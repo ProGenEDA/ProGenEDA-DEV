@@ -52,6 +52,16 @@ Reason:
 - It has clean ROOT.DSN version fields.
 - It has minimal ROOT.CDB.
 
+## D006: Keep composed 74HC08 rendering gated on a clean D05 oracle
+
+Decision: expose the AND reference circuit in CircuitIR and generate only validated whole-template outputs until `HC08_D05_exact_picture_manual_control.pdsprj` is supplied and passes Proteus 8.13 comparison testing.
+
+Evidence:
+
+- D01-D03 are clean donor projects but do not include the target pull-up/pull-down resistor rails.
+- The previous file labelled `G04_FINAL_picture_circuit_full_cdb` is byte-equivalent to D03 and is not the target circuit.
+- Arbitrary `ROOT.DSN` composition was the suspected source of prior ISIS failures.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

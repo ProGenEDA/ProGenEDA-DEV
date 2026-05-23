@@ -1,0 +1,67 @@
+{
+  "version": "0.2",
+  "target": {
+    "proteus_version": "8.13",
+    "style": "terminal_based",
+    "sheet_count": 1,
+    "mode": "production"
+  },
+  "circuit": {
+    "name": "and_reference_pullup_pulldown",
+    "components": [
+      {"ref": "U1", "part": "74HC08"},
+      {"ref": "R1", "part": "RESISTOR", "value": "10k"},
+      {"ref": "R2", "part": "RESISTOR", "value": "10k"}
+    ],
+    "nets": [
+      {"name": "VCC", "kind": "power"},
+      {"name": "GND", "kind": "ground"},
+      {"name": "ODD_PULLUP", "kind": "internal"},
+      {"name": "EVEN_PULLDOWN", "kind": "internal"},
+      {"name": "Y_A", "kind": "output"},
+      {"name": "Y_B", "kind": "output"},
+      {"name": "Y_C", "kind": "output"},
+      {"name": "Y_D", "kind": "output"}
+    ],
+    "connections": [
+      {"component": "R1", "pin": "1", "net": "VCC"},
+      {"component": "R1", "pin": "2", "net": "ODD_PULLUP"},
+      {"component": "R2", "pin": "1", "net": "EVEN_PULLDOWN"},
+      {"component": "R2", "pin": "2", "net": "GND"},
+      {"component": "U1", "pin": "1", "net": "ODD_PULLUP"},
+      {"component": "U1", "pin": "2", "net": "EVEN_PULLDOWN"},
+      {"component": "U1", "pin": "3", "net": "Y_A"},
+      {"component": "U1", "pin": "4", "net": "ODD_PULLUP"},
+      {"component": "U1", "pin": "5", "net": "EVEN_PULLDOWN"},
+      {"component": "U1", "pin": "6", "net": "Y_B"},
+      {"component": "U1", "pin": "9", "net": "ODD_PULLUP"},
+      {"component": "U1", "pin": "10", "net": "EVEN_PULLDOWN"},
+      {"component": "U1", "pin": "8", "net": "Y_C"},
+      {"component": "U1", "pin": "12", "net": "ODD_PULLUP"},
+      {"component": "U1", "pin": "13", "net": "EVEN_PULLDOWN"},
+      {"component": "U1", "pin": "11", "net": "Y_D"}
+    ],
+    "layout": {
+      "terminals": [
+        {"label": "1", "net": "ODD_PULLUP", "kind": "input", "at": {"x": 8, "y": 2}},
+        {"label": "2", "net": "EVEN_PULLDOWN", "kind": "input", "at": {"x": 8, "y": 3}},
+        {"label": "3", "net": "ODD_PULLUP", "kind": "input", "at": {"x": 8, "y": 6}},
+        {"label": "4", "net": "EVEN_PULLDOWN", "kind": "input", "at": {"x": 8, "y": 7}},
+        {"label": "5", "net": "ODD_PULLUP", "kind": "input", "at": {"x": 8, "y": 10}},
+        {"label": "6", "net": "EVEN_PULLDOWN", "kind": "input", "at": {"x": 8, "y": 11}},
+        {"label": "7", "net": "ODD_PULLUP", "kind": "input", "at": {"x": 8, "y": 14}},
+        {"label": "8", "net": "EVEN_PULLDOWN", "kind": "input", "at": {"x": 8, "y": 15}}
+      ],
+      "wires": [
+        {"net": "ODD_PULLUP", "points": [{"x": 2, "y": 4}, {"x": 4, "y": 4}, {"x": 4, "y": 14}]},
+        {"net": "EVEN_PULLDOWN", "points": [{"x": 2, "y": 16}, {"x": 4, "y": 16}, {"x": 4, "y": 6}]}
+      ],
+      "junctions": [
+        {"net": "ODD_PULLUP", "at": {"x": 4, "y": 6}},
+        {"net": "ODD_PULLUP", "at": {"x": 4, "y": 10}},
+        {"net": "EVEN_PULLDOWN", "at": {"x": 4, "y": 7}},
+        {"net": "EVEN_PULLDOWN", "at": {"x": 4, "y": 11}}
+      ]
+    }
+  }
+}

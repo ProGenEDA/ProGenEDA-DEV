@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
+from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, ZipInfo
 
 
 @dataclass(frozen=True)
@@ -35,6 +35,16 @@ REQUIRED_INTERNAL_FILES = (
     "ROOT.CDB",
     "SCRIPTS/PWRRAILS.DAT",
 )
+DETERMINISTIC_ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+
+
+def _write_deterministic(zf: ZipFile, name: str, data: bytes, compression: int) -> None:
+    """Write an archive member without host-time metadata."""
+
+    info = ZipInfo(filename=name, date_time=DETERMINISTIC_ZIP_TIMESTAMP)
+    info.compress_type = compression
+    info.external_attr = 0o600 << 16
+    zf.writestr(info, data)
 
 
 def inspect_pdsprj(path: str | Path) -> PdsprjInfo:
@@ -79,10 +89,10 @@ def repack_pdsprj(
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    with ZipFile(out, "w", compression=compression) as zf:
+    with ZipFile(out, "w") as zf:
         for file_path in sorted(p for p in src.rglob("*") if p.is_file()):
             arcname = file_path.relative_to(src).as_posix()
-            zf.write(file_path, arcname)
+            _write_deterministic(zf, arcname, file_path.read_bytes(), compression)
 
 
 def read_internal_file(path: str | Path, internal_name: str) -> bytes:
@@ -113,9 +123,9 @@ def write_project_from_parts(
 
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    with ZipFile(out, "w", compression=compression) as zout:
+    with ZipFile(out, "w") as zout:
         for name in names:
             if name in merged:
-                zout.writestr(name, merged[name])
+                _write_deterministic(zout, name, merged[name], compression)
         for name in sorted(set(merged) - set(names)):
-            zout.writestr(name, merged[name])
+            _write_deterministic(zout, name, merged[name], compression)

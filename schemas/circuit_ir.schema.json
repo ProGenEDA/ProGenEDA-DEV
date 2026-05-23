@@ -12,8 +12,10 @@
       "required": ["proteus_version", "style"],
       "additionalProperties": false,
       "properties": {
-        "proteus_version": {"type": "string", "examples": ["8.13"]},
-        "style": {"type": "string", "enum": ["terminal_based"]}
+        "proteus_version": {"type": "string", "enum": ["8.13"]},
+        "style": {"type": "string", "enum": ["terminal_based"]},
+        "sheet_count": {"type": "integer", "const": 1, "default": 1},
+        "mode": {"type": "string", "enum": ["production", "diagnostic_control"], "default": "production"}
       }
     },
     "circuit": {
@@ -21,23 +23,11 @@
       "required": ["name", "components", "nets", "connections"],
       "additionalProperties": false,
       "properties": {
-        "name": {"type": "string"},
-        "components": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/component"}
-        },
-        "nets": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/net"}
-        },
-        "connections": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/connection"}
-        },
-        "layout_hints": {
-          "type": "object",
-          "additionalProperties": true
-        }
+        "name": {"type": "string", "minLength": 1},
+        "components": {"type": "array", "items": {"$ref": "#/$defs/component"}},
+        "nets": {"type": "array", "items": {"$ref": "#/$defs/net"}},
+        "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
+        "layout": {"$ref": "#/$defs/layout"}
       }
     }
   },
@@ -48,7 +38,7 @@
       "additionalProperties": false,
       "properties": {
         "ref": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$"},
-        "part": {"type": "string"},
+        "part": {"type": "string", "enum": ["RESISTOR", "74HC08", "LOGICSTATE", "LOGICPROBE"]},
         "value": {"type": "string"},
         "metadata": {"type": "object", "additionalProperties": true}
       }
@@ -70,6 +60,59 @@
         "component": {"type": "string"},
         "pin": {"type": "string"},
         "net": {"type": "string"}
+      }
+    },
+    "point": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {"x": {"type": "integer"}, "y": {"type": "integer"}}
+    },
+    "terminal": {
+      "type": "object",
+      "required": ["label", "net", "kind", "at"],
+      "additionalProperties": false,
+      "properties": {
+        "label": {"type": "string", "pattern": "^[A-Za-z0-9_+./-]+$"},
+        "net": {"type": "string"},
+        "kind": {"type": "string", "enum": ["input", "output", "power", "ground", "default"]},
+        "at": {"$ref": "#/$defs/point"}
+      }
+    },
+    "wire": {
+      "type": "object",
+      "required": ["net", "points"],
+      "additionalProperties": false,
+      "properties": {
+        "net": {"type": "string"},
+        "points": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/point"}}
+      }
+    },
+    "junction": {
+      "type": "object",
+      "required": ["net", "at"],
+      "additionalProperties": false,
+      "properties": {"net": {"type": "string"}, "at": {"$ref": "#/$defs/point"}}
+    },
+    "placement": {
+      "type": "object",
+      "required": ["component", "at"],
+      "additionalProperties": false,
+      "properties": {
+        "component": {"type": "string"},
+        "unit": {"type": "string", "enum": ["A", "B", "C", "D"]},
+        "orientation": {"type": "string", "enum": ["horizontal"], "default": "horizontal"},
+        "at": {"$ref": "#/$defs/point"}
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "terminals": {"type": "array", "items": {"$ref": "#/$defs/terminal"}},
+        "wires": {"type": "array", "items": {"$ref": "#/$defs/wire"}},
+        "junctions": {"type": "array", "items": {"$ref": "#/$defs/junction"}},
+        "placements": {"type": "array", "items": {"$ref": "#/$defs/placement"}}
       }
     }
   }

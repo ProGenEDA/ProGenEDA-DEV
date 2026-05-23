@@ -1,0 +1,23 @@
+{
+  "version": "0.2",
+  "target": {
+    "proteus_version": "8.13",
+    "style": "terminal_based",
+    "sheet_count": 1,
+    "mode": "production"
+  },
+  "circuit": {
+    "name": "single_r1_1k_vcc_gnd",
+    "components": [
+      {"ref": "R1", "part": "RESISTOR", "value": "1k"}
+    ],
+    "nets": [
+      {"name": "VCC", "kind": "power"},
+      {"name": "GND", "kind": "ground"}
+    ],
+    "connections": [
+      {"component": "R1", "pin": "1", "net": "VCC"},
+      {"component": "R1", "pin": "2", "net": "GND"}
+    ]
+  }
+}

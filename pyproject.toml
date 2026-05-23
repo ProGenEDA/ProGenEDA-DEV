@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proteusgen"
+version = "0.1.0"
+description = "Deterministic, fixture-backed Proteus project generator research tool"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[project.scripts]
+proteusgen = "proteusgen.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

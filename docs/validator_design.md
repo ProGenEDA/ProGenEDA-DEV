@@ -38,19 +38,18 @@ The validator must reject bad or unsupported circuit descriptions before generat
 
 ### Scope checks
 
-For resistor-generator v0, reject unsupported parts even if present in requested future scope.
+For production generation, reject unsupported or unvalidated composition even when clean donor material exists.
 
-Supported v0 parts:
+CircuitIR vocabulary:
 
 ```text
 RESISTOR
-INPUT_TERMINAL
-OUTPUT_TERMINAL
-POWER_TERMINAL
-GROUND_TERMINAL
+74HC08
+LOGICSTATE
+LOGICPROBE
 ```
 
-The generator should usually create terminals automatically from nets, so CircuitIR does not need explicit terminal components for every net.
+Only exact validated passive recipes are production-ready today. `74HC08`, `LOGICSTATE`, and `LOGICPROBE` remain represented in the contract for acceptance/diagnostic inputs, while composed production rendering is gated on D05. Rendered terminals, wires, junctions, and fixed-grid placement are layout objects rather than electrical components.
 
 ## Warning examples
 

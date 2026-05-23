@@ -61,20 +61,14 @@ Use CircuitIR JSON. Do not make the generator parse free-form English.
 
 The planner prompt in `prompts/planner_prompt.md` is responsible for turning natural language into CircuitIR.
 
-## Early generator target
+## Current generator target
 
-The first real generator target is terminal-based resistor networks:
+The CLI and CircuitIR contract exist. Enable output conservatively:
 
-- VCC/GND networks
-- series resistors
-- parallel resistors
-- dividers
-- ladders
-- star networks
-- delta networks
-- bridge networks
-
-Use repeated same-name terminals as virtual nets.
+- Production generation is restricted to whole clean templates with explicit recipes until composed-object transformations are validated.
+- The first composed-output acceptance case is one quad `74HC08` package with two resistor rails and labelled input terminals, specified in `examples/and_reference_pending_d05.json`.
+- Do not enable the AND acceptance case until the clean Proteus 8.13 D05 oracle has been supplied and a generated project passes open/save comparison.
+- Use terminal/net-label topology where safe, but do not assume labelled terminals replace visible wire/junction records required by the reference circuit.
 
 ## Development style
 

@@ -2,6 +2,8 @@
 
 Every generated or patched Proteus project test should return structured feedback.
 
+Proteus 8.16 SP3 may be used for an early load smoke check on this machine. Only results recorded with `runtime_role: "proteus_8_13_authoritative"` and `acceptance_authoritative: true` may promote a component or rendering method to supported output.
+
 ## Required human notes
 
 For each test project, record:
@@ -29,6 +31,8 @@ Example:
   "test_id": "GEN_R_DIVIDER_001",
   "generated_file": "voltage_divider_001.pdsprj",
   "proteus_version": "8.13",
+  "runtime_role": "proteus_8_13_authoritative",
+  "acceptance_authoritative": true,
   "opened": true,
   "fatal_error": false,
   "warnings": [],

@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "policy": "Only clean user-created Proteus 8.13 fixtures are active generation inputs. Donor records may not be sliced or combined unless a later validated renderer explicitly supports that operation.",
+  "fixtures": [
+    {
+      "id": "e001_empty",
+      "path": "pdsprj/e001_empty_project.pdsprj",
+      "sha256": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "role": "production_template",
+      "source": "E001_empty_project/New Project.pdsprj",
+      "status": "validated_clean_base",
+      "recipe": "empty_single_sheet"
+    },
+    {
+      "id": "e019_resistor_in_out_10k",
+      "path": "pdsprj/e019_resistor_in_out_10k.pdsprj",
+      "sha256": "7ca8fb38933597f05766b8cebcda1659af2f4fa310948fe477058d99376320c2",
+      "role": "research_fixture",
+      "source": "p8_13/E019_resistor_IN_to_OUT_short_wires",
+      "status": "clean_passive_primitive"
+    },
+    {
+      "id": "e020_resistor_vcc_gnd_1k",
+      "path": "pdsprj/e020_resistor_vcc_gnd_1k.pdsprj",
+      "sha256": "532a308b80c4230278b25eb2f71a48c3bc26cb604ca5687d503263cd4eeaf8e8",
+      "role": "production_template",
+      "source": "p8_13/E020_resistor_VCC_to_GND_short_wires",
+      "status": "validated_clean_passive_template",
+      "recipe": "single_r1_1k_vcc_gnd"
+    },
+    {
+      "id": "hc08_d01_single_gate",
+      "path": "pdsprj/hc08_d01_single_gate.pdsprj",
+      "sha256": "2b5d238b6546250e6d40667f6cf1fe0e13bdb4a7a0ed2062443491a2831d8e61",
+      "role": "research_fixture",
+      "source": "HC08_D01_single_gate_minimal",
+      "status": "clean_donor"
+    },
+    {
+      "id": "hc08_d02_four_gates_unwired",
+      "path": "pdsprj/hc08_d02_four_gates_unwired.pdsprj",
+      "sha256": "764d48a9711e1f4a3f5218b0f0bf25be4e6eada9996386f54ea77b8c75ac354e",
+      "role": "diagnostic_template",
+      "source": "HC08_D02_all_four_gates_unwired",
+      "status": "clean_donor_pending_generated_acceptance",
+      "recipe": "hc08_d02_unwired_control"
+    },
+    {
+      "id": "hc08_d03_logic_io",
+      "path": "pdsprj/hc08_d03_logic_io.pdsprj",
+      "sha256": "400e252c6595b342b44c16ca50da6f995c3d16dfd082469d1bd9f3737535ae3f",
+      "role": "research_fixture",
+      "source": "HC08_D03_all_four_gates_logic_inputs_outputs",
+      "status": "clean_donor_pending_generated_acceptance"
+    }
+  ],
+  "pending_fixtures": [
+    {
+      "id": "hc08_d05_exact_picture_oracle",
+      "required_for": "and_reference_acceptance",
+      "status": "awaiting_user_created_proteus_8_13_project",
+      "use": "comparison_oracle_only"
+    }
+  ]
+}

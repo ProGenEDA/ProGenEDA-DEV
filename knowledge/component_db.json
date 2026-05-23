@@ -2,7 +2,7 @@
   "schema_version": "0.1",
   "components": {
     "RESISTOR": {
-      "status": "partially_supported",
+      "status": "generation_ready_exact_template_only",
       "category": "passive",
       "proteus_names_observed": ["RESISTOR", "RES"],
       "pins": [
@@ -15,7 +15,8 @@
         "requires_cdb": true,
         "values_authority": "ROOT.CDB",
         "refs_authority": "ROOT.CDB",
-        "tested": true
+        "tested": true,
+        "supported_recipe": "R1=1k between VCC and GND using clean E020 whole-project fixture"
       },
       "notes": [
         "Topology can be built with terminal labels around resistor pins.",
@@ -63,14 +64,22 @@
     "CAPACITOR": {"status": "requested_not_yet_controlled", "category": "passive"},
     "LED": {"status": "found_in_corpus_not_controlled", "category": "display_indicator"},
     "CLOCK": {"status": "found_in_corpus_not_controlled", "category": "digital_source"},
-    "LOGICPROBE": {"status": "found_in_corpus_not_controlled", "category": "instrument"},
+    "LOGICSTATE": {"status": "clean_donor_available_not_generation_ready", "category": "digital_source", "clean_source": "HC08_D03"},
+    "LOGICPROBE": {"status": "clean_donor_available_not_generation_ready", "category": "instrument", "clean_source": "HC08_D03"},
     "74LS00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
     "74HC00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
     "74HCT00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
     "74LS04": {"status": "found_in_corpus_not_controlled", "category": "logic_ic", "family": "hex_inverter"},
     "74HC04": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "hex_inverter"},
     "74LS08": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_and"},
-    "74HC08": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "quad_2_input_and"},
+    "74HC08": {
+      "status": "diagnostic_control_only_pending_d05",
+      "category": "logic_ic",
+      "family": "quad_2_input_and",
+      "clean_sources": ["HC08_D01", "HC08_D02", "HC08_D03"],
+      "v0_limit": "one U1 quad package",
+      "generation_gate": "HC08_D05 exact-picture oracle and Proteus 8.13 acceptance result required"
+    },
     "74LS32": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_or"},
     "74HC32": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "quad_2_input_or"},
     "74LS86": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_xor"},
