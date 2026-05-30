@@ -1,0 +1,28 @@
+{
+  "case": "CAPACITOR_V9_UNIQUE_INDEX_TEMP_2026_05_31",
+  "status": "temporary_diagnostic_not_locked_pending_proteus_test",
+  "generated_local_path": "D:/Coding/protuesgen/experiments/capacitor_v9_unique_index_temp_2026_05_31",
+  "zip": {
+    "path": "D:/Coding/protuesgen/experiments/CAPACITOR_V9_UNIQUE_INDEX_TEMP_2026_05_31.zip",
+    "size_bytes": 143806,
+    "sha256": "7a00d84af56c3b4f2af1fcb30d47f0c0be2f37f7b3fef1ebd46865251badfc5c"
+  },
+  "generator_script": "D:/Coding/protuesgen/tools/proteus_generation/2026-05-31/generate_capacitor_v9_unique_index_temp.py",
+  "trigger": "V8 user feedback: only T01 worked. Deep byte audit found duplicated terminal-attached cap visual index byte 344.",
+  "hypothesis": "Terminal-attached multi-cap generation failed because every duplicated cap visual record kept hidden visual index 1; free multi-cap generation works because it patches this byte to 1, 2, 3.",
+  "static_results": {
+    "fixture_registry_valid": true,
+    "pytest": "31 passed, 40 subtests passed",
+    "all_case_static_validation_issues_empty": true,
+    "t02_cap_visual_indexes": [1, 2],
+    "t05_cap_visual_indexes": [1, 2, 3]
+  },
+  "test_order": [
+    "CAP_V9_T01_V8_T01_REPRO_GUARD",
+    "CAP_V9_T02_TWO_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX",
+    "CAP_V9_T03_TWO_TERMINAL_RES_SUFFIX_TERMS_FIRST_UNIQUE_INDEX",
+    "CAP_V9_T04_TWO_TERMINAL_RES_SUFFIX_V9_ORDER_UNIQUE_INDEX",
+    "CAP_V9_T05_THREE_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX"
+  ],
+  "do_not_promote_before": "Proteus 8.13 confirms a V9 two-terminal-cap variant opens and renders two complete terminal-attached capacitors."
+}

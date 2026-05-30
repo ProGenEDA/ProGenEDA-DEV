@@ -148,6 +148,28 @@ Evidence:
 - V7 T05 working while T04 failed means free capacitor records can coexist with a terminal-attached capacitor only in the observed free-first/terminal-last order so far.
 - V7 T07 partially opening suggests object ordering is closer than sequential duplicated groups but still missing the V9 separator/layout pattern.
 
+## D015: V8 rejects synthesized two-terminal-cap ordering
+
+Decision: do not keep guessing at multi terminal-attached capacitor composition from one-cap donors. Start deeper VGDVC/DLL/log and user-corpus analysis, and request a real manually made two-terminal-cap donor if the current corpus does not contain one.
+
+Evidence:
+
+- User reported only V8 T01 worked.
+- V8 T01 is the V7 T05 reproduction: one free capacitor before one terminal-attached capacitor.
+- V8 T02-T06 all attempted two terminal-attached capacitors using V9-style ordering, suffix variants, CDB flag variants, and vertical staggering; all failed according to user.
+- This means the safe capacitor method currently covers free multi-cap records and a single terminal-attached capacitor, not two synthesized terminal-attached capacitor groups.
+
+## D016: Test unique capacitor visual index byte for terminal-attached multi-cap
+
+Decision: V9 must test the concrete byte-level bug found after V8: every duplicated terminal-attached capacitor copied the donor cap visual index byte 344 as `1`, while accepted free multi-cap records patch that byte to `1, 2, 3`.
+
+Evidence:
+
+- `cap3` accepted free-cap records have byte 344 values `1, 2, 3`.
+- `CAP_V7_T06`, `CAP_V7_T07`, and `CAP_V8_T02` failing/partial terminal-cap variants had byte 344 equal to `1` in both C1 and C2 cap visual records.
+- This duplicate hidden visual index explains the observed partial rendering better than suffix/order alone.
+- V9 T02 is the minimal V7 T06 shape with only the terminal-attached capacitor visual indexes corrected to `1, 2`.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

@@ -139,11 +139,11 @@
     {
       "id": "R016",
       "title": "Capacitor work stays temporary until Proteus accepts guarded diagnostics",
-      "status": "free_multi_cap_confirmed_terminal_multi_pending_v8",
-      "confidence": 0.86,
+      "status": "free_multi_and_single_terminal_confirmed_multi_terminal_v9_pending",
+      "confidence": 0.89,
       "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_USER_FEEDBACK_20260531", "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531", "CAPACITOR_V7_USER_FEEDBACK_20260531", "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531"],
-      "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. Single terminal-attached capacitor generation is positive through V7 T01/T02, and extra CDB-only records are tolerated through V7 T03. Do not promote multi-terminal-attached capacitor topology until V8 or later proves a complete two-cap terminal method; V7 T04/T06 failed and V7 T07 only partially rendered."
+      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_USER_FEEDBACK_20260531", "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531", "CAPACITOR_V7_USER_FEEDBACK_20260531", "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531", "CAPACITOR_V8_USER_FEEDBACK_20260531", "CAPACITOR_V9_UNIQUE_INDEX_STATIC_20260531"],
+      "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. Single terminal-attached capacitor generation is positive through V7/V8, and extra CDB-only records are tolerated through V7 T03. Do not synthesize two or more terminal-attached capacitors from duplicated one-cap terminal groups unless the hidden capacitor visual index byte 344 is unique per cap; V9 is the pending guarded diagnostic for that fix."
     }
   ]
 }
