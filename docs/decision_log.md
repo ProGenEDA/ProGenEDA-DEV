@@ -126,6 +126,16 @@ Evidence:
 - V4 T05 remains negative evidence for naive duplicated terminal-cap-terminal groups.
 - V6 generates terminal/free coexistence tests first, then two-terminal-cap variants with different suffix families and object orders.
 
+## D013: V6 terminal reintroduction rejected; isolate from V4 T04 baseline
+
+Decision: V6 is rejected as negative evidence. The next terminal-attached capacitor diagnostics must start from a byte-exact reproduction of the known-opening V4 T04 single terminal-cap object chunk, then change one variable at a time.
+
+Evidence:
+
+- User reported all V6 cases gave VGDVC errors.
+- Local audit found terminal-last V6 variants appended an extra final FF byte instead of replacing the final wire terminator.
+- V7 T01 object chunk matches V4 T04 byte-for-byte, so it is the new sanity gate.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

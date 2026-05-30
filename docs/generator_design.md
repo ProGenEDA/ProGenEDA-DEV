@@ -99,13 +99,14 @@ Priority after locked resistor generator:
 Current capacitor gate:
 
 ```text
-D:/Coding/protuesgen/tools/proteus_generation/2026-05-30/generate_capacitor_v6_terminal_reintro_temp.py
-D:/Coding/protuesgen/experiments/capacitor_v6_terminal_reintro_temp_2026_05_30/
+D:/Coding/protuesgen/tools/proteus_generation/2026-05-31/generate_capacitor_v7_terminal_isolation_temp.py
+D:/Coding/protuesgen/experiments/capacitor_v7_terminal_isolation_temp_2026_05_31/
 ```
 
 Free multi-capacitor CDB/object expansion is user-accepted through V5. V6 is
-deliberately temporary and reintroduces terminal-attached capacitor topology in
-controlled variants before any capacitor code moves into the main generator.
+negative evidence: all cases gave VGDVC, and terminal-last variants had a final
+terminator bug. V7 is the active terminal isolation gate before any capacitor
+code moves into the main generator.
 
 ## Non-goals for v0
 
