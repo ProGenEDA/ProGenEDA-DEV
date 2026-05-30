@@ -90,3 +90,5 @@ C2 right WIRE, 50 bytes, final FF
 ```
 
 The donor ROOT.CDB contains two `CAPACITOR` records with refs `C1` and `C2`, both `1nF`, and the generated CDB builder can reproduce it byte-for-byte with zero component-table flags. V10 temporary diagnostics use this manual order from E001 and must pass Proteus manual testing before any capacitor code is promoted to main.
+
+The user reported all V10 manual-order cases worked in Proteus 8.13, including exact donor transplant, split/rebuild, coordinate translation, ref/value mutation, and a three-cap scale test. V11 now uses the same record structure for larger 6C and 21C terminal-label topology stress tests. These larger networks are still temporary until user-opened Proteus confirmation.

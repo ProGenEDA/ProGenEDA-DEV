@@ -139,19 +139,19 @@
     {
       "id": "R016",
       "title": "Capacitor work stays temporary until Proteus accepts guarded diagnostics",
-      "status": "free_multi_and_single_terminal_confirmed_multi_terminal_v10_manual_donor_pending",
-      "confidence": 0.91,
+      "status": "v10_manual_order_confirmed_large_network_pending",
+      "confidence": 0.94,
       "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_USER_FEEDBACK_20260531", "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531", "CAPACITOR_V7_USER_FEEDBACK_20260531", "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531", "CAPACITOR_V8_USER_FEEDBACK_20260531", "CAPACITOR_V9_UNIQUE_INDEX_STATIC_20260531", "CAPACITOR_V9_USER_FEEDBACK_20260531", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531"],
-      "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. Single terminal-attached capacitor generation is positive through V7/V8, and extra CDB-only records are tolerated through V7 T03. V9 proves unique hidden visual indexes alone do not solve multiple terminal-attached capacitors. Keep multi-terminal capacitor generation temporary until the V10 manual-donor ordering is Proteus accepted."
+      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_USER_FEEDBACK_20260531", "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531", "CAPACITOR_V7_USER_FEEDBACK_20260531", "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531", "CAPACITOR_V8_USER_FEEDBACK_20260531", "CAPACITOR_V9_UNIQUE_INDEX_STATIC_20260531", "CAPACITOR_V9_USER_FEEDBACK_20260531", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531", "CAPACITOR_V11_NETWORKS_STATIC_20260531"],
+      "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. V10 confirms the manual donor outputs-first order opens for exact, translated, renamed, and three-cap terminal-attached cases. Keep the capacitor generator temporary until the V11 larger 6C and 21C network stress tests are Proteus accepted."
     },
     {
       "id": "R017",
       "title": "Manual two-terminal-cap donor uses outputs-first object order",
-      "status": "observed_pending_generated_acceptance",
-      "confidence": 0.84,
+      "status": "user_confirmed_for_v10_two_and_three_cap_cases",
+      "confidence": 0.92,
       "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["CAp2withterm.pdsprj manual donor", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531"],
+      "evidence": ["CAp2withterm.pdsprj manual donor", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531"],
       "rule": "The user-made two-terminal-capacitor donor object chunk is ordered as: header, both $TEROUTPUT records, then each $TERINPUT/CAPACITOR/left-wire/right-wire group. The non-final right-wire record is 49 bytes, omitting the usual trailing terminator byte; the final right-wire record is 50 bytes and ends with FF."
     }
   ]

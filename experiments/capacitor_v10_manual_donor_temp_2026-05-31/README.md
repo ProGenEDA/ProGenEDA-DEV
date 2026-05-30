@@ -2,7 +2,7 @@
 
 ## Status
 
-Temporary, pending Proteus test.
+Temporary method accepted for V10 scope. Larger 6C/21C network scaling remains pending in V11.
 
 ## Trigger
 
@@ -96,5 +96,5 @@ T01/T02 are byte-exact guards. T03 tests coordinate mutation. T04 tests
 same-length refs, labels, and values. T05 tests whether the two-cap donor shape
 can scale to three terminal-attached capacitors.
 
-Do not promote capacitor to main until Proteus opens and renders the generated
-manual-order cases correctly.
+User reported all V10 cases work. Do not promote capacitor to main until the
+larger V11 6C and 21C networks also open and render correctly.
