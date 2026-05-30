@@ -136,6 +136,18 @@ Evidence:
 - Local audit found terminal-last V6 variants appended an extra final FF byte instead of replacing the final wire terminator.
 - V7 T01 object chunk matches V4 T04 byte-for-byte, so it is the new sanity gate.
 
+## D014: Test V9-style ordering for multiple terminal-attached capacitors
+
+Decision: V7 is mixed evidence, not promotable. V8 must test multiple terminal-attached capacitors using the accepted resistor V9 ordering: all input terminals, all output terminals, one separator byte, then component/wire groups.
+
+Evidence:
+
+- User reported V7 T01, T02, T03, and T05 worked.
+- User reported V7 T04 and T06 failed.
+- User screenshot for V7 T07 showed the file opened but only a partial two-terminal-cap circuit appeared, with C1 plus a dangling/partial N4 side.
+- V7 T05 working while T04 failed means free capacitor records can coexist with a terminal-attached capacitor only in the observed free-first/terminal-last order so far.
+- V7 T07 partially opening suggests object ordering is closer than sequential duplicated groups but still missing the V9 separator/layout pattern.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

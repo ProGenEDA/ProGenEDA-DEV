@@ -9,7 +9,7 @@ RESISTOR: two-terminal, CDB-backed, V9 linked terminal/resistor/wire group
 POWER_TERMINAL: working with two locked methods
 GROUND_TERMINAL: working with short-wire endpoint method only
 PREFERRED_POWER_GROUND_COMBO: power donor bridge + ground short-wire endpoint
-ACTIVE_NEXT_COMPONENT: capacitor V7 terminal isolation diagnostics
+ACTIVE_NEXT_COMPONENT: capacitor V8 terminal ordering diagnostics
 ```
 
 Resistor generation is locked for the current scope in the active generator repo. Use the spacing-adjusted V9 method as main; do not return to direct `$TERPOWER` resistor endpoints or standalone production visual wires.
@@ -163,7 +163,8 @@ Current status:
 
 ```text
 free multi-cap visual/CDB generation accepted
-terminal topology V7 Proteus user test pending
+V7 proved single terminal caps and free-first/terminal-last ordering
+multi terminal-attached capacitor topology V8 Proteus user test pending
 do not promote to main yet
 ```
 
@@ -181,7 +182,7 @@ update JSON spec
 Current diagnostic gate:
 
 ```text
-D:/Coding/protuesgen/experiments/capacitor_v7_terminal_isolation_temp_2026_05_31
+D:/Coding/protuesgen/experiments/capacitor_v8_terminal_order_temp_2026_05_31
 ```
 
 Possible JSON extension:
