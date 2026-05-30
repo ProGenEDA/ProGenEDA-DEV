@@ -99,12 +99,13 @@ Priority after locked resistor generator:
 Current capacitor gate:
 
 ```text
-D:/Coding/protuesgen/tools/proteus_generation/2026-05-30/generate_capacitor_v4_temp.py
-D:/Coding/protuesgen/experiments/capacitor_v4_temp_2026_05_30/
+D:/Coding/protuesgen/tools/proteus_generation/2026-05-30/generate_capacitor_v5_cap3_temp.py
+D:/Coding/protuesgen/experiments/capacitor_v5_cap3_temp_2026_05_30/
 ```
 
-The V4 capacitor work is deliberately temporary. It must pass the ordered
-Proteus diagnostics before any capacitor code moves into the main generator.
+The V5 capacitor work is deliberately temporary. It uses the user-supplied
+`cap3.pdsprj` donor to test free capacitor CDB/object expansion before
+terminal-attached multi-cap records are revisited.
 
 ## Non-goals for v0
 

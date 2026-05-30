@@ -105,6 +105,17 @@ Evidence:
 - The V4 script verifies that a generated terminal-cap-terminal object chunk matches CAP_T02 byte-for-byte.
 - Static generation produced five ordered diagnostics with zero static validation issues, but manual Proteus testing is still pending.
 
+## D011: Use cap3 free capacitor records before retrying terminal-attached multi-cap generation
+
+Decision: after V4 T05 failed, the capacitor lane moves to the user-supplied `cap3.pdsprj` donor and isolates free capacitor CDB/object expansion before reintroducing endpoint terminals and wires.
+
+Evidence:
+
+- User reported V4 T04 opened and V4 T05 gave a Proteus error.
+- `cap3.pdsprj` contains three capacitor CDB records and three free capacitor visual records without terminal endpoint groups.
+- V5 reproduces the `cap3` `ROOT.CDB` and object chunk byte-for-byte before generating two-cap and translated/renamed three-cap diagnostics.
+- This suggests the next unknown is multi-cap free-record acceptance, not resistor-style terminal-group duplication.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.
