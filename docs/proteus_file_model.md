@@ -68,3 +68,25 @@ G0 resistor endpoints -> $TERGROUND only when the ground node is component.nodes
 The older pure short-wire power endpoint method is not the main generator behavior. The preferred working method is the user-confirmed donor bridge from `power_terminal_bridge_donor.pdsprj`; ground remains the short-wire endpoint method.
 
 Long labels such as `VCC` and `GND` remain outside the locked v0.1 resistor generator until variable-length terminal labels are validated.
+
+## Capacitor Temporary Findings
+
+Free multi-capacitor generation is user-accepted through the `cap3` donor path, but terminal-attached multi-capacitor generation is still experimental.
+
+The user-made `CAp2withterm.pdsprj` donor shows a different object order than the failed duplicated one-cap attempts:
+
+```text
+00
+$TEROUTPUT N2
+$TEROUTPUT N4
+$TERINPUT N1
+C1 CAPACITOR
+C1 left WIRE
+C1 right WIRE, 49 bytes, no trailing terminator byte
+$TERINPUT N3
+C2 CAPACITOR
+C2 left WIRE
+C2 right WIRE, 50 bytes, final FF
+```
+
+The donor ROOT.CDB contains two `CAPACITOR` records with refs `C1` and `C2`, both `1nF`, and the generated CDB builder can reproduce it byte-for-byte with zero component-table flags. V10 temporary diagnostics use this manual order from E001 and must pass Proteus manual testing before any capacitor code is promoted to main.
