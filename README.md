@@ -11,7 +11,7 @@ Current target:
 - Generator input language: CircuitIR JSON
 - Current generated domain: V9 terminal-based resistor graphs from E001
 - Resistor generator status: locked as main for the current scope
-- Capacitor status: temporary V5 cap3 diagnostics generated; waiting on ordered Proteus test before promotion
+- Capacitor status: free multi-cap visuals accepted; terminal topology is in temporary V6 diagnostics
 - Current power/ground support: one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge feeds powered `V0` input terminals; `G0` right endpoints become `$TERGROUND` with the normal short-wire-to-pin method
 - Current resistor visual support: horizontal and 90-degree vertical records through `visual.orientation_hint`; `layout.visual_wires` is parsed but skipped in production until a safe donor is validated
 

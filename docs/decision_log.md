@@ -116,6 +116,16 @@ Evidence:
 - V5 reproduces the `cap3` `ROOT.CDB` and object chunk byte-for-byte before generating two-cap and translated/renamed three-cap diagnostics.
 - This suggests the next unknown is multi-cap free-record acceptance, not resistor-style terminal-group duplication.
 
+## D012: Reintroduce capacitor terminals only after V5 free-cap acceptance
+
+Decision: user acceptance of all V5 cap3 diagnostics confirms free multi-cap CDB/object generation. Terminal-attached capacitor topology remains experimental and must be tested with V6 variants before promotion.
+
+Evidence:
+
+- User reported all V5 diagnostics work.
+- V4 T05 remains negative evidence for naive duplicated terminal-cap-terminal groups.
+- V6 generates terminal/free coexistence tests first, then two-terminal-cap variants with different suffix families and object orders.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

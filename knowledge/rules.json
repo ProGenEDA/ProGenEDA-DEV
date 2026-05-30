@@ -139,11 +139,11 @@
     {
       "id": "R016",
       "title": "Capacitor work stays temporary until Proteus accepts guarded diagnostics",
-      "status": "static_confirmed_pending_proteus_acceptance",
-      "confidence": 0.78,
+      "status": "free_multi_cap_confirmed_terminal_pending",
+      "confidence": 0.84,
       "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_TEMP_STATIC_20260530", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_CAP3_TEMP_STATIC_20260530"],
-      "rule": "Do not promote capacitor generation to the main generator until Proteus accepts guarded diagnostics. V4 T05 showed duplicated terminal-cap-terminal groups are unsafe. V5 must validate cap3-derived free capacitor CDB/object expansion before terminal-attached multi-cap generation is revisited."
+      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_CAP3_TEMP_STATIC_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_TERMINAL_REINTRO_STATIC_20260530"],
+      "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. Do not promote terminal-attached capacitor topology until V6 or a later guarded diagnostic passes; V4 T05 showed duplicated terminal-cap-terminal groups are unsafe."
     }
   ]
 }
