@@ -202,11 +202,20 @@
     {
       "id": "R023",
       "title": "Inductor power/ground generation remains lock-candidate",
-      "status": "v4_static_pending_user_test",
-      "confidence": 0.84,
+      "status": "rejected_v4_generic_bridge_order",
+      "confidence": 0.88,
       "applies_to": ["Proteus 8.13", "inductor temporary V4 method"],
-      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V4_POWER_GROUND_STATIC_20260531"],
-      "rule": "Before promoting inductor generation to main, test generated V0/G0 inductor networks that combine V3 per-index REALIND generation with the locked passive $TERPOWER -> $TEROUTPUT(V0) bridge and $TERGROUND(G0) right endpoints. V2 proved exact power/ground donor insertion only; V4 is the generated endpoint lock candidate."
+      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V4_POWER_GROUND_STATIC_20260531", "INDUCTOR_V4_USER_FEEDBACK_20260531"],
+      "rule": "Do not prepend the generic passive $TERPOWER -> $TEROUTPUT(V0) bridge before generated REALIND groups. V4 T1, T2, T3, and T5 opened partially then reported bad object record; V4 T4 gave an ISIS.dll error. The visible result showed a detached power bridge plus a separate V0 input label, so generic passive bridge ordering is rejected for inductors."
+    },
+    {
+      "id": "R024",
+      "title": "Inductor power/ground must preserve donor04 order",
+      "status": "v5_static_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "inductor temporary V5 method"],
+      "evidence": ["INDUCTOR_V4_USER_FEEDBACK_20260531", "INDUCTOR_V5_DONOR04_ORDER_STATIC_20260531"],
+      "rule": "The accepted inductor_04 power/ground donor order is input terminal, REALIND, trimmed left wire, power terminal, output terminal, bridge wire, ground terminal, final ground wire. V5 tests exact donor04 chunk controls plus small ref/value/internal-node mutations while preserving this order."
     }
   ]
 }

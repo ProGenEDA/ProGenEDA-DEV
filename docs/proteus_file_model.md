@@ -173,3 +173,21 @@ G0 right endpoints become $TERGROUND(G0)
 ```
 
 If V4 opens cleanly, the inductor generator can be promoted for the current scope. Keep the initial main inductor scope conservative: up to the controlled three donor slots until a larger inductor donor establishes safe suffix/link bytes beyond three `REALIND` components.
+
+The user reported V4 failed: T1, T2, T3, and T5 opened far enough to show a detached generic power bridge and a separate `V0` inductor input, then gave a bad object record error; T4 gave an ISIS.dll error. This rejects the generic passive bridge-first object order for inductors.
+
+The accepted `inductor_04_power_ground` object order is different:
+
+```text
+00 header
+$TERINPUT internal connection node
+REALIND
+left WIRE, 49 bytes, no trailing terminator
+$TERPOWER V0
+$TEROUTPUT internal connection node
+bridge WIRE
+$TERGROUND G0
+final ground WIRE
+```
+
+`INDUCTOR_V5_DONOR04_ORDER_TEMP_20260531` tests this exact order. T1-T3 are byte-identical donor04 controls; T4-T5 mutate only the ref/value/internal power-bridge connection label while preserving donor04 order.
