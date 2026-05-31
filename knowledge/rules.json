@@ -160,8 +160,17 @@
       "status": "locked_current_scope",
       "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive experimental method"],
-      "evidence": ["MIXED_RES_CAP_V1_6R_21R_STATIC_20260531", "MIXED_RES_CAP_V1_USER_FEEDBACK_20260531", "MAIN_MIXED_RES_CAP_LOCKED_V1_STATIC_20260531"],
+      "evidence": ["MIXED_RES_CAP_V1_6R_21R_STATIC_20260531", "MIXED_RES_CAP_V1_USER_FEEDBACK_20260531", "MAIN_MIXED_RES_CAP_LOCKED_V1_STATIC_20260531", "MAIN_MIXED_RES_CAP_LOCKED_V1_USER_FEEDBACK_20260531"],
       "rule": "Use src/proteusgen/mixed_passive.py as the main mixed resistor/capacitor generator for the current scope. The locked object stream order is header, one power bridge, capacitor output array, capacitor groups, resistor input array, resistor output array, separator, resistor groups. Use a 2540000 internal-unit safe grid and shift duplicate positions so components are not generated on top of each other."
+    },
+    {
+      "id": "R019",
+      "title": "Inductor generation requires controlled donors before coding",
+      "status": "pending_user_donors",
+      "confidence": 0.75,
+      "applies_to": ["Proteus 8.13", "inductor planned method"],
+      "evidence": ["user requested inductor next 20260531", "BIG06 inductor/source empty-CDB trial opened/saved/simulated but is not a controlled donor"],
+      "rule": "Do not infer inductor object bytes from unrelated corpus scans. Start with user-created E001-based controlled inductor donors, then attempt the same terminal-first method used for resistor/capacitor generation."
     }
   ]
 }

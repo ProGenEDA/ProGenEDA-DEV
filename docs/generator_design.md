@@ -112,15 +112,15 @@ duplicate positions = shifted so components are not emitted on top of each other
 
 Priority after the locked resistor and mixed passive generators:
 
-1. capacitor
-2. inductor
-3. DC voltage source
-4. AC voltage source
-5. LED
-6. switch / DIP switch
-7. clock
-8. logic probe
-9. additional 74xx basic gates
+1. inductor
+2. 74HC-family ICs, starting from simple logic-gate packages
+3. push buttons and simple switches
+4. DC voltage source
+5. AC voltage source
+6. first public v1 release candidate
+7. LED
+8. clock
+9. logic probe
 10. 7-segment and decoder circuits
 
 Current standalone capacitor gate:

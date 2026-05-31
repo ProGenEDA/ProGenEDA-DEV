@@ -62,7 +62,15 @@
     },
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
-    "INDUCTOR": {"status": "requested_not_yet_controlled", "category": "passive"},
+    "INDUCTOR": {
+      "status": "next_requested_awaiting_controlled_donors",
+      "category": "passive",
+      "generation": {
+        "planned_method": "terminal-first passive method from E001, matching the resistor/capacitor workflow after donor record analysis",
+        "tested": false,
+        "locked": false
+      }
+    },
     "CAPACITOR": {
       "status": "v11_large_network_validated_v13_power_ground_spacing_pending",
       "category": "passive",
