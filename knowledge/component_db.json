@@ -63,7 +63,7 @@
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
-      "status": "temporary_v6_v7_rcl_static_packs_awaiting_user_test",
+      "status": "temporary_v6_v7_rcl_failed_manual_larger_donor_required",
       "category": "passive",
       "proteus_names_observed": ["REALIND"],
       "controlled_donors": [
@@ -76,7 +76,7 @@
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
         "requires_cdb": true,
-        "temporary_recipe": "Temporary code lives in tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main. V3 confirms terminal-only REALIND generation with per-index templates. V5 confirms a single V0-to-G0 inductor using the accepted inductor_04 donor order: internal input, REALIND, trimmed left wire, $TERPOWER, internal $TEROUTPUT, bridge wire, $TERGROUND, final wire. V6 6/21 and V7 requested-15 diagnostic packs have been generated with clean static validation and are awaiting user Proteus tests before promotion.",
+        "temporary_recipe": "Temporary code lives in tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main. V3 confirms terminal-only REALIND generation with per-index templates for the three-slot donor scope only. V5 confirms a single V0-to-G0 inductor using the accepted inductor_04 donor order: internal input, REALIND, trimmed left wire, $TERPOWER, internal $TEROUTPUT, bridge wire, $TERGROUND, final wire. V6 6/21, V7 requested-15, and R/C/L V1 all failed in Proteus, so larger inductor generation now requires a Proteus-created six-or-more-inductor donor.",
         "known_limits": [
           "Do not use resistor V9 suffix generation for REALIND records.",
           "Do not use the generic passive bridge-first order for inductors.",
@@ -112,7 +112,7 @@
       }
     },
     "MIXED_PASSIVE_RCL": {
-      "status": "temporary_v1_static_pack_awaiting_user_test",
+      "status": "temporary_v1_failed_blocked_on_inductor_scale_donor",
       "category": "mixed_passive_network",
       "generation": {
         "visual_authority": "ROOT.DSN",
@@ -120,7 +120,7 @@
         "requires_cdb": true,
         "tested": false,
         "locked": false,
-        "temporary_recipe": "tools/proteus_generation/2026-06-01/generate_mixed_rcl_v1_temp.py combines locked resistor V9 records, locked resistor/capacitor mixed records, and temporary inductor V6 REALIND records. MIXED_RCL_V1_TEMP_2026_06_01.zip has 18 static-clean diagnostics but needs manual Proteus acceptance."
+        "temporary_recipe": "tools/proteus_generation/2026-06-01/generate_mixed_rcl_v1_temp.py combined locked resistor V9 records, locked resistor/capacitor mixed records, and temporary inductor V6 REALIND records. MIXED_RCL_V1_TEMP_2026_06_01.zip was rejected by user Proteus testing. Do not retry R/C/L until larger inductor generation is solved from a new donor."
       }
     },
     "LED": {"status": "found_in_corpus_not_controlled", "category": "display_indicator"},
