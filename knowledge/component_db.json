@@ -63,7 +63,7 @@
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
-      "status": "v3_multi_accepted_v4_power_ground_rejected_v5_pending",
+      "status": "locked_main_generator_current_scope",
       "category": "passive",
       "proteus_names_observed": ["REALIND"],
       "controlled_donors": [
@@ -73,10 +73,17 @@
         "inductor_04_power_ground"
       ],
       "generation": {
-        "planned_method": "terminal-first passive method from E001, matching the resistor/capacitor workflow",
-        "temporary_recipe": "V1 used user-created terminal-attached REALIND donor records but failed in Proteus with VGDVC.dll for every generated case. One key negative finding: do not patch REALIND link suffix bytes with the resistor V9 suffix sequence. V2 proved exact donor repacks, exact donor chunks from E001, suffix-preserved single-inductor mutation, renamed/translated single-inductor mutation, and exact power/ground donor insertion; V2 T7 failed for generated three-inductor reconstruction. V3 is user-accepted for generated multi-inductor mutation when preserving per-index REALIND templates. V4 generated power/ground networks using the generic passive bridge order failed. V5 is testing the exact inductor_04 donor order for generated power/ground mutation.",
-        "tested": false,
-        "locked": false
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "supported_recipe": "src/proteusgen/inductor.py. Terminal-only generation supports one to three inductors using per-index REALIND templates from inductor_03_three_terminal. Single V0-to-G0 power/ground generation uses the accepted inductor_04 object order: internal input, REALIND, trimmed left wire, $TERPOWER, internal $TEROUTPUT, bridge wire, $TERGROUND, final wire.",
+        "known_limits": [
+          "Do not use resistor V9 suffix generation for REALIND records.",
+          "Do not use the generic passive bridge-first order for inductors.",
+          "Reject multi-inductor V0/G0 circuits until a Proteus-created donor/order is accepted."
+        ],
+        "tested": true,
+        "locked": true
       }
     },
     "CAPACITOR": {

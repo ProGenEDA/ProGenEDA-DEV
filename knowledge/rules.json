@@ -211,11 +211,20 @@
     {
       "id": "R024",
       "title": "Inductor power/ground must preserve donor04 order",
-      "status": "v5_static_pending_user_test",
-      "confidence": 0.84,
+      "status": "user_confirmed_for_single_power_ground_mutation",
+      "confidence": 0.92,
       "applies_to": ["Proteus 8.13", "inductor temporary V5 method"],
-      "evidence": ["INDUCTOR_V4_USER_FEEDBACK_20260531", "INDUCTOR_V5_DONOR04_ORDER_STATIC_20260531"],
-      "rule": "The accepted inductor_04 power/ground donor order is input terminal, REALIND, trimmed left wire, power terminal, output terminal, bridge wire, ground terminal, final ground wire. V5 tests exact donor04 chunk controls plus small ref/value/internal-node mutations while preserving this order."
+      "evidence": ["INDUCTOR_V4_USER_FEEDBACK_20260531", "INDUCTOR_V5_DONOR04_ORDER_STATIC_20260531", "INDUCTOR_V5_USER_FEEDBACK_20260601"],
+      "rule": "The accepted inductor_04 power/ground donor order is input terminal, REALIND, trimmed left wire, power terminal, output terminal, bridge wire, ground terminal, final ground wire. V5 confirms exact donor04 chunk controls plus small ref/value/internal-node mutations work when preserving this order."
+    },
+    {
+      "id": "R025",
+      "title": "Inductor generator is locked as main for current scope",
+      "status": "locked_current_scope",
+      "confidence": 0.9,
+      "applies_to": ["Proteus 8.13", "inductor main generator"],
+      "evidence": ["INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V5_USER_FEEDBACK_20260601", "MAIN_INDUCTOR_LOCKED_V1_STATIC_20260601"],
+      "rule": "Use src/proteusgen/inductor.py as the main inductor generator for the current scope. Terminal-only generation supports one to three inductors using per-index REALIND templates. Power/ground generation supports exactly one V0-to-G0 inductor using donor04 order. Reject multi-inductor circuits with V0 or G0 until a Proteus-tested donor/order exists."
     }
   ]
 }

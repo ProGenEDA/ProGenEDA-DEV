@@ -11,6 +11,7 @@ from typing import Any
 from .circuit_ir import load_json, parse_circuit_ir
 from .comparison import compare_projects
 from .generator import GenerationBlocked, generate_project
+from .inductor import InductorGenerationBlocked, generate_inductor_project_from_payload
 from .inspectors import find_all
 from .mixed_passive import MixedPassiveGenerationBlocked, generate_mixed_passive_project_from_payload
 from .pdsprj import inspect_pdsprj, read_internal_file
@@ -97,6 +98,17 @@ def generate_mixed_passives_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def generate_inductors_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_inductor_project_from_payload(payload, args.outdir)
+    except InductorGenerationBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    _print(result.as_dict())
+    return 0
+
+
 def compare_command(args: argparse.Namespace) -> int:
     result = compare_projects(args.generated, args.reference)
     _print(result)
@@ -149,6 +161,11 @@ def build_parser() -> argparse.ArgumentParser:
     mixed_parser.add_argument("circuit")
     mixed_parser.add_argument("--outdir", required=True)
     mixed_parser.set_defaults(function=generate_mixed_passives_command)
+
+    inductor_parser = subparsers.add_parser("generate-inductors", help="Generate a locked inductor terminal project")
+    inductor_parser.add_argument("circuit")
+    inductor_parser.add_argument("--outdir", required=True)
+    inductor_parser.set_defaults(function=generate_inductors_command)
 
     compare_parser = subparsers.add_parser("compare", help="Compare generated and resaved/oracle projects")
     compare_parser.add_argument("generated")

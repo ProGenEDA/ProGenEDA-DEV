@@ -191,3 +191,18 @@ final ground WIRE
 ```
 
 `INDUCTOR_V5_DONOR04_ORDER_TEMP_20260531` tests this exact order. T1-T3 are byte-identical donor04 controls; T4-T5 mutate only the ref/value/internal power-bridge connection label while preserving donor04 order.
+
+The user reported all V5 cases worked. The main inductor generator is now locked for the current scope in `src/proteusgen/inductor.py`:
+
+```text
+terminal-only inductors:
+  one to three components
+  per-index REALIND donor templates from inductor_03_three_terminal
+  $TERINPUT / $TEROUTPUT terminal-label topology
+
+power/ground inductor:
+  exactly one component with nodes ["V0", "G0"]
+  donor04 object order only
+```
+
+Multi-inductor circuits that include V0 or G0 remain open research. The V4 generic passive bridge-first order is rejected and must not be reintroduced for inductors.
