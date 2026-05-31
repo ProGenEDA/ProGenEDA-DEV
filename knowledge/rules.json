@@ -184,11 +184,20 @@
     {
       "id": "R021",
       "title": "Inductor V2 starts with exact donor controls",
-      "status": "static_only_pending_user_test",
-      "confidence": 0.84,
+      "status": "user_confirmed_partial_t7_failed",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "inductor temporary V2 method"],
-      "evidence": ["INDUCTOR_V1_USER_FEEDBACK_20260531", "INDUCTOR_V2_SUFFIX_STATIC_20260531"],
-      "rule": "For inductor diagnostics after V1, test exact donor repacks and exact donor object chunks before generated mutations. Preserve donor REALIND terminal/component link suffix bytes. The V2 single suffix-preserved case is byte-for-byte identical to the two-terminal donor object chunk."
+      "evidence": ["INDUCTOR_V1_USER_FEEDBACK_20260531", "INDUCTOR_V2_SUFFIX_STATIC_20260531", "INDUCTOR_V2_USER_FEEDBACK_20260531"],
+      "rule": "Exact inductor donor repacks, exact donor object chunks inserted into E001, suffix-preserved single-inductor mutation, renamed/translated single-inductor mutation, and exact power/ground donor insertion work in Proteus 8.13. The generated three-inductor V2 T7 case failed, so multi-inductor generation must not be promoted from V2."
+    },
+    {
+      "id": "R022",
+      "title": "Inductor multi-generation needs per-index diagnostics",
+      "status": "v3_static_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "inductor temporary V3 method"],
+      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_MULTI_STATIC_20260531"],
+      "rule": "For multi-inductor diagnostics, preserve the REALIND visual record for each donor index rather than selecting only by visible value length. V3 also tests donor-relative rigid geometry separately from formula-recomputed geometry because V2 T7 differed from the donor in both the L2 component tail bytes and several terminal/wire coordinates."
     }
   ]
 }

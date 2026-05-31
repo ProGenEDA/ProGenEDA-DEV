@@ -63,7 +63,7 @@
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
-      "status": "v1_rejected_vgdvc_v2_suffix_pack_awaiting_user_test",
+      "status": "v2_partial_single_power_ok_multi_v3_pending",
       "category": "passive",
       "proteus_names_observed": ["REALIND"],
       "controlled_donors": [
@@ -74,7 +74,7 @@
       ],
       "generation": {
         "planned_method": "terminal-first passive method from E001, matching the resistor/capacitor workflow",
-        "temporary_recipe": "V1 used user-created terminal-attached REALIND donor records but failed in Proteus with VGDVC.dll for every generated case. One key negative finding: do not patch REALIND link suffix bytes with the resistor V9 suffix sequence. V2 includes exact donor repacks, exact donor-object-chunk controls, and suffix-preserved generated mutations.",
+        "temporary_recipe": "V1 used user-created terminal-attached REALIND donor records but failed in Proteus with VGDVC.dll for every generated case. One key negative finding: do not patch REALIND link suffix bytes with the resistor V9 suffix sequence. V2 proved exact donor repacks, exact donor chunks from E001, suffix-preserved single-inductor mutation, renamed/translated single-inductor mutation, and exact power/ground donor insertion; V2 T7 failed for generated three-inductor reconstruction. V3 is testing per-index REALIND templates and donor-relative multi-inductor geometry before promotion.",
         "tested": false,
         "locked": false
       }

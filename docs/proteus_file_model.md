@@ -147,3 +147,17 @@ As with the accepted capacitor manual-order donor, non-final right-wire records 
 `INDUCTOR_V1_TERMINAL_TEMP_20260531` used this donor shape from E001, but the user reported that every generated V1 case caused a VGDVC.dll error. V1 must not be reused as positive evidence. A byte diff against the known-good two-terminal donor shows the first generated mutation was replacing the donor's `REALIND` link suffix bytes with resistor V9 suffix bytes.
 
 `INDUCTOR_V2_SUFFIX_TEMP_20260531` therefore starts with exact donor repack controls and exact donor-object-chunk controls before testing suffix-preserved mutations. The single suffix-preserved case preserves the two-terminal donor object chunk byte-for-byte.
+
+The user reported V2 T1-T6 and T8-T9 worked, while V2 T7 failed. This means deterministic repacking, E001 insertion of exact inductor chunks, suffix-preserved single-inductor mutation, renamed/translated single-inductor mutation, and exact power/ground donor insertion are accepted for current evidence. The remaining failure is isolated to generated multi-inductor reconstruction.
+
+Local diffing of failed V2 T7 found two remaining suspects: the second 3-character inductor reused the first 3-character `REALIND` visual template, changing L2 tail/link bytes, and the generated output recomputed several donor terminal/wire coordinates instead of preserving the donor's relative geometry. `INDUCTOR_V3_MULTI_TEMP_20260531` tests those separately:
+
+```text
+T01 rebuild donor03 from explicit per-index slices, byte-identical object chunk
+T02 rename refs/terminal labels with donor03 geometry preserved
+T03 rigid-translate all donor03 coordinates with refs/labels preserved
+T04 rename plus rigid-translate donor03 geometry
+T05 formula-coordinate rebuild with the per-index REALIND suffix issue fixed
+```
+
+Do not promote arbitrary multi-inductor generation until V3 Proteus results identify which of these transformations is safe.
