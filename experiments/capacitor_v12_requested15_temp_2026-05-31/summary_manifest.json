@@ -1,0 +1,1780 @@
+{
+  "case": "CAPACITOR_V12_REQUESTED15_TEMP_2026_05_31",
+  "status": "temporary_diagnostic_not_locked",
+  "trigger": "User accepted V11 6C/21C and requested the previous 15 resistor circuits generated with capacitors.",
+  "method": "Convert the accepted oriented 15 resistor topology inputs to V10 manual-order capacitor records.",
+  "manual_donor": {
+    "fixture_id": "cap2_with_terminals_manual",
+    "project_sha256": "2b0661808857e844d6b676c16eacf37b5bc47f0a6f589c183a66ee2675b3eaa5",
+    "object_order": "all outputs first, then input/cap/left-wire/right-wire groups; non-final right wires are 49 bytes"
+  },
+  "limitations": [
+    "V0 and G0 are ordinary terminal labels, not power/ground symbols, in this temp batch.",
+    "Capacitor records are horizontal because capacitor rotation is not yet separately validated.",
+    "Standalone bus/junction wires are not emitted."
+  ],
+  "test_order": [
+    "01_SIMPLE_LOOP",
+    "02_SERIES_CIRCUIT",
+    "03_PARALLEL_CIRCUIT",
+    "04_SERIES_PARALLEL_COMBO",
+    "05_BASIC_VOLTAGE_DIVIDER",
+    "06_MULTI_STEP_VOLTAGE_DIVIDER",
+    "07_CURRENT_DIVIDER",
+    "08_DELTA_NETWORK",
+    "09_STAR_Y_NETWORK",
+    "10_DELTA_TO_STAR_SETUP",
+    "11_WHEATSTONE_BRIDGE",
+    "12_BALANCED_WHEATSTONE_BRIDGE",
+    "13_UNBALANCED_WHEATSTONE_BRIDGE",
+    "14_H_BRIDGE_RESISTOR_VERSION",
+    "15_R_2R_LADDER_NETWORK"
+  ],
+  "cases": [
+    {
+      "case_id": "01_SIMPLE_LOOP",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Simple Loop converted to capacitors",
+      "source_resistor_case": "01_SIMPLE_LOOP",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 1,
+      "node_count": 2,
+      "object_chunk_len": 674,
+      "root_cdb_len": 252,
+      "root_dsn_len": 66662,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 1,
+          "$TERINPUT": 1,
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "WIRE": 2,
+          "1uF": 1,
+          "2uF": 0,
+          "3uF": 0,
+          "4uF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 1,
+          "CAP": 4,
+          "CAP10": 2,
+          "1uF": 1,
+          "2uF": 0,
+          "3uF": 0,
+          "4uF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65765,
+        "second_object_data": 65800,
+        "object_data_pointer": 65813
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "01_SIMPLE_LOOP.pdsprj": "cc888b069b053847a532da1b07e1ea961c57d514b4450b0fe720b3e24fd9593d",
+        "01_SIMPLE_LOOP.ROOT.CDB.bin": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89",
+        "01_SIMPLE_LOOP.ROOT.DSN.bin": "ad2eb02a8d7f063c772d7c52c3f3650479f33e268c67840c2bd88181e2ea5d50",
+        "object_chunk": "d373c33068b0b002a978ddb17f02f73b36b50d114d9e19141f7cdf1142fb976a",
+        "ROOT.CDB": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89"
+      },
+      "output_files": [
+        "01_SIMPLE_LOOP.pdsprj",
+        "01_SIMPLE_LOOP.ROOT.CDB.bin",
+        "01_SIMPLE_LOOP.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "02_SERIES_CIRCUIT",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Series Circuit converted to capacitors",
+      "source_resistor_case": "02_SERIES_CIRCUIT",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 4,
+      "node_count": 5,
+      "object_chunk_len": 2690,
+      "root_cdb_len": 654,
+      "root_dsn_len": 68678,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 4,
+          "$TERINPUT": 4,
+          "CAPACITOR": 4,
+          "CAP10": 4,
+          "WIRE": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 4,
+          "CAP": 16,
+          "CAP10": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 67781,
+        "second_object_data": 67816,
+        "object_data_pointer": 67829
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "N1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "N1",
+          "right": "N2",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "N2",
+          "right": "N3",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "N3",
+          "right": "G0",
+          "x": 762000,
+          "y": 5080000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "02_SERIES_CIRCUIT.pdsprj": "876b522c472914c2feace9a03ab4381ea73478550b4f1e508fa0913ff3c7b161",
+        "02_SERIES_CIRCUIT.ROOT.CDB.bin": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922",
+        "02_SERIES_CIRCUIT.ROOT.DSN.bin": "bc0c08d1a2ef36435a26bfd5c775479fc68d9d4798cc5e5fdff8451d8b6c9222",
+        "object_chunk": "a8d1a8dac5982e50312f56dd4e6347b45a5e6817a7aadd6bc4e05baebaeec570",
+        "ROOT.CDB": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922"
+      },
+      "output_files": [
+        "02_SERIES_CIRCUIT.pdsprj",
+        "02_SERIES_CIRCUIT.ROOT.CDB.bin",
+        "02_SERIES_CIRCUIT.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "03_PARALLEL_CIRCUIT",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Parallel Circuit converted to capacitors",
+      "source_resistor_case": "03_PARALLEL_CIRCUIT",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 4,
+      "node_count": 2,
+      "object_chunk_len": 2690,
+      "root_cdb_len": 654,
+      "root_dsn_len": 68678,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 4,
+          "$TERINPUT": 4,
+          "CAPACITOR": 4,
+          "CAP10": 4,
+          "WIRE": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 4,
+          "CAP": 16,
+          "CAP10": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 67781,
+        "second_object_data": 67816,
+        "object_data_pointer": 67829
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "V0",
+          "right": "G0",
+          "x": 762000,
+          "y": 5080000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "03_PARALLEL_CIRCUIT.pdsprj": "ddeec8d40cf1d49220a67eb6227490fc149993a321b3b4859fff57a512bc7f95",
+        "03_PARALLEL_CIRCUIT.ROOT.CDB.bin": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922",
+        "03_PARALLEL_CIRCUIT.ROOT.DSN.bin": "73c8e0499441086c4cdf4c1959b91e0874741c62a82f010a7b27f586b49e1719",
+        "object_chunk": "d5fca6e3d662ace1410874088841b2a3ffe4522f386916e9b498428c23241080",
+        "ROOT.CDB": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922"
+      },
+      "output_files": [
+        "03_PARALLEL_CIRCUIT.pdsprj",
+        "03_PARALLEL_CIRCUIT.ROOT.CDB.bin",
+        "03_PARALLEL_CIRCUIT.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "04_SERIES_PARALLEL_COMBO",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Series-Parallel Combo converted to capacitors",
+      "source_resistor_case": "04_SERIES_PARALLEL_COMBO",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 4,
+      "node_count": 3,
+      "object_chunk_len": 2690,
+      "root_cdb_len": 654,
+      "root_dsn_len": 68678,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 4,
+          "$TERINPUT": 4,
+          "CAPACITOR": 4,
+          "CAP10": 4,
+          "WIRE": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 4,
+          "CAP": 16,
+          "CAP10": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 67781,
+        "second_object_data": 67816,
+        "object_data_pointer": 67829
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "N1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "N1",
+          "right": "G0",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "N1",
+          "right": "G0",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "N1",
+          "right": "G0",
+          "x": 762000,
+          "y": 5080000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "04_SERIES_PARALLEL_COMBO.pdsprj": "449e04056048d97731bc89a42225b30180dae53d8683847cab8364d5e9ecf7bd",
+        "04_SERIES_PARALLEL_COMBO.ROOT.CDB.bin": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922",
+        "04_SERIES_PARALLEL_COMBO.ROOT.DSN.bin": "fba363fdc9fe44bee3478c42ba9e052a70ad3650d4df2424f82141077536d453",
+        "object_chunk": "967ab4a26bf55ce72dfd82a26400db14bf2c9de52511e03bb8702a42ecd127bd",
+        "ROOT.CDB": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922"
+      },
+      "output_files": [
+        "04_SERIES_PARALLEL_COMBO.pdsprj",
+        "04_SERIES_PARALLEL_COMBO.ROOT.CDB.bin",
+        "04_SERIES_PARALLEL_COMBO.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "05_BASIC_VOLTAGE_DIVIDER",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Basic Voltage Divider converted to capacitors",
+      "source_resistor_case": "05_BASIC_VOLTAGE_DIVIDER",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 2,
+      "node_count": 3,
+      "object_chunk_len": 1346,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67334,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 2,
+          "$TERINPUT": 2,
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "WIRE": 4,
+          "1uF": 1,
+          "2uF": 0,
+          "3uF": 0,
+          "4uF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 1,
+          "2uF": 0,
+          "3uF": 0,
+          "4uF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66437,
+        "second_object_data": 66472,
+        "object_data_pointer": 66485
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "VT",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "5uF",
+          "left": "VT",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "05_BASIC_VOLTAGE_DIVIDER.pdsprj": "f6706bb880847b1b4edbc8a324944cca0b8c0ab40f9220a447c540aacd666714",
+        "05_BASIC_VOLTAGE_DIVIDER.ROOT.CDB.bin": "907e896aa7acad867a613091bebcc26a89727bf0590d2b97908fa71e790d32d8",
+        "05_BASIC_VOLTAGE_DIVIDER.ROOT.DSN.bin": "10e58f2c30ddb637632435fb008b4741687cafd984324de848b890b70fbe6133",
+        "object_chunk": "862007502931a24cc1dce045ff9c35cd1504e491872b294e0dcc11bcf61e2669",
+        "ROOT.CDB": "907e896aa7acad867a613091bebcc26a89727bf0590d2b97908fa71e790d32d8"
+      },
+      "output_files": [
+        "05_BASIC_VOLTAGE_DIVIDER.pdsprj",
+        "05_BASIC_VOLTAGE_DIVIDER.ROOT.CDB.bin",
+        "05_BASIC_VOLTAGE_DIVIDER.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "06_MULTI_STEP_VOLTAGE_DIVIDER",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Multi-Step Voltage Divider converted to capacitors",
+      "source_resistor_case": "06_MULTI_STEP_VOLTAGE_DIVIDER",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 5,
+      "node_count": 6,
+      "object_chunk_len": 3362,
+      "root_cdb_len": 788,
+      "root_dsn_len": 69350,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 5,
+          "$TERINPUT": 5,
+          "CAPACITOR": 5,
+          "CAP10": 5,
+          "WIRE": 10,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 5,
+          "CAP": 20,
+          "CAP10": 10,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 68453,
+        "second_object_data": 68488,
+        "object_data_pointer": 68501
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "T1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "T1",
+          "right": "T2",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "T2",
+          "right": "T3",
+          "x": -6858000,
+          "y": 0,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "T3",
+          "right": "T4",
+          "x": -6858000,
+          "y": -2540000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "5uF",
+          "left": "T4",
+          "right": "G0",
+          "x": -6858000,
+          "y": -5080000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "06_MULTI_STEP_VOLTAGE_DIVIDER.pdsprj": "868fd075f00ce86d054a812f8d86ab2e09b47ed2604ea70e8eb142a66d4deab0",
+        "06_MULTI_STEP_VOLTAGE_DIVIDER.ROOT.CDB.bin": "2c225bbde41b4f0fcd72be976974874a5a56752787194de3b049e3cdaafd4210",
+        "06_MULTI_STEP_VOLTAGE_DIVIDER.ROOT.DSN.bin": "1506e7f35fdf0f21a5121b28e43c7260bf25ab4d297be7cf2d9140feb7f69d7e",
+        "object_chunk": "74ec6999ae835deeb83c4318d160700e930fcb8829dfbfee2584db02c6333a0c",
+        "ROOT.CDB": "2c225bbde41b4f0fcd72be976974874a5a56752787194de3b049e3cdaafd4210"
+      },
+      "output_files": [
+        "06_MULTI_STEP_VOLTAGE_DIVIDER.pdsprj",
+        "06_MULTI_STEP_VOLTAGE_DIVIDER.ROOT.CDB.bin",
+        "06_MULTI_STEP_VOLTAGE_DIVIDER.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "07_CURRENT_DIVIDER",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Current Divider converted to capacitors",
+      "source_resistor_case": "07_CURRENT_DIVIDER",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 5,
+      "node_count": 2,
+      "object_chunk_len": 3362,
+      "root_cdb_len": 788,
+      "root_dsn_len": 69350,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 5,
+          "$TERINPUT": 5,
+          "CAPACITOR": 5,
+          "CAP10": 5,
+          "WIRE": 10,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 5,
+          "CAP": 20,
+          "CAP10": 10,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 68453,
+        "second_object_data": 68488,
+        "object_data_pointer": 68501
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "V0",
+          "right": "G0",
+          "x": 762000,
+          "y": 5080000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "5uF",
+          "left": "V0",
+          "right": "G0",
+          "x": 3302000,
+          "y": 5080000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "07_CURRENT_DIVIDER.pdsprj": "e17dab5c8fb94500b30a8368fdcc6b89f778a1394a1ba345016975f44c7f4c35",
+        "07_CURRENT_DIVIDER.ROOT.CDB.bin": "2c225bbde41b4f0fcd72be976974874a5a56752787194de3b049e3cdaafd4210",
+        "07_CURRENT_DIVIDER.ROOT.DSN.bin": "53c94f63a8e7e098006fb57e49c4d8027d630d3e4213c874c69f16aabc83e5ff",
+        "object_chunk": "441e84b19166cf83a057d42f60367aa165d898b304ddde43ff03ea8f46795097",
+        "ROOT.CDB": "2c225bbde41b4f0fcd72be976974874a5a56752787194de3b049e3cdaafd4210"
+      },
+      "output_files": [
+        "07_CURRENT_DIVIDER.pdsprj",
+        "07_CURRENT_DIVIDER.ROOT.CDB.bin",
+        "07_CURRENT_DIVIDER.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "08_DELTA_NETWORK",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Delta Network converted to capacitors",
+      "source_resistor_case": "08_DELTA_NETWORK",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 3,
+      "node_count": 3,
+      "object_chunk_len": 2018,
+      "root_cdb_len": 520,
+      "root_dsn_len": 68006,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 3,
+          "$TERINPUT": 3,
+          "CAPACITOR": 3,
+          "CAP10": 3,
+          "WIRE": 6,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 3,
+          "CAP": 12,
+          "CAP10": 6,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 67109,
+        "second_object_data": 67144,
+        "object_data_pointer": 67157
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "D1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "D1",
+          "right": "G0",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "08_DELTA_NETWORK.pdsprj": "aefb6ddad8ca5836bf019c62ce99f4a900dee10084e1dedfe4e34aa0d2c1004e",
+        "08_DELTA_NETWORK.ROOT.CDB.bin": "78fa7dd0dc558abbdcbd469673044c54434650e8662515da6e9334aa78be3890",
+        "08_DELTA_NETWORK.ROOT.DSN.bin": "98b102d44b75965b9a7a2dd59706fc2ed2c1b6f5d3a61ab795bcd173035cc667",
+        "object_chunk": "e40cfd8a84a2a86dbe50df0826f95d5beeeccd29f00f15b676234e56fd50d538",
+        "ROOT.CDB": "78fa7dd0dc558abbdcbd469673044c54434650e8662515da6e9334aa78be3890"
+      },
+      "output_files": [
+        "08_DELTA_NETWORK.pdsprj",
+        "08_DELTA_NETWORK.ROOT.CDB.bin",
+        "08_DELTA_NETWORK.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "09_STAR_Y_NETWORK",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Star Y Network converted to capacitors",
+      "source_resistor_case": "09_STAR_Y_NETWORK",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 3,
+      "node_count": 4,
+      "object_chunk_len": 2018,
+      "root_cdb_len": 520,
+      "root_dsn_len": 68006,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 3,
+          "$TERINPUT": 3,
+          "CAPACITOR": 3,
+          "CAP10": 3,
+          "WIRE": 6,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 3,
+          "CAP": 12,
+          "CAP10": 6,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 67109,
+        "second_object_data": 67144,
+        "object_data_pointer": 67157
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "C0",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "C0",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "C0",
+          "right": "O1",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "09_STAR_Y_NETWORK.pdsprj": "15a82f1de969cc1647d4cfa76fcc96b3c4c47d984aef75643f53b3a4d307bb84",
+        "09_STAR_Y_NETWORK.ROOT.CDB.bin": "78fa7dd0dc558abbdcbd469673044c54434650e8662515da6e9334aa78be3890",
+        "09_STAR_Y_NETWORK.ROOT.DSN.bin": "7fec281897df83469e7f3d65850183e232a5f3895e26b638e4b7a90db6adfaa2",
+        "object_chunk": "fd5dea3d7ea7b23b0d5086b05b2b6ad5dc71920ceb25241cd848501f175bdb49",
+        "ROOT.CDB": "78fa7dd0dc558abbdcbd469673044c54434650e8662515da6e9334aa78be3890"
+      },
+      "output_files": [
+        "09_STAR_Y_NETWORK.pdsprj",
+        "09_STAR_Y_NETWORK.ROOT.CDB.bin",
+        "09_STAR_Y_NETWORK.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "10_DELTA_TO_STAR_SETUP",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Delta to Star Setup converted to capacitors",
+      "source_resistor_case": "10_DELTA_TO_STAR_SETUP",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 6,
+      "node_count": 5,
+      "object_chunk_len": 4034,
+      "root_cdb_len": 922,
+      "root_dsn_len": 70022,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 6,
+          "$TERINPUT": 6,
+          "CAPACITOR": 6,
+          "CAP10": 6,
+          "WIRE": 12,
+          "1uF": 3,
+          "2uF": 0,
+          "3uF": 3,
+          "4uF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 6,
+          "CAP": 24,
+          "CAP10": 12,
+          "1uF": 3,
+          "2uF": 0,
+          "3uF": 3,
+          "4uF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 69125,
+        "second_object_data": 69160,
+        "object_data_pointer": 69173
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "3uF",
+          "left": "V0",
+          "right": "D1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "3uF",
+          "left": "D1",
+          "right": "G0",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "V0",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "1uF",
+          "left": "V0",
+          "right": "S0",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "1uF",
+          "left": "S0",
+          "right": "G0",
+          "x": -1778000,
+          "y": 2540000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 6,
+          "ref": "C6",
+          "value": "1uF",
+          "left": "S0",
+          "right": "O1",
+          "x": 762000,
+          "y": 2540000,
+          "in_suffix": "0c32",
+          "out_suffix": "0c00",
+          "cap_visual_index_byte_344": 6,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "10_DELTA_TO_STAR_SETUP.pdsprj": "3c1a45331f78de52178b8b3ac3c470dfdaf410faf2aadc6e3a49e22883743af4",
+        "10_DELTA_TO_STAR_SETUP.ROOT.CDB.bin": "cce9cfdf0dcbb3a754a194d05ec0812220b6b5246093521346f599e9964e4aa3",
+        "10_DELTA_TO_STAR_SETUP.ROOT.DSN.bin": "2eb46df4596c4cb7c57f7963392b6db0f4aa182302850bb2dd9cb4b826952296",
+        "object_chunk": "5734063936e58cb7953c30a1d4c5083a83e29cf400a70090b72bbc3639be376b",
+        "ROOT.CDB": "cce9cfdf0dcbb3a754a194d05ec0812220b6b5246093521346f599e9964e4aa3"
+      },
+      "output_files": [
+        "10_DELTA_TO_STAR_SETUP.pdsprj",
+        "10_DELTA_TO_STAR_SETUP.ROOT.CDB.bin",
+        "10_DELTA_TO_STAR_SETUP.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "11_WHEATSTONE_BRIDGE",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Wheatstone Bridge converted to capacitors",
+      "source_resistor_case": "11_WHEATSTONE_BRIDGE",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 4,
+      "node_count": 4,
+      "object_chunk_len": 2690,
+      "root_cdb_len": 654,
+      "root_dsn_len": 68678,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 4,
+          "$TERINPUT": 4,
+          "CAPACITOR": 4,
+          "CAP10": 4,
+          "WIRE": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 4,
+          "CAP": 16,
+          "CAP10": 8,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 67781,
+        "second_object_data": 67816,
+        "object_data_pointer": 67829
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "L1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "L1",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "V0",
+          "right": "R1",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "R1",
+          "right": "G0",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "11_WHEATSTONE_BRIDGE.pdsprj": "627e73081e72e1d1a184078b709e472e91fcd89aad7603af75069b875785eaea",
+        "11_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922",
+        "11_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "adc04fec1274f229d4379e89301c8a26dbeecfd0424c9d166ec3278a701ab334",
+        "object_chunk": "d743ad9c1379bca78d80cd578be21d2313a99e6a7a730581af601b8c7226d972",
+        "ROOT.CDB": "c402c53a97d29712f5f319b315e25048ab465cc0161206012a264dd52b819922"
+      },
+      "output_files": [
+        "11_WHEATSTONE_BRIDGE.pdsprj",
+        "11_WHEATSTONE_BRIDGE.ROOT.CDB.bin",
+        "11_WHEATSTONE_BRIDGE.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "12_BALANCED_WHEATSTONE_BRIDGE",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Balanced Wheatstone Bridge converted to capacitors",
+      "source_resistor_case": "12_BALANCED_WHEATSTONE_BRIDGE",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 5,
+      "node_count": 4,
+      "object_chunk_len": 3362,
+      "root_cdb_len": 788,
+      "root_dsn_len": 69350,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 5,
+          "$TERINPUT": 5,
+          "CAPACITOR": 5,
+          "CAP10": 5,
+          "WIRE": 10,
+          "1uF": 5,
+          "2uF": 0,
+          "3uF": 0,
+          "4uF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 5,
+          "CAP": 20,
+          "CAP10": 10,
+          "1uF": 5,
+          "2uF": 0,
+          "3uF": 0,
+          "4uF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 68453,
+        "second_object_data": 68488,
+        "object_data_pointer": 68501
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "L1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "1uF",
+          "left": "L1",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "1uF",
+          "left": "V0",
+          "right": "R1",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "1uF",
+          "left": "R1",
+          "right": "G0",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "1uF",
+          "left": "L1",
+          "right": "R1",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "12_BALANCED_WHEATSTONE_BRIDGE.pdsprj": "bc6c82bf89b8f39d7a4ceef7d980c8694d0e2d9753c27d509c56c8a19767f9f3",
+        "12_BALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "4e5808ebe2143297e54618e452a7c2a0e5c0ebabc1102c6892336d6173f32849",
+        "12_BALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "df6e9ed873a0869db195c7ddd31288e290dd9b9b59ddf95f9407552c7521cdca",
+        "object_chunk": "ddbc749ebaace7cf63ac727a68cc30086536b5ffd7b2e1a38fc59c6ef1ac121a",
+        "ROOT.CDB": "4e5808ebe2143297e54618e452a7c2a0e5c0ebabc1102c6892336d6173f32849"
+      },
+      "output_files": [
+        "12_BALANCED_WHEATSTONE_BRIDGE.pdsprj",
+        "12_BALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin",
+        "12_BALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "13_UNBALANCED_WHEATSTONE_BRIDGE",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "Unbalanced Wheatstone Bridge converted to capacitors",
+      "source_resistor_case": "13_UNBALANCED_WHEATSTONE_BRIDGE",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 5,
+      "node_count": 4,
+      "object_chunk_len": 3362,
+      "root_cdb_len": 788,
+      "root_dsn_len": 69350,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 5,
+          "$TERINPUT": 5,
+          "CAPACITOR": 5,
+          "CAP10": 5,
+          "WIRE": 10,
+          "1uF": 2,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 5,
+          "CAP": 20,
+          "CAP10": 10,
+          "1uF": 2,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 68453,
+        "second_object_data": 68488,
+        "object_data_pointer": 68501
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "L1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "3uF",
+          "left": "L1",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "2uF",
+          "left": "V0",
+          "right": "R1",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "R1",
+          "right": "G0",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "1uF",
+          "left": "L1",
+          "right": "R1",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "13_UNBALANCED_WHEATSTONE_BRIDGE.pdsprj": "c7811bfc0d8a0fb79ff86db87333e4eb1caf06eb198580955b76d10be1eefc1d",
+        "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "ba5e2aa72f5f7ddefdc245c3a3a18a01de40e85b0e02b67c476b32956f9412f8",
+        "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "f9e9db713a1d1cde1341d30603ff2c5512307db4a4cfa19b183c010b8c98237e",
+        "object_chunk": "89396c58b23cd878af9318bedc56c9aec9f18825d271739dac042493131720da",
+        "ROOT.CDB": "ba5e2aa72f5f7ddefdc245c3a3a18a01de40e85b0e02b67c476b32956f9412f8"
+      },
+      "output_files": [
+        "13_UNBALANCED_WHEATSTONE_BRIDGE.pdsprj",
+        "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin",
+        "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "14_H_BRIDGE_RESISTOR_VERSION",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "H-Bridge Resistor Version converted to capacitors",
+      "source_resistor_case": "14_H_BRIDGE_RESISTOR_VERSION",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 5,
+      "node_count": 4,
+      "object_chunk_len": 3362,
+      "root_cdb_len": 788,
+      "root_dsn_len": 69350,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 5,
+          "$TERINPUT": 5,
+          "CAPACITOR": 5,
+          "CAP10": 5,
+          "WIRE": 10,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 5,
+          "CAP": 20,
+          "CAP10": 10,
+          "1uF": 1,
+          "2uF": 1,
+          "3uF": 1,
+          "4uF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 68453,
+        "second_object_data": 68488,
+        "object_data_pointer": 68501
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "L1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "2uF",
+          "left": "L1",
+          "right": "G0",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "3uF",
+          "left": "V0",
+          "right": "R1",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "4uF",
+          "left": "R1",
+          "right": "G0",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "5uF",
+          "left": "L1",
+          "right": "R1",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "14_H_BRIDGE_RESISTOR_VERSION.pdsprj": "459a250a45f80ed76f4c130bbbadce85ac32adb74573657d2f60e69223392e9a",
+        "14_H_BRIDGE_RESISTOR_VERSION.ROOT.CDB.bin": "2c225bbde41b4f0fcd72be976974874a5a56752787194de3b049e3cdaafd4210",
+        "14_H_BRIDGE_RESISTOR_VERSION.ROOT.DSN.bin": "1cc9a90f2d29a47f38a56a9f9a5e1759d074431010389adb955d70add6c4decb",
+        "object_chunk": "38f16c309a8afff97262f2624479be10dd83a90ef92189ca0b6249940ea5dd13",
+        "ROOT.CDB": "2c225bbde41b4f0fcd72be976974874a5a56752787194de3b049e3cdaafd4210"
+      },
+      "output_files": [
+        "14_H_BRIDGE_RESISTOR_VERSION.pdsprj",
+        "14_H_BRIDGE_RESISTOR_VERSION.ROOT.CDB.bin",
+        "14_H_BRIDGE_RESISTOR_VERSION.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "15_R_2R_LADDER_NETWORK",
+      "status": "temporary_capacitor_v12_requested15_not_locked",
+      "description": "R-2R Ladder Network converted to capacitors",
+      "source_resistor_case": "15_R_2R_LADDER_NETWORK",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 9,
+      "node_count": 6,
+      "object_chunk_len": 6050,
+      "root_cdb_len": 1324,
+      "root_dsn_len": 72038,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 9,
+          "$TERINPUT": 9,
+          "CAPACITOR": 9,
+          "CAP10": 9,
+          "WIRE": 18,
+          "1uF": 4,
+          "2uF": 5,
+          "3uF": 0,
+          "4uF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 9,
+          "CAP": 36,
+          "CAP10": 18,
+          "1uF": 4,
+          "2uF": 5,
+          "3uF": 0,
+          "4uF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 71141,
+        "second_object_data": 71176,
+        "object_data_pointer": 71189
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "V0",
+          "right": "A1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "1uF",
+          "left": "A1",
+          "right": "A2",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "1uF",
+          "left": "A2",
+          "right": "A3",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "1uF",
+          "left": "A3",
+          "right": "A4",
+          "x": 762000,
+          "y": 5080000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "2uF",
+          "left": "A1",
+          "right": "G0",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 6,
+          "ref": "C6",
+          "value": "2uF",
+          "left": "A2",
+          "right": "G0",
+          "x": 762000,
+          "y": 5080000,
+          "in_suffix": "0c32",
+          "out_suffix": "0c00",
+          "cap_visual_index_byte_344": 6,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 7,
+          "ref": "C7",
+          "value": "2uF",
+          "left": "A3",
+          "right": "G0",
+          "x": 3302000,
+          "y": 5080000,
+          "in_suffix": "0e6a",
+          "out_suffix": "0e38",
+          "cap_visual_index_byte_344": 7,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 8,
+          "ref": "C8",
+          "value": "2uF",
+          "left": "A4",
+          "right": "G0",
+          "x": 3302000,
+          "y": 5080000,
+          "in_suffix": "10a2",
+          "out_suffix": "1070",
+          "cap_visual_index_byte_344": 8,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 9,
+          "ref": "C9",
+          "value": "2uF",
+          "left": "A4",
+          "right": "G0",
+          "x": 3302000,
+          "y": 2540000,
+          "in_suffix": "12da",
+          "out_suffix": "12a8",
+          "cap_visual_index_byte_344": 9,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "15_R_2R_LADDER_NETWORK.pdsprj": "7929ad8f6aa82b5bc54fdf8fe7254f6c9a8454e210dc011d54d506099d7be49c",
+        "15_R_2R_LADDER_NETWORK.ROOT.CDB.bin": "7be9f6ffb9a64b91ae6e65c75e09a288086ad0f7accf438fa5dbfe3077c694d7",
+        "15_R_2R_LADDER_NETWORK.ROOT.DSN.bin": "95c2573686f577f936062cd22aaa309afcc022a1ca02650174fe6ca54ab63e5f",
+        "object_chunk": "6f009d19f5d16c5762acd72e825b69957930740485d1339cfd3660ac7d61bb13",
+        "ROOT.CDB": "7be9f6ffb9a64b91ae6e65c75e09a288086ad0f7accf438fa5dbfe3077c694d7"
+      },
+      "output_files": [
+        "15_R_2R_LADDER_NETWORK.pdsprj",
+        "15_R_2R_LADDER_NETWORK.ROOT.CDB.bin",
+        "15_R_2R_LADDER_NETWORK.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    }
+  ]
+}

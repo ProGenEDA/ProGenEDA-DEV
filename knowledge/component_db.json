@@ -64,28 +64,36 @@
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {"status": "requested_not_yet_controlled", "category": "passive"},
     "CAPACITOR": {
-      "status": "v10_manual_order_validated_v11_large_network_pending",
+      "status": "v11_large_network_validated_v12_requested15_pending",
       "category": "passive",
       "proteus_names_observed": ["CAPACITOR", "CAP", "CAP10"],
       "generation": {
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
         "requires_cdb": true,
-        "tested": false,
+        "tested": true,
         "locked": false,
-        "temporary_recipe": "CAP_T01 free-cap visual core plus user cap3 multi-cap CDB/object guards are user-accepted. V10 confirms the user-made CAp2withterm donor order works: all outputs first, then input/cap/wire groups with non-final right-wire trimmed to 49 bytes. V11 now tests scaling this method to 6C and 21C networks before promotion to main."
+        "temporary_recipe": "CAP_T01 free-cap visual core plus user cap3 multi-cap CDB/object guards are user-accepted. V10 confirms the user-made cap2_with_terminals_manual donor order works: all outputs first, then input/cap/wire groups with non-final right-wire trimmed to 49 bytes. V11 confirms scaling this method to 6C and 21C networks. V12 now tests the same method across the 15 requested resistor-equivalent capacitor topologies before promotion to main."
       }
     },
     "LED": {"status": "found_in_corpus_not_controlled", "category": "display_indicator"},
     "CLOCK": {"status": "found_in_corpus_not_controlled", "category": "digital_source"},
-    "LOGICPROBE": {"status": "found_in_corpus_not_controlled", "category": "instrument"},
+    "LOGICSTATE": {"status": "clean_donor_available_not_generation_ready", "category": "digital_source", "clean_source": "HC08_D03"},
+    "LOGICPROBE": {"status": "clean_donor_available_not_generation_ready", "category": "instrument", "clean_source": "HC08_D03"},
     "74LS00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
     "74HC00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
     "74HCT00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
     "74LS04": {"status": "found_in_corpus_not_controlled", "category": "logic_ic", "family": "hex_inverter"},
     "74HC04": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "hex_inverter"},
     "74LS08": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_and"},
-    "74HC08": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "quad_2_input_and"},
+    "74HC08": {
+      "status": "diagnostic_control_only_pending_d05",
+      "category": "logic_ic",
+      "family": "quad_2_input_and",
+      "clean_sources": ["HC08_D01", "HC08_D02", "HC08_D03"],
+      "v0_limit": "one U1 quad package",
+      "generation_gate": "HC08_D05 exact-picture oracle and Proteus 8.13 acceptance result required"
+    },
     "74LS32": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_or"},
     "74HC32": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "quad_2_input_or"},
     "74LS86": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_xor"},

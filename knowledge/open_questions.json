@@ -59,51 +59,72 @@
     },
     {
       "id": "Q009",
+      "priority": "high",
+      "question": "Can the D05 exact-picture oracle establish safe complete-record transforms for one 74HC08 package plus pull-up/pull-down wires, terminals, junctions, and resistor metadata?",
+      "status": "awaiting_hc08_d05_oracle",
+      "needed_for": ["and_reference_acceptance", "hc08_generation_v0"]
+    },
+    {
+      "id": "Q010",
       "priority": "medium",
-      "question": "Do the main resistor outputs survive formal Proteus 8.13 save-as/reopen and semantic comparison for all requested topologies?",
+      "question": "Do the main power-bridge resistor outputs survive manual Proteus 8.13 save-as/reopen and visual comparison for all requested topologies?",
       "status": "user_visual_no_error_acceptance_received_current_scope_formal_save_reopen_diff_pending",
       "needed_for": ["resistor_generator_release_acceptance"]
     },
     {
-      "id": "Q010",
+      "id": "Q011",
+      "priority": "high",
+      "question": "What exact Proteus-created standalone WIRE donor record is safe for visible resistor bus/junction drawing without VGDVC.dll errors?",
+      "status": "pending_safe_wire_donor_after_visual_wire_vgdvc_report",
+      "needed_for": ["visible_bus_wire_generation"]
+    },
+    {
+      "id": "Q012",
       "priority": "high",
       "question": "Which CAPACITOR_V7_TERMINAL_ISOLATION_TEMP_20260531 diagnostic is the first to fail in Proteus 8.13?",
       "status": "answered_t04_and_t06_failed_t07_partial_t01_t02_t03_t05_worked",
       "needed_for": ["capacitor_generator_promotion"]
     },
     {
-      "id": "Q011",
+      "id": "Q013",
       "priority": "high",
       "question": "Does CAPACITOR_V8_TERMINAL_ORDER_TEMP_20260531 T02 or another V9-order variant display two terminal-attached capacitors correctly in Proteus 8.13?",
       "status": "answered_only_t01_worked_t02_to_t06_failed",
       "needed_for": ["capacitor_generator_promotion"]
     },
     {
-      "id": "Q012",
+      "id": "Q014",
       "priority": "high",
       "question": "What valid ROOT.DSN object stream does Proteus create for two or more terminal-attached capacitors?",
       "status": "answered_by_manual_cap2_donor_structure_pending_generated_acceptance",
       "needed_for": ["capacitor_generator_promotion"]
     },
     {
-      "id": "Q013",
+      "id": "Q015",
       "priority": "high",
       "question": "Does CAPACITOR_V9_UNIQUE_INDEX_TEMP_20260531 T02 open and render two complete terminal-attached capacitors after fixing byte 344 to 1 and 2?",
       "status": "answered_no_t01_worked_t03_partial_rest_failed",
       "needed_for": ["capacitor_generator_promotion"]
     },
     {
-      "id": "Q014",
+      "id": "Q016",
       "priority": "high",
       "question": "Does CAPACITOR_V10_MANUAL_DONOR_TEMP_20260531 open, mutate, and scale terminal-attached capacitors when using the manual donor's outputs-first object order?",
       "status": "answered_yes_all_v10_cases_worked",
       "needed_for": ["capacitor_generator_promotion"]
     },
     {
-      "id": "Q015",
+      "id": "Q017",
       "priority": "high",
       "question": "Do CAPACITOR_V11_NETWORKS_TEMP_20260531 6C and 21C generated networks open and render all terminal-attached capacitors using the accepted V10 order?",
-      "status": "awaiting_user_proteus_test_v11_6c_21c_networks",
+      "status": "answered_yes_all_v11_cases_worked",
+      "needed_for": ["capacitor_generator_promotion"]
+    },
+    {
+      "id": "Q018",
+      "priority": "high",
+      "question": "Do CAPACITOR_V12_REQUESTED15_TEMP_20260531 requested capacitor networks open and render all 15 resistor-equivalent topologies using the accepted V10/V11 order?",
+      "status": "awaiting_user_proteus_test_v12_requested15",
       "needed_for": ["capacitor_generator_promotion"]
     }
   ]

@@ -2,12 +2,12 @@
 
 ## Status
 
-Temporary, pending Proteus test.
+User accepted in Proteus. Still temporary until the wider V12 requested-15 pack is accepted and capacitor code is promoted to main.
 
 ## Trigger
 
 User reported all V10 manual-donor cases work, then requested the old 21R and
-6R circuits generated with capacitors.
+6R circuits generated with capacitors. User later reported all V11 cases work.
 
 ## Method
 
@@ -41,12 +41,13 @@ Generator script:
 D:/Coding/protuesgen/tools/proteus_generation/2026-05-31/generate_capacitor_v11_networks_temp.py
 ```
 
-## Static Results
+## Results
 
 ```text
 fixture registry: valid=true
 pytest: 31 passed
 static_validation_issues: empty for both cases
+Proteus user feedback: all V11 cases work
 ```
 
 ## Test Order

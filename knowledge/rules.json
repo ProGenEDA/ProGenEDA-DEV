@@ -70,7 +70,7 @@
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.92,
       "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["R21 V9 user-confirmed artifact", "PROTUESGEN_RESISTOR_V9_IMPLEMENTATION_20260530"],
+      "evidence": ["memory R21 V9 user-confirmed artifact", "RESISTOR_V9_STATIC_BATCH_20260530"],
       "rule": "For generated resistor networks, emit matching input/output terminal records, a resistor visual record, and two short-wire records with consistent link suffixes and only one final terminator at the end of the object stream."
     },
     {
@@ -79,7 +79,7 @@
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.94,
       "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["final/README.md", "PROTUESGEN_RESISTOR_V9_IMPLEMENTATION_20260530"],
+      "evidence": ["memory final/README.md", "r21_v9_resistor_terminal_donor fixture", "RESISTOR_V9_STATIC_BATCH_20260530"],
       "rule": "Use the blank E001 project as the .pdsprj container base for resistor generation. Donor projects may provide byte-record templates, but generated outputs replace ROOT.CDB and ROOT.DSN and copy PROJECT.XML/PWRRAILS from E001."
     },
     {
@@ -88,7 +88,7 @@
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["final/power_terminal_output_bridge_method.md", "final/ground_terminal_short_wire_method.md", "MAIN_POWER_BRIDGE_RESISTOR_15_20260530"],
+      "evidence": ["memory final/power_terminal_output_bridge_method.md", "memory final/ground_terminal_short_wire_method.md", "MAIN_POWER_BRIDGE_RESISTOR_15_20260530"],
       "rule": "For the locked resistor V9 method, use two-character labels such as V0 and G0. Power bridge labels and resistor terminal labels remain two-character; $TERGROUND is safe as a right endpoint replacement for $TEROUTPUT."
     },
     {
@@ -115,7 +115,7 @@
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.94,
       "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["final/power_bridge_ground_shortwire_method.md", "MAIN_R21_POWER_BRIDGE_REPRO_20260530", "MAIN_POWER_BRIDGE_RESISTOR_15_20260530", "MAIN_RESISTOR_LOCKED_V9_METHOD_AUDIT_20260530"],
+      "evidence": ["memory final/power_bridge_ground_shortwire_method.md", "MAIN_R21_POWER_BRIDGE_REPRO_20260530", "MAIN_POWER_BRIDGE_RESISTOR_15_20260530"],
       "rule": "The main resistor generator must emit one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge for the power node. Powered resistor endpoints stay ordinary $TERINPUT(V0) terminals so same-name terminal topology connects them to the bridge."
     },
     {
@@ -139,20 +139,20 @@
     {
       "id": "R016",
       "title": "Capacitor work stays temporary until Proteus accepts guarded diagnostics",
-      "status": "v10_manual_order_confirmed_large_network_pending",
-      "confidence": 0.94,
+      "status": "v11_large_network_confirmed_requested15_pending",
+      "confidence": 0.95,
       "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_USER_FEEDBACK_20260531", "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531", "CAPACITOR_V7_USER_FEEDBACK_20260531", "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531", "CAPACITOR_V8_USER_FEEDBACK_20260531", "CAPACITOR_V9_UNIQUE_INDEX_STATIC_20260531", "CAPACITOR_V9_USER_FEEDBACK_20260531", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531", "CAPACITOR_V11_NETWORKS_STATIC_20260531"],
-      "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. V10 confirms the manual donor outputs-first order opens for exact, translated, renamed, and three-cap terminal-attached cases. Keep the capacitor generator temporary until the V11 larger 6C and 21C network stress tests are Proteus accepted."
+      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_USER_FEEDBACK_20260531", "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531", "CAPACITOR_V7_USER_FEEDBACK_20260531", "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531", "CAPACITOR_V8_USER_FEEDBACK_20260531", "CAPACITOR_V9_UNIQUE_INDEX_STATIC_20260531", "CAPACITOR_V9_USER_FEEDBACK_20260531", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531", "CAPACITOR_V11_NETWORKS_STATIC_20260531", "CAPACITOR_V11_USER_FEEDBACK_20260531", "CAPACITOR_V12_REQUESTED15_STATIC_20260531"],
+      "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. V10 confirms the manual donor outputs-first order opens for exact, translated, renamed, and three-cap terminal-attached cases. V11 confirms the same method scales to 6C and 21C terminal-label networks. Keep the capacitor generator temporary until the V12 requested 15 capacitor-network pack is Proteus accepted."
     },
     {
       "id": "R017",
       "title": "Manual two-terminal-cap donor uses outputs-first object order",
-      "status": "user_confirmed_for_v10_two_and_three_cap_cases",
-      "confidence": 0.92,
+      "status": "user_confirmed_for_v10_and_v11_networks",
+      "confidence": 0.94,
       "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["CAp2withterm.pdsprj manual donor", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531"],
-      "rule": "The user-made two-terminal-capacitor donor object chunk is ordered as: header, both $TEROUTPUT records, then each $TERINPUT/CAPACITOR/left-wire/right-wire group. The non-final right-wire record is 49 bytes, omitting the usual trailing terminator byte; the final right-wire record is 50 bytes and ends with FF."
+      "evidence": ["cap2_with_terminals_manual fixture", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531", "CAPACITOR_V11_NETWORKS_STATIC_20260531", "CAPACITOR_V11_USER_FEEDBACK_20260531", "CAPACITOR_V12_REQUESTED15_STATIC_20260531"],
+      "rule": "The user-made two-terminal-capacitor donor object chunk is ordered as: header, all $TEROUTPUT records, then each $TERINPUT/CAPACITOR/left-wire/right-wire group. Every non-final right-wire record is 49 bytes, omitting the usual trailing terminator byte; the final right-wire record is 50 bytes and ends with FF."
     }
   ]
 }
