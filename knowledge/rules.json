@@ -193,11 +193,20 @@
     {
       "id": "R022",
       "title": "Inductor multi-generation needs per-index diagnostics",
-      "status": "v3_static_pending_user_test",
-      "confidence": 0.84,
+      "status": "user_confirmed_for_v3_multi_generation",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "inductor temporary V3 method"],
-      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_MULTI_STATIC_20260531"],
-      "rule": "For multi-inductor diagnostics, preserve the REALIND visual record for each donor index rather than selecting only by visible value length. V3 also tests donor-relative rigid geometry separately from formula-recomputed geometry because V2 T7 differed from the donor in both the L2 component tail bytes and several terminal/wire coordinates."
+      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_MULTI_STATIC_20260531", "INDUCTOR_V3_USER_FEEDBACK_20260531"],
+      "rule": "For multi-inductor generation, preserve the REALIND visual record for each donor index rather than selecting only by visible value length. V3 confirms exact per-index rebuild, text mutation with donor geometry, rigid donor-geometry translation, renamed rigid translation, and formula-coordinate rebuild with per-index REALIND templates all open in Proteus 8.13."
+    },
+    {
+      "id": "R023",
+      "title": "Inductor power/ground generation remains lock-candidate",
+      "status": "v4_static_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "inductor temporary V4 method"],
+      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V4_POWER_GROUND_STATIC_20260531"],
+      "rule": "Before promoting inductor generation to main, test generated V0/G0 inductor networks that combine V3 per-index REALIND generation with the locked passive $TERPOWER -> $TEROUTPUT(V0) bridge and $TERGROUND(G0) right endpoints. V2 proved exact power/ground donor insertion only; V4 is the generated endpoint lock candidate."
     }
   ]
 }

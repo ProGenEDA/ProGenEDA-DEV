@@ -63,7 +63,7 @@
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
-      "status": "v2_partial_single_power_ok_multi_v3_pending",
+      "status": "v3_multi_accepted_v4_power_ground_pending",
       "category": "passive",
       "proteus_names_observed": ["REALIND"],
       "controlled_donors": [
@@ -74,7 +74,7 @@
       ],
       "generation": {
         "planned_method": "terminal-first passive method from E001, matching the resistor/capacitor workflow",
-        "temporary_recipe": "V1 used user-created terminal-attached REALIND donor records but failed in Proteus with VGDVC.dll for every generated case. One key negative finding: do not patch REALIND link suffix bytes with the resistor V9 suffix sequence. V2 proved exact donor repacks, exact donor chunks from E001, suffix-preserved single-inductor mutation, renamed/translated single-inductor mutation, and exact power/ground donor insertion; V2 T7 failed for generated three-inductor reconstruction. V3 is testing per-index REALIND templates and donor-relative multi-inductor geometry before promotion.",
+        "temporary_recipe": "V1 used user-created terminal-attached REALIND donor records but failed in Proteus with VGDVC.dll for every generated case. One key negative finding: do not patch REALIND link suffix bytes with the resistor V9 suffix sequence. V2 proved exact donor repacks, exact donor chunks from E001, suffix-preserved single-inductor mutation, renamed/translated single-inductor mutation, and exact power/ground donor insertion; V2 T7 failed for generated three-inductor reconstruction. V3 is user-accepted for generated multi-inductor mutation when preserving per-index REALIND templates. V4 is testing generated power/ground networks before main promotion.",
         "tested": false,
         "locked": false
       }

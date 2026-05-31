@@ -161,3 +161,15 @@ T05 formula-coordinate rebuild with the per-index REALIND suffix issue fixed
 ```
 
 Do not promote arbitrary multi-inductor generation until V3 Proteus results identify which of these transformations is safe.
+
+The user reported all V3 cases worked. That confirms per-index `REALIND` template preservation is the safe multi-inductor path, including formula-coordinate generation once the L2 template/suffix bug is fixed.
+
+`INDUCTOR_V4_POWER_GROUND_TEMP_20260531` is the final inductor lock-candidate pack before main promotion. It combines the accepted V3 `REALIND` generation path with the already accepted passive power/ground method:
+
+```text
+one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge
+V0 component endpoints remain ordinary $TERINPUT(V0)
+G0 right endpoints become $TERGROUND(G0)
+```
+
+If V4 opens cleanly, the inductor generator can be promoted for the current scope. Keep the initial main inductor scope conservative: up to the controlled three donor slots until a larger inductor donor establishes safe suffix/link bytes beyond three `REALIND` components.

@@ -1,0 +1,74 @@
+{
+  "case_id": "IND_V4_T05_T_NETWORK_POWER_GROUND_GENERATED",
+  "source": "inductor V4 power/ground lock-candidate diagnostics",
+  "notes": "Generated three-inductor T network with one powered left endpoint and two ground endpoints.",
+  "component_count": 3,
+  "power_bridge_count": 1,
+  "ground_terminal_count": 2,
+  "object_chunk_len": 2296,
+  "root_dsn_len": 68582,
+  "root_cdb_len": 512,
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65343,
+    "second_isis": 67685,
+    "second_object_data": 67720,
+    "object_data_pointer": 67733
+  },
+  "marker_counts": {
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 2,
+    "$TERPOWER": 1,
+    "$TERGROUND": 2,
+    "REALIND": 9,
+    "WIRE": 7
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "ref": "LA",
+      "value": "1mH",
+      "left": "V0",
+      "right": "N1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "01b2",
+      "out_suffix": "01e4",
+      "x": -7366000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "ref": "LB",
+      "value": "2mH",
+      "left": "N1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "04c2",
+      "out_suffix": "04f4",
+      "x": -4826000,
+      "y": 2540000
+    },
+    {
+      "idx": 3,
+      "ref": "LC",
+      "value": "10uH",
+      "left": "N1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0703",
+      "out_suffix": "0735",
+      "x": -4826000,
+      "y": 0
+    }
+  ],
+  "static_validation_issues": [],
+  "output_hashes": {
+    "pdsprj_sha256": "69e6ed24fa75faf850fb2827c49ec31fea2ab620325915e98c17436a6d86c653",
+    "root_dsn_sha256": "95c4939139dbe8d5c55adfacdcbca715814993556fbca7358d2188104c53ca97",
+    "root_cdb_sha256": "8f7422229755806f6fdcf0d839eca62707006b88bf65ff6f029af3417c212653",
+    "object_chunk_sha256": "c65137872175683a1948c8d0e2a0c3ba4b59fcd003ff342d6c0fd04930d88726"
+  }
+}
