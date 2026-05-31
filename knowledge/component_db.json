@@ -63,7 +63,7 @@
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
-      "status": "locked_main_generator_current_scope",
+      "status": "temporary_v5_accepted_more_network_tests_required",
       "category": "passive",
       "proteus_names_observed": ["REALIND"],
       "controlled_donors": [
@@ -76,14 +76,14 @@
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
         "requires_cdb": true,
-        "supported_recipe": "src/proteusgen/inductor.py. Terminal-only generation supports one to three inductors using per-index REALIND templates from inductor_03_three_terminal. Single V0-to-G0 power/ground generation uses the accepted inductor_04 object order: internal input, REALIND, trimmed left wire, $TERPOWER, internal $TEROUTPUT, bridge wire, $TERGROUND, final wire.",
+        "temporary_recipe": "Temporary code lives in tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main. V3 confirms terminal-only REALIND generation with per-index templates. V5 confirms a single V0-to-G0 inductor using the accepted inductor_04 donor order: internal input, REALIND, trimmed left wire, $TERPOWER, internal $TEROUTPUT, bridge wire, $TERGROUND, final wire. This is not main/locked until the 6/21 inductor networks, 15 inductor circuit pack, and resistor/capacitor/inductor mixed tests pass.",
         "known_limits": [
           "Do not use resistor V9 suffix generation for REALIND records.",
           "Do not use the generic passive bridge-first order for inductors.",
-          "Reject multi-inductor V0/G0 circuits until a Proteus-created donor/order is accepted."
+          "Do not promote to src/proteusgen until the requested inductor and R/C/L network batches pass."
         ],
         "tested": true,
-        "locked": true
+        "locked": false
       }
     },
     "CAPACITOR": {

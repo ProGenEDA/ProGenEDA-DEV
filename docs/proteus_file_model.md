@@ -192,7 +192,13 @@ final ground WIRE
 
 `INDUCTOR_V5_DONOR04_ORDER_TEMP_20260531` tests this exact order. T1-T3 are byte-identical donor04 controls; T4-T5 mutate only the ref/value/internal power-bridge connection label while preserving donor04 order.
 
-The user reported all V5 cases worked. The main inductor generator is now locked for the current scope in `src/proteusgen/inductor.py`:
+The user reported all V5 cases worked. This confirms the donor04-order mutation for the tested single-inductor scope only; it does not lock the inductor generator as main. The premature main implementation was moved to:
+
+```text
+tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main
+```
+
+Current temporary evidence:
 
 ```text
 terminal-only inductors:
@@ -205,4 +211,4 @@ power/ground inductor:
   donor04 object order only
 ```
 
-Multi-inductor circuits that include V0 or G0 remain open research. The V4 generic passive bridge-first order is rejected and must not be reintroduced for inductors.
+Before promotion, this temporary generator still needs the requested 6/21 inductor network tests, the 15 inductor topology tests, and resistor/capacitor/inductor mixed circuit tests. Multi-inductor circuits that include V0 or G0 remain open research. The V4 generic passive bridge-first order is rejected and must not be reintroduced for inductors.
