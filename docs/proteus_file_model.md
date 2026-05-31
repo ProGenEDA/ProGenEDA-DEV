@@ -89,3 +89,22 @@ The user reported all V10 manual-order cases worked in Proteus 8.13, including e
 V12 applies the same manual-order method to the 15 requested resistor-network topologies converted to capacitors. This pack is still temporary pending user Proteus open/visual acceptance. It intentionally uses ordinary two-character labels `V0` and `G0` rather than power/ground terminal symbols, emits horizontal capacitor records, and does not introduce standalone bus/junction wire records.
 
 V13 supersedes V12 for the next capacitor test pass. It uses a wider `3810000` internal-unit grid on both x and y axes, prepends one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge after the object stream header, leaves powered capacitor endpoints as ordinary `$TERINPUT(V0)`, and emits grounded right endpoints as `$TERGROUND(G0)`. Capacitor records remain horizontal and standalone bus/junction wire records are still not emitted.
+
+## Mixed Resistor/Capacitor Temporary Findings
+
+Mixed passive V1 combines two accepted single-component-family record methods but is not itself accepted yet. The first diagnostic pack contains the 6-component and 21-component resistor topologies with odd-indexed components generated as resistors and even-indexed components generated as capacitors.
+
+The V1 object stream order is:
+
+```text
+00 header
+$TERPOWER -> $TEROUTPUT(V0) bridge
+all capacitor output/ground terminals
+all capacitor input/component/wire groups
+all resistor input terminals
+all resistor output/ground terminals
+00 resistor separator
+all resistor component/wire groups
+```
+
+This preserves the accepted capacitor outputs-first block and the accepted resistor V9 terminal-array block as much as possible. It requires Proteus open/render feedback before any mixed passive generator is promoted.
