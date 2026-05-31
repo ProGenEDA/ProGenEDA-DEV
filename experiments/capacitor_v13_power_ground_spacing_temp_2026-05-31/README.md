@@ -1,43 +1,51 @@
-# Capacitor V12 Requested 15 Network Diagnostics 2026-05-31
+# Capacitor V13 Power/Ground Spacing Diagnostics 2026-05-31
 
 ## Status
 
-Superseded by V13 before Proteus test. Use V13 for the next check because it adds wider spacing plus real power/ground terminal records.
+Temporary, pending Proteus test. Supersedes V12 for the next user check.
 
 ## Trigger
 
-User reported the V11 6C and 21C capacitor networks work, then requested the same 15 resistor-network acceptance circuits generated with capacitors.
+User requested more horizontal and vertical component distance, then asked to generate the 15 capacitor circuits with power terminal and ground.
 
 ## Method
 
-V12 uses the accepted V10/V11 manual-donor record shape:
+V13 keeps the user-accepted V10/V11 manual capacitor object order:
 
 ```text
-all $TEROUTPUT records first
+all capacitor output terminals first
 then repeated $TERINPUT / CAPACITOR / left WIRE / right WIRE groups
 non-final right WIRE records are 49 bytes
 final right WIRE record is 50 bytes and ends FF
 ```
 
-The pack is generated from E001. It uses terminal-label topology and ordinary two-character labels `V0` and `G0`; it does not introduce power/ground terminal symbols or standalone bus/junction wire records.
+It adds the locked resistor power/ground endpoint method:
+
+```text
+one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge
+powered capacitor endpoints stay ordinary $TERINPUT(V0)
+G0 right endpoints become $TERGROUND(G0)
+```
+
+Spacing changed from V12's `2540000` grid to `3810000` internal units on both x and y axes.
 
 ## Generated Local Pack
 
 ```text
-D:/Coding/protuesgen/experiments/capacitor_v12_requested15_temp_2026_05_31
+D:/Coding/protuesgen/experiments/capacitor_v13_power_ground_spacing_temp_2026_05_31
 ```
 
 ZIP:
 
 ```text
-D:/Coding/protuesgen/experiments/CAPACITOR_V12_REQUESTED15_TEMP_2026_05_31.zip
-sha256: a7f37e0fc2507525176fd3046e57da21168fc44c357eed9c9cc781a69e2a4f3f
+D:/Coding/protuesgen/experiments/CAPACITOR_V13_POWER_GROUND_SPACING_TEMP_2026_05_31.zip
+sha256: 2ecf1bbda47de0f21ede6d8730acb0607fa688d94ed3cc2fab0c801e1fae9818
 ```
 
 Generator script:
 
 ```text
-D:/Coding/protuesgen/tools/proteus_generation/2026-05-31/generate_capacitor_v12_requested15_temp.py
+D:/Coding/protuesgen/tools/proteus_generation/2026-05-31/generate_capacitor_v13_power_ground_spacing_temp.py
 ```
 
 ## Static Results
@@ -47,6 +55,7 @@ pytest: 31 passed
 tests/test_results.py after knowledge update: 2 passed
 static_validation_issues: empty for all 15 cases
 project count: 15 .pdsprj files
+total capacitor count: 65
 ```
 
 ## Test Order
@@ -73,7 +82,9 @@ project count: 15 .pdsprj files
 
 ```text
 Each project opens without VGDVC or loader errors.
-The visible capacitor count matches the case manifest.
-The terminal-label topology matches the named circuit.
-Values and refs render as C1.. with uF values.
+Power terminal bridge is present for V0.
+G0 endpoints show ground terminals.
+Visible capacitor count matches each case manifest.
+Component spacing is more comfortable than V12.
 ```
+

@@ -64,7 +64,7 @@
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {"status": "requested_not_yet_controlled", "category": "passive"},
     "CAPACITOR": {
-      "status": "v11_large_network_validated_v12_requested15_pending",
+      "status": "v11_large_network_validated_v13_power_ground_spacing_pending",
       "category": "passive",
       "proteus_names_observed": ["CAPACITOR", "CAP", "CAP10"],
       "generation": {
@@ -73,7 +73,7 @@
         "requires_cdb": true,
         "tested": true,
         "locked": false,
-        "temporary_recipe": "CAP_T01 free-cap visual core plus user cap3 multi-cap CDB/object guards are user-accepted. V10 confirms the user-made cap2_with_terminals_manual donor order works: all outputs first, then input/cap/wire groups with non-final right-wire trimmed to 49 bytes. V11 confirms scaling this method to 6C and 21C networks. V12 now tests the same method across the 15 requested resistor-equivalent capacitor topologies before promotion to main."
+        "temporary_recipe": "CAP_T01 free-cap visual core plus user cap3 multi-cap CDB/object guards are user-accepted. V10 confirms the user-made cap2_with_terminals_manual donor order works: all outputs first, then input/cap/wire groups with non-final right-wire trimmed to 49 bytes. V11 confirms scaling this method to 6C and 21C networks. V13 tests the same method across the 15 requested resistor-equivalent capacitor topologies with wider component spacing, one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge, and $TERGROUND(G0) right endpoints before promotion to main."
       }
     },
     "LED": {"status": "found_in_corpus_not_controlled", "category": "display_indicator"},
