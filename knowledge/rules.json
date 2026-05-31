@@ -175,11 +175,20 @@
     {
       "id": "R020",
       "title": "Inductor V1 donor object order",
-      "status": "static_only_pending_user_test",
-      "confidence": 0.82,
+      "status": "rejected_v1_all_generated_cases_vgdvc",
+      "confidence": 0.86,
       "applies_to": ["Proteus 8.13", "inductor temporary V1 method"],
-      "evidence": ["inductor_02_two_terminal.pdsprj", "inductor_03_three_terminal.pdsprj", "INDUCTOR_V1_TERMINAL_STATIC_20260531"],
-      "rule": "The first inductor V1 generator uses the user-created three-terminal-inductor donor. One inductor emits input, output, REALIND visual record, left WIRE, right WIRE. The three-inductor donor keeps the first full group first, then remaining outputs, then remaining input/inductor/wire groups. Non-final right-wire records omit the trailing terminator byte. Four-character inductor values such as 10uH use a one-byte-longer REALIND visual record than three-character values such as 1mH."
+      "evidence": ["inductor_02_two_terminal.pdsprj", "inductor_03_three_terminal.pdsprj", "INDUCTOR_V1_TERMINAL_STATIC_20260531", "INDUCTOR_V1_USER_FEEDBACK_20260531"],
+      "rule": "The first inductor V1 generator used the user-created three-terminal-inductor donor order, but all V1 generated outputs caused VGDVC.dll errors. Do not reuse V1 as positive evidence. Initial diff against the known-good two-terminal donor shows the first mutation is the terminal/component link suffix sequence; V2 must preserve donor REALIND link suffix bytes before testing further mutations."
+    },
+    {
+      "id": "R021",
+      "title": "Inductor V2 starts with exact donor controls",
+      "status": "static_only_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "inductor temporary V2 method"],
+      "evidence": ["INDUCTOR_V1_USER_FEEDBACK_20260531", "INDUCTOR_V2_SUFFIX_STATIC_20260531"],
+      "rule": "For inductor diagnostics after V1, test exact donor repacks and exact donor object chunks before generated mutations. Preserve donor REALIND terminal/component link suffix bytes. The V2 single suffix-preserved case is byte-for-byte identical to the two-terminal donor object chunk."
     }
   ]
 }

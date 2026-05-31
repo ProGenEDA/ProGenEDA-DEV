@@ -1,0 +1,447 @@
+{
+  "case": "INDUCTOR_V2_SUFFIX_TEMP_2026_05_31",
+  "status": "awaiting_user_proteus_test",
+  "method": "exact donor controls plus REALIND suffix-preserving generation",
+  "test_order": [
+    "IND_V2_T01_DONOR02_REPACK_EXACT",
+    "IND_V2_T02_E001_DONOR02_EXACT_CHUNK",
+    "IND_V2_T03_SUFFIX_PRESERVED_SINGLE",
+    "IND_V2_T04_SUFFIX_PRESERVED_RENAMED",
+    "IND_V2_T05_DONOR03_REPACK_EXACT",
+    "IND_V2_T06_E001_DONOR03_EXACT_CHUNK",
+    "IND_V2_T07_SUFFIX_PRESERVED_THREE",
+    "IND_V2_T08_DONOR04_REPACK_EXACT",
+    "IND_V2_T09_E001_DONOR04_EXACT_CHUNK"
+  ],
+  "cases": [
+    {
+      "case_id": "IND_V2_T01_DONOR02_REPACK_EXACT",
+      "source": "deterministic repack of inductor_02_two_terminal",
+      "notes": "Exact deterministic repack of your two-terminal donor.",
+      "component_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "object_chunk_len": 682,
+      "root_dsn_len": 66968,
+      "root_cdb_len": 249,
+      "marker_counts": {
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "REALIND": 3,
+        "WIRE": 2
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "N1",
+          "right": "N2"
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "a11219d3483613067416f9d05ba8f238cfee46ba05234de792fce40afeb34807",
+        "root_dsn_sha256": "d3f8da6ef715cc0c5c8294410afbb75d9a2b42714fdc83ac74ac6092909c8420",
+        "root_cdb_sha256": "d5d54bf1cd970fc9aef9f42f5158fdf24b37192be3e6bc1fe4bea9ee50d284f4",
+        "object_chunk_sha256": "8c73af3d334c3a8dd7095f12c83cae6faca21c3ba10f1e95664a09b39d69d36b"
+      }
+    },
+    {
+      "case_id": "IND_V2_T02_E001_DONOR02_EXACT_CHUNK",
+      "source": "inductor V2 suffix-preservation diagnostics",
+      "notes": "E001 base with exact donor02 ROOT.DSN object chunk and exact donor02 ROOT.CDB.",
+      "component_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "object_chunk_len": 682,
+      "root_dsn_len": 66968,
+      "root_cdb_len": 249,
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65343,
+        "second_isis": 66071,
+        "second_object_data": 66106,
+        "object_data_pointer": 66119
+      },
+      "marker_counts": {
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "REALIND": 3,
+        "WIRE": 2
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "N1",
+          "right": "N2"
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "b6eb62e0dcea9bd83aa8e00e205fc8a06af75c70cfd4f81671dde3d6a53cd9ee",
+        "root_dsn_sha256": "eb7262c53a227f9fd0762d6940a30981b6c872843c3edd5fb81033f1757bf816",
+        "root_cdb_sha256": "d5d54bf1cd970fc9aef9f42f5158fdf24b37192be3e6bc1fe4bea9ee50d284f4",
+        "object_chunk_sha256": "8c73af3d334c3a8dd7095f12c83cae6faca21c3ba10f1e95664a09b39d69d36b"
+      }
+    },
+    {
+      "case_id": "IND_V2_T03_SUFFIX_PRESERVED_SINGLE",
+      "source": "inductor V2 suffix-preservation diagnostics",
+      "notes": "Generated single inductor preserving donor suffix bytes; should match donor02 object chunk.",
+      "component_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "object_chunk_len": 682,
+      "root_dsn_len": 66968,
+      "root_cdb_len": 249,
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65343,
+        "second_isis": 66071,
+        "second_object_data": 66106,
+        "object_data_pointer": 66119
+      },
+      "marker_counts": {
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "REALIND": 3,
+        "WIRE": 2
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "N1",
+          "right": "N2",
+          "input_marker": "$TERINPUT",
+          "output_marker": "$TEROUTPUT",
+          "in_suffix": "01b2",
+          "out_suffix": "01e4",
+          "x": -7366000,
+          "y": 1270000
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "b6eb62e0dcea9bd83aa8e00e205fc8a06af75c70cfd4f81671dde3d6a53cd9ee",
+        "root_dsn_sha256": "eb7262c53a227f9fd0762d6940a30981b6c872843c3edd5fb81033f1757bf816",
+        "root_cdb_sha256": "d5d54bf1cd970fc9aef9f42f5158fdf24b37192be3e6bc1fe4bea9ee50d284f4",
+        "object_chunk_sha256": "8c73af3d334c3a8dd7095f12c83cae6faca21c3ba10f1e95664a09b39d69d36b"
+      }
+    },
+    {
+      "case_id": "IND_V2_T04_SUFFIX_PRESERVED_RENAMED",
+      "source": "inductor V2 suffix-preservation diagnostics",
+      "notes": "Renamed/translated single inductor while preserving donor suffix bytes.",
+      "component_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "object_chunk_len": 682,
+      "root_dsn_len": 66968,
+      "root_cdb_len": 249,
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65343,
+        "second_isis": 66071,
+        "second_object_data": 66106,
+        "object_data_pointer": 66119
+      },
+      "marker_counts": {
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "REALIND": 3,
+        "WIRE": 2
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "LA",
+          "value": "2mH",
+          "left": "A1",
+          "right": "B1",
+          "input_marker": "$TERINPUT",
+          "output_marker": "$TEROUTPUT",
+          "in_suffix": "01b2",
+          "out_suffix": "01e4",
+          "x": -4826000,
+          "y": 2540000
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "874f05bab3343ab377dc1fc277ae71bf73a048c06315ea659cbbd2a4f6638a92",
+        "root_dsn_sha256": "813cf07f4c28e33d5c820403009e5fee9862e074d22bbb974022b1b673accc9b",
+        "root_cdb_sha256": "d1c5de05a129d6e6a023aa00e5b9ebc11190fa2d7d5f41139256118153330741",
+        "object_chunk_sha256": "0a03b7fed8e22d235f812be264695e976e7ad8812d44fb40d9a53c09d9d2dd43"
+      }
+    },
+    {
+      "case_id": "IND_V2_T05_DONOR03_REPACK_EXACT",
+      "source": "deterministic repack of inductor_03_three_terminal",
+      "notes": "Exact deterministic repack of your three-inductor donor.",
+      "component_count": 3,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "object_chunk_len": 2043,
+      "root_dsn_len": 68329,
+      "root_cdb_len": 512,
+      "marker_counts": {
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "REALIND": 9,
+        "WIRE": 6
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "N1",
+          "right": "N2"
+        },
+        {
+          "idx": 2,
+          "ref": "L2",
+          "value": "2mH",
+          "left": "N3",
+          "right": "N4"
+        },
+        {
+          "idx": 3,
+          "ref": "L3",
+          "value": "10uH",
+          "left": "N5",
+          "right": "N6"
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "58bba0f48b34202a72900dd9c7cf42d20773dece2829f8e323a634b278573010",
+        "root_dsn_sha256": "3bbdd4d363dda46b61cdf13c6322feb21e66e39d0d9c6f6151563a7f7b52af71",
+        "root_cdb_sha256": "d475a88371e1d35dec383be57f5e118da183c98af4a78fdc2c1b967a786fd00f",
+        "object_chunk_sha256": "b14031fdb99bccc4f7618730267b04cb3f5254f447cc08a95208f7b0d3c6672c"
+      }
+    },
+    {
+      "case_id": "IND_V2_T06_E001_DONOR03_EXACT_CHUNK",
+      "source": "inductor V2 suffix-preservation diagnostics",
+      "notes": "E001 base with exact donor03 object chunk and exact donor03 ROOT.CDB.",
+      "component_count": 3,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "object_chunk_len": 2043,
+      "root_dsn_len": 68329,
+      "root_cdb_len": 512,
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65343,
+        "second_isis": 67432,
+        "second_object_data": 67467,
+        "object_data_pointer": 67480
+      },
+      "marker_counts": {
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "REALIND": 9,
+        "WIRE": 6
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "N1",
+          "right": "N2"
+        },
+        {
+          "idx": 2,
+          "ref": "L2",
+          "value": "2mH",
+          "left": "N3",
+          "right": "N4"
+        },
+        {
+          "idx": 3,
+          "ref": "L3",
+          "value": "10uH",
+          "left": "N5",
+          "right": "N6"
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "aba025f5dbd6926271ac2c3bc3859014d778756cee5d5dccf62b4aef71226f41",
+        "root_dsn_sha256": "107ca3ec587f674d38322b18ca0cf8d11d4a3568ce58257a9252b1267dcda076",
+        "root_cdb_sha256": "d475a88371e1d35dec383be57f5e118da183c98af4a78fdc2c1b967a786fd00f",
+        "object_chunk_sha256": "b14031fdb99bccc4f7618730267b04cb3f5254f447cc08a95208f7b0d3c6672c"
+      }
+    },
+    {
+      "case_id": "IND_V2_T07_SUFFIX_PRESERVED_THREE",
+      "source": "inductor V2 suffix-preservation diagnostics",
+      "notes": "Generated three-inductor case preserving donor suffix bytes; should match donor03 object chunk.",
+      "component_count": 3,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "object_chunk_len": 2043,
+      "root_dsn_len": 68329,
+      "root_cdb_len": 512,
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65343,
+        "second_isis": 67432,
+        "second_object_data": 67467,
+        "object_data_pointer": 67480
+      },
+      "marker_counts": {
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "REALIND": 9,
+        "WIRE": 6
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "N1",
+          "right": "N2",
+          "input_marker": "$TERINPUT",
+          "output_marker": "$TEROUTPUT",
+          "in_suffix": "01b2",
+          "out_suffix": "01e4",
+          "x": -7366000,
+          "y": 1270000
+        },
+        {
+          "idx": 2,
+          "ref": "L2",
+          "value": "2mH",
+          "left": "N3",
+          "right": "N4",
+          "input_marker": "$TERINPUT",
+          "output_marker": "$TEROUTPUT",
+          "in_suffix": "04c2",
+          "out_suffix": "04f4",
+          "x": -7366000,
+          "y": 0
+        },
+        {
+          "idx": 3,
+          "ref": "L3",
+          "value": "10uH",
+          "left": "N5",
+          "right": "N6",
+          "input_marker": "$TERINPUT",
+          "output_marker": "$TEROUTPUT",
+          "in_suffix": "0703",
+          "out_suffix": "0735",
+          "x": -7366000,
+          "y": -1270000
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "a00d9b1f71fa0f42b259f2393aa57f163aad469f678deba69f9a6405772de684",
+        "root_dsn_sha256": "3c1b2c061259c142643e368db17e9ee1843fda9fcd71081d43d6bc21db8de9a5",
+        "root_cdb_sha256": "d475a88371e1d35dec383be57f5e118da183c98af4a78fdc2c1b967a786fd00f",
+        "object_chunk_sha256": "f3240a19c2dac2b8aacd77bbb1151d4d4fbbbbebda4833af1a63d56152416c93"
+      }
+    },
+    {
+      "case_id": "IND_V2_T08_DONOR04_REPACK_EXACT",
+      "source": "deterministic repack of inductor_04_power_ground",
+      "notes": "Exact deterministic repack of your power/ground inductor donor.",
+      "component_count": 1,
+      "power_bridge_count": 1,
+      "ground_terminal_count": 1,
+      "object_chunk_len": 947,
+      "root_dsn_len": 67233,
+      "root_cdb_len": 249,
+      "marker_counts": {
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "REALIND": 3,
+        "WIRE": 3
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "V0",
+          "right": "G0"
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "3f2589ae338bc0f7767d68bb5250c0d5fe19eacf6cdbf11c04d76ba3eb983cb4",
+        "root_dsn_sha256": "d5b5fab6e900845800a8e70ead5223ced45ba2058ce6fc77d6823898b81d745b",
+        "root_cdb_sha256": "d5d54bf1cd970fc9aef9f42f5158fdf24b37192be3e6bc1fe4bea9ee50d284f4",
+        "object_chunk_sha256": "ff2689aadeff6109d057ac7521446649adf3878eef0d7f9a571be340e325fc3f"
+      }
+    },
+    {
+      "case_id": "IND_V2_T09_E001_DONOR04_EXACT_CHUNK",
+      "source": "inductor V2 suffix-preservation diagnostics",
+      "notes": "E001 base with exact donor04 object chunk and exact donor04 ROOT.CDB.",
+      "component_count": 1,
+      "power_bridge_count": 1,
+      "ground_terminal_count": 1,
+      "object_chunk_len": 947,
+      "root_dsn_len": 67233,
+      "root_cdb_len": 249,
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65343,
+        "second_isis": 66336,
+        "second_object_data": 66371,
+        "object_data_pointer": 66384
+      },
+      "marker_counts": {
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "REALIND": 3,
+        "WIRE": 3
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "L1",
+          "value": "1mH",
+          "left": "V0",
+          "right": "G0"
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "pdsprj_sha256": "1c5d9d74bd83a4a6d6ca4a78c7a81e62af35cc8876f91b3875549cda5a29be53",
+        "root_dsn_sha256": "3d22611be98f1a3ee005181f6f360ed568e6ff943b273271c2b1649d6fb0d13a",
+        "root_cdb_sha256": "d5d54bf1cd970fc9aef9f42f5158fdf24b37192be3e6bc1fe4bea9ee50d284f4",
+        "object_chunk_sha256": "ff2689aadeff6109d057ac7521446649adf3878eef0d7f9a571be340e325fc3f"
+      }
+    }
+  ]
+}
