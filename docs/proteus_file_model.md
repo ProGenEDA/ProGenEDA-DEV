@@ -113,13 +113,14 @@ This preserves the accepted capacitor outputs-first block and the accepted resis
 
 ## Inductor Temporary Findings
 
-The user supplied four controlled Proteus 8.13 inductor donors:
+The user supplied five controlled Proteus 8.13 inductor donors:
 
 ```text
 inductor_01_single_free.pdsprj
 inductor_02_two_terminal.pdsprj
 inductor_03_three_terminal.pdsprj
 inductor_04_power_ground.pdsprj
+inductor_05_six_terminal.pdsprj
 ```
 
 The inductor device name observed in `ROOT.DSN` and `ROOT.CDB` is `REALIND`.
@@ -143,6 +144,24 @@ remaining $TERINPUT / REALIND / WIRE / WIRE groups
 ```
 
 As with the accepted capacitor manual-order donor, non-final right-wire records omit the trailing terminator byte. A four-character value such as `10uH` uses a one-byte-longer `REALIND` visual record than three-character values such as `1mH` and `2mH`.
+
+After V6/V7/RCL V1 failed, the user supplied `inductor_05_six_terminal.pdsprj`.
+This six-inductor donor does not use the three-inductor donor order and does
+not use the capacitor donor's outputs-first order. Its observed object order is:
+
+```text
+00 header
+$TERINPUT / $TEROUTPUT / REALIND / left WIRE / right WIRE
+$TERINPUT / $TEROUTPUT / REALIND / left WIRE / right WIRE
+... repeated six times
+```
+
+The capacitor-family rule that does carry over is right-wire trimming: non-final
+right-wire records are 49 bytes, omitting the trailing record terminator, while
+the final right-wire record is 50 bytes and ends with `FF`. Donor05 also shows a
+regular terminal suffix step of `0x02A8` (`$TERINPUT` starts at `0x01B2`,
+`$TEROUTPUT` starts at `0x01E4`). The `REALIND` visual record's terminal link
+bytes start at offset 365 in the 374-byte record.
 
 `INDUCTOR_V1_TERMINAL_TEMP_20260531` used this donor shape from E001, but the user reported that every generated V1 case caused a VGDVC.dll error. V1 must not be reused as positive evidence. A byte diff against the known-good two-terminal donor shows the first generated mutation was replacing the donor's `REALIND` link suffix bytes with resistor V9 suffix bytes.
 
@@ -211,4 +230,18 @@ power/ground inductor:
   donor04 object order only
 ```
 
-Before promotion, this temporary generator still needs the requested 6/21 inductor network tests, the 15 inductor topology tests, and resistor/capacitor/inductor mixed circuit tests. Multi-inductor circuits that include V0 or G0 remain open research. The V4 generic passive bridge-first order is rejected and must not be reintroduced for inductors.
+V6 6/21, V7 requested-15, and R/C/L V1 were rejected by user Proteus testing;
+all generated files gave errors. Those failed packs must not be reused as
+positive evidence.
+
+`INDUCTOR_V8_SIX_DONOR_TEMP_2026_06_01` uses donor05's six sequential groups.
+T01 inserts the exact donor05 object chunk into E001 and T02 rebuilds donor05
+from slices byte-for-byte. T03 is the main generated six-inductor candidate.
+T05 is the explicit capacitor-style outputs-first probe, included only to test
+the same-family hypothesis. T06 is a power/ground bridge probe and should be
+tested only after the terminal-only donor05 cases work.
+
+Before promotion, V8 still needs user Proteus open/render results. Multi-inductor
+circuits that include V0 or G0 remain open research. The V4 generic passive
+bridge-first order is rejected and must not be reintroduced for inductors unless
+a later donor-based diagnostic proves a safe variant.
