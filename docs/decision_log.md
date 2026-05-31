@@ -170,6 +170,24 @@ Evidence:
 - This duplicate hidden visual index explains the observed partial rendering better than suffix/order alone.
 - V9 T02 is the minimal V7 T06 shape with only the terminal-attached capacitor visual indexes corrected to `1, 2`.
 
+## D017: Lock mixed resistor/capacitor passive generation
+
+Decision: promote mixed resistor/capacitor passive generation into main code for the current scope.
+
+Evidence:
+
+- User accepted the mixed 6-component and 21-component diagnostics with odd-indexed components as resistors and even-indexed components as capacitors.
+- The accepted method uses one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge and `$TERGROUND(G0)` right endpoints.
+- Static checks for the locked main pack produced no object-count, CDB-marker, suffix, or terminator issues.
+- The full Python suite passed after promotion.
+
+Implementation:
+
+- Main code: `src/proteusgen/mixed_passive.py`.
+- Input parser: `src/proteusgen/mixed_passive_ir.py`.
+- CLI: `proteusgen generate-mixed-passives`.
+- Spacing was reduced from the temporary `3810000` grid to the locked `2540000` safe grid. Duplicate manual positions are shifted so components are never emitted on top of each other.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

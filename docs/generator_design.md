@@ -7,10 +7,11 @@ The generator is deterministic Python code. It consumes validated CircuitIR and 
 Version 0 target:
 
 - Proteus 8.13
-- locked V9 terminal-based resistor networks
-- V0/G0/internal nets represented using terminals
-- resistor values and refs stored consistently in ROOT.CDB
-- capacitor is in the temporary V4 diagnostic lane, pending Proteus acceptance
+- deterministic `CircuitIR` JSON CLI
+- locked V9 terminal-based resistor generation from E001
+- locked mixed resistor/capacitor passive generation from E001 for the current scope
+- standalone capacitor generation remains in the temporary lane pending the wider V13 checks
+- D02 four-unit `74HC08` repack as a diagnostic control only
 
 ## High-level flow
 
@@ -36,27 +37,13 @@ For Proteus 8.13, based on current tests:
 - resistor reference names: ROOT.CDB
 - PWRRAILS.DAT: copy unchanged for v0
 
-## Current locked generator
+## Rendering safety gate
 
-The resistor generator is the current main production path in the active code repo. It is exposed by:
+The current code does not concatenate binary `OBJECT DATA` segments or splice arbitrary records. Clean D01-D03 donors prove that `74HC08` data exists, but they do not prove safe composition with new terminals, resistors, rails, or junctions.
 
-```text
-proteusgen generate-resistors
-python generate_from_json.py
-```
+The target AND circuit is specified in `examples/and_reference_pending_d05.json`. Production generation remains blocked until the user supplies `HC08_D05_exact_picture_manual_control.pdsprj` and a renderer transformation is validated against that oracle in Proteus 8.13.
 
-Locked behavior:
-
-```text
-resistor connectivity = V9 input/output terminal labels
-power = one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge
-powered resistor endpoints = ordinary $TERINPUT(V0)
-ground = $TERGROUND(G0) right endpoint with normal short wire
-standalone visual wires = skipped in production
-safe grid = 2540000 internal units on x and y
-```
-
-## Layout strategy for v0
+## Layout strategy after the gate
 
 Use terminal-based branches.
 
@@ -66,7 +53,9 @@ Each resistor branch should be represented as:
 terminal NET_A -- short connection -- resistor REF VALUE -- short connection -- terminal NET_B
 ```
 
-The reusable resistor branch template is locked for the current resistor scope.
+For powered resistor circuits, the main V9 generator keeps `V0` resistor endpoints as ordinary `$TERINPUT(V0)` terminals and emits one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge. Ground remains a `$TERGROUND(G0)` right endpoint connected by the normal short wire.
+
+The AND acceptance circuit also requires visible pull-up/pull-down rail wires and junctions; terminal-name substitution alone cannot represent the reference picture.
 
 ## Component expansion strategy
 
@@ -81,9 +70,47 @@ Enable a part only after it has:
 - validator rules
 - at least one successful generated/resaved project test
 
+## Current locked generators
+
+The resistor generator lives in `src/proteusgen/resistor_v9.py` and is exposed by:
+
+```text
+proteusgen generate-resistors
+python generate_from_json.py
+```
+
+The mixed resistor/capacitor generator lives in `src/proteusgen/mixed_passive.py` and is exposed by:
+
+```text
+proteusgen generate-mixed-passives
+```
+
+Locked behavior:
+
+```text
+resistor connectivity = V9 input/output terminal labels
+power = one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge
+powered resistor endpoints = ordinary $TERINPUT(V0)
+ground = $TERGROUND(G0) right endpoint with normal short wire
+standalone visual wires = skipped in production
+safe grid = 2540000 internal units on x and y
+```
+
+Mixed passive locked behavior:
+
+```text
+allowed components = RESISTOR and CAPACITOR
+power = one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge
+powered component endpoints = ordinary $TERINPUT(V0)
+ground = $TERGROUND(G0) right endpoint with normal short wire
+object order = power bridge, capacitor output/group block, resistor V9 block
+safe grid = 2540000 internal units on x and y
+duplicate positions = shifted so components are not emitted on top of each other
+```
+
 ## Future supported component groups
 
-Priority after locked resistor generator:
+Priority after the locked resistor and mixed passive generators:
 
 1. capacitor
 2. inductor
@@ -93,14 +120,14 @@ Priority after locked resistor generator:
 6. switch / DIP switch
 7. clock
 8. logic probe
-9. 74xx basic gates
+9. additional 74xx basic gates
 10. 7-segment and decoder circuits
 
-Current capacitor gate:
+Current standalone capacitor gate:
 
 ```text
-D:/Coding/protuesgen/tools/proteus_generation/2026-05-31/generate_capacitor_v9_unique_index_temp.py
-D:/Coding/protuesgen/experiments/capacitor_v9_unique_index_temp_2026_05_31/
+tools/proteus_generation/2026-05-31/generate_capacitor_v9_unique_index_temp.py
+experiments/capacitor_v9_unique_index_temp_2026_05_31/
 ```
 
 Free multi-capacitor CDB/object expansion is user-accepted through V5. V6 is

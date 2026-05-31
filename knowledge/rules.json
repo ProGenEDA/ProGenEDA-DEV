@@ -156,12 +156,12 @@
     },
     {
       "id": "R018",
-      "title": "Mixed resistor/capacitor passive generation is temporary",
-      "status": "mixed_v1_pending_user_proteus_test",
-      "confidence": 0.62,
+      "title": "Mixed resistor/capacitor passive generation is locked",
+      "status": "locked_current_scope",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive experimental method"],
-      "evidence": ["MIXED_RES_CAP_V1_6R_21R_STATIC_20260531"],
-      "rule": "For the first mixed passive diagnostic, keep mixed resistor/capacitor generation temporary. V1 combines the accepted capacitor block order and accepted resistor V9 block order in one object stream: header, one power bridge, capacitor output array, capacitor groups, resistor input array, resistor output array, separator, resistor groups. This object order requires Proteus user acceptance before promotion."
+      "evidence": ["MIXED_RES_CAP_V1_6R_21R_STATIC_20260531", "MIXED_RES_CAP_V1_USER_FEEDBACK_20260531", "MAIN_MIXED_RES_CAP_LOCKED_V1_STATIC_20260531"],
+      "rule": "Use src/proteusgen/mixed_passive.py as the main mixed resistor/capacitor generator for the current scope. The locked object stream order is header, one power bridge, capacitor output array, capacitor groups, resistor input array, resistor output array, separator, resistor groups. Use a 2540000 internal-unit safe grid and shift duplicate positions so components are not generated on top of each other."
     }
   ]
 }

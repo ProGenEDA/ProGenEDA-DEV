@@ -49,16 +49,18 @@
   ],
   "allowed_with_caution": [
     {
-      "name": "D:/arch/outtt",
-      "reason": "Local folder provided by the user on 2026-05-30 containing decompiled Proteus-related .cpp outputs and diagnostic notes. Treat as first-look diagnostic reference for error names, symbols, markers, and file-format clues only. Do not copy proprietary implementation code into the generator, do not modify Proteus executables, do not bypass licensing, and corroborate any generator rule with user-created project behavior before promotion."
-    },
-    {
       "name": "BIG08 JK/DLD clock-related source",
       "reason": "Only CLOCK model error, same in control/test; not treated as project-container failure"
     },
     {
       "name": "ENA analog files",
       "reason": "Visual/opening worked but empty-CDB test had simulation/model issue; use for visual/corpus only unless model metadata preserved"
+    }
+  ],
+  "not_acceptance_evidence": [
+    {
+      "name": "G04_FINAL_picture_circuit_full_cdb",
+      "reason": "Inspection found it byte-equivalent to HC08_D03; it has LOGICSTATE/LOGICPROBE content but no resistor network for the target picture."
     }
   ]
 }

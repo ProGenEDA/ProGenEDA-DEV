@@ -90,11 +90,13 @@ V12 applies the same manual-order method to the 15 requested resistor-network to
 
 V13 supersedes V12 for the next capacitor test pass. It uses a wider `3810000` internal-unit grid on both x and y axes, prepends one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge after the object stream header, leaves powered capacitor endpoints as ordinary `$TERINPUT(V0)`, and emits grounded right endpoints as `$TERGROUND(G0)`. Capacitor records remain horizontal and standalone bus/junction wire records are still not emitted.
 
-## Mixed Resistor/Capacitor Temporary Findings
+## Mixed Resistor/Capacitor Locked Scope
 
-Mixed passive V1 combines two accepted single-component-family record methods but is not itself accepted yet. The first diagnostic pack contains the 6-component and 21-component resistor topologies with odd-indexed components generated as resistors and even-indexed components generated as capacitors.
+Mixed passive V1 combines the accepted resistor V9 method and accepted capacitor manual-order method. The user accepted the V1 6-component and 21-component mixed passive diagnostics on May 31, 2026, with a spacing adjustment request: reduce the excessive row gap while still preventing overlap.
 
-The V1 object stream order is:
+The main locked generator now lives in `src/proteusgen/mixed_passive.py`, uses `2540000` internal units as the safe minimum x/y spacing, and shifts duplicate component positions so no two components are emitted on top of each other.
+
+The locked object stream order is:
 
 ```text
 00 header
@@ -107,4 +109,4 @@ all resistor output/ground terminals
 all resistor component/wire groups
 ```
 
-This preserves the accepted capacitor outputs-first block and the accepted resistor V9 terminal-array block as much as possible. It requires Proteus open/render feedback before any mixed passive generator is promoted.
+This preserves the accepted capacitor outputs-first block and the accepted resistor V9 terminal-array block. The generated `ROOT.CDB` contains both `RESISTOR` and `CAPACITOR` entries in the requested component order.

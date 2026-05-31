@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/proteusgen/resistor_circuit_ir_v0_1.schema.json",
+  "title": "ProteusResistorCircuitIRV01",
+  "type": "object",
+  "required": ["schema_version", "generator_target", "project", "nodes", "components", "layout"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "proteus-circuit-ir/v0.1"},
+    "generator_target": {"const": "proteus-8.13-v9-resistor-terminal"},
+    "project": {
+      "type": "object",
+      "required": ["name", "output_basename", "base", "units"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "output_basename": {"type": "string", "minLength": 1},
+        "base": {"const": "E001_EMPTY_BASE"},
+        "units": {"const": "proteus_internal"}
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 2, "maxLength": 2},
+          "role": {"type": "string"},
+          "kind": {"enum": ["internal", "power", "ground"]}
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["ref", "type", "value", "nodes"],
+        "additionalProperties": false,
+        "properties": {
+          "ref": {"type": "string", "minLength": 2, "maxLength": 2},
+          "type": {"const": "RESISTOR"},
+          "value": {"type": "string", "minLength": 1},
+          "nodes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {"type": "string", "minLength": 2, "maxLength": 2}
+          },
+          "visual": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "orientation_hint": {
+                "type": "string",
+                "enum": [
+                  "horizontal",
+                  "right",
+                  "east",
+                  "vertical",
+                  "vertical_down",
+                  "down",
+                  "south",
+                  "vertical_up",
+                  "up",
+                  "north",
+                  "left",
+                  "west"
+                ]
+              },
+              "angle_tenths": {"type": "integer", "enum": [-2700, -1800, -900, 0, 900, 1800, 2700]},
+              "visible_value": {"type": "string", "minLength": 2, "maxLength": 2}
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "required": ["mode", "coordinate_units", "component_positions"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {"enum": ["manual_component_positions", "branch_grid", "auto_grid"]},
+        "coordinate_units": {"const": "proteus_internal"},
+        "auto_place": {"type": "boolean"},
+        "component_positions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["x", "y"],
+            "additionalProperties": false,
+            "properties": {
+              "x": {"type": "integer"},
+              "y": {"type": "integer"}
+            }
+          }
+        },
+        "visual_wires": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["x1", "y1", "x2", "y2"],
+            "additionalProperties": false,
+            "properties": {
+              "x1": {"type": "integer"},
+              "y1": {"type": "integer"},
+              "x2": {"type": "integer"},
+              "y2": {"type": "integer"}
+            }
+          }
+        }
+      }
+    },
+    "metadata": {"type": "object"}
+  }
+}

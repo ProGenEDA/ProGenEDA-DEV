@@ -44,7 +44,7 @@ Early strategy:
 - copy `PROJECT.XML` and `SCRIPTS/PWRRAILS.DAT` from template, with optional timestamp updates later
 - repack as `.pdsprj`
 
-Initial output domain: terminal-based resistor networks.
+Initial emitted output domain: exact clean single-sheet template recipes. The first composition milestone is the structured AND reference circuit after D05-based validation.
 
 ## 4. Feedback / knowledge layer
 
@@ -59,4 +59,4 @@ Confirmed findings are promoted into:
 
 ## Current maturity level
 
-The repo currently stores research memory and schemas. The generator is not implemented yet. The 60-test resistor pack is expected to answer the remaining questions before resistor-generator v0.
+The repo now contains a deterministic CLI, CircuitIR parsing and readiness validation, clean fixture provenance checks, exact-template generation, semantic project comparison, and result ingestion. Binary composition of rails/ICs remains intentionally blocked until its clean Proteus 8.13 oracle is available.

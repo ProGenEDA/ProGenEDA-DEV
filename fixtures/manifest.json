@@ -1,0 +1,146 @@
+{
+  "schema_version": "0.1",
+  "policy": "Only clean user-created Proteus 8.13 fixtures are active generation inputs. Donor records may not be sliced or combined unless a later validated renderer explicitly supports that operation.",
+  "fixtures": [
+    {
+      "id": "e001_empty",
+      "path": "pdsprj/e001_empty_project.pdsprj",
+      "sha256": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "role": "production_template",
+      "source": "E001_empty_project/New Project.pdsprj",
+      "status": "validated_clean_base",
+      "recipe": "empty_single_sheet"
+    },
+    {
+      "id": "e019_resistor_in_out_10k",
+      "path": "pdsprj/e019_resistor_in_out_10k.pdsprj",
+      "sha256": "7ca8fb38933597f05766b8cebcda1659af2f4fa310948fe477058d99376320c2",
+      "role": "research_fixture",
+      "source": "p8_13/E019_resistor_IN_to_OUT_short_wires",
+      "status": "clean_passive_primitive"
+    },
+    {
+      "id": "e020_resistor_vcc_gnd_1k",
+      "path": "pdsprj/e020_resistor_vcc_gnd_1k.pdsprj",
+      "sha256": "532a308b80c4230278b25eb2f71a48c3bc26cb604ca5687d503263cd4eeaf8e8",
+      "role": "production_template",
+      "source": "p8_13/E020_resistor_VCC_to_GND_short_wires",
+      "status": "validated_clean_passive_template",
+      "recipe": "single_r1_1k_vcc_gnd"
+    },
+    {
+      "id": "r21_v9_resistor_terminal_donor",
+      "path": "pdsprj/r21_v9_resistor_terminal_donor.pdsprj",
+      "sha256": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41",
+      "role": "record_schema_donor",
+      "source": "memory/artifacts/proteus_v9_recovery/files/R21_E001_B02_V9_NO_PREMATURE_TERMINATORS__FINAL_B02_LINKED_R21_7PAR7_PLUS_7SERIES_TERMINALS.pdsprj",
+      "status": "user_confirmed_v9_resistor_terminal_method",
+      "recipe": "donor_only_v9_terminal_resistor_wire_records"
+    },
+    {
+      "id": "power_terminal_bridge_donor",
+      "path": "pdsprj/power_terminal_bridge_donor.pdsprj",
+      "sha256": "d06b97bec98b2a6990a3e9e948afa0a848acc56815c4c5ee458d4e2f4c979d55",
+      "role": "record_schema_donor",
+      "source": "memory/final/power_terminal_output_bridge_method.md New Project(1).pdsprj",
+      "status": "user_confirmed_power_terminal_output_bridge_method",
+      "recipe": "donor_only_power_terminal_output_bridge_core"
+    },
+    {
+      "id": "cap_control_e001_empty_base",
+      "path": "pdsprj/control_e001_empty_base.pdsprj",
+      "sha256": "3f6d521b7cd77b4ad9211d9f68858fca0521cf25b9f1e2c331c50e6aec733761",
+      "role": "research_fixture",
+      "source": "CAP_T04_POWER_CAPACITOR_GROUND.zip/CONTROL_E001_EMPTY_BASE.pdsprj",
+      "status": "clean_capacitor_research_base",
+      "recipe": "empty_single_sheet_from_capacitor_donor_pack"
+    },
+    {
+      "id": "cap_t01_single_capacitor_1uf",
+      "path": "pdsprj/cap_t01_single_capacitor_1uf.pdsprj",
+      "sha256": "8427b2e10bc4729f85279b4357384df5a7c9a903c4a0f41533cf8b50e0f99d98",
+      "role": "research_fixture",
+      "source": "CAP_T04_POWER_CAPACITOR_GROUND.zip/CAP_T01_SINGLE_CAPACITOR_1uF.pdsprj",
+      "status": "capacitor_donor_not_locked",
+      "recipe": "single_c1_1uf_visual_record_and_cdb_donor"
+    },
+    {
+      "id": "cap_t02_capacitor_between_two_terminals",
+      "path": "pdsprj/cap_t02_capacitor_between_two_terminals.pdsprj",
+      "sha256": "8a5c4dc42de9d8bd5279fc16282f2b3667c5e94abbd1baa10186efe98d6a2710",
+      "role": "research_fixture",
+      "source": "CAP_T04_POWER_CAPACITOR_GROUND.zip/CAP_T02_CAPACITOR_BETWEEN_TWO_TERMINALS.pdsprj",
+      "status": "capacitor_donor_not_locked",
+      "recipe": "terminal_capacitor_terminal_group_order_donor"
+    },
+    {
+      "id": "cap_t03_resistor_capacitor_series",
+      "path": "pdsprj/cap_t03_resistor_capacitor_series.pdsprj",
+      "sha256": "93c4c1784f394617a721820bf122791ba12160603d67111a0d8f850aaaec883c",
+      "role": "research_fixture",
+      "source": "CAP_T04_POWER_CAPACITOR_GROUND.zip/CAP_T03_RESISTOR_CAPACITOR_SERIES.pdsprj",
+      "status": "capacitor_donor_not_locked",
+      "recipe": "mixed_resistor_capacitor_cdb_order_donor"
+    },
+    {
+      "id": "cap_t04_power_capacitor_ground",
+      "path": "pdsprj/cap_t04_power_capacitor_ground.pdsprj",
+      "sha256": "10587102df61a979e78e47c077c8514289b505c14c96892324c5b881a904ffee",
+      "role": "research_fixture",
+      "source": "CAP_T04_POWER_CAPACITOR_GROUND.zip/CAP_T04_POWER_CAPACITOR_GROUND.pdsprj",
+      "status": "capacitor_donor_not_locked",
+      "recipe": "power_capacitor_ground_validation_donor"
+    },
+    {
+      "id": "cap3_three_capacitors",
+      "path": "pdsprj/cap3_three_capacitors.pdsprj",
+      "sha256": "bf113dccf780d67bd09ce4be51dd26544ef25ce4edc85322da6b0e75292d79c8",
+      "role": "research_fixture",
+      "source": "C:/Users/tahab/Downloads/cap3.pdsprj",
+      "status": "user_supplied_capacitor_multi_component_donor",
+      "recipe": "three_unconnected_capacitor_visual_records_and_cdb_records"
+    },
+    {
+      "id": "cap2_with_terminals_manual",
+      "path": "pdsprj/cap2_with_terminals_manual.pdsprj",
+      "sha256": "2b0661808857e844d6b676c16eacf37b5bc47f0a6f589c183a66ee2675b3eaa5",
+      "role": "research_fixture",
+      "source": "C:/Users/tahab/Downloads/CAp2withterm.pdsprj",
+      "status": "user_supplied_manual_two_terminal_capacitor_donor",
+      "recipe": "two_manual_terminal_attached_capacitors_1nf_output_array_then_input_cap_wire_groups"
+    },
+    {
+      "id": "hc08_d01_single_gate",
+      "path": "pdsprj/hc08_d01_single_gate.pdsprj",
+      "sha256": "2b5d238b6546250e6d40667f6cf1fe0e13bdb4a7a0ed2062443491a2831d8e61",
+      "role": "research_fixture",
+      "source": "HC08_D01_single_gate_minimal",
+      "status": "clean_donor"
+    },
+    {
+      "id": "hc08_d02_four_gates_unwired",
+      "path": "pdsprj/hc08_d02_four_gates_unwired.pdsprj",
+      "sha256": "764d48a9711e1f4a3f5218b0f0bf25be4e6eada9996386f54ea77b8c75ac354e",
+      "role": "diagnostic_template",
+      "source": "HC08_D02_all_four_gates_unwired",
+      "status": "clean_donor_pending_generated_acceptance",
+      "recipe": "hc08_d02_unwired_control"
+    },
+    {
+      "id": "hc08_d03_logic_io",
+      "path": "pdsprj/hc08_d03_logic_io.pdsprj",
+      "sha256": "400e252c6595b342b44c16ca50da6f995c3d16dfd082469d1bd9f3737535ae3f",
+      "role": "research_fixture",
+      "source": "HC08_D03_all_four_gates_logic_inputs_outputs",
+      "status": "clean_donor_pending_generated_acceptance"
+    }
+  ],
+  "pending_fixtures": [
+    {
+      "id": "hc08_d05_exact_picture_oracle",
+      "required_for": "and_reference_acceptance",
+      "status": "awaiting_user_created_proteus_8_13_project",
+      "use": "comparison_oracle_only"
+    }
+  ]
+}
