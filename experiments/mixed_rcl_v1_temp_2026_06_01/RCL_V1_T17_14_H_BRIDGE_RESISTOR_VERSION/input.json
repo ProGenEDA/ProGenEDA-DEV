@@ -1,0 +1,106 @@
+{
+  "schema_version": "mixed-rcl-temp/v1",
+  "generator_target": "proteus-8.13-mixed-rcl-terminal-power-ground-diagnostic",
+  "case_id": "RCL_V1_T17_14_H_BRIDGE_RESISTOR_VERSION",
+  "source_resistor_case": "14_H_BRIDGE_RESISTOR_VERSION",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "L1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "R1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "L1"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "L1",
+        "G0"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "3mH",
+      "nodes": [
+        "V0",
+        "R1"
+      ],
+      "visual": {
+        "x": -3048000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "R1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3048000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "C5",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "L1",
+        "R1"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 0
+      }
+    }
+  ],
+  "metadata": {
+    "method": "global component cycle RESISTOR, CAPACITOR, INDUCTOR",
+    "object_order": "header, power bridge, inductor V3 section, capacitor outputs, capacitor groups, resistor inputs, resistor outputs, separator, resistor groups",
+    "temporary": true
+  }
+}

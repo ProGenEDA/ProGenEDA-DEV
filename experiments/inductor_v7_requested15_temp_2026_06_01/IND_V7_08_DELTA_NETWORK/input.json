@@ -1,0 +1,123 @@
+{
+  "schema_version": "inductor-temp-v6/v0",
+  "generator_target": "proteus-8.13-inductor-6-21-diagnostic",
+  "case_id": "IND_V7_08_DELTA_NETWORK",
+  "source_resistor_case": null,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "D1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "V0",
+        "D1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "D1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "30uH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "power_ground_after_first_left_wire_extended",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "1mH",
+        "visible_value": "1mH",
+        "left": "V0",
+        "right": "D1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 2,
+        "source_ref": "R2",
+        "ref": "L2",
+        "value": "2mH",
+        "visible_value": "2mH",
+        "left": "D1",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "04c2",
+        "out_suffix": "04f4",
+        "x": -3556000,
+        "y": 5080000
+      },
+      {
+        "idx": 3,
+        "source_ref": "R3",
+        "ref": "L3",
+        "value": "30uH",
+        "visible_value": "30uH",
+        "left": "V0",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 3,
+        "suffix_policy": "extended",
+        "in_suffix": "0703",
+        "out_suffix": "0735",
+        "x": -7366000,
+        "y": 2540000
+      }
+    ]
+  }
+}

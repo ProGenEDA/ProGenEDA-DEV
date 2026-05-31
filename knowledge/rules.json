@@ -223,8 +223,8 @@
       "status": "retracted_premature_main_lock",
       "confidence": 0.96,
       "applies_to": ["Proteus 8.13", "inductor temporary generator"],
-      "evidence": ["INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V5_USER_FEEDBACK_20260601", "INDUCTOR_PREMATURE_MAIN_LOCK_CORRECTION_20260601"],
-      "rule": "Do not treat src/proteusgen/inductor.py or the generate-inductors CLI as main/locked. The current inductor implementation is copied to tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main and must remain temporary until the requested 6/21 inductor networks, 15 inductor topology pack, and resistor/capacitor/inductor mixed network tests pass in Proteus."
+      "evidence": ["INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V5_USER_FEEDBACK_20260601", "INDUCTOR_PREMATURE_MAIN_LOCK_CORRECTION_20260601", "INDUCTOR_V6_6_21_STATIC_20260601", "INDUCTOR_V7_REQUESTED15_STATIC_20260601", "MIXED_RCL_V1_STATIC_20260601"],
+      "rule": "Do not treat src/proteusgen/inductor.py or the generate-inductors CLI as main/locked. The current inductor implementation is copied to tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main. The V6 6/21, V7 requested-15, and R/C/L V1 packs are generated for manual Proteus testing, but inductor promotion remains blocked until those batches pass in Proteus."
     }
   ]
 }

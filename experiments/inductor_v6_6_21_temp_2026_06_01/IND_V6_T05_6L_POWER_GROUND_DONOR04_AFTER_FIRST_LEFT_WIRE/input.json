@@ -1,0 +1,227 @@
+{
+  "schema_version": "inductor-temp-v6/v0",
+  "generator_target": "proteus-8.13-inductor-6-21-diagnostic",
+  "case_id": "IND_V6_T05_6L_POWER_GROUND_DONOR04_AFTER_FIRST_LEFT_WIRE",
+  "source_resistor_case": "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "V0",
+        "N1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "N1",
+        "N2"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "10uH",
+      "nodes": [
+        "V0",
+        "N2"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 0
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "L4",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "N2",
+        "N3"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": -2540000
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "L5",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "N3",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": -5080000
+      }
+    },
+    {
+      "idx": 6,
+      "source_ref": "R6",
+      "ref": "L6",
+      "type": "INDUCTOR",
+      "value": "10uH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -7620000
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "power_ground_after_first_left_wire_extended",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "1mH",
+        "visible_value": "1mH",
+        "left": "V0",
+        "right": "N1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 2,
+        "source_ref": "R2",
+        "ref": "L2",
+        "value": "2mH",
+        "visible_value": "2mH",
+        "left": "N1",
+        "right": "N2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "04c2",
+        "out_suffix": "04f4",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "source_ref": "R3",
+        "ref": "L3",
+        "value": "10uH",
+        "visible_value": "10uH",
+        "left": "V0",
+        "right": "N2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 3,
+        "suffix_policy": "extended",
+        "in_suffix": "0703",
+        "out_suffix": "0735",
+        "x": -7366000,
+        "y": 0
+      },
+      {
+        "idx": 4,
+        "source_ref": "R4",
+        "ref": "L4",
+        "value": "1mH",
+        "visible_value": "1mH",
+        "left": "N2",
+        "right": "N3",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "0a13",
+        "out_suffix": "0a45",
+        "x": -3556000,
+        "y": -2540000
+      },
+      {
+        "idx": 5,
+        "source_ref": "R5",
+        "ref": "L5",
+        "value": "2mH",
+        "visible_value": "2mH",
+        "left": "N3",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "0d23",
+        "out_suffix": "0d55",
+        "x": -3556000,
+        "y": -5080000
+      },
+      {
+        "idx": 6,
+        "source_ref": "R6",
+        "ref": "L6",
+        "value": "10uH",
+        "visible_value": "10uH",
+        "left": "V0",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 3,
+        "suffix_policy": "extended",
+        "in_suffix": "1033",
+        "out_suffix": "1065",
+        "x": -7366000,
+        "y": -7620000
+      }
+    ]
+  }
+}
