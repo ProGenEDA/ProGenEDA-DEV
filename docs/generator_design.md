@@ -140,6 +140,18 @@ hidden capacitor visual index byte 344 as `1` for every capacitor, while accepte
 free multi-cap records use `1, 2, 3`. V9 tests unique visual indexes before any
 capacitor code moves into the main generator.
 
+Current inductor gate:
+
+```text
+tools/proteus_generation/2026-05-31/generate_inductor_v1_terminal_temp.py
+experiments/inductor_v1_terminal_temp_2026_05_31/
+```
+
+Inductor V1 uses the user-created `inductor_03_three_terminal` donor for
+terminal-attached `REALIND` records and tests single, renamed/translated,
+three-inductor, power/ground, and two-series-inductor outputs before any
+inductor code moves into the main generator.
+
 ## Non-goals for v0
 
 - arbitrary auto-routing

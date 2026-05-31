@@ -110,3 +110,38 @@ all resistor component/wire groups
 ```
 
 This preserves the accepted capacitor outputs-first block and the accepted resistor V9 terminal-array block. The generated `ROOT.CDB` contains both `RESISTOR` and `CAPACITOR` entries in the requested component order.
+
+## Inductor Temporary Findings
+
+The user supplied four controlled Proteus 8.13 inductor donors:
+
+```text
+inductor_01_single_free.pdsprj
+inductor_02_two_terminal.pdsprj
+inductor_03_three_terminal.pdsprj
+inductor_04_power_ground.pdsprj
+```
+
+The inductor device name observed in `ROOT.DSN` and `ROOT.CDB` is `REALIND`.
+The terminal-attached one-inductor donor uses:
+
+```text
+00 header
+$TERINPUT
+$TEROUTPUT
+REALIND visual record
+left WIRE
+right WIRE
+```
+
+The three-inductor donor uses a non-trivial scaling order:
+
+```text
+first full inductor group
+remaining $TEROUTPUT records
+remaining $TERINPUT / REALIND / WIRE / WIRE groups
+```
+
+As with the accepted capacitor manual-order donor, non-final right-wire records omit the trailing terminator byte. A four-character value such as `10uH` uses a one-byte-longer `REALIND` visual record than three-character values such as `1mH` and `2mH`.
+
+`INDUCTOR_V1_TERMINAL_TEMP_20260531` is a temporary generated pack using this donor shape from E001. It is not promoted to main until user Proteus testing confirms open/render behavior.

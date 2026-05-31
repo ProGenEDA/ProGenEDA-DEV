@@ -63,10 +63,18 @@
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
-      "status": "next_requested_awaiting_controlled_donors",
+      "status": "temporary_v1_static_pack_awaiting_user_test",
       "category": "passive",
+      "proteus_names_observed": ["REALIND"],
+      "controlled_donors": [
+        "inductor_01_single_free",
+        "inductor_02_two_terminal",
+        "inductor_03_three_terminal",
+        "inductor_04_power_ground"
+      ],
       "generation": {
-        "planned_method": "terminal-first passive method from E001, matching the resistor/capacitor workflow after donor record analysis",
+        "planned_method": "terminal-first passive method from E001, matching the resistor/capacitor workflow",
+        "temporary_recipe": "V1 uses user-created terminal-attached REALIND donor records. One-inductor order is input/output/inductor/wire/wire. Three-inductor order is first full group, remaining outputs, then remaining input/inductor/wire groups. Non-final right-wire records are trimmed to 49 bytes. Power tests prepend the accepted donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge and use $TERGROUND(G0) as the right endpoint.",
         "tested": false,
         "locked": false
       }

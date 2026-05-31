@@ -166,11 +166,20 @@
     {
       "id": "R019",
       "title": "Inductor generation requires controlled donors before coding",
-      "status": "pending_user_donors",
-      "confidence": 0.75,
+      "status": "donors_received_v1_pending_user_test",
+      "confidence": 0.82,
       "applies_to": ["Proteus 8.13", "inductor planned method"],
-      "evidence": ["user requested inductor next 20260531", "BIG06 inductor/source empty-CDB trial opened/saved/simulated but is not a controlled donor"],
-      "rule": "Do not infer inductor object bytes from unrelated corpus scans. Start with user-created E001-based controlled inductor donors, then attempt the same terminal-first method used for resistor/capacitor generation."
+      "evidence": ["user requested inductor next 20260531", "BIG06 inductor/source empty-CDB trial opened/saved/simulated but is not a controlled donor", "INDUCTOR_V1_DONOR_ANALYSIS_STATIC_20260531"],
+      "rule": "Do not infer inductor object bytes from unrelated corpus scans. Use the user-created E001-based inductor donors as record templates, then test the same terminal-first method used for resistor/capacitor generation."
+    },
+    {
+      "id": "R020",
+      "title": "Inductor V1 donor object order",
+      "status": "static_only_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "inductor temporary V1 method"],
+      "evidence": ["inductor_02_two_terminal.pdsprj", "inductor_03_three_terminal.pdsprj", "INDUCTOR_V1_TERMINAL_STATIC_20260531"],
+      "rule": "The first inductor V1 generator uses the user-created three-terminal-inductor donor. One inductor emits input, output, REALIND visual record, left WIRE, right WIRE. The three-inductor donor keeps the first full group first, then remaining outputs, then remaining input/inductor/wire groups. Non-final right-wire records omit the trailing terminator byte. Four-character inductor values such as 10uH use a one-byte-longer REALIND visual record than three-character values such as 1mH."
     }
   ]
 }
