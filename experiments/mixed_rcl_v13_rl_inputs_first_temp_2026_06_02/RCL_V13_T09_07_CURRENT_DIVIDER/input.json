@@ -1,0 +1,227 @@
+{
+  "schema_version": "mixed-rcl-temp/v13-rl-inputs-first",
+  "generator_target": "proteus-8.13-scaled-mixed-rcl-rl-inputs-first-netlist-diagnostic",
+  "case_id": "RCL_V13_T09_07_CURRENT_DIVIDER",
+  "source_resistor_case": "07_CURRENT_DIVIDER",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "current_divider_leg_1"
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "current_divider_leg_2"
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "3mH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "current_divider_leg_3"
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": 4064000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "current_divider_leg_4"
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": 7874000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "current_divider_leg_5"
+      }
+    }
+  ],
+  "metadata": {
+    "method": "mixed R/C/L using accepted capacitor block and V10 native R/L pair records, with all R/L inputs collected before L/R bodies, one global component ID sequence, and object-order CDB",
+    "object_order": "header, power bridge, capacitor outputs, capacitor groups, all native R/L inputs, then native L/R output-component bodies with global component IDs",
+    "emission_order": [
+      {
+        "global_id": 1,
+        "idx": 2,
+        "kind": "CAPACITOR",
+        "ref": "C1"
+      },
+      {
+        "global_id": 2,
+        "idx": 3,
+        "kind": "INDUCTOR",
+        "ref": "L1"
+      },
+      {
+        "global_id": 3,
+        "idx": 1,
+        "kind": "RESISTOR",
+        "ref": "R1"
+      },
+      {
+        "global_id": 4,
+        "idx": 5,
+        "kind": "INDUCTOR",
+        "ref": "L2"
+      },
+      {
+        "global_id": 5,
+        "idx": 4,
+        "kind": "RESISTOR",
+        "ref": "R2"
+      }
+    ],
+    "temporary": true,
+    "conversion_notes": [],
+    "topology": [
+      {
+        "idx": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k",
+        "left": "V0",
+        "right": "G0",
+        "global_id": 3,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0627",
+        "out_suffix": "0659",
+        "x": -7366000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "ref": "C1",
+        "kind": "CAPACITOR",
+        "value": "1uF",
+        "visible_value": "1uF",
+        "left": "V0",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "011a",
+        "out_suffix": "00e8",
+        "cap_visual_index_byte_344": 1,
+        "wire_right_len": 49,
+        "x": -3556000,
+        "y": 5080000,
+        "idx": 2,
+        "ordinal": 1,
+        "global_id": 1,
+        "source_ref": "R2"
+      },
+      {
+        "idx": 3,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "3mH",
+        "left": "V0",
+        "right": "G0",
+        "global_id": 2,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0401",
+        "out_suffix": "0433",
+        "x": 254000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "idx": 4,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "4k",
+        "left": "V0",
+        "right": "G0",
+        "global_id": 5,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0a73",
+        "out_suffix": "0aa5",
+        "x": 4064000,
+        "y": 5080000,
+        "rl_pair_index": 2
+      },
+      {
+        "idx": 5,
+        "kind": "INDUCTOR",
+        "ref": "L2",
+        "value": "5mH",
+        "left": "V0",
+        "right": "G0",
+        "global_id": 4,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "084d",
+        "out_suffix": "087f",
+        "x": 7874000,
+        "y": 5080000,
+        "rl_pair_index": 2
+      }
+    ]
+  }
+}

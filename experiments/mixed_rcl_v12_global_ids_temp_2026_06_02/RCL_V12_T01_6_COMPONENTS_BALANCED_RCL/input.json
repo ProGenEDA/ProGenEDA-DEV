@@ -1,0 +1,270 @@
+{
+  "schema_version": "mixed-rcl-temp/v12-global-ids",
+  "generator_target": "proteus-8.13-scaled-mixed-rcl-global-id-netlist-diagnostic",
+  "case_id": "RCL_V12_T01_6_COMPONENTS_BALANCED_RCL",
+  "source_resistor_case": "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "N1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N1",
+        "N2"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "3mH",
+      "nodes": [
+        "V0",
+        "N2"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 0
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "N2",
+        "N3"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": -2540000
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N3",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": -5080000
+      }
+    },
+    {
+      "idx": 6,
+      "source_ref": "R6",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "6mH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -7620000
+      }
+    }
+  ],
+  "metadata": {
+    "method": "mixed R/C/L using accepted capacitor block and repeated V10 native R/L pair blocks, with one global component ID sequence and object-order CDB",
+    "object_order": "header, power bridge, capacitor outputs, capacitor groups, repeated native L/R pair blocks with global component IDs",
+    "emission_order": [
+      {
+        "global_id": 1,
+        "idx": 2,
+        "kind": "CAPACITOR",
+        "ref": "C1"
+      },
+      {
+        "global_id": 2,
+        "idx": 5,
+        "kind": "CAPACITOR",
+        "ref": "C2"
+      },
+      {
+        "global_id": 3,
+        "idx": 3,
+        "kind": "INDUCTOR",
+        "ref": "L1"
+      },
+      {
+        "global_id": 4,
+        "idx": 1,
+        "kind": "RESISTOR",
+        "ref": "R1"
+      },
+      {
+        "global_id": 5,
+        "idx": 6,
+        "kind": "INDUCTOR",
+        "ref": "L2"
+      },
+      {
+        "global_id": 6,
+        "idx": 4,
+        "kind": "RESISTOR",
+        "ref": "R2"
+      }
+    ],
+    "temporary": true,
+    "conversion_notes": [],
+    "topology": [
+      {
+        "idx": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k",
+        "left": "V0",
+        "right": "N1",
+        "global_id": 4,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0627",
+        "out_suffix": "0659",
+        "x": -7366000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "ref": "C1",
+        "kind": "CAPACITOR",
+        "value": "1uF",
+        "visible_value": "1uF",
+        "left": "N1",
+        "right": "N2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "011a",
+        "out_suffix": "00e8",
+        "cap_visual_index_byte_344": 1,
+        "wire_right_len": 49,
+        "x": -3556000,
+        "y": 2540000,
+        "idx": 2,
+        "ordinal": 1,
+        "global_id": 1,
+        "source_ref": "R2"
+      },
+      {
+        "idx": 3,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "3mH",
+        "left": "V0",
+        "right": "N2",
+        "global_id": 3,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0401",
+        "out_suffix": "0433",
+        "x": -7366000,
+        "y": 0,
+        "rl_pair_index": 1
+      },
+      {
+        "idx": 4,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "4k",
+        "left": "N2",
+        "right": "N3",
+        "global_id": 6,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0a73",
+        "out_suffix": "0aa5",
+        "x": -3556000,
+        "y": -2540000,
+        "rl_pair_index": 2
+      },
+      {
+        "ref": "C2",
+        "kind": "CAPACITOR",
+        "value": "1uF",
+        "visible_value": "1uF",
+        "left": "N3",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0352",
+        "out_suffix": "0320",
+        "cap_visual_index_byte_344": 2,
+        "wire_right_len": 49,
+        "x": -3556000,
+        "y": -5080000,
+        "idx": 5,
+        "ordinal": 2,
+        "global_id": 2,
+        "source_ref": "R5"
+      },
+      {
+        "idx": 6,
+        "kind": "INDUCTOR",
+        "ref": "L2",
+        "value": "6mH",
+        "left": "V0",
+        "right": "G0",
+        "global_id": 5,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "084d",
+        "out_suffix": "087f",
+        "x": -7366000,
+        "y": -7620000,
+        "rl_pair_index": 2
+      }
+    ]
+  }
+}

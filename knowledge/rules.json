@@ -328,11 +328,29 @@
     {
       "id": "R037",
       "title": "Scaled RCL uses repeated native R/L pairs",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.84,
+      "status": "rejected_for_simulation_netlist_duplicate_ids",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V11 method"],
-      "evidence": ["MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V11_SCALED_STATIC_20260601"],
-      "rule": "For the first scaled mixed R/C/L attempt after V10, emit one donor-derived V0 bridge, then the accepted capacitor output/group block, then repeated native R/L pair blocks. Keep resistor and inductor counts paired in every case; assign capacitors to extra topology slots. Do not promote until V11's 6-component, 21-component, and 15 requested topology cases are user-accepted."
+      "evidence": ["MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V11_SCALED_STATIC_20260601", "MIXED_RCL_V11_USER_FEEDBACK_NETLIST_DUPLICATES_20260602"],
+      "rule": "V11's scaled object order was not enough for simulation. It emitted one donor-derived V0 bridge, the accepted capacitor output/group block, then repeated native R/L pair blocks, but it reused per-family DSN component IDs and wrote ROOT.CDB in source order. Proteus netlist compilation reported duplicate part references and duplicate generated X00000001 handles. Do not promote or reuse V11 without global component identity and CDB ordering fixes."
+    },
+    {
+      "id": "R038",
+      "title": "Mixed RCL simulation needs global component IDs",
+      "status": "partial_confirmed_single_clr_only_multi_component_failed",
+      "confidence": 0.9,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V12 method"],
+      "evidence": ["MIXED_RCL_V11_USER_FEEDBACK_NETLIST_DUPLICATES_20260602", "MIXED_RCL_V12_GLOBAL_IDS_STATIC_20260602", "MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602"],
+      "rule": "For mixed terminal R/C/L projects, visible component refs are not enough. The DSN component identity field used by CAPACITOR, REALIND, and RESISTOR records must be globally unique across families, and ROOT.CDB component tables must use the same IDs in DSN object-emission order. V12 fixed the single 1C+1L+1R cases such as simple loop and basic divider, but user testing reported that remaining cases with additional resistor, capacitor, or inductor components still failed. Therefore global IDs and object-order CDB are necessary but not sufficient for scaled R/C/L."
+    },
+    {
+      "id": "R039",
+      "title": "Scaled RCL may require all R/L inputs before R/L bodies",
+      "status": "static_generated_pending_user_netlist_test",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V13 method"],
+      "evidence": ["MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602", "MIXED_RCL_V13_RL_INPUTS_FIRST_STATIC_20260602"],
+      "rule": "The one-pair R+L donor proves only that both R/L input terminals precede that pair's output/component bodies. V12 repeated complete native L/R pair blocks, placing pair 2 inputs after pair 1 bodies; user testing then showed only single 1C+1L+1R cases worked. V13 keeps global IDs and CDB object-order alignment, but for all scaled cases emits every R/L input terminal first across all native pairs, then emits each native L/R output/component body. User Proteus netlist/simulation testing is required."
     }
   ]
 }

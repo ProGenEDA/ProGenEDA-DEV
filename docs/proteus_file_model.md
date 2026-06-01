@@ -611,3 +611,118 @@ T03-T17: the 15 requested topology shapes with mixed R/C/L components
 All V11 static validation passed, but this is not a promotion point. Promotion
 requires user Proteus open/render acceptance for the 6-component, 21-component,
 and requested-15 outputs.
+
+The user then tested V11 by invoking Proteus simulation/netlist compilation and
+reported failures. Representative errors for T03 simple loop and T07 basic
+voltage divider were:
+
+```text
+Duplicate part reference: R1 [C1]
+Duplicate part reference: X00000001#0 [X00000001#0]
+Duplicate part reference: X00000001#1 [X00000001#1]
+Simulation FAILED due to netlist compiler error(s).
+```
+
+The user also reported the 6-component and 21-component V11 cases failed. This
+means visual/opening acceptance and simulation/netlist acceptance must be tracked
+separately.
+
+Static byte analysis found V11's netlist-identity bug:
+
+```text
+V11 T03 DSN object IDs:
+  C1 -> 1
+  L1 -> 1
+  R1 -> 2
+
+V11 T03 ROOT.CDB table order:
+  1 -> R1
+  2 -> C1
+  3 -> L1
+```
+
+So Proteus mapped DSN component records to the wrong or duplicate logical part
+handles during netlisting. Visible refs were unique, but hidden component IDs
+were not globally unique and the CDB was not aligned with the DSN object-emission
+order.
+
+`MIXED_RCL_V12_GLOBAL_IDS_TEMP_2026_06_02` is the next diagnostic pack. It keeps
+the V11 physical composition strategy but changes the identity model:
+
+```text
+header
+one donor-derived V0 power bridge
+capacitor outputs
+capacitor input/CAPACITOR/wire groups
+repeated native L/R pair blocks
+```
+
+For V12, each emitted component receives a unique global component ID across all
+families, and ROOT.CDB component tables are written in the same order:
+
+```text
+T03 example:
+  1 -> C1
+  2 -> L1
+  3 -> R1
+
+T01 6-component example:
+  1 -> C1
+  2 -> C2
+  3 -> L1
+  4 -> R1
+  5 -> L2
+  6 -> R2
+```
+
+Static validation now checks for duplicate global component IDs and verifies CDB
+table-1 refs and IDs match the emission order. V12 still requires user Proteus
+netlist/simulation testing before any promotion.
+
+User testing then narrowed V12:
+
+```text
+V12 T03 simple loop: worked
+V12 T07 basic voltage divider: worked
+remaining multi-component cases: failed
+especially cases with additional R, C, or L beyond one of each
+```
+
+So global IDs and CDB/object-order alignment fix the single `1C + 1L + 1R`
+boundary, but they are not sufficient for scaling.
+
+The next suspected scale boundary is R/L pair ordering. V12 repeated complete
+native one-pair blocks:
+
+```text
+pair 1: L input, R input, L body, R body
+pair 2: L input, R input, L body, R body
+...
+```
+
+The donor only proves the one-pair rule: both R/L inputs precede that pair's
+output/component bodies. It does not prove complete one-pair blocks may be
+repeated. `MIXED_RCL_V13_RL_INPUTS_FIRST_TEMP_2026_06_02` therefore keeps V12's
+global IDs and CDB ordering but changes the scaled R/L layout to:
+
+```text
+all capacitor outputs
+all capacitor input/CAPACITOR/wire groups
+all R/L input terminals for every pair
+all native L/R output-component bodies
+```
+
+Static checks confirmed this order in the byte stream. For example, V13 T01 has
+global IDs:
+
+```text
+1 -> C1
+2 -> C2
+3 -> L1
+4 -> R1
+5 -> L2
+6 -> R2
+```
+
+and the first REALIND/RESISTOR body appears after the full R/L input-terminal
+span. V13 still requires user Proteus netlist/simulation testing.

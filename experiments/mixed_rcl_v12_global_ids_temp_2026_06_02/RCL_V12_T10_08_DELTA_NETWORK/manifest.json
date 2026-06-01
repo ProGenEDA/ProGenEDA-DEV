@@ -1,0 +1,121 @@
+{
+  "case_id": "RCL_V12_T10_08_DELTA_NETWORK",
+  "status": "temporary_mixed_rcl_v12_global_ids_not_locked",
+  "description": "Mixed R/C/L version of requested topology 08_DELTA_NETWORK.",
+  "component_count": 3,
+  "node_count": 3,
+  "resistor_count": 1,
+  "capacitor_count": 1,
+  "inductor_count": 1,
+  "rl_pair_count": 1,
+  "power_bridge_count": 1,
+  "ground_terminal_count": 2,
+  "object_order": "header, power bridge, capacitor outputs, capacitor groups, repeated native L/R pair blocks with global component IDs",
+  "emission_order": [
+    {
+      "global_id": 1,
+      "idx": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1"
+    },
+    {
+      "global_id": 2,
+      "idx": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1"
+    },
+    {
+      "global_id": 3,
+      "idx": 1,
+      "kind": "RESISTOR",
+      "ref": "R1"
+    }
+  ],
+  "conversion_notes": [],
+  "object_chunk_len": 2262,
+  "root_cdb_len": 486,
+  "root_dsn_len": 69036,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 2,
+    "$TERGROUND": 2,
+    "WIRE": 7,
+    "RESISTOR": 2,
+    "REALIND": 3,
+    "CAPACITOR": 1,
+    "CAP10": 1,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65831,
+    "second_isis": 68139,
+    "second_object_data": 68174,
+    "object_data_pointer": 68187
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "1k",
+      "left": "V0",
+      "right": "D1",
+      "global_id": 3,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0627",
+      "out_suffix": "0659",
+      "x": -7366000,
+      "y": 5080000,
+      "rl_pair_index": 1
+    },
+    {
+      "ref": "C1",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "D1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "011a",
+      "out_suffix": "00e8",
+      "cap_visual_index_byte_344": 1,
+      "wire_right_len": 49,
+      "x": -3556000,
+      "y": 5080000,
+      "idx": 2,
+      "ordinal": 1,
+      "global_id": 1,
+      "source_ref": "R2"
+    },
+    {
+      "idx": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "3mH",
+      "left": "V0",
+      "right": "G0",
+      "global_id": 2,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0401",
+      "out_suffix": "0433",
+      "x": -7366000,
+      "y": 2540000,
+      "rl_pair_index": 1
+    }
+  ],
+  "static_validation_issues": [],
+  "output_hashes": {
+    "RCL_V12_T10_08_DELTA_NETWORK.pdsprj": "559ca177681d0a265de888c44a4049eb549e2c24dd8ac59a30130745335d152d",
+    "RCL_V12_T10_08_DELTA_NETWORK.ROOT.CDB.bin": "4e18d80fbac24f6fa51415f79d9d9586047d773d444439f6e2d95f55f0840f2b",
+    "RCL_V12_T10_08_DELTA_NETWORK.ROOT.DSN.bin": "4cb1fdf6e95b08a117f20ba5b42ef909ece1de98b76373c9814666628561d609",
+    "RCL_V12_T10_08_DELTA_NETWORK.OBJECT_CHUNK.bin": "d8283e3ff6e275696fcc6301fd82fabf1c7d9c80a25e3e39ba62340b56dc2f29",
+    "object_chunk": "d8283e3ff6e275696fcc6301fd82fabf1c7d9c80a25e3e39ba62340b56dc2f29",
+    "ROOT.CDB": "4e18d80fbac24f6fa51415f79d9d9586047d773d444439f6e2d95f55f0840f2b"
+  }
+}

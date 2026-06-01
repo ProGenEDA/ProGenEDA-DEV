@@ -1,0 +1,165 @@
+{
+  "case_id": "RCL_V13_T14_12_BALANCED_WHEATSTONE_BRIDGE",
+  "status": "temporary_mixed_rcl_v13_rl_inputs_first_not_locked",
+  "description": "Mixed R/C/L version of requested topology 12_BALANCED_WHEATSTONE_BRIDGE.",
+  "component_count": 5,
+  "node_count": 4,
+  "resistor_count": 2,
+  "capacitor_count": 1,
+  "inductor_count": 2,
+  "rl_pair_count": 2,
+  "power_bridge_count": 1,
+  "ground_terminal_count": 2,
+  "object_order": "header, power bridge, capacitor outputs, capacitor groups, all native R/L inputs, then native L/R output-component bodies with global component IDs",
+  "emission_order": [
+    {
+      "global_id": 1,
+      "idx": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1"
+    },
+    {
+      "global_id": 2,
+      "idx": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1"
+    },
+    {
+      "global_id": 3,
+      "idx": 1,
+      "kind": "RESISTOR",
+      "ref": "R1"
+    },
+    {
+      "global_id": 4,
+      "idx": 5,
+      "kind": "INDUCTOR",
+      "ref": "L2"
+    },
+    {
+      "global_id": 5,
+      "idx": 4,
+      "kind": "RESISTOR",
+      "ref": "R2"
+    }
+  ],
+  "conversion_notes": [],
+  "object_chunk_len": 3596,
+  "root_cdb_len": 720,
+  "root_dsn_len": 70370,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 5,
+    "$TEROUTPUT": 4,
+    "$TERGROUND": 2,
+    "WIRE": 11,
+    "RESISTOR": 4,
+    "REALIND": 6,
+    "CAPACITOR": 1,
+    "CAP10": 1,
+    "COMPONENT ID": 5,
+    "COMPONENT VALUE": 5
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65831,
+    "second_isis": 69473,
+    "second_object_data": 69508,
+    "object_data_pointer": 69521
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "1k",
+      "left": "V0",
+      "right": "L1",
+      "global_id": 3,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0627",
+      "out_suffix": "0659",
+      "x": -7366000,
+      "y": 5080000,
+      "rl_pair_index": 1
+    },
+    {
+      "ref": "C1",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "L1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "011a",
+      "out_suffix": "00e8",
+      "cap_visual_index_byte_344": 1,
+      "wire_right_len": 49,
+      "x": -7366000,
+      "y": 2540000,
+      "idx": 2,
+      "ordinal": 1,
+      "global_id": 1,
+      "source_ref": "R2"
+    },
+    {
+      "idx": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "1mH",
+      "left": "V0",
+      "right": "R1",
+      "global_id": 2,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0401",
+      "out_suffix": "0433",
+      "x": -3556000,
+      "y": 5080000,
+      "rl_pair_index": 1
+    },
+    {
+      "idx": 4,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "1k",
+      "left": "R1",
+      "right": "G0",
+      "global_id": 5,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0a73",
+      "out_suffix": "0aa5",
+      "x": -3556000,
+      "y": 2540000,
+      "rl_pair_index": 2
+    },
+    {
+      "idx": 5,
+      "kind": "INDUCTOR",
+      "ref": "L2",
+      "value": "9mH",
+      "left": "L1",
+      "right": "R1",
+      "global_id": 4,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "084d",
+      "out_suffix": "087f",
+      "x": -7366000,
+      "y": 0,
+      "rl_pair_index": 2
+    }
+  ],
+  "static_validation_issues": [],
+  "output_hashes": {
+    "RCL_V13_T14_12_BALANCED_WHEATSTONE_BRIDGE.pdsprj": "e4bd9fe9fbf65595d4b2bb9402639fa0b219a5eeec8c343f07a990e0f347944b",
+    "RCL_V13_T14_12_BALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "1fc1aa4d5a62d7cef4e469ead39e738a6c3fc6567efe6941850aae343f215d1e",
+    "RCL_V13_T14_12_BALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "84dfc50a25efdb2e32f4dff9873bcfe41aaf4c1aab3acc39dc97e63b4e46af5a",
+    "RCL_V13_T14_12_BALANCED_WHEATSTONE_BRIDGE.OBJECT_CHUNK.bin": "5f698868b1c06b93e890254101ffd9c3e44f0bc268aa9a57c2635d5d3305865b",
+    "object_chunk": "5f698868b1c06b93e890254101ffd9c3e44f0bc268aa9a57c2635d5d3305865b",
+    "ROOT.CDB": "1fc1aa4d5a62d7cef4e469ead39e738a6c3fc6567efe6941850aae343f215d1e"
+  }
+}
