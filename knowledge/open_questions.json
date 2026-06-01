@@ -201,7 +201,7 @@
       "id": "Q029",
       "priority": "high",
       "question": "Do the requested 6/21 inductor networks, 15 inductor topologies, and resistor/capacitor/inductor mixed circuits open/render correctly before inductor promotion?",
-      "status": "partially_answered_v8_6_21_worked_v3_cl_worked_v5_free_rlc_controls_worked_v6_terminal_c_l_worked_terminal_r_blocked_v7_awaiting_user_test",
+      "status": "partially_answered_v8_6_21_worked_v3_cl_worked_v5_free_rlc_controls_worked_v6_terminal_c_l_worked_v7_free_lc_r_final_worked_v8_r_last_power_pending",
       "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
     },
     {
@@ -229,8 +229,15 @@
       "id": "Q033",
       "priority": "high",
       "question": "Can MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_TEMP_2026_06_01 make terminal-attached resistor coexist with free L/C or terminal C+L by changing final order, ordinal, component index, suffixes, or donor header?",
-      "status": "awaiting_user_proteus_test_v7_resistor_suffix_order",
+      "status": "partially_answered_v7_t02_to_t07_free_lc_r_final_worked_t08_to_t12_unreported",
       "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution"]
+    },
+    {
+      "id": "Q034",
+      "priority": "high",
+      "question": "Do MIXED_RCL_V8_R_LAST_TERMINAL_POWER_TEMP_2026_06_01 cases open when terminal C/L blocks and V0/G0 are placed before a final resistor block?",
+      "status": "awaiting_user_proteus_test_v8_r_last_terminal_power",
+      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution", "rcl_6_21_and_15_topology_generation"]
     }
   ]
 }

@@ -256,11 +256,11 @@
     {
       "id": "R029",
       "title": "R/C/L mixed generation uses accepted V8 inductors",
-      "status": "terminal_resistor_boundary_blocked_v7_pending",
+      "status": "r_last_terminal_power_v8_pending",
       "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V2 method"],
-      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601"],
-      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. V5 confirms free R/L/C component records can coexist and be inserted into E001. V6 shows terminal-attached C and L work around a free resistor, including connected C+L, while every case with terminal-attached R failed. Treat the active blocker as terminal-attached resistor records coexisting with any inductor until V7 identifies a safe resistor suffix/order policy."
+      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601"],
+      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. V5 confirms free R/L/C component records can coexist and be inserted into E001. V6 shows terminal-attached C and L work around a free resistor. V7 T02-T07 show a terminal-attached resistor can coexist with free L/C when the resistor block is placed last/final. V8 is testing whether that R-last rule also works with terminal C/L blocks, V0/G0, and 6/21 mixed R/C/L scale."
     },
     {
       "id": "R030",
@@ -283,11 +283,20 @@
     {
       "id": "R032",
       "title": "RLC terminal resistor suffix and order must be tested before topology generation",
-      "status": "static_v7_pending_user_test",
+      "status": "partial_answered_free_lc_r_final_accepted_v8_pending",
       "confidence": 0.84,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V7 method"],
-      "evidence": ["MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601"],
-      "rule": "Before requesting another large mixed R/C/L batch, test whether terminal R can coexist with free L/C or terminal C+L when R is final and uses alternate ordinal/component-index/suffix policies. If every V7 case fails, the V9 terminal resistor visual record itself is likely incompatible with inductor coexistence and a new Proteus-created terminal-resistor-plus-inductor donor is required."
+      "evidence": ["MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601"],
+      "rule": "V7 T02-T07 show terminal R can coexist with free L/C if free L/C records are first and the resistor terminal block is final. The specific ordinal/index/suffix policy was not the deciding factor because all tested variants T02-T07 worked. Do not infer full all-terminal R/C/L support yet; V8 must test terminal C/L blocks before final R, then add V0/G0 and 6/21 scale."
+    },
+    {
+      "id": "R033",
+      "title": "RLC terminal resistor final ordering is positive only for free L/C scope",
+      "status": "partial_confirmed_v8_pending",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V7/V8 method"],
+      "evidence": ["MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601"],
+      "rule": "When a project contains free capacitor and inductor donor records, a terminal-attached resistor works if its complete terminal/resistor/wire block is the final object block. This does not yet validate all-terminal C/L/R or power/ground networks. Keep the generator temporary and use V8 to determine whether C/L terminal blocks and power/ground can precede the final resistor block safely."
     }
   ]
 }

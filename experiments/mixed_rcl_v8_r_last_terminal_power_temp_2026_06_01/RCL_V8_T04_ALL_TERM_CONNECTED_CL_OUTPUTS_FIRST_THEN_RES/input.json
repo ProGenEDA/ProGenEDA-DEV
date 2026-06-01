@@ -1,0 +1,128 @@
+{
+  "schema_version": "mixed-rcl-temp/v8-r-last-terminal-power",
+  "generator_target": "proteus-8.13-mixed-rcl-r-last-diagnostic",
+  "case_id": "RCL_V8_T04_ALL_TERM_CONNECTED_CL_OUTPUTS_FIRST_THEN_RES",
+  "nodes": [
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "N4",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "N2",
+        "N3"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "N1",
+        "N2"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1nF",
+      "nodes": [
+        "N3",
+        "N4"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 5080000
+      }
+    }
+  ],
+  "metadata": {
+    "object_order": "capacitor+inductor outputs first, capacitor+inductor groups, resistor terminal block final",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "L1",
+        "ref": "L1",
+        "value": "1mH",
+        "left": "N2",
+        "right": "N3",
+        "slot": 1,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -3556000,
+        "y": 5080000,
+        "wire_right_len": 50,
+        "ordinal": 1,
+        "kind": "INDUCTOR"
+      },
+      {
+        "ref": "R1",
+        "kind": "RESISTOR",
+        "value": "10k",
+        "visible_value": "10",
+        "left": "N1",
+        "right": "N2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0159",
+        "out_suffix": "018b",
+        "angle_tenths": 0,
+        "x": -7366000,
+        "y": 5080000,
+        "idx": 2,
+        "ordinal": 1,
+        "source_ref": "R1"
+      },
+      {
+        "ref": "C1",
+        "kind": "CAPACITOR",
+        "value": "1nF",
+        "visible_value": "1nF",
+        "left": "N3",
+        "right": "N4",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "011a",
+        "out_suffix": "00e8",
+        "cap_visual_index_byte_344": 1,
+        "wire_right_len": 49,
+        "x": 254000,
+        "y": 5080000,
+        "idx": 3,
+        "ordinal": 1,
+        "source_ref": "C1"
+      }
+    ]
+  }
+}

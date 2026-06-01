@@ -113,7 +113,7 @@
       }
     },
     "MIXED_PASSIVE_RCL": {
-      "status": "temporary_v7_terminal_resistor_suffix_order_awaiting_user_test",
+      "status": "temporary_v8_r_last_terminal_power_awaiting_user_test",
       "category": "mixed_passive_network",
       "generation": {
         "visual_authority": "ROOT.DSN",
@@ -121,7 +121,7 @@
         "requires_cdb": true,
         "tested": false,
         "locked": false,
-        "temporary_recipe": "tools/proteus_generation/2026-06-01/generate_mixed_rcl_v1_temp.py combined locked resistor V9 records, locked resistor/capacitor mixed records, and temporary inductor V6 REALIND records; MIXED_RCL_V1_TEMP_2026_06_01.zip was rejected by user Proteus testing. After donor05/V8 was accepted, generate_mixed_rcl_v2_v8_temp.py tried locked resistor V9 records, locked capacitor manual-order records, V8 donor05 sequential inductor records as a final contiguous block, one V0 power bridge, and G0 ground endpoints; the user reported all V2 files gave VGCVC.dll. generate_mixed_rcl_v3_isolation_temp.py showed only C+L T03 and T05 worked; every case containing both resistor and inductor failed. generate_mixed_rcl_v4_resistor_boundary_temp.py probes CDB/power/order variants. The user then supplied rlc_manual_donor, whose object chunk has free L/R/C components in L1, R1, C1 order with matching CDB but no terminals or wires. V5 T01-T04 donor controls worked, while V5 T05-T10 generated terminal-topology variants failed. V6 showed terminal C/L combinations work around a free resistor, but every terminal-attached resistor case failed. generate_mixed_rcl_v7_resistor_suffix_order_temp.py now varies only resistor final order, ordinal, component index, suffix/link bytes, and donor header."
+        "temporary_recipe": "tools/proteus_generation/2026-06-01/generate_mixed_rcl_v1_temp.py combined locked resistor V9 records, locked resistor/capacitor mixed records, and temporary inductor V6 REALIND records; MIXED_RCL_V1_TEMP_2026_06_01.zip was rejected by user Proteus testing. After donor05/V8 was accepted, generate_mixed_rcl_v2_v8_temp.py tried locked resistor V9 records, locked capacitor manual-order records, V8 donor05 sequential inductor records as a final contiguous block, one V0 power bridge, and G0 ground endpoints; the user reported all V2 files gave VGCVC.dll. generate_mixed_rcl_v3_isolation_temp.py showed only C+L T03 and T05 worked; every case containing both resistor and inductor failed. generate_mixed_rcl_v4_resistor_boundary_temp.py probes CDB/power/order variants. The user then supplied rlc_manual_donor, whose object chunk has free L/R/C components in L1, R1, C1 order with matching CDB but no terminals or wires. V5 T01-T04 donor controls worked, while V5 T05-T10 generated terminal-topology variants failed. V6 showed terminal C/L combinations work around a free resistor, but every terminal-attached resistor case failed. V7 partial feedback confirmed T02-T07 worked, meaning terminal R can coexist with free L/C when the resistor block is final. generate_mixed_rcl_v8_r_last_terminal_power_temp.py now tests terminal C/L blocks before final R, then V0/G0 and 6/21 mixed R/C/L cycle candidates."
       }
     },
     "LED": {"status": "found_in_corpus_not_controlled", "category": "display_indicator"},

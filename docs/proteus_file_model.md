@@ -409,3 +409,31 @@ T11-T12: all-terminal R-final variants using the manual RLC donor header
 If V7 fails entirely, the current V9 terminal-resistor visual record is likely
 not compatible with inductor coexistence, and the next required donor should be
 a Proteus-created terminal-attached resistor plus inductor file.
+
+The user later reported V7 T02-T07 worked. Those cases all share the same
+important structure:
+
+```text
+free L/C donor records first
+terminal-attached resistor block last and final
+```
+
+The varied ordinal/index/suffix policies in T02-T07 all opened, so the decisive
+factor is currently interpreted as final object-stream order, not the exact
+suffix policy. This only answers the free-L/C scope. V7 T08-T12 remain
+unrecorded unless later feedback supplies their result.
+
+`MIXED_RCL_V8_R_LAST_TERMINAL_POWER_TEMP_2026_06_01` now tests the next boundary:
+
+```text
+T01: V7-style control, free L/C then final terminal R
+T02-T04: all-terminal C/L/R, no power, C/L blocks before final R
+T05-T06: small V0-to-G0 R/C/L series, C/L blocks before final R
+T07-T08: 6-component and 21-component R/C/L cycles with V0/G0
+```
+
+All V8 static validation passed. Do not promote mixed R/C/L until the V8 Proteus
+open results are known. If T02-T04 fail, the remaining problem is terminal C/L
+coexistence before terminal R. If T02-T04 work but T05-T06 fail, isolate the
+power bridge and G0 endpoint interaction. If T05-T08 work, regenerate the 15
+requested mixed R/C/L topologies using the same C/L-before-final-R object order.

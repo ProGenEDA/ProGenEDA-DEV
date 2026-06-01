@@ -1,0 +1,151 @@
+{
+  "batch_id": "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601",
+  "status": "static_generated_awaiting_user_proteus_test",
+  "source_feedback": "V7 T02-T07 worked: free L/C first plus terminal R final is accepted. V7 T08-T12 remain unrecorded unless user provides results.",
+  "cases": [
+    {
+      "case_id": "RCL_V8_T01_FREE_L_C_THEN_R_FINAL_CONTROL",
+      "description": "Reproduce the V7 passing boundary: free L/C donor records first, terminal R final.",
+      "object_order": "free L/C donor records first, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERGROUND": 0,
+        "WIRE": 2,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V8_T02_ALL_TERM_DISCONNECTED_CAP_THEN_IND_THEN_RES",
+      "description": "All three families are terminal-attached with disconnected labels, C/L before final resistor using cap_then_ind_then_res.",
+      "object_order": "cap outputs/groups, inductor sequential groups, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 0,
+        "WIRE": 6,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V8_T03_ALL_TERM_CONNECTED_CAP_THEN_IND_THEN_RES",
+      "description": "All three families are terminal-attached with connected labels, C/L before final resistor using cap_then_ind_then_res.",
+      "object_order": "cap outputs/groups, inductor sequential groups, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 0,
+        "WIRE": 6,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V8_T04_ALL_TERM_CONNECTED_CL_OUTPUTS_FIRST_THEN_RES",
+      "description": "All three families are terminal-attached with connected labels, C/L before final resistor using cl_outputs_first_then_res.",
+      "object_order": "capacitor+inductor outputs first, capacitor+inductor groups, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 0,
+        "WIRE": 6,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V8_T05_POWER_GROUND_3_SERIES_CAP_THEN_IND_THEN_RES",
+      "description": "Three-component R/C/L series path from V0 to G0, C/L block before final resistor using cap_then_ind_then_res.",
+      "object_order": "power bridge, cap outputs/groups, inductor sequential groups, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V8_T06_POWER_GROUND_3_SERIES_CL_OUTPUTS_FIRST_THEN_RES",
+      "description": "Three-component R/C/L series path from V0 to G0, C/L block before final resistor using cl_outputs_first_then_res.",
+      "object_order": "power bridge, capacitor+inductor outputs first, capacitor+inductor groups, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V8_T07_6_COMPONENT_RCL_CYCLE_R_LAST",
+      "description": "6-component mixed R/C/L cycle with V0/G0; all C/L records before final resistor block. Conversion notes: []",
+      "object_order": "power bridge, cap outputs/groups, inductor sequential groups, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 5,
+        "$TERGROUND": 2,
+        "WIRE": 13,
+        "RESISTOR": 4,
+        "CAPACITOR": 2,
+        "CAP10": 2,
+        "REALIND": 6,
+        "COMPONENT ID": 6
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V8_T08_21_COMPONENT_RCL_CYCLE_R_LAST",
+      "description": "21-component mixed R/C/L cycle with V0/G0; all C/L records before final resistor block. Conversion notes: []",
+      "object_order": "power bridge, cap outputs/groups, inductor sequential groups, resistor terminal block final",
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 21,
+        "$TEROUTPUT": 21,
+        "$TERGROUND": 1,
+        "WIRE": 43,
+        "RESISTOR": 14,
+        "CAPACITOR": 7,
+        "CAP10": 7,
+        "REALIND": 21,
+        "COMPONENT ID": 21
+      },
+      "static_validation_issues": []
+    }
+  ]
+}
