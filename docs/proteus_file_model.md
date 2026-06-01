@@ -241,7 +241,20 @@ T05 is the explicit capacitor-style outputs-first probe, included only to test
 the same-family hypothesis. T06 is a power/ground bridge probe and should be
 tested only after the terminal-only donor05 cases work.
 
-Before promotion, V8 still needs user Proteus open/render results. Multi-inductor
-circuits that include V0 or G0 remain open research. The V4 generic passive
+The user reported all V8 cases worked in Proteus. This accepts donor05 sequential
+groups as the current temporary multi-inductor method, including the 21-inductor
+scale case and the sequential power/ground bridge probe. The outputs-first V8
+probe also worked, but the generator should prefer the donor05 observed sequential
+order unless a later test proves a reason to switch.
+
+`INDUCTOR_V9_REQUESTED15_POWER_GROUND_TEMP_2026_06_01` applies the accepted V8
+method to the 15 requested topology cases, with one donor-derived
+`$TERPOWER -> $TEROUTPUT(V0)` bridge, ordinary `$TERINPUT(V0)` powered component
+endpoints, and `$TERGROUND(G0)` grounded right endpoints. Static validation is
+clean for all 15 cases, and the existing locked resistor plus mixed R/C tests
+still pass. V9 is awaiting user Proteus open/render acceptance.
+
+The inductor generator must remain temporary until the requested 15 inductor
+circuits and later R/C/L mixed circuits are accepted. The V4 generic passive
 bridge-first order is rejected and must not be reintroduced for inductors unless
 a later donor-based diagnostic proves a safe variant.

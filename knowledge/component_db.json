@@ -63,7 +63,7 @@
     "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
-      "status": "temporary_v8_six_donor_static_pack_awaiting_user_test",
+      "status": "temporary_v9_requested15_power_ground_pending_user_test",
       "category": "passive",
       "proteus_names_observed": ["REALIND"],
       "controlled_donors": [
@@ -77,7 +77,7 @@
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
         "requires_cdb": true,
-        "temporary_recipe": "Temporary code lives in tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main. V3 confirms terminal-only REALIND generation with per-index templates for the three-slot donor scope only. V5 confirms a single V0-to-G0 inductor using the accepted inductor_04 donor order: internal input, REALIND, trimmed left wire, $TERPOWER, internal $TEROUTPUT, bridge wire, $TERGROUND, final wire. V6 6/21, V7 requested-15, and R/C/L V1 all failed in Proteus. The user then supplied inductor_05_six_terminal; V8 uses its observed six sequential terminal/REALIND/wire groups and is awaiting user Proteus testing.",
+        "temporary_recipe": "Temporary code lives in tools/proteus_generation/2026-06-01. V3 confirms terminal-only REALIND generation with per-index templates for the three-slot donor scope only. V5 confirms a single V0-to-G0 inductor using the accepted inductor_04 donor order. V6 6/21, V7 requested-15, and R/C/L V1 all failed in Proteus. The user then supplied inductor_05_six_terminal; V8 uses its observed six sequential $TERINPUT/$TEROUTPUT/REALIND/left-wire/right-wire groups and user testing confirmed all V8 cases worked, including the 21-inductor and power/ground probes. V9 requested-15 inductor power/ground pack was generated from the V8 method and is awaiting user Proteus testing.",
         "known_limits": [
           "Do not use resistor V9 suffix generation for REALIND records.",
           "Do not use the generic passive bridge-first order for inductors.",

@@ -1,0 +1,55 @@
+{
+  "schema_version": "inductor-temp-v8/v0",
+  "generator_target": "proteus-8.13-inductor-six-donor-diagnostic",
+  "case_id": "IND_V9_01_SIMPLE_LOOP",
+  "source_resistor_case": null,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "sequential_groups",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "1mH",
+        "left": "V0",
+        "right": "G0",
+        "slot": 1,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000,
+        "wire_right_len": 50
+      }
+    ]
+  }
+}
