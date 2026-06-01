@@ -1,0 +1,193 @@
+{
+  "schema_version": "mixed-rcl-temp/v2",
+  "generator_target": "proteus-8.13-mixed-rcl-terminal-power-ground-diagnostic",
+  "case_id": "RCL_V2_T17_15_R_2R_LADDER_NETWORK",
+  "source_resistor_case": "15_R_2R_LADDER_NETWORK",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "A2",
+      "kind": "internal"
+    },
+    {
+      "id": "A3",
+      "kind": "internal"
+    },
+    {
+      "id": "A4",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "A1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000,
+        "orientation_hint": "horizontal",
+        "role": "ladder_series_1"
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A1",
+        "A2"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000,
+        "orientation_hint": "horizontal",
+        "role": "ladder_series_2"
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "A2",
+        "A3"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 5080000,
+        "orientation_hint": "horizontal",
+        "role": "ladder_series_3"
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "A3",
+        "A4"
+      ],
+      "visual": {
+        "x": 4064000,
+        "y": 5080000,
+        "orientation_hint": "horizontal",
+        "role": "ladder_series_4"
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "C5",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "ladder_shunt_1"
+      }
+    },
+    {
+      "idx": 6,
+      "source_ref": "R6",
+      "ref": "L6",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "A2",
+        "G0"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "ladder_shunt_2"
+      }
+    },
+    {
+      "idx": 7,
+      "source_ref": "R7",
+      "ref": "R7",
+      "type": "RESISTOR",
+      "value": "2k",
+      "nodes": [
+        "A3",
+        "G0"
+      ],
+      "visual": {
+        "x": 4064000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "ladder_shunt_3"
+      }
+    },
+    {
+      "idx": 8,
+      "source_ref": "R8",
+      "ref": "C8",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A4",
+        "G0"
+      ],
+      "visual": {
+        "x": 7874000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "ladder_shunt_4"
+      }
+    },
+    {
+      "idx": 9,
+      "source_ref": "R9",
+      "ref": "L9",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "A4",
+        "G0"
+      ],
+      "visual": {
+        "x": 7874000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "ladder_termination"
+      }
+    }
+  ],
+  "metadata": {
+    "method": "mixed R/C/L with all three passive families present in each requested case",
+    "object_order": "header, power bridge, capacitor outputs, capacitor groups, resistor inputs, resistor outputs, resistor separator, resistor groups, donor05 sequential inductor groups",
+    "temporary": true,
+    "conversion_notes": []
+  }
+}

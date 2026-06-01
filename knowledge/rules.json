@@ -252,6 +252,15 @@
       "applies_to": ["Proteus 8.13", "inductor temporary V9 method"],
       "evidence": ["INDUCTOR_V8_USER_FEEDBACK_20260601", "INDUCTOR_V9_REQUESTED15_POWER_GROUND_STATIC_20260601"],
       "rule": "Generate requested multi-inductor V0/G0 topology packs from the accepted donor05 sequential method and donor-derived V0 bridge. Do not promote inductor code to main until the requested 15 inductor circuits and the later R/C/L mixed circuits are user-accepted."
+    },
+    {
+      "id": "R029",
+      "title": "R/C/L mixed generation uses accepted V8 inductors",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V2 method"],
+      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601"],
+      "rule": "Do not reuse the failed R/C/L V1 inductor composition. The next temporary R/C/L candidate should combine locked resistor V9 records, locked capacitor manual-order records, and V8 donor05 sequential inductor records. Keep the inductor records in a contiguous donor05 sequential block and require user Proteus acceptance before promotion."
     }
   ]
 }

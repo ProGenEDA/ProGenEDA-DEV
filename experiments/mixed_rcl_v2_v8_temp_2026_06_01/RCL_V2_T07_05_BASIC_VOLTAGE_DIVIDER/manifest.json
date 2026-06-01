@@ -1,0 +1,102 @@
+{
+  "case_id": "RCL_V2_T07_05_BASIC_VOLTAGE_DIVIDER",
+  "status": "temporary_mixed_rcl_v2_not_locked",
+  "description": "Mixed R/C/L version of requested topology 05_BASIC_VOLTAGE_DIVIDER.",
+  "component_count": 3,
+  "node_count": 4,
+  "resistor_count": 1,
+  "capacitor_count": 1,
+  "inductor_count": 1,
+  "power_bridge_count": 1,
+  "ground_terminal_count": 1,
+  "object_order": "header, power bridge, capacitor outputs, capacitor groups, resistor inputs, resistor outputs, resistor separator, resistor groups, donor05 sequential inductor groups",
+  "conversion_notes": [
+    "Expanded the two-component source topology into three mixed components by splitting the second branch into C then L."
+  ],
+  "object_chunk_len": 2263,
+  "root_cdb_len": 487,
+  "root_dsn_len": 67866,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 1,
+    "WIRE": 7,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 2
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 64660,
+    "second_isis": 66969,
+    "second_object_data": 67004,
+    "object_data_pointer": 67017
+  },
+  "topology": [
+    {
+      "ref": "R1",
+      "kind": "RESISTOR",
+      "value": "10k",
+      "visible_value": "10",
+      "left": "V0",
+      "right": "VT",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0159",
+      "out_suffix": "018b",
+      "angle_tenths": -900,
+      "x": -7366000,
+      "y": 5080000,
+      "idx": 1,
+      "ordinal": 1,
+      "source_ref": "R1"
+    },
+    {
+      "ref": "C2",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "VT",
+      "right": "X1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "011a",
+      "out_suffix": "00e8",
+      "cap_visual_index_byte_344": 1,
+      "wire_right_len": 49,
+      "x": -7366000,
+      "y": 2540000,
+      "idx": 2,
+      "ordinal": 1,
+      "source_ref": "R2"
+    },
+    {
+      "idx": 3,
+      "source_ref": "R2",
+      "ref": "L3",
+      "value": "5mH",
+      "left": "X1",
+      "right": "G0",
+      "slot": 1,
+      "suffix_policy": "extend_from_donor05",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "01b2",
+      "out_suffix": "01e4",
+      "x": -3556000,
+      "y": 2540000,
+      "wire_right_len": 50,
+      "ordinal": 1,
+      "kind": "INDUCTOR"
+    }
+  ],
+  "static_validation_issues": [],
+  "output_hashes": {
+    "RCL_V2_T07_05_BASIC_VOLTAGE_DIVIDER.pdsprj": "a18a3fa6f524460e90ca821262ce17c612589e90977ddf95a4171d7ba813586f",
+    "RCL_V2_T07_05_BASIC_VOLTAGE_DIVIDER.ROOT.CDB.bin": "0bc54e3bbe60fc65880d126ae323aefbe2c698a6b4a8954aed579c4f94ef6c69",
+    "RCL_V2_T07_05_BASIC_VOLTAGE_DIVIDER.ROOT.DSN.bin": "6acb526874e1653561fbacef8776a3e02c3eb93e57e1f5300a700b49cafc5b1b",
+    "object_chunk": "9bb60156e4100bacaf5d3cadfd45308e761d4f1022b6fb553eaffa1ba4baa1f2",
+    "ROOT.CDB": "0bc54e3bbe60fc65880d126ae323aefbe2c698a6b4a8954aed579c4f94ef6c69"
+  }
+}

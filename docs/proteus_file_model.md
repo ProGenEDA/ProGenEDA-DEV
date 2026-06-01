@@ -258,3 +258,39 @@ The inductor generator must remain temporary until the requested 15 inductor
 circuits and later R/C/L mixed circuits are accepted. The V4 generic passive
 bridge-first order is rejected and must not be reintroduced for inductors unless
 a later donor-based diagnostic proves a safe variant.
+
+## Mixed R/C/L Temporary Findings
+
+`MIXED_RCL_V1_TEMP_2026_06_01` is negative evidence. It combined the locked
+resistor/capacitor methods with the rejected V6 inductor path, and the user
+reported that all generated files failed in Proteus.
+
+`MIXED_RCL_V2_V8_TEMP_2026_06_01` is the next R/C/L candidate. It uses:
+
+```text
+locked resistor V9 records
+locked capacitor manual-order records
+accepted V8 donor05 sequential inductor records
+one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge
+$TERGROUND(G0) right endpoints
+```
+
+The V2 object stream order is:
+
+```text
+00 header
+power bridge
+capacitor output terminals
+capacitor input/component/wire groups
+resistor input terminals
+resistor output/ground terminals
+resistor separator
+resistor component/wire groups
+donor05 sequential inductor groups
+```
+
+V2 generated 17 projects: one six-component R/C/L cycle, one twenty-one-component
+R/C/L cycle, and the 15 requested topology shapes. One- and two-component source
+topologies are expanded to three mixed components so every requested topology
+test includes at least one resistor, capacitor, and inductor. Static validation
+is clean for all 17 cases, but Proteus user open/render testing is still pending.
