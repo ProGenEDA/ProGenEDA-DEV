@@ -726,3 +726,100 @@ global IDs:
 
 and the first REALIND/RESISTOR body appears after the full R/L input-terminal
 span. V13 still requires user Proteus netlist/simulation testing.
+
+User feedback then rejected V13 for scaling: cases with only one resistor, one
+capacitor, and one inductor worked, but cases with additional R/C/L components
+still failed. The user supplied
+`fixtures/pdsprj/rcl_4x_t07_unit_donor.pdsprj` for more evidence.
+
+## Mixed R/C/L 4x Repeated-Unit Donor
+
+The supplied 4x donor has SHA256:
+
+```text
+340b5972d35ce8b63c1aad6048c8fe33a2ea969ae2ad272acc316ce12f8459f5
+```
+
+Internal file sizes:
+
+```text
+ROOT.DSN  75928
+ROOT.CDB   1594
+object chunk 8281
+```
+
+Object marker counts:
+
+```text
+$TERPOWER        1
+$TERINPUT       12
+$TEROUTPUT       9
+$TERGROUND       4
+WIRE            25
+CAPACITOR        4
+CAP10            4
+REALIND         12
+RESISTOR         8
+COMPONENT ID    12
+COMPONENT VALUE 12
+```
+
+The object chunk is not organized as a pooled capacitor block plus pooled R/L
+blocks. It is:
+
+```text
+header byte
+one V0 power bridge
+unit 1
+unit 2
+unit 3
+unit 4
+```
+
+Each non-final unit is 2006 bytes:
+
+```text
+C output
+C input
+CAPACITOR
+C left wire
+C right wire, trimmed 49 bytes
+L input
+R input
+L $TERGROUND output
+REALIND
+L left wire
+L right wire, trimmed 49 bytes
+R output
+00 boundary byte
+RESISTOR
+R left wire
+R right wire
+```
+
+The final unit is 2007 bytes because the final R right-wire record carries the
+final `FF` terminator as an extra byte. The observed terminal suffix step is
+`0x07d6`, which equals the 2006-byte non-final unit size. The donor's CDB IDs
+use this pattern:
+
+```text
+unit 1: C1=1,  L1=2,  R1=3
+unit 2: C2=6,  L2=7,  R2=8
+unit 3: C3=9,  L3=10, R3=11
+unit 4: C4=12, L4=13, R4=14
+```
+
+The gaps after ID 3 may be a copy/paste artifact, so V14 tests both contiguous
+4x IDs and the supplied 4x gap policy.
+
+One more record-level difference matters: the RESISTOR records inside this
+mixed donor carry visible value `10k` with length 3. Therefore fields after the
+visible value shift by one byte relative to the fixed two-character resistor V9
+records. In the donor, the resistor component ID is at `value_offset + 252`
+(byte offset 325 for `10k`), and the input/output suffix links start at
+`value_offset + 265` and `value_offset + 269`.
+
+`MIXED_RCL_V14_REPEATED_UNIT_TEMP_2026_06_02` uses this donor as a temporary
+repeated-unit schema. It emits controls plus 1x, 2x, 3x, 4x, 4x supplied-ID-gap,
+6x, 7x, and 21x repeated `V0 -> R -> C -> L -> G0` units for Proteus
+open/netlist/simulation testing.

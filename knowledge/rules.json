@@ -346,11 +346,29 @@
     {
       "id": "R039",
       "title": "Scaled RCL may require all R/L inputs before R/L bodies",
-      "status": "static_generated_pending_user_netlist_test",
-      "confidence": 0.78,
+      "status": "rejected_by_later_user_feedback_for_multi_component_scaling",
+      "confidence": 0.74,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V13 method"],
-      "evidence": ["MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602", "MIXED_RCL_V13_RL_INPUTS_FIRST_STATIC_20260602"],
-      "rule": "The one-pair R+L donor proves only that both R/L input terminals precede that pair's output/component bodies. V12 repeated complete native L/R pair blocks, placing pair 2 inputs after pair 1 bodies; user testing then showed only single 1C+1L+1R cases worked. V13 keeps global IDs and CDB object-order alignment, but for all scaled cases emits every R/L input terminal first across all native pairs, then emits each native L/R output/component body. User Proteus netlist/simulation testing is required."
+      "evidence": ["MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602", "MIXED_RCL_V13_RL_INPUTS_FIRST_STATIC_20260602", "MIXED_RCL_V13_USER_FEEDBACK_PARTIAL_20260602"],
+      "rule": "The one-pair R+L donor proves only that both R/L input terminals precede that pair's output/component bodies. V12 repeated complete native L/R pair blocks, placing pair 2 inputs after pair 1 bodies; user testing then showed only single 1C+1L+1R cases worked. V13 kept global IDs and CDB object-order alignment, and emitted every R/L input terminal first across all native pairs before L/R bodies, but user feedback still reported multi-component cases failed. Do not promote V13."
+    },
+    {
+      "id": "R040",
+      "title": "Scaled RCL donor repeats complete C/L/R units",
+      "status": "static_donor_observed_pending_v14_user_netlist_test",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V14 method"],
+      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602"],
+      "rule": "The supplied 4x mixed R/C/L donor does not use pooled capacitor blocks or pooled R/L input arrays. Its ROOT.DSN object data is one V0 power bridge followed by four complete units: C output, C input+CAPACITOR+wires, L input, R input, L $TERGROUND+REALIND+wires, then R output+RESISTOR+wires. Suffixes advance by 0x07d6, equal to the 2006-byte non-final unit length, and the final unit's R right-wire record is 51 bytes with the final FF terminator. Use this as the current scaling hypothesis until V14 Proteus testing accepts or rejects it."
+    },
+    {
+      "id": "R041",
+      "title": "Mixed RCL resistor record offsets depend on visible value length",
+      "status": "static_donor_observed_pending_v14_user_netlist_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L resistor records"],
+      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602"],
+      "rule": "The RESISTOR record inside the supplied mixed R/C/L donor has visible value '10k' with length 3. As a result, the component identity field is at value_offset+252, observed as byte offset 325 for the donor record, and the pin-link suffix fields start at value_offset+265 and value_offset+269. Fixed resistor-only V9 offsets are unsafe for mixed-family resistor records when the visible value length changes."
     }
   ]
 }
