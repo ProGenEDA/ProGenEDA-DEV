@@ -310,11 +310,20 @@
     {
       "id": "R035",
       "title": "Manual terminal R+L donor is required",
-      "status": "required",
+      "status": "donors_received_v10_static_pending_user_test",
       "confidence": 0.94,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L terminal method"],
-      "evidence": ["MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"],
-      "rule": "The current corpus has resistor terminal donors, capacitor terminal donors, inductor terminal donors, and a free R/L/C donor, but no Proteus-created project that places a terminal-attached RESISTOR and terminal-attached REALIND in the same object stream. Because all generated R+L variants failed, the next evidence must be a clean E001-based manual R+L terminal donor before R/C/L generation can continue."
+      "evidence": ["MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601", "rl_terminal_disconnected fixture", "rl_terminal_series fixture", "MIXED_RCL_V10_TERMINAL_RL_DONOR_STATIC_20260601"],
+      "rule": "The current corpus now includes Proteus-created terminal R+L donors. The disconnected donor is the primary mutation template: its native object order is header, both inputs, L output+REALIND+wires, then R output+RESISTOR+wires. Do not promote mixed R/C/L until V10 donor controls and donor-native generated cases are user-accepted in Proteus."
+    },
+    {
+      "id": "R036",
+      "title": "Native terminal R+L order uses inputs-first mixed groups",
+      "status": "static_observed_pending_user_acceptance",
+      "confidence": 0.88,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L terminal method"],
+      "evidence": ["rl_terminal_disconnected fixture", "MIXED_RCL_V10_TERMINAL_RL_DONOR_STATIC_20260601"],
+      "rule": "For a Proteus-created disconnected terminal R+L project, ROOT.DSN object data is not normal resistor V9 order and not inductor sequential group order. It is header, two $TERINPUT records, then the inductor's $TEROUTPUT/REALIND/left-wire/right-wire group, then the resistor's $TEROUTPUT/boundary-byte/RESISTOR/left-wire/right-wire group. V10 tests whether this native order is safe to mutate."
     }
   ]
 }

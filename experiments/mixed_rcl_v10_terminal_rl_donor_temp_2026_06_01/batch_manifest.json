@@ -1,0 +1,282 @@
+{
+  "batch_id": "MIXED_RCL_V10_TERMINAL_RL_DONOR_STATIC_20260601",
+  "status": "static_generated_awaiting_user_proteus_test",
+  "source_feedback": "V9 all generated terminal R+L guesses failed. V10 uses the manual terminal R+L donor native order instead.",
+  "donor_analysis": {
+    "disconnected": {
+      "project": "fixtures\\pdsprj\\rl_terminal_disconnected.pdsprj",
+      "pdsprj_sha256": "293f00ac5504f0f53fc514682a9cb8136dabda8c03343850b5a54c5b6a614f36",
+      "root_dsn_len": 68109,
+      "root_cdb_len": 352,
+      "object_chunk_len": 1335,
+      "object_chunk_sha256": "c1a937f2ea8adad85e1a68201885627dfc059488523d64fa2793e6990e5bec96",
+      "root_cdb_sha256": "97532160889b7f5878fc4daec041b4e7a6093c85ae612ee2f6d0ab8fcdd9d985",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "marker_positions": {
+        "$TERINPUT": [
+          15,
+          118
+        ],
+        "$TEROUTPUT": [
+          221,
+          798
+        ],
+        "REALIND": [
+          454,
+          535,
+          644
+        ],
+        "RESISTOR": [
+          1030,
+          1193
+        ],
+        "WIRE": [
+          709,
+          759,
+          1259,
+          1309
+        ],
+        "COMPONENT ID": [
+          363,
+          940
+        ],
+        "COMPONENT VALUE": [
+          432,
+          1008
+        ]
+      }
+    },
+    "series": {
+      "project": "fixtures\\pdsprj\\rl_terminal_series.pdsprj",
+      "pdsprj_sha256": "80fe75ca0bf60cb40f99344bb979b6a616ed77d1da1bacbc30f260fd47c833f8",
+      "root_dsn_len": 68110,
+      "root_cdb_len": 353,
+      "object_chunk_len": 1336,
+      "object_chunk_sha256": "960f4ec16d37a8033e53da1524aca6a2aac0213f3fc5c92c8b63c2b12677d2f1",
+      "root_cdb_sha256": "57145256f9c724e18f8d540b5ec8c575413c6a2658c1cbf4ff2c4e6a704498f4",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "marker_positions": {
+        "$TERINPUT": [
+          15,
+          118
+        ],
+        "$TEROUTPUT": [
+          221,
+          772
+        ],
+        "REALIND": [
+          453,
+          1086,
+          1195
+        ],
+        "RESISTOR": [
+          617,
+          1004
+        ],
+        "WIRE": [
+          683,
+          733,
+          1260,
+          1310
+        ],
+        "COMPONENT ID": [
+          363,
+          914
+        ],
+        "COMPONENT VALUE": [
+          431,
+          982
+        ]
+      }
+    },
+    "finding": "The disconnected donor object order is header, both inputs, L output+REALIND+wires, then R output+RESISTOR+wires. The series donor is retained as a control because its CDB/component refs appear swapped relative to the requested names."
+  },
+  "test_order": [
+    "RCL_V10_T01_EXACT_DISCONNECTED_REPACK",
+    "RCL_V10_T02_DISCONNECTED_CHUNK_IN_E001",
+    "RCL_V10_T03_EXACT_SERIES_REPACK",
+    "RCL_V10_T04_SERIES_CHUNK_IN_E001",
+    "RCL_V10_T05_NATIVE_REBUILD_SAME_LABELS",
+    "RCL_V10_T06_NATIVE_CONNECTED_LABELS",
+    "RCL_V10_T07_NATIVE_TRANSLATED_DISCONNECTED",
+    "RCL_V10_T08_NATIVE_POWER_GROUND_SERIES"
+  ],
+  "cases": [
+    {
+      "case_id": "RCL_V10_T01_EXACT_DISCONNECTED_REPACK",
+      "description": "Exact deterministic repack of the manual disconnected terminal R+L donor.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1335,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V10_T02_DISCONNECTED_CHUNK_IN_E001",
+      "description": "Manual disconnected donor object chunk and CDB inserted into the clean E001 base.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1335,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V10_T03_EXACT_SERIES_REPACK",
+      "description": "Exact deterministic repack of the manual series terminal R+L donor.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1336,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V10_T04_SERIES_CHUNK_IN_E001",
+      "description": "Manual series donor object chunk and CDB inserted into the clean E001 base. This is a control for donor header/base compatibility.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1336,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V10_T05_NATIVE_REBUILD_SAME_LABELS",
+      "description": "Generated rebuild from disconnected donor templates using the same labels and donor coordinates.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1335,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V10_T06_NATIVE_CONNECTED_LABELS",
+      "description": "Generated R+L series using donor-native order and shared N2 terminal label, no power/ground.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1335,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V10_T07_NATIVE_TRANSLATED_DISCONNECTED",
+      "description": "Generated disconnected R+L translated to a new horizontal placement, proving coordinate mutation separately.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "WIRE": 4,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1335,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V10_T08_NATIVE_POWER_GROUND_SERIES",
+      "description": "Generated V0 to G0 R+L series using one donor-derived V0 power bridge and G0 ground endpoint.",
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 1,
+        "WIRE": 5,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "object_chunk_len": 1590,
+      "static_validation_issues": []
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": "mixed-rcl-temp/v10-terminal-rl-donor",
+  "generator_target": "proteus-8.13-terminal-rl-boundary-diagnostic",
+  "case_id": "RCL_V10_T06_NATIVE_CONNECTED_LABELS",
+  "description": "Generated R+L series using donor-native order and shared N2 terminal label, no power/ground.",
+  "nodes": [
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "N2",
+        "N3"
+      ],
+      "visual": {
+        "x": -9398000,
+        "y": 3556000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "N1",
+        "N2"
+      ],
+      "visual": {
+        "x": -9652000,
+        "y": 2032000
+      }
+    }
+  ],
+  "metadata": {
+    "temporary": true,
+    "object_order": "header, all inputs, L output+REALIND+wires, R output+RESISTOR+wires",
+    "topology": [
+      {
+        "idx": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "1mH",
+        "left": "N2",
+        "right": "N3",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0401",
+        "out_suffix": "0433",
+        "x": -9398000,
+        "y": 3556000
+      },
+      {
+        "idx": 2,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k",
+        "left": "N1",
+        "right": "N2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0627",
+        "out_suffix": "0659",
+        "x": -9652000,
+        "y": 2032000
+      }
+    ]
+  }
+}

@@ -519,3 +519,58 @@ no power/ground
 If those donors open as manually created projects, compare their ROOT.DSN object
 order, terminal records, wire records, component indices, link/suffix bytes, and
 ROOT.CDB records before attempting any new mixed R/C/L generation.
+
+The user supplied both requested R+L terminal donors:
+
+```text
+rl_terminal_disconnected.pdsprj
+sha256 293f00ac5504f0f53fc514682a9cb8136dabda8c03343850b5a54c5b6a614f36
+
+rl_terminal_series.pdsprj
+sha256 80fe75ca0bf60cb40f99344bb979b6a616ed77d1da1bacbc30f260fd47c833f8
+```
+
+Static analysis of `rl_terminal_disconnected` shows:
+
+```text
+ROOT.DSN length: 68109
+ROOT.CDB length: 352
+object chunk length: 1335
+
+marker counts:
+  $TERINPUT: 2
+  $TEROUTPUT: 2
+  WIRE: 4
+  REALIND: 3
+  RESISTOR: 2
+  COMPONENT ID: 2
+  COMPONENT VALUE: 2
+
+native object order:
+  header
+  both $TERINPUT records
+  L $TEROUTPUT + REALIND visual record + two short wires
+  R $TEROUTPUT + one boundary byte + RESISTOR visual record + two short wires
+```
+
+This is the first controlled evidence that native terminal R+L order is
+different from both the locked resistor V9 order and the accepted six-inductor
+sequential order. The series donor has matching marker counts but is retained as
+a control because its CDB/component refs appear swapped relative to the requested
+names.
+
+`MIXED_RCL_V10_TERMINAL_RL_DONOR_TEMP_2026_06_01` uses this native donor order:
+
+```text
+T01: exact disconnected donor repack
+T02: disconnected donor object chunk and CDB inserted into E001
+T03: exact series donor repack
+T04: series donor object chunk and CDB inserted into E001
+T05: generated donor-native same-label rebuild
+T06: generated donor-native connected-label R+L
+T07: generated donor-native translated disconnected R+L
+T08: generated donor-native V0/G0 R+L series
+```
+
+Do not promote mixed R/C/L until Proteus user testing accepts the donor controls
+and at least the donor-native generated rebuild.
