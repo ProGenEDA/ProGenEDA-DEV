@@ -256,11 +256,20 @@
     {
       "id": "R029",
       "title": "R/C/L mixed generation uses accepted V8 inductors",
-      "status": "resistor_inductor_boundary_blocked_v4_pending",
+      "status": "resistor_inductor_boundary_blocked_v5_manual_donor_pending",
       "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V2 method"],
-      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601"],
-      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. Every V3 case containing both resistor and inductor failed, so treat resistor as a separate family boundary and use V4 CDB/power/order diagnostics before regenerating large mixed networks."
+      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601"],
+      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. Every V3 case containing both resistor and inductor failed, so treat resistor as a separate family boundary. V4 and V5 are diagnostics only; wait for user Proteus results before regenerating large mixed networks."
+    },
+    {
+      "id": "R030",
+      "title": "Manual RLC donor is a family-order donor, not a topology donor",
+      "status": "static_v5_controls_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V5 method"],
+      "evidence": ["rlc_manual_donor fixture", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601"],
+      "rule": "The user-supplied rlc_manual_donor object chunk contains free component records in L1, R1, C1 order with matching ROOT.CDB entries, but contains no $TERINPUT, $TEROUTPUT, $TERPOWER, $TERGROUND, or WIRE records. Use it to test R/L/C family order, DSN device/header compatibility, and CDB metadata. Do not treat it as evidence for a completed V0/G0 terminal topology until V5 generated terminal cases pass in Proteus."
     }
   ]
 }

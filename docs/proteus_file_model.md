@@ -320,3 +320,34 @@ test R+L with and without power bridge, different `ROOT.CDB` component contents,
 and both resistor-first and inductor-first object orders. T08-T10 then test
 minimal R+C+L variants where the known-good C+L block can remain final or CDB
 entries can omit one family. V4 is pending user Proteus testing.
+
+The user then supplied `rlc.pdsprj`, imported as `rlc_manual_donor`. This donor
+is useful, but it is not a complete terminal-topology oracle. Its observed
+object chunk is 1087 bytes and contains:
+
+```text
+REALIND marker count: 3
+RESISTOR marker count: 2
+CAPACITOR marker count: 1
+CAP10 marker count: 1
+COMPONENT ID marker count: 3
+terminal marker count: 0
+WIRE marker count: 0
+```
+
+The visible free component order is `L1`, `R1`, `C1`, and `ROOT.CDB` carries
+matching L/R/C entries. `MIXED_RCL_V5_MANUAL_DONOR_TEMP_2026_06_01` therefore
+starts with donor controls:
+
+```text
+T01 exact deterministic donor repack
+T02 donor ROOT.DSN/ROOT.CDB copied into an E001 container
+T03 donor object chunk and CDB inserted into E001 using the donor DSN header
+T04 donor object chunk and CDB inserted into E001 using the resistor donor header
+```
+
+Only after those controls does V5 reintroduce generated terminal topology. T05
+and T06 are the key boundary checks: both use L/R/C object order, but T05 uses
+the manual donor `ROOT.CDB` and T06 uses a generated `ROOT.CDB` in the same spec
+order. V5 is awaiting user Proteus results and must not be promoted until the
+donor controls and generated terminal cases are known.
