@@ -351,3 +351,27 @@ and T06 are the key boundary checks: both use L/R/C object order, but T05 uses
 the manual donor `ROOT.CDB` and T06 uses a generated `ROOT.CDB` in the same spec
 order. V5 is awaiting user Proteus results and must not be promoted until the
 donor controls and generated terminal cases are known.
+
+The user reported V5 T01-T04 all worked and V5 T05 onward all errored. This
+means:
+
+```text
+free L/R/C component coexistence: accepted
+manual donor CDB and DSN header insertion: accepted
+generated mixed R/L/C terminal topology: rejected by current evidence
+```
+
+`MIXED_RCL_V6_TERMINAL_BOUNDARY_TEMP_2026_06_01` therefore removes power/ground
+from the immediate test surface and isolates terminal-attached records:
+
+```text
+T01: rebuild the worked free L/R/C donor chunk from slices
+T02-T04: one terminal-attached family with the other two as exact free donor records
+T05-T07: two terminal-attached families with the third as an exact free donor record
+T08-T09: all terminal-attached, disconnected versus connected labels, resistor header
+T13-T14: same all-terminal chunks using the manual RLC donor header
+```
+
+Do not generate another large R/C/L topology pack until V6 identifies whether
+the failure is a specific family record, pairwise terminal-record coexistence,
+shared terminal labels, or DSN header/device-section choice.
