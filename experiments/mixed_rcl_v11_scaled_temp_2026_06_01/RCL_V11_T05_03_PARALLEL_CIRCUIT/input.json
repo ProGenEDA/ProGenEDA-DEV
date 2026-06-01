@@ -1,0 +1,162 @@
+{
+  "schema_version": "mixed-rcl-temp/v11-scaled",
+  "generator_target": "proteus-8.13-scaled-mixed-rcl-terminal-power-ground-diagnostic",
+  "case_id": "RCL_V11_T05_03_PARALLEL_CIRCUIT",
+  "source_resistor_case": "03_PARALLEL_CIRCUIT",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "parallel_vertical_leg_1"
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "parallel_vertical_leg_2"
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "3mH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "parallel_vertical_leg_3"
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": 4064000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "parallel_vertical_leg_4"
+      }
+    }
+  ],
+  "metadata": {
+    "method": "mixed R/C/L using accepted capacitor block and repeated V10 native R/L pair blocks",
+    "object_order": "header, power bridge, capacitor outputs, capacitor groups, repeated native R/L pair blocks",
+    "temporary": true,
+    "conversion_notes": [],
+    "topology": [
+      {
+        "idx": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k",
+        "left": "V0",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0627",
+        "out_suffix": "0659",
+        "x": -7366000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "ref": "C1",
+        "kind": "CAPACITOR",
+        "value": "1uF",
+        "visible_value": "1uF",
+        "left": "V0",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "011a",
+        "out_suffix": "00e8",
+        "cap_visual_index_byte_344": 1,
+        "wire_right_len": 49,
+        "x": -3556000,
+        "y": 5080000,
+        "idx": 2,
+        "ordinal": 1,
+        "source_ref": "R2"
+      },
+      {
+        "idx": 3,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "3mH",
+        "left": "V0",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0401",
+        "out_suffix": "0433",
+        "x": 254000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "ref": "C2",
+        "kind": "CAPACITOR",
+        "value": "1uF",
+        "visible_value": "1uF",
+        "left": "V0",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0352",
+        "out_suffix": "0320",
+        "cap_visual_index_byte_344": 2,
+        "wire_right_len": 49,
+        "x": 4064000,
+        "y": 5080000,
+        "idx": 4,
+        "ordinal": 2,
+        "source_ref": "R4"
+      }
+    ]
+  }
+}

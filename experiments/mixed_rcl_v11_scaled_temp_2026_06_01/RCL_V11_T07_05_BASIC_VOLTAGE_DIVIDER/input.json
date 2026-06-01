@@ -1,0 +1,134 @@
+{
+  "schema_version": "mixed-rcl-temp/v11-scaled",
+  "generator_target": "proteus-8.13-scaled-mixed-rcl-terminal-power-ground-diagnostic",
+  "case_id": "RCL_V11_T07_05_BASIC_VOLTAGE_DIVIDER",
+  "source_resistor_case": "05_BASIC_VOLTAGE_DIVIDER",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "VT",
+      "kind": "internal"
+    },
+    {
+      "id": "X1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "V0",
+        "VT"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "upper_divider_resistor"
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "VT",
+        "X1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "lower_divider_resistor"
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R2",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "X1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    }
+  ],
+  "metadata": {
+    "method": "mixed R/C/L using accepted capacitor block and repeated V10 native R/L pair blocks",
+    "object_order": "header, power bridge, capacitor outputs, capacitor groups, repeated native R/L pair blocks",
+    "temporary": true,
+    "conversion_notes": [
+      "Expanded the two-component source into three mixed components by splitting the second branch into C then L."
+    ],
+    "topology": [
+      {
+        "idx": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "V0",
+        "right": "VT",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0627",
+        "out_suffix": "0659",
+        "x": -7366000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "ref": "C1",
+        "kind": "CAPACITOR",
+        "value": "1uF",
+        "visible_value": "1uF",
+        "left": "VT",
+        "right": "X1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "011a",
+        "out_suffix": "00e8",
+        "cap_visual_index_byte_344": 1,
+        "wire_right_len": 49,
+        "x": -7366000,
+        "y": 2540000,
+        "idx": 2,
+        "ordinal": 1,
+        "source_ref": "R2"
+      },
+      {
+        "idx": 3,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "X1",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0401",
+        "out_suffix": "0433",
+        "x": -3556000,
+        "y": 2540000,
+        "rl_pair_index": 1
+      }
+    ]
+  }
+}

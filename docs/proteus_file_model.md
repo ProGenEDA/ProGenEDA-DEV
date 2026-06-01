@@ -574,3 +574,40 @@ T08: generated donor-native V0/G0 R+L series
 
 Do not promote mixed R/C/L until Proteus user testing accepts the donor controls
 and at least the donor-native generated rebuild.
+
+The user reported all V10 cases worked. This confirms the native terminal R+L
+order for:
+
+```text
+exact donor repacks
+donor chunks inserted into E001
+same-label generated rebuild
+connected-label R+L
+translated disconnected R+L
+V0/G0 R+L series
+```
+
+`MIXED_RCL_V11_SCALED_TEMP_2026_06_01` scales that accepted boundary to the
+requested mixed R/C/L batch. It emits:
+
+```text
+header
+one donor-derived V0 power bridge
+accepted capacitor output/group block
+repeated native R/L pair blocks from V10
+```
+
+V11 balances component type assignment so every generated circuit has paired
+resistor and inductor counts, with capacitors filling extra topology slots. This
+keeps each resistor inside a native R/L pair instead of falling back to the
+previous failed independent resistor/inductor composition. The pack contains:
+
+```text
+T01: 6 components, 2R/2C/2L
+T02: 21 components, 7R/7C/7L
+T03-T17: the 15 requested topology shapes with mixed R/C/L components
+```
+
+All V11 static validation passed, but this is not a promotion point. Promotion
+requires user Proteus open/render acceptance for the 6-component, 21-component,
+and requested-15 outputs.
