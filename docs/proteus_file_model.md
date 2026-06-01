@@ -307,3 +307,16 @@ T06-T09: minimal resistor + capacitor + inductor order probes
 
 Use V3 results to determine whether the failure is pairwise (`R+L` or `C+L`) or
 only appears when all three families share one object stream.
+
+The user reported only V3 T03 and T05 worked. Both are capacitor+inductor cases:
+T03 uses a capacitor block followed by a donor05 sequential inductor block, and
+T05 uses joined capacitor/inductor outputs-first ordering. V3 T01/T02
+resistor+inductor failed, V3 T04 inductor-first capacitor+inductor failed, and
+all V3 full R+C+L cases failed. This supports treating resistor as a separate
+family boundary from the capacitor/inductor family.
+
+`MIXED_RCL_V4_RESISTOR_BOUNDARY_TEMP_2026_06_01` probes that boundary. T01-T07
+test R+L with and without power bridge, different `ROOT.CDB` component contents,
+and both resistor-first and inductor-first object orders. T08-T10 then test
+minimal R+C+L variants where the known-good C+L block can remain final or CDB
+entries can omit one family. V4 is pending user Proteus testing.
