@@ -201,7 +201,7 @@
       "id": "Q029",
       "priority": "high",
       "question": "Do the requested 6/21 inductor networks, 15 inductor topologies, and resistor/capacitor/inductor mixed circuits open/render correctly before inductor promotion?",
-      "status": "partially_answered_v8_6_21_worked_v3_cl_worked_v5_free_rlc_controls_worked_v6_terminal_c_l_worked_v7_free_lc_r_final_worked_v8_all_terminal_failed_v9_rl_boundary_pending",
+      "status": "partially_answered_v8_6_21_worked_v3_cl_worked_v5_free_rlc_controls_worked_v6_terminal_c_l_worked_v7_free_lc_r_final_worked_v8_all_terminal_failed_v9_rl_boundary_failed_manual_rl_donor_required",
       "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
     },
     {
@@ -243,8 +243,15 @@
       "id": "Q035",
       "priority": "high",
       "question": "Can any MIXED_RCL_V9_RL_BOUNDARY_TEMP_2026_06_01 minimal terminal R+L order/index/suffix case open in Proteus?",
-      "status": "awaiting_user_proteus_test_v9_rl_boundary",
+      "status": "answered_no_all_v9_generated_rl_boundary_cases_failed",
       "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution", "manual_rl_donor_decision"]
+    },
+    {
+      "id": "Q036",
+      "priority": "high",
+      "question": "What exact Proteus-created object order and link/suffix pattern does Proteus use for a terminal-attached RESISTOR and terminal-attached REALIND in the same clean E001-based project?",
+      "status": "manual_donor_required",
+      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution", "rcl_6_21_and_15_topology_generation"]
     }
   ]
 }

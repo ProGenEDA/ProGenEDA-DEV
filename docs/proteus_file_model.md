@@ -473,3 +473,49 @@ next required donor should be a Proteus-created project containing a
 terminal-attached resistor and a terminal-attached inductor in the same clean
 E001-based project, because the current donor set does not show Proteus' native
 R+L terminal object ordering/linking.
+
+The user reported that none of the V9 files worked. This answers the R/L
+boundary:
+
+```text
+failed:
+  minimal terminal R+L, no power, both object orders
+  terminal R+L with varied resistor index/suffix/global-style IDs
+  connected-label terminal R+L, no power
+  terminal R+L plus capacitor
+  terminal R+L plus V0/G0
+```
+
+Do not continue generated R/L guessing from independent resistor and inductor
+donors. Existing evidence already proves:
+
+```text
+terminal C+L with free R: accepted
+terminal R with free L/C: accepted when R is final
+terminal R+L generated from independent donor records: rejected
+```
+
+The missing evidence is now specific: a Proteus-created terminal-attached
+`RESISTOR` and terminal-attached `REALIND` in the same clean E001-based project.
+The highest-value manual donor is disconnected labels only, no power, no
+capacitor:
+
+```text
+R1 between terminal labels R1 and R2
+L1 between terminal labels L1 and L2
+values 1k and 1mH
+normal short wire stubs/terminals as Proteus creates them
+```
+
+A second useful donor is the same pair in series:
+
+```text
+R1 from N1 to N2
+L1 from N2 to N3
+same N2 terminal-label connection on R right and L left
+no power/ground
+```
+
+If those donors open as manually created projects, compare their ROOT.DSN object
+order, terminal records, wire records, component indices, link/suffix bytes, and
+ROOT.CDB records before attempting any new mixed R/C/L generation.

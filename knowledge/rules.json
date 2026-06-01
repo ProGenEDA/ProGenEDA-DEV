@@ -256,11 +256,11 @@
     {
       "id": "R029",
       "title": "R/C/L mixed generation uses accepted V8 inductors",
-      "status": "rl_terminal_boundary_v9_pending",
+      "status": "blocked_pending_manual_terminal_rl_donor",
       "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V2 method"],
-      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601"],
-      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. V5 confirms free R/L/C component records can coexist and be inserted into E001. V6 shows terminal-attached C and L work around a free resistor. V7 T02-T07 show a terminal-attached resistor can coexist with free L/C when the resistor block is placed last/final. V8 shows this does not extend to terminal C/L plus final R: only the free L/C control T01 worked, and no-power all-terminal T02 failed. Treat terminal-attached R plus terminal-attached L as the active boundary; V9 tests R/L order, global-style indices, and suffix ranges."
+      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"],
+      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. V5 confirms free R/L/C component records can coexist and be inserted into E001. V6 shows terminal-attached C and L work around a free resistor. V7 T02-T07 show a terminal-attached resistor can coexist with free L/C when the resistor block is placed last/final. V8 shows this does not extend to terminal C/L plus final R: only the free L/C control T01 worked, and no-power all-terminal T02 failed. V9 then showed all generated minimal terminal R+L order/index/suffix variants failed. Stop generated guessing at this boundary and require a Proteus-created terminal-attached resistor plus terminal-attached inductor donor before producing more R/C/L topology packs."
     },
     {
       "id": "R030",
@@ -301,11 +301,20 @@
     {
       "id": "R034",
       "title": "RLC active blocker is terminal resistor plus terminal inductor",
-      "status": "v9_pending",
+      "status": "answered_all_generated_rl_failed_manual_donor_required",
       "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V8/V9 method"],
-      "evidence": ["MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601"],
-      "rule": "The first failing condition is not power/ground, shared terminal labels, or large component count. V8 T02 failed with disconnected labels and no power/ground. Existing positive evidence covers terminal C+L with free R and terminal R with free L/C. Therefore isolate terminal R+L directly. V9 must be interpreted before generating more full R/C/L networks; if V9 T01-T08 all fail, request a Proteus-created terminal-attached resistor plus terminal-attached inductor donor."
+      "evidence": ["MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"],
+      "rule": "The first failing condition is not power/ground, shared terminal labels, or large component count. V8 T02 failed with disconnected labels and no power/ground. Existing positive evidence covers terminal C+L with free R and terminal R with free L/C. V9 directly tested minimal terminal R+L order, index, and suffix hypotheses; the user reported none worked. Do not generate larger mixed R/C/L circuits until a clean Proteus-created terminal R+L donor is analyzed."
+    },
+    {
+      "id": "R035",
+      "title": "Manual terminal R+L donor is required",
+      "status": "required",
+      "confidence": 0.94,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L terminal method"],
+      "evidence": ["MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"],
+      "rule": "The current corpus has resistor terminal donors, capacitor terminal donors, inductor terminal donors, and a free R/L/C donor, but no Proteus-created project that places a terminal-attached RESISTOR and terminal-attached REALIND in the same object stream. Because all generated R+L variants failed, the next evidence must be a clean E001-based manual R+L terminal donor before R/C/L generation can continue."
     }
   ]
 }
