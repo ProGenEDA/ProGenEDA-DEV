@@ -437,3 +437,39 @@ open results are known. If T02-T04 fail, the remaining problem is terminal C/L
 coexistence before terminal R. If T02-T04 work but T05-T06 fail, isolate the
 power bridge and G0 endpoint interaction. If T05-T08 work, regenerate the 15
 requested mixed R/C/L topologies using the same C/L-before-final-R object order.
+
+The user reported that only V8 T01 worked. This is a strong boundary:
+
+```text
+positive:
+  free L/C donor records + final terminal R
+
+negative:
+  terminal C + terminal L + terminal R with disconnected labels and no power
+  terminal C + terminal L + terminal R with connected labels
+  same families with V0/G0
+  6-component and 21-component R/C/L candidates
+```
+
+Because V8 T02 has no power/ground and disconnected labels, the first blocker is
+not V0/G0, shared labels, or circuit scale. Existing positive evidence already
+shows terminal C+L works around a free resistor, and terminal R works around free
+L/C. The remaining active blocker is terminal-attached `RESISTOR` plus
+terminal-attached `REALIND` in the same object stream.
+
+`MIXED_RCL_V9_RL_BOUNDARY_TEMP_2026_06_01` isolates that boundary before any
+large topology work:
+
+```text
+T01-T02: minimal terminal R+L, no power, both object orders
+T03-T07: terminal R+L with varied resistor index/suffix and global-style IDs
+T08: connected-label R+L, no power
+T09-T10: add capacitor only after R+L hypotheses
+T11: add V0/G0 only after the preceding boundary is tested
+```
+
+If V9 T01-T08 all fail, generated guessing should stop for this boundary. The
+next required donor should be a Proteus-created project containing a
+terminal-attached resistor and a terminal-attached inductor in the same clean
+E001-based project, because the current donor set does not show Proteus' native
+R+L terminal object ordering/linking.

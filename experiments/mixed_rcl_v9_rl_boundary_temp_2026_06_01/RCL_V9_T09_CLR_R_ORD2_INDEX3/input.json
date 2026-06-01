@@ -1,0 +1,137 @@
+{
+  "schema_version": "mixed-rcl-temp/v9-rl-boundary",
+  "generator_target": "proteus-8.13-mixed-rcl-rl-boundary-diagnostic",
+  "case_id": "RCL_V9_T09_CLR_R_ORD2_INDEX3",
+  "nodes": [
+    {
+      "id": "C1",
+      "kind": "internal"
+    },
+    {
+      "id": "C2",
+      "kind": "internal"
+    },
+    {
+      "id": "L1",
+      "kind": "internal"
+    },
+    {
+      "id": "L2",
+      "kind": "internal"
+    },
+    {
+      "id": "R1",
+      "kind": "internal"
+    },
+    {
+      "id": "R2",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1nF",
+      "nodes": [
+        "C1",
+        "C2"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "L1",
+        "L2"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "R1",
+        "R2"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 5080000
+      }
+    }
+  ],
+  "metadata": {
+    "object_order": "terminal capacitor block, terminal inductor non-final, terminal resistor final",
+    "topology": [
+      {
+        "ref": "C1",
+        "kind": "CAPACITOR",
+        "value": "1nF",
+        "visible_value": "1nF",
+        "left": "C1",
+        "right": "C2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "011a",
+        "out_suffix": "00e8",
+        "cap_visual_index_byte_344": 1,
+        "wire_right_len": 49,
+        "x": -7366000,
+        "y": 5080000,
+        "idx": 1,
+        "ordinal": 1,
+        "source_ref": "C1"
+      },
+      {
+        "idx": 2,
+        "source_ref": "L1",
+        "ref": "L1",
+        "value": "1mH",
+        "left": "L1",
+        "right": "L2",
+        "slot": 1,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -3556000,
+        "y": 5080000,
+        "wire_right_len": 50,
+        "ordinal": 1,
+        "kind": "INDUCTOR",
+        "component_index_override": 2
+      },
+      {
+        "ref": "R1",
+        "kind": "RESISTOR",
+        "value": "1k",
+        "visible_value": "1k",
+        "left": "R1",
+        "right": "R2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0317",
+        "out_suffix": "0349",
+        "angle_tenths": 0,
+        "x": 254000,
+        "y": 5080000,
+        "component_index_override": 3,
+        "ordinal_used": 2,
+        "block_final": true
+      }
+    ]
+  }
+}
