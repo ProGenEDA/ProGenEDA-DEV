@@ -293,4 +293,17 @@ V2 generated 17 projects: one six-component R/C/L cycle, one twenty-one-componen
 R/C/L cycle, and the 15 requested topology shapes. One- and two-component source
 topologies are expanded to three mixed components so every requested topology
 test includes at least one resistor, capacitor, and inductor. Static validation
-is clean for all 17 cases, but Proteus user open/render testing is still pending.
+is clean for all 17 cases. The user reported that all V2 files failed with a
+`VGCVC.dll` error, so this object order is rejected.
+
+`MIXED_RCL_V3_ISOLATION_TEMP_2026_06_01` isolates the next variable instead of
+generating another large batch. It contains:
+
+```text
+T01-T02: resistor + inductor order probes
+T03-T05: capacitor + inductor order probes
+T06-T09: minimal resistor + capacitor + inductor order probes
+```
+
+Use V3 results to determine whether the failure is pairwise (`R+L` or `C+L`) or
+only appears when all three families share one object stream.

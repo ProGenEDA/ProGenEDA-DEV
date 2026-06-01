@@ -256,11 +256,11 @@
     {
       "id": "R029",
       "title": "R/C/L mixed generation uses accepted V8 inductors",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.84,
+      "status": "rejected_v2_object_order_v3_isolation_pending",
+      "confidence": 0.88,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V2 method"],
-      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601"],
-      "rule": "Do not reuse the failed R/C/L V1 inductor composition. The next temporary R/C/L candidate should combine locked resistor V9 records, locked capacitor manual-order records, and V8 donor05 sequential inductor records. Keep the inductor records in a contiguous donor05 sequential block and require user Proteus acceptance before promotion."
+      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601"],
+      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. The accepted resistor, capacitor, and inductor generators remain individually valid, but mixed R/C/L needs pairwise isolation. Use V3 to test R+L, C+L, and minimal R+C+L order variants before regenerating large mixed networks."
     }
   ]
 }
