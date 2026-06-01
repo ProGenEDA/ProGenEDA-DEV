@@ -375,3 +375,37 @@ T13-T14: same all-terminal chunks using the manual RLC donor header
 Do not generate another large R/C/L topology pack until V6 identifies whether
 the failure is a specific family record, pairwise terminal-record coexistence,
 shared terminal labels, or DSN header/device-section choice.
+
+The user reported that V6 T01, T02, T04, T05, and T10 worked; all other V6
+cases failed. Interpreting those cases:
+
+```text
+worked:
+  T01 free L/R/C rebuild
+  T02 terminal L with free R/C
+  T04 terminal C with free L/R
+  T05 terminal C+L with free R, disconnected labels
+  T10 terminal C+L with free R, connected labels
+
+failed:
+  every case containing terminal-attached R
+  all-terminal cases with either resistor header or manual RLC header
+```
+
+So the current boundary is narrower than generic mixed-family terminals:
+terminal C and terminal L can coexist around a free resistor, but terminal R
+fails whenever an inductor exists in the project.
+
+`MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_TEMP_2026_06_01` keeps that evidence stable
+and varies only the resistor terminal record:
+
+```text
+T01: reproduce the V6 terminal-R failure
+T02-T07: free L/C first, terminal R final, varied ordinal/index/suffix policy
+T08-T10: known-good connected terminal C+L first, terminal R final, varied suffix policy
+T11-T12: all-terminal R-final variants using the manual RLC donor header
+```
+
+If V7 fails entirely, the current V9 terminal-resistor visual record is likely
+not compatible with inductor coexistence, and the next required donor should be
+a Proteus-created terminal-attached resistor plus inductor file.

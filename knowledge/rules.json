@@ -256,11 +256,11 @@
     {
       "id": "R029",
       "title": "R/C/L mixed generation uses accepted V8 inductors",
-      "status": "terminal_boundary_blocked_v6_pending",
+      "status": "terminal_resistor_boundary_blocked_v7_pending",
       "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V2 method"],
-      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601"],
-      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. V5 confirms free R/L/C component records can coexist and be inserted into E001, but every generated terminal-topology case failed. Treat the active blocker as generated terminal-attached mixed-family topology until V6 identifies which terminal family or header boundary is unsafe."
+      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601"],
+      "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. V5 confirms free R/L/C component records can coexist and be inserted into E001. V6 shows terminal-attached C and L work around a free resistor, including connected C+L, while every case with terminal-attached R failed. Treat the active blocker as terminal-attached resistor records coexisting with any inductor until V7 identifies a safe resistor suffix/order policy."
     },
     {
       "id": "R030",
@@ -274,11 +274,20 @@
     {
       "id": "R031",
       "title": "RLC terminal topology must be isolated by family",
-      "status": "static_v6_pending_user_test",
-      "confidence": 0.82,
+      "status": "answered_terminal_resistor_is_blocker",
+      "confidence": 0.92,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V6 method"],
-      "evidence": ["MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601"],
-      "rule": "After V5, do not jump directly to connected V0/G0 R/C/L generation. First test one terminal-attached family at a time with the other two families left as exact free donor records, then pairwise terminal-attached coexistence, then disconnected versus connected all-terminal records, and finally DSN header variants. V6 implements this diagnostic order."
+      "evidence": ["MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601"],
+      "rule": "V6 identifies the family boundary: terminal-attached L with free R/C works, terminal-attached C with free L/R works, terminal-attached C+L with free R works in disconnected and connected forms, but terminal-attached R fails in every tested combination containing an inductor. Do not generate R/C/L topologies with the current V9 resistor terminal record until resistor-specific diagnostics pass."
+    },
+    {
+      "id": "R032",
+      "title": "RLC terminal resistor suffix and order must be tested before topology generation",
+      "status": "static_v7_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V7 method"],
+      "evidence": ["MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601"],
+      "rule": "Before requesting another large mixed R/C/L batch, test whether terminal R can coexist with free L/C or terminal C+L when R is final and uses alternate ordinal/component-index/suffix policies. If every V7 case fails, the V9 terminal resistor visual record itself is likely incompatible with inductor coexistence and a new Proteus-created terminal-resistor-plus-inductor donor is required."
     }
   ]
 }
