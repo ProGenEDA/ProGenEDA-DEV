@@ -1,0 +1,464 @@
+{
+  "schema_version": "mixed-rcl-temp/v18-final-topology",
+  "generator_target": "proteus-8.13-mixed-rcl-final-testing",
+  "case_id": "RCL_V18_T17_15_R_2R_LADDER_NETWORK",
+  "nodes": [
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "A2",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "A3",
+      "kind": "internal"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "A4",
+      "kind": "internal"
+    },
+    {
+      "id": "A5",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    },
+    {
+      "id": "A6",
+      "kind": "internal"
+    },
+    {
+      "id": "A7",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "A1",
+        "N1"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "V0",
+        "A1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N1",
+        "A2"
+      ],
+      "visual": {
+        "x": 2794000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 4,
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "A2",
+        "G0"
+      ],
+      "visual": {
+        "x": 6604000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 5,
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A3",
+        "N2"
+      ],
+      "visual": {
+        "x": 12954000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 6,
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "N1",
+        "A3"
+      ],
+      "visual": {
+        "x": 12954000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 7,
+      "ref": "C3",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N2",
+        "A4"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -3556000
+      }
+    },
+    {
+      "idx": 8,
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "A4",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": -3556000
+      }
+    },
+    {
+      "idx": 9,
+      "ref": "L4",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "A5",
+        "N3"
+      ],
+      "visual": {
+        "x": 6604000,
+        "y": -3556000
+      }
+    },
+    {
+      "idx": 10,
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "N2",
+        "A5"
+      ],
+      "visual": {
+        "x": 2794000,
+        "y": -1016000
+      }
+    },
+    {
+      "idx": 11,
+      "ref": "C4",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N3",
+        "A6"
+      ],
+      "visual": {
+        "x": 12954000,
+        "y": -3556000
+      }
+    },
+    {
+      "idx": 12,
+      "ref": "L5",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "A6",
+        "G0"
+      ],
+      "visual": {
+        "x": 16764000,
+        "y": -3556000
+      }
+    },
+    {
+      "idx": 13,
+      "ref": "C5",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A7",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -9652000
+      }
+    },
+    {
+      "idx": 14,
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "N3",
+        "A7"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -7112000
+      }
+    }
+  ],
+  "metadata": {
+    "temporary": true,
+    "group_modes": [
+      "RL",
+      "LC",
+      "RC",
+      "LC",
+      "RL",
+      "LC",
+      "RC"
+    ],
+    "object_order": "header, V0 bridge, accepted V17 subgroup-removal groups",
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "A1",
+        "right": "N1",
+        "global_id": 1,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "V0",
+        "right": "A1",
+        "global_id": 2,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 3,
+        "unit": 2,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "N1",
+        "right": "A2",
+        "global_id": 3,
+        "in_suffix": "1002",
+        "out_suffix": "0fd0",
+        "x": 2794000,
+        "y": 2540000
+      },
+      {
+        "idx": 4,
+        "unit": 2,
+        "kind": "INDUCTOR",
+        "ref": "L2",
+        "value": "5mH",
+        "left": "A2",
+        "right": "G0",
+        "global_id": 4,
+        "in_suffix": "12df",
+        "out_suffix": "1311",
+        "x": 6604000,
+        "y": 2540000
+      },
+      {
+        "idx": 5,
+        "unit": 3,
+        "kind": "CAPACITOR",
+        "ref": "C2",
+        "value": "1uF",
+        "left": "A3",
+        "right": "N2",
+        "global_id": 5,
+        "in_suffix": "17d8",
+        "out_suffix": "17a6",
+        "x": 12954000,
+        "y": 2540000
+      },
+      {
+        "idx": 6,
+        "unit": 3,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "10k",
+        "left": "N1",
+        "right": "A3",
+        "global_id": 6,
+        "in_suffix": "1cdc",
+        "out_suffix": "1d0e",
+        "x": 12954000,
+        "y": 5080000
+      },
+      {
+        "idx": 7,
+        "unit": 4,
+        "kind": "CAPACITOR",
+        "ref": "C3",
+        "value": "1uF",
+        "left": "N2",
+        "right": "A4",
+        "global_id": 7,
+        "in_suffix": "1fae",
+        "out_suffix": "1f7c",
+        "x": -7366000,
+        "y": -3556000
+      },
+      {
+        "idx": 8,
+        "unit": 4,
+        "kind": "INDUCTOR",
+        "ref": "L3",
+        "value": "5mH",
+        "left": "A4",
+        "right": "G0",
+        "global_id": 8,
+        "in_suffix": "228b",
+        "out_suffix": "22bd",
+        "x": -3556000,
+        "y": -3556000
+      },
+      {
+        "idx": 9,
+        "unit": 5,
+        "kind": "INDUCTOR",
+        "ref": "L4",
+        "value": "5mH",
+        "left": "A5",
+        "right": "N3",
+        "global_id": 9,
+        "in_suffix": "2a61",
+        "out_suffix": "2a93",
+        "x": 6604000,
+        "y": -3556000
+      },
+      {
+        "idx": 10,
+        "unit": 5,
+        "kind": "RESISTOR",
+        "ref": "R3",
+        "value": "10k",
+        "left": "N2",
+        "right": "A5",
+        "global_id": 10,
+        "in_suffix": "2c88",
+        "out_suffix": "2cba",
+        "x": 2794000,
+        "y": -1016000
+      },
+      {
+        "idx": 11,
+        "unit": 6,
+        "kind": "CAPACITOR",
+        "ref": "C4",
+        "value": "1uF",
+        "left": "N3",
+        "right": "A6",
+        "global_id": 11,
+        "in_suffix": "2f5a",
+        "out_suffix": "2f28",
+        "x": 12954000,
+        "y": -3556000
+      },
+      {
+        "idx": 12,
+        "unit": 6,
+        "kind": "INDUCTOR",
+        "ref": "L5",
+        "value": "5mH",
+        "left": "A6",
+        "right": "G0",
+        "global_id": 12,
+        "in_suffix": "3237",
+        "out_suffix": "3269",
+        "x": 16764000,
+        "y": -3556000
+      },
+      {
+        "idx": 13,
+        "unit": 7,
+        "kind": "CAPACITOR",
+        "ref": "C5",
+        "value": "1uF",
+        "left": "A7",
+        "right": "G0",
+        "global_id": 13,
+        "in_suffix": "3730",
+        "out_suffix": "36fe",
+        "x": -7366000,
+        "y": -9652000
+      },
+      {
+        "idx": 14,
+        "unit": 7,
+        "kind": "RESISTOR",
+        "ref": "R4",
+        "value": "10k",
+        "left": "N3",
+        "right": "A7",
+        "global_id": 14,
+        "in_suffix": "3c34",
+        "out_suffix": "3c66",
+        "x": -7366000,
+        "y": -7112000
+      }
+    ]
+  }
+}

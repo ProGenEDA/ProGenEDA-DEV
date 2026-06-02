@@ -1,0 +1,519 @@
+{
+  "batch_id": "MIXED_RCL_V18_FINAL_TOPOLOGY_STATIC_20260602",
+  "status": "static_generated_awaiting_user_final_proteus_test",
+  "source_feedback": "User reported all V17 component-removal cases worked. V18 applies that accepted method to 6-component, 21-component, and 15 named topology final-test cases.",
+  "method": "Use accepted V17 subgroup-removal groups, marker-relative WIRE coordinates, unique global DSN/CDB IDs, and E001 as base.",
+  "test_order": [
+    "RCL_V18_T01_6_COMPONENT_MIXED",
+    "RCL_V18_T02_21_COMPONENT_MIXED",
+    "RCL_V18_T03_01_SIMPLE_LOOP",
+    "RCL_V18_T04_02_SERIES_CIRCUIT",
+    "RCL_V18_T05_03_PARALLEL_CIRCUIT",
+    "RCL_V18_T06_04_SERIES_PARALLEL_COMBO",
+    "RCL_V18_T07_05_BASIC_VOLTAGE_DIVIDER",
+    "RCL_V18_T08_06_MULTI_STEP_VOLTAGE_DIVIDER",
+    "RCL_V18_T09_07_CURRENT_DIVIDER",
+    "RCL_V18_T10_08_DELTA_NETWORK",
+    "RCL_V18_T11_09_STAR_Y_NETWORK",
+    "RCL_V18_T12_10_DELTA_TO_STAR_SETUP",
+    "RCL_V18_T13_11_WHEATSTONE_BRIDGE",
+    "RCL_V18_T14_12_BALANCED_WHEATSTONE_BRIDGE",
+    "RCL_V18_T15_13_UNBALANCED_WHEATSTONE_BRIDGE",
+    "RCL_V18_T16_14_H_BRIDGE_RESISTOR_VERSION",
+    "RCL_V18_T17_15_R_2R_LADDER_NETWORK"
+  ],
+  "cases": [
+    {
+      "case_id": "RCL_V18_T01_6_COMPONENT_MIXED",
+      "description": "Six-component mixed circuit using RCL + RC + C.",
+      "component_count": 6,
+      "resistor_count": 2,
+      "capacitor_count": 3,
+      "inductor_count": 1,
+      "group_modes": [
+        "RCL",
+        "RC",
+        "C"
+      ],
+      "object_chunk_len": 4261,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 3,
+        "WIRE": 13,
+        "RESISTOR": 4,
+        "REALIND": 3,
+        "CAPACITOR": 3,
+        "CAP10": 3,
+        "COMPONENT ID": 6,
+        "COMPONENT VALUE": 6
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T02_21_COMPONENT_MIXED",
+      "description": "Twenty-one-component mixed circuit using seven accepted full RCL units.",
+      "component_count": 21,
+      "resistor_count": 7,
+      "capacitor_count": 7,
+      "inductor_count": 7,
+      "group_modes": [
+        "RCL",
+        "RCL",
+        "RCL",
+        "RCL",
+        "RCL",
+        "RCL",
+        "RCL"
+      ],
+      "object_chunk_len": 14299,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 21,
+        "$TEROUTPUT": 15,
+        "$TERGROUND": 7,
+        "WIRE": 43,
+        "RESISTOR": 14,
+        "REALIND": 21,
+        "CAPACITOR": 7,
+        "CAP10": 7,
+        "COMPONENT ID": 21,
+        "COMPONENT VALUE": 21
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T03_01_SIMPLE_LOOP",
+      "description": "Simple loop: one RCL path from power to ground.",
+      "component_count": 3,
+      "resistor_count": 1,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "group_modes": [
+        "RCL"
+      ],
+      "object_chunk_len": 2263,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 3,
+        "COMPONENT VALUE": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T04_02_SERIES_CIRCUIT",
+      "description": "Series circuit: RC section followed by RCL section.",
+      "component_count": 5,
+      "resistor_count": 2,
+      "capacitor_count": 2,
+      "inductor_count": 1,
+      "group_modes": [
+        "RC",
+        "RCL"
+      ],
+      "object_chunk_len": 3589,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 5,
+        "$TERGROUND": 1,
+        "WIRE": 11,
+        "RESISTOR": 4,
+        "REALIND": 3,
+        "CAPACITOR": 2,
+        "CAP10": 2,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T05_03_PARALLEL_CIRCUIT",
+      "description": "Parallel circuit: RCL, RC, and LC branches between power and ground.",
+      "component_count": 7,
+      "resistor_count": 2,
+      "capacitor_count": 3,
+      "inductor_count": 2,
+      "group_modes": [
+        "RCL",
+        "RC",
+        "LC"
+      ],
+      "object_chunk_len": 4941,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 5,
+        "$TERGROUND": 3,
+        "WIRE": 15,
+        "RESISTOR": 4,
+        "REALIND": 6,
+        "CAPACITOR": 3,
+        "CAP10": 3,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T06_04_SERIES_PARALLEL_COMBO",
+      "description": "Series-parallel combo: RC section feeding parallel RCL and LC branches.",
+      "component_count": 7,
+      "resistor_count": 2,
+      "capacitor_count": 3,
+      "inductor_count": 2,
+      "group_modes": [
+        "RC",
+        "RCL",
+        "LC"
+      ],
+      "object_chunk_len": 4941,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 2,
+        "WIRE": 15,
+        "RESISTOR": 4,
+        "REALIND": 6,
+        "CAPACITOR": 3,
+        "CAP10": 3,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T07_05_BASIC_VOLTAGE_DIVIDER",
+      "description": "Basic divider: RL upper section and RC lower section with midpoint N1.",
+      "component_count": 4,
+      "resistor_count": 2,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "group_modes": [
+        "RL",
+        "RC"
+      ],
+      "object_chunk_len": 2917,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 4,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 9,
+        "RESISTOR": 4,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T08_06_MULTI_STEP_VOLTAGE_DIVIDER",
+      "description": "Multi-step divider: RL, RC, and LC sections creating N1 and N2 taps.",
+      "component_count": 6,
+      "resistor_count": 2,
+      "capacitor_count": 2,
+      "inductor_count": 2,
+      "group_modes": [
+        "RL",
+        "RC",
+        "LC"
+      ],
+      "object_chunk_len": 4269,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 13,
+        "RESISTOR": 4,
+        "REALIND": 6,
+        "CAPACITOR": 2,
+        "CAP10": 2,
+        "COMPONENT ID": 6,
+        "COMPONENT VALUE": 6
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T09_07_CURRENT_DIVIDER",
+      "description": "Current divider: several parallel mixed paths from V0 to G0.",
+      "component_count": 8,
+      "resistor_count": 2,
+      "capacitor_count": 4,
+      "inductor_count": 2,
+      "group_modes": [
+        "RC",
+        "RCL",
+        "C",
+        "LC"
+      ],
+      "object_chunk_len": 5613,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 5,
+        "$TERGROUND": 4,
+        "WIRE": 17,
+        "RESISTOR": 4,
+        "REALIND": 6,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 8,
+        "COMPONENT VALUE": 8
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T10_08_DELTA_NETWORK",
+      "description": "Delta network using V0, N1, and G0 as triangle vertices.",
+      "component_count": 6,
+      "resistor_count": 2,
+      "capacitor_count": 2,
+      "inductor_count": 2,
+      "group_modes": [
+        "RL",
+        "RC",
+        "LC"
+      ],
+      "object_chunk_len": 4269,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 13,
+        "RESISTOR": 4,
+        "REALIND": 6,
+        "CAPACITOR": 2,
+        "CAP10": 2,
+        "COMPONENT ID": 6,
+        "COMPONENT VALUE": 6
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T11_09_STAR_Y_NETWORK",
+      "description": "Star network with central node N1 and three mixed outer arms.",
+      "component_count": 6,
+      "resistor_count": 2,
+      "capacitor_count": 2,
+      "inductor_count": 2,
+      "group_modes": [
+        "RL",
+        "RC",
+        "LC"
+      ],
+      "object_chunk_len": 4269,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 13,
+        "RESISTOR": 4,
+        "REALIND": 6,
+        "CAPACITOR": 2,
+        "CAP10": 2,
+        "COMPONENT ID": 6,
+        "COMPONENT VALUE": 6
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T12_10_DELTA_TO_STAR_SETUP",
+      "description": "Delta-to-star setup with mixed delta and star sides for comparison.",
+      "component_count": 12,
+      "resistor_count": 4,
+      "capacitor_count": 4,
+      "inductor_count": 4,
+      "group_modes": [
+        "RL",
+        "RC",
+        "LC",
+        "RL",
+        "RC",
+        "LC"
+      ],
+      "object_chunk_len": 8281,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 12,
+        "$TEROUTPUT": 11,
+        "$TERGROUND": 2,
+        "WIRE": 25,
+        "RESISTOR": 8,
+        "REALIND": 12,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 12,
+        "COMPONENT VALUE": 12
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T13_11_WHEATSTONE_BRIDGE",
+      "description": "Wheatstone bridge: two mixed side branches and a bridge between N1 and N2.",
+      "component_count": 11,
+      "resistor_count": 3,
+      "capacitor_count": 4,
+      "inductor_count": 4,
+      "group_modes": [
+        "RC",
+        "LC",
+        "RL",
+        "RCL",
+        "LC"
+      ],
+      "object_chunk_len": 7627,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 11,
+        "$TEROUTPUT": 10,
+        "$TERGROUND": 2,
+        "WIRE": 23,
+        "RESISTOR": 6,
+        "REALIND": 12,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 11,
+        "COMPONENT VALUE": 11
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T14_12_BALANCED_WHEATSTONE_BRIDGE",
+      "description": "Balanced Wheatstone bridge with symmetric mixed side branches.",
+      "component_count": 10,
+      "resistor_count": 3,
+      "capacitor_count": 4,
+      "inductor_count": 3,
+      "group_modes": [
+        "RC",
+        "LC",
+        "RC",
+        "LC",
+        "RL"
+      ],
+      "object_chunk_len": 6947,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 10,
+        "$TEROUTPUT": 9,
+        "$TERGROUND": 2,
+        "WIRE": 21,
+        "RESISTOR": 6,
+        "REALIND": 9,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 10,
+        "COMPONENT VALUE": 10
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T15_13_UNBALANCED_WHEATSTONE_BRIDGE",
+      "description": "Unbalanced Wheatstone bridge with a heavier lower-right RCL section.",
+      "component_count": 11,
+      "resistor_count": 4,
+      "capacitor_count": 4,
+      "inductor_count": 3,
+      "group_modes": [
+        "RC",
+        "LC",
+        "RL",
+        "RCL",
+        "RC"
+      ],
+      "object_chunk_len": 7601,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 11,
+        "$TEROUTPUT": 10,
+        "$TERGROUND": 2,
+        "WIRE": 23,
+        "RESISTOR": 8,
+        "REALIND": 9,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 11,
+        "COMPONENT VALUE": 11
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T16_14_H_BRIDGE_RESISTOR_VERSION",
+      "description": "H-bridge style network with two mixed vertical branches and one cross bridge.",
+      "component_count": 11,
+      "resistor_count": 3,
+      "capacitor_count": 4,
+      "inductor_count": 4,
+      "group_modes": [
+        "RC",
+        "LC",
+        "RL",
+        "RCL",
+        "LC"
+      ],
+      "object_chunk_len": 7627,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 11,
+        "$TEROUTPUT": 10,
+        "$TERGROUND": 2,
+        "WIRE": 23,
+        "RESISTOR": 6,
+        "REALIND": 12,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 11,
+        "COMPONENT VALUE": 11
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V18_T17_15_R_2R_LADDER_NETWORK",
+      "description": "R-2R-style ladder topology using repeated mixed series sections and LC shunts.",
+      "component_count": 14,
+      "resistor_count": 4,
+      "capacitor_count": 5,
+      "inductor_count": 5,
+      "group_modes": [
+        "RL",
+        "LC",
+        "RC",
+        "LC",
+        "RL",
+        "LC",
+        "RC"
+      ],
+      "object_chunk_len": 9633,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 14,
+        "$TEROUTPUT": 11,
+        "$TERGROUND": 4,
+        "WIRE": 29,
+        "RESISTOR": 8,
+        "REALIND": 15,
+        "CAPACITOR": 5,
+        "CAP10": 5,
+        "COMPONENT ID": 14,
+        "COMPONENT VALUE": 14
+      },
+      "static_validation_issues": []
+    }
+  ]
+}

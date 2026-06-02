@@ -932,3 +932,57 @@ V17 static checks passed: marker counts match requested component counts, WIRE
 coordinate windows are marker-relative and sane, component IDs are unique, and
 the target T05 contains exactly three resistors, four capacitors, and one
 inductor.
+
+User feedback on V17:
+
+```text
+All V17 cases worked.
+```
+
+This confirms that whole-subgroup removal from accepted repeated RCL units is
+safe for temporary mixed R/C/L generation. The accepted group primitives are:
+
+```text
+RCL  full unit: R -> C -> L
+RC   remove L
+LC   remove R
+RL   remove C
+C    remove R and L
+```
+
+`MIXED_RCL_V18_FINAL_TOPOLOGY_TEMP_2026_06_02` applies the V17 method to the
+final mixed R/C/L topology test set. It keeps E001 as the base project, emits
+one donor-derived V0 power bridge, uses G0 ground endpoints, patches all WIRE
+coordinates at `WIRE marker + 9`, and keeps component IDs globally unique with
+ROOT.CDB in object-emission order.
+
+V18 test order:
+
+```text
+T01  6-component mixed circuit
+T02  21-component mixed circuit
+T03  simple loop
+T04  series circuit
+T05  parallel circuit
+T06  series-parallel combo
+T07  basic voltage divider
+T08  multi-step voltage divider
+T09  current divider
+T10  delta network
+T11  star/Y network
+T12  delta-to-star setup
+T13  Wheatstone bridge
+T14  balanced Wheatstone bridge
+T15  unbalanced Wheatstone bridge
+T16  H-bridge resistor-version topology
+T17  R-2R ladder topology
+```
+
+V18 static checks passed for all 17 cases: every manifest has zero
+`static_validation_issues`, every object chunk starts with `00` and ends with
+`FF`, and every generated `.pdsprj` contains `PROJECT.XML`, `ROOT.DSN`,
+`ROOT.CDB`, and `SCRIPTS/PWRRAILS.DAT`. The V18 archive SHA256 is:
+
+```text
+cd63ac4ee90e434313a6012f178b6e8f2bf3b8fef25400dbab136bc621551c63
+```
