@@ -1,0 +1,152 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "project": {
+    "name": "MIXED_RCL_LOCKED_T02_21_RULE_TOPOLOGY",
+    "output_basename": "MIXED_RCL_LOCKED_T02_21_RULE_TOPOLOGY",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "D1",
+      "kind": "internal"
+    },
+    {
+      "id": "D2",
+      "kind": "internal"
+    },
+    {
+      "id": "M0",
+      "kind": "internal"
+    },
+    {
+      "id": "E1",
+      "kind": "internal"
+    },
+    {
+      "id": "E2",
+      "kind": "internal"
+    },
+    {
+      "id": "F1",
+      "kind": "internal"
+    },
+    {
+      "id": "F2",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "V0",
+      "end": "D1"
+    },
+    {
+      "mode": "RC",
+      "start": "D1",
+      "end": "D2"
+    },
+    {
+      "mode": "LC",
+      "start": "D2",
+      "end": "M0"
+    },
+    {
+      "mode": "RCL",
+      "start": "V0",
+      "end": "E1"
+    },
+    {
+      "mode": "RL",
+      "start": "E1",
+      "end": "E2"
+    },
+    {
+      "mode": "RC",
+      "start": "E2",
+      "end": "M0"
+    },
+    {
+      "mode": "RCL",
+      "start": "M0",
+      "end": "F1"
+    },
+    {
+      "mode": "LC",
+      "start": "F1",
+      "end": "F2"
+    },
+    {
+      "mode": "RL",
+      "start": "F2",
+      "end": "G0"
+    }
+  ],
+  "metadata": {
+    "source": "locked mixed R/C/L examples",
+    "description": "Corrected 21-component topology: two seven-component V0-to-M0 series strings feeding one seven-component M0-to-G0 series string.",
+    "expected_counts": {
+      "RESISTOR": 7,
+      "CAPACITOR": 7,
+      "INDUCTOR": 7
+    },
+    "circuit_rule": "Row 1 V0->M0 has 7 components, row 2 V0->M0 has 7 components, row 3 M0->G0 has 7 components.",
+    "circuit_rows": [
+      {
+        "row": 1,
+        "rule": "seven components in series from V0 to M0",
+        "group_modes": [
+          "RCL",
+          "RC",
+          "LC"
+        ],
+        "nodes": [
+          "V0",
+          "D1",
+          "D2",
+          "M0"
+        ]
+      },
+      {
+        "row": 2,
+        "rule": "seven components in series from V0 to M0",
+        "group_modes": [
+          "RCL",
+          "RL",
+          "RC"
+        ],
+        "nodes": [
+          "V0",
+          "E1",
+          "E2",
+          "M0"
+        ]
+      },
+      {
+        "row": 3,
+        "rule": "seven components in series from M0 to G0",
+        "group_modes": [
+          "RCL",
+          "LC",
+          "RL"
+        ],
+        "nodes": [
+          "M0",
+          "F1",
+          "F2",
+          "G0"
+        ]
+      }
+    ]
+  }
+}

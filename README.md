@@ -9,10 +9,10 @@ Current target:
 - No modification of Proteus executables
 - No license circumvention
 - Generator input language: CircuitIR JSON
-- Current generated domain: locked V9 terminal-based resistor graphs from E001, plus locked mixed resistor/capacitor passive graphs
+- Current generated domain: locked V9 terminal-based resistor graphs from E001, locked mixed resistor/capacitor passive graphs, and locked mixed resistor/capacitor/inductor group-based graphs
 - Resistor generator status: accepted as main for the current scope
 - Capacitor status: terminal-attached capacitor records are accepted inside the locked mixed passive generator; standalone capacitor-only promotion remains in temporary V13 testing
-- Inductor status: temporary; V3 terminal-only and V5 single `V0` to `G0` donor04-order diagnostics worked, but 6/21, 15-circuit, and R/C/L mixed tests are still required before main promotion
+- Inductor status: standalone inductor generation remains temporary; mixed R/C/L generation is locked for the accepted group-based scope through the 6-component, corrected 21-rule, and 15 topology packs
 - Current power/ground support: one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge feeds powered `V0` input terminals; `G0` right endpoints become `$TERGROUND`
 - Current resistor visual support: horizontal and 90-degree vertical records through `visual.orientation_hint`; `layout.visual_wires` is parsed but skipped in production until a safe donor is validated
 - Pending later composition milestone: one quad `74HC08` package with passive terminal/wire rails
@@ -44,6 +44,7 @@ proteusgen validate examples\single_resistor_vcc_gnd.json
 proteusgen generate examples\single_resistor_vcc_gnd.json --output out\single_r1.pdsprj
 proteusgen generate-resistors examples\resistor_v9_power_ground.json --outdir out\single_r_power_ground
 proteusgen generate-mixed-passives path\to\mixed_passive.json --outdir out\mixed_passive
+proteusgen generate-mixed-rcl path\to\mixed_rcl.json --outdir out\mixed_rcl
 python generate_from_json.py --input examples\resistor_v9_power_ground.json --outdir out\single_r_power_ground
 proteusgen compare out\single_r1.pdsprj path\to\resaved.pdsprj
 proteusgen record-result out\single_r1.result-template.json
@@ -55,6 +56,8 @@ Run the CLI from this repository checkout. When invoking an installed package el
 The V9 resistor generator reads `proteus-circuit-ir/v0.1` JSON. See `docs/resistor_json_input.md` and `schemas/resistor_circuit_ir_v0_1.schema.json`.
 
 The mixed resistor/capacitor generator reads `proteus-mixed-passive-ir/v0.1` JSON. It uses the same two-character `V0`/`G0` power-ground convention and the locked safe-spacing rules.
+
+The mixed R/C/L generator reads `mixed-rcl-circuit-ir/v0.1` JSON. See `docs/mixed_rcl_json_input.md`. Its current locked input shape is group-based: each group is one accepted donor-derived `RCL`, `RC`, `LC`, `RL`, or `C` block with two-character terminal labels.
 
 The temporary inductor work-in-progress lives under `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main`.
 

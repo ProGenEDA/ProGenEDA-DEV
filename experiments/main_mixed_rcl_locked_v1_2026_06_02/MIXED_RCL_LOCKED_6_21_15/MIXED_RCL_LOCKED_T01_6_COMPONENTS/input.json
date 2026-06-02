@@ -1,0 +1,46 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "project": {
+    "name": "MIXED_RCL_LOCKED_T01_6_COMPONENTS",
+    "output_basename": "MIXED_RCL_LOCKED_T01_6_COMPONENTS",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "V0",
+      "end": "G0"
+    },
+    {
+      "mode": "RC",
+      "start": "V0",
+      "end": "G0"
+    },
+    {
+      "mode": "C",
+      "start": "V0",
+      "end": "G0"
+    }
+  ],
+  "metadata": {
+    "source": "locked mixed R/C/L examples",
+    "description": "Six-component mixed R/C/L circuit using one RCL block, one RC block, and one C-only block.",
+    "expected_counts": {
+      "RESISTOR": 2,
+      "CAPACITOR": 3,
+      "INDUCTOR": 1
+    }
+  }
+}

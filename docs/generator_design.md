@@ -10,6 +10,7 @@ Version 0 target:
 - deterministic `CircuitIR` JSON CLI
 - locked V9 terminal-based resistor generation from E001
 - locked mixed resistor/capacitor passive generation from E001 for the current scope
+- locked mixed resistor/capacitor/inductor group-based generation from E001 for the current scope
 - standalone capacitor generation remains in the temporary lane pending the wider V13 checks
 - D02 four-unit `74HC08` repack as a diagnostic control only
 
@@ -85,6 +86,12 @@ The mixed resistor/capacitor generator lives in `src/proteusgen/mixed_passive.py
 proteusgen generate-mixed-passives
 ```
 
+The mixed resistor/capacitor/inductor generator lives in `src/proteusgen/mixed_rcl.py` and is exposed by:
+
+```text
+proteusgen generate-mixed-rcl
+```
+
 Locked behavior:
 
 ```text
@@ -108,11 +115,36 @@ safe grid = 2540000 internal units on x and y
 duplicate positions = shifted so components are not emitted on top of each other
 ```
 
+Mixed R/C/L locked behavior:
+
+```text
+input shape = group recipes, not free component placement
+allowed groups = RCL, RC, LC, RL, C
+base = E001
+donor schema = rcl_4x_t07_unit_donor
+wire patching = WIRE marker + 9 for every C/L/R wire record
+power = one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge
+ground = G0 endpoints become $TERGROUND where supported by the accepted group
+component IDs = globally unique across R/C/L
+ROOT.CDB order = emitted component IDs
+locked examples = 6-component case, corrected 21-rule topology, and 15 requested topologies
+```
+
+The corrected 21 R/C/L topology is specifically:
+
+```text
+row 1: V0 -> seven mixed components -> M0
+row 2: V0 -> seven mixed components -> M0
+row 3: M0 -> seven mixed components -> G0
+```
+
+It is encoded as `RCL+RC+LC`, `RCL+RL+RC`, and `RCL+LC+RL`, giving exactly `7R / 7C / 7L`.
+
 ## Future supported component groups
 
-Priority after the locked resistor and mixed passive generators:
+Priority after the locked resistor, mixed passive, and mixed R/C/L generators:
 
-1. inductor
+1. standalone inductor promotion or deferment cleanup
 2. 74HC-family ICs, starting from simple logic-gate packages
 3. push buttons and simple switches
 4. DC voltage source

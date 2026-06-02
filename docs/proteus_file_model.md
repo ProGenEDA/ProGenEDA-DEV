@@ -1028,3 +1028,40 @@ V19 corrected-21 archive SHA256 is:
 ```text
 6e6c38e09c26bec72a6588b379a3f9813fd6d8b01b9cc6db10fff90033bd8d76
 ```
+
+User feedback on V19:
+
+```text
+V19 corrected 21 worked; lock it in.
+```
+
+The accepted R/C/L method was promoted into main code as
+`src/proteusgen/mixed_rcl.py`. The main generator uses:
+
+```text
+base: E001
+donor schema: rcl_4x_t07_unit_donor
+groups: RCL, RC, LC, RL, C
+wire coordinate rule: WIRE marker + 9
+component identity: globally unique DSN IDs across R/C/L
+CDB order: emitted component IDs
+power: one donor-derived V0 bridge
+```
+
+`MAIN_MIXED_RCL_LOCKED_V1_2026_06_02` generated the locked 17-case pack:
+
+```text
+T01  6-component mixed R/C/L case
+T02  corrected 21-rule topology, exactly 7R/7C/7L
+T03-T17  the 15 requested topology cases
+```
+
+Static checks passed for all 17 locked cases: zero
+`static_validation_issues`, required internal files present, object chunks start
+with `00` and end with `FF`, component refs/IDs and link suffixes are unique,
+and the corrected 21 case graph uses all 21 components exactly once across the
+three accepted paths. The locked archive SHA256 is:
+
+```text
+5a570d480610d8189435b7f249e7a988c1fda987c1541e383e58e652395acc65
+```

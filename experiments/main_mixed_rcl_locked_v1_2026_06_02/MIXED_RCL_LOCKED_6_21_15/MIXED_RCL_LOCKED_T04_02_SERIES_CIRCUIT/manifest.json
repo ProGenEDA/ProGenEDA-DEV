@@ -1,0 +1,248 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "status": "locked_current_scope",
+  "project_name": "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT",
+  "output_basename": "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "component_count_requested": 5,
+  "component_count_emitted_cdb": 5,
+  "component_count_emitted_dsn": 5,
+  "resistor_count": 2,
+  "capacitor_count": 2,
+  "inductor_count": 1,
+  "node_count_emitted": 6,
+  "nodes": [
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "A2",
+      "kind": "internal"
+    },
+    {
+      "id": "B2",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "group_count": 2,
+  "group_modes": [
+    "RC",
+    "RCL"
+  ],
+  "power_bridge_count": 1,
+  "ground_terminal_count": 1,
+  "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+  "object_chunk_len": 3589,
+  "root_cdb_len": 725,
+  "root_dsn_len": 71236,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 5,
+    "$TEROUTPUT": 5,
+    "$TERGROUND": 1,
+    "WIRE": 11,
+    "RESISTOR": 4,
+    "REALIND": 3,
+    "CAPACITOR": 2,
+    "CAP10": 2,
+    "COMPONENT ID": 5,
+    "COMPONENT VALUE": 5
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 66704,
+    "second_isis": 70339,
+    "second_object_data": 70374,
+    "object_data_pointer": 70387
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A1",
+      "right": "N1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -7366000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "V0",
+      "right": "A1",
+      "global_id": 2,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "1uF",
+      "left": "A2",
+      "right": "B2",
+      "global_id": 3,
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": 2794000,
+      "y": 2540000
+    },
+    {
+      "idx": 4,
+      "unit": 2,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "B2",
+      "right": "G0",
+      "global_id": 4,
+      "in_suffix": "12df",
+      "out_suffix": "1311",
+      "x": 6604000,
+      "y": 2540000
+    },
+    {
+      "idx": 5,
+      "unit": 2,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "10k",
+      "left": "N1",
+      "right": "A2",
+      "global_id": 5,
+      "in_suffix": "1506",
+      "out_suffix": "1538",
+      "x": 2794000,
+      "y": 5080000
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A1",
+        "N1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "V0",
+        "A1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A2",
+        "B2"
+      ],
+      "visual": {
+        "x": 2794000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 4,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "B2",
+        "G0"
+      ],
+      "visual": {
+        "x": 6604000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 5,
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "N1",
+        "A2"
+      ],
+      "visual": {
+        "x": 2794000,
+        "y": 5080000
+      }
+    }
+  ],
+  "static_validation_issues": [],
+  "metadata": {
+    "source": "locked mixed R/C/L examples",
+    "description": "Series circuit: RC section followed by RCL section."
+  },
+  "known_limitations": [
+    "Current main R/C/L generation is group-based and limited to proven RCL, RC, LC, RL, and C donor-removal blocks.",
+    "Terminal labels and generated refs are two ASCII characters.",
+    "The V0 power terminal is emitted through the donor-derived output bridge. Component endpoints use input/output/ground terminals.",
+    "Geometry is donor-derived horizontal component blocks; topology is encoded by repeated terminal labels."
+  ],
+  "output_files": [
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.pdsprj",
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.ROOT.CDB.bin",
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.ROOT.DSN.bin",
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.OBJECT_CHUNK.bin",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.pdsprj": "fe550b88e69cd66284a59e9f20415e2e0b3a1352a642ac1b9efd991a19069ecb",
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.ROOT.CDB.bin": "d9b0d567c623c07f2462d047c75ea7622bc1fd59bef3e2c549def3db595acf18",
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.ROOT.DSN.bin": "8c5786adc7f8dafb7dd1a528df5aae576a5e494cac447ae1df97f5de82f059f8",
+    "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT.OBJECT_CHUNK.bin": "35c128cbd17283af22505b6c50456e605439b0f55af28b863176ea04604460db",
+    "object_chunk": "35c128cbd17283af22505b6c50456e605439b0f55af28b863176ea04604460db",
+    "ROOT.CDB": "d9b0d567c623c07f2462d047c75ea7622bc1fd59bef3e2c549def3db595acf18",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "rcl_unit_donor": "340b5972d35ce8b63c1aad6048c8fe33a2ea969ae2ad272acc316ce12f8459f5"
+  }
+}
