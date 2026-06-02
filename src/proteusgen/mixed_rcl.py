@@ -1179,7 +1179,7 @@ def generate_mixed_rcl_project(
         "- V0/power uses the accepted donor-derived $TERPOWER -> $TEROUTPUT bridge.\n"
         "- Component starts use $TERINPUT terminals.\n"
         "- Component ends use $TEROUTPUT, except G0 endpoints use $TERGROUND.\n"
-        "- R/C/L, RC, LC, RL, and C-only blocks are made by removing whole subgroups from accepted donor units.\n",
+        "- R/C/L, RC, LC, RL, C-only, R-only, and L-only blocks are made by removing whole subgroups from accepted donor units.\n",
         encoding="utf-8",
     )
     return MixedRclGenerationResult(output_path, cdb_path, dsn_path, chunk_path, manifest_path, readme_path, version_path, manifest)
