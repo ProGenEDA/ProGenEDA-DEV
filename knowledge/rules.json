@@ -355,20 +355,29 @@
     {
       "id": "R040",
       "title": "Scaled RCL donor repeats complete C/L/R units",
-      "status": "static_donor_observed_pending_v14_user_netlist_test",
-      "confidence": 0.86,
+      "status": "confirmed_donor_transplant_but_generated_mutation_failed",
+      "confidence": 0.88,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V14 method"],
-      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602"],
-      "rule": "The supplied 4x mixed R/C/L donor does not use pooled capacitor blocks or pooled R/L input arrays. Its ROOT.DSN object data is one V0 power bridge followed by four complete units: C output, C input+CAPACITOR+wires, L input, R input, L $TERGROUND+REALIND+wires, then R output+RESISTOR+wires. Suffixes advance by 0x07d6, equal to the 2006-byte non-final unit length, and the final unit's R right-wire record is 51 bytes with the final FF terminator. Use this as the current scaling hypothesis until V14 Proteus testing accepts or rejects it."
+      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602", "MIXED_RCL_V14_USER_FEEDBACK_BAD_OBJECT_AFTER_CONTROLS_20260602"],
+      "rule": "The supplied 4x mixed R/C/L donor does not use pooled capacitor blocks or pooled R/L input arrays. Its ROOT.DSN object data is one V0 power bridge followed by four complete units: C output, C input+CAPACITOR+wires, L input, R input, L $TERGROUND+REALIND+wires, then R output+RESISTOR+wires. Suffixes advance by 0x07d6, equal to the 2006-byte non-final unit length, and the final unit's R right-wire record is 51 bytes with the final FF terminator. V14 T00 and T00B proved that exact donor repack and donor chunk+CDB insertion into E001 are valid. Every generated V14 case after that failed with Bad Object Record/corrupt pink wires, so the repeated-unit donor shape is real but V14's mutation strategy is not safe."
     },
     {
       "id": "R041",
       "title": "Mixed RCL resistor record offsets depend on visible value length",
-      "status": "static_donor_observed_pending_v14_user_netlist_test",
+      "status": "static_donor_observed_not_independently_accepted",
       "confidence": 0.82,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L resistor records"],
       "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602"],
       "rule": "The RESISTOR record inside the supplied mixed R/C/L donor has visible value '10k' with length 3. As a result, the component identity field is at value_offset+252, observed as byte offset 325 for the donor record, and the pin-link suffix fields start at value_offset+265 and value_offset+269. Fixed resistor-only V9 offsets are unsafe for mixed-family resistor records when the visible value length changes."
+    },
+    {
+      "id": "R042",
+      "title": "RCL Bad Object Record boundary is generated mutation",
+      "status": "static_isolation_pack_generated_pending_user_test",
+      "confidence": 0.8,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V15 method"],
+      "evidence": ["MIXED_RCL_V14_USER_FEEDBACK_BAD_OBJECT_AFTER_CONTROLS_20260602", "MIXED_RCL_V15_MUTATION_ISOLATION_STATIC_20260602"],
+      "rule": "Because V14 T00 and T00B worked, the exact 4x donor object chunk, donor CDB, and E001 transplant path are valid. Because every generated V14 case failed, the active boundary is one of the generated mutations: terminal label changes, coordinate/component record patching, or shortening the 4x object stream. V15 isolates these boundaries by changing only terminal labels in the full 4x donor, restoring donor labels on the failed V14 generated 4x chunk, and testing exact first-unit subsets with alternative final-wire/CDB choices."
     }
   ]
 }

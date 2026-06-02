@@ -823,3 +823,41 @@ records. In the donor, the resistor component ID is at `value_offset + 252`
 repeated-unit schema. It emits controls plus 1x, 2x, 3x, 4x, 4x supplied-ID-gap,
 6x, 7x, and 21x repeated `V0 -> R -> C -> L -> G0` units for Proteus
 open/netlist/simulation testing.
+
+User feedback on V14:
+
+```text
+T00 exact donor repack: worked
+T00B donor object chunk and CDB inserted into E001: worked
+T01 and later generated cases: Bad Object Record and corrupt pink-wire render
+```
+
+That result proves the donor object chunk, donor CDB, E001 transplant path, and
+DSN section pointer patching are valid. The active failure is generated mutation
+inside the object records.
+
+The closest generated 4x case, V14 T05, had the same object chunk length,
+marker counts, and ROOT.CDB hash as the working donor. Byte comparison showed
+the first unit differed only in terminal label bytes (`VT`/`X1` changed to
+`A1`/`B1`), while later units also carried coordinate/component mutations.
+
+`MIXED_RCL_V15_MUTATION_ISOLATION_TEMP_2026_06_02` isolates this:
+
+```text
+T00  exact 4x donor chunk in E001 control
+T01  first-unit terminal labels only changed to A1/B1
+T02  all four units terminal labels changed to unique A#/B# labels
+T03  all four units terminal labels changed to repeated N1/N2 labels
+T04  failed V14 T05 generated 4x chunk with donor terminal labels restored
+T05  exact first donor unit only, 50-byte right wire final FF, 3-component CDB
+T06  exact first donor unit only, 50-byte right wire final FF, full donor CDB
+T07  exact first donor unit only, 51-byte final right wire, 3-component CDB
+```
+
+Interpretation:
+
+```text
+If T01 fails, terminal label mutation itself is unsafe in this donor family.
+If T01-T03 pass but T04 fails, coordinate/component mutation is the bad-record source.
+If T05-T07 fail, shortening the 4x donor object stream is unsafe with this DSN model.
+```
