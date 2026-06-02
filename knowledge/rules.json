@@ -382,11 +382,20 @@
     {
       "id": "R043",
       "title": "Mixed RCL wire coordinates are marker-relative",
-      "status": "static_v16_generated_pending_user_test",
-      "confidence": 0.88,
+      "status": "user_confirmed_for_v16_repeated_units",
+      "confidence": 0.94,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L wire records"],
-      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V15_USER_FEEDBACK_MUTATION_ISOLATION_20260602", "MIXED_RCL_V16_WIRE_OFFSET_FIX_STATIC_20260602"],
-      "rule": "Do not patch mixed RCL WIRE coordinates at a fixed byte offset. In the 4x RCL donor, capacitor and inductor wire records contain the WIRE marker at byte 24 and coordinates at byte 33, but resistor wire records contain the WIRE marker at byte 25 and coordinates at byte 34. Patch WIRE coordinates at marker_position + 9. V14 used byte 33 for all wires, corrupting resistor wire records and producing Bad Object Record/pink-wire rendering."
+      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V15_USER_FEEDBACK_MUTATION_ISOLATION_20260602", "MIXED_RCL_V16_WIRE_OFFSET_FIX_STATIC_20260602", "MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602"],
+      "rule": "Do not patch mixed RCL WIRE coordinates at a fixed byte offset. In the 4x RCL donor, capacitor and inductor wire records contain the WIRE marker at byte 24 and coordinates at byte 33, but resistor wire records contain the WIRE marker at byte 25 and coordinates at byte 34. Patch WIRE coordinates at marker_position + 9. V14 used byte 33 for all wires, corrupting resistor wire records and producing Bad Object Record/pink-wire rendering. V16 user testing confirmed this marker-relative rule works for 1x, 2x, 3x, 4x, 6x, 7x, and 21x full R/C/L repeated-unit outputs."
+    },
+    {
+      "id": "R044",
+      "title": "Mixed RCL component removal stays diagnostic",
+      "status": "static_v17_generated_pending_user_test",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V17 method"],
+      "evidence": ["MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V17_COMPONENT_REMOVAL_STATIC_20260602"],
+      "rule": "The next unaccepted boundary is removing whole C/L/R subgroups from accepted V16 repeated units to form RC, LC, RL, and C-only branches. V17 keeps donor subgroup order, patches WIRE coordinates at marker_position + 9, and gives the final kept subgroup a valid final FF wire terminator. Do not promote arbitrary uneven R/C/L counts, including the requested 3R/4C/1L case, until V17 user testing confirms these removal cases open and pass netlist/simulation."
     }
   ]
 }

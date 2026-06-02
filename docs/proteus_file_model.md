@@ -904,3 +904,31 @@ T06   6 units / 18 components
 T07   7 units / 21 components
 T08   21 units / 63 components
 ```
+
+User feedback on V16:
+
+```text
+All V16 cases worked.
+```
+
+This confirms the repeated full-unit method for balanced R/C/L units after the
+marker-relative wire fix.
+
+`MIXED_RCL_V17_COMPONENT_REMOVAL_TEMP_2026_06_02` tests the next boundary:
+removing whole component subgroups from the accepted V16 unit order. It keeps
+the donor subgroup order and preserves final-wire terminator shape for whichever
+subgroup ends the object stream. V17 test order:
+
+```text
+T00  one full RCL control: V0 -> R -> C -> L -> G0
+T01  one RC branch: remove L, C output becomes G0
+T02  one LC branch: remove R, C input becomes V0
+T03  one RL branch: remove C, R output and L input share A1
+T04  one C-only branch: C between V0 and G0
+T05  requested 3R/4C/1L project: RCL + RC + RC + C
+```
+
+V17 static checks passed: marker counts match requested component counts, WIRE
+coordinate windows are marker-relative and sane, component IDs are unique, and
+the target T05 contains exactly three resistors, four capacitors, and one
+inductor.
