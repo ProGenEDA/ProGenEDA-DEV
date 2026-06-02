@@ -861,3 +861,46 @@ If T01 fails, terminal label mutation itself is unsafe in this donor family.
 If T01-T03 pass but T04 fails, coordinate/component mutation is the bad-record source.
 If T05-T07 fail, shortening the 4x donor object stream is unsafe with this DSN model.
 ```
+
+User feedback on V15:
+
+```text
+T01, T02, and T03 label-only full-donor mutations worked.
+T04, the V14 generated 4x body with donor labels restored, gave Bad Object Record.
+T05 and T06 one-unit 50-byte final-right-wire variants gave Bad Object Record.
+T07, the one-unit 51-byte final-right-wire variant, worked.
+```
+
+This proves two separate RCL rules:
+
+```text
+terminal label mutation is safe in the full 4x donor stream
+shortened RCL streams need the donor-style extra final FF byte
+```
+
+The generated-body failure was then traced to wire-coordinate offsets. In the
+4x RCL donor, wire coordinates are marker-relative, not fixed-offset:
+
+```text
+C and L wire records: WIRE marker at byte 24, coordinates at byte 33
+R wire records:       WIRE marker at byte 25, coordinates at byte 34
+```
+
+V14 patched every wire at byte 33, corrupting resistor wire records by one
+byte. `MIXED_RCL_V16_WIRE_OFFSET_FIX_TEMP_2026_06_02` repeats the V14
+repeated-unit diagnostics but patches wire coordinates at `WIRE marker + 9`.
+Static checks found no marker, terminator, or wire-coordinate issues. V16 test
+order:
+
+```text
+T00   exact 4x donor repack control
+T00B  4x donor chunk and CDB inserted into E001 control
+T01   1 unit / 3 components
+T02   2 units / 6 components
+T03   3 units / 9 components
+T04   4 units / 12 components, contiguous IDs
+T05   4 units / 12 components, supplied donor ID gaps
+T06   6 units / 18 components
+T07   7 units / 21 components
+T08   21 units / 63 components
+```
