@@ -986,3 +986,45 @@ V18 static checks passed for all 17 cases: every manifest has zero
 ```text
 cd63ac4ee90e434313a6012f178b6e8f2bf3b8fef25400dbab136bc621551c63
 ```
+
+User feedback on V18:
+
+```text
+T02 is not accepted as the 21-component circuit. 21 does not mean merely
+placing 21 components; it must follow the accepted 21-circuit topology.
+```
+
+The accepted 21 rule, inherited from the earlier 21R and 21RC cases, is:
+
+```text
+row 1: V0 -> seven components -> M0
+row 2: V0 -> seven components -> M0
+row 3: M0 -> seven components -> G0
+```
+
+`MIXED_RCL_V19_CORRECT_21_TEMP_2026_06_02` generates only the corrected 21
+case for confirmation. It uses accepted V17 group primitives in three visual
+rows:
+
+```text
+row 1 groups: RCL, RC, LC
+row 2 groups: RCL, RL, RC
+row 3 groups: RCL, LC, RL
+```
+
+This gives exactly `7R / 7C / 7L` and the graph check verifies:
+
+```text
+row 1: V0-A1-B1-D1-A2-D2-A3-M0
+row 2: V0-A4-B4-E1-A5-E2-A6-M0
+row 3: M0-A7-B7-F1-A8-F2-A9-G0
+```
+
+V19 static checks passed: zero `static_validation_issues`, no object boundary
+issues, required internal `.pdsprj` files present, all 21 components used once
+by the three intended paths, and no label is longer than two characters. The
+V19 corrected-21 archive SHA256 is:
+
+```text
+6e6c38e09c26bec72a6588b379a3f9813fd6d8b01b9cc6db10fff90033bd8d76
+```

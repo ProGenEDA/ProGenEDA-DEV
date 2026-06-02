@@ -400,11 +400,20 @@
     {
       "id": "R045",
       "title": "Mixed RCL final topology pack uses V17 subgroup-removal units",
-      "status": "static_v18_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "rejected_for_v18_21_count_only_topology",
+      "confidence": 0.86,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V18 method"],
-      "evidence": ["MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V18_FINAL_TOPOLOGY_STATIC_20260602"],
-      "rule": "Generate the final 6-component, 21-component, and 15 requested mixed R/C/L topology test projects from accepted V17 full/removal groups: RCL, RC, RL, LC, and C-only. Keep E001 as the project base, keep one donor-derived V0 power bridge, use G0 ground terminals, preserve marker-relative WIRE coordinate patching, and keep global component IDs and ROOT.CDB in object-emission order. Do not promote the R/C/L generator to main until V18 is user-accepted in Proteus."
+      "evidence": ["MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V18_FINAL_TOPOLOGY_STATIC_20260602", "MIXED_RCL_V18_USER_FEEDBACK_T02_21_TOPOLOGY_REJECTED_20260602"],
+      "rule": "V18 correctly reused accepted V17 full/removal groups, E001 base, V0 bridge, G0 endpoints, marker-relative WIRE coordinate patching, and global component IDs, but its T02 21-component case is invalid as a final acceptance case because it emitted seven independent V0-to-G0 RCL branches. A 21-component test must follow the accepted 21-circuit topology, not merely contain 21 components. Do not promote V18 as final."
+    },
+    {
+      "id": "R046",
+      "title": "Correct 21 circuit topology has three seven-component paths",
+      "status": "static_v19_generated_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V19 method"],
+      "evidence": ["MIXED_RCL_V18_USER_FEEDBACK_T02_21_TOPOLOGY_REJECTED_20260602", "MIXED_RCL_V19_CORRECT_21_STATIC_20260602"],
+      "rule": "The corrected 21-component mixed R/C/L circuit must follow the earlier accepted 21R/21RC rule: one seven-component series string from V0 to M0, a second seven-component series string from V0 to M0, and a third seven-component series string from M0 to G0. V19 implements this with accepted V17 groups arranged as RCL+RC+LC, RCL+RL+RC, and RCL+LC+RL, giving exactly 7 resistors, 7 capacitors, and 7 inductors. Do not lock the R/C/L generator until the user confirms V19 in Proteus."
     }
   ]
 }

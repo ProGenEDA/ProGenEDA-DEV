@@ -1,0 +1,94 @@
+{
+  "batch_id": "MIXED_RCL_V19_CORRECT_21_STATIC_20260602",
+  "status": "static_generated_awaiting_user_21_confirmation",
+  "source_feedback": "User reported V18 T02 was wrong because 21 components must follow the accepted 21-circuit topology, not just contain 21 components.",
+  "method": "Use accepted V17 subgroup-removal groups but arrange them into the accepted 21-circuit topology.",
+  "test_order": [
+    "RCL_V19_T01_CORRECT_21_RULE_TOPOLOGY"
+  ],
+  "archive_expected": "D:\\Coding\\protuesgen\\experiments\\MIXED_RCL_V19_CORRECT_21_TEMP_2026_06_02.zip",
+  "cases": [
+    {
+      "case_id": "RCL_V19_T01_CORRECT_21_RULE_TOPOLOGY",
+      "component_count": 21,
+      "resistor_count": 7,
+      "capacitor_count": 7,
+      "inductor_count": 7,
+      "group_modes": [
+        "RCL",
+        "RC",
+        "LC",
+        "RCL",
+        "RL",
+        "RC",
+        "RCL",
+        "LC",
+        "RL"
+      ],
+      "circuit_rows": [
+        {
+          "row": 1,
+          "rule": "seven components in series from V0 to M0",
+          "group_modes": [
+            "RCL",
+            "RC",
+            "LC"
+          ],
+          "nodes": [
+            "V0",
+            "D1",
+            "D2",
+            "M0"
+          ],
+          "unit_indices": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "row": 2,
+          "rule": "seven components in series from V0 to M0",
+          "group_modes": [
+            "RCL",
+            "RL",
+            "RC"
+          ],
+          "nodes": [
+            "V0",
+            "E1",
+            "E2",
+            "M0"
+          ],
+          "unit_indices": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "row": 3,
+          "rule": "seven components in series from M0 to G0",
+          "group_modes": [
+            "RCL",
+            "LC",
+            "RL"
+          ],
+          "nodes": [
+            "M0",
+            "F1",
+            "F2",
+            "G0"
+          ],
+          "unit_indices": [
+            7,
+            8,
+            9
+          ]
+        }
+      ],
+      "static_validation_issues": [],
+      "missing_required_internal_files": []
+    }
+  ]
+}
