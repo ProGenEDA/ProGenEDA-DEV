@@ -422,7 +422,16 @@
       "confidence": 0.92,
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L main generator"],
       "evidence": ["MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V19_USER_FEEDBACK_WORKED_20260602", "MAIN_MIXED_RCL_LOCKED_V1_STATIC_20260602"],
-      "rule": "Use src/proteusgen/mixed_rcl.py as the main mixed resistor/capacitor/inductor generator for the current scope. It emits E001-based projects using the accepted 4x RCL donor schema, marker-relative WIRE coordinate patching, global component IDs, ROOT.CDB in object-emission ID order, and accepted whole-subgroup modes RCL, RC, LC, RL, and C. The locked examples include the 6-component case, corrected 21-rule topology, and 15 requested topologies."
+      "rule": "Use src/proteusgen/mixed_rcl.py as the main mixed resistor/capacitor/inductor generator for the current scope. It emits E001-based projects using the accepted 4x RCL donor schema, marker-relative WIRE coordinate patching, global component IDs, ROOT.CDB in object-emission ID order, and accepted whole-subgroup modes RCL, RC, LC, RL, C, R, and L. The locked examples include the 6-component case, corrected 21-rule topology, and 15 requested topologies."
+    },
+    {
+      "id": "R048",
+      "title": "Mixed RCL value overrides must keep donor value length",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "mixed passive R/C/L main generator"],
+      "evidence": ["REQUESTED_RCL_FILTER_VALUES_MAIN_STATIC_20260602"],
+      "rule": "When overriding visible values in src/proteusgen/mixed_rcl.py, keep the existing donor value field length. Current safe overrides are exactly three ASCII characters for resistors, capacitors, and inductors. Use compact Proteus text such as 10R for 10 ohm, 50R for 50 ohm, 4u7 for 4.7 uF, 10u for 10 uF, and 10m for 10 mH. A two-character resistor value such as 10 corrupts the mixed-family resistor record because downstream fields shift."
     }
   ]
 }

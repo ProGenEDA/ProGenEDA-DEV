@@ -5,7 +5,7 @@ current scope. It uses E001 as the clean base and the accepted 4x RCL donor as
 the record schema. The generator accepts a conservative group recipe where each
 group is one proven donor-derived block:
 
-``RCL``, ``RC``, ``LC``, ``RL``, or ``C``.
+``RCL``, ``RC``, ``LC``, ``RL``, ``C``, ``R``, or ``L``.
 """
 
 from __future__ import annotations
@@ -23,8 +23,8 @@ from .pdsprj import read_internal_file, write_project_from_parts
 from .templates import FixtureRegistry
 from .versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-Mode = Literal["RCL", "RC", "LC", "RL", "C"]
-VALID_MODES: set[str] = {"RCL", "RC", "LC", "RL", "C"}
+Mode = Literal["RCL", "RC", "LC", "RL", "C", "R", "L"]
+VALID_MODES: set[str] = {"RCL", "RC", "LC", "RL", "C", "R", "L"}
 
 SCHEMA_VERSION = "mixed-rcl-circuit-ir/v0.1"
 GENERATOR_TARGET = "proteus-8.13-mixed-rcl-locked"
@@ -71,6 +71,7 @@ class MixedRclCircuitIR:
     name: str
     output_basename: str
     groups: tuple[MixedRclGroup, ...]
+    component_values: dict[str, str]
     metadata: dict[str, Any]
 
 
@@ -101,6 +102,7 @@ class MixedRclValidationReport:
                     {"mode": group.mode, "start": group.start, "end": group.end}
                     for group in self.circuit.groups
                 ],
+                "component_values": self.circuit.component_values,
             },
         }
 
@@ -413,6 +415,10 @@ def _included_components(mode: Mode) -> tuple[str, ...]:
         return ("L", "R")
     if mode == "C":
         return ("C",)
+    if mode == "R":
+        return ("R",)
+    if mode == "L":
+        return ("L",)
     raise ValueError(mode)
 
 
@@ -438,6 +444,18 @@ def _ids_for_groups(groups: tuple[MixedRclGroup, ...]) -> list[dict[str, int]]:
 
 def _label_is_supported(value: Any) -> bool:
     return isinstance(value, str) and len(value) == 2 and value.isascii()
+
+
+def _value_is_supported(ref: str, value: str) -> bool:
+    if not value.isascii():
+        return False
+    if ref.startswith("R"):
+        return len(value) == 3
+    if ref.startswith("C"):
+        return len(value) == 3
+    if ref.startswith("L"):
+        return len(value) == 3
+    return False
 
 
 def parse_mixed_rcl_ir(payload: Any) -> tuple[MixedRclCircuitIR | None, list[str]]:
@@ -483,6 +501,7 @@ def parse_mixed_rcl_ir(payload: Any) -> tuple[MixedRclCircuitIR | None, list[str
     generator_target = payload.get("generator_target", GENERATOR_TARGET)
     name = project.get("name", "MIXED_RCL_PROJECT")
     output_basename = project.get("output_basename", name)
+    component_values_raw = payload.get("component_values", {})
     metadata = payload.get("metadata", {})
     if metadata is None:
         metadata = {}
@@ -498,6 +517,24 @@ def parse_mixed_rcl_ir(payload: Any) -> tuple[MixedRclCircuitIR | None, list[str
     if not isinstance(output_basename, str) or not output_basename:
         errors.append("project.output_basename must be a non-empty string.")
         output_basename = name
+    component_values: dict[str, str] = {}
+    if not isinstance(component_values_raw, dict):
+        errors.append("component_values must be an object when supplied.")
+    else:
+        for ref, value in component_values_raw.items():
+            if not _label_is_supported(ref):
+                errors.append(f"component_values key {ref!r} must be a two-character component reference.")
+                continue
+            if not isinstance(value, str):
+                errors.append(f"component_values[{ref!r}] must be a string.")
+                continue
+            if not _value_is_supported(ref, value):
+                errors.append(
+                    f"component_values[{ref!r}]={value!r} is not safe for the current donor record. "
+                    "Use exactly 3 ASCII chars for resistors, capacitors, and inductors."
+                )
+                continue
+            component_values[ref] = value
     if not isinstance(metadata, dict):
         errors.append("metadata must be an object.")
         metadata = {}
@@ -511,6 +548,7 @@ def parse_mixed_rcl_ir(payload: Any) -> tuple[MixedRclCircuitIR | None, list[str
             name=name,
             output_basename=output_basename,
             groups=tuple(parsed_groups),
+            component_values=component_values,
             metadata=metadata,
         ),
         [],
@@ -528,6 +566,9 @@ def validate_mixed_rcl_circuit(ir: MixedRclCircuitIR) -> MixedRclValidationRepor
         errors.append("Unsupported group mode found.")
     if len(ir.groups) > 35:
         errors.append("The locked R/C/L generator currently supports at most 35 groups.")
+    for ref, value in ir.component_values.items():
+        if not _label_is_supported(ref) or not _value_is_supported(ref, value):
+            errors.append(f"Unsupported value override {ref}={value!r}.")
     if ir.generator_target != GENERATOR_TARGET:
         warnings.append(f"generator_target is {ir.generator_target!r}; locked target is {GENERATOR_TARGET!r}.")
     return MixedRclValidationReport(errors=tuple(errors), warnings=tuple(warnings), circuit=ir)
@@ -575,7 +616,7 @@ def _patch_native_resistor(template: bytes, spec: RclSpec, global_id: int, in_su
     raw_value = spec.visible_value.encode("ascii")
     if len(raw_ref) != 2 or not raw_ref.isascii():
         raise ValueError(f"Unsupported resistor ref {spec.ref!r}.")
-    if len(raw_value) not in (2, 3) or not raw_value.isascii():
+    if len(raw_value) != 3 or not raw_value.isascii():
         raise ValueError(f"Unsupported resistor visible value {spec.visible_value!r}.")
 
     record = bytearray(template)
@@ -684,7 +725,13 @@ def _patch_inductor(template: bytes, spec: RclSpec, index: int, in_suffix: int, 
     return bytes(record)
 
 
-def _make_specs(group_item: MixedRclGroup, unit_index: int, ids: dict[str, int], ref_counts: dict[str, int]) -> dict[str, RclSpec]:
+def _make_specs(
+    group_item: MixedRclGroup,
+    unit_index: int,
+    ids: dict[str, int],
+    ref_counts: dict[str, int],
+    component_values: dict[str, str],
+) -> dict[str, RclSpec]:
     dummy = {kind: ids.get(kind, 240 + "CLR".index(kind)) for kind in "CLR"}
     cap, ind, res = _unit_specs(unit_index, global_ids=(dummy["C"], dummy["L"], dummy["R"]))
     internal_1 = _two_char("A", unit_index)
@@ -693,7 +740,8 @@ def _make_specs(group_item: MixedRclGroup, unit_index: int, ids: dict[str, int],
     def with_ref(spec: RclSpec, kind: str, left: str, right: str) -> RclSpec:
         ref_counts[kind] += 1
         ref = _two_char(kind, ref_counts[kind])
-        return replace(spec, idx=ids[kind], ref=ref, source_ref=ref, left=left, right=right)
+        value = component_values.get(ref, spec.value)
+        return replace(spec, idx=ids[kind], ref=ref, source_ref=ref, value=value, visible_value=value, left=left, right=right)
 
     if group_item.mode == "RCL":
         return {
@@ -718,6 +766,10 @@ def _make_specs(group_item: MixedRclGroup, unit_index: int, ids: dict[str, int],
         }
     if group_item.mode == "C":
         return {"C": with_ref(cap, "C", group_item.start, group_item.end)}
+    if group_item.mode == "R":
+        return {"R": with_ref(res, "R", group_item.start, group_item.end)}
+    if group_item.mode == "L":
+        return {"L": with_ref(ind, "L", group_item.start, group_item.end)}
     raise ValueError(group_item.mode)
 
 
@@ -841,10 +893,11 @@ def _patch_group(
     templates: RclUnitTemplates,
     ids: dict[str, int],
     ref_counts: dict[str, int],
+    component_values: dict[str, str],
 ) -> tuple[bytes, list[RclSpec], list[dict[str, Any]]]:
     slot = templates.units[(unit_index - 1) % len(templates.units)]
     suffixes = _suffixes(unit_index)
-    specs = _make_specs(group_item, unit_index, ids, ref_counts)
+    specs = _make_specs(group_item, unit_index, ids, ref_counts, component_values)
     final_kind = _last_emitted_group(group_item.mode) if is_final else ""
     parts: list[bytes] = []
     emitted: list[RclSpec] = []
@@ -883,6 +936,7 @@ def build_object_chunk(ir: MixedRclCircuitIR, templates: RclUnitTemplates) -> tu
             templates=templates,
             ids=ids,
             ref_counts=ref_counts,
+            component_values=ir.component_values,
         )
         chunks.append(chunk)
         specs.extend(group_specs)
@@ -1084,9 +1138,11 @@ def generate_mixed_rcl_project(
         "components": _component_payload(specs),
         "static_validation_issues": chunk_issues,
         "metadata": ir.metadata,
+        "component_value_overrides": ir.component_values,
         "known_limitations": [
-            "Current main R/C/L generation is group-based and limited to proven RCL, RC, LC, RL, and C donor-removal blocks.",
+            "Current main R/C/L generation is group-based and limited to donor-removal blocks.",
             "Terminal labels and generated refs are two ASCII characters.",
+            "Current visible value overrides must fit the existing donor record sizes.",
             "The V0 power terminal is emitted through the donor-derived output bridge. Component endpoints use input/output/ground terminals.",
             "Geometry is donor-derived horizontal component blocks; topology is encoded by repeated terminal labels.",
         ],

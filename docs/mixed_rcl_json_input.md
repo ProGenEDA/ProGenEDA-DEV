@@ -24,6 +24,11 @@ proteusgen generate-mixed-rcl path\to\mixed_rcl.json --outdir out\mixed_rcl
     {"mode": "RCL", "start": "V0", "end": "N1"},
     {"mode": "RC", "start": "N1", "end": "G0"}
   ],
+  "component_values": {
+    "R1": "10k",
+    "C1": "1uF",
+    "L1": "5mH"
+  },
   "metadata": {
     "description": "Optional notes from the planner."
   }
@@ -32,11 +37,14 @@ proteusgen generate-mixed-rcl path\to\mixed_rcl.json --outdir out\mixed_rcl
 
 ## Rules
 
-- `mode` must be one of `RCL`, `RC`, `LC`, `RL`, or `C`.
+- `mode` must be one of `RCL`, `RC`, `LC`, `RL`, `C`, `R`, or `L`.
 - `start` and `end` must be exactly two ASCII characters, for example `V0`, `G0`, `N1`, `M0`.
 - `V0` is the power net. The generator emits one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge.
 - `G0` is the ground net. Supported group endpoints to `G0` emit ground terminals.
-- The generator uses fixed accepted values in this scope: resistors `10k`, capacitors `1uF`, inductors `5mH`.
+- By default the generator uses accepted donor values: resistors `10k`, capacitors `1uF`, inductors `5mH`.
+- `component_values` is optional. Keys are generated two-character refs such as `R1`, `C1`, and `L1`.
+- Current value overrides must fit the existing donor record sizes. Use exactly 3 ASCII characters for resistors, capacitors, and inductors.
+- Use compact Proteus value text when needed: `10R` for 10 ohm, `50R` for 50 ohm, `4u7` for 4.7 uF, `10u` for 10 uF, and `10m` for 10 mH.
 - Geometry is donor-derived horizontal group blocks; electrical topology is expressed by repeated terminal labels.
 
 The accepted 21-rule topology is encoded as:

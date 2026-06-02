@@ -74,6 +74,84 @@ class MixedRclTests(unittest.TestCase):
             self.assertEqual(degree["M0"], 3)
             self.assertEqual(degree["G0"], 1)
 
+    def test_requested_rcl_filter_uses_explicit_values_and_topology(self) -> None:
+        payload = {
+            "schema_version": "mixed-rcl-circuit-ir/v0.1",
+            "generator_target": "proteus-8.13-mixed-rcl-locked",
+            "project": {
+                "name": "RCL_REQUESTED_FILTER_VALUES",
+                "output_basename": "RCL_REQUESTED_FILTER_VALUES",
+                "base": "E001_EMPTY_BASE",
+                "units": "proteus_internal",
+            },
+            "groups": [
+                {"mode": "RL", "start": "V0", "end": "B0"},
+                {"mode": "C", "start": "A1", "end": "N2"},
+                {"mode": "L", "start": "B0", "end": "N3"},
+                {"mode": "R", "start": "N2", "end": "N3"},
+                {"mode": "L", "start": "N2", "end": "G0"},
+                {"mode": "C", "start": "N3", "end": "G0"},
+            ],
+            "component_values": {
+                "R1": "10R",
+                "R2": "50R",
+                "L1": "2mH",
+                "L2": "5mH",
+                "L3": "10m",
+                "C1": "4u7",
+                "C2": "10u",
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = generate_mixed_rcl_project_from_payload(payload, directory)
+            manifest = result.manifest
+            self.assertEqual(manifest["static_validation_issues"], [])
+            self.assertEqual(manifest["component_count_emitted_dsn"], 7)
+            self.assertEqual(manifest["resistor_count"], 2)
+            self.assertEqual(manifest["capacitor_count"], 2)
+            self.assertEqual(manifest["inductor_count"], 3)
+            self.assertEqual(manifest["group_modes"], ["RL", "C", "L", "R", "L", "C"])
+
+            by_ref = {component["ref"]: component for component in manifest["components"]}
+            expected = {
+                "R1": ("10R", ("V0", "A1")),
+                "L1": ("2mH", ("A1", "B0")),
+                "C1": ("4u7", ("A1", "N2")),
+                "L2": ("5mH", ("B0", "N3")),
+                "R2": ("50R", ("N2", "N3")),
+                "L3": ("10m", ("N2", "G0")),
+                "C2": ("10u", ("N3", "G0")),
+            }
+            self.assertEqual(set(by_ref), set(expected))
+            for ref, (value, nodes) in expected.items():
+                self.assertEqual(by_ref[ref]["value"], value)
+                self.assertEqual(tuple(by_ref[ref]["nodes"]), nodes)
+
+    def test_value_override_must_fit_current_donor_record(self) -> None:
+        payload = {
+            "schema_version": "mixed-rcl-circuit-ir/v0.1",
+            "generator_target": "proteus-8.13-mixed-rcl-locked",
+            "project": {"name": "BAD_VALUE", "output_basename": "BAD_VALUE"},
+            "groups": [{"mode": "C", "start": "V0", "end": "G0"}],
+            "component_values": {"C1": "4.7uF"},
+        }
+        report = validate_mixed_rcl_payload(payload)
+        self.assertFalse(report.valid)
+        self.assertIn("not safe for the current donor record", " ".join(report.errors))
+
+    def test_short_resistor_value_override_is_rejected(self) -> None:
+        payload = {
+            "schema_version": "mixed-rcl-circuit-ir/v0.1",
+            "generator_target": "proteus-8.13-mixed-rcl-locked",
+            "project": {"name": "BAD_R_VALUE", "output_basename": "BAD_R_VALUE"},
+            "groups": [{"mode": "R", "start": "V0", "end": "G0"}],
+            "component_values": {"R1": "10"},
+        }
+        report = validate_mixed_rcl_payload(payload)
+        self.assertFalse(report.valid)
+        self.assertIn("not safe for the current donor record", " ".join(report.errors))
+
     def test_unsupported_label_is_rejected(self) -> None:
         payload = predefined_mixed_rcl_cases()[0]
         payload["groups"][0]["start"] = "POWER"

@@ -1048,6 +1048,14 @@ CDB order: emitted component IDs
 power: one donor-derived V0 bridge
 ```
 
+The main generator now also supports singleton `R` and `L` groups for circuits
+that need to remove two subgroups from an accepted donor unit. The same
+byte-length constraint applies to explicit visible values: resistors may use
+exactly three ASCII characters, and capacitor/inductor values must also be
+exactly three ASCII characters. Compact Proteus-style values such as `10R`,
+`50R`, `4u7`, `10u`, and `10m` are used instead of expanding the donor
+records.
+
 `MAIN_MIXED_RCL_LOCKED_V1_2026_06_02` generated the locked 17-case pack:
 
 ```text
