@@ -1171,3 +1171,53 @@ The V6 archive SHA256 is:
 ```text
 ab52c82f7281bf0c763160d6cc0519ba6163eebbc89c628ff971252361606d77
 ```
+
+User feedback on V6:
+
+```text
+T02 failed with VG/VGC... dll.
+T04 failed with VG/VGC... dll.
+```
+
+Proteus workspace side files were created for `T00`, `T01`, `T03`, `T05`, and
+`T06`, but not for `T02` or `T04`. This matches the user feedback and rejects
+two methods:
+
+```text
+Do not use V5/resistor-style patched source suffixes.
+Do not place the source block after the generated R/C/L body.
+```
+
+The accepted source direction for the next pack is:
+
+```text
+source block first
+preserve standalone/manual source terminal and component suffix bytes
+patch only the source global component ID
+use the 49-byte non-final source wire 2 shape before appending the R/C/L body
+keep source-driven nets as ordinary DV/D0 terminals
+```
+
+`DC_SOURCES_V7_ACCEPTED_SOURCE_FIRST_TEMP_2026_06_03` applies that rule to the
+requested source-driven mixed R/C/L scale tests:
+
+```text
+T01  six-component mixed R/C/L circuit with DC-voltage source
+T02  corrected 21-rule mixed R/C/L circuit with DC-voltage source
+T03  corrected 21-rule fallback using the manual source block
+```
+
+All V7 cases use `DV`/`D0`, contain no `$TERPOWER` or `$TERGROUND` records, and
+contain no `V0` or `G0` terminal labels. Static checks passed for all three
+cases and the focused mixed R/C/L regression test still passes:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V7 archive SHA256 is:
+
+```text
+307ce9bd305be6519041307fe7545bd96bcf5d065cb562087c8f286e821ec9ec
+```

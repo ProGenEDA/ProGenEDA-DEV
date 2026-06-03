@@ -445,11 +445,20 @@
     {
       "id": "R050",
       "title": "DC voltage source block must preserve donor source bytes",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "partially_confirmed_source_first_preserved_bytes",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "DC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603", "DC_SOURCES_V6_SOURCE_BLOCK_FIX_STATIC_20260603"],
-      "rule": "After V5 isolated the failure to generated VSOURCE insertion, V6 tests source-block variants that preserve source donor or manual source suffix/link bytes instead of resistor-style terminal patching. The leading hypothesis is that a valid non-final source block needs the donor source terminal/component suffixes preserved and its second source wire shortened to the 49-byte non-final form observed in the working manual combined donor. If that still fails, V6 falls back to exact manual source block and manual CDB variants before any source method is promoted."
+      "evidence": ["DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603", "DC_SOURCES_V6_SOURCE_BLOCK_FIX_STATIC_20260603", "DC_SOURCES_V6_USER_FEEDBACK_T02_T04_FAILED_20260603"],
+      "rule": "After V5 isolated the failure to generated VSOURCE insertion, V6 showed the unsafe variants: T02 failed when the source used V5/resistor-style patched suffixes even with the 49-byte non-final source wire, and T04 failed when the manual source block was placed after the R/C/L body. Workspace files and user feedback indicate T00, T01, T03, T05, and T06 opened. Therefore DC-voltage source insertion should be source-first, should preserve standalone/manual source terminal/component suffix bytes, and should keep the second source wire in the 49-byte non-final form before the generated R/C/L source-net body."
+    },
+    {
+      "id": "R051",
+      "title": "DC voltage source 6/21 confirmation uses source-first only",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "DC voltage source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["DC_SOURCES_V6_USER_FEEDBACK_T02_T04_FAILED_20260603", "DC_SOURCES_V7_ACCEPTED_SOURCE_FIRST_STATIC_20260603"],
+      "rule": "V7 applies only the V6 accepted source-first family to requested source-driven mixed R/C/L circuits. It generates the 6-component case and corrected 21-rule case with source nets DV/D0, no $TERPOWER records, no $TERGROUND records, no V0/G0 terminal labels, a generated source-first ROOT.CDB order, and source global ID equal to the next component ID after the R/C/L specs. A manual source-block 21-rule fallback is included only to isolate standalone-source scaling if needed."
     }
   ]
 }
