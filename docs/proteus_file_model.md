@@ -1287,3 +1287,70 @@ The V8 archive SHA256 is:
 ```text
 074c148d8b0c1a06d5ada2f213898a0e493b5e5f3ac8280e9bed7fa6cf962e1e
 ```
+
+User feedback on V8:
+
+```text
+all DC-voltage cases worked
+no DC-current cases worked
+```
+
+This accepts the DC-voltage 15-topology pack and rejects the V8 DC-current
+method. Since the same R/C/L source-net topology generator worked for DC voltage,
+the failure boundary is the current source insertion method, not the passive
+R/C/L body layout.
+
+## DC Current Connected-Source Diagnostics
+
+The working user-created current-source load donor differs from the standalone
+current source used in V8:
+
+```text
+dc_current_03_resistor_load object chunk length: 1310
+first source/load records:
+  input terminal I0:     chunk[1:104]
+  output terminal DI:    chunk[104:208]
+  CSOURCE record:        chunk[208:555]
+  source wire 1:         chunk[555:605]
+  source wire 2 nonfinal chunk[605:655]
+source ref/value: I4 / 500mA
+source model: CSOURCE
+CDB order: passive resistor record before current-source record
+```
+
+`DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_TEMP_2026_06_03` tests this donor
+shape against the rejected V8 standalone source shape:
+
+```text
+T00 standalone current-source donor transplanted into E001
+T01 connected current-source + resistor-load donor transplanted into E001
+T02 generated DI/I0 source-net R/C/L body, no current source
+T03 generated simple R/C/L, connected CSOURCE block, fixed I4, 500mA, source-last CDB
+T04 generated simple R/C/L, connected CSOURCE block, fixed I4, 500mA, source-first CDB
+T05 generated simple R/C/L, V8 standalone I1/1A CSOURCE block, source-last CDB
+T06 generated six-component R/C/L, connected CSOURCE block, fixed I4, 500mA, source-last CDB
+T07 generated six-component R/C/L, connected CSOURCE block, visible source ref patched to ID, source-last CDB
+```
+
+V9 static checks passed for all 8 cases:
+
+```text
+required internals present: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+$TERPOWER count: 0
+$TERGROUND count: 0
+V0/G0 terminal labels: 0
+manifest static_validation_issues: []
+```
+
+The focused mixed R/C/L regression test still passes:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V9 archive SHA256 is:
+
+```text
+79823f09870e3f9d4aecd089d90663df222dcf86d6c4d54ba6589e1e9697d3aa
+```

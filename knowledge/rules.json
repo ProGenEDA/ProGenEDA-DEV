@@ -463,11 +463,20 @@
     {
       "id": "R052",
       "title": "DC current source uses DI/I0 source-net convention",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "rejected_for_v8_standalone_source_block",
+      "confidence": 0.86,
       "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["dc_current_01_default user donor", "dc_current_03_resistor_load user donor", "DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_STATIC_20260603"],
-      "rule": "The user-created DC-current donors show a CSOURCE with an ordinary output terminal labelled DI and an ordinary input terminal labelled I0; I1 is the source reference, not a net. V8 applies the accepted source-first pattern to current sources by replacing V0 with DI and G0 with I0, preserving the native current-source input/output/source/wire record boundaries, trimming the final source wire to a non-final shape before the R/C/L body, using model CSOURCE, ref I1, value 1A, and a combined device section containing R/C/L plus CSOURCE. This rule remains pending until V8 manual Proteus testing."
+      "evidence": ["dc_current_01_default user donor", "dc_current_03_resistor_load user donor", "DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_STATIC_20260603", "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603"],
+      "rule": "The user-created DC-current donors show a CSOURCE with an ordinary output terminal labelled DI and an ordinary input terminal labelled I0; I1/I4 are source references, not nets. The DI/I0 source-net convention remains valid evidence, but V8's current-source implementation is rejected: all DC-current generated topology cases failed while all DC-voltage cases worked. Do not use the standalone dc_current_01_default source block with ref I1/value 1A as the final current-source insertion method."
+    },
+    {
+      "id": "R053",
+      "title": "DC current source connected-load donor is the active diagnostic direction",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_STATIC_20260603"],
+      "rule": "The user-made dc_current_03_resistor_load donor uses a connected CSOURCE record with visible ref I4, value 500mA, a 347-byte source record, source object before the resistor load, and a CDB where passive component records precede the current-source record. V9 therefore tests connected-source-block variants first: fixed visible I4 with source-last CDB, fixed visible I4 with source-first CDB, and a standalone-source A/B case with source-last CDB. Keep this rule diagnostic until user Proteus feedback identifies the passing variant."
     }
   ]
 }
