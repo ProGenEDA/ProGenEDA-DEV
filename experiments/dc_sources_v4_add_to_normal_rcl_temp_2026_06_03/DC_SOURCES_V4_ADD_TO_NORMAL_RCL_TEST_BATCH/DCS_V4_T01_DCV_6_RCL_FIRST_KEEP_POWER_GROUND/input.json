@@ -1,0 +1,38 @@
+{
+  "case_id": "DCS_V4_T01_DCV_6_RCL_FIRST_KEEP_POWER_GROUND",
+  "description": "Normal 6-component R/C/L object stream first, then a 10V DC source with output V0 and input G0; keep normal V0 power bridge and G0 ground endpoints.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.4",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "10V",
+      "positive": "V0",
+      "negative": "G0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "V0",
+      "end": "G0"
+    },
+    {
+      "mode": "RC",
+      "start": "V0",
+      "end": "G0"
+    },
+    {
+      "mode": "C",
+      "start": "V0",
+      "end": "G0"
+    }
+  ],
+  "component_values": {},
+  "metadata": {
+    "source_position": "after_rcl",
+    "power_bridge_policy": "keep_normal_power_ground",
+    "test_order": 4,
+    "requested_method": "produce normal RCL, then add source by same labels"
+  }
+}

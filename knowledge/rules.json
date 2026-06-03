@@ -436,11 +436,20 @@
     {
       "id": "R049",
       "title": "DC source CDB order must not numeric-sort sources after passives",
-      "status": "pending_v3_user_test_after_v2_isisdll",
+      "status": "necessary_not_sufficient_v3_generated_failed",
       "confidence": 0.76,
       "applies_to": ["Proteus 8.13", "DC voltage/current source temporary method"],
-      "evidence": ["DC_SOURCES_V2_USER_FEEDBACK_ISISDLL_20260603", "DC_SOURCES_V3_OBJECT_ORDER_TEMP_STATIC_20260603", "R038", "R047"],
-      "rule": "For temporary DC source plus passive generation, do not sort ROOT.CDB rows by numeric component ID when DSN object data emits source units before passive R/C/L groups. V2 used high source IDs and low passive IDs, so numeric sorting placed source CDB rows after passive rows while ROOT.DSN emitted sources first; user testing reported ISIS.dll errors for all V2 cases. V3 emits source CDB rows first and includes exact donor controls, but this remains pending until Proteus user testing confirms the controls and generated cases."
+      "evidence": ["DC_SOURCES_V2_USER_FEEDBACK_ISISDLL_20260603", "DC_SOURCES_V3_OBJECT_ORDER_TEMP_STATIC_20260603", "DC_SOURCES_V3_USER_FEEDBACK_CONTROLS_ONLY_20260603", "R038", "R047"],
+      "rule": "For temporary DC source plus passive generation, do not sort ROOT.CDB rows by numeric component ID when DSN object data emits source units before passive R/C/L groups. V2 used high source IDs and low passive IDs, so numeric sorting placed source CDB rows after passive rows while ROOT.DSN emitted sources first; user testing reported ISIS.dll errors for all V2 cases. V3 fixed CDB object order and its exact donor controls opened, but all generated source+R/C/L cases still gave ISIS.dll errors. Therefore object-order CDB alignment is necessary but not sufficient for DC source plus R/C/L generation."
+    },
+    {
+      "id": "R050",
+      "title": "DC source should be tested by adding source to normal V0/G0 RCL",
+      "status": "pending_v4_user_test",
+      "confidence": 0.72,
+      "applies_to": ["Proteus 8.13", "DC voltage/current source temporary method"],
+      "evidence": ["DC_SOURCES_V3_USER_FEEDBACK_CONTROLS_ONLY_20260603", "DC_SOURCES_V4_ADD_TO_NORMAL_RCL_TEMP_STATIC_20260603", "R047"],
+      "rule": "After V3 controls opened but generated source+R/C/L cases failed, the next source method must preserve the accepted normal R/C/L V0/G0 label shape. V4 generates normal locked mixed R/C/L groups first, then adds a DC source whose positive side is a $TEROUTPUT terminal named V0 and whose negative side is a $TERINPUT terminal named G0, so connection is by matching terminal labels. V4 tests both keeping the normal V0 power bridge for coexistence and removing only the V0 bridge for source replacement. This rule remains pending until user Proteus testing reports which V4 cases open."
     }
   ]
 }

@@ -1188,3 +1188,56 @@ V3 is not a promotion point. Test controls first; if any T00 control fails, the
 source donor transplant/device-section path is wrong. If T00 controls pass but
 generated cases fail, the remaining issue is source record mutation or merged
 source+R/C/L device/CDB composition.
+
+User Proteus feedback for V3:
+
+```text
+The donor/exact-copy controls opened, but every generated source+R/C/L circuit
+gave ISIS.dll errors.
+```
+
+This proves exact DC source records and exact source donor transplants are
+valid, but V3's generated source+R/C/L construction is still invalid. The V3
+generated path changed the accepted R/C/L supply shape: it removed the normal
+mixed-RCL V0 bridge, changed R/C/L supply labels away from the normal V0/G0
+shape for simple tests, and prepended source records.
+
+`DC_SOURCES_V4_ADD_TO_NORMAL_RCL_TEMP_20260603` follows the next diagnostic
+rule: produce the R/C/L circuit normally first, then add a DC source whose
+terminals use the same labels as the R/C/L supply nets.
+
+```text
+source positive side: $TEROUTPUT labelled V0
+source negative side: $TERINPUT labelled G0
+normal R/C/L labels: V0 and G0 preserved
+```
+
+V4 contains this ordered test ladder:
+
+```text
+T00A normal locked 6-component R/C/L baseline
+T00B exact DC voltage source donor repack
+T00C exact DC current source donor repack
+T01  normal 6-component R/C/L first, add 10V source after it, keep V0 bridge/G0 endpoints
+T02  10V source first, then normal 6-component R/C/L, keep V0 bridge/G0 endpoints
+T03  normal 6-component R/C/L first, remove only V0 bridge, add 10V source after it
+T04  10V source first, then 6-component R/C/L with only V0 bridge removed
+T05  normal 6-component R/C/L first, remove only V0 bridge, add 1A current source after it
+T06  1A current source first, then 6-component R/C/L with only V0 bridge removed
+T07  corrected 21-component R/C/L first, remove only V0 bridge, add 10V source after it
+T08  corrected 21-component R/C/L first, remove only V0 bridge, add 1A current source after it
+```
+
+Static checks passed for all 11 V4 files: required internal files present, zero
+manifest chunk/static issues, and tests/fixture verification passed. The temp
+archive SHA256 is:
+
+```text
+b3274e253eb0767b60e44fea6c786c57854a559f24f3d0287f173b3e38ca59cd
+```
+
+V4 is not a promotion point. If T01/T02 open, source records can coexist with
+the normal R/C/L power and ground terminals. If T03/T04 open, a source can
+replace the V0 power bridge while preserving accepted G0 endpoints. If T05/T06
+open, the same result applies to current sources. T07/T08 then test scaling to
+the corrected 21 topology.

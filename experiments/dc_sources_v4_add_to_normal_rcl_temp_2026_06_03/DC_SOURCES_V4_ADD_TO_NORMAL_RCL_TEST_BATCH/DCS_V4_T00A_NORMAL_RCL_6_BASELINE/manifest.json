@@ -1,0 +1,277 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "status": "temporary_dc_source_v4_control",
+  "project_name": "DCS_V4_T00A_NORMAL_RCL_6_BASELINE",
+  "output_basename": "DCS_V4_T00A_NORMAL_RCL_6_BASELINE",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "component_count_requested": 6,
+  "component_count_emitted_cdb": 6,
+  "component_count_emitted_dsn": 6,
+  "resistor_count": 2,
+  "capacitor_count": 3,
+  "inductor_count": 1,
+  "node_count_emitted": 5,
+  "nodes": [
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "B1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "A2",
+      "kind": "internal"
+    }
+  ],
+  "group_count": 3,
+  "group_modes": [
+    "RCL",
+    "RC",
+    "C"
+  ],
+  "power_bridge_count": 1,
+  "ground_terminal_count": 3,
+  "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+  "object_chunk_len": 4261,
+  "root_cdb_len": 859,
+  "root_dsn_len": 71908,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 6,
+    "$TEROUTPUT": 4,
+    "$TERGROUND": 3,
+    "WIRE": 13,
+    "RESISTOR": 4,
+    "REALIND": 3,
+    "CAPACITOR": 3,
+    "CAP10": 3,
+    "COMPONENT ID": 6,
+    "COMPONENT VALUE": 6
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 66704,
+    "second_isis": 71011,
+    "second_object_data": 71046,
+    "object_data_pointer": 71059
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A1",
+      "right": "B1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -7366000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "B1",
+      "right": "G0",
+      "global_id": 2,
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": -3556000,
+      "y": 2540000
+    },
+    {
+      "idx": 3,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "V0",
+      "right": "A1",
+      "global_id": 3,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 4,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "1uF",
+      "left": "A2",
+      "right": "G0",
+      "global_id": 4,
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": 2794000,
+      "y": 2540000
+    },
+    {
+      "idx": 5,
+      "unit": 2,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "10k",
+      "left": "V0",
+      "right": "A2",
+      "global_id": 5,
+      "in_suffix": "1506",
+      "out_suffix": "1538",
+      "x": 2794000,
+      "y": 5080000
+    },
+    {
+      "idx": 6,
+      "unit": 3,
+      "kind": "CAPACITOR",
+      "ref": "C3",
+      "value": "1uF",
+      "left": "V0",
+      "right": "G0",
+      "global_id": 6,
+      "in_suffix": "17d8",
+      "out_suffix": "17a6",
+      "x": 12954000,
+      "y": 2540000
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A1",
+        "B1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "B1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "V0",
+        "A1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 4,
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A2",
+        "G0"
+      ],
+      "visual": {
+        "x": 2794000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 5,
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "V0",
+        "A2"
+      ],
+      "visual": {
+        "x": 2794000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 6,
+      "ref": "C3",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": 12954000,
+        "y": 2540000
+      }
+    }
+  ],
+  "static_validation_issues": [],
+  "metadata": {},
+  "component_value_overrides": {},
+  "known_limitations": [
+    "Current main R/C/L generation is group-based and limited to donor-removal blocks.",
+    "Terminal labels and generated refs are two ASCII characters.",
+    "Current visible value overrides must fit the existing donor record sizes.",
+    "The V0 power terminal is emitted through the donor-derived output bridge. Component endpoints use input/output/ground terminals.",
+    "Geometry is donor-derived horizontal component blocks; topology is encoded by repeated terminal labels."
+  ],
+  "output_files": [
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.pdsprj",
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.ROOT.CDB.bin",
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.ROOT.DSN.bin",
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.OBJECT_CHUNK.bin",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.pdsprj": "6c53c2a17212a87fbbbda5286680333c602fb62f5a1163e398f450cecac182bf",
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.ROOT.CDB.bin": "099d8adcfad247defc6ed73984484285a7a117b6dd70b16f823e294889c0f95f",
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.ROOT.DSN.bin": "3f21456dad41e712da10e4a5f21aa920c2f5b3f4dca5e701e3404019cd104687",
+    "DCS_V4_T00A_NORMAL_RCL_6_BASELINE.OBJECT_CHUNK.bin": "26cc17e589f45645da723b69407fc6e607de9e6a19f82a56a790dcc9508e8e48",
+    "object_chunk": "26cc17e589f45645da723b69407fc6e607de9e6a19f82a56a790dcc9508e8e48",
+    "ROOT.CDB": "099d8adcfad247defc6ed73984484285a7a117b6dd70b16f823e294889c0f95f",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "rcl_unit_donor": "340b5972d35ce8b63c1aad6048c8fe33a2ea969ae2ad272acc316ce12f8459f5"
+  },
+  "case_id": "DCS_V4_T00A_NORMAL_RCL_6_BASELINE",
+  "description": "Normal locked main R/C/L 6-component baseline with V0 power bridge and G0 ground endpoints.",
+  "test_order": 1,
+  "control_type": "normal_main_mixed_rcl_generation",
+  "output": "DC_SOURCES_V4_ADD_TO_NORMAL_RCL_TEST_BATCH\\DCS_V4_T00A_NORMAL_RCL_6_BASELINE\\DCS_V4_T00A_NORMAL_RCL_6_BASELINE.pdsprj"
+}
