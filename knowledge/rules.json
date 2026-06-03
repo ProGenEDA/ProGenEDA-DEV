@@ -436,11 +436,20 @@
     {
       "id": "R049",
       "title": "DC voltage source-net diagnostics use ordinary terminals",
+      "status": "partially_confirmed_source_nets_generated_source_failed",
+      "confidence": 0.88,
+      "applies_to": ["Proteus 8.13", "DC voltage source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["user-created testing.pdsprj combined donor", "DC_SOURCES_V5_SOURCE_NET_STATIC_20260603", "DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603"],
+      "rule": "The user-made combined DC-voltage plus six-component R/C/L donor contains no $TERPOWER and no $TERGROUND records. Its source-driven nets use ordinary terminal labels: DV for the DC-voltage positive net and D0 for the negative net. V5 user testing confirmed the manual donor transplant, manual label-only mutation, and generated source-net R/C/L body with no source object worked. The generated VSOURCE-first and VSOURCE-last cases both failed with VGC/VG... dll, so the source-net conversion is accepted as a direction but generated VSOURCE insertion remains unresolved."
+    },
+    {
+      "id": "R050",
+      "title": "DC voltage source block must preserve donor source bytes",
       "status": "static_generated_pending_user_test",
       "confidence": 0.82,
       "applies_to": ["Proteus 8.13", "DC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["user-created testing.pdsprj combined donor", "DC_SOURCES_V5_SOURCE_NET_STATIC_20260603"],
-      "rule": "The user-made combined DC-voltage plus six-component R/C/L donor contains no $TERPOWER and no $TERGROUND records. Its source-driven nets use ordinary terminal labels: DV for the DC-voltage positive net and D0 for the negative net. V5 therefore tests generated source-driven circuits by replacing V0/G0 with DV/D0, removing the normal power bridge, converting former ground endpoints to ordinary $TEROUTPUT records, and inserting a VSOURCE whose positive side is an output terminal and negative side is an input terminal. This rule is not promoted until V5 manual Proteus testing identifies a safe generated source insertion order."
+      "evidence": ["DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603", "DC_SOURCES_V6_SOURCE_BLOCK_FIX_STATIC_20260603"],
+      "rule": "After V5 isolated the failure to generated VSOURCE insertion, V6 tests source-block variants that preserve source donor or manual source suffix/link bytes instead of resistor-style terminal patching. The leading hypothesis is that a valid non-final source block needs the donor source terminal/component suffixes preserved and its second source wire shortened to the 49-byte non-final form observed in the working manual combined donor. If that still fails, V6 falls back to exact manual source block and manual CDB variants before any source method is promoted."
     }
   ]
 }

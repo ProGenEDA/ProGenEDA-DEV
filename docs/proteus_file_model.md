@@ -1118,5 +1118,56 @@ static validation issues. The archive SHA256 is:
 e3d9dab3fe61dca27997271e33f800ff538a23552d9c1bea5e76808b8ee6a658
 ```
 
-This source-net method remains pending until Proteus open/netlist feedback
-identifies which generated source insertion order is valid.
+User feedback on V5:
+
+```text
+T00 worked.
+T01 worked.
+T02 worked.
+T03 and T04 failed with VGC/VG... dll errors.
+```
+
+This confirms the source-net conversion itself is not the active blocker:
+generated R/C/L with `DV` and `D0` ordinary terminals works when no source
+object is inserted. The remaining blocker is the generated `VSOURCE` object
+block and/or its `ROOT.CDB` source metadata.
+
+The working manual combined donor uses this source-region structure:
+
+```text
+ordinary DV anchor input before source block
+DV output terminal
+D0 input terminal
+VSOURCE record
+source wire 1: 50 bytes
+source wire 2: 49 bytes when non-final
+```
+
+`DC_SOURCES_V6_SOURCE_BLOCK_FIX_TEMP_2026_06_03` is the focused follow-up pack.
+It does not change the working generated source-net R/C/L body. It only varies
+the source object block:
+
+```text
+T00 source-net R/C/L no-source control
+T01 source first, preserve standalone source suffix/link bytes, trim non-final source wire 2 to 49 bytes
+T02 source first, keep V5 patched suffixes, trim non-final source wire 2 to 49 bytes
+T03 source first, exact manual source block without the extra DV anchor
+T04 generated R/C/L first, then manual source block made final
+T05 source first, exact manual source block plus full manual combined donor ROOT.CDB
+T06 source first, manual source block plus the extra ordinary DV anchor and manual ROOT.CDB
+```
+
+V6 static checks passed: every case contains `PROJECT.XML`, `ROOT.DSN`,
+`ROOT.CDB`, and `SCRIPTS/PWRRAILS.DAT`, every manifest reports zero
+`static_validation_issues`, and the focused mixed R/C/L regression test passed:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V6 archive SHA256 is:
+
+```text
+ab52c82f7281bf0c763160d6cc0519ba6163eebbc89c628ff971252361606d77
+```
