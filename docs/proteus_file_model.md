@@ -1412,3 +1412,74 @@ The V10 archive SHA256 is:
 ```text
 480ec22bb825792cf7fb4e74db9b18734867e6f2c7b553ed36052fba32b692db
 ```
+
+User feedback on V10:
+
+```text
+T02, T03, and T04 all gave ISIS dll errors
+```
+
+T00/T01 were not reported as failing. This keeps the connected current donor
+and generated resistor-only load as useful controls, but rejects the V10 mixed
+R/C/L cases.
+
+The V10 mixed device section did not match the accepted DC-voltage source
+metadata shape:
+
+```text
+Accepted DCV mixed source device section:
+  CAP + REALIND + RESISTOR + VSOURCE
+
+Rejected V10 DCI mixed source device section:
+  CAP + REALIND + RESISTOR + CSOURCE + RESISTOR
+```
+
+The duplicate `RESISTOR` device entry came from combining the full R/C/L donor
+device table with the connected current-load donor table. Since the DCV cases
+worked with one clean device entry per family, V11 tests that same metadata
+shape for current sources.
+
+## DC Current DCV-Style Device Diagnostics
+
+`DC_CURRENT_V11_DCV_STYLE_DEVICES_TEMP_2026_06_03` keeps the current source
+geometry from the V10 controls, but uses the accepted DCV-style clean device
+table for mixed cases:
+
+```text
+CAP + REALIND + RESISTOR + CSOURCE
+```
+
+V11 test order:
+
+```text
+T00 exact connected current-source + resistor-load donor transplanted into E001
+T01 generated resistor-only load with connected source and current-load donor devices
+T02 generated simple R/C/L load with connected source + anchor terminals and clean devices
+T03 generated six-component R/C/L load with connected source + anchor terminals and clean devices
+T04 generated simple R/C/L load with connected source, no anchor terminals, and clean devices
+T05 generated simple R/C/L load with standalone current source and clean devices
+```
+
+V11 static checks passed for all 6 cases:
+
+```text
+required internals present: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+$TERPOWER count: 0
+$TERGROUND count: 0
+V0/G0 terminal labels: 0
+manifest static_validation_issues: []
+mixed device marker counts: CSOURCE 1, RESISTOR 1, CAPACITOR 1, REALIND 2
+```
+
+The focused mixed R/C/L regression test still passes:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V11 archive SHA256 is:
+
+```text
+63461232a5d51ab7f2a84469527d2f7f6092db409ffca84009ee65352271d4df
+```

@@ -481,11 +481,20 @@
     {
       "id": "R054",
       "title": "DC current source may require donor DI/I0 anchor terminals",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.76,
+      "status": "insufficient_when_device_table_has_duplicate_resistor",
+      "confidence": 0.82,
       "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V10_ANCHOR_TERMINALS_STATIC_20260603"],
-      "rule": "The connected current-load donor places a load-side DI $TERINPUT and I0 $TEROUTPUT immediately after the CSOURCE block and before the resistor component. V10 preserves this donor anchor terminal pair, chunk[655:858], after the connected source block, chunk[1:655], before appending generated load records. This is a diagnostic rule only until user testing confirms whether the resistor-only, simple R/C/L, and six-component R/C/L anchor cases work."
+      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V10_ANCHOR_TERMINALS_STATIC_20260603", "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603"],
+      "rule": "The connected current-load donor places a load-side DI $TERINPUT and I0 $TEROUTPUT immediately after the CSOURCE block and before the resistor component. V10 preserved this donor anchor terminal pair, chunk[655:858], after the connected source block, chunk[1:655]. User feedback rejected T02/T03/T04 mixed R/C/L anchor cases with ISIS dll errors, while T00/T01 were not reported as failing. V10 mixed cases used a combined device table with duplicate RESISTOR entries, so the anchor pair alone is not sufficient when device metadata is not DCV-style clean."
+    },
+    {
+      "id": "R055",
+      "title": "DC current mixed cases should mirror DCV clean device table",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603", "DC_CURRENT_V11_DCV_STYLE_DEVICES_STATIC_20260603"],
+      "rule": "Accepted DC-voltage mixed source cases use one clean device table with CAP, REALIND, RESISTOR, and VSOURCE. V10 mixed current cases instead had CAP, REALIND, RESISTOR, CSOURCE, and a second RESISTOR entry due combining the R/C/L donor table with the connected current-load donor table. V11 mirrors the DCV metadata shape by combining the R/C/L donor device table with the standalone CSOURCE-only donor table, producing exactly CAP + REALIND + RESISTOR + CSOURCE for generated mixed current cases. This remains pending until user Proteus testing confirms V11."
     }
   ]
 }
