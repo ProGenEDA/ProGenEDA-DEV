@@ -1354,3 +1354,61 @@ The V9 archive SHA256 is:
 ```text
 79823f09870e3f9d4aecd089d90663df222dcf86d6c4d54ba6589e1e9697d3aa
 ```
+
+User feedback on V9:
+
+```text
+T03 and onward gave ISIS/VG dll errors
+```
+
+The failure starts at generated current-source cases, while donor controls and
+the no-source generated body were not reported as failing. Therefore the
+connected CSOURCE block alone is still insufficient before generated R/C/L body
+records.
+
+## DC Current Anchor Terminal Diagnostics
+
+The exact connected current-load donor places a load-side anchor terminal pair
+immediately after the source block:
+
+```text
+source block:            chunk[1:655]
+load-side anchor pair:   chunk[655:858]
+  DI $TERINPUT
+  I0 $TEROUTPUT
+resistor body starts:    chunk[858]
+```
+
+`DC_CURRENT_V10_ANCHOR_TERMINALS_TEMP_2026_06_03` tests preserving that donor
+anchor pair before appending generated load records:
+
+```text
+T00 exact connected current-source + resistor-load donor transplanted into E001
+T01 generated resistor-only load with connected CSOURCE block plus DI/I0 anchor pair
+T02 generated simple R/C/L load with connected CSOURCE block plus DI/I0 anchor pair
+T03 generated six-component R/C/L load with fixed visible source ref I4
+T04 generated six-component R/C/L load with visible source ref patched to the source ID
+```
+
+V10 static checks passed for all 5 cases:
+
+```text
+required internals present: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+$TERPOWER count: 0
+$TERGROUND count: 0
+V0/G0 terminal labels: 0
+manifest static_validation_issues: []
+```
+
+The focused mixed R/C/L regression test still passes:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V10 archive SHA256 is:
+
+```text
+480ec22bb825792cf7fb4e74db9b18734867e6f2c7b553ed36052fba32b692db
+```

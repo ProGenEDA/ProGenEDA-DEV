@@ -472,11 +472,20 @@
     {
       "id": "R053",
       "title": "DC current source connected-load donor is the active diagnostic direction",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.78,
+      "status": "rejected_without_anchor_terminals",
+      "confidence": 0.82,
       "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_STATIC_20260603"],
-      "rule": "The user-made dc_current_03_resistor_load donor uses a connected CSOURCE record with visible ref I4, value 500mA, a 347-byte source record, source object before the resistor load, and a CDB where passive component records precede the current-source record. V9 therefore tests connected-source-block variants first: fixed visible I4 with source-last CDB, fixed visible I4 with source-first CDB, and a standalone-source A/B case with source-last CDB. Keep this rule diagnostic until user Proteus feedback identifies the passing variant."
+      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_STATIC_20260603", "DC_CURRENT_V9_USER_FEEDBACK_T03_ONWARD_FAILED_20260603"],
+      "rule": "The user-made dc_current_03_resistor_load donor uses a connected CSOURCE record with visible ref I4, value 500mA, a 347-byte source record, source object before the resistor load, and a CDB where passive component records precede the current-source record. V9 proved that copying only the connected source block before generated R/C/L is not sufficient: T03 and onward failed with ISIS/VG dll errors. Do not use the source block alone as the final current-source method."
+    },
+    {
+      "id": "R054",
+      "title": "DC current source may require donor DI/I0 anchor terminals",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.76,
+      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V10_ANCHOR_TERMINALS_STATIC_20260603"],
+      "rule": "The connected current-load donor places a load-side DI $TERINPUT and I0 $TEROUTPUT immediately after the CSOURCE block and before the resistor component. V10 preserves this donor anchor terminal pair, chunk[655:858], after the connected source block, chunk[1:655], before appending generated load records. This is a diagnostic rule only until user testing confirms whether the resistor-only, simple R/C/L, and six-component R/C/L anchor cases work."
     }
   ]
 }
