@@ -490,11 +490,20 @@
     {
       "id": "R055",
       "title": "DC current mixed cases should mirror DCV clean device table",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.78,
+      "status": "rejected_for_v11_current_geometry",
+      "confidence": 0.84,
       "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603", "DC_CURRENT_V11_DCV_STYLE_DEVICES_STATIC_20260603"],
-      "rule": "Accepted DC-voltage mixed source cases use one clean device table with CAP, REALIND, RESISTOR, and VSOURCE. V10 mixed current cases instead had CAP, REALIND, RESISTOR, CSOURCE, and a second RESISTOR entry due combining the R/C/L donor table with the connected current-load donor table. V11 mirrors the DCV metadata shape by combining the R/C/L donor device table with the standalone CSOURCE-only donor table, producing exactly CAP + REALIND + RESISTOR + CSOURCE for generated mixed current cases. This remains pending until user Proteus testing confirms V11."
+      "evidence": ["DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603", "DC_CURRENT_V11_DCV_STYLE_DEVICES_STATIC_20260603", "DC_CURRENT_V11_USER_FEEDBACK_ALL_ISIS_DLL_20260603"],
+      "rule": "Accepted DC-voltage mixed source cases use one clean device table with CAP, REALIND, RESISTOR, and VSOURCE. V10 mixed current cases instead had CAP, REALIND, RESISTOR, CSOURCE, and a second RESISTOR entry due combining the R/C/L donor table with the connected current-load donor table. V11 fixed the duplicate metadata by producing CAP + REALIND + RESISTOR + CSOURCE, but user feedback reported all V11 cases still gave ISIS dll errors. Therefore clean device metadata alone is not sufficient when the source geometry remains from the DI/I0 current-source donor family."
+    },
+    {
+      "id": "R056",
+      "title": "Manual DC current source uses DCV geometry with CSOURCE metadata",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["user-supplied testing.pdsprj 2026-06-03 15:50", "DC_CURRENT_V12_MANUAL_TESTING_STUDY_STATIC_20260603"],
+      "rule": "The new user-supplied testing.pdsprj for DC current uses the same source net labels as DC voltage: DV for the positive/source side and D0 for the negative side. Its source reference/value are V1/10V, its visible source subckt text remains VSOURCE, but its final object model marker, ROOT.CDB model entry, and device-table model are CSOURCE. Its device table order is CAP, CSOURCE, REALIND, RESISTOR. V12 tests this rule directly using exact manual controls, accepted DCV source geometry patched only at the final model marker to CSOURCE, and an extracted manual source unit."
     }
   ]
 }

@@ -1483,3 +1483,80 @@ The V11 archive SHA256 is:
 ```text
 63461232a5d51ab7f2a84469527d2f7f6092db409ffca84009ee65352271d4df
 ```
+
+User feedback on V11:
+
+```text
+all V11 cases gave ISIS dll errors
+```
+
+This rejects the clean-device-table hypothesis by itself. The source identity
+and/or object geometry is still wrong when using the DI/I0 current-source donor
+family.
+
+## DC Current Manual Testing Study
+
+The user supplied a new manual reference:
+
+```text
+C:\Users\tahab\Downloads\testing.pdsprj
+last write: 2026-06-03 15:50:56
+```
+
+Byte-level inspection of this file shows a different DC-current source pattern:
+
+```text
+source nets: DV / D0
+source reference/value: V1 / 10V
+visible object subckt text: VSOURCE
+final object model marker: CSOURCE
+ROOT.CDB source model: CSOURCE
+device table model: CSOURCE
+device table order: CAP + CSOURCE + REALIND + RESISTOR
+normal power/ground terminals: none
+```
+
+The manual source unit is:
+
+```text
+chunk[2187:2942]
+contains:
+  DV $TERINPUT
+  DV $TEROUTPUT
+  D0 $TERINPUT
+  V1/10V source object with visible VSOURCE and model CSOURCE
+  D0 $TEROUTPUT
+```
+
+`DC_CURRENT_V12_MANUAL_TESTING_STUDY_TEMP_2026_06_03` tests this new model:
+
+```text
+T00 exact supplied manual testing.pdsprj copied without repacking
+T01 manual object chunk, CDB, and device table transplanted into E001
+T02 generated simple R/C/L using accepted DCV source geometry patched to CSOURCE
+T03 generated six-component R/C/L using accepted DCV source geometry patched to CSOURCE
+T04 generated six-component R/C/L using the exact manual source unit
+```
+
+V12 static checks passed for all 5 cases:
+
+```text
+required internals present: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+$TERPOWER count: 0
+$TERGROUND count: 0
+V0/G0 terminal labels: 0
+manifest static_validation_issues: []
+```
+
+The focused mixed R/C/L regression test still passes:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V12 archive SHA256 is:
+
+```text
+f94eef38f4d4fa2d00ae0962dda2cf21b8955d9f29474f66b53805990f71dd18
+```
