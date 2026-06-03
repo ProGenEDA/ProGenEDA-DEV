@@ -1114,3 +1114,34 @@ archive SHA256 is:
 ```text
 59b1345168f8e1934b6ab73f0db07523ada0825b6e9bfd1a3a0b0b8ba2955ee5
 ```
+
+User Proteus feedback for V1:
+
+```text
+All V1 generated DC-source projects hard-crashed Proteus before an error
+dialog appeared.
+```
+
+Local byte review found that V1 wrote `ROOT.CDB` with the wrong encoders:
+
+```text
+wrong V1 string encoding: 4-byte length + ASCII
+accepted CDB string encoding: 1-byte length + ASCII
+wrong V1 source property text: no trailing NUL
+accepted source property text: trailing NUL included in the length field
+```
+
+`DC_SOURCES_V2_CDB_FIX_TEMP_20260603` corrects those CDB encoders. Its source
+CDB records now match the manual donor field lengths:
+
+```text
+VSOURCE property length: 0x18
+CSOURCE property length: 0x1a
+```
+
+V2 is still temp-only and pending Proteus open/render/netlist testing. Its
+archive SHA256 is:
+
+```text
+7eade429748d7694a9498e5d2756c9789f816151926e0ab81dc7ed689808e523
+```
