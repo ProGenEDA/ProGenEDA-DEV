@@ -1,0 +1,120 @@
+{
+  "case_id": "DCS_V8_DCV_T01_01_SIMPLE_LOOP",
+  "description": "DC voltage source-driven Simple loop: one RCL path from power to ground.",
+  "status": "temporary_dc_source_v8_15_voltage_15_current_not_locked",
+  "output": "DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_TEST_BATCH\\DCS_V8_DCV_T01_01_SIMPLE_LOOP\\DCS_V8_DCV_T01_01_SIMPLE_LOOP.pdsprj",
+  "object_chunk_len": 2658,
+  "root_cdb_len": 588,
+  "root_dsn_len": 70911,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 4,
+    "$TERGROUND": 0,
+    "VSOURCE": 2,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 2,
+    "WIRE": 8,
+    "COMPONENT ID": 4,
+    "COMPONENT VALUE": 4,
+    "CAP10": 1
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67310,
+    "second_isis": 70014,
+    "second_object_data": 70049,
+    "object_data_pointer": 70062
+  },
+  "hashes": {
+    "DCS_V8_DCV_T01_01_SIMPLE_LOOP.pdsprj": "54e8058de1467a7232e4259c18f0c01ba8062bad8585f2bc5d1fdecb02dc9b54",
+    "DCS_V8_DCV_T01_01_SIMPLE_LOOP.ROOT.CDB.bin": "39309944bfa014069f8867a84d25015d44c2f1638308b8ff781e84c68aeb52b7",
+    "DCS_V8_DCV_T01_01_SIMPLE_LOOP.ROOT.DSN.bin": "18bd6b9975b3c5166bf2e03a87f8ac68d126e6d0cbe4dd7876174e1ef69484d8",
+    "DCS_V8_DCV_T01_01_SIMPLE_LOOP.OBJECT_CHUNK.bin": "13ee33bb79cbda69d0acc5233c1c9c0ef885c63a3b4a97c97873ec9b28363420",
+    "object_chunk": "13ee33bb79cbda69d0acc5233c1c9c0ef885c63a3b4a97c97873ec9b28363420",
+    "ROOT.CDB": "39309944bfa014069f8867a84d25015d44c2f1638308b8ff781e84c68aeb52b7"
+  },
+  "input": {
+    "base_payload_name": "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP",
+    "source_kind": "dc_voltage",
+    "source_position": "before_rcl",
+    "source": {
+      "idx": 4,
+      "ref": "V1",
+      "value": "10V",
+      "model": "VSOURCE",
+      "positive_net": "DV",
+      "negative_net": "D0",
+      "prop_text": "{PRIMITIVE=ANALOG}\n"
+    },
+    "groups": [
+      {
+        "mode": "RCL",
+        "start": "DV",
+        "end": "D0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RCL"
+      ],
+      "group_count": 1,
+      "component_count": 3,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "resistor_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "DV",
+      "source_net_negative": "D0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "B1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B1",
+        "right": "D0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "DV",
+        "right": "A1",
+        "global_id": 3,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      }
+    ]
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "case_id": "DCS_V8_DCI_T02_02_SERIES_CIRCUIT",
+  "description": "DC current source-driven Series circuit: RC section followed by RCL section.",
+  "status": "temporary_dc_source_v8_15_voltage_15_current_not_locked",
+  "output": "DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_TEST_BATCH\\DCS_V8_DCI_T02_02_SERIES_CIRCUIT\\DCS_V8_DCI_T02_02_SERIES_CIRCUIT.pdsprj",
+  "object_chunk_len": 3985,
+  "root_cdb_len": 827,
+  "root_dsn_len": 72271,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 6,
+    "$TEROUTPUT": 6,
+    "$TERGROUND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 2,
+    "CAPACITOR": 2,
+    "REALIND": 3,
+    "RESISTOR": 4,
+    "WIRE": 12,
+    "COMPONENT ID": 6,
+    "COMPONENT VALUE": 6,
+    "CAP10": 2
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67343,
+    "second_isis": 71374,
+    "second_object_data": 71409,
+    "object_data_pointer": 71422
+  },
+  "hashes": {
+    "DCS_V8_DCI_T02_02_SERIES_CIRCUIT.pdsprj": "bb46a450b0a6d519abf1e953a76be0f81aa2d0d5a16b721154fb76488e25ddf2",
+    "DCS_V8_DCI_T02_02_SERIES_CIRCUIT.ROOT.CDB.bin": "e60de471a9ae899f48c0af1af57845f814379e3617066f77e3b042e4ae03fb30",
+    "DCS_V8_DCI_T02_02_SERIES_CIRCUIT.ROOT.DSN.bin": "534306714941904156586e9b9fdd061b3ff4e1138d053c4a185080f33d316c7a",
+    "DCS_V8_DCI_T02_02_SERIES_CIRCUIT.OBJECT_CHUNK.bin": "48341e891cfd7ba6815dce7962a2f291a30dbeaaee37f8b9c1b261b716d5f0f2",
+    "object_chunk": "48341e891cfd7ba6815dce7962a2f291a30dbeaaee37f8b9c1b261b716d5f0f2",
+    "ROOT.CDB": "e60de471a9ae899f48c0af1af57845f814379e3617066f77e3b042e4ae03fb30"
+  },
+  "input": {
+    "base_payload_name": "MIXED_RCL_LOCKED_T04_02_SERIES_CIRCUIT",
+    "source_kind": "dc_current",
+    "source_position": "before_rcl",
+    "source": {
+      "idx": 6,
+      "ref": "I1",
+      "value": "1A",
+      "model": "CSOURCE",
+      "positive_net": "DI",
+      "negative_net": "I0",
+      "prop_text": "{PRIMITIVE=ANALOGUE}\n"
+    },
+    "groups": [
+      {
+        "mode": "RC",
+        "start": "DI",
+        "end": "N1"
+      },
+      {
+        "mode": "RCL",
+        "start": "N1",
+        "end": "I0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RC",
+        "RCL"
+      ],
+      "group_count": 2,
+      "component_count": 5,
+      "capacitor_count": 2,
+      "inductor_count": 1,
+      "resistor_count": 2,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "DV",
+      "source_net_negative": "D0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "N1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "DI",
+        "right": "A1",
+        "global_id": 2,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 3,
+        "unit": 2,
+        "kind": "CAPACITOR",
+        "ref": "C2",
+        "value": "1uF",
+        "left": "A2",
+        "right": "B2",
+        "global_id": 3,
+        "in_suffix": "1002",
+        "out_suffix": "0fd0",
+        "x": 2794000,
+        "y": 2540000
+      },
+      {
+        "idx": 4,
+        "unit": 2,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B2",
+        "right": "I0",
+        "global_id": 4,
+        "in_suffix": "12df",
+        "out_suffix": "1311",
+        "x": 6604000,
+        "y": 2540000
+      },
+      {
+        "idx": 5,
+        "unit": 2,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "10k",
+        "left": "N1",
+        "right": "A2",
+        "global_id": 5,
+        "in_suffix": "1506",
+        "out_suffix": "1538",
+        "x": 2794000,
+        "y": 5080000
+      }
+    ]
+  }
+}

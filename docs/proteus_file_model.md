@@ -1221,3 +1221,69 @@ The V7 archive SHA256 is:
 ```text
 307ce9bd305be6519041307fe7545bd96bcf5d065cb562087c8f286e821ec9ec
 ```
+
+User feedback on V7:
+
+```text
+all V7 cases worked
+```
+
+This confirms the source-first DC-voltage method for the 6-component and
+corrected 21-rule mixed R/C/L scale cases.
+
+## DC Voltage And Current 15-Topology Pack
+
+The user-created DC-current donors show a related but not identical standalone
+source shape:
+
+```text
+dc_current_01_default object chunk length: 653
+terminal order: $TERINPUT(I0), then $TEROUTPUT(DI)
+source model: CSOURCE
+source ref/value: I1 / 1A
+source wire 2 final length: 51 bytes
+```
+
+Therefore V8 uses these source-net conventions:
+
+```text
+DC voltage: positive net DV, negative net D0, source model VSOURCE
+DC current: positive net DI, negative net I0, source model CSOURCE
+```
+
+`DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_TEMP_2026_06_03` applies the V7
+source-first method to the 15 locked mixed R/C/L topology cases:
+
+```text
+T01-T15: DC-voltage source-driven versions using DV/D0
+T16-T30: DC-current source-driven versions using DI/I0
+```
+
+Current-source cases use a combined device section built from the accepted
+R/C/L donor device section plus the standalone `CSOURCE` donor device section.
+All V8 cases preserve native source suffix bytes, patch only source global IDs,
+place the source block before the generated R/C/L body, and remove the normal
+power/ground bridge.
+
+V8 static checks passed for all 30 cases:
+
+```text
+required internals present: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+$TERPOWER count: 0
+$TERGROUND count: 0
+V0/G0 terminal labels: 0
+manifest static_validation_issues: []
+```
+
+The focused mixed R/C/L regression test still passes:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V8 archive SHA256 is:
+
+```text
+074c148d8b0c1a06d5ada2f213898a0e493b5e5f3ac8280e9bed7fa6cf962e1e
+```

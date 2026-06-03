@@ -1,0 +1,256 @@
+{
+  "case_id": "DCS_V8_DCI_T14_14_H_BRIDGE_RESISTOR_VERSION",
+  "description": "DC current source-driven H-bridge style network with two mixed vertical branches and one cross bridge.",
+  "status": "temporary_dc_source_v8_15_voltage_15_current_not_locked",
+  "output": "DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_TEST_BATCH\\DCS_V8_DCI_T14_14_H_BRIDGE_RESISTOR_VERSION\\DCS_V8_DCI_T14_14_H_BRIDGE_RESISTOR_VERSION.pdsprj",
+  "object_chunk_len": 8023,
+  "root_cdb_len": 1592,
+  "root_dsn_len": 76309,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 12,
+    "$TEROUTPUT": 12,
+    "$TERGROUND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 2,
+    "CAPACITOR": 4,
+    "REALIND": 12,
+    "RESISTOR": 6,
+    "WIRE": 24,
+    "COMPONENT ID": 12,
+    "COMPONENT VALUE": 12,
+    "CAP10": 4
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67343,
+    "second_isis": 75412,
+    "second_object_data": 75447,
+    "object_data_pointer": 75460
+  },
+  "hashes": {
+    "DCS_V8_DCI_T14_14_H_BRIDGE_RESISTOR_VERSION.pdsprj": "c3f43a42b5157184226e29354d0d07493795131764e0c0bc3ec5e8039b1d8a3d",
+    "DCS_V8_DCI_T14_14_H_BRIDGE_RESISTOR_VERSION.ROOT.CDB.bin": "ac495899051ab66952816adac8d1bbc8edb1e7e4d0f4f08c80df8fc4aecc689c",
+    "DCS_V8_DCI_T14_14_H_BRIDGE_RESISTOR_VERSION.ROOT.DSN.bin": "7c6beb27efe202f0e296df67ed6575620c3c9bef3df35dbf539c3ee678efda99",
+    "DCS_V8_DCI_T14_14_H_BRIDGE_RESISTOR_VERSION.OBJECT_CHUNK.bin": "9cf5c0d255dbbf8f240af1dc301ce2a415aa5f73c3bba3b956ec14462667b9f8",
+    "object_chunk": "9cf5c0d255dbbf8f240af1dc301ce2a415aa5f73c3bba3b956ec14462667b9f8",
+    "ROOT.CDB": "ac495899051ab66952816adac8d1bbc8edb1e7e4d0f4f08c80df8fc4aecc689c"
+  },
+  "input": {
+    "base_payload_name": "MIXED_RCL_LOCKED_T16_14_H_BRIDGE_RESISTOR_VERSION",
+    "source_kind": "dc_current",
+    "source_position": "before_rcl",
+    "source": {
+      "idx": 12,
+      "ref": "I1",
+      "value": "1A",
+      "model": "CSOURCE",
+      "positive_net": "DI",
+      "negative_net": "I0",
+      "prop_text": "{PRIMITIVE=ANALOGUE}\n"
+    },
+    "groups": [
+      {
+        "mode": "RC",
+        "start": "DI",
+        "end": "N1"
+      },
+      {
+        "mode": "LC",
+        "start": "N1",
+        "end": "I0"
+      },
+      {
+        "mode": "RL",
+        "start": "DI",
+        "end": "N2"
+      },
+      {
+        "mode": "RCL",
+        "start": "N2",
+        "end": "I0"
+      },
+      {
+        "mode": "LC",
+        "start": "N1",
+        "end": "N2"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RC",
+        "LC",
+        "RL",
+        "RCL",
+        "LC"
+      ],
+      "group_count": 5,
+      "component_count": 11,
+      "capacitor_count": 4,
+      "inductor_count": 4,
+      "resistor_count": 3,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "DV",
+      "source_net_negative": "D0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "N1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "DI",
+        "right": "A1",
+        "global_id": 2,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 3,
+        "unit": 2,
+        "kind": "CAPACITOR",
+        "ref": "C2",
+        "value": "1uF",
+        "left": "N1",
+        "right": "A2",
+        "global_id": 3,
+        "in_suffix": "1002",
+        "out_suffix": "0fd0",
+        "x": 2794000,
+        "y": 2540000
+      },
+      {
+        "idx": 4,
+        "unit": 2,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "A2",
+        "right": "I0",
+        "global_id": 4,
+        "in_suffix": "12df",
+        "out_suffix": "1311",
+        "x": 6604000,
+        "y": 2540000
+      },
+      {
+        "idx": 5,
+        "unit": 3,
+        "kind": "INDUCTOR",
+        "ref": "L2",
+        "value": "5mH",
+        "left": "A3",
+        "right": "N2",
+        "global_id": 5,
+        "in_suffix": "1ab5",
+        "out_suffix": "1ae7",
+        "x": 16764000,
+        "y": 2540000
+      },
+      {
+        "idx": 6,
+        "unit": 3,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "10k",
+        "left": "DI",
+        "right": "A3",
+        "global_id": 6,
+        "in_suffix": "1cdc",
+        "out_suffix": "1d0e",
+        "x": 12954000,
+        "y": 5080000
+      },
+      {
+        "idx": 7,
+        "unit": 4,
+        "kind": "CAPACITOR",
+        "ref": "C3",
+        "value": "1uF",
+        "left": "A4",
+        "right": "B4",
+        "global_id": 7,
+        "in_suffix": "1fae",
+        "out_suffix": "1f7c",
+        "x": -7366000,
+        "y": -3556000
+      },
+      {
+        "idx": 8,
+        "unit": 4,
+        "kind": "INDUCTOR",
+        "ref": "L3",
+        "value": "5mH",
+        "left": "B4",
+        "right": "I0",
+        "global_id": 8,
+        "in_suffix": "228b",
+        "out_suffix": "22bd",
+        "x": -3556000,
+        "y": -3556000
+      },
+      {
+        "idx": 9,
+        "unit": 4,
+        "kind": "RESISTOR",
+        "ref": "R3",
+        "value": "10k",
+        "left": "N2",
+        "right": "A4",
+        "global_id": 9,
+        "in_suffix": "24b2",
+        "out_suffix": "24e4",
+        "x": -7366000,
+        "y": -1016000
+      },
+      {
+        "idx": 10,
+        "unit": 5,
+        "kind": "CAPACITOR",
+        "ref": "C4",
+        "value": "1uF",
+        "left": "N1",
+        "right": "A5",
+        "global_id": 10,
+        "in_suffix": "2784",
+        "out_suffix": "2752",
+        "x": 2794000,
+        "y": -3556000
+      },
+      {
+        "idx": 11,
+        "unit": 5,
+        "kind": "INDUCTOR",
+        "ref": "L4",
+        "value": "5mH",
+        "left": "A5",
+        "right": "N2",
+        "global_id": 11,
+        "in_suffix": "2a61",
+        "out_suffix": "2a93",
+        "x": 6604000,
+        "y": -3556000
+      }
+    ]
+  }
+}
