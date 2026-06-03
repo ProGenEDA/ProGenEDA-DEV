@@ -432,6 +432,15 @@
       "applies_to": ["Proteus 8.13", "mixed passive R/C/L main generator"],
       "evidence": ["REQUESTED_RCL_FILTER_VALUES_MAIN_STATIC_20260602"],
       "rule": "When overriding visible values in src/proteusgen/mixed_rcl.py, keep the existing donor value field length. Current safe overrides are exactly three ASCII characters for resistors, capacitors, and inductors. Use compact Proteus text such as 10R for 10 ohm, 50R for 50 ohm, 4u7 for 4.7 uF, 10u for 10 uF, and 10m for 10 mH. A two-character resistor value such as 10 corrupts the mixed-family resistor record because downstream fields shift."
+    },
+    {
+      "id": "R049",
+      "title": "DC source CDB order must not numeric-sort sources after passives",
+      "status": "pending_v3_user_test_after_v2_isisdll",
+      "confidence": 0.76,
+      "applies_to": ["Proteus 8.13", "DC voltage/current source temporary method"],
+      "evidence": ["DC_SOURCES_V2_USER_FEEDBACK_ISISDLL_20260603", "DC_SOURCES_V3_OBJECT_ORDER_TEMP_STATIC_20260603", "R038", "R047"],
+      "rule": "For temporary DC source plus passive generation, do not sort ROOT.CDB rows by numeric component ID when DSN object data emits source units before passive R/C/L groups. V2 used high source IDs and low passive IDs, so numeric sorting placed source CDB rows after passive rows while ROOT.DSN emitted sources first; user testing reported ISIS.dll errors for all V2 cases. V3 emits source CDB rows first and includes exact donor controls, but this remains pending until Proteus user testing confirms the controls and generated cases."
     }
   ]
 }

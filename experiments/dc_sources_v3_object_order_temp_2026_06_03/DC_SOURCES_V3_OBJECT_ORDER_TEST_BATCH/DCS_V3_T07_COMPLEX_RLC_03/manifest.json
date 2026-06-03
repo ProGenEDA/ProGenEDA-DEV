@@ -1,0 +1,351 @@
+{
+  "case_id": "DCS_V3_T07_COMPLEX_RLC_03",
+  "description": "Pasted circuit 3: 24V source and two 0.5A current sources in a branched RLC network.",
+  "output": "DC_SOURCES_V3_OBJECT_ORDER_TEST_BATCH\\DCS_V3_T07_COMPLEX_RLC_03\\DCS_V3_T07_COMPLEX_RLC_03.pdsprj",
+  "donor_method": "prepend patched DC source units, then locked mixed RCL groups with V0 bridge removed",
+  "cdb_order_rule": "ROOT.CDB rows are emitted in DSN object order: sources first, then RCL specs",
+  "source_terminal_rule": "positive side uses output terminal, negative side uses input terminal",
+  "source_terminals_connect_by_label": true,
+  "source_specs": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "24V",
+      "positive": "A1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "500mA",
+      "positive": "C1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I2",
+      "value": "500mA",
+      "positive": "D1",
+      "negative": "G0"
+    }
+  ],
+  "rcl_counts": {
+    "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+    "group_modes": [
+      "R",
+      "L",
+      "C",
+      "L",
+      "R",
+      "C",
+      "R",
+      "L"
+    ],
+    "group_count": 8,
+    "component_count": 8,
+    "capacitor_count": 2,
+    "inductor_count": 3,
+    "resistor_count": 3,
+    "power_bridge_count": 1,
+    "ground_terminal_count": 3
+  },
+  "component_count": 11,
+  "components": [
+    {
+      "idx": 201,
+      "ref": "V1",
+      "type": "DC_VOLTAGE_SOURCE",
+      "value": "24V",
+      "nodes": [
+        "A1",
+        "G0"
+      ],
+      "visual": {
+        "x": -8382000,
+        "y": 2032000
+      }
+    },
+    {
+      "idx": 221,
+      "ref": "I1",
+      "type": "DC_CURRENT_SOURCE",
+      "value": "500mA",
+      "nodes": [
+        "C1",
+        "G0"
+      ],
+      "visual": {
+        "x": 3302000,
+        "y": -1016000
+      }
+    },
+    {
+      "idx": 222,
+      "ref": "I2",
+      "type": "DC_CURRENT_SOURCE",
+      "value": "500mA",
+      "nodes": [
+        "D1",
+        "G0"
+      ],
+      "visual": {
+        "x": 5080000,
+        "y": -1016000
+      }
+    },
+    {
+      "idx": 1,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "150",
+      "nodes": [
+        "A1",
+        "N1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "82m",
+      "nodes": [
+        "N1",
+        "B1"
+      ],
+      "visual": {
+        "x": 6604000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "4u7",
+      "nodes": [
+        "B1",
+        "G0"
+      ],
+      "visual": {
+        "x": 12954000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 4,
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "1H0",
+      "nodes": [
+        "B1",
+        "C1"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": -3556000
+      }
+    },
+    {
+      "idx": 5,
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "500",
+      "nodes": [
+        "C1",
+        "G0"
+      ],
+      "visual": {
+        "x": 2794000,
+        "y": -1016000
+      }
+    },
+    {
+      "idx": 6,
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "2u2",
+      "nodes": [
+        "C1",
+        "D1"
+      ],
+      "visual": {
+        "x": 12954000,
+        "y": -3556000
+      }
+    },
+    {
+      "idx": 7,
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "1k0",
+      "nodes": [
+        "D1",
+        "N2"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -7112000
+      }
+    },
+    {
+      "idx": 8,
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "470",
+      "nodes": [
+        "N2",
+        "G0"
+      ],
+      "visual": {
+        "x": 6604000,
+        "y": -9652000
+      }
+    }
+  ],
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "150",
+      "left": "A1",
+      "right": "N1",
+      "global_id": 1,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 2,
+      "unit": 2,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "82m",
+      "left": "N1",
+      "right": "B1",
+      "global_id": 2,
+      "in_suffix": "12df",
+      "out_suffix": "1311",
+      "x": 6604000,
+      "y": 2540000
+    },
+    {
+      "idx": 3,
+      "unit": 3,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "4u7",
+      "left": "B1",
+      "right": "G0",
+      "global_id": 3,
+      "in_suffix": "17d8",
+      "out_suffix": "17a6",
+      "x": 12954000,
+      "y": 2540000
+    },
+    {
+      "idx": 4,
+      "unit": 4,
+      "kind": "INDUCTOR",
+      "ref": "L2",
+      "value": "1H0",
+      "left": "B1",
+      "right": "C1",
+      "global_id": 4,
+      "in_suffix": "228b",
+      "out_suffix": "22bd",
+      "x": -3556000,
+      "y": -3556000
+    },
+    {
+      "idx": 5,
+      "unit": 5,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "500",
+      "left": "C1",
+      "right": "G0",
+      "global_id": 5,
+      "in_suffix": "2c88",
+      "out_suffix": "2cba",
+      "x": 2794000,
+      "y": -1016000
+    },
+    {
+      "idx": 6,
+      "unit": 6,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "2u2",
+      "left": "C1",
+      "right": "D1",
+      "global_id": 6,
+      "in_suffix": "2f5a",
+      "out_suffix": "2f28",
+      "x": 12954000,
+      "y": -3556000
+    },
+    {
+      "idx": 7,
+      "unit": 7,
+      "kind": "RESISTOR",
+      "ref": "R3",
+      "value": "1k0",
+      "left": "D1",
+      "right": "N2",
+      "global_id": 7,
+      "in_suffix": "3c34",
+      "out_suffix": "3c66",
+      "x": -7366000,
+      "y": -7112000
+    },
+    {
+      "idx": 8,
+      "unit": 8,
+      "kind": "INDUCTOR",
+      "ref": "L3",
+      "value": "470",
+      "left": "N2",
+      "right": "G0",
+      "global_id": 8,
+      "in_suffix": "41e3",
+      "out_suffix": "4215",
+      "x": 6604000,
+      "y": -9652000
+    }
+  ],
+  "markers": {
+    "$TERINPUT": 11,
+    "$TEROUTPUT": 8,
+    "$TERGROUND": 3,
+    "$TERPOWER": 0,
+    "VSOURCE": 2,
+    "CSOURCE": 4,
+    "RESISTOR": 6,
+    "CAPACITOR": 2,
+    "REALIND": 9,
+    "WIRE": 22
+  },
+  "chunk_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67950,
+    "second_isis": 75305,
+    "second_object_data": 75340,
+    "object_data_pointer": 75353
+  },
+  "hashes": {
+    "DCS_V3_T07_COMPLEX_RLC_03.pdsprj": "abed2b52db85d2210461aacf3ff061124a44856a66594c6785316a35b444f752",
+    "DCS_V3_T07_COMPLEX_RLC_03.ROOT.CDB.bin": "7fb520fc376c4968548c7aedac13a6bfc24a5c30b587e601bdfda8f4a71f12bf",
+    "DCS_V3_T07_COMPLEX_RLC_03.ROOT.DSN.bin": "f1726db9b63e7358d86ecf2a2e668866a8788f9f7c2ed9210bd5c1dfaa89f582",
+    "DCS_V3_T07_COMPLEX_RLC_03.OBJECT_CHUNK.bin": "96df8d41a6fa41d99c8139b3ca958d90e5d5933be6ea0fb5f4753065aa693e13"
+  },
+  "test_order": 15,
+  "source_text": "Circuit 3 from pasted request"
+}

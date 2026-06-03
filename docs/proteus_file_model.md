@@ -1145,3 +1145,46 @@ archive SHA256 is:
 ```text
 7eade429748d7694a9498e5d2756c9789f816151926e0ab81dc7ed689808e523
 ```
+
+User Proteus feedback for V2:
+
+```text
+All V2 generated DC-source projects gave ISIS.dll errors.
+```
+
+V2 fixed the CDB string/text encoders, but local review found it still broke a
+known mixed-component rule: source units were emitted first in `ROOT.DSN`, while
+`ROOT.CDB` rows were sorted by numeric component ID. Because generated source
+IDs were high and passive R/C/L IDs were low, the source CDB rows appeared
+after passive rows. This violates the accepted mixed R/C/L rule that CDB
+component rows must align with DSN object-emission order.
+
+`DC_SOURCES_V3_OBJECT_ORDER_TEMP_20260603` is the next temp-only diagnostic
+batch. It adds eight controls before generated source+R/C/L cases:
+
+```text
+T00A exact DC voltage donor repack
+T00B exact DC voltage donor object chunk and CDB transplanted into E001
+T00C exact DC current donor repack
+T00D exact DC current donor object chunk and CDB transplanted into E001
+T00E exact DC voltage + resistor-load donor repack
+T00F exact DC voltage + resistor-load donor object chunk and CDB transplanted into E001
+T00G exact DC current + resistor-load donor repack
+T00H exact DC current + resistor-load donor object chunk and CDB transplanted into E001
+```
+
+Generated V3 cases then repeat the requested DC voltage/current 6-component,
+correct 21-component, and five complex source+R/C/L circuits. V3 writes source
+CDB rows first, then passive R/C/L rows, matching the generated DSN object
+stream. Static checks passed for all 17 files: required internal files present,
+zero manifest chunk/static issues, and spot checks show source CDB tokens before
+passive tokens in generated cases. The temp archive SHA256 is:
+
+```text
+9c68a4d77007a811aca923e7f0fc845817c6725986f026f6deeb84c0cd4f7a6f
+```
+
+V3 is not a promotion point. Test controls first; if any T00 control fails, the
+source donor transplant/device-section path is wrong. If T00 controls pass but
+generated cases fail, the remaining issue is source record mutation or merged
+source+R/C/L device/CDB composition.
