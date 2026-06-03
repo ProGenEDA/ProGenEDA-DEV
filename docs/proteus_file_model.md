@@ -1073,3 +1073,44 @@ three accepted paths. The locked archive SHA256 is:
 ```text
 5a570d480610d8189435b7f249e7a988c1fda987c1541e383e58e652395acc65
 ```
+
+## DC Source Donor Notes (Static, Pending User Test)
+
+`DC_SOURCES_V1_TEMP_20260603` is the first temp-only DC source batch. It is
+not promoted to main code yet.
+
+Observed source donor model:
+
+```text
+DC voltage source default donor unit: 652 bytes
+DC current source default donor unit: 653 bytes
+DC voltage device marker: VSOURCE
+DC current device marker: CSOURCE
+source positive terminal: $TEROUTPUT
+source negative terminal: $TERINPUT
+source experiments emit: no $TERPOWER records
+```
+
+The temp generator prepends patched source units to accepted mixed R/C/L
+groups with the automatic V0 bridge removed. Topology is still represented by
+repeated terminal labels. For simple 6/21 source tests the reserved labels are:
+
+```text
+DC voltage: DV positive, D0 negative
+DC current: DI positive, I0 negative
+```
+
+For the five pasted complex DC-source R/C/L circuits, source terminals use the
+actual circuit node labels to connect by label. If an R/C/L endpoint is `G0`,
+the existing passive renderer still emits the accepted G0 ground endpoint for
+that passive component; the source negative side itself remains an input
+terminal.
+
+Static validation for all nine temp cases passed: no object chunk boundary
+issues, no duplicate component IDs or references, and every `.pdsprj` contains
+`PROJECT.XML`, `ROOT.DSN`, `ROOT.CDB`, and `SCRIPTS/PWRRAILS.DAT`. The temp
+archive SHA256 is:
+
+```text
+59b1345168f8e1934b6ab73f0db07523ada0825b6e9bfd1a3a0b0b8ba2955ee5
+```

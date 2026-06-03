@@ -1,0 +1,84 @@
+{
+  "case_id": "DCS_V1_T07_COMPLEX_RLC_03",
+  "description": "Pasted circuit 3: 24V source and two 0.5A current sources in a branched RLC network.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.1",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "24V",
+      "positive": "A1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "500mA",
+      "positive": "C1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I2",
+      "value": "500mA",
+      "positive": "D1",
+      "negative": "G0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "R",
+      "start": "A1",
+      "end": "N1"
+    },
+    {
+      "mode": "L",
+      "start": "N1",
+      "end": "B1"
+    },
+    {
+      "mode": "C",
+      "start": "B1",
+      "end": "G0"
+    },
+    {
+      "mode": "L",
+      "start": "B1",
+      "end": "C1"
+    },
+    {
+      "mode": "R",
+      "start": "C1",
+      "end": "G0"
+    },
+    {
+      "mode": "C",
+      "start": "C1",
+      "end": "D1"
+    },
+    {
+      "mode": "R",
+      "start": "D1",
+      "end": "N2"
+    },
+    {
+      "mode": "L",
+      "start": "N2",
+      "end": "G0"
+    }
+  ],
+  "component_values": {
+    "R1": "150",
+    "L1": "82m",
+    "C1": "4u7",
+    "L2": "1H0",
+    "R2": "500",
+    "C2": "2u2",
+    "R3": "1k0",
+    "L3": "470"
+  },
+  "metadata": {
+    "test_order": 7,
+    "source_text": "Circuit 3 from pasted request"
+  }
+}
