@@ -1,0 +1,125 @@
+{
+  "batch_id": "DC_SOURCES_V5_SOURCE_NET_STATIC_20260603",
+  "status": "static_generated_awaiting_user_proteus_open_netlist_test",
+  "scope": "DC voltage source only, temp diagnostics based on user-made combined donor and protuesgen locked RCL generator.",
+  "key_finding_from_manual_donor": "Use source nets DV/D0 and ordinary input/output terminals; do not keep $TERPOWER or $TERGROUND in source-driven circuits.",
+  "test_order": [
+    "DCS_V5_T00_MANUAL_COMBINED_DONOR_IN_E001",
+    "DCS_V5_T01_MANUAL_LABEL_ONLY_P0_N0",
+    "DCS_V5_T02_GENERATED_RCL_SOURCE_NET_NO_SOURCE",
+    "DCS_V5_T03_GENERATED_DCV_FIRST_DV_D0",
+    "DCS_V5_T04_GENERATED_DCV_LAST_DV_D0"
+  ],
+  "cases": [
+    {
+      "case_id": "DCS_V5_T00_MANUAL_COMBINED_DONOR_IN_E001",
+      "description": "User-made combined DC-voltage + 6-component RCL donor object chunk and CDB transplanted into E001. Expected to open if the E001 transplant path is valid.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 7,
+        "$TERGROUND": 0,
+        "VSOURCE": 2,
+        "CSOURCE": 0,
+        "CAPACITOR": 3,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 14,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "CAP10": 3
+      },
+      "object_chunk_len": 4656,
+      "root_cdb_len": 962,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCS_V5_T01_MANUAL_LABEL_ONLY_P0_N0",
+      "description": "Same manual combined object chunk, only terminal labels DV->P0 and D0->N0. Expected to open if source net labels are mutable.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 7,
+        "$TERGROUND": 0,
+        "VSOURCE": 2,
+        "CSOURCE": 0,
+        "CAPACITOR": 3,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 14,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "CAP10": 3
+      },
+      "object_chunk_len": 4656,
+      "root_cdb_len": 962,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCS_V5_T02_GENERATED_RCL_SOURCE_NET_NO_SOURCE",
+      "description": "Current protuesgen locked RCL 6-component body generated with source nets DV/D0, no power bridge, no ground terminal, and no source object.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "CAPACITOR": 3,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 12,
+        "COMPONENT ID": 6,
+        "COMPONENT VALUE": 6,
+        "CAP10": 3
+      },
+      "object_chunk_len": 4006,
+      "root_cdb_len": 859,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCS_V5_T03_GENERATED_DCV_FIRST_DV_D0",
+      "description": "Generated DC source first, followed by current protuesgen locked RCL 6-component source-net body. Tests source-before-RCL object order.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 7,
+        "$TERGROUND": 0,
+        "VSOURCE": 2,
+        "CSOURCE": 0,
+        "CAPACITOR": 3,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 14,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "CAP10": 3
+      },
+      "object_chunk_len": 4657,
+      "root_cdb_len": 960,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCS_V5_T04_GENERATED_DCV_LAST_DV_D0",
+      "description": "Generated current protuesgen locked RCL 6-component source-net body first, then DC source last. Tests source-after-RCL object order.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 7,
+        "$TERGROUND": 0,
+        "VSOURCE": 2,
+        "CSOURCE": 0,
+        "CAPACITOR": 3,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 14,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "CAP10": 3
+      },
+      "object_chunk_len": 4657,
+      "root_cdb_len": 960,
+      "static_validation_issues": []
+    }
+  ]
+}
