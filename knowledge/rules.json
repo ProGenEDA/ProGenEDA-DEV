@@ -522,6 +522,15 @@
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "mixed R/C/L source-driven circuits"],
       "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604"],
       "rule": "For source-driven DC mixed R/C/L circuits, do not emit default V0 power terminals or G0 ground terminals unless a later explicit user request requires a separate power/ground symbol. DC voltage uses the accepted source-first VSOURCE method with ordinary DV/D0 source-net terminals. DC current uses the same accepted source-first source geometry and DV/D0 net labels, but its model identity is CSOURCE in the final object marker, ROOT.CDB, and device table. Both source types are confirmed across the requested 15 topology set."
+    },
+    {
+      "id": "R059",
+      "title": "AC voltage source donors use VSINE with AV/A0 terminals",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "AC voltage source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["user-supplied ac_voltage_01_default.pdsprj", "user-supplied ac_voltage_02_variant.pdsprj", "user-supplied 2xac_voltage_02_variant.pdsprj", "user-supplied ac_voltage_03_resistor_load.pdsprj", "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_STATIC_20260604"],
+      "rule": "The supplied AC-voltage donors use ordinary two-character source-net labels AV and A0 and no $TERPOWER/$TERGROUND records in the source object chunk. The source model is VSINE, not VSOURCE. In ROOT.CDB, the source ref is V1, both the value field and model field are VSINE, and amplitude/frequency are property text fields such as {VA=20v} and {FREQ=5000hz}. V1 generated both source-first standalone VSINE insertion and source-last load-donor VSINE insertion; user Proteus testing is pending before promotion."
     }
   ]
 }

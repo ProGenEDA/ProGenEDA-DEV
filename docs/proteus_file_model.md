@@ -1677,3 +1677,67 @@ optional combined AC source plus small R/C/L load donor if source insertion diff
 For AC donors, use restricted ordinary source-net labels equivalent to the DC
 `DV`/`D0` pair, but AC-specific so future transforms cannot collide with DC
 rules. Suggested starting labels are `AV` and `A0`.
+
+## AC Voltage V1 Source Diagnostics
+
+The user supplied four AC-voltage source donors:
+
+```text
+ac_voltage_01_default.pdsprj
+ac_voltage_02_variant.pdsprj
+2xac_voltage_02_variant.pdsprj
+ac_voltage_03_resistor_load.pdsprj
+```
+
+Observed AC-voltage source model:
+
+```text
+source nets: AV / A0
+source model: VSINE
+ROOT.CDB ref: V1
+ROOT.CDB value field: VSINE
+ROOT.CDB model field: VSINE
+properties: {VA=...}, {FREQ=...}, {PRIMITIVE=ANALOGUE}
+normal power/ground terminals in source object chunk: none
+```
+
+The load donor device section already contains the required mixed source table
+families:
+
+```text
+VSINE + CAPACITOR + REALIND + RESISTOR
+```
+
+`AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_TEMP_2026_06_04` tests exact controls and
+generated source insertion variants.
+
+Test order:
+
+```text
+T00 exact default donor copy
+T01 default donor object/CDB/device transplant into E001
+T02 variant donor object/CDB/device transplant into E001
+T03 two-source donor object/CDB/device transplant into E001
+T04 generated six-component R/C/L AV/A0 body with no source object
+T05 generated simple-loop R/C/L with source-first standalone VSINE block
+T06 generated six-component R/C/L with source-first standalone VSINE block
+T07 generated six-component R/C/L with source-last load-donor VSINE block
+T08 generated corrected 21-rule R/C/L with source-first standalone VSINE block
+T09 generated corrected 21-rule R/C/L with source-last load-donor VSINE block
+```
+
+V1 static checks passed:
+
+```text
+projects generated: 10
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+manifest static_validation_issues: []
+generated source-only variant ROOT.CDB matches ac_voltage_02_variant ROOT.CDB byte-for-byte: true
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V1 archive SHA256 is:
+
+```text
+985630d2c7d98f97281679ae58fcce798e91f8a3791d787e5a761225217c76a0
+```

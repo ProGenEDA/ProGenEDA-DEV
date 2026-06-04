@@ -86,7 +86,19 @@
         "supported_recipe": "Accepted V12/V13 DCI method: use ordinary DV/D0 terminal labels and the accepted DCV source-first geometry, keep visible source subckt text VSOURCE, but patch the final object marker, ROOT.CDB model, and device table to CSOURCE. Do not use the rejected standalone DI/I0 current-source donor path."
       }
     },
-    "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
+    "AC_VOLTAGE_SOURCE": {
+      "status": "temporary_v1_source_diagnostics_pending_user_test",
+      "category": "source",
+      "proteus_names_observed": ["VSINE"],
+      "generation": {
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "tested": false,
+        "locked": false,
+        "temporary_recipe": "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_TEMP_2026_06_04 uses user-supplied AC voltage donors. Observed source nets are ordinary AV/A0 terminals. The source model and CDB value field are VSINE. Amplitude/frequency live in ROOT.CDB and source-record properties such as {VA=20v} and {FREQ=5000hz}. V1 tests exact donor controls, E001 transplants, AV/A0 R/C/L no-source control, source-first standalone VSINE insertion, and source-last load-donor VSINE insertion."
+      }
+    },
     "AC_CURRENT_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
     "INDUCTOR": {
       "status": "temporary_v9_requested15_power_ground_pending_user_test",
