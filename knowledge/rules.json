@@ -598,11 +598,20 @@
     {
       "id": "R067",
       "title": "Mixed DC source device sections should be spliced by entry, not concatenated whole",
-      "status": "v8_static_generated_pending_user_test",
+      "status": "superseded_by_v9_user_supplied_mixed_source_rcl_donor",
       "confidence": 0.78,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN device metadata"],
-      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604", "DC_MIXED_SOURCES_V8_SPLICED_DEVICES_STATIC_20260604"],
-      "rule": "Accepted single-source DCV and DCI packs used coherent donor device sections that already contained their source family plus R/C/L devices. V7 failed only after combining all-source metadata with R/C/L metadata for requested circuits. V8 therefore avoids whole-section concatenation and instead splices the CSOURCE device entry from the accepted current+R/C/L donor into the accepted VSOURCE+R/C/L device section. This remains pending until Proteus confirms V8."
+      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604", "DC_MIXED_SOURCES_V8_SPLICED_DEVICES_STATIC_20260604", "user-supplied RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj"],
+      "rule": "Accepted single-source DCV and DCI packs used coherent donor device sections that already contained their source family plus R/C/L devices. V7 failed only after combining all-source metadata with R/C/L metadata for requested circuits. V8 tested entry-level CSOURCE device splicing, but the later user-supplied mixed source plus R/C/L donor provides a stronger complete-source/RCL ordering authority, so V8 is superseded as the next decision point."
+    },
+    {
+      "id": "R068",
+      "title": "Mixed DC source plus RCL donor uses source-tail object order",
+      "status": "v9_static_generated_pending_user_test",
+      "confidence": 0.88,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN object ordering", "ROOT.CDB source ordering"],
+      "evidence": ["user-supplied RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj", "DC_MIXED_SOURCES_V9_DONOR_TAIL_STATIC_20260605"],
+      "rule": "The working mixed source plus corrected 21-component R/C/L donor keeps the generated R/C/L body first and appends the VSOURCE/CSOURCE source records at the tail. It removes actual $TERPOWER/$TERGROUND bridge objects from the object chunk but keeps the leading ordinary $TEROUTPUT V0 terminal. Its coherent device section order is CAP, CSOURCE, REALIND, RESISTOR, VSOURCE. Its ROOT.CDB rows are passives first, then I1 CSOURCE, then V1 VSOURCE. Source terminal labels are ordinary net labels, not reserved names, and can be changed as long as matching labels stay consistent."
     }
   ]
 }

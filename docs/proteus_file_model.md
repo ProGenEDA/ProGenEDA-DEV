@@ -2197,3 +2197,76 @@ The V8 archive SHA256 is:
 ```text
 0ccc977d4c22d7580ad3ccb72ee39ceba28dc1388a0e8e6940a5e4df6372efb5
 ```
+
+## DC Mixed Sources V9 Donor-Tail Ordering
+
+`DC_MIXED_SOURCES_V9_DONOR_TAIL_TEMP_2026_06_05` uses the user-supplied
+working mixed source plus corrected 21-component R/C/L donor:
+
+```text
+C:\Users\tahab\Downloads\RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj
+```
+
+The donor supersedes V8 as the active mixed DC-source/RCL join authority because
+it is a Proteus-created project containing the corrected 21-component R/C/L body,
+one VSOURCE, and one CSOURCE in the same working object stream.
+
+Observed donor facts:
+
+```text
+object chunk length: 15346 bytes
+object chunk terminal records: 23 $TERINPUT, 23 $TEROUTPUT
+object chunk source records: VSOURCE=2 markers, CSOURCE=2 markers
+object chunk source placement: source records are appended at the tail
+object chunk power/ground records: 0 $TERPOWER, 0 $TERGROUND
+wire records: 46
+device section order: CAP, CSOURCE, REALIND, RESISTOR, VSOURCE
+ROOT.CDB row order: passives first, then I1 CSOURCE, then V1 VSOURCE
+source CDB values: I1=1A, V1=1V
+```
+
+Important object-stream correction:
+
+```text
+The donor removes the actual $TERPOWER/$TERGROUND bridge records, but it keeps
+the leading ordinary $TEROUTPUT V0 terminal from the old R/C/L bridge region.
+Earlier source-net helpers removed the whole bridge core, including this safe
+ordinary terminal. V9 keeps only that leading ordinary output terminal, removes
+the real bridge/power/ground records, builds the R/C/L body, then appends the
+donor's source tail.
+```
+
+Terminal label rule:
+
+```text
+Source and R/C/L terminal names are ordinary net labels, not reserved names.
+The labels can be changed if matching endpoint labels remain consistent.
+```
+
+Test order:
+
+```text
+DCMS_V9_T00_DONOR_COPY
+DCMS_V9_T01_DONOR_TRANSPLANT_E001
+DCMS_V9_T02_DONOR_LABEL_DVO_TO_D0
+DCMS_V9_T03_GENERATED_21_DONOR_TAIL_EXACT_LABELS
+DCMS_V9_T04_GENERATED_21_DONOR_TAIL_D0_LABEL
+DCMS_V9_T05_GENERATED_21_DONOR_TAIL_D0_GENERATED_CDB
+```
+
+V9 static checks passed:
+
+```text
+projects generated: 6 including donor copy control
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+generated object chunks contain: 23 $TERINPUT, 23 $TEROUTPUT, 46 WIRE
+generated object chunks contain: VSOURCE=2, CSOURCE=2
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V9 archive SHA256 is:
+
+```text
+0cda43ec316045abae69e1571967a2c2d3bd1cee868e6a41e2cb67369a126f61
+```
