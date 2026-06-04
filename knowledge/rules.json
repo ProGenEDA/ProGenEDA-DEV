@@ -499,11 +499,20 @@
     {
       "id": "R056",
       "title": "Manual DC current source uses DCV geometry with CSOURCE metadata",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "user_confirmed_for_v12_manual_dci_method",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["user-supplied testing.pdsprj 2026-06-03 15:50", "DC_CURRENT_V12_MANUAL_TESTING_STUDY_STATIC_20260603"],
-      "rule": "The new user-supplied testing.pdsprj for DC current uses the same source net labels as DC voltage: DV for the positive/source side and D0 for the negative side. Its source reference/value are V1/10V, its visible source subckt text remains VSOURCE, but its final object model marker, ROOT.CDB model entry, and device-table model are CSOURCE. Its device table order is CAP, CSOURCE, REALIND, RESISTOR. V12 tests this rule directly using exact manual controls, accepted DCV source geometry patched only at the final model marker to CSOURCE, and an extracted manual source unit."
+      "evidence": ["user-supplied testing.pdsprj 2026-06-03 15:50", "DC_CURRENT_V12_MANUAL_TESTING_STUDY_STATIC_20260603", "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "rule": "The new user-supplied testing.pdsprj for DC current uses the same source net labels as DC voltage: DV for the positive/source side and D0 for the negative side. Its source reference/value are V1/10V, its visible source subckt text remains VSOURCE, but its final object model marker, ROOT.CDB model entry, and device-table model are CSOURCE. Its device table order is CAP, CSOURCE, REALIND, RESISTOR. User testing confirmed all V12 cases worked, including exact manual controls and generated R/C/L candidates that reused accepted DCV source geometry patched only at the final model marker to CSOURCE."
+    },
+    {
+      "id": "R057",
+      "title": "DC current 15-topology pack applies V12 source method",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604", "DC_CURRENT_V13_15_TOPOLOGIES_STATIC_20260604"],
+      "rule": "For broad DC-current source topology testing, map the locked V0/G0 mixed R/C/L topology body to ordinary DV/D0 source nets, remove $TERPOWER/$TERGROUND and V0/G0 terminal labels, insert the accepted source-first DCV geometry patched to CSOURCE metadata, keep source ref/value V1/10V, and use a clean device table with CAP, CSOURCE, REALIND, and RESISTOR. V13 applies this rule to all 15 requested topology cases; Proteus user testing is pending."
     }
   ]
 }

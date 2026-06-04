@@ -1560,3 +1560,79 @@ The V12 archive SHA256 is:
 ```text
 f94eef38f4d4fa2d00ae0962dda2cf21b8955d9f29474f66b53805990f71dd18
 ```
+
+User feedback on V12:
+
+```text
+all V12 cases worked
+```
+
+This confirms the DC-current correction direction: use the accepted DC-voltage
+source geometry and ordinary `DV`/`D0` source-net terminals, but patch the
+source identity to `CSOURCE` in the final object model marker, `ROOT.CDB`, and
+device table.
+
+## DC Current 15-Topology V13 Pack
+
+`DC_CURRENT_V13_15_TOPOLOGIES_TEMP_2026_06_04` applies the V12 confirmed
+method to the 15 requested mixed R/C/L topology cases.
+
+Generation rules:
+
+```text
+input topology source net: V0 -> DV
+input topology return net: G0 -> D0
+power/ground terminal records: none
+source geometry: accepted DCV source-first geometry
+visible source text: VSOURCE
+source model metadata: CSOURCE
+source reference/value: V1 / 10V
+device table: CAP + CSOURCE + REALIND + RESISTOR
+ROOT.CDB source order: source record after passive records
+```
+
+V13 test order:
+
+```text
+T01 SIMPLE_LOOP
+T02 SERIES_CIRCUIT
+T03 PARALLEL_CIRCUIT
+T04 SERIES_PARALLEL_COMBO
+T05 BASIC_VOLTAGE_DIVIDER
+T06 MULTI_STEP_VOLTAGE_DIVIDER
+T07 CURRENT_DIVIDER
+T08 DELTA_NETWORK
+T09 STAR_Y_NETWORK
+T10 DELTA_TO_STAR_SETUP
+T11 WHEATSTONE_BRIDGE
+T12 BALANCED_WHEATSTONE_BRIDGE
+T13 UNBALANCED_WHEATSTONE_BRIDGE
+T14 H_BRIDGE_RESISTOR_VERSION
+T15 R_2R_LADDER_NETWORK
+```
+
+V13 static checks passed for all 15 generated topology cases:
+
+```text
+required internals present: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+$TERPOWER count: 0
+$TERGROUND count: 0
+V0/G0 terminal labels: 0
+visible VSOURCE marker count: 1
+final/model CSOURCE marker count: 1
+source terminals: DV / D0
+manifest static_validation_issues: []
+```
+
+The focused mixed R/C/L regression test still passes:
+
+```text
+python -m pytest tests/test_mixed_rcl.py -q
+7 passed, 34 subtests passed
+```
+
+The V13 archive SHA256 is:
+
+```text
+00e49a929489ac178de9b9d366ce24dced510aa497d0b9c653ba0e20ddd8bfe7
+```
