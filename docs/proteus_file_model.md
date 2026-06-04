@@ -2109,3 +2109,91 @@ The V7 archive SHA256 is:
 ```text
 7b8ebc7b26ba520bba60f1214e06de9b71a503f88b8bafa80315716627b4f4f8
 ```
+
+User feedback on V7:
+
+```text
+T00 through T03 worked.
+T04 through T09 gave ISIS.dll.
+```
+
+Interpretation:
+
+```text
+T00/T01 prove the all-source donor copy/transplant path remains valid.
+T02/T03 prove duplicated all-source VSOURCE/CSOURCE source records are safe
+when used source-only.
+T04 onward fails only when generated R/C/L records are added.
+Therefore the immediate failure boundary is the source+R/C/L join, especially
+device-section composition and metadata ordering, not the source object records
+alone.
+```
+
+## DC Mixed Sources V8 Spliced Device Entries
+
+`DC_MIXED_SOURCES_V8_SPLICED_DEVICES_TEMP_2026_06_04` replaces whole-section
+device concatenation with entry-level device splicing.
+
+Reasoning:
+
+```text
+Accepted DCV source-driven R/C/L used one coherent donor device section with:
+CAP, REALIND, RESISTOR, VSOURCE
+
+Accepted DCI source-driven R/C/L used one coherent donor device section with:
+CAP, CSOURCE, REALIND, RESISTOR
+
+V7 requested mixed-source cases failed after joining the all-source source
+section with the R/C/L section.
+```
+
+V8 device-section method:
+
+```text
+Take CAP, REALIND, RESISTOR, VSOURCE entries from the accepted voltage+R/C/L donor.
+Take only the CSOURCE entry from the accepted current+R/C/L donor.
+Build two test orders:
+  A: CAP, REALIND, RESISTOR, VSOURCE, CSOURCE
+  B: CAP, CSOURCE, REALIND, RESISTOR, VSOURCE
+```
+
+V8 source-object method:
+
+```text
+Use the V1/V7 accepted-style source-first terminal units from the 4x DC-voltage
+donor for connected source layouts.
+Patch current sources to CSOURCE final model identity.
+Test both actual I-ref/current values and strict V-ref/10V current identity.
+```
+
+Test order:
+
+```text
+DCMS_V8_T00_RCL_ONLY_SPLICED_DEVICES_A
+DCMS_V8_T01_SOURCE_ONLY_ACTUAL_SPLICED_DEVICES_A
+DCMS_V8_T02_SOURCE_ONLY_STRICT_SPLICED_DEVICES_A
+DCMS_V8_T03_REQUESTED1_ACTUAL_CDB_LAST_DEVICES_A
+DCMS_V8_T04_REQUESTED1_STRICT_CDB_LAST_DEVICES_A
+DCMS_V8_T05_REQUESTED1_STRICT_CDB_FIRST_DEVICES_A
+DCMS_V8_T06_REQUESTED1_STRICT_CDB_LAST_DEVICES_B
+DCMS_V8_T07_REQUESTED2_STRICT_CDB_LAST_DEVICES_A
+DCMS_V8_T08_REQUESTED3_STRICT_CDB_LAST_DEVICES_A
+DCMS_V8_T09_REQUESTED4_STRICT_CDB_LAST_DEVICES_A
+DCMS_V8_T10_REQUESTED5_STRICT_CDB_LAST_DEVICES_A
+```
+
+V8 static checks passed:
+
+```text
+projects generated: 11
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+manifest static_validation_issues: []
+all device sections contain VSOURCE=1, CSOURCE=1, CAPACITOR=1, REALIND=2, RESISTOR=1
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V8 archive SHA256 is:
+
+```text
+0ccc977d4c22d7580ad3ccb72ee39ceba28dc1388a0e8e6940a5e4df6372efb5
+```

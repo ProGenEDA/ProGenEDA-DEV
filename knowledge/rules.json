@@ -589,11 +589,20 @@
     {
       "id": "R066",
       "title": "V7 tests all-source donor VSOURCE/CSOURCE object records",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.8,
+      "status": "partially_confirmed_source_only_rejected_with_rcl_join",
+      "confidence": 0.86,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604", "DC_MIXED_SOURCES_V7_ALL3_RECORDS_STATIC_20260604"],
-      "rule": "V7 duplicates the all-source donor's own VSOURCE and CSOURCE records directly, uses donor-style V refs for voltage and I refs for current, and tests passive versus +/- source CDB rows. This isolates object-record validity before final labelled source-terminal connectivity is solved."
+      "evidence": ["MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604", "DC_MIXED_SOURCES_V7_ALL3_RECORDS_STATIC_20260604", "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604"],
+      "rule": "V7 duplicated the all-source donor's own VSOURCE and CSOURCE records directly. User feedback indicates T00-T03 worked, so donor copy/transplant and duplicated source-only VSOURCE/CSOURCE records are safe. T04 onward failed with ISIS.dll, so the failure starts when generated R/C/L records are added through the synthetic all-source+R/C/L join. Do not treat source CDB pin maps as the primary failure after V7; investigate device-section composition and source/RCL join ordering."
+    },
+    {
+      "id": "R067",
+      "title": "Mixed DC source device sections should be spliced by entry, not concatenated whole",
+      "status": "v8_static_generated_pending_user_test",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN device metadata"],
+      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604", "DC_MIXED_SOURCES_V8_SPLICED_DEVICES_STATIC_20260604"],
+      "rule": "Accepted single-source DCV and DCI packs used coherent donor device sections that already contained their source family plus R/C/L devices. V7 failed only after combining all-source metadata with R/C/L metadata for requested circuits. V8 therefore avoids whole-section concatenation and instead splices the CSOURCE device entry from the accepted current+R/C/L donor into the accepted VSOURCE+R/C/L device section. This remains pending until Proteus confirms V8."
     }
   ]
 }
