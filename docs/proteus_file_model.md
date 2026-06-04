@@ -1636,3 +1636,44 @@ The V13 archive SHA256 is:
 ```text
 00e49a929489ac178de9b9d366ce24dced510aa497d0b9c653ba0e20ddd8bfe7
 ```
+
+User feedback on V13:
+
+```text
+all V13 DC-current source-driven topology cases worked
+```
+
+This locks the DC-current source method for the current source-driven R/C/L
+scope. Combined with the earlier accepted DC-voltage V7/V8 results, the DC
+source rule is now:
+
+```text
+source-driven circuits do not emit default V0/G0 power/ground terminals
+DC voltage: source-first VSOURCE with ordinary DV/D0 source-net terminals
+DC current: same source-first geometry and DV/D0 source-net terminals, but CSOURCE metadata
+```
+
+The rejected path remains important negative evidence:
+
+```text
+Do not use standalone DI/I0 current-source donor geometry for generated mixed R/C/L circuits.
+```
+
+## AC Source Onboarding
+
+AC voltage and AC current source generation should start from user-created
+Proteus 8.13 donors, matching the DC source workflow:
+
+```text
+one default AC voltage source with positive/negative ordinary terminals
+one AC voltage source with a non-default value/frequency if Proteus exposes those fields
+one AC voltage source driving a simple resistor load
+one default AC current source with positive/negative ordinary terminals
+one AC current source with a non-default value/frequency if Proteus exposes those fields
+one AC current source driving a simple resistor load
+optional combined AC source plus small R/C/L load donor if source insertion differs from DC
+```
+
+For AC donors, use restricted ordinary source-net labels equivalent to the DC
+`DV`/`D0` pair, but AC-specific so future transforms cannot collide with DC
+rules. Suggested starting labels are `AV` and `A0`.

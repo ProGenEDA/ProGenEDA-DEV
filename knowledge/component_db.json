@@ -2,7 +2,7 @@
   "schema_version": "0.1",
   "components": {
     "RESISTOR": {
-      "status": "generation_ready_exact_template_only",
+      "status": "locked_main_generator_current_scope",
       "category": "passive",
       "proteus_names_observed": ["RESISTOR", "RES"],
       "pins": [
@@ -16,7 +16,8 @@
         "values_authority": "ROOT.CDB",
         "refs_authority": "ROOT.CDB",
         "tested": true,
-        "supported_recipe": "R1=1k between VCC and GND using clean E020 whole-project fixture"
+        "locked": true,
+        "supported_recipe": "V9 terminal/resistor/wire groups from E001 plus donor-derived power bridge and ground short-wire endpoint"
       },
       "notes": [
         "Topology can be built with terminal labels around resistor pins.",
@@ -41,13 +42,14 @@
       "label_authority": "ROOT.DSN"
     },
     "POWER_TERMINAL": {
-      "status": "partially_supported",
+      "status": "generation_ready_donor_bridge",
       "category": "terminal",
       "proteus_marker": "$TERPOWER",
       "visual_authority": "ROOT.DSN",
       "requires_cdb": false,
       "label_authority": "ROOT.DSN",
-      "default_net_expected": "VCC"
+      "default_net_expected": "V0",
+      "supported_recipe": "one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge from power_terminal_bridge_donor.pdsprj"
     },
     "GROUND_TERMINAL": {
       "status": "partially_supported",
@@ -58,10 +60,97 @@
       "label_authority": "ROOT.DSN",
       "default_net_expected": "GND"
     },
-    "DC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
+    "DC_VOLTAGE_SOURCE": {
+      "status": "locked_current_scope",
+      "category": "source",
+      "proteus_names_observed": ["VSOURCE"],
+      "generation": {
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "tested": true,
+        "locked": true,
+        "supported_recipe": "Accepted source-first DCV method: ordinary DV/D0 terminal labels, no default $TERPOWER/$TERGROUND records, preserved donor source bytes, VSOURCE model metadata, and clean CAP+REALIND+RESISTOR+VSOURCE device table for mixed R/C/L source-driven circuits."
+      }
+    },
+    "DC_CURRENT_SOURCE": {
+      "status": "locked_current_scope",
+      "category": "source",
+      "proteus_names_observed": ["CSOURCE"],
+      "generation": {
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "tested": true,
+        "locked": true,
+        "supported_recipe": "Accepted V12/V13 DCI method: use ordinary DV/D0 terminal labels and the accepted DCV source-first geometry, keep visible source subckt text VSOURCE, but patch the final object marker, ROOT.CDB model, and device table to CSOURCE. Do not use the rejected standalone DI/I0 current-source donor path."
+      }
+    },
     "AC_VOLTAGE_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
-    "INDUCTOR": {"status": "requested_not_yet_controlled", "category": "passive"},
-    "CAPACITOR": {"status": "requested_not_yet_controlled", "category": "passive"},
+    "AC_CURRENT_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},
+    "INDUCTOR": {
+      "status": "temporary_v9_requested15_power_ground_pending_user_test",
+      "category": "passive",
+      "proteus_names_observed": ["REALIND"],
+      "controlled_donors": [
+        "inductor_01_single_free",
+        "inductor_02_two_terminal",
+        "inductor_03_three_terminal",
+        "inductor_04_power_ground",
+        "inductor_05_six_terminal"
+      ],
+      "generation": {
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "temporary_recipe": "Temporary code lives in tools/proteus_generation/2026-06-01. V3 confirms terminal-only REALIND generation with per-index templates for the three-slot donor scope only. V5 confirms a single V0-to-G0 inductor using the accepted inductor_04 donor order. V6 6/21, V7 requested-15, and R/C/L V1 all failed in Proteus. The user then supplied inductor_05_six_terminal; V8 uses its observed six sequential $TERINPUT/$TEROUTPUT/REALIND/left-wire/right-wire groups and user testing confirmed all V8 cases worked, including the 21-inductor and power/ground probes. V9 requested-15 inductor power/ground pack was generated from the V8 method and is awaiting user Proteus testing.",
+        "known_limits": [
+          "Do not use resistor V9 suffix generation for REALIND records.",
+          "Do not use the generic passive bridge-first order for inductors.",
+          "Do not promote to src/proteusgen until the requested inductor and R/C/L network batches pass."
+        ],
+        "tested": true,
+        "locked": false
+      }
+    },
+    "CAPACITOR": {
+      "status": "v11_large_network_validated_v13_power_ground_spacing_pending",
+      "category": "passive",
+      "proteus_names_observed": ["CAPACITOR", "CAP", "CAP10"],
+      "generation": {
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "tested": true,
+        "locked": false,
+        "temporary_recipe": "CAP_T01 free-cap visual core plus user cap3 multi-cap CDB/object guards are user-accepted. V10 confirms the user-made cap2_with_terminals_manual donor order works: all outputs first, then input/cap/wire groups with non-final right-wire trimmed to 49 bytes. V11 confirms scaling this method to 6C and 21C networks. V13 tests the same method across the 15 requested resistor-equivalent capacitor topologies with wider component spacing, one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge, and $TERGROUND(G0) right endpoints before promotion to main."
+      }
+    },
+    "MIXED_PASSIVE_RC": {
+      "status": "locked_main_generator_current_scope",
+      "category": "mixed_passive_network",
+      "generation": {
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "tested": true,
+        "locked": true,
+        "supported_recipe": "Odd-indexed components use resistor V9 terminal records; even-indexed components use capacitor V10/V13 manual-order terminal records. The locked generator emits one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge, $TERGROUND(G0) right endpoints, a capacitor block first, then a resistor V9 block. Safe spacing is 2540000 internal units on x/y with duplicate-position shifting."
+      }
+    },
+    "MIXED_PASSIVE_RCL": {
+      "status": "locked_main_generator_current_scope",
+      "category": "mixed_passive_network",
+      "generation": {
+        "visual_authority": "ROOT.DSN",
+        "metadata_authority": "ROOT.CDB",
+        "requires_cdb": true,
+        "tested": true,
+        "locked": true,
+        "supported_recipe": "src/proteusgen/mixed_rcl.py uses E001 as the base, the user-confirmed rcl_4x_t07_unit_donor schema, marker-relative WIRE coordinate patching, global component IDs, ROOT.CDB in emitted-ID order, one V0 donor power bridge, accepted whole-subgroup modes RCL, RC, LC, RL, C, R, and L, plus explicit three-character value overrides such as 10R, 50R, 4u7, 10u, and 10m. The locked pack covers the 6-component case, corrected 21-rule topology, and 15 requested topologies.",
+        "temporary_history": "tools/proteus_generation/2026-06-01/generate_mixed_rcl_v1_temp.py combined locked resistor V9 records, locked resistor/capacitor mixed records, and temporary inductor V6 REALIND records; MIXED_RCL_V1_TEMP_2026_06_01.zip was rejected by user Proteus testing. After donor05/V8 was accepted, generate_mixed_rcl_v2_v8_temp.py tried locked resistor V9 records, locked capacitor manual-order records, V8 donor05 sequential inductor records as a final contiguous block, one V0 power bridge, and G0 ground endpoints; the user reported all V2 files gave VGCVC.dll. V3 showed only C+L T03 and T05 worked; every case containing both resistor and inductor failed. The user supplied rlc_manual_donor, whose object chunk has free L/R/C components in L1, R1, C1 order with matching CDB but no terminals or wires. V5 T01-T04 donor controls worked, while V5 T05-T10 generated terminal-topology variants failed. V6 showed terminal C/L combinations work around a free resistor, but every terminal-attached resistor case failed. V7 partial feedback confirmed T02-T07 worked, meaning terminal R can coexist with free L/C when the resistor block is final. V8 then showed this does not solve terminal C/L plus terminal R: only the free-L/C control T01 worked, and no-power disconnected all-terminal T02 failed. V9 isolated minimal terminal R+L order/index/suffix variants; the user reported none worked. The user then supplied rl_terminal_disconnected and rl_terminal_series. V10 uses the disconnected donor's native object order: header, both inputs, L output+REALIND+wires, then R output+RESISTOR+wires. User testing confirmed V10 opened/rendered, including donor-native mutation, connected labels, translation, and V0/G0 R+L; later feedback clarified visual opening is not simulation acceptance. V11 scaled the method with one V0 bridge, the accepted capacitor block, and repeated native R/L pair blocks for 6, 21, and 15 requested mixed R/C/L topology cases, but Proteus simulation/netlist failed with duplicate part references and generated X00000001 handles because component IDs were reused per family and CDB was source-ordered. V12 writes DSN component IDs globally across C/L/R and writes ROOT.CDB tables in DSN object-emission order; user testing confirmed the single 1C+1L+1R cases worked, but multi-component cases still failed. V13 kept global IDs and object-order CDB, and tried all R/L inputs before all L/R bodies, but user feedback still reported multi-component failures. The user then supplied rcl_4x_t07_unit_donor. V14 used that 4x donor as the repeated complete C/L/R unit schema and included exact donor controls plus generated 1x, 2x, 3x, 4x, 6x, 7x, and 21x cases. User testing confirmed T00 exact donor repack and T00B donor chunk+CDB in E001 worked, but every generated case after that gave Bad Object Record and corrupt pink-wire rendering. V15 proved label-only full-donor mutation works, generated body mutation fails, and first-unit shortening needs the 51-byte final right-wire shape. Byte inspection found the V14 bug: mixed RCL resistor wire records have WIRE at byte 25 and coordinates at byte 34, while C/L wires use WIRE at byte 24 and coordinates at byte 33. V16 patches wire coordinates at WIRE-marker+9; user testing confirmed all V16 1x/2x/3x/4x/6x/7x/21x repeated full-unit cases worked. V17 removes whole C/L/R subgroups from accepted V16 units; user testing confirmed RC, LC, RL, C-only, and the requested 3R/4C/1L project all worked. V18 used accepted V17 groups for the final test pack, but user feedback rejected T02 because the 21-component circuit only had 21 components and did not follow the accepted 21-circuit rule. V19 corrected the 21 topology as two seven-component V0-to-M0 series strings and one seven-component M0-to-G0 series string, balanced as 7R/7C/7L; user testing confirmed it worked, so the method was promoted into main code."
+      }
+    },
     "LED": {"status": "found_in_corpus_not_controlled", "category": "display_indicator"},
     "CLOCK": {"status": "found_in_corpus_not_controlled", "category": "digital_source"},
     "LOGICSTATE": {"status": "clean_donor_available_not_generation_ready", "category": "digital_source", "clean_source": "HC08_D03"},

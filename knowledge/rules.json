@@ -508,11 +508,20 @@
     {
       "id": "R057",
       "title": "DC current 15-topology pack applies V12 source method",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.86,
+      "status": "user_confirmed_for_v13_15_topologies",
+      "confidence": 0.92,
       "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604", "DC_CURRENT_V13_15_TOPOLOGIES_STATIC_20260604"],
-      "rule": "For broad DC-current source topology testing, map the locked V0/G0 mixed R/C/L topology body to ordinary DV/D0 source nets, remove $TERPOWER/$TERGROUND and V0/G0 terminal labels, insert the accepted source-first DCV geometry patched to CSOURCE metadata, keep source ref/value V1/10V, and use a clean device table with CAP, CSOURCE, REALIND, and RESISTOR. V13 applies this rule to all 15 requested topology cases; Proteus user testing is pending."
+      "evidence": ["DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604", "DC_CURRENT_V13_15_TOPOLOGIES_STATIC_20260604", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "rule": "For broad DC-current source topology generation, map the locked V0/G0 mixed R/C/L topology body to ordinary DV/D0 source nets, remove $TERPOWER/$TERGROUND and V0/G0 terminal labels, insert the accepted source-first DCV geometry patched to CSOURCE metadata, keep source ref/value V1/10V, and use a clean device table with CAP, CSOURCE, REALIND, and RESISTOR. User testing confirmed all 15 V13 DC-current source-driven topology cases worked."
+    },
+    {
+      "id": "R058",
+      "title": "DC source-driven RCL generation is locked for current scope",
+      "status": "locked_current_scope",
+      "confidence": 0.91,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "mixed R/C/L source-driven circuits"],
+      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "rule": "For source-driven DC mixed R/C/L circuits, do not emit default V0 power terminals or G0 ground terminals unless a later explicit user request requires a separate power/ground symbol. DC voltage uses the accepted source-first VSOURCE method with ordinary DV/D0 source-net terminals. DC current uses the same accepted source-first source geometry and DV/D0 net labels, but its model identity is CSOURCE in the final object marker, ROOT.CDB, and device table. Both source types are confirmed across the requested 15 topology set."
     }
   ]
 }
