@@ -1948,3 +1948,88 @@ The V4 archive SHA256 is:
 ```text
 be93143849bc8090006142debad5971208e0592932ea0b4efff4d1e97ba58d8b
 ```
+
+User feedback on DC mixed sources V4:
+
+```text
+None of the V4 cases worked; all gave ISIS.dll. User also requested smaller
+names.
+```
+
+Because V4 source-only controls also failed, the immediate failure boundary is
+mixed source object/device metadata or path/name handling, not the R/C/L body.
+
+## MX5 Short Names
+
+`MX5_SHORT_NAMES_STATIC_20260604` wrote direct short project filenames under
+`experiments/mx5`:
+
+```text
+A0 A1 B0 B1 B2 C1 C2 C3 C4 C5
+```
+
+MX5 static checks passed and the archive SHA256 is:
+
+```text
+6fbcb14e40f4d00ddc3009d8354e8ea7815e1821cf30be97bc7d23f45e8f2944
+```
+
+MX5 was superseded before user testing when the user supplied an all-source
+donor containing `VSOURCE`, `CSOURCE`, and `VSINE`.
+
+## All-Source Donor And MX6
+
+The user supplied:
+
+```text
+C:\Users\tahab\Downloads\45454New Project.pdsprj
+```
+
+The donor contains `VSOURCE`, `CSOURCE`, and `VSINE` source-family metadata in
+one project. Byte inspection:
+
+```text
+ROOT.DSN length: 68199
+ROOT.CDB length: 421
+ROOT.DSN markers: VSOURCE=3, CSOURCE=3, VSINE=4
+ROOT.CDB markers: VSOURCE=1, CSOURCE=1, VSINE=2
+extracted object chunk length: 1031
+extracted object chunk terminal records: $TERINPUT=0, $TEROUTPUT=0
+```
+
+So the donor is currently treated as source-family device metadata authority.
+It does not by itself supply the labelled source-net terminal geometry needed
+for generated circuits.
+
+`MX6_ALL3_SOURCE_DONOR_STATIC_20260604` uses this donor's source device section
+and short direct filenames under `experiments/mx6`.
+
+Test order:
+
+```text
+D0 exact all-source donor copy
+D1 all-source donor object/CDB/device transplant into E001
+E0 source-only VSOURCE+CSOURCE using all-source donor device table and actual 2A current value
+E1 source-only VSOURCE+CSOURCE using all-source donor device table and strict V2/10V current identity
+F1 requested circuit 1 with source device metadata before R/C/L metadata
+G1 requested circuit 1 with R/C/L metadata before source device metadata
+F2 requested circuit 2
+F3 requested circuit 3
+F4 requested circuit 4
+F5 requested circuit 5
+```
+
+MX6 static checks passed:
+
+```text
+projects generated: 10
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+manifest static_validation_issues: []
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The MX6 archive SHA256 is:
+
+```text
+9ccf7f658874fb6d14498f63e283b845784c7657be33c41fc5965bdf52a7214d
+```

@@ -562,11 +562,29 @@
     {
       "id": "R063",
       "title": "Mixed DC source V4 tests V-style refs and clean device metadata",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.8,
+      "status": "rejected_all_cases_isis_dll",
+      "confidence": 0.84,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_STATIC_20260604"],
-      "rule": "The next mixed DC source diagnostic uses archived four-source DCV units for unique source suffixes, keeps all source refs V-style, uses accepted generated passive CDB maps, patches current sources only to CSOURCE model identity, and rebuilds one clean ordered device section: CAP, VSOURCE, CSOURCE, REALIND, RESISTOR. This remains pending until Proteus user testing confirms T00A/T00B and T01-T05."
+      "evidence": ["DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_STATIC_20260604", "DC_MIXED_SOURCES_V4_USER_FEEDBACK_ALL_ISIS_DLL_20260604"],
+      "rule": "V4 used archived four-source DCV units for unique source suffixes, V-style refs, accepted generated passive CDB maps, CSOURCE final model identity for current sources, and a clean ordered device section. User testing reported all V4 cases failed with ISIS.dll, including source-only controls. Therefore V-style refs plus clean device ordering are not sufficient, and the immediate failure is in mixed source object/device handling or long path/name handling, before R/C/L topology matters."
+    },
+    {
+      "id": "R064",
+      "title": "MX5 short-name mixed source diagnostics isolate path and source metadata",
+      "status": "superseded_by_mx6_all3_source_donor",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
+      "evidence": ["DC_MIXED_SOURCES_V4_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "MX5_SHORT_NAMES_STATIC_20260604"],
+      "rule": "MX5 wrote short-name controls A0/A1/B0/B1/B2/C1-C5, but the user then supplied an all-source donor containing VSOURCE, CSOURCE, and VSINE. MX6 supersedes MX5 as the preferred next test because it uses that donor's combined source-family metadata."
+    },
+    {
+      "id": "R065",
+      "title": "All-source donor supplies combined source-family metadata",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "AC voltage source", "multi-source mixed R/C/L circuits"],
+      "evidence": ["ALL3_SOURCE_DONOR_OBSERVATION_20260604", "MX6_ALL3_SOURCE_DONOR_STATIC_20260604"],
+      "rule": "The user-supplied 45454New Project.pdsprj contains VSOURCE, CSOURCE, and VSINE source-family metadata in one project. Its extracted source object chunk has no ordinary source-net terminal records, so it is a device-section/source-metadata authority rather than a complete generated source-net layout donor. MX6 uses its source device section with accepted generated source-terminal geometry and tests short-name controls plus requested circuits."
     }
   ]
 }
