@@ -580,11 +580,20 @@
     {
       "id": "R065",
       "title": "All-source donor supplies combined source-family metadata",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "mx6_partially_confirmed_records_must_come_from_all3",
+      "confidence": 0.87,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "AC voltage source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["ALL3_SOURCE_DONOR_OBSERVATION_20260604", "MX6_ALL3_SOURCE_DONOR_STATIC_20260604"],
-      "rule": "The user-supplied 45454New Project.pdsprj contains VSOURCE, CSOURCE, and VSINE source-family metadata in one project. Its extracted source object chunk has no ordinary source-net terminal records, so it is a device-section/source-metadata authority rather than a complete generated source-net layout donor. MX6 uses its source device section with accepted generated source-terminal geometry and tests short-name controls plus requested circuits."
+      "evidence": ["ALL3_SOURCE_DONOR_OBSERVATION_20260604", "MX6_ALL3_SOURCE_DONOR_STATIC_20260604", "MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604"],
+      "rule": "The user-supplied 45454New Project.pdsprj contains VSOURCE, CSOURCE, and VSINE source-family metadata in one project. D0 exact copy and D1 E001 transplant worked, proving its object chunk/CDB/device metadata are packer-safe. MX6 E0/E1 failed with bad object record because they still used old 4x-DCV source-unit records. Therefore mixed source generation must use the all-source donor's own source object records, not just its device table."
+    },
+    {
+      "id": "R066",
+      "title": "V7 tests all-source donor VSOURCE/CSOURCE object records",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.8,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
+      "evidence": ["MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604", "DC_MIXED_SOURCES_V7_ALL3_RECORDS_STATIC_20260604"],
+      "rule": "V7 duplicates the all-source donor's own VSOURCE and CSOURCE records directly, uses donor-style V refs for voltage and I refs for current, and tests passive versus +/- source CDB rows. This isolates object-record validity before final labelled source-terminal connectivity is solved."
     }
   ]
 }

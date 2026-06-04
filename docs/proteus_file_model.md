@@ -2033,3 +2033,79 @@ The MX6 archive SHA256 is:
 ```text
 9ccf7f658874fb6d14498f63e283b845784c7657be33c41fc5965bdf52a7214d
 ```
+
+User feedback on MX6:
+
+```text
+D0 and D1 worked.
+E0 and E1 gave bad object record.
+All cases after those gave ISIS.dll.
+User requested returning to descriptive/old naming.
+```
+
+Interpretation:
+
+```text
+D0 exact donor copy works.
+D1 all-source donor object/CDB/device transplant into E001 works.
+Therefore the all-source donor records and the current packer path are valid.
+E0/E1 still used old 4x-DCV source-unit records and failed with bad object
+record.
+Therefore mixed source generation must stop using old 4x-DCV source records
+when CSOURCE is present.
+```
+
+## DC Mixed Sources V7 All-Source Records
+
+`DC_MIXED_SOURCES_V7_ALL3_RECORDS_TEMP_2026_06_04` returns to descriptive case
+names and extracts the working `VSOURCE` and `CSOURCE` object records directly
+from the all-source donor.
+
+Record split from the donor object chunk:
+
+```text
+VSINE record:   chunk[1:344],   343 bytes
+VSOURCE record: chunk[344:686], 342 bytes
+CSOURCE record: chunk[686:1031], 345 bytes
+```
+
+Method under test:
+
+```text
+source object records: duplicated from all-source donor VSOURCE/CSOURCE records
+voltage refs: V1, V2, ...
+current refs: I1, I2, ...
+source connectivity: not final; donor source chunk has no labelled terminal records
+CDB A/B: passive source rows vs +/- source-pin rows
+device section: all-source donor source metadata combined with R/C/L donor metadata
+```
+
+Test order:
+
+```text
+DCMS_V7_T00_ALL3_DONOR_COPY
+DCMS_V7_T01_ALL3_TRANSPLANT_E001
+DCMS_V7_T02_SOURCE_ONLY_PASSIVE_CDB
+DCMS_V7_T03_SOURCE_ONLY_SOURCEPIN_CDB
+DCMS_V7_T04_REQUESTED1_PASSIVE_CDB
+DCMS_V7_T05_REQUESTED1_SOURCEPIN_CDB
+DCMS_V7_T06_REQUESTED2_SOURCEPIN_CDB
+DCMS_V7_T07_REQUESTED3_SOURCEPIN_CDB
+DCMS_V7_T08_REQUESTED4_SOURCEPIN_CDB
+DCMS_V7_T09_REQUESTED5_SOURCEPIN_CDB
+```
+
+V7 static checks passed:
+
+```text
+projects generated: 10
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+manifest static_validation_issues: []
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V7 archive SHA256 is:
+
+```text
+7b8ebc7b26ba520bba60f1214e06de9b71a503f88b8bafa80315716627b4f4f8
+```
