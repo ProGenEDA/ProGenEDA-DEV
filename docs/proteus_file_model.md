@@ -2270,3 +2270,73 @@ The V9 archive SHA256 is:
 ```text
 0cda43ec316045abae69e1571967a2c2d3bd1cee868e6a41e2cb67369a126f61
 ```
+
+User feedback on V9:
+
+```text
+T00 donor copy worked.
+T01 donor transplant worked.
+T02 donor terminal-label mutation worked.
+T03 and onward gave VGDVC.dll.
+```
+
+Interpretation:
+
+```text
+The generated T03 object chunk shares the donor source tail byte-for-byte
+from offset 14148 to the end, so the VGDVC boundary is not the source tail.
+The failure is in the generated R/C/L body replacement.
+
+The first semantic body mismatch appears in the final RL group:
+  donor:     OUT A9, R7 body, OUT DVO, L7 body
+  generated: OUT D0, L7 body, OUT A9, R7 body
+
+Therefore the donor final RL unit order must be tested before any full
+generated-body replacement is attempted again.
+```
+
+## DC Mixed Sources V10 Final-Unit Isolation
+
+`DC_MIXED_SOURCES_V10_FINAL_UNIT_TEMP_2026_06_05` keeps V9's donor-tail evidence
+but narrows the mutation surface.
+
+V10 goals:
+
+```text
+1. Repeat the V9 passing boundary with donor copy/transplant/label mutation.
+2. Test whether the generated CDB is safe on the donor-safe object stream.
+3. Test whether label matching alone fixes generated-body failure.
+4. Test whether replacing only the generated final RL unit with the donor final
+   RL unit fixes the source+R/C/L join.
+```
+
+Test order:
+
+```text
+DCMS_V10_T00_DONOR_COPY
+DCMS_V10_T01_DONOR_TRANSPLANT_E001
+DCMS_V10_T02_DONOR_LABEL_DVO_TO_D0
+DCMS_V10_T03_DONOR_OBJECT_GENERATED_CDB
+DCMS_V10_T04_DONOR_D0_GENERATED_CDB
+DCMS_V10_T05_GENERATED_21_DVO_LABEL
+DCMS_V10_T06_GENERATED_PREFIX_DONOR_FINAL_UNIT
+DCMS_V10_T07_GENERATED_PREFIX_DONOR_FINAL_UNIT_D0
+DCMS_V10_T08_GENERATED_PREFIX_DONOR_FINAL_UNIT_D0_GENERATED_CDB
+```
+
+V10 static checks passed:
+
+```text
+projects generated: 9 including donor copy control
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+generated object chunks contain: 23 $TERINPUT, 23 $TEROUTPUT, 46 WIRE
+generated object chunks contain: VSOURCE=2, CSOURCE=2
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V10 archive SHA256 is:
+
+```text
+44f0d7c58fefe230d3f0797353b49a4d95ea3ec56b0663b9d928051b36212717
+```

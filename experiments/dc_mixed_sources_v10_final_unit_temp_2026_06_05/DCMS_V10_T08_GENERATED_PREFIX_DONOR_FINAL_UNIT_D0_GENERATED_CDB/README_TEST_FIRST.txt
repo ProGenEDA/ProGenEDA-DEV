@@ -1,0 +1,6 @@
+DCMS_V10_T08_GENERATED_PREFIX_DONOR_FINAL_UNIT_D0_GENERATED_CDB
+
+Same as T07, but with generated CDB rows.
+
+Project: DCMS_V10_T08_GENERATED_PREFIX_DONOR_FINAL_UNIT_D0_GENERATED_CDB.pdsprj
+Static validation issues: []
