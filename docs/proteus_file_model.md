@@ -1850,3 +1850,46 @@ The V1 archive SHA256 is:
 ```text
 c1865a2cb96a3770c0315dc42f2b1a3e1b12c4c628627be9d19216d2600838b9
 ```
+
+User feedback on DC mixed sources V1:
+
+```text
+All five requested circuits gave ISIS.dll error.
+```
+
+Follow-up byte comparison found a stricter source CDB rule. Source component
+rows in user-made DC voltage/current donors use pin names `+` and `-`, mapped
+to package pins `1` and `2`. V1 incorrectly used passive-style `1`/`2` pin
+names for source rows.
+
+## DC Mixed Sources V2 Strict CDB
+
+`DC_MIXED_SOURCES_V2_STRICT_CDB_TEMP_2026_06_04` regenerates the same five
+requested mixed DC source circuits as V1, changing only the source rows in
+`ROOT.CDB` to use donor-style `+/-` source pin names.
+
+Test order:
+
+```text
+T01 DCMS_V2_T01_CIRCUIT_1_12V_2A
+T02 DCMS_V2_T02_CIRCUIT_2_TWO_5V_1A
+T03 DCMS_V2_T03_CIRCUIT_3_24V_TWO_0A5
+T04 DCMS_V2_T04_CIRCUIT_4_TWO_15V_TWO_3A
+T05 DCMS_V2_T05_CIRCUIT_5_THREE_9V_1A5
+```
+
+V2 static checks passed:
+
+```text
+projects generated: 5
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+source CDB +/- pin-map count equals source count in every project
+manifest static_validation_issues: []
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V2 archive SHA256 is:
+
+```text
+cb32ce406b75eb789025ef5b6595907b4cb75c5019feeeebbceb022cfcf093db
+```
