@@ -2340,3 +2340,86 @@ The V10 archive SHA256 is:
 ```text
 44f0d7c58fefe230d3f0797353b49a4d95ea3ec56b0663b9d928051b36212717
 ```
+
+User feedback on V10:
+
+```text
+T00 through T04 worked.
+T05 and T06 gave VGDVC.dll.
+T07 and T08 showed a missing-library dialog/crash, with Proteus reporting a
+garbled device name such as Device '6h|=...' used but not in library.
+```
+
+Interpretation:
+
+```text
+Generated CDB rows are not the immediate failure when the object stream remains
+donor-safe, because T03 and T04 worked.
+
+The V10 final-unit splice cut at OUT A9 offset 13019, which is inside the final
+RL donor group. The whole donor group starts earlier at IN A9 offset 12813 and
+also includes the matching input/output terminal records around the component
+bodies. Splicing at the later output marker can join generated prefix records to
+donor component records mid-group, which is not Proteus-safe.
+
+Variable-length DVO-to-D0 shrinking is also unsafe in generated splice cases
+until the object boundary is known. Exact donor label shrinking worked in T02
+and T04, but generated splice shrink cases produced garbled device identity.
+```
+
+## DC Mixed Sources V11 Group-Boundary Isolation
+
+`DC_MIXED_SOURCES_V11_GROUP_BOUNDARY_TEMP_2026_06_05` keeps the V10 working
+controls and changes the suspect splice logic from final-output markers to
+whole donor R/C/L group boundaries.
+
+V11 goals:
+
+```text
+1. Keep donor copy and donor-object/generated-CDB controls.
+2. Test donor group-9 as a complete suffix after generated groups 1-8.
+3. Test donor groups 7-9 and 4-9 as larger donor suffixes.
+4. Test whether remapping generated prefix terminal suffix bytes to donor suffix
+   bytes is needed before a donor suffix can be joined safely.
+5. Avoid DVO-to-D0 label shrinking in generated splice cases.
+```
+
+Observed donor group starts:
+
+```text
+after_leading_v0_output: 105
+group_4_start: 4789
+group_7_start: 9455
+group_9_start: 12813
+source_tail_start: 14148
+```
+
+Test order:
+
+```text
+DCMS_V11_T00_DONOR_COPY
+DCMS_V11_T01_DONOR_OBJECT_GENERATED_CDB
+DCMS_V11_T02_GENERATED_PREFIX_DONOR_GROUP9
+DCMS_V11_T03_GENERATED_PREFIX_DONOR_GROUP9_SUFFIXMAP
+DCMS_V11_T04_GENERATED_PREFIX_DONOR_GROUP7_TO_TAIL
+DCMS_V11_T05_GENERATED_PREFIX_DONOR_GROUP7_SUFFIXMAP
+DCMS_V11_T06_GENERATED_PREFIX_DONOR_GROUP4_TO_TAIL
+DCMS_V11_T07_GENERATED_LEADING_V0_DONOR_REST
+```
+
+V11 static checks passed:
+
+```text
+projects generated: 8 including donor copy control
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+generated object chunks contain: 23 $TERINPUT, 23 $TEROUTPUT, 46 WIRE
+generated object chunks contain: VSOURCE=2, CSOURCE=2
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V11 archive SHA256 is:
+
+```text
+9651003e28224e4d939b24db133280532e0cc343f2919510e88892e0997abe38
+```
