@@ -87,7 +87,7 @@
       }
     },
     "AC_VOLTAGE_SOURCE": {
-      "status": "temporary_v1_source_diagnostics_pending_user_test",
+      "status": "temporary_v2_nonfinal_source_unit_pending_user_test",
       "category": "source",
       "proteus_names_observed": ["VSINE"],
       "generation": {
@@ -96,7 +96,7 @@
         "requires_cdb": true,
         "tested": false,
         "locked": false,
-        "temporary_recipe": "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_TEMP_2026_06_04 uses user-supplied AC voltage donors. Observed source nets are ordinary AV/A0 terminals. The source model and CDB value field are VSINE. Amplitude/frequency live in ROOT.CDB and source-record properties such as {VA=20v} and {FREQ=5000hz}. V1 tests exact donor controls, E001 transplants, AV/A0 R/C/L no-source control, source-first standalone VSINE insertion, and source-last load-donor VSINE insertion."
+        "temporary_recipe": "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_TEMP_2026_06_04 proved exact donor controls, E001 transplants, and generated AV/A0 R/C/L no-source control worked, but generated source insertion T05 onward failed with VGDVC.dll. AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_TEMP_2026_06_04 tests the exact 673-byte non-final AV/A0 VSINE unit extracted from the two-source donor, plus trimmed standalone-source controls. Observed source model and CDB value field are VSINE; amplitude/frequency live in ROOT.CDB/source-record properties such as {VA=20v} and {FREQ=5000hz}."
       }
     },
     "AC_CURRENT_SOURCE": {"status": "requested_not_yet_controlled", "category": "source"},

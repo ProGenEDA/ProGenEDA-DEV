@@ -526,11 +526,20 @@
     {
       "id": "R059",
       "title": "AC voltage source donors use VSINE with AV/A0 terminals",
+      "status": "v1_generated_source_insertion_rejected",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "AC voltage source temporary method", "mixed R/C/L source-driven circuits"],
+      "evidence": ["user-supplied ac_voltage_01_default.pdsprj", "user-supplied ac_voltage_02_variant.pdsprj", "user-supplied 2xac_voltage_02_variant.pdsprj", "user-supplied ac_voltage_03_resistor_load.pdsprj", "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_STATIC_20260604", "AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604"],
+      "rule": "The supplied AC-voltage donors use ordinary two-character source-net labels AV and A0 and no $TERPOWER/$TERGROUND records in the source object chunk. The source model is VSINE, not VSOURCE. In ROOT.CDB, the source ref is V1, both the value field and model field are VSINE, and amplitude/frequency are property text fields such as {VA=20v} and {FREQ=5000hz}. V1 proved exact donor controls, E001 transplants, and generated AV/A0 R/C/L with no source work, but rejected generated source insertion from T05 onward with VGDVC.dll. Do not reuse V1's final standalone source block as a non-final generated source unit."
+    },
+    {
+      "id": "R060",
+      "title": "AC voltage V2 tests exact non-final two-source VSINE unit",
       "status": "static_generated_pending_user_test",
       "confidence": 0.84,
       "applies_to": ["Proteus 8.13", "AC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["user-supplied ac_voltage_01_default.pdsprj", "user-supplied ac_voltage_02_variant.pdsprj", "user-supplied 2xac_voltage_02_variant.pdsprj", "user-supplied ac_voltage_03_resistor_load.pdsprj", "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_STATIC_20260604"],
-      "rule": "The supplied AC-voltage donors use ordinary two-character source-net labels AV and A0 and no $TERPOWER/$TERGROUND records in the source object chunk. The source model is VSINE, not VSOURCE. In ROOT.CDB, the source ref is V1, both the value field and model field are VSINE, and amplitude/frequency are property text fields such as {VA=20v} and {FREQ=5000hz}. V1 generated both source-first standalone VSINE insertion and source-last load-donor VSINE insertion; user Proteus testing is pending before promotion."
+      "evidence": ["AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604", "AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_STATIC_20260604"],
+      "rule": "The two-source AC-voltage donor shows the first non-final AV/A0 VSINE unit is 673 bytes: output AV, input A0, V1 VSINE record, and two non-final 50-byte wire records. V2 uses that exact non-final source unit for source-first simple, six-component, and corrected 21-rule R/C/L candidates. It also tests whether simply trimming the standalone variant source block to the same non-final length is sufficient. Proteus user testing is pending."
     }
   ]
 }

@@ -1741,3 +1741,59 @@ The V1 archive SHA256 is:
 ```text
 985630d2c7d98f97281679ae58fcce798e91f8a3791d787e5a761225217c76a0
 ```
+
+User feedback on V1:
+
+```text
+T00 through T04 worked
+T05 and onward gave VGDVC.dll error
+```
+
+This means exact donor copies, E001 transplants, and the generated `AV`/`A0`
+R/C/L body without a source are valid. The failure starts when a generated
+VSINE source is inserted.
+
+The likely V1 source-insertion fault is non-final source unit shape. The
+standalone variant source body is 674 bytes, ending in a final 51-byte wire.
+The `2xac_voltage_02_variant` donor shows the first non-final `AV`/`A0` source
+unit is exactly 673 bytes:
+
+```text
+output AV: 104 bytes
+input A0: 103 bytes
+V1 VSINE source record: 366 bytes
+wire 1: 50 bytes
+wire 2 non-final: 50 bytes
+```
+
+## AC Voltage V2 Non-Final Source Unit
+
+`AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_TEMP_2026_06_04` tests the exact non-final
+source unit from the two-source donor.
+
+Test order:
+
+```text
+T00 two-source donor transplant control
+T01 generated six-component R/C/L AV/A0 body with no source object
+T02 simple-loop R/C/L with exact two-source non-final AV/A0 VSINE unit
+T03 six-component R/C/L with exact two-source non-final AV/A0 VSINE unit
+T04 corrected 21-rule R/C/L with exact two-source non-final AV/A0 VSINE unit
+T05 simple-loop R/C/L with standalone variant source block trimmed to non-final length
+T06 six-component R/C/L with standalone variant source block trimmed to non-final length
+```
+
+V2 static checks passed:
+
+```text
+projects generated: 7
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+manifest static_validation_issues: []
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V2 archive SHA256 is:
+
+```text
+8bdd36e0bae520940dbc7534bd0931cf2724df5d9a306eaa42900be8769ad492
+```
