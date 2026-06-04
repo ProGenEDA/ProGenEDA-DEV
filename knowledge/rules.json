@@ -634,11 +634,20 @@
     {
       "id": "R071",
       "title": "Mixed DC source visual relocation must preserve source suffix bytes",
-      "status": "v12_static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "v12_confirmed_open_visual_v0_wire_issue",
+      "confidence": 0.88,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "source visual coordinates", "terminal suffix mapping"],
-      "evidence": ["DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605", "DC_MIXED_SOURCES_V12_SUFFIXMAP_COORDS_STATIC_20260605"],
-      "rule": "V11 suffix-map cases opened but the source blocks were visually too far from their connected terminal labels. V12 relocates donor source sub-blocks by patching only terminal symbol/label coordinates, WIRE coordinates, and source component coordinate fields; it keeps record lengths and terminal/link suffix bytes unchanged. Test voltage-source-only relocation before both-source relocation so CSOURCE coordinate changes are isolated."
+      "evidence": ["DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605", "DC_MIXED_SOURCES_V12_SUFFIXMAP_COORDS_STATIC_20260605", "DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605"],
+      "rule": "V11 suffix-map cases opened but the source blocks were visually too far from their connected terminal labels. V12 relocated donor source sub-blocks by patching only terminal symbol/label coordinates, WIRE coordinates, and source component coordinate fields while preserving record lengths and terminal/link suffix bytes. User testing reported all V12 cases opened, confirming source relocation is safe, but the leading V0 terminal remained away from the source and a long line crossed the sheet."
+    },
+    {
+      "id": "R072",
+      "title": "Mixed RCL negative-row nonfinal wire high byte must be repaired",
+      "status": "v13_static_generated_pending_user_test",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "mixed R/C/L circuits", "multi-source mixed R/C/L circuits", "WIRE coordinate records", "visual geometry"],
+      "evidence": ["DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605", "V12 long-wire coordinate audit 2026-06-05", "DC_MIXED_SOURCES_V13_V0_SOURCE_GEOMETRY_STATIC_20260605"],
+      "rule": "Some generated non-final WIRE records in lower rows contain a negative y2 coordinate whose high byte has been overwritten to 00, producing y2-y1 = 0x01000000 and a sheet-crossing visual line. V13 repairs those wire y2 fields after suffix mapping and before source/V0 coordinate relocation. It also moves the leading ordinary OUT V0 terminal beside the VSOURCE upper wire point while preserving suffix bytes."
     }
   ]
 }

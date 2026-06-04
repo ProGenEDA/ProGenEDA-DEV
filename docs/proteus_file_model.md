@@ -2491,3 +2491,67 @@ The V12 archive SHA256 is:
 ```text
 1791c93ec646f63b9b954de7b491ddcfd589f53efd7bccdfea996e547a092783
 ```
+
+User feedback on V12:
+
+```text
+All V12 cases opened.
+The immediate visual problem is the V0 terminal/source geometry: V0 should be
+with the source, but a long line crosses the sheet to join the source side.
+```
+
+Interpretation:
+
+```text
+Suffix-mapped source relocation is Proteus-safe. The remaining issue is visual
+geometry, not source/device identity.
+
+A byte audit found generated lower-row WIRE records with y2-y1 = 0x01000000.
+Those records came from negative y coordinates whose high byte was overwritten
+to 00 in non-final generated wires. The resulting coordinates create long
+cross-sheet visual lines even though Proteus can open the project.
+```
+
+## DC Mixed Sources V13 V0 Source Geometry
+
+`DC_MIXED_SOURCES_V13_V0_SOURCE_GEOMETRY_TEMP_2026_06_05` keeps the V12
+working suffix-map/source-relocation method and fixes the visible geometry.
+
+V13 changes:
+
+```text
+1. Use suffix-map joins only.
+2. Repair generated WIRE records where y2-y1 equals 0x01000000.
+3. Move the leading ordinary OUT V0 terminal beside the VSOURCE upper wire
+   point.
+4. Preserve terminal/link suffix bytes and record lengths.
+```
+
+Test order:
+
+```text
+DCMS_V13_T00_DONOR_COPY
+DCMS_V13_T01_DONOR_OBJECT_GENERATED_CDB
+DCMS_V13_T02_GROUP9_SUFFIXMAP_SAFE_CONTROL
+DCMS_V13_T03_GROUP9_SOURCES_AND_V0_LOCAL
+DCMS_V13_T04_GROUP7_SOURCES_AND_V0_LOCAL
+DCMS_V13_T05_GROUP4_SOURCES_AND_V0_LOCAL
+```
+
+V13 static checks passed:
+
+```text
+projects generated: 6 including donor copy control
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+generated object chunks contain: 23 $TERINPUT, 23 $TEROUTPUT, 46 WIRE
+generated object chunks contain: VSOURCE=2, CSOURCE=2
+long WIRE coordinate audit: 0 long wires in every generated V13 case
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V13 archive SHA256 is:
+
+```text
+17986827626a5c8859f8be1ba07c9c4be84f35d76fd193615bb6f3ac27879a30
+```
