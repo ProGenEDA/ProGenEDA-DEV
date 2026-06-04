@@ -535,11 +535,20 @@
     {
       "id": "R060",
       "title": "AC voltage V2 tests exact non-final two-source VSINE unit",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.84,
+      "status": "user_confirmed_for_v2_source_first_nonfinal_unit",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "AC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604", "AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_STATIC_20260604"],
-      "rule": "The two-source AC-voltage donor shows the first non-final AV/A0 VSINE unit is 673 bytes: output AV, input A0, V1 VSINE record, and two non-final 50-byte wire records. V2 uses that exact non-final source unit for source-first simple, six-component, and corrected 21-rule R/C/L candidates. It also tests whether simply trimming the standalone variant source block to the same non-final length is sufficient. Proteus user testing is pending."
+      "evidence": ["AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604", "AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_STATIC_20260604", "AC_VOLTAGE_V2_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "rule": "The two-source AC-voltage donor shows the first non-final AV/A0 VSINE unit is 673 bytes: output AV, input A0, V1 VSINE record, and two non-final 50-byte wire records. V2 user testing confirmed all generated cases worked, including simple, six-component, and corrected 21-rule R/C/L candidates using the exact non-final source unit. AC voltage source generation should therefore use source-first non-final donor source units rather than reusing a final standalone source block shape."
+    },
+    {
+      "id": "R061",
+      "title": "Multiple DC sources use donor-spaced source-first units",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
+      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V1_REQUESTED5_STATIC_20260604"],
+      "rule": "For the first multiple-source DC experiment, prepend all source units before the accepted R/C/L source-net body. Use the user-made 4x DC voltage donor for already-spaced source unit geometry. Keep voltage sources as VSOURCE. For current sources, reuse the accepted DCV geometry and patch the final object model marker, ROOT.CDB model entry, and device table identity to CSOURCE. Source terminal labels are ordinary labels and may be patched length-safely to the requested source nodes; no default $TERPOWER or $TERGROUND records are emitted in these source-driven cases. Proteus user testing is pending."
     }
   ]
 }

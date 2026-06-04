@@ -1797,3 +1797,56 @@ The V2 archive SHA256 is:
 ```text
 8bdd36e0bae520940dbc7534bd0931cf2724df5d9a306eaa42900be8769ad492
 ```
+
+User feedback on V2:
+
+```text
+All V2 cases worked.
+```
+
+AC current source generation is out of scope for the current release by user
+decision, so the next source work moved to mixed DC voltage/current source
+circuits.
+
+## DC Mixed Sources V1 Requested Five Circuits
+
+`DC_MIXED_SOURCES_V1_REQUESTED5_TEMP_2026_06_04` generates the five complex
+R/C/L circuits requested by the user, each containing mixed DC voltage and DC
+current sources.
+
+Method under test:
+
+```text
+source object order: all source units first, then generated R/C/L body
+source geometry: user-made 4x DC voltage donor source units
+DC voltage identity: VSOURCE in ROOT.DSN, ROOT.CDB, and device table
+DC current identity: accepted DCV geometry with final model marker, ROOT.CDB, and device table patched to CSOURCE
+source terminal labels: ordinary source-net terminals, patched to the circuit nodes
+default power/ground symbols: not emitted
+R/C/L body: accepted mixed_rcl source-net subgroup generator
+```
+
+The five generated projects are:
+
+```text
+T01 DCMS_V1_T01_CIRCUIT_1_12V_2A
+T02 DCMS_V1_T02_CIRCUIT_2_TWO_5V_1A
+T03 DCMS_V1_T03_CIRCUIT_3_24V_TWO_0A5
+T04 DCMS_V1_T04_CIRCUIT_4_TWO_15V_TWO_3A
+T05 DCMS_V1_T05_CIRCUIT_5_THREE_9V_1A5
+```
+
+Static checks passed:
+
+```text
+projects generated: 5
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+manifest static_validation_issues: []
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V1 archive SHA256 is:
+
+```text
+c1865a2cb96a3770c0315dc42f2b1a3e1b12c4c628627be9d19216d2600838b9
+```
