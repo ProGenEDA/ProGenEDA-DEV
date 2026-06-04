@@ -625,11 +625,20 @@
     {
       "id": "R070",
       "title": "Mixed DC source diagnostics must splice whole donor RCL groups",
-      "status": "v11_static_generated_pending_user_test",
-      "confidence": 0.84,
+      "status": "v11_suffixmap_confirmed_plain_group_splices_rejected",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN object ordering", "terminal suffix mapping"],
-      "evidence": ["DC_MIXED_SOURCES_V10_USER_FEEDBACK_T05_ONWARD_ERRORS_20260605", "donor-vs-generated suffix comparison 2026-06-05", "DC_MIXED_SOURCES_V11_GROUP_BOUNDARY_STATIC_20260605"],
-      "rule": "Generated-prefix splice cases must cut only at whole donor group boundaries. V11 tests full donor group-9, group-7-to-tail, group-4-to-tail, leading-V0-only donor-rest, and suffix-remapped generated prefixes. Avoid variable-length DVO-to-D0 label shrinking on generated splice cases until the group boundary is confirmed, because V10 T07/T08 showed that shrink-patched generated splices can corrupt device identity into a missing-library dialog."
+      "evidence": ["DC_MIXED_SOURCES_V10_USER_FEEDBACK_T05_ONWARD_ERRORS_20260605", "donor-vs-generated suffix comparison 2026-06-05", "DC_MIXED_SOURCES_V11_GROUP_BOUNDARY_STATIC_20260605", "DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605"],
+      "rule": "Generated-prefix splice cases must cut only at whole donor group boundaries and must remap generated prefix terminal/link suffix bytes to the donor suffix scheme before joining to donor suffix records. V11 T03 and T05, the suffix-map variants, opened; T02, T04, T06, and T07 all gave VGDVC.dll. Plain group-boundary splicing is therefore not enough. Avoid variable-length DVO-to-D0 label shrinking on generated splice cases unless separately proven, because V10 T07/T08 showed that shrink-patched generated splices can corrupt device identity into a missing-library dialog."
+    },
+    {
+      "id": "R071",
+      "title": "Mixed DC source visual relocation must preserve source suffix bytes",
+      "status": "v12_static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "source visual coordinates", "terminal suffix mapping"],
+      "evidence": ["DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605", "DC_MIXED_SOURCES_V12_SUFFIXMAP_COORDS_STATIC_20260605"],
+      "rule": "V11 suffix-map cases opened but the source blocks were visually too far from their connected terminal labels. V12 relocates donor source sub-blocks by patching only terminal symbol/label coordinates, WIRE coordinates, and source component coordinate fields; it keeps record lengths and terminal/link suffix bytes unchanged. Test voltage-source-only relocation before both-source relocation so CSOURCE coordinate changes are isolated."
     }
   ]
 }

@@ -2423,3 +2423,71 @@ The V11 archive SHA256 is:
 ```text
 9651003e28224e4d939b24db133280532e0cc343f2919510e88892e0997abe38
 ```
+
+User feedback on V11:
+
+```text
+T02, T04, T06, and T07 failed with VGDVC.dll.
+The other cases opened.
+The opened generated cases had source/supply blocks too far from their connected
+terminal labels.
+```
+
+Interpretation:
+
+```text
+T03 and T05 were the suffix-map variants, and they opened. T02 and T04 were the
+same donor group boundaries without suffix remapping, and they failed. T06 had
+no suffix-map variant and failed. T07 mixed only the generated leading V0 output
+with the donor body and failed.
+
+Therefore, whole group boundaries are not sufficient on their own. Generated
+prefix terminal/link suffix bytes must be remapped to the donor suffix scheme
+before joining to donor suffix records.
+```
+
+## DC Mixed Sources V12 Suffix-Map Coordinate Isolation
+
+`DC_MIXED_SOURCES_V12_SUFFIXMAP_COORDS_TEMP_2026_06_05` removes the V11 plain
+splice variants and keeps suffix-map variants only. It also tests source visual
+coordinate relocation without changing record lengths or terminal/link suffix
+bytes.
+
+V12 goals:
+
+```text
+1. Repeat donor controls.
+2. Repeat the known-open group-9 suffix-map boundary without coordinate changes.
+3. Move only the VSOURCE block close to the final DVO terminal cluster.
+4. Move both VSOURCE and CSOURCE blocks close to their matching terminal clusters.
+5. Add the missing group-4 suffix-map variant with coordinate relocation.
+```
+
+Test order:
+
+```text
+DCMS_V12_T00_DONOR_COPY
+DCMS_V12_T01_DONOR_OBJECT_GENERATED_CDB
+DCMS_V12_T02_GROUP9_SUFFIXMAP_CONTROL
+DCMS_V12_T03_GROUP9_SUFFIXMAP_VSOURCE_COORDS
+DCMS_V12_T04_GROUP9_SUFFIXMAP_BOTH_COORDS
+DCMS_V12_T05_GROUP7_SUFFIXMAP_BOTH_COORDS
+DCMS_V12_T06_GROUP4_SUFFIXMAP_BOTH_COORDS
+```
+
+V12 static checks passed:
+
+```text
+projects generated: 7 including donor copy control
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+generated object chunks contain: 23 $TERINPUT, 23 $TEROUTPUT, 46 WIRE
+generated object chunks contain: VSOURCE=2, CSOURCE=2
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V12 archive SHA256 is:
+
+```text
+1791c93ec646f63b9b954de7b491ddcfd589f53efd7bccdfea996e547a092783
+```
