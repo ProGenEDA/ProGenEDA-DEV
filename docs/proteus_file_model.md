@@ -1893,3 +1893,58 @@ The V2 archive SHA256 is:
 ```text
 cb32ce406b75eb789025ef5b6595907b4cb75c5019feeeebbceb022cfcf093db
 ```
+
+User feedback on DC mixed sources V2:
+
+```text
+All V2 requested circuits gave ISIS.dll error.
+```
+
+This rejects the provisional `+/-` source CDB hypothesis for generated output.
+Follow-up byte checks on accepted generated DCV V7 and DCI V13 projects show
+their generated source rows use the passive-style pin map. Manual donors may
+use `+/-`, but generated source rows cannot blindly copy that rule.
+
+## DC Mixed Sources V4 V-Refs And Clean Devices
+
+`DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_TEMP_2026_06_04` is the next
+multi-source DC diagnostic pack after V1 and V2 both failed with ISIS.dll.
+
+Method under test:
+
+```text
+source geometry: archived user-made 4x DC voltage source units
+source refs: V-style only, V1/V2/V3/V4
+DC voltage identity: VSOURCE
+DC current identity: accepted DCV geometry with final model marker/CDB/device family patched to CSOURCE
+CDB source pin maps: accepted generated passive-style rows, not rejected V2 +/-
+device table: rebuilt as CAP, VSOURCE, CSOURCE, REALIND, RESISTOR
+donor paths: archived accepted experiment donor copies, not live Downloads files
+```
+
+Test order:
+
+```text
+T00A DCMS_V4_T00A_SOURCE_ONLY_ACTUAL_CURRENT_VALUE
+T00B DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY
+T01  DCMS_V4_T01_CIRCUIT_1_12V_2A
+T02  DCMS_V4_T02_CIRCUIT_2_TWO_5V_1A
+T03  DCMS_V4_T03_CIRCUIT_3_24V_TWO_0A5
+T04  DCMS_V4_T04_CIRCUIT_4_TWO_15V_TWO_3A
+T05  DCMS_V4_T05_CIRCUIT_5_THREE_9V_1A5
+```
+
+V4 static checks passed:
+
+```text
+projects generated: 7
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+manifest static_validation_issues: []
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V4 archive SHA256 is:
+
+```text
+be93143849bc8090006142debad5971208e0592932ea0b4efff4d1e97ba58d8b
+```

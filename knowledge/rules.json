@@ -544,20 +544,29 @@
     {
       "id": "R061",
       "title": "Multiple DC sources use donor-spaced source-first units",
-      "status": "v1_rejected_source_cdb_pin_map_violation",
-      "confidence": 0.86,
+      "status": "v1_v2_rejected_unresolved_multi_source_identity",
+      "confidence": 0.78,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V1_REQUESTED5_STATIC_20260604", "DC_MIXED_SOURCES_V1_USER_FEEDBACK_ALL_ISIS_DLL_20260604"],
-      "rule": "V1 prepended donor-spaced source units before the accepted R/C/L source-net body, but all requested multi-source cases failed with ISIS.dll. Byte comparison found a strict source CDB violation: source entries in user-made DC voltage/current donors use pin names + and - mapped to pins 1 and 2, while V1 wrote passive-style 1 and 2 pin names for source rows. Do not reuse V1's CDB source-row construction."
+      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V1_REQUESTED5_STATIC_20260604", "DC_MIXED_SOURCES_V1_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604"],
+      "rule": "V1 prepended donor-spaced source units before the accepted R/C/L source-net body, but all requested multi-source cases failed with ISIS.dll. V2 changed only source CDB rows to donor-style +/- pin names and also failed. Therefore the failure is not solved by source CDB pin maps alone; do not reuse V1/V2's combination of I-style current refs, concatenated device metadata, and mixed source rows."
     },
     {
       "id": "R062",
-      "title": "Source ROOT.CDB rows must use +/- pin names",
+      "title": "Generated source CDB rows do not blindly use donor +/- maps",
+      "status": "v2_rejected_plus_minus_hypothesis",
+      "confidence": 0.88,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "source CDB generation"],
+      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "accepted generated V7/V13 ROOT.CDB byte checks", "DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604"],
+      "rule": "Manual source donors can contain +/- pin names in ROOT.CDB, but the accepted generated DC-voltage and DC-current source-driven R/C/L packs use passive-style source row maps and work. V2 proved that forcing +/- source rows does not fix mixed multi-source ISIS.dll failures. Treat +/- as donor-specific evidence, not a universal generated-source rule."
+    },
+    {
+      "id": "R063",
+      "title": "Mixed DC source V4 tests V-style refs and clean device metadata",
       "status": "static_generated_pending_user_test",
-      "confidence": 0.84,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "AC voltage source", "source CDB generation"],
-      "evidence": ["dc_voltage_01_default_10v donor ROOT.CDB", "2x dc_voltage_01_default_10v donor ROOT.CDB", "4x dc_voltage_01_default_10v donor ROOT.CDB", "dc_current_01_default donor ROOT.CDB", "2x dc_current_01_default donor ROOT.CDB", "4x dc_current_01_default donor ROOT.CDB", "DC_MIXED_SOURCES_V2_STRICT_CDB_STATIC_20260604"],
-      "rule": "Source component rows in ROOT.CDB must use source pin names + and - mapped to package pins 1 and 2. The encoded first-table map is len(+), +, len(1), 1, len(-), -, len(2), 2. Passive-style CDB pin maps such as 1/2 are not acceptable for source rows in strict source generation. V2 regenerates the requested five mixed DC-source circuits with only this CDB fix relative to V1; Proteus user testing is pending."
+      "confidence": 0.8,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
+      "evidence": ["DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_STATIC_20260604"],
+      "rule": "The next mixed DC source diagnostic uses archived four-source DCV units for unique source suffixes, keeps all source refs V-style, uses accepted generated passive CDB maps, patches current sources only to CSOURCE model identity, and rebuilds one clean ordered device section: CAP, VSOURCE, CSOURCE, REALIND, RESISTOR. This remains pending until Proteus user testing confirms T00A/T00B and T01-T05."
     }
   ]
 }
