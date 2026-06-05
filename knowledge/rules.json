@@ -643,11 +643,20 @@
     {
       "id": "R072",
       "title": "Mixed RCL negative-row nonfinal wire high byte must be repaired",
-      "status": "v13_static_generated_pending_user_test",
-      "confidence": 0.86,
+      "status": "user_confirmed_v13_open_visual_good_enough",
+      "confidence": 0.91,
       "applies_to": ["Proteus 8.13", "mixed R/C/L circuits", "multi-source mixed R/C/L circuits", "WIRE coordinate records", "visual geometry"],
-      "evidence": ["DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605", "V12 long-wire coordinate audit 2026-06-05", "DC_MIXED_SOURCES_V13_V0_SOURCE_GEOMETRY_STATIC_20260605"],
-      "rule": "Some generated non-final WIRE records in lower rows contain a negative y2 coordinate whose high byte has been overwritten to 00, producing y2-y1 = 0x01000000 and a sheet-crossing visual line. V13 repairs those wire y2 fields after suffix mapping and before source/V0 coordinate relocation. It also moves the leading ordinary OUT V0 terminal beside the VSOURCE upper wire point while preserving suffix bytes."
+      "evidence": ["DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605", "V12 long-wire coordinate audit 2026-06-05", "DC_MIXED_SOURCES_V13_V0_SOURCE_GEOMETRY_STATIC_20260605", "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605"],
+      "rule": "Some generated non-final WIRE records in lower rows contain a negative y2 coordinate whose high byte has been overwritten to 00, producing y2-y1 = 0x01000000 and a sheet-crossing visual line. V13 repairs those wire y2 fields after suffix mapping and before source/V0 coordinate relocation. It also moves the leading ordinary OUT V0 terminal beside the VSOURCE upper wire point while preserving suffix bytes. User feedback confirmed the V13 outputs open and the visuals are good enough for this stage."
+    },
+    {
+      "id": "R073",
+      "title": "Requested mixed DC-source circuits duplicate V13 source units",
+      "status": "v14_static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "requested five mixed source circuits"],
+      "evidence": ["DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_STATIC_20260605"],
+      "rule": "For the requested five complex mixed DC voltage/current source R/C/L circuits, generate the passive R/C/L source-net body first, then append duplicated donor-derived VSOURCE/CSOURCE units using V13-safe coordinate relocation, source-local positive terminals, repaired generated WIRE high bytes, unique source global IDs, source values patched in both ROOT.DSN visible value records and ROOT.CDB rows, and passives-first/source-last ROOT.CDB ordering."
     }
   ]
 }

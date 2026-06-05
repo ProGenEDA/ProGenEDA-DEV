@@ -1,0 +1,257 @@
+{
+  "description": "Circuit 3: one 24V voltage source and two 0.5A current sources across an RLC ladder.",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "model": "VSOURCE",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 9,
+      "out_suffix": "7000",
+      "in_suffix": "7032",
+      "target": [
+        -9906000,
+        4064000
+      ]
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "model": "CSOURCE",
+      "positive": "C0",
+      "negative": "D0",
+      "global_id": 10,
+      "out_suffix": "7080",
+      "in_suffix": "70b2",
+      "target": [
+        16510000,
+        1524000
+      ]
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I2",
+      "model": "CSOURCE",
+      "positive": "D1",
+      "negative": "D0",
+      "global_id": 11,
+      "out_suffix": "7100",
+      "in_suffix": "7132",
+      "target": [
+        2032000,
+        -4572000
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RL",
+      "start": "DV",
+      "end": "B0"
+    },
+    {
+      "mode": "C",
+      "start": "B0",
+      "end": "D0"
+    },
+    {
+      "mode": "L",
+      "start": "B0",
+      "end": "C0"
+    },
+    {
+      "mode": "R",
+      "start": "C0",
+      "end": "D0"
+    },
+    {
+      "mode": "C",
+      "start": "C0",
+      "end": "D1"
+    },
+    {
+      "mode": "RL",
+      "start": "D1",
+      "end": "D0"
+    }
+  ],
+  "visible_values": {
+    "R1": "150",
+    "L1": "82m",
+    "C1": "4u7",
+    "L2": "1H0",
+    "R2": "500",
+    "C2": "2u2",
+    "R3": "1k0",
+    "L3": "470"
+  },
+  "exact_cdb_values": {
+    "R1": "150",
+    "L1": "82mH",
+    "C1": "4.7uF",
+    "L2": "1H",
+    "R2": "500",
+    "C2": "2.2uF",
+    "R3": "1k",
+    "L3": "470mH"
+  },
+  "rcl_counts": {
+    "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+    "group_modes": [
+      "RL",
+      "C",
+      "L",
+      "R",
+      "C",
+      "RL"
+    ],
+    "group_count": 6,
+    "component_count": 8,
+    "capacitor_count": 2,
+    "inductor_count": 3,
+    "resistor_count": 3,
+    "power_bridge_count": 0,
+    "ground_terminal_count": 0,
+    "source_net_negative": "D0"
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "82m",
+      "left": "A1",
+      "right": "B0",
+      "global_id": 1,
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": -3556000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "150",
+      "left": "DV",
+      "right": "A1",
+      "global_id": 2,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "4u7",
+      "left": "B0",
+      "right": "D0",
+      "global_id": 3,
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": 2794000,
+      "y": 2540000
+    },
+    {
+      "idx": 4,
+      "unit": 3,
+      "kind": "INDUCTOR",
+      "ref": "L2",
+      "value": "1H0",
+      "left": "B0",
+      "right": "C0",
+      "global_id": 4,
+      "in_suffix": "1ab5",
+      "out_suffix": "1ae7",
+      "x": 16764000,
+      "y": 2540000
+    },
+    {
+      "idx": 5,
+      "unit": 4,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "500",
+      "left": "C0",
+      "right": "D0",
+      "global_id": 5,
+      "in_suffix": "24b2",
+      "out_suffix": "24e4",
+      "x": -7366000,
+      "y": -1016000
+    },
+    {
+      "idx": 6,
+      "unit": 5,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "2u2",
+      "left": "C0",
+      "right": "D1",
+      "global_id": 6,
+      "in_suffix": "2784",
+      "out_suffix": "2752",
+      "x": 2794000,
+      "y": -3556000
+    },
+    {
+      "idx": 7,
+      "unit": 6,
+      "kind": "INDUCTOR",
+      "ref": "L3",
+      "value": "470",
+      "left": "A6",
+      "right": "D0",
+      "global_id": 7,
+      "in_suffix": "3237",
+      "out_suffix": "3269",
+      "x": 16764000,
+      "y": -3556000
+    },
+    {
+      "idx": 8,
+      "unit": 6,
+      "kind": "RESISTOR",
+      "ref": "R3",
+      "value": "1k0",
+      "left": "D1",
+      "right": "A6",
+      "global_id": 8,
+      "in_suffix": "345e",
+      "out_suffix": "3490",
+      "x": 12954000,
+      "y": -1016000
+    }
+  ],
+  "wire_repair": {
+    "repaired_wire_count": 4,
+    "repairs": [
+      {
+        "wire_marker": 3370,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      },
+      {
+        "wire_marker": 3420,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      },
+      {
+        "wire_marker": 5376,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      },
+      {
+        "wire_marker": 5426,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      }
+    ]
+  }
+}

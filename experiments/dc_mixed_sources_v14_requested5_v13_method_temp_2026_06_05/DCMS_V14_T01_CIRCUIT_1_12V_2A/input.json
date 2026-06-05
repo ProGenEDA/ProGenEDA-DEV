@@ -1,0 +1,227 @@
+{
+  "description": "Circuit 1: 12V voltage source, 2A current source, R/C/L branches around nodes B0-C0-D1.",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "model": "VSOURCE",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 8,
+      "out_suffix": "7000",
+      "in_suffix": "7032",
+      "target": [
+        -9906000,
+        4064000
+      ]
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "model": "CSOURCE",
+      "positive": "D1",
+      "negative": "D0",
+      "global_id": 9,
+      "out_suffix": "7080",
+      "in_suffix": "70b2",
+      "target": [
+        6350000,
+        -4572000
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "mode": "R",
+      "start": "DV",
+      "end": "B0"
+    },
+    {
+      "mode": "C",
+      "start": "B0",
+      "end": "D0"
+    },
+    {
+      "mode": "L",
+      "start": "B0",
+      "end": "C0"
+    },
+    {
+      "mode": "R",
+      "start": "C0",
+      "end": "D0"
+    },
+    {
+      "mode": "L",
+      "start": "C0",
+      "end": "D1"
+    },
+    {
+      "mode": "RC",
+      "start": "D1",
+      "end": "D0"
+    }
+  ],
+  "visible_values": {
+    "R1": "1k0",
+    "C1": "10u",
+    "L1": "100",
+    "R2": "470",
+    "L2": "220",
+    "C2": "22u",
+    "R3": "100"
+  },
+  "exact_cdb_values": {
+    "R1": "1k",
+    "C1": "10uF",
+    "L1": "100mH",
+    "R2": "470",
+    "L2": "220mH",
+    "C2": "22uF",
+    "R3": "100"
+  },
+  "rcl_counts": {
+    "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+    "group_modes": [
+      "R",
+      "C",
+      "L",
+      "R",
+      "L",
+      "RC"
+    ],
+    "group_count": 6,
+    "component_count": 7,
+    "capacitor_count": 2,
+    "inductor_count": 2,
+    "resistor_count": 3,
+    "power_bridge_count": 0,
+    "ground_terminal_count": 0,
+    "source_net_negative": "D0"
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "1k0",
+      "left": "DV",
+      "right": "B0",
+      "global_id": 1,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 2,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "10u",
+      "left": "B0",
+      "right": "D0",
+      "global_id": 2,
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": 2794000,
+      "y": 2540000
+    },
+    {
+      "idx": 3,
+      "unit": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "100",
+      "left": "B0",
+      "right": "C0",
+      "global_id": 3,
+      "in_suffix": "1ab5",
+      "out_suffix": "1ae7",
+      "x": 16764000,
+      "y": 2540000
+    },
+    {
+      "idx": 4,
+      "unit": 4,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "470",
+      "left": "C0",
+      "right": "D0",
+      "global_id": 4,
+      "in_suffix": "24b2",
+      "out_suffix": "24e4",
+      "x": -7366000,
+      "y": -1016000
+    },
+    {
+      "idx": 5,
+      "unit": 5,
+      "kind": "INDUCTOR",
+      "ref": "L2",
+      "value": "220",
+      "left": "C0",
+      "right": "D1",
+      "global_id": 5,
+      "in_suffix": "2a61",
+      "out_suffix": "2a93",
+      "x": 6604000,
+      "y": -3556000
+    },
+    {
+      "idx": 6,
+      "unit": 6,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "22u",
+      "left": "A6",
+      "right": "D0",
+      "global_id": 6,
+      "in_suffix": "2f5a",
+      "out_suffix": "2f28",
+      "x": 12954000,
+      "y": -3556000
+    },
+    {
+      "idx": 7,
+      "unit": 6,
+      "kind": "RESISTOR",
+      "ref": "R3",
+      "value": "100",
+      "left": "D1",
+      "right": "A6",
+      "global_id": 7,
+      "in_suffix": "345e",
+      "out_suffix": "3490",
+      "x": 12954000,
+      "y": -1016000
+    }
+  ],
+  "wire_repair": {
+    "repaired_wire_count": 4,
+    "repairs": [
+      {
+        "wire_marker": 2690,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      },
+      {
+        "wire_marker": 2740,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      },
+      {
+        "wire_marker": 4696,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      },
+      {
+        "wire_marker": 4746,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      }
+    ]
+  }
+}

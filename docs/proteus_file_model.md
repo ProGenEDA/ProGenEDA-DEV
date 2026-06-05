@@ -2555,3 +2555,65 @@ The V13 archive SHA256 is:
 ```text
 17986827626a5c8859f8be1ba07c9c4be84f35d76fd193615bb6f3ac27879a30
 ```
+
+User feedback on V13:
+
+```text
+The V13 outputs open and the visuals are good enough for the current stage.
+```
+
+Interpretation:
+
+```text
+The source-local V0 placement and generated negative-row WIRE high-byte repair
+are accepted as the working mixed DC source geometry rule. Use V13 as the base
+for requested multi-source mixed DC source circuits.
+```
+
+## DC Mixed Sources V14 Requested Five With V13 Method
+
+`DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_TEMP_2026_06_05` applies the V13
+source geometry and WIRE repair method to the five requested mixed DC voltage
+and current source R/C/L circuits.
+
+V14 changes:
+
+```text
+1. Generate each requested R/C/L body as ordinary source-net terminals with no
+   $TERPOWER and no $TERGROUND records.
+2. Duplicate donor-derived VSOURCE and CSOURCE units from the accepted mixed
+   source donor family.
+3. Give every source a unique global ID and terminal-link suffix pair.
+4. Place source positive terminals locally beside their connected source-net
+   node to avoid long visual wires.
+5. Patch source values in both ROOT.DSN visible source-value records and
+   ROOT.CDB rows.
+6. Keep passives first and source rows last in ROOT.CDB.
+```
+
+Test order:
+
+```text
+DCMS_V14_T00_V13_ACCEPTED_CONTROL
+DCMS_V14_T01_CIRCUIT_1_12V_2A
+DCMS_V14_T02_CIRCUIT_2_TWO_5V_1A
+DCMS_V14_T03_CIRCUIT_3_24V_TWO_0A5
+DCMS_V14_T04_CIRCUIT_4_TWO_15V_TWO_3A
+DCMS_V14_T05_CIRCUIT_5_THREE_9V_1A5
+```
+
+V14 static checks passed:
+
+```text
+projects generated: 6 including the accepted V13 control
+required internals present in all generated projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated requested object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+long WIRE coordinate audit: 0 long wires in every generated requested case
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V14 archive SHA256 is:
+
+```text
+db384fa7a28d7340cdb1e9ff1a2090a6bb2ab9e82f638c4eae1179ce38262f44
+```
