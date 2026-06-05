@@ -2617,3 +2617,94 @@ The V14 archive SHA256 is:
 ```text
 db384fa7a28d7340cdb1e9ff1a2090a6bb2ab9e82f638c4eae1179ce38262f44
 ```
+
+User feedback on V14:
+
+```text
+All five requested mixed DC voltage/current source R/C/L circuits worked.
+```
+
+Interpretation:
+
+```text
+The V13-based duplicated VSOURCE/CSOURCE unit method is locked for the current
+multi-source DC mixed R/C/L scope.
+```
+
+## DC Voltage V15 15 RCL Topologies
+
+`DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_TEMP_2026_06_05` regenerates only the
+accepted DC-voltage half of the older V8 15-topology source pack. It deliberately
+does not include the old V8 DC-current half, because that path was rejected.
+
+V15 method:
+
+```text
+source type: one 10V VSOURCE
+positive source net: DV
+negative source net: D0
+object order: source-first, then generated R/C/L source-net body
+power/ground records: none
+V0/G0 terminal labels: none
+wire repair: V13 negative-row WIRE high-byte repair
+```
+
+Test order:
+
+```text
+DCV_V15_T01_01_SIMPLE_LOOP
+DCV_V15_T02_02_SERIES_CIRCUIT
+DCV_V15_T03_03_PARALLEL_CIRCUIT
+DCV_V15_T04_04_SERIES_PARALLEL_COMBO
+DCV_V15_T05_05_BASIC_VOLTAGE_DIVIDER
+DCV_V15_T06_06_MULTI_STEP_VOLTAGE_DIVIDER
+DCV_V15_T07_07_CURRENT_DIVIDER
+DCV_V15_T08_08_DELTA_NETWORK
+DCV_V15_T09_09_STAR_Y_NETWORK
+DCV_V15_T10_10_DELTA_TO_STAR_SETUP
+DCV_V15_T11_11_WHEATSTONE_BRIDGE
+DCV_V15_T12_12_BALANCED_WHEATSTONE_BRIDGE
+DCV_V15_T13_13_UNBALANCED_WHEATSTONE_BRIDGE
+DCV_V15_T14_14_H_BRIDGE_RESISTOR_VERSION
+DCV_V15_T15_15_R_2R_LADDER_NETWORK
+```
+
+V15 static checks passed:
+
+```text
+projects generated: 15
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+generated object chunks contain: 0 V0 labels, 0 G0 labels
+generated object chunks contain: VSOURCE=2, CSOURCE=0
+long/corrupt WIRE audit: 0 in every generated V15 case
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+```
+
+The V15 archive SHA256 is:
+
+```text
+9b3460888dbf79200d34ddfbe29602f21ae0b5562e7c4cd33000e8d5a0b4208e
+```
+
+## Supported Combinations Current Scope
+
+As of 2026-06-05, supported component-family combinations in the deterministic
+generator scope are:
+
+```text
+single passive family: R, C, L
+two passive families: R+C, R+L, C+L
+three passive families: R+C+L
+passive topology with V0/G0 power/ground terminals: R, C, L, R+C, R+C+L
+source-driven topology without separate power/ground terminals: DC voltage + R/C/L, DC current + R/C/L, AC voltage + R/C/L
+multi-source DC topology: multiple DC voltage sources + multiple DC current sources + R/C/L
+```
+
+Out of current scope or not locked:
+
+```text
+AC current source: explicitly skipped by user
+ICs: planned next family, not yet implemented
+buttons/switches: planned later, not yet implemented
+```

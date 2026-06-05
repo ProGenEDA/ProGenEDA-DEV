@@ -652,11 +652,20 @@
     {
       "id": "R073",
       "title": "Requested mixed DC-source circuits duplicate V13 source units",
-      "status": "v14_static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "locked_current_scope",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "requested five mixed source circuits"],
-      "evidence": ["DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_STATIC_20260605"],
-      "rule": "For the requested five complex mixed DC voltage/current source R/C/L circuits, generate the passive R/C/L source-net body first, then append duplicated donor-derived VSOURCE/CSOURCE units using V13-safe coordinate relocation, source-local positive terminals, repaired generated WIRE high bytes, unique source global IDs, source values patched in both ROOT.DSN visible value records and ROOT.CDB rows, and passives-first/source-last ROOT.CDB ordering."
+      "evidence": ["DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_STATIC_20260605", "DC_MIXED_SOURCES_V14_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "rule": "For complex mixed DC voltage/current source R/C/L circuits, generate the passive R/C/L source-net body first, then append duplicated donor-derived VSOURCE/CSOURCE units using V13-safe coordinate relocation, source-local positive terminals, repaired generated WIRE high bytes, unique source global IDs, source values patched in both ROOT.DSN visible value records and ROOT.CDB rows, and passives-first/source-last ROOT.CDB ordering. User testing confirmed all five requested V14 mixed-source circuits worked, so this method is locked for the current multi-source DC scope."
+    },
+    {
+      "id": "R074",
+      "title": "DC-voltage RCL topology pack uses source-first VSOURCE plus V13 wire repair",
+      "status": "v15_static_generated_pending_user_test",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "mixed R/C/L source-driven circuits", "15 locked topology set", "WIRE coordinate records"],
+      "evidence": ["DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_STATIC_20260605"],
+      "rule": "For the 15 locked mixed R/C/L topology examples driven by one DC voltage source, use the accepted V8 source-first standalone VSOURCE block with DV as the positive source net and D0 as the negative source net, emit no $TERPOWER/$TERGROUND or V0/G0 labels, and apply the V13 negative-row WIRE high-byte repair before packing."
     }
   ]
 }
