@@ -2872,9 +2872,39 @@ all SOURCE_PASSIVE_V3 cases gave bad object record
 Interpretation:
 
 ```text
-The grounded-return repair was the wrong direction. Do not use $TERGROUND/G0
-endpoint grounding, including the D0 plus 1G G0-reference fallback, as the
-correction for pure DCV+DCV source-driven passive loads.
+The generated V3 ordering was rejected. A later user-fixed V3 T03 file still
+contains the D0-to-G0 high-value reference path, so $TERGROUND by itself is not
+the proven cause. Do not reuse generated V3's split-output source ordering or
+passive-style source CDB rows.
+```
+
+The user then supplied a fixed `SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF.pdsprj`
+for comparison. Byte-level differences against generated V3 T03:
+
+```text
+fixed object order:
+  passive resistor groups first
+  then source units
+
+fixed source unit order:
+  VSOURCE component
+  $TEROUTPUT positive terminal
+  WIRE
+  $TERINPUT negative terminal
+  WIRE
+
+generated V3 source order:
+  all source $TEROUTPUT records first
+  passive groups
+  then $TERINPUT + VSOURCE + WIRE + WIRE source tails
+
+fixed ROOT.CDB source rows:
+  pin map +/1 and -/2
+  final row field -1
+
+generated V3 ROOT.CDB source rows:
+  passive-style 1/2 pin map
+  final row field 0
 ```
 
 ## Source Passive V4 DCV2 Manual 2x Source Probe
@@ -2933,10 +2963,66 @@ The Source Passive V4 archive SHA256 is:
 e39a8fe52f31523054d9f56c5786ed598986939769f90adbe89763543795e713
 ```
 
-This is pending Proteus open/simulation feedback. If T01/T02 pass, prefer the
-manual donor's separate-return source-pair structure for pure DCV+DCV passive
-loads. T03/T04 isolate the old shared-D0 behavior, and T05/T06 isolate whether
-ROOT.CDB source/passive row order matters.
+User feedback:
+
+```text
+V4 moved the failure to VGDVC.dll.
+```
+
+Interpretation:
+
+```text
+Do not continue the V4 manual-2x-source route for pure source-driven passive
+loads. Return to the fixed V3 evidence and preserve the fixed component-first
+source unit order and source-style CDB rows.
+```
+
+## Source Passive V5 Fixed V3 Order Probe
+
+`SOURCE_PASSIVE_V5_FIXED_V3_ORDER_TEMP_2026_06_05` is built from the user-fixed
+V3 T03 file.
+
+V5 method:
+
+```text
+T00: copy the user-fixed V3 T03 project unchanged
+T01: transplant the user-fixed V3 ROOT.DSN and ROOT.CDB into E001
+T02/T04 preferred: generated passive body + fixed component-first source units
+  + fixed source-style CDB rows + source values left at fixed-file 1V/1V
+T03/T05 value isolation: same as T02/T04 but source values patched to 10V/5V
+```
+
+Test order:
+
+```text
+SRCP_V5_T00_USER_FIXED_COPY
+SRCP_V5_T01_USER_FIXED_TRANSPLANT_E001
+SRCP_V5_T02_R_ONLY_FIXED_ORDER_1V_SOURCE
+SRCP_V5_T03_R_ONLY_FIXED_ORDER_10V_5V
+SRCP_V5_T04_RC_RL_FIXED_ORDER_1V_SOURCE
+SRCP_V5_T05_RC_RL_FIXED_ORDER_10V_5V
+```
+
+Static checks:
+
+```text
+projects generated: 6
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+static_validation_issues: empty in all six generated manifests
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+credential scan: no Groq, MongoDB, or Hugging Face token-pattern matches
+```
+
+The Source Passive V5 archive SHA256 is:
+
+```text
+db0ccf1eb534b75c8d82697424221518064ec11627ab4245f36b15376a1b5546
+```
+
+This is pending Proteus open/simulation feedback. If T02 and T04 pass, the fixed
+V3 order and CDB row style become the preferred pure DCV+DCV source-driven
+passive correction. T03/T05 isolate whether changing source values back to
+10V/5V is safe.
 
 ## Supported Combinations Current Scope
 
@@ -2956,7 +3042,7 @@ two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+D
 Out of current scope or not locked:
 
 ```text
-pure DCV+DCV source-driven passive loads: pending Source Passive V4 manual two-source donor test
+pure DCV+DCV source-driven passive loads: pending Source Passive V5 fixed V3 order test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented

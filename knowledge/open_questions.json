@@ -530,15 +530,22 @@
       "id": "Q076",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEMP_2026_06_05 T01/T02 simulate correctly with G0 as the shared two-DC-voltage-source return, or are the D0 plus 1G G0-reference fallback cases T03/T04 required?",
-      "status": "answered_no_all_v3_cases_bad_object_record_ground_endpoint_rejected",
+      "status": "answered_no_generated_v3_bad_object_but_user_fixed_v3_t03_supplied",
       "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "simulation_reference_rule", "first_release_scope"]
     },
     {
       "id": "Q077",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V4_DCV2_MANUAL2X_TEMP_2026_06_05 T01/T02 open and simulate when using the manual two-DC-voltage-source donor's separate source returns, and do T03/T04 or T05/T06 isolate shared-return or CDB-order behavior?",
-      "status": "awaiting_user_proteus_test_source_passive_v4_dcv2_manual2x",
+      "status": "answered_rejected_v4_vgdvc_reported",
       "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "manual_two_source_return_rule", "first_release_scope"]
+    },
+    {
+      "id": "Q078",
+      "priority": "high",
+      "question": "Do SOURCE_PASSIVE_V5_FIXED_V3_ORDER_TEMP_2026_06_05 T02/T04 open and simulate when using the user-fixed V3 component-first source order and source-style CDB rows, and do T03/T05 prove whether 10V/5V value mutation is safe?",
+      "status": "awaiting_user_proteus_test_source_passive_v5_fixed_v3_order",
+      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "fixed_v3_source_order_rule", "first_release_scope"]
     }
   ]
 }

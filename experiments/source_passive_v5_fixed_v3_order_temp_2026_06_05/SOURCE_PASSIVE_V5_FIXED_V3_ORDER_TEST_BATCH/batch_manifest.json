@@ -1,0 +1,136 @@
+{
+  "batch_id": "SOURCE_PASSIVE_V5_FIXED_V3_ORDER_STATIC_20260605",
+  "status": "static_generated_awaiting_user_proteus_open_simulation_test",
+  "source_feedback": "V4 reportedly moved the failure to VGDVC; user supplied a fixed V3 T03 file for comparison.",
+  "method": "Use the fixed V3 component-first VSOURCE unit order and fixed source-style CDB rows.",
+  "test_order": [
+    "SRCP_V5_T00_USER_FIXED_COPY",
+    "SRCP_V5_T01_USER_FIXED_TRANSPLANT_E001",
+    "SRCP_V5_T02_R_ONLY_FIXED_ORDER_1V_SOURCE",
+    "SRCP_V5_T03_R_ONLY_FIXED_ORDER_10V_5V",
+    "SRCP_V5_T04_RC_RL_FIXED_ORDER_1V_SOURCE",
+    "SRCP_V5_T05_RC_RL_FIXED_ORDER_10V_5V"
+  ],
+  "cases": [
+    {
+      "case_id": "SRCP_V5_T00_USER_FIXED_COPY",
+      "description": "User-supplied fixed V3 T03 project copied unchanged as a control.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3259,
+      "root_cdb_len": 631,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V5_T01_USER_FIXED_TRANSPLANT_E001",
+      "description": "User-fixed V3 ROOT.DSN and ROOT.CDB transplanted into the clean E001 base.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3259,
+      "root_cdb_len": 631,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V5_T02_R_ONLY_FIXED_ORDER_1V_SOURCE",
+      "description": "R-only DCV2 fallback using fixed V3 source order and 1V/1V source values.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3263,
+      "root_cdb_len": 631,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V5_T03_R_ONLY_FIXED_ORDER_10V_5V",
+      "description": "R-only DCV2 fallback using fixed V3 source order while mutating source values to 10V and 5V.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3264,
+      "root_cdb_len": 632,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V5_T04_RC_RL_FIXED_ORDER_1V_SOURCE",
+      "description": "RC/RL DCV2 fallback using fixed V3 source order and 1V/1V source values.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "object_chunk_len": 4615,
+      "root_cdb_len": 896,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V5_T05_RC_RL_FIXED_ORDER_10V_5V",
+      "description": "RC/RL DCV2 fallback using fixed V3 source order while mutating source values to 10V and 5V.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "object_chunk_len": 4616,
+      "root_cdb_len": 897,
+      "static_validation_issues": []
+    }
+  ]
+}

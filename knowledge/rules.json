@@ -687,21 +687,30 @@
     },
     {
       "id": "R077",
-      "title": "Do not fix pure DCV2 passive loads with $TERGROUND endpoints",
-      "status": "rejected_ground_endpoint_bad_object_record",
-      "confidence": 0.9,
+      "title": "Generated V3 DCV2 grounded-return order is rejected",
+      "status": "superseded_by_user_fixed_v3_order_donor",
+      "confidence": 0.86,
       "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "SPICE simulation reference"],
-      "evidence": ["SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605", "SOURCE_PASSIVE_V3_DCV2_GROUNDED_STATIC_20260605", "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605"],
-      "rule": "SOURCE_PASSIVE_V3 tried to repair the pure DCV+DCV singular-branch result by adding G0/$TERGROUND return endpoints, including D0 plus a 1G G0 reference fallback. User testing reported every V3 case gave bad object record. Do not use $TERGROUND/G0 endpoint grounding as the correction for source-driven pure two-DC-voltage-source passive loads."
+      "evidence": ["SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605", "SOURCE_PASSIVE_V3_DCV2_GROUNDED_STATIC_20260605", "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605"],
+      "rule": "SOURCE_PASSIVE_V3 generated pure DCV+DCV grounded-return cases by splitting source output terminals to the front of the object stream and using generated passive-style source CDB rows. User testing reported every generated V3 case gave bad object record. A later user-fixed V3 T03 file still contains the D0-to-G0 high-value reference, so $TERGROUND alone is not the proven cause. Do not reuse generated V3's split-output source ordering or passive-style source CDB rows."
     },
     {
       "id": "R078",
       "title": "Pure DCV2 passive loads should mirror manual two-source donor returns",
-      "status": "source_passive_v4_static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "rejected_v4_vgdvc_reported",
+      "confidence": 0.78,
       "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "manual 2x DCV donor"],
-      "evidence": ["MANUAL_2X_DCV_DONOR_OBSERVATION_20260605", "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "SOURCE_PASSIVE_V4_DCV2_MANUAL2X_STATIC_20260605"],
-      "rule": "The manual two-DC-voltage-source donor contains no $TERPOWER or $TERGROUND records and uses two ordinary source-net terminal pairs: DV/D0 and DV1/D01. SOURCE_PASSIVE_V4 uses that donor block and tests separate source returns first after shrinking the second pair to two-character labels D1/D2. T03/T04 are shared-D0 controls and T05/T06 isolate CDB row order. Do not lock this rule until the V4 Proteus open/simulation feedback is received."
+      "evidence": ["MANUAL_2X_DCV_DONOR_OBSERVATION_20260605", "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "SOURCE_PASSIVE_V4_DCV2_MANUAL2X_STATIC_20260605", "SOURCE_PASSIVE_V4_USER_FEEDBACK_VGDVC_REPORTED_20260605"],
+      "rule": "The manual two-DC-voltage-source donor contains no $TERPOWER or $TERGROUND records and uses two ordinary source-net terminal pairs, but SOURCE_PASSIVE_V4 reported VGDVC errors when adapted for source-driven passive loads. Do not continue the V4 manual-2x-source route until a smaller donor-preserving diagnostic proves which byte range is safe."
+    },
+    {
+      "id": "R079",
+      "title": "Pure DCV2 passive fallback uses fixed V3 component-first source units",
+      "status": "source_passive_v5_static_generated_pending_user_test",
+      "confidence": 0.83,
+      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "SPICE simulation reference"],
+      "evidence": ["USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V5_FIXED_V3_ORDER_STATIC_20260605"],
+      "rule": "The user-fixed V3 T03 file uses passive R/C/L groups first, then component-first VSOURCE units ordered as VSOURCE, output terminal, wire, input terminal, wire. Its ROOT.CDB source rows use +/1 and -/2 pin names and a -1 terminal-side field. SOURCE_PASSIVE_V5 tests this fixed order and CDB style for R-only and RC/RL pure DCV+DCV loads, with both fixed-file 1V/1V source values and requested 10V/5V value mutations. Do not lock this rule until V5 Proteus feedback is received."
     }
   ]
 }
