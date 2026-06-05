@@ -62,6 +62,132 @@ Evidence:
 - The previous file labelled `G04_FINAL_picture_circuit_full_cdb` is byte-equivalent to D03 and is not the target circuit.
 - Arbitrary `ROOT.DSN` composition was the suspected source of prior ISIS failures.
 
+## D007: Use donor-derived power bridge for resistor V9 power nodes
+
+Decision: the main resistor generator must connect power with one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge and leave powered resistor endpoints as ordinary `$TERINPUT(V0)` terminals. Ground stays as `$TERGROUND(G0)` on right endpoints with the normal short wire.
+
+Evidence:
+
+- `memory/final/power_bridge_ground_shortwire_method.md` records the user-confirmed clean 6R and R21 bridge/ground attempts.
+- The promoted generator reproduces `CLEAN_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE` `ROOT.DSN` and `ROOT.CDB` byte-for-byte.
+- The regenerated 15 requested resistor circuits passed static validation and guarded Proteus 8.13 Wine open-smoke checks without early loader exits.
+
+## D008: Disable standalone visual wires and stretch dense resistor layouts
+
+Decision: production resistor generation must skip `layout.visual_wires` and stretch dense manual component coordinates to the safe V9 grid until standalone wire records are validated from a Proteus-created donor.
+
+Evidence:
+
+- The user reported VGDVC.dll failures beginning with the parallel generated circuit, matching the first requested cases that emitted experimental standalone visual wires.
+- The safe-layout batch generated all 15 requested resistor circuits with `visual_wire_count=0`, recorded skipped visual wires in manifests, and stretched dense positions where required.
+- All 15 safe-layout outputs stayed alive through guarded Proteus 8.13 Wine open-smoke and none of the captured stderr logs contained `VGDVC`.
+- After user visual acceptance, vertical safe spacing was increased from `1524000` to `2540000` internal units so stacked divider components have more distance between component/terminal groups without changing terminal-to-component offsets.
+
+## D009: Lock resistor generator as the main generator path
+
+Decision: the spacing-adjusted V9 resistor generator is the main accepted resistor generator for the current scope. Development now moves to capacitor support.
+
+Evidence:
+
+- The main CLI path imports `src/proteusgen/resistor_v9.py`.
+- The 15 spacing-adjusted locked-method outputs generated with zero static validation issues.
+- OBJECT DATA audit confirmed one `$TERPOWER` bridge, `$TERINPUT` resistor power endpoints, `$TERGROUND` right ground endpoints, and zero emitted standalone visual wires.
+- The user reported that the checked generated projects gave no errors and matched the requested circuits.
+
+## D010: Keep capacitor in temporary diagnostics until Proteus acceptance
+
+Decision: capacitor generation is not main yet. The first capacitor pass uses a temporary V4 diagnostic pack with exact donor reproduction guards before any patched or duplicated capacitor record is considered.
+
+Evidence:
+
+- Previous V2/V3 capacitor attempts produced Proteus VGDVC/library errors and remain negative evidence.
+- The V4 script verifies that generated one-cap `ROOT.CDB` matches CAP_T01 byte-for-byte.
+- The V4 script verifies that a generated terminal-cap-terminal object chunk matches CAP_T02 byte-for-byte.
+- Static generation produced five ordered diagnostics with zero static validation issues, but manual Proteus testing is still pending.
+
+## D011: Use cap3 free capacitor records before retrying terminal-attached multi-cap generation
+
+Decision: after V4 T05 failed, the capacitor lane moves to the user-supplied `cap3.pdsprj` donor and isolates free capacitor CDB/object expansion before reintroducing endpoint terminals and wires.
+
+Evidence:
+
+- User reported V4 T04 opened and V4 T05 gave a Proteus error.
+- `cap3.pdsprj` contains three capacitor CDB records and three free capacitor visual records without terminal endpoint groups.
+- V5 reproduces the `cap3` `ROOT.CDB` and object chunk byte-for-byte before generating two-cap and translated/renamed three-cap diagnostics.
+- This suggests the next unknown is multi-cap free-record acceptance, not resistor-style terminal-group duplication.
+
+## D012: Reintroduce capacitor terminals only after V5 free-cap acceptance
+
+Decision: user acceptance of all V5 cap3 diagnostics confirms free multi-cap CDB/object generation. Terminal-attached capacitor topology remains experimental and must be tested with V6 variants before promotion.
+
+Evidence:
+
+- User reported all V5 diagnostics work.
+- V4 T05 remains negative evidence for naive duplicated terminal-cap-terminal groups.
+- V6 generates terminal/free coexistence tests first, then two-terminal-cap variants with different suffix families and object orders.
+
+## D013: V6 terminal reintroduction rejected; isolate from V4 T04 baseline
+
+Decision: V6 is rejected as negative evidence. The next terminal-attached capacitor diagnostics must start from a byte-exact reproduction of the known-opening V4 T04 single terminal-cap object chunk, then change one variable at a time.
+
+Evidence:
+
+- User reported all V6 cases gave VGDVC errors.
+- Local audit found terminal-last V6 variants appended an extra final FF byte instead of replacing the final wire terminator.
+- V7 T01 object chunk matches V4 T04 byte-for-byte, so it is the new sanity gate.
+
+## D014: Test V9-style ordering for multiple terminal-attached capacitors
+
+Decision: V7 is mixed evidence, not promotable. V8 must test multiple terminal-attached capacitors using the accepted resistor V9 ordering: all input terminals, all output terminals, one separator byte, then component/wire groups.
+
+Evidence:
+
+- User reported V7 T01, T02, T03, and T05 worked.
+- User reported V7 T04 and T06 failed.
+- User screenshot for V7 T07 showed the file opened but only a partial two-terminal-cap circuit appeared, with C1 plus a dangling/partial N4 side.
+- V7 T05 working while T04 failed means free capacitor records can coexist with a terminal-attached capacitor only in the observed free-first/terminal-last order so far.
+- V7 T07 partially opening suggests object ordering is closer than sequential duplicated groups but still missing the V9 separator/layout pattern.
+
+## D015: V8 rejects synthesized two-terminal-cap ordering
+
+Decision: do not keep guessing at multi terminal-attached capacitor composition from one-cap donors. Start deeper VGDVC/DLL/log and user-corpus analysis, and request a real manually made two-terminal-cap donor if the current corpus does not contain one.
+
+Evidence:
+
+- User reported only V8 T01 worked.
+- V8 T01 is the V7 T05 reproduction: one free capacitor before one terminal-attached capacitor.
+- V8 T02-T06 all attempted two terminal-attached capacitors using V9-style ordering, suffix variants, CDB flag variants, and vertical staggering; all failed according to user.
+- This means the safe capacitor method currently covers free multi-cap records and a single terminal-attached capacitor, not two synthesized terminal-attached capacitor groups.
+
+## D016: Test unique capacitor visual index byte for terminal-attached multi-cap
+
+Decision: V9 must test the concrete byte-level bug found after V8: every duplicated terminal-attached capacitor copied the donor cap visual index byte 344 as `1`, while accepted free multi-cap records patch that byte to `1, 2, 3`.
+
+Evidence:
+
+- `cap3` accepted free-cap records have byte 344 values `1, 2, 3`.
+- `CAP_V7_T06`, `CAP_V7_T07`, and `CAP_V8_T02` failing/partial terminal-cap variants had byte 344 equal to `1` in both C1 and C2 cap visual records.
+- This duplicate hidden visual index explains the observed partial rendering better than suffix/order alone.
+- V9 T02 is the minimal V7 T06 shape with only the terminal-attached capacitor visual indexes corrected to `1, 2`.
+
+## D017: Lock mixed resistor/capacitor passive generation
+
+Decision: promote mixed resistor/capacitor passive generation into main code for the current scope.
+
+Evidence:
+
+- User accepted the mixed 6-component and 21-component diagnostics with odd-indexed components as resistors and even-indexed components as capacitors.
+- The accepted method uses one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge and `$TERGROUND(G0)` right endpoints.
+- Static checks for the locked main pack produced no object-count, CDB-marker, suffix, or terminator issues.
+- The full Python suite passed after promotion.
+
+Implementation:
+
+- Main code: `src/proteusgen/mixed_passive.py`.
+- Input parser: `src/proteusgen/mixed_passive_ir.py`.
+- CLI: `proteusgen generate-mixed-passives`.
+- Spacing was reduced from the temporary `3810000` grid to the locked `2540000` safe grid. Duplicate manual positions are shifted so components are never emitted on top of each other.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

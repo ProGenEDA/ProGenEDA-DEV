@@ -1,0 +1,142 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project": {
+    "name": "PG11_T_NETWORK",
+    "output_basename": "PG11_T_NETWORK",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "B1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "N1"
+      ]
+    },
+    {
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "2k",
+      "nodes": [
+        "N1",
+        "N2"
+      ]
+    },
+    {
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "3k",
+      "nodes": [
+        "N2",
+        "G0"
+      ]
+    },
+    {
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "N1",
+        "A1"
+      ]
+    },
+    {
+      "ref": "R5",
+      "type": "RESISTOR",
+      "value": "5k",
+      "nodes": [
+        "A1",
+        "G0"
+      ]
+    },
+    {
+      "ref": "R6",
+      "type": "RESISTOR",
+      "value": "6k",
+      "nodes": [
+        "N2",
+        "B1"
+      ]
+    },
+    {
+      "ref": "R7",
+      "type": "RESISTOR",
+      "value": "7k",
+      "nodes": [
+        "B1",
+        "G0"
+      ]
+    }
+  ],
+  "layout": {
+    "mode": "manual_component_positions",
+    "coordinate_units": "proteus_internal",
+    "component_positions": {
+      "R1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "R2": {
+        "x": -3810000,
+        "y": 5080000
+      },
+      "R3": {
+        "x": -1270000,
+        "y": 5080000
+      },
+      "R4": {
+        "x": 1270000,
+        "y": 5080000
+      },
+      "R5": {
+        "x": 3810000,
+        "y": 5080000
+      },
+      "R6": {
+        "x": 6350000,
+        "y": 5080000
+      },
+      "R7": {
+        "x": 8890000,
+        "y": 5080000
+      }
+    }
+  },
+  "metadata": {
+    "source": "proteusgen predefined resistor acceptance case",
+    "case_slug": "pg11_t_network",
+    "notes": [
+      "Uses V0/G0 two-character power/ground labels for the locked V9 endpoint method."
+    ]
+  }
+}

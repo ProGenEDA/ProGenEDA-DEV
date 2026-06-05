@@ -1,0 +1,134 @@
+{
+  "case_id": "ACV_V1_T05_SIMPLE_LOOP_SOURCE_FIRST",
+  "description": "Generated simple-loop R/C/L topology with source-first standalone VSINE block.",
+  "status": "temporary_ac_voltage_v1_source_diagnostic_not_locked",
+  "output": "ACV_V1_SOURCE_DIAGNOSTICS_TEST_BATCH\\ACV_V1_T05_SIMPLE_LOOP_SOURCE_FIRST\\ACV_V1_T05_SIMPLE_LOOP_SOURCE_FIRST.pdsprj",
+  "object_chunk_len": 2682,
+  "root_cdb_len": 615,
+  "root_dsn_len": 71138,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 4,
+    "$TERGROUND": 0,
+    "VSINE": 3,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 2,
+    "WIRE": 8,
+    "COMPONENT ID": 4,
+    "COMPONENT VALUE": 4
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSINE": 1,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67513,
+    "second_isis": 70241,
+    "second_object_data": 70276,
+    "object_data_pointer": 70289
+  },
+  "hashes": {
+    "ACV_V1_T05_SIMPLE_LOOP_SOURCE_FIRST.pdsprj": "9a514262e5ccc81e4f78b6002b8ccb0384e2d959e3f22a38d0887ae3472d9428",
+    "ACV_V1_T05_SIMPLE_LOOP_SOURCE_FIRST.ROOT.CDB.bin": "be21c90462c2446b741956c6e876f6074199357c961d23f86b36f52bdb4ddd8a",
+    "ACV_V1_T05_SIMPLE_LOOP_SOURCE_FIRST.ROOT.DSN.bin": "73439c79c6a09ceda4578596e46002cf18e4aecfa31a1523d89aee1643f6ec9b",
+    "ACV_V1_T05_SIMPLE_LOOP_SOURCE_FIRST.OBJECT_CHUNK.bin": "9f9c6aa5361116efe4a1d09b222f84a42c304e130ac4bd51a2ca0fbd6f12ab38",
+    "object_chunk": "9f9c6aa5361116efe4a1d09b222f84a42c304e130ac4bd51a2ca0fbd6f12ab38",
+    "ROOT.CDB": "be21c90462c2446b741956c6e876f6074199357c961d23f86b36f52bdb4ddd8a",
+    "devices": "2fcee230c92f7566a59b9d72e7cc0226dfe95133bb3cc32cbe3e84814012b84b"
+  },
+  "input": {
+    "base_payload_name": "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP",
+    "source_kind": "ac_voltage",
+    "source_model": "VSINE",
+    "source_position": "before_rcl",
+    "source": {
+      "idx": 4,
+      "ref": "V1",
+      "value": "VSINE",
+      "properties": "{VA=20v}\n{FREQ=5000hz}\n{PRIMITIVE=ANALOGUE}\n\u0000"
+    },
+    "groups": [
+      {
+        "mode": "RCL",
+        "start": "AV",
+        "end": "A0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RCL"
+      ],
+      "group_count": 1,
+      "component_count": 3,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "resistor_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "AV",
+      "source_net_negative": "A0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "B1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B1",
+        "right": "A0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "AV",
+        "right": "A1",
+        "global_id": 3,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      }
+    ]
+  }
+}

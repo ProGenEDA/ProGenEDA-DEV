@@ -1,0 +1,1598 @@
+{
+  "batch_id": "MX5_SHORT_NAMES_STATIC_20260604",
+  "status": "static_generated_awaiting_user_proteus_open_netlist_test",
+  "v4_feedback": "User reported all V4 cases failed with ISIS.dll and asked for smaller names.",
+  "method": "Short direct project names plus known-good controls and mixed-source isolation cases.",
+  "test_order": [
+    "A0",
+    "A1",
+    "B0",
+    "B1",
+    "B2",
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5"
+  ],
+  "cases": [
+    {
+      "name": "A0",
+      "description": "Known-good accepted DCV source-driven project copied to short path.",
+      "control": "exact_copy_known_good_project_short_path",
+      "source_file": "experiments\\dc_sources_v7_accepted_source_first_temp_2026_06_03\\DC_SOURCES_V7_ACCEPTED_SOURCE_FIRST_TEST_BATCH\\DCS_V7_T01_DCV_6_COMPONENTS_SOURCE_FIRST\\DCS_V7_T01_DCV_6_COMPONENTS_SOURCE_FIRST.pdsprj",
+      "output": "A0.pdsprj",
+      "hashes": {
+        "A0.pdsprj": "f687fb73e01383abad06b56fb6274ace7e7de2acc8c9896e79eee942751ef993"
+      }
+    },
+    {
+      "name": "A1",
+      "description": "Known-good accepted DCI source-driven project copied to short path.",
+      "control": "exact_copy_known_good_project_short_path",
+      "source_file": "experiments\\dc_current_v13_15_topologies_temp_2026_06_04\\DCI_V13_15_TOPOLOGIES_TEST_BATCH\\DCI_V13_T01_01_SIMPLE_LOOP\\DCI_V13_T01_01_SIMPLE_LOOP.pdsprj",
+      "output": "A1.pdsprj",
+      "hashes": {
+        "A1.pdsprj": "523aa30fa3cc99f3eb8ffb9e2e69dc55a272192b3ca5fcf7b811ef9f5e30c4a8"
+      }
+    },
+    {
+      "name": "B0",
+      "description": "V4-style mixed source-only control with actual 2A current value, short path.",
+      "output": "B0.pdsprj",
+      "object_chunk_len": 1301,
+      "root_cdb_len": 321,
+      "root_dsn_len": 70193,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "VSOURCE": 3,
+        "CSOURCE": 1,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "RESISTOR": 0,
+        "WIRE": 4,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2,
+        "CAP10": 0
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 69296,
+        "second_object_data": 69331,
+        "object_data_pointer": 69344
+      },
+      "hashes": {
+        "B0.pdsprj": "4533c46625e14a6de0b19b2367da4b74c45e7f0d41643dba382aae9f369e0123",
+        "B0.cdb.bin": "8b6d3f13302ba340002aff5f9feb6a7a68be152aedb0a12f12afad3c5e68a3d2",
+        "B0.dsn.bin": "0dab2e009c97663644c6c812d2f770a151cf0c8fc8cf41960832c20750d68533",
+        "B0.chunk.bin": "235b1159a03c6029f0ceb35a8943f0baae1561a59b38b28a072f22afcf993fa2",
+        "object_chunk": "235b1159a03c6029f0ceb35a8943f0baae1561a59b38b28a072f22afcf993fa2",
+        "ROOT.CDB": "8b6d3f13302ba340002aff5f9feb6a7a68be152aedb0a12f12afad3c5e68a3d2",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "source_only_4x_dcv_units",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "12V",
+            "visible_value": "12V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE"
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V2",
+            "cdb_value": "2A",
+            "visible_value": "02A",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "CSOURCE"
+          }
+        ]
+      }
+    },
+    {
+      "name": "B1",
+      "description": "V4-style mixed source-only control with strict accepted V2/10V current identity, short path.",
+      "output": "B1.pdsprj",
+      "object_chunk_len": 1301,
+      "root_cdb_len": 322,
+      "root_dsn_len": 70193,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "VSOURCE": 3,
+        "CSOURCE": 1,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "RESISTOR": 0,
+        "WIRE": 4,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2,
+        "CAP10": 0
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 69296,
+        "second_object_data": 69331,
+        "object_data_pointer": 69344
+      },
+      "hashes": {
+        "B1.pdsprj": "63b62de21992383d20aeecc8b8106ff3df3a9456bf4e51e7f4d19533e71be975",
+        "B1.cdb.bin": "590e11fd56267dc5b0ba25f559dac2759824a55384ee5134b416d7f8915f4b35",
+        "B1.dsn.bin": "07970e8c91d2d0150015a78baf84f3010440954530c8196023a8ff8b15783f9b",
+        "B1.chunk.bin": "f3ea8ac962a70062eea7ec5d8d1cbad3d887e40e97f6835b7508f879ebfd8085",
+        "object_chunk": "f3ea8ac962a70062eea7ec5d8d1cbad3d887e40e97f6835b7508f879ebfd8085",
+        "ROOT.CDB": "590e11fd56267dc5b0ba25f559dac2759824a55384ee5134b416d7f8915f4b35",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "source_only_4x_dcv_units",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "12V",
+            "visible_value": "12V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE"
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V2",
+            "cdb_value": "10V",
+            "visible_value": "10V",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "CSOURCE"
+          }
+        ]
+      }
+    },
+    {
+      "name": "B2",
+      "description": "Mixed source-only control using one 4x-DCV VSOURCE unit plus one patched manual DCI source unit.",
+      "output": "B2.pdsprj",
+      "object_chunk_len": 1406,
+      "root_cdb_len": 322,
+      "root_dsn_len": 70298,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 0,
+        "VSOURCE": 3,
+        "CSOURCE": 1,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "RESISTOR": 0,
+        "WIRE": 2,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2,
+        "CAP10": 0
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 69401,
+        "second_object_data": 69436,
+        "object_data_pointer": 69449
+      },
+      "hashes": {
+        "B2.pdsprj": "efcf02ad338daa02ff12f086cb0051a764e1683aaf832499976b667928c8d68d",
+        "B2.cdb.bin": "590e11fd56267dc5b0ba25f559dac2759824a55384ee5134b416d7f8915f4b35",
+        "B2.dsn.bin": "f65adc37e51fca3ae4a372f98525e5b13cf712a17de31b321ebdcf545710f6a7",
+        "B2.chunk.bin": "deb4d73f3142c2967b41312b1919aa6abc19c59a5d4da6fb7b9f027bba1a662f",
+        "object_chunk": "deb4d73f3142c2967b41312b1919aa6abc19c59a5d4da6fb7b9f027bba1a662f",
+        "ROOT.CDB": "590e11fd56267dc5b0ba25f559dac2759824a55384ee5134b416d7f8915f4b35",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "source_only_4x_dcv_plus_patched_manual_dci_unit",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "12V",
+            "visible_value": "12V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 1
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V2",
+            "cdb_value": "10V",
+            "visible_value": "10V",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "C1",
+      "description": "Circuit 1: 12V source through RLC ladder with one 2A current source at the right node.",
+      "output": "C1.pdsprj",
+      "object_chunk_len": 5968,
+      "root_cdb_len": 1168,
+      "root_dsn_len": 74860,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 9,
+        "$TEROUTPUT": 9,
+        "$TERGROUND": 0,
+        "VSOURCE": 3,
+        "CSOURCE": 1,
+        "CAPACITOR": 2,
+        "REALIND": 6,
+        "RESISTOR": 6,
+        "WIRE": 18,
+        "COMPONENT ID": 9,
+        "COMPONENT VALUE": 9,
+        "CAP10": 2
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 73963,
+        "second_object_data": 73998,
+        "object_data_pointer": 74011
+      },
+      "hashes": {
+        "C1.pdsprj": "62d2c1dba97bfe3c6030f9b839e568faa1e5ee57b4232d5d0caf20681e651775",
+        "C1.cdb.bin": "4a379d18513e4dc19878a92ac66d46cbcfcd2686179e1f585cf4cf1bbf4fad72",
+        "C1.dsn.bin": "dbb48a81da15d0fcdbe82da4eb95694abb9a47fd622770dc7b12e90dc351cdee",
+        "C1.chunk.bin": "64356c6904193da1d071486617bf96da3f39716890f4e85d84eba724aaa4f4fd",
+        "object_chunk": "64356c6904193da1d071486617bf96da3f39716890f4e85d84eba724aaa4f4fd",
+        "ROOT.CDB": "4a379d18513e4dc19878a92ac66d46cbcfcd2686179e1f585cf4cf1bbf4fad72",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "requested_mixed_source_short_name_v4_method",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "12V",
+            "visible_value": "12V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 8
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V2",
+            "cdb_value": "2A",
+            "visible_value": "02A",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 9
+          }
+        ],
+        "groups": [
+          {
+            "mode": "R",
+            "start": "DV",
+            "end": "B0"
+          },
+          {
+            "mode": "C",
+            "start": "B0",
+            "end": "D0"
+          },
+          {
+            "mode": "L",
+            "start": "B0",
+            "end": "C0"
+          },
+          {
+            "mode": "R",
+            "start": "C0",
+            "end": "D0"
+          },
+          {
+            "mode": "L",
+            "start": "C0",
+            "end": "D1"
+          },
+          {
+            "mode": "RC",
+            "start": "D1",
+            "end": "D0"
+          }
+        ],
+        "rcl_counts": {
+          "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+          "group_modes": [
+            "R",
+            "C",
+            "L",
+            "R",
+            "L",
+            "RC"
+          ],
+          "group_count": 6,
+          "component_count": 7,
+          "capacitor_count": 2,
+          "inductor_count": 2,
+          "resistor_count": 3,
+          "power_bridge_count": 0,
+          "ground_terminal_count": 0,
+          "source_net_positive": "DV",
+          "source_net_negative": "D0"
+        },
+        "topology": [
+          {
+            "idx": 1,
+            "unit": 1,
+            "kind": "RESISTOR",
+            "ref": "R1",
+            "value": "10k",
+            "left": "DV",
+            "right": "B0",
+            "global_id": 1,
+            "in_suffix": "0d30",
+            "out_suffix": "0d62",
+            "x": -7366000,
+            "y": 5080000
+          },
+          {
+            "idx": 2,
+            "unit": 2,
+            "kind": "CAPACITOR",
+            "ref": "C1",
+            "value": "1uF",
+            "left": "B0",
+            "right": "D0",
+            "global_id": 2,
+            "in_suffix": "1002",
+            "out_suffix": "0fd0",
+            "x": 2794000,
+            "y": 2540000
+          },
+          {
+            "idx": 3,
+            "unit": 3,
+            "kind": "INDUCTOR",
+            "ref": "L1",
+            "value": "5mH",
+            "left": "B0",
+            "right": "C0",
+            "global_id": 3,
+            "in_suffix": "1ab5",
+            "out_suffix": "1ae7",
+            "x": 16764000,
+            "y": 2540000
+          },
+          {
+            "idx": 4,
+            "unit": 4,
+            "kind": "RESISTOR",
+            "ref": "R2",
+            "value": "10k",
+            "left": "C0",
+            "right": "D0",
+            "global_id": 4,
+            "in_suffix": "24b2",
+            "out_suffix": "24e4",
+            "x": -7366000,
+            "y": -1016000
+          },
+          {
+            "idx": 5,
+            "unit": 5,
+            "kind": "INDUCTOR",
+            "ref": "L2",
+            "value": "5mH",
+            "left": "C0",
+            "right": "D1",
+            "global_id": 5,
+            "in_suffix": "2a61",
+            "out_suffix": "2a93",
+            "x": 6604000,
+            "y": -3556000
+          },
+          {
+            "idx": 6,
+            "unit": 6,
+            "kind": "CAPACITOR",
+            "ref": "C2",
+            "value": "1uF",
+            "left": "A6",
+            "right": "D0",
+            "global_id": 6,
+            "in_suffix": "2f5a",
+            "out_suffix": "2f28",
+            "x": 12954000,
+            "y": -3556000
+          },
+          {
+            "idx": 7,
+            "unit": 6,
+            "kind": "RESISTOR",
+            "ref": "R3",
+            "value": "10k",
+            "left": "D1",
+            "right": "A6",
+            "global_id": 7,
+            "in_suffix": "345e",
+            "out_suffix": "3490",
+            "x": 12954000,
+            "y": -1016000
+          }
+        ],
+        "exact_values": {
+          "R1": "1k",
+          "C1": "10uF",
+          "L1": "100mH",
+          "R2": "470",
+          "L2": "220mH",
+          "C2": "22uF",
+          "R3": "100"
+        }
+      }
+    },
+    {
+      "name": "C2",
+      "description": "Circuit 2: two 5V sources and one 1A current source with B/C/D branch network.",
+      "output": "C2.pdsprj",
+      "object_chunk_len": 7290,
+      "root_cdb_len": 1402,
+      "root_dsn_len": 76182,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 11,
+        "$TEROUTPUT": 11,
+        "$TERGROUND": 0,
+        "VSOURCE": 5,
+        "CSOURCE": 1,
+        "CAPACITOR": 3,
+        "REALIND": 6,
+        "RESISTOR": 6,
+        "WIRE": 22,
+        "COMPONENT ID": 11,
+        "COMPONENT VALUE": 11,
+        "CAP10": 3
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 75285,
+        "second_object_data": 75320,
+        "object_data_pointer": 75333
+      },
+      "hashes": {
+        "C2.pdsprj": "8533589001611e534e5f7f458d2d98ca1d566f9aa18be864617dfcdab8cfc172",
+        "C2.cdb.bin": "6cd6507cfdaa64b4e37aa20ea103a8abdc983d1c92f3a1923b7c619eb7a2241d",
+        "C2.dsn.bin": "3a78446fd3b4a1830cc51f4edf24c28d29cc01e7cf3c422690b0dabecb9070af",
+        "C2.chunk.bin": "c26b72ef1d89e8e2b5876c4e778c61fed539cfe8e25d4092bc2d25fa71c5157f",
+        "object_chunk": "c26b72ef1d89e8e2b5876c4e778c61fed539cfe8e25d4092bc2d25fa71c5157f",
+        "ROOT.CDB": "6cd6507cfdaa64b4e37aa20ea103a8abdc983d1c92f3a1923b7c619eb7a2241d",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "requested_mixed_source_short_name_v4_method",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "5V",
+            "visible_value": "05V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 9
+          },
+          {
+            "kind": "dc_voltage",
+            "ref": "V2",
+            "cdb_value": "5V",
+            "visible_value": "05V",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 10
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V3",
+            "cdb_value": "1A",
+            "visible_value": "01A",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 11
+          }
+        ],
+        "groups": [
+          {
+            "mode": "R",
+            "start": "DV",
+            "end": "B0"
+          },
+          {
+            "mode": "C",
+            "start": "B0",
+            "end": "D0"
+          },
+          {
+            "mode": "RC",
+            "start": "B0",
+            "end": "D0"
+          },
+          {
+            "mode": "L",
+            "start": "B0",
+            "end": "C0"
+          },
+          {
+            "mode": "L",
+            "start": "C0",
+            "end": "D0"
+          },
+          {
+            "mode": "R",
+            "start": "C0",
+            "end": "D1"
+          },
+          {
+            "mode": "C",
+            "start": "D1",
+            "end": "D0"
+          }
+        ],
+        "rcl_counts": {
+          "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+          "group_modes": [
+            "R",
+            "C",
+            "RC",
+            "L",
+            "L",
+            "R",
+            "C"
+          ],
+          "group_count": 7,
+          "component_count": 8,
+          "capacitor_count": 3,
+          "inductor_count": 2,
+          "resistor_count": 3,
+          "power_bridge_count": 0,
+          "ground_terminal_count": 0,
+          "source_net_positive": "DV",
+          "source_net_negative": "D0"
+        },
+        "topology": [
+          {
+            "idx": 1,
+            "unit": 1,
+            "kind": "RESISTOR",
+            "ref": "R1",
+            "value": "10k",
+            "left": "DV",
+            "right": "B0",
+            "global_id": 1,
+            "in_suffix": "0d30",
+            "out_suffix": "0d62",
+            "x": -7366000,
+            "y": 5080000
+          },
+          {
+            "idx": 2,
+            "unit": 2,
+            "kind": "CAPACITOR",
+            "ref": "C1",
+            "value": "1uF",
+            "left": "B0",
+            "right": "D0",
+            "global_id": 2,
+            "in_suffix": "1002",
+            "out_suffix": "0fd0",
+            "x": 2794000,
+            "y": 2540000
+          },
+          {
+            "idx": 3,
+            "unit": 3,
+            "kind": "CAPACITOR",
+            "ref": "C2",
+            "value": "1uF",
+            "left": "A3",
+            "right": "D0",
+            "global_id": 3,
+            "in_suffix": "17d8",
+            "out_suffix": "17a6",
+            "x": 12954000,
+            "y": 2540000
+          },
+          {
+            "idx": 4,
+            "unit": 3,
+            "kind": "RESISTOR",
+            "ref": "R2",
+            "value": "10k",
+            "left": "B0",
+            "right": "A3",
+            "global_id": 4,
+            "in_suffix": "1cdc",
+            "out_suffix": "1d0e",
+            "x": 12954000,
+            "y": 5080000
+          },
+          {
+            "idx": 5,
+            "unit": 4,
+            "kind": "INDUCTOR",
+            "ref": "L1",
+            "value": "5mH",
+            "left": "B0",
+            "right": "C0",
+            "global_id": 5,
+            "in_suffix": "228b",
+            "out_suffix": "22bd",
+            "x": -3556000,
+            "y": -3556000
+          },
+          {
+            "idx": 6,
+            "unit": 5,
+            "kind": "INDUCTOR",
+            "ref": "L2",
+            "value": "5mH",
+            "left": "C0",
+            "right": "D0",
+            "global_id": 6,
+            "in_suffix": "2a61",
+            "out_suffix": "2a93",
+            "x": 6604000,
+            "y": -3556000
+          },
+          {
+            "idx": 7,
+            "unit": 6,
+            "kind": "RESISTOR",
+            "ref": "R3",
+            "value": "10k",
+            "left": "C0",
+            "right": "D1",
+            "global_id": 7,
+            "in_suffix": "345e",
+            "out_suffix": "3490",
+            "x": 12954000,
+            "y": -1016000
+          },
+          {
+            "idx": 8,
+            "unit": 7,
+            "kind": "CAPACITOR",
+            "ref": "C3",
+            "value": "1uF",
+            "left": "D1",
+            "right": "D0",
+            "global_id": 8,
+            "in_suffix": "3730",
+            "out_suffix": "36fe",
+            "x": -7366000,
+            "y": -9652000
+          }
+        ],
+        "exact_values": {
+          "R1": "50",
+          "C1": "47uF",
+          "C2": "10uF",
+          "R2": "220",
+          "L1": "50mH",
+          "L2": "150mH",
+          "R3": "330",
+          "C3": "100uF"
+        }
+      }
+    },
+    {
+      "name": "C3",
+      "description": "Circuit 3: one 24V source and two 0.5A current sources across an RLC ladder.",
+      "output": "C3.pdsprj",
+      "object_chunk_len": 7298,
+      "root_cdb_len": 1405,
+      "root_dsn_len": 76190,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 11,
+        "$TEROUTPUT": 11,
+        "$TERGROUND": 0,
+        "VSOURCE": 4,
+        "CSOURCE": 2,
+        "CAPACITOR": 2,
+        "REALIND": 9,
+        "RESISTOR": 6,
+        "WIRE": 22,
+        "COMPONENT ID": 11,
+        "COMPONENT VALUE": 11,
+        "CAP10": 2
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 75293,
+        "second_object_data": 75328,
+        "object_data_pointer": 75341
+      },
+      "hashes": {
+        "C3.pdsprj": "23968800e1afdf5eefea215dd19de36005c32e3d0cc99e2c8dacca29d2d49079",
+        "C3.cdb.bin": "319336ddf1ff6b169e9f3484fb09468af2b64f624c508a03db2e542d94c0dbe8",
+        "C3.dsn.bin": "330aa8905f50407fc72c367b4ffa93ce6e2bfd7b59cb6a89a43142ea49c1d3da",
+        "C3.chunk.bin": "a23f323e65f964f5efb88cf37e97ecbb5cb2a3f405c2a0c49e5deb2f9f8cffd9",
+        "object_chunk": "a23f323e65f964f5efb88cf37e97ecbb5cb2a3f405c2a0c49e5deb2f9f8cffd9",
+        "ROOT.CDB": "319336ddf1ff6b169e9f3484fb09468af2b64f624c508a03db2e542d94c0dbe8",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "requested_mixed_source_short_name_v4_method",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "24V",
+            "visible_value": "24V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 9
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V2",
+            "cdb_value": "0.5A",
+            "visible_value": "0.5",
+            "positive": "C0",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 10
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V3",
+            "cdb_value": "0.5A",
+            "visible_value": "0.5",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 11
+          }
+        ],
+        "groups": [
+          {
+            "mode": "RL",
+            "start": "DV",
+            "end": "B0"
+          },
+          {
+            "mode": "C",
+            "start": "B0",
+            "end": "D0"
+          },
+          {
+            "mode": "L",
+            "start": "B0",
+            "end": "C0"
+          },
+          {
+            "mode": "R",
+            "start": "C0",
+            "end": "D0"
+          },
+          {
+            "mode": "C",
+            "start": "C0",
+            "end": "D1"
+          },
+          {
+            "mode": "RL",
+            "start": "D1",
+            "end": "D0"
+          }
+        ],
+        "rcl_counts": {
+          "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+          "group_modes": [
+            "RL",
+            "C",
+            "L",
+            "R",
+            "C",
+            "RL"
+          ],
+          "group_count": 6,
+          "component_count": 8,
+          "capacitor_count": 2,
+          "inductor_count": 3,
+          "resistor_count": 3,
+          "power_bridge_count": 0,
+          "ground_terminal_count": 0,
+          "source_net_positive": "DV",
+          "source_net_negative": "D0"
+        },
+        "topology": [
+          {
+            "idx": 1,
+            "unit": 1,
+            "kind": "INDUCTOR",
+            "ref": "L1",
+            "value": "5mH",
+            "left": "A1",
+            "right": "B0",
+            "global_id": 1,
+            "in_suffix": "0b09",
+            "out_suffix": "0b3b",
+            "x": -3556000,
+            "y": 2540000
+          },
+          {
+            "idx": 2,
+            "unit": 1,
+            "kind": "RESISTOR",
+            "ref": "R1",
+            "value": "10k",
+            "left": "DV",
+            "right": "A1",
+            "global_id": 2,
+            "in_suffix": "0d30",
+            "out_suffix": "0d62",
+            "x": -7366000,
+            "y": 5080000
+          },
+          {
+            "idx": 3,
+            "unit": 2,
+            "kind": "CAPACITOR",
+            "ref": "C1",
+            "value": "1uF",
+            "left": "B0",
+            "right": "D0",
+            "global_id": 3,
+            "in_suffix": "1002",
+            "out_suffix": "0fd0",
+            "x": 2794000,
+            "y": 2540000
+          },
+          {
+            "idx": 4,
+            "unit": 3,
+            "kind": "INDUCTOR",
+            "ref": "L2",
+            "value": "5mH",
+            "left": "B0",
+            "right": "C0",
+            "global_id": 4,
+            "in_suffix": "1ab5",
+            "out_suffix": "1ae7",
+            "x": 16764000,
+            "y": 2540000
+          },
+          {
+            "idx": 5,
+            "unit": 4,
+            "kind": "RESISTOR",
+            "ref": "R2",
+            "value": "10k",
+            "left": "C0",
+            "right": "D0",
+            "global_id": 5,
+            "in_suffix": "24b2",
+            "out_suffix": "24e4",
+            "x": -7366000,
+            "y": -1016000
+          },
+          {
+            "idx": 6,
+            "unit": 5,
+            "kind": "CAPACITOR",
+            "ref": "C2",
+            "value": "1uF",
+            "left": "C0",
+            "right": "D1",
+            "global_id": 6,
+            "in_suffix": "2784",
+            "out_suffix": "2752",
+            "x": 2794000,
+            "y": -3556000
+          },
+          {
+            "idx": 7,
+            "unit": 6,
+            "kind": "INDUCTOR",
+            "ref": "L3",
+            "value": "5mH",
+            "left": "A6",
+            "right": "D0",
+            "global_id": 7,
+            "in_suffix": "3237",
+            "out_suffix": "3269",
+            "x": 16764000,
+            "y": -3556000
+          },
+          {
+            "idx": 8,
+            "unit": 6,
+            "kind": "RESISTOR",
+            "ref": "R3",
+            "value": "10k",
+            "left": "D1",
+            "right": "A6",
+            "global_id": 8,
+            "in_suffix": "345e",
+            "out_suffix": "3490",
+            "x": 12954000,
+            "y": -1016000
+          }
+        ],
+        "exact_values": {
+          "R1": "150",
+          "L1": "82mH",
+          "C1": "4.7uF",
+          "L2": "1H",
+          "R2": "500",
+          "C2": "2.2uF",
+          "R3": "1k",
+          "L3": "470mH"
+        }
+      }
+    },
+    {
+      "name": "C4",
+      "description": "Circuit 4: two 15V sources and two 3A current sources across a six-node RLC network.",
+      "output": "C4.pdsprj",
+      "object_chunk_len": 7940,
+      "root_cdb_len": 1506,
+      "root_dsn_len": 76832,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 12,
+        "$TEROUTPUT": 12,
+        "$TERGROUND": 0,
+        "VSOURCE": 6,
+        "CSOURCE": 2,
+        "CAPACITOR": 3,
+        "REALIND": 6,
+        "RESISTOR": 6,
+        "WIRE": 24,
+        "COMPONENT ID": 12,
+        "COMPONENT VALUE": 12,
+        "CAP10": 3
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 75935,
+        "second_object_data": 75970,
+        "object_data_pointer": 75983
+      },
+      "hashes": {
+        "C4.pdsprj": "43d049fa12e68a9e7d74b733d1909ae3f7ac37c53a3cbc2ff7af41a8909130a0",
+        "C4.cdb.bin": "cf2e56fd5572abe0d1ff2d5ea18aad0ca9e97e8287c1958fd23846ff9694098e",
+        "C4.dsn.bin": "65f4e26eb8b8b09fba4190fc8e53a3fdea25ab667a6c1b43c71437df3032023e",
+        "C4.chunk.bin": "267e95e2bc03f692a3f38b7135772766972cb1276cc5cd836ec886c181dab77f",
+        "object_chunk": "267e95e2bc03f692a3f38b7135772766972cb1276cc5cd836ec886c181dab77f",
+        "ROOT.CDB": "cf2e56fd5572abe0d1ff2d5ea18aad0ca9e97e8287c1958fd23846ff9694098e",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "requested_mixed_source_short_name_v4_method",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "15V",
+            "visible_value": "15V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 9
+          },
+          {
+            "kind": "dc_voltage",
+            "ref": "V2",
+            "cdb_value": "15V",
+            "visible_value": "15V",
+            "positive": "E0",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 10
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V3",
+            "cdb_value": "3A",
+            "visible_value": "03A",
+            "positive": "C0",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 11
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V4",
+            "cdb_value": "3A",
+            "visible_value": "03A",
+            "positive": "E0",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 12
+          }
+        ],
+        "groups": [
+          {
+            "mode": "R",
+            "start": "DV",
+            "end": "B0"
+          },
+          {
+            "mode": "RL",
+            "start": "B0",
+            "end": "D0"
+          },
+          {
+            "mode": "C",
+            "start": "B0",
+            "end": "C0"
+          },
+          {
+            "mode": "C",
+            "start": "C0",
+            "end": "D0"
+          },
+          {
+            "mode": "L",
+            "start": "C0",
+            "end": "D1"
+          },
+          {
+            "mode": "R",
+            "start": "D1",
+            "end": "D0"
+          },
+          {
+            "mode": "C",
+            "start": "D1",
+            "end": "E0"
+          }
+        ],
+        "rcl_counts": {
+          "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+          "group_modes": [
+            "R",
+            "RL",
+            "C",
+            "C",
+            "L",
+            "R",
+            "C"
+          ],
+          "group_count": 7,
+          "component_count": 8,
+          "capacitor_count": 3,
+          "inductor_count": 2,
+          "resistor_count": 3,
+          "power_bridge_count": 0,
+          "ground_terminal_count": 0,
+          "source_net_positive": "DV",
+          "source_net_negative": "D0"
+        },
+        "topology": [
+          {
+            "idx": 1,
+            "unit": 1,
+            "kind": "RESISTOR",
+            "ref": "R1",
+            "value": "10k",
+            "left": "DV",
+            "right": "B0",
+            "global_id": 1,
+            "in_suffix": "0d30",
+            "out_suffix": "0d62",
+            "x": -7366000,
+            "y": 5080000
+          },
+          {
+            "idx": 2,
+            "unit": 2,
+            "kind": "INDUCTOR",
+            "ref": "L1",
+            "value": "5mH",
+            "left": "A2",
+            "right": "D0",
+            "global_id": 2,
+            "in_suffix": "12df",
+            "out_suffix": "1311",
+            "x": 6604000,
+            "y": 2540000
+          },
+          {
+            "idx": 3,
+            "unit": 2,
+            "kind": "RESISTOR",
+            "ref": "R2",
+            "value": "10k",
+            "left": "B0",
+            "right": "A2",
+            "global_id": 3,
+            "in_suffix": "1506",
+            "out_suffix": "1538",
+            "x": 2794000,
+            "y": 5080000
+          },
+          {
+            "idx": 4,
+            "unit": 3,
+            "kind": "CAPACITOR",
+            "ref": "C1",
+            "value": "1uF",
+            "left": "B0",
+            "right": "C0",
+            "global_id": 4,
+            "in_suffix": "17d8",
+            "out_suffix": "17a6",
+            "x": 12954000,
+            "y": 2540000
+          },
+          {
+            "idx": 5,
+            "unit": 4,
+            "kind": "CAPACITOR",
+            "ref": "C2",
+            "value": "1uF",
+            "left": "C0",
+            "right": "D0",
+            "global_id": 5,
+            "in_suffix": "1fae",
+            "out_suffix": "1f7c",
+            "x": -7366000,
+            "y": -3556000
+          },
+          {
+            "idx": 6,
+            "unit": 5,
+            "kind": "INDUCTOR",
+            "ref": "L2",
+            "value": "5mH",
+            "left": "C0",
+            "right": "D1",
+            "global_id": 6,
+            "in_suffix": "2a61",
+            "out_suffix": "2a93",
+            "x": 6604000,
+            "y": -3556000
+          },
+          {
+            "idx": 7,
+            "unit": 6,
+            "kind": "RESISTOR",
+            "ref": "R3",
+            "value": "10k",
+            "left": "D1",
+            "right": "D0",
+            "global_id": 7,
+            "in_suffix": "345e",
+            "out_suffix": "3490",
+            "x": 12954000,
+            "y": -1016000
+          },
+          {
+            "idx": 8,
+            "unit": 7,
+            "kind": "CAPACITOR",
+            "ref": "C3",
+            "value": "1uF",
+            "left": "D1",
+            "right": "E0",
+            "global_id": 8,
+            "in_suffix": "3730",
+            "out_suffix": "36fe",
+            "x": -7366000,
+            "y": -9652000
+          }
+        ],
+        "exact_values": {
+          "R1": "10",
+          "L1": "330mH",
+          "R2": "47",
+          "C1": "10uF",
+          "C2": "22uF",
+          "L2": "100mH",
+          "R3": "220",
+          "C3": "4.7uF"
+        }
+      }
+    },
+    {
+      "name": "C5",
+      "description": "Circuit 5: three 9V sources and one 1.5A current source with B/D source nodes.",
+      "output": "C5.pdsprj",
+      "object_chunk_len": 7286,
+      "root_cdb_len": 1400,
+      "root_dsn_len": 76178,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 11,
+        "$TEROUTPUT": 11,
+        "$TERGROUND": 0,
+        "VSOURCE": 7,
+        "CSOURCE": 1,
+        "CAPACITOR": 3,
+        "REALIND": 6,
+        "RESISTOR": 4,
+        "WIRE": 22,
+        "COMPONENT ID": 11,
+        "COMPONENT VALUE": 11,
+        "CAP10": 3
+      },
+      "device_marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "VSOURCE": 1,
+        "CSOURCE": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2,
+        "RESISTOR": 1,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "CAP10": 3
+      },
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67949,
+        "second_isis": 75281,
+        "second_object_data": 75316,
+        "object_data_pointer": 75329
+      },
+      "hashes": {
+        "C5.pdsprj": "bfb5a8c3b2a9e24d5362946b72dbeba1bde5d7d698021c4a7a6d603ee7d60e35",
+        "C5.cdb.bin": "f0a7641f0870b411efcda5aacc8a3a32909d6def53892fe60f317de515d31dd8",
+        "C5.dsn.bin": "15e2606c19db823b2a296613df67944684c471b852e17c5e37e17c12962eabb9",
+        "C5.chunk.bin": "45897c3e7509a4bb24470c66cd629db6b7df29d100761ba4a042381cfaabcd7a",
+        "object_chunk": "45897c3e7509a4bb24470c66cd629db6b7df29d100761ba4a042381cfaabcd7a",
+        "ROOT.CDB": "f0a7641f0870b411efcda5aacc8a3a32909d6def53892fe60f317de515d31dd8",
+        "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+      },
+      "input": {
+        "kind": "requested_mixed_source_short_name_v4_method",
+        "sources": [
+          {
+            "kind": "dc_voltage",
+            "ref": "V1",
+            "cdb_value": "9V",
+            "visible_value": "09V",
+            "positive": "DV",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 8
+          },
+          {
+            "kind": "dc_voltage",
+            "ref": "V2",
+            "cdb_value": "9V",
+            "visible_value": "09V",
+            "positive": "B0",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 9
+          },
+          {
+            "kind": "dc_voltage",
+            "ref": "V3",
+            "cdb_value": "9V",
+            "visible_value": "09V",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "VSOURCE",
+            "global_id": 10
+          },
+          {
+            "kind": "dc_current",
+            "ref": "V4",
+            "cdb_value": "1.5A",
+            "visible_value": "1.5",
+            "positive": "D1",
+            "negative": "D0",
+            "model": "CSOURCE",
+            "global_id": 11
+          }
+        ],
+        "groups": [
+          {
+            "mode": "L",
+            "start": "DV",
+            "end": "B0"
+          },
+          {
+            "mode": "C",
+            "start": "B0",
+            "end": "D0"
+          },
+          {
+            "mode": "R",
+            "start": "B0",
+            "end": "C0"
+          },
+          {
+            "mode": "LC",
+            "start": "C0",
+            "end": "D0"
+          },
+          {
+            "mode": "R",
+            "start": "C0",
+            "end": "D1"
+          },
+          {
+            "mode": "C",
+            "start": "D1",
+            "end": "D0"
+          }
+        ],
+        "rcl_counts": {
+          "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+          "group_modes": [
+            "L",
+            "C",
+            "R",
+            "LC",
+            "R",
+            "C"
+          ],
+          "group_count": 6,
+          "component_count": 7,
+          "capacitor_count": 3,
+          "inductor_count": 2,
+          "resistor_count": 2,
+          "power_bridge_count": 0,
+          "ground_terminal_count": 0,
+          "source_net_positive": "DV",
+          "source_net_negative": "D0"
+        },
+        "topology": [
+          {
+            "idx": 1,
+            "unit": 1,
+            "kind": "INDUCTOR",
+            "ref": "L1",
+            "value": "5mH",
+            "left": "DV",
+            "right": "B0",
+            "global_id": 1,
+            "in_suffix": "0b09",
+            "out_suffix": "0b3b",
+            "x": -3556000,
+            "y": 2540000
+          },
+          {
+            "idx": 2,
+            "unit": 2,
+            "kind": "CAPACITOR",
+            "ref": "C1",
+            "value": "1uF",
+            "left": "B0",
+            "right": "D0",
+            "global_id": 2,
+            "in_suffix": "1002",
+            "out_suffix": "0fd0",
+            "x": 2794000,
+            "y": 2540000
+          },
+          {
+            "idx": 3,
+            "unit": 3,
+            "kind": "RESISTOR",
+            "ref": "R1",
+            "value": "10k",
+            "left": "B0",
+            "right": "C0",
+            "global_id": 3,
+            "in_suffix": "1cdc",
+            "out_suffix": "1d0e",
+            "x": 12954000,
+            "y": 5080000
+          },
+          {
+            "idx": 4,
+            "unit": 4,
+            "kind": "CAPACITOR",
+            "ref": "C2",
+            "value": "1uF",
+            "left": "C0",
+            "right": "A4",
+            "global_id": 4,
+            "in_suffix": "1fae",
+            "out_suffix": "1f7c",
+            "x": -7366000,
+            "y": -3556000
+          },
+          {
+            "idx": 5,
+            "unit": 4,
+            "kind": "INDUCTOR",
+            "ref": "L2",
+            "value": "5mH",
+            "left": "A4",
+            "right": "D0",
+            "global_id": 5,
+            "in_suffix": "228b",
+            "out_suffix": "22bd",
+            "x": -3556000,
+            "y": -3556000
+          },
+          {
+            "idx": 6,
+            "unit": 5,
+            "kind": "RESISTOR",
+            "ref": "R2",
+            "value": "10k",
+            "left": "C0",
+            "right": "D1",
+            "global_id": 6,
+            "in_suffix": "2c88",
+            "out_suffix": "2cba",
+            "x": 2794000,
+            "y": -1016000
+          },
+          {
+            "idx": 7,
+            "unit": 6,
+            "kind": "CAPACITOR",
+            "ref": "C3",
+            "value": "1uF",
+            "left": "D1",
+            "right": "D0",
+            "global_id": 7,
+            "in_suffix": "2f5a",
+            "out_suffix": "2f28",
+            "x": 12954000,
+            "y": -3556000
+          }
+        ],
+        "exact_values": {
+          "L1": "150mH",
+          "C1": "10uF",
+          "R1": "100",
+          "L2": "470mH",
+          "C2": "22uF",
+          "R2": "470",
+          "C3": "1uF"
+        }
+      }
+    }
+  ]
+}

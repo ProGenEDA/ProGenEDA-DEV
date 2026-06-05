@@ -1,0 +1,258 @@
+{
+  "case": "CAPACITOR_V9_UNIQUE_INDEX_TEMP_2026_05_31",
+  "status": "temporary_diagnostic_not_locked",
+  "trigger": "V8 user feedback: only T01 worked. Deep byte audit found duplicated terminal-attached cap visual index byte 344.",
+  "hypothesis": "Terminal-attached multi-cap generation failed because every duplicated cap visual record kept hidden visual index 1; free multi-cap generation works because it patches this byte to 1, 2, 3.",
+  "test_order": [
+    "CAP_V9_T01_V8_T01_REPRO_GUARD",
+    "CAP_V9_T02_TWO_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX",
+    "CAP_V9_T03_TWO_TERMINAL_RES_SUFFIX_TERMS_FIRST_UNIQUE_INDEX",
+    "CAP_V9_T04_TWO_TERMINAL_RES_SUFFIX_V9_ORDER_UNIQUE_INDEX",
+    "CAP_V9_T05_THREE_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX"
+  ],
+  "decision_rule": [
+    "T01 should reproduce the already-working guard.",
+    "If T02 works, byte344 unique visual index was the missing minimal fix for sequential terminal-cap groups.",
+    "If T02 fails but T03 or T04 works, unique index was necessary but object order still matters.",
+    "If T02-T04 all fail, request a real Proteus-made two-terminal-cap donor.",
+    "Test T05 only if T02 works, to check scaling beyond two terminal-attached capacitors."
+  ],
+  "cases": [
+    {
+      "case_id": "CAP_V9_T01_V8_T01_REPRO_GUARD",
+      "status": "temporary_capacitor_v9_unique_index_not_locked",
+      "description": "Reproduce the user-working V8 T01 guard: free C2 first, then terminal-attached C1.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap3_three_capacitors.pdsprj",
+      "object_chunk_len": 1039,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67027,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2,
+          "1uF": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66130,
+        "second_object_data": 66165,
+        "object_data_pointer": 66178
+      },
+      "validations": {
+        "cap_visual_indexes": [
+          2,
+          1
+        ]
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V9_T01_V8_T01_REPRO_GUARD.pdsprj": "c7d8943fee86374b99fd113a302aa1dba05f326ba02b57ef586b941660c0fe33",
+        "CAP_V9_T01_V8_T01_REPRO_GUARD.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V9_T01_V8_T01_REPRO_GUARD.ROOT.DSN.bin": "d42d431d5d7588c3bcd552c04b6d2b1897ae57e056abb3c46a185cef1f992e8b",
+        "object_chunk": "1956f17923bcd039ebd9116811782a8f29d23e8150c66f7f051b275f25d24ebc",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V9_T02_TWO_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX",
+      "status": "temporary_capacitor_v9_unique_index_not_locked",
+      "description": "V7 T06 minimal fix: two sequential terminal-cap groups with unique capacitor visual indexes 1 and 2.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1347,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67335,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4,
+          "1uF": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66438,
+        "second_object_data": 66473,
+        "object_data_pointer": 66486
+      },
+      "validations": {
+        "cap_visual_indexes": [
+          1,
+          2
+        ]
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V9_T02_TWO_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX.pdsprj": "1c8b6cb8feb66a6a206a3586479e7f9073db9880874656411266e88ae92686a8",
+        "CAP_V9_T02_TWO_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V9_T02_TWO_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX.ROOT.DSN.bin": "f07cd7876448a3575b109c26ebd52bc3d5d0f3987047dcaeb33a98a9a8bc7abb",
+        "object_chunk": "2bcdefb833f86dbdc2c3d9f1215421b1541980d536ae15b3c7c2aa7b84e20f02",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V9_T03_TWO_TERMINAL_RES_SUFFIX_TERMS_FIRST_UNIQUE_INDEX",
+      "status": "temporary_capacitor_v9_unique_index_not_locked",
+      "description": "V7 T07 minimal fix: terms-first order with unique capacitor visual indexes 1 and 2.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1347,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67335,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4,
+          "1uF": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66438,
+        "second_object_data": 66473,
+        "object_data_pointer": 66486
+      },
+      "validations": {
+        "cap_visual_indexes": [
+          1,
+          2
+        ]
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V9_T03_TWO_TERMINAL_RES_SUFFIX_TERMS_FIRST_UNIQUE_INDEX.pdsprj": "5329ba7de8b99988fa1dd46a1acf0cc1a43b34f87f0d2f8c698403eeeea0e0d9",
+        "CAP_V9_T03_TWO_TERMINAL_RES_SUFFIX_TERMS_FIRST_UNIQUE_INDEX.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V9_T03_TWO_TERMINAL_RES_SUFFIX_TERMS_FIRST_UNIQUE_INDEX.ROOT.DSN.bin": "d3f54a2ee77fef1538d78aa1d305ab4ec3dc74426a3dc5f5688a769a83036aed",
+        "object_chunk": "592d2573f4c4cae7af4ba7dc00dd8da03de9c21712159b56379bbf8e85b5fbf4",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V9_T04_TWO_TERMINAL_RES_SUFFIX_V9_ORDER_UNIQUE_INDEX",
+      "status": "temporary_capacitor_v9_unique_index_not_locked",
+      "description": "V8 T02 minimal fix: V9 object order plus unique capacitor visual indexes 1 and 2.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1348,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67336,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4,
+          "1uF": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66439,
+        "second_object_data": 66474,
+        "object_data_pointer": 66487
+      },
+      "validations": {
+        "cap_visual_indexes": [
+          1,
+          2
+        ]
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V9_T04_TWO_TERMINAL_RES_SUFFIX_V9_ORDER_UNIQUE_INDEX.pdsprj": "c9e5f19f6404e25c8c572eea6372829883391e4a03479f51ae614583713247e2",
+        "CAP_V9_T04_TWO_TERMINAL_RES_SUFFIX_V9_ORDER_UNIQUE_INDEX.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V9_T04_TWO_TERMINAL_RES_SUFFIX_V9_ORDER_UNIQUE_INDEX.ROOT.DSN.bin": "b97920558a8f194cc10f7af82ece0f06f83a7dfcaa704bf982d1e55ecf7c04c2",
+        "object_chunk": "7dc354442c35e3d0898f099aac96cb6458837d80f6366141ce1ffc800c1ea81d",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V9_T05_THREE_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX",
+      "status": "temporary_capacitor_v9_unique_index_not_locked",
+      "description": "Scale test after T02: three sequential terminal-cap groups with unique visual indexes 1, 2, and 3.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 2020,
+      "root_cdb_len": 520,
+      "root_dsn_len": 68008,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 3,
+          "CAP10": 3,
+          "$TERINPUT": 3,
+          "$TEROUTPUT": 3,
+          "WIRE": 6,
+          "1uF": 3
+        },
+        "root_cdb": {
+          "CAPACITOR": 3,
+          "CAP": 12,
+          "CAP10": 6,
+          "1uF": 3
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 67111,
+        "second_object_data": 67146,
+        "object_data_pointer": 67159
+      },
+      "validations": {
+        "cap_visual_indexes": [
+          1,
+          2,
+          3
+        ]
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V9_T05_THREE_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX.pdsprj": "29e0c46b6f06b099385c29e65e89de774cfc381932e73b6ef5aecba7b7587b56",
+        "CAP_V9_T05_THREE_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX.ROOT.CDB.bin": "26760922cb90135fae73e581ec724b16e30f92fb3d994ab1bdf176e25764a972",
+        "CAP_V9_T05_THREE_TERMINAL_CAP_SUFFIX_SEQ_UNIQUE_INDEX.ROOT.DSN.bin": "614a73823c4e17f8c1474823b95f45944446ddcca24abb8aa426119a3c8dd65f",
+        "object_chunk": "e4f8c9f201a828c33b53ac757c8998d9cc3791357f7bdc91b5760fbe77da1fe4",
+        "ROOT.CDB": "26760922cb90135fae73e581ec724b16e30f92fb3d994ab1bdf176e25764a972"
+      }
+    }
+  ]
+}

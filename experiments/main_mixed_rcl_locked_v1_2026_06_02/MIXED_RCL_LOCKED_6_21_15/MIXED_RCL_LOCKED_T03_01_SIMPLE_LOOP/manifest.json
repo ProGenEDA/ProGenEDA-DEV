@@ -1,0 +1,183 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "status": "locked_current_scope",
+  "project_name": "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP",
+  "output_basename": "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "component_count_requested": 3,
+  "component_count_emitted_cdb": 3,
+  "component_count_emitted_dsn": 3,
+  "resistor_count": 1,
+  "capacitor_count": 1,
+  "inductor_count": 1,
+  "node_count_emitted": 4,
+  "nodes": [
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "B1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "V0",
+      "kind": "power"
+    }
+  ],
+  "group_count": 1,
+  "group_modes": [
+    "RCL"
+  ],
+  "power_bridge_count": 1,
+  "ground_terminal_count": 1,
+  "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+  "object_chunk_len": 2263,
+  "root_cdb_len": 487,
+  "root_dsn_len": 69910,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 1,
+    "WIRE": 7,
+    "RESISTOR": 2,
+    "REALIND": 3,
+    "CAPACITOR": 1,
+    "CAP10": 1,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 66704,
+    "second_isis": 69013,
+    "second_object_data": 69048,
+    "object_data_pointer": 69061
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A1",
+      "right": "B1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -7366000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "B1",
+      "right": "G0",
+      "global_id": 2,
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": -3556000,
+      "y": 2540000
+    },
+    {
+      "idx": 3,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "V0",
+      "right": "A1",
+      "global_id": 3,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A1",
+        "B1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "B1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "V0",
+        "A1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    }
+  ],
+  "static_validation_issues": [],
+  "metadata": {
+    "source": "locked mixed R/C/L examples",
+    "description": "Simple loop: one RCL path from power to ground."
+  },
+  "known_limitations": [
+    "Current main R/C/L generation is group-based and limited to proven RCL, RC, LC, RL, and C donor-removal blocks.",
+    "Terminal labels and generated refs are two ASCII characters.",
+    "The V0 power terminal is emitted through the donor-derived output bridge. Component endpoints use input/output/ground terminals.",
+    "Geometry is donor-derived horizontal component blocks; topology is encoded by repeated terminal labels."
+  ],
+  "output_files": [
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.pdsprj",
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.ROOT.CDB.bin",
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.ROOT.DSN.bin",
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.OBJECT_CHUNK.bin",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.pdsprj": "4a33e4692eb3c8e31e20ececad5d08f4063d2e19231868502fbeb3568703132a",
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.ROOT.CDB.bin": "48eab5443c0b13bf9e2ae0e8e4bb07de087f825a812713c1d501544d6fe10273",
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.ROOT.DSN.bin": "b38ca3f4002861431a4b8c099a635a416abf6cbfffa97469ace222c3132cfd7a",
+    "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP.OBJECT_CHUNK.bin": "840d1b115a5e2ca2b609958980bb541f67746d198c0658512e84258747a612d7",
+    "object_chunk": "840d1b115a5e2ca2b609958980bb541f67746d198c0658512e84258747a612d7",
+    "ROOT.CDB": "48eab5443c0b13bf9e2ae0e8e4bb07de087f825a812713c1d501544d6fe10273",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "rcl_unit_donor": "340b5972d35ce8b63c1aad6048c8fe33a2ea969ae2ad272acc316ce12f8459f5"
+  }
+}

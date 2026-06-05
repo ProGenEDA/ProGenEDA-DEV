@@ -1,0 +1,279 @@
+{
+  "case": "CAPACITOR_V6_TERMINAL_REINTRO_TEMP_2026_05_30",
+  "status": "temporary_diagnostic_not_locked",
+  "method": "Start from V5 cap3 free-cap success and reintroduce terminals in controlled variants. V4 T05 sequential CAP_T02-style duplication remains negative evidence.",
+  "test_order": [
+    "CAP_V6_T01_ONE_TERMINAL_CAP_PLUS_FREE_CAP",
+    "CAP_V6_T02_ONE_TERMINAL_CAP_PLUS_TWO_FREE_CAPS",
+    "CAP_V6_T03_TWO_TERMINAL_CAPS_RES_SUFFIX_SEQUENTIAL",
+    "CAP_V6_T04_TWO_TERMINAL_CAPS_CAP_SUFFIX_TERMS_FIRST",
+    "CAP_V6_T05_TWO_TERMINAL_CAPS_RES_SUFFIX_TERMS_FIRST",
+    "CAP_V6_T06_TWO_TERMINAL_CAPS_RES_SUFFIX_CAPS_FIRST"
+  ],
+  "paired_notes": [
+    "If T01/T02 fail, stop terminal reintroduction and inspect coexistence of free and terminal-attached cap records.",
+    "T03-T06 are variants for two terminal-attached capacitors; report every one that opens or errors."
+  ],
+  "cases": [
+    {
+      "case_id": "CAP_V6_T01_ONE_TERMINAL_CAP_PLUS_FREE_CAP",
+      "status": "temporary_capacitor_v6_terminal_reintro_not_locked",
+      "description": "One terminal-attached capacitor plus one free capacitor; tests safe coexistence before duplicated terminal groups.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1040,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67028,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66131,
+        "second_object_data": 66166,
+        "object_data_pointer": 66179
+      },
+      "validations": {
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V6_T01_ONE_TERMINAL_CAP_PLUS_FREE_CAP.pdsprj": "72dbcbcd40c7cd63a445adca2ce0086b08401bbfcb37784162ebc8848c153494",
+        "CAP_V6_T01_ONE_TERMINAL_CAP_PLUS_FREE_CAP.ROOT.CDB.bin": "0be0a1ddf498d0f19803d5be6deeebef7e0f5a9df8cb581632df4ff795dbfd63",
+        "CAP_V6_T01_ONE_TERMINAL_CAP_PLUS_FREE_CAP.ROOT.DSN.bin": "ea3d087b82e1b741fa868b67b95c537e88c63aa2a92aa37c3ee6cbc7f453a34e",
+        "object_chunk": "ec008a0dc5ec2c7e2db8828509c44f32c6b8374b5d2592f0f0f4114386cf73de",
+        "ROOT.CDB": "0be0a1ddf498d0f19803d5be6deeebef7e0f5a9df8cb581632df4ff795dbfd63"
+      }
+    },
+    {
+      "case_id": "CAP_V6_T02_ONE_TERMINAL_CAP_PLUS_TWO_FREE_CAPS",
+      "status": "temporary_capacitor_v6_terminal_reintro_not_locked",
+      "description": "One terminal-attached capacitor plus two free capacitors using the cap3 middle-component flag.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap3_three_capacitors.pdsprj",
+      "object_chunk_len": 1405,
+      "root_cdb_len": 520,
+      "root_dsn_len": 67393,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 3,
+          "CAP10": 3,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 3,
+          "CAP": 12,
+          "CAP10": 6
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66496,
+        "second_object_data": 66531,
+        "object_data_pointer": 66544
+      },
+      "validations": {
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V6_T02_ONE_TERMINAL_CAP_PLUS_TWO_FREE_CAPS.pdsprj": "2b8ab01872628bae255b22b56b727249372cc523cf7e0077d884bd9401bb4bc3",
+        "CAP_V6_T02_ONE_TERMINAL_CAP_PLUS_TWO_FREE_CAPS.ROOT.CDB.bin": "09e9fa018b2ad60b1305c412e336ec52d24b49c4e541ef703186ccd00fdf3063",
+        "CAP_V6_T02_ONE_TERMINAL_CAP_PLUS_TWO_FREE_CAPS.ROOT.DSN.bin": "05bc2681e0cff065ebfeb5092673b25520bc0d928a1064b0ef828f3853f29108",
+        "object_chunk": "b33b02869429d039821b45ce733a857ff79e0144107bbc44cfa701ef796a8627",
+        "ROOT.CDB": "09e9fa018b2ad60b1305c412e336ec52d24b49c4e541ef703186ccd00fdf3063"
+      }
+    },
+    {
+      "case_id": "CAP_V6_T03_TWO_TERMINAL_CAPS_RES_SUFFIX_SEQUENTIAL",
+      "status": "temporary_capacitor_v6_terminal_reintro_not_locked",
+      "description": "Two terminal-attached capacitors in T02 sequential order but using the resistor-style proven suffix spacing.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1348,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67336,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66439,
+        "second_object_data": 66474,
+        "object_data_pointer": 66487
+      },
+      "validations": {
+        "suffix_family": "resistor_step",
+        "object_order": "sequential",
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V6_T03_TWO_TERMINAL_CAPS_RES_SUFFIX_SEQUENTIAL.pdsprj": "6c525101177ed67d16ae6415663b3faa145a7dbfbd6233fe639fa2fb0654dff6",
+        "CAP_V6_T03_TWO_TERMINAL_CAPS_RES_SUFFIX_SEQUENTIAL.ROOT.CDB.bin": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef",
+        "CAP_V6_T03_TWO_TERMINAL_CAPS_RES_SUFFIX_SEQUENTIAL.ROOT.DSN.bin": "651c7afcd7a775d501e8f9bf5c437f23b671a996cad5ef48c9acacfcd35b4490",
+        "object_chunk": "cbc93ff1d2eea2012ec7c3d530893cb53fec3025b64c2c3f9b2d5f2c4d76eb03",
+        "ROOT.CDB": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef"
+      }
+    },
+    {
+      "case_id": "CAP_V6_T04_TWO_TERMINAL_CAPS_CAP_SUFFIX_TERMS_FIRST",
+      "status": "temporary_capacitor_v6_terminal_reintro_not_locked",
+      "description": "Two terminal-attached capacitors with all terminals before capacitor/wire records, using CAP_T02 suffix family.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1348,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67336,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66439,
+        "second_object_data": 66474,
+        "object_data_pointer": 66487
+      },
+      "validations": {
+        "suffix_family": "cap_step40",
+        "object_order": "terms_first",
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V6_T04_TWO_TERMINAL_CAPS_CAP_SUFFIX_TERMS_FIRST.pdsprj": "8deebbac1936207cb1176cd180727077de800de51b9f0d80bebfccc073495238",
+        "CAP_V6_T04_TWO_TERMINAL_CAPS_CAP_SUFFIX_TERMS_FIRST.ROOT.CDB.bin": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef",
+        "CAP_V6_T04_TWO_TERMINAL_CAPS_CAP_SUFFIX_TERMS_FIRST.ROOT.DSN.bin": "65040e811f2285e276d3c7b426559a720c1afde5749054cc97f1d25f4c240b6f",
+        "object_chunk": "3a91c60074cc68a0e32db98436e65612e5b26919dd98e4e2d386242d74028725",
+        "ROOT.CDB": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef"
+      }
+    },
+    {
+      "case_id": "CAP_V6_T05_TWO_TERMINAL_CAPS_RES_SUFFIX_TERMS_FIRST",
+      "status": "temporary_capacitor_v6_terminal_reintro_not_locked",
+      "description": "Two terminal-attached capacitors with all terminals before capacitor/wire records, using resistor-style suffix spacing.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1348,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67336,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66439,
+        "second_object_data": 66474,
+        "object_data_pointer": 66487
+      },
+      "validations": {
+        "suffix_family": "resistor_step",
+        "object_order": "terms_first",
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V6_T05_TWO_TERMINAL_CAPS_RES_SUFFIX_TERMS_FIRST.pdsprj": "9bfc1057ab0ff5d58866fb4f63ccb30e99f7a67769053261a21cf3f42542d2a3",
+        "CAP_V6_T05_TWO_TERMINAL_CAPS_RES_SUFFIX_TERMS_FIRST.ROOT.CDB.bin": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef",
+        "CAP_V6_T05_TWO_TERMINAL_CAPS_RES_SUFFIX_TERMS_FIRST.ROOT.DSN.bin": "9af8b4f8370aba0ffab5cf32d7d5318ee6d7808ac0bcb79786fabdaeabaa3b93",
+        "object_chunk": "7596185a14c3d9e1add0e2578e609979f25b79c38a6bb964b96136510d022c74",
+        "ROOT.CDB": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef"
+      }
+    },
+    {
+      "case_id": "CAP_V6_T06_TWO_TERMINAL_CAPS_RES_SUFFIX_CAPS_FIRST",
+      "status": "temporary_capacitor_v6_terminal_reintro_not_locked",
+      "description": "Two terminal-attached capacitors with capacitor records before endpoint terminals and wires, using resistor-style suffix spacing.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1348,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67336,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66439,
+        "second_object_data": 66474,
+        "object_data_pointer": 66487
+      },
+      "validations": {
+        "suffix_family": "resistor_step",
+        "object_order": "caps_first",
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V6_T06_TWO_TERMINAL_CAPS_RES_SUFFIX_CAPS_FIRST.pdsprj": "2cb441250f8abd6e5d53270551cf181e01fe1259ab7d9623f6d0c18ade8196a0",
+        "CAP_V6_T06_TWO_TERMINAL_CAPS_RES_SUFFIX_CAPS_FIRST.ROOT.CDB.bin": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef",
+        "CAP_V6_T06_TWO_TERMINAL_CAPS_RES_SUFFIX_CAPS_FIRST.ROOT.DSN.bin": "db41bad187a3a89bcdfa2b3ab2d8c2f2ff34c9e48e97f70d7004c8f9a8300ab4",
+        "object_chunk": "4adf15950b32f3609ecc9928dc4a77fbb3bde023a2477e19899d85773870982c",
+        "ROOT.CDB": "81533a27b569c92d2d9cc0e17c72022c39aaf1eab8c114f44a158466eef88cef"
+      }
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project": {
+    "name": "PG17_CASCADE_BRIDGE",
+    "output_basename": "PG17_CASCADE_BRIDGE",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "A2",
+      "kind": "internal"
+    },
+    {
+      "id": "A3",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "B1",
+      "kind": "internal"
+    },
+    {
+      "id": "B2",
+      "kind": "internal"
+    },
+    {
+      "id": "B3",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "A1"
+      ]
+    },
+    {
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "2k",
+      "nodes": [
+        "A1",
+        "A2"
+      ]
+    },
+    {
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "3k",
+      "nodes": [
+        "A2",
+        "A3"
+      ]
+    },
+    {
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "A3",
+        "G0"
+      ]
+    },
+    {
+      "ref": "R5",
+      "type": "RESISTOR",
+      "value": "5k",
+      "nodes": [
+        "V0",
+        "B1"
+      ]
+    },
+    {
+      "ref": "R6",
+      "type": "RESISTOR",
+      "value": "6k",
+      "nodes": [
+        "B1",
+        "B2"
+      ]
+    },
+    {
+      "ref": "R7",
+      "type": "RESISTOR",
+      "value": "7k",
+      "nodes": [
+        "B2",
+        "B3"
+      ]
+    },
+    {
+      "ref": "R8",
+      "type": "RESISTOR",
+      "value": "8k",
+      "nodes": [
+        "B3",
+        "G0"
+      ]
+    },
+    {
+      "ref": "R9",
+      "type": "RESISTOR",
+      "value": "9k",
+      "nodes": [
+        "A1",
+        "B2"
+      ]
+    },
+    {
+      "ref": "RA",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "B1",
+        "A2"
+      ]
+    },
+    {
+      "ref": "RB",
+      "type": "RESISTOR",
+      "value": "11k",
+      "nodes": [
+        "A3",
+        "B3"
+      ]
+    }
+  ],
+  "layout": {
+    "mode": "manual_component_positions",
+    "coordinate_units": "proteus_internal",
+    "component_positions": {
+      "R1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "R2": {
+        "x": -3810000,
+        "y": 5080000
+      },
+      "R3": {
+        "x": -1270000,
+        "y": 5080000
+      },
+      "R4": {
+        "x": 1270000,
+        "y": 5080000
+      },
+      "R5": {
+        "x": 3810000,
+        "y": 5080000
+      },
+      "R6": {
+        "x": 6350000,
+        "y": 5080000
+      },
+      "R7": {
+        "x": 8890000,
+        "y": 5080000
+      },
+      "R8": {
+        "x": -6350000,
+        "y": 3556000
+      },
+      "R9": {
+        "x": -3810000,
+        "y": 3556000
+      },
+      "RA": {
+        "x": -1270000,
+        "y": 3556000
+      },
+      "RB": {
+        "x": 1270000,
+        "y": 3556000
+      }
+    }
+  },
+  "metadata": {
+    "source": "proteusgen predefined resistor acceptance case",
+    "case_slug": "pg17_cascade_bridge",
+    "notes": [
+      "Uses V0/G0 two-character power/ground labels for the locked V9 endpoint method."
+    ]
+  }
+}

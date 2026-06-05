@@ -1,0 +1,199 @@
+{
+  "schema_version": "inductor-temp-v6/v0",
+  "generator_target": "proteus-8.13-inductor-6-21-diagnostic",
+  "case_id": "IND_V7_06_MULTI_STEP_VOLTAGE_DIVIDER",
+  "source_resistor_case": null,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "T1",
+      "kind": "internal"
+    },
+    {
+      "id": "T2",
+      "kind": "internal"
+    },
+    {
+      "id": "T3",
+      "kind": "internal"
+    },
+    {
+      "id": "T4",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "V0",
+        "T1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "T1",
+        "T2"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "30uH",
+      "nodes": [
+        "T2",
+        "T3"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 0
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "L4",
+      "type": "INDUCTOR",
+      "value": "4mH",
+      "nodes": [
+        "T3",
+        "T4"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -2540000
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "L5",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "T4",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": -5080000
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "power_ground_after_first_left_wire_extended",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "1mH",
+        "visible_value": "1mH",
+        "left": "V0",
+        "right": "T1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 2,
+        "source_ref": "R2",
+        "ref": "L2",
+        "value": "2mH",
+        "visible_value": "2mH",
+        "left": "T1",
+        "right": "T2",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "04c2",
+        "out_suffix": "04f4",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "source_ref": "R3",
+        "ref": "L3",
+        "value": "30uH",
+        "visible_value": "30uH",
+        "left": "T2",
+        "right": "T3",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 3,
+        "suffix_policy": "extended",
+        "in_suffix": "0703",
+        "out_suffix": "0735",
+        "x": -7366000,
+        "y": 0
+      },
+      {
+        "idx": 4,
+        "source_ref": "R4",
+        "ref": "L4",
+        "value": "4mH",
+        "visible_value": "4mH",
+        "left": "T3",
+        "right": "T4",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "0a13",
+        "out_suffix": "0a45",
+        "x": -7366000,
+        "y": -2540000
+      },
+      {
+        "idx": 5,
+        "source_ref": "R5",
+        "ref": "L5",
+        "value": "5mH",
+        "visible_value": "5mH",
+        "left": "T4",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "0d23",
+        "out_suffix": "0d55",
+        "x": -7366000,
+        "y": -5080000
+      }
+    ]
+  }
+}

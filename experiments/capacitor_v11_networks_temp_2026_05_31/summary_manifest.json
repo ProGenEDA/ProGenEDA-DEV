@@ -1,0 +1,481 @@
+{
+  "case": "CAPACITOR_V11_NETWORKS_TEMP_2026_05_31",
+  "status": "temporary_diagnostic_not_locked",
+  "trigger": "User accepted all V10 manual-donor cases and requested the old 21R and 6R circuits with capacitors.",
+  "method": "Scale V10 manual donor output-array then input/cap/wire groups to 6 and 21 terminal-attached capacitors.",
+  "manual_donor": {
+    "fixture_id": "cap2_with_terminals_manual",
+    "project_sha256": "2b0661808857e844d6b676c16eacf37b5bc47f0a6f589c183a66ee2675b3eaa5",
+    "object_order": "all outputs first, then input/cap/left-wire/right-wire groups; non-final right wires are 49 bytes"
+  },
+  "test_order": [
+    "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R",
+    "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21"
+  ],
+  "decision_rule": [
+    "T01 checks whether the accepted V10 method scales from 3 to 6 capacitors.",
+    "T02 checks whether the same method scales to the 21-component R21 topology.",
+    "If both open and render all capacitors, capacitor generation can be promoted from temporary toward main."
+  ],
+  "cases": [
+    {
+      "case_id": "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R",
+      "status": "temporary_capacitor_v11_network_not_locked",
+      "description": "Six-capacitor version of the corrected hand-drawn 6R topology.",
+      "source": "memory final/examples/handdrawn_6r_corrected.json topology, converted R->C",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 6,
+      "node_count": 5,
+      "object_chunk_len": 4034,
+      "root_cdb_len": 922,
+      "root_dsn_len": 70022,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 6,
+          "$TERINPUT": 6,
+          "CAPACITOR": 6,
+          "CAP10": 6,
+          "WIRE": 12,
+          "1uF": 6
+        },
+        "root_cdb": {
+          "CAPACITOR": 6,
+          "CAP": 24,
+          "CAP10": 12,
+          "1uF": 6
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 69125,
+        "second_object_data": 69160,
+        "object_data_pointer": 69173
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "N0",
+          "right": "N1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "1uF",
+          "left": "N1",
+          "right": "N2",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "1uF",
+          "left": "N0",
+          "right": "N2",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "1uF",
+          "left": "N2",
+          "right": "N3",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "1uF",
+          "left": "N3",
+          "right": "N4",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 6,
+          "ref": "C6",
+          "value": "1uF",
+          "left": "N0",
+          "right": "N4",
+          "x": -1778000,
+          "y": 2540000,
+          "in_suffix": "0c32",
+          "out_suffix": "0c00",
+          "cap_visual_index_byte_344": 6,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R.pdsprj": "9c741c0683e5768c65afa74d19f055858eecd1e495a4442c6897edc0997285cf",
+        "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R.ROOT.CDB.bin": "2607c9d1a249a0ac3bedfc8b8e8395b8b469be417fa2c4b1554e00f9973a979a",
+        "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R.ROOT.DSN.bin": "3c04bb22284b048e26bd2fb5eb7ee9e0226238a8c53e03fc1fda16973137f1ec",
+        "object_chunk": "a1f4b9a4e0a11370258506b7cef4792b9c5ddd9c4d5c47c49da7737f713e8386",
+        "ROOT.CDB": "2607c9d1a249a0ac3bedfc8b8e8395b8b469be417fa2c4b1554e00f9973a979a"
+      },
+      "output_files": [
+        "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R.pdsprj",
+        "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R.ROOT.CDB.bin",
+        "CAP_V11_T01_6C_SAME_TOPOLOGY_AS_6R.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21",
+      "status": "temporary_capacitor_v11_network_not_locked",
+      "description": "Twenty-one-capacitor version of the R21 7+7+7 topology.",
+      "source": "memory capacitor_network_attempts_2026-05-29 R21 topology, regenerated with V10 manual donor order",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap2_with_terminals_manual.pdsprj",
+      "capacitor_count": 21,
+      "node_count": 21,
+      "object_chunk_len": 14114,
+      "root_cdb_len": 2932,
+      "root_dsn_len": 80102,
+      "marker_counts": {
+        "object_chunk": {
+          "$TEROUTPUT": 21,
+          "$TERINPUT": 21,
+          "CAPACITOR": 21,
+          "CAP10": 21,
+          "WIRE": 42,
+          "1uF": 21
+        },
+        "root_cdb": {
+          "CAPACITOR": 21,
+          "CAP": 84,
+          "CAP10": 42,
+          "1uF": 21
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 79205,
+        "second_object_data": 79240,
+        "object_data_pointer": 79253
+      },
+      "topology": [
+        {
+          "idx": 1,
+          "ref": "C1",
+          "value": "1uF",
+          "left": "N0",
+          "right": "A1",
+          "x": -6858000,
+          "y": 5080000,
+          "in_suffix": "011a",
+          "out_suffix": "00e8",
+          "cap_visual_index_byte_344": 1,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 2,
+          "ref": "C2",
+          "value": "1uF",
+          "left": "A1",
+          "right": "A2",
+          "x": -4318000,
+          "y": 5080000,
+          "in_suffix": "0352",
+          "out_suffix": "0320",
+          "cap_visual_index_byte_344": 2,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 3,
+          "ref": "C3",
+          "value": "1uF",
+          "left": "A2",
+          "right": "A3",
+          "x": -1778000,
+          "y": 5080000,
+          "in_suffix": "058a",
+          "out_suffix": "0558",
+          "cap_visual_index_byte_344": 3,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 4,
+          "ref": "C4",
+          "value": "1uF",
+          "left": "A3",
+          "right": "A4",
+          "x": 762000,
+          "y": 5080000,
+          "in_suffix": "07c2",
+          "out_suffix": "0790",
+          "cap_visual_index_byte_344": 4,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 5,
+          "ref": "C5",
+          "value": "1uF",
+          "left": "A4",
+          "right": "A5",
+          "x": 3302000,
+          "y": 5080000,
+          "in_suffix": "09fa",
+          "out_suffix": "09c8",
+          "cap_visual_index_byte_344": 5,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 6,
+          "ref": "C6",
+          "value": "1uF",
+          "left": "A5",
+          "right": "A6",
+          "x": 5842000,
+          "y": 5080000,
+          "in_suffix": "0c32",
+          "out_suffix": "0c00",
+          "cap_visual_index_byte_344": 6,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 7,
+          "ref": "C7",
+          "value": "1uF",
+          "left": "A6",
+          "right": "M0",
+          "x": 8382000,
+          "y": 5080000,
+          "in_suffix": "0e6a",
+          "out_suffix": "0e38",
+          "cap_visual_index_byte_344": 7,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 8,
+          "ref": "C8",
+          "value": "1uF",
+          "left": "N0",
+          "right": "B1",
+          "x": -6858000,
+          "y": 2540000,
+          "in_suffix": "10a2",
+          "out_suffix": "1070",
+          "cap_visual_index_byte_344": 8,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 9,
+          "ref": "C9",
+          "value": "1uF",
+          "left": "B1",
+          "right": "B2",
+          "x": -4318000,
+          "y": 2540000,
+          "in_suffix": "12da",
+          "out_suffix": "12a8",
+          "cap_visual_index_byte_344": 9,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 10,
+          "ref": "CA",
+          "value": "1uF",
+          "left": "B2",
+          "right": "B3",
+          "x": -1778000,
+          "y": 2540000,
+          "in_suffix": "1512",
+          "out_suffix": "14e0",
+          "cap_visual_index_byte_344": 10,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 11,
+          "ref": "CB",
+          "value": "1uF",
+          "left": "B3",
+          "right": "B4",
+          "x": 762000,
+          "y": 2540000,
+          "in_suffix": "174a",
+          "out_suffix": "1718",
+          "cap_visual_index_byte_344": 11,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 12,
+          "ref": "CC",
+          "value": "1uF",
+          "left": "B4",
+          "right": "B5",
+          "x": 3302000,
+          "y": 2540000,
+          "in_suffix": "1982",
+          "out_suffix": "1950",
+          "cap_visual_index_byte_344": 12,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 13,
+          "ref": "CD",
+          "value": "1uF",
+          "left": "B5",
+          "right": "B6",
+          "x": 5842000,
+          "y": 2540000,
+          "in_suffix": "1bba",
+          "out_suffix": "1b88",
+          "cap_visual_index_byte_344": 13,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 14,
+          "ref": "CE",
+          "value": "1uF",
+          "left": "B6",
+          "right": "M0",
+          "x": 8382000,
+          "y": 2540000,
+          "in_suffix": "1df2",
+          "out_suffix": "1dc0",
+          "cap_visual_index_byte_344": 14,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 15,
+          "ref": "CF",
+          "value": "1uF",
+          "left": "M0",
+          "right": "T1",
+          "x": -6858000,
+          "y": 0,
+          "in_suffix": "202a",
+          "out_suffix": "1ff8",
+          "cap_visual_index_byte_344": 15,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 16,
+          "ref": "CG",
+          "value": "1uF",
+          "left": "T1",
+          "right": "T2",
+          "x": -4318000,
+          "y": 0,
+          "in_suffix": "2262",
+          "out_suffix": "2230",
+          "cap_visual_index_byte_344": 16,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 17,
+          "ref": "CH",
+          "value": "1uF",
+          "left": "T2",
+          "right": "T3",
+          "x": -1778000,
+          "y": 0,
+          "in_suffix": "249a",
+          "out_suffix": "2468",
+          "cap_visual_index_byte_344": 17,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 18,
+          "ref": "CI",
+          "value": "1uF",
+          "left": "T3",
+          "right": "T4",
+          "x": 762000,
+          "y": 0,
+          "in_suffix": "26d2",
+          "out_suffix": "26a0",
+          "cap_visual_index_byte_344": 18,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 19,
+          "ref": "CJ",
+          "value": "1uF",
+          "left": "T4",
+          "right": "T5",
+          "x": 3302000,
+          "y": 0,
+          "in_suffix": "290a",
+          "out_suffix": "28d8",
+          "cap_visual_index_byte_344": 19,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 20,
+          "ref": "CK",
+          "value": "1uF",
+          "left": "T5",
+          "right": "T6",
+          "x": 5842000,
+          "y": 0,
+          "in_suffix": "2b42",
+          "out_suffix": "2b10",
+          "cap_visual_index_byte_344": 20,
+          "wire_right_len": 49
+        },
+        {
+          "idx": 21,
+          "ref": "CL",
+          "value": "1uF",
+          "left": "T6",
+          "right": "Z0",
+          "x": 8382000,
+          "y": 0,
+          "in_suffix": "2d7a",
+          "out_suffix": "2d48",
+          "cap_visual_index_byte_344": 21,
+          "wire_right_len": 50
+        }
+      ],
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21.pdsprj": "6ac80b5fdc7bb3895e74fb631bf5818c6f34e08c7f6d6efca2b799c5929a234f",
+        "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21.ROOT.CDB.bin": "c9fdbbf3c3d2e793228806edd27ff007511b783e9f8569dcd7a08d60027f18a9",
+        "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21.ROOT.DSN.bin": "7caf1f1e364160846973013bded5b3becfb7f41430d21259b3d5a958dece2fa9",
+        "object_chunk": "86923e1caac0c8e7b1e4a5812b8d6e04b8459801caf20dccc640408237536f4c",
+        "ROOT.CDB": "c9fdbbf3c3d2e793228806edd27ff007511b783e9f8569dcd7a08d60027f18a9"
+      },
+      "output_files": [
+        "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21.pdsprj",
+        "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21.ROOT.CDB.bin",
+        "CAP_V11_T02_21C_SAME_TOPOLOGY_AS_R21.ROOT.DSN.bin",
+        "input.json",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    }
+  ]
+}

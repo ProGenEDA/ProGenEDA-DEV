@@ -1,0 +1,188 @@
+{
+  "case_id": "ACV_V1_T06_SIX_COMPONENT_SOURCE_FIRST",
+  "description": "Generated six-component R/C/L circuit with source-first standalone VSINE block.",
+  "status": "temporary_ac_voltage_v1_source_diagnostic_not_locked",
+  "output": "ACV_V1_SOURCE_DIAGNOSTICS_TEST_BATCH\\ACV_V1_T06_SIX_COMPONENT_SOURCE_FIRST\\ACV_V1_T06_SIX_COMPONENT_SOURCE_FIRST.pdsprj",
+  "object_chunk_len": 4680,
+  "root_cdb_len": 987,
+  "root_dsn_len": 73136,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 7,
+    "$TEROUTPUT": 7,
+    "$TERGROUND": 0,
+    "VSINE": 3,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 3,
+    "REALIND": 3,
+    "RESISTOR": 4,
+    "WIRE": 14,
+    "COMPONENT ID": 7,
+    "COMPONENT VALUE": 7
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSINE": 1,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67513,
+    "second_isis": 72239,
+    "second_object_data": 72274,
+    "object_data_pointer": 72287
+  },
+  "hashes": {
+    "ACV_V1_T06_SIX_COMPONENT_SOURCE_FIRST.pdsprj": "fecd22e0b5f351503fd58be3e3245276071af68ff94ea7736be4c8997390805b",
+    "ACV_V1_T06_SIX_COMPONENT_SOURCE_FIRST.ROOT.CDB.bin": "147f67c04a15340fb576ff33f1ab6bb4916873d333c4f9a3ef424873b31a7ce4",
+    "ACV_V1_T06_SIX_COMPONENT_SOURCE_FIRST.ROOT.DSN.bin": "7f1b3fa60f7b13cb9d0472760e3570277d41c18db9d13f0f6fa530018745c825",
+    "ACV_V1_T06_SIX_COMPONENT_SOURCE_FIRST.OBJECT_CHUNK.bin": "4f0ca3e6a96fe8cd3a2a871d796a0aca262fce6fb77fa9c137646a8191940ee1",
+    "object_chunk": "4f0ca3e6a96fe8cd3a2a871d796a0aca262fce6fb77fa9c137646a8191940ee1",
+    "ROOT.CDB": "147f67c04a15340fb576ff33f1ab6bb4916873d333c4f9a3ef424873b31a7ce4",
+    "devices": "2fcee230c92f7566a59b9d72e7cc0226dfe95133bb3cc32cbe3e84814012b84b"
+  },
+  "input": {
+    "base_payload_name": "MIXED_RCL_LOCKED_T01_6_COMPONENTS",
+    "source_kind": "ac_voltage",
+    "source_model": "VSINE",
+    "source_position": "before_rcl",
+    "source": {
+      "idx": 7,
+      "ref": "V1",
+      "value": "VSINE",
+      "properties": "{VA=20v}\n{FREQ=5000hz}\n{PRIMITIVE=ANALOGUE}\n\u0000"
+    },
+    "groups": [
+      {
+        "mode": "RCL",
+        "start": "AV",
+        "end": "A0"
+      },
+      {
+        "mode": "RC",
+        "start": "AV",
+        "end": "A0"
+      },
+      {
+        "mode": "C",
+        "start": "AV",
+        "end": "A0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RCL",
+        "RC",
+        "C"
+      ],
+      "group_count": 3,
+      "component_count": 6,
+      "capacitor_count": 3,
+      "inductor_count": 1,
+      "resistor_count": 2,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "AV",
+      "source_net_negative": "A0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "B1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B1",
+        "right": "A0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "AV",
+        "right": "A1",
+        "global_id": 3,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 4,
+        "unit": 2,
+        "kind": "CAPACITOR",
+        "ref": "C2",
+        "value": "1uF",
+        "left": "A2",
+        "right": "A0",
+        "global_id": 4,
+        "in_suffix": "1002",
+        "out_suffix": "0fd0",
+        "x": 2794000,
+        "y": 2540000
+      },
+      {
+        "idx": 5,
+        "unit": 2,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "10k",
+        "left": "AV",
+        "right": "A2",
+        "global_id": 5,
+        "in_suffix": "1506",
+        "out_suffix": "1538",
+        "x": 2794000,
+        "y": 5080000
+      },
+      {
+        "idx": 6,
+        "unit": 3,
+        "kind": "CAPACITOR",
+        "ref": "C3",
+        "value": "1uF",
+        "left": "AV",
+        "right": "A0",
+        "global_id": 6,
+        "in_suffix": "17d8",
+        "out_suffix": "17a6",
+        "x": 12954000,
+        "y": 2540000
+      }
+    ]
+  }
+}

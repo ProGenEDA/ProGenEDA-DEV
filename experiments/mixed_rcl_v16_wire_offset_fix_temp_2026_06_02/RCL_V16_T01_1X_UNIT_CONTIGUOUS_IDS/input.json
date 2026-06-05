@@ -1,0 +1,124 @@
+{
+  "schema_version": "mixed-rcl-temp/v16-wire-offset-fix",
+  "generator_target": "proteus-8.13-scaled-mixed-rcl-wire-offset-fix-diagnostic",
+  "case_id": "RCL_V16_T01_1X_UNIT_CONTIGUOUS_IDS",
+  "nodes": [
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "B1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "V0",
+      "kind": "power"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "C1",
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "A1",
+        "B1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "L1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "B1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "10k",
+      "nodes": [
+        "V0",
+        "A1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    }
+  ],
+  "metadata": {
+    "temporary": true,
+    "object_order": "header, V0 bridge, repeated full C/L/R terminal units from supplied 4x donor",
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "B1",
+        "global_id": 1,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B1",
+        "right": "G0",
+        "global_id": 2,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "V0",
+        "right": "A1",
+        "global_id": 3,
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      }
+    ]
+  }
+}

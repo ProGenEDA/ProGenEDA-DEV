@@ -1,0 +1,76 @@
+{
+  "schema_version": "mixed-rcl-temp/v1",
+  "generator_target": "proteus-8.13-mixed-rcl-terminal-power-ground-diagnostic",
+  "case_id": "RCL_V1_T12_09_STAR_Y_NETWORK",
+  "source_resistor_case": "09_STAR_Y_NETWORK",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "C0",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "O1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "C0"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "C0",
+        "G0"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "3mH",
+      "nodes": [
+        "C0",
+        "O1"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 0
+      }
+    }
+  ],
+  "metadata": {
+    "method": "global component cycle RESISTOR, CAPACITOR, INDUCTOR",
+    "object_order": "header, power bridge, inductor V3 section, capacitor outputs, capacitor groups, resistor inputs, resistor outputs, separator, resistor groups",
+    "temporary": true
+  }
+}

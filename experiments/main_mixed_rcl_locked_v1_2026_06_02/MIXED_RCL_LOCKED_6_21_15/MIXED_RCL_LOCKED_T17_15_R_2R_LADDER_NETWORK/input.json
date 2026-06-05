@@ -1,0 +1,73 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "project": {
+    "name": "MIXED_RCL_LOCKED_T17_15_R_2R_LADDER_NETWORK",
+    "output_basename": "MIXED_RCL_LOCKED_T17_15_R_2R_LADDER_NETWORK",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RL",
+      "start": "V0",
+      "end": "N1"
+    },
+    {
+      "mode": "LC",
+      "start": "N1",
+      "end": "G0"
+    },
+    {
+      "mode": "RC",
+      "start": "N1",
+      "end": "N2"
+    },
+    {
+      "mode": "LC",
+      "start": "N2",
+      "end": "G0"
+    },
+    {
+      "mode": "RL",
+      "start": "N2",
+      "end": "N3"
+    },
+    {
+      "mode": "LC",
+      "start": "N3",
+      "end": "G0"
+    },
+    {
+      "mode": "RC",
+      "start": "N3",
+      "end": "G0"
+    }
+  ],
+  "metadata": {
+    "source": "locked mixed R/C/L examples",
+    "description": "R-2R-style ladder topology using repeated mixed series sections and LC shunts."
+  }
+}

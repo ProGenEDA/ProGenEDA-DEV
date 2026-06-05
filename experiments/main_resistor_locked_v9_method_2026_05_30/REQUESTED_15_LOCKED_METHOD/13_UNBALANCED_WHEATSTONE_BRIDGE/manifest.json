@@ -1,0 +1,196 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project_name": "Unbalanced Wheatstone Bridge",
+  "output_basename": "13_UNBALANCED_WHEATSTONE_BRIDGE",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "donor_fixture_id": "r21_v9_resistor_terminal_donor",
+  "power_bridge_fixture_id": "power_terminal_bridge_donor",
+  "power_bridge_core_len_bytes": 255,
+  "power_bridge_count": 1,
+  "power_nodes": [
+    "V0"
+  ],
+  "node_count_requested": 4,
+  "component_count_requested": 5,
+  "component_count_emitted_cdb": 5,
+  "component_count_emitted_dsn": 5,
+  "terminal_count": 12,
+  "input_terminal_count": 5,
+  "output_terminal_count": 4,
+  "power_terminal_count": 1,
+  "ground_terminal_count": 2,
+  "short_wire_count": 10,
+  "bridge_wire_count": 1,
+  "visual_wire_count": 0,
+  "visual_wire_skipped_count": 2,
+  "wire_count": 11,
+  "object_group_count": 5,
+  "auto_placed_count": 0,
+  "layout_adjusted_count": 4,
+  "object_chunk_len": 3522,
+  "root_cdb_len": 634,
+  "root_dsn_len": 69125,
+  "terminator_validation": {
+    "final_object_has_final_terminator": true,
+    "premature_terminator_issues": []
+  },
+  "link_suffix_validation": {
+    "checked": true,
+    "issues": []
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 64660,
+    "second_isis": 68228,
+    "second_object_data": 68263,
+    "object_data_pointer": 68276
+  },
+  "static_validation_issues": [],
+  "topology": [
+    {
+      "idx": 1,
+      "ref": "R1",
+      "value": "1k",
+      "visible_value": "1k",
+      "left": "V0",
+      "right": "L1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0159",
+      "out_suffix": "018b",
+      "angle_tenths": -900,
+      "pin1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "pin2": {
+        "x": -6350000,
+        "y": 3810000
+      },
+      "x": -6350000,
+      "y": 5080000,
+      "auto_placed": false
+    },
+    {
+      "idx": 2,
+      "ref": "R2",
+      "value": "3k",
+      "visible_value": "3k",
+      "left": "L1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0317",
+      "out_suffix": "0349",
+      "angle_tenths": -900,
+      "pin1": {
+        "x": -6350000,
+        "y": 3556000
+      },
+      "pin2": {
+        "x": -6350000,
+        "y": 2286000
+      },
+      "x": -6350000,
+      "y": 3556000,
+      "auto_placed": false
+    },
+    {
+      "idx": 3,
+      "ref": "R3",
+      "value": "2k",
+      "visible_value": "2k",
+      "left": "V0",
+      "right": "R1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "04d5",
+      "out_suffix": "0507",
+      "angle_tenths": -900,
+      "pin1": {
+        "x": -3810000,
+        "y": 5080000
+      },
+      "pin2": {
+        "x": -3810000,
+        "y": 3810000
+      },
+      "x": -3810000,
+      "y": 5080000,
+      "auto_placed": false
+    },
+    {
+      "idx": 4,
+      "ref": "R4",
+      "value": "4k",
+      "visible_value": "4k",
+      "left": "R1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0693",
+      "out_suffix": "06c5",
+      "angle_tenths": -900,
+      "pin1": {
+        "x": -3810000,
+        "y": 3556000
+      },
+      "pin2": {
+        "x": -3810000,
+        "y": 2286000
+      },
+      "x": -3810000,
+      "y": 3556000,
+      "auto_placed": false
+    },
+    {
+      "idx": 5,
+      "ref": "R5",
+      "value": "10k",
+      "visible_value": "10",
+      "left": "L1",
+      "right": "R1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0851",
+      "out_suffix": "0883",
+      "angle_tenths": 0,
+      "pin1": {
+        "x": -6350000,
+        "y": 3556000
+      },
+      "pin2": {
+        "x": -5080000,
+        "y": 3556000
+      },
+      "x": -6350000,
+      "y": 3556000,
+      "auto_placed": false
+    }
+  ],
+  "known_limitations": [
+    "Two-character node labels only; use V0/G0 instead of VCC/GND.",
+    "Power support emits one donor-derived $TERPOWER -> $TEROUTPUT bridge for the power node.",
+    "Ground terminals are supported only on right endpoints.",
+    "Resistor drawing supports locked 90-degree rotations only; arbitrary diagonal component angles and routed bus/junction geometry are still experimental.",
+    "Standalone layout.visual_wires are intentionally skipped in production until VGDVC-safe wire records are validated."
+  ],
+  "output_files": [
+    "13_UNBALANCED_WHEATSTONE_BRIDGE.pdsprj",
+    "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin",
+    "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "13_UNBALANCED_WHEATSTONE_BRIDGE.pdsprj": "77bdbc067aa49bc1d47c9f2a5c5644b45b3c07c492563207acf7856e97182bdf",
+    "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "cc572278453c627d981a3ef30967bb3255c6dfda5dbbd60c2d4cb0724587c4e0",
+    "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "6515a2ab7e65cab2186b12e00dc1d700acdbc4b37fb2f0f8a7621dfe1247c2c4",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41",
+    "power_bridge_donor": "d06b97bec98b2a6990a3e9e948afa0a848acc56815c4c5ee458d4e2f4c979d55"
+  }
+}

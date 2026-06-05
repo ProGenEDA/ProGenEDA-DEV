@@ -1,0 +1,142 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project": {
+    "name": "H-Bridge Resistor Version",
+    "output_basename": "14_H_BRIDGE_RESISTOR_VERSION",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "L1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "R1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "L1"
+      ],
+      "visual": {
+        "orientation_hint": "vertical",
+        "role": "left_upper_vertical"
+      }
+    },
+    {
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "2k",
+      "nodes": [
+        "L1",
+        "G0"
+      ],
+      "visual": {
+        "orientation_hint": "vertical",
+        "role": "left_lower_vertical"
+      }
+    },
+    {
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "3k",
+      "nodes": [
+        "V0",
+        "R1"
+      ],
+      "visual": {
+        "orientation_hint": "vertical",
+        "role": "right_upper_vertical"
+      }
+    },
+    {
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "R1",
+        "G0"
+      ],
+      "visual": {
+        "orientation_hint": "vertical",
+        "role": "right_lower_vertical"
+      }
+    },
+    {
+      "ref": "R5",
+      "type": "RESISTOR",
+      "value": "5k",
+      "nodes": [
+        "L1",
+        "R1"
+      ],
+      "visual": {
+        "orientation_hint": "horizontal",
+        "role": "middle_bridge"
+      }
+    }
+  ],
+  "layout": {
+    "mode": "manual_component_positions",
+    "coordinate_units": "proteus_internal",
+    "component_positions": {
+      "R1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "R2": {
+        "x": -6350000,
+        "y": 3810000
+      },
+      "R3": {
+        "x": -5080000,
+        "y": 5080000
+      },
+      "R4": {
+        "x": -5080000,
+        "y": 3810000
+      },
+      "R5": {
+        "x": -6350000,
+        "y": 3810000
+      }
+    },
+    "visual_wires": [
+      {
+        "x1": -6350000,
+        "y1": 5080000,
+        "x2": -5080000,
+        "y2": 5080000
+      },
+      {
+        "x1": -6350000,
+        "y1": 2540000,
+        "x2": -5080000,
+        "y2": 2540000
+      }
+    ]
+  },
+  "metadata": {
+    "source": "user requested resistor network list 2026-05-30",
+    "description": "Two vertical series branches with a fifth resistor bridging their middle joints.",
+    "notes": [
+      "Regenerated after Proteus angle-field and visual-wire support; vertical branches use real -900 tenths resistor records."
+    ]
+  }
+}

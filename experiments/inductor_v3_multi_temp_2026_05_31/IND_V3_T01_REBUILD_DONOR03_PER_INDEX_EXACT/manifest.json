@@ -1,0 +1,70 @@
+{
+  "case_id": "IND_V3_T01_REBUILD_DONOR03_PER_INDEX_EXACT",
+  "source": "inductor V3 multi-inductor diagnostics",
+  "notes": "Rebuild donor03 object chunk from explicit per-index slices. This should be byte-identical to donor03.",
+  "component_count": 3,
+  "power_bridge_count": 0,
+  "ground_terminal_count": 0,
+  "object_chunk_len": 2043,
+  "root_dsn_len": 68329,
+  "root_cdb_len": 512,
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65343,
+    "second_isis": 67432,
+    "second_object_data": 67467,
+    "object_data_pointer": 67480
+  },
+  "marker_counts": {
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "REALIND": 9,
+    "WIRE": 6
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "ref": "L1",
+      "value": "1mH",
+      "left": "N1",
+      "right": "N2",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "dx": 0,
+      "dy": 0
+    },
+    {
+      "idx": 2,
+      "ref": "L2",
+      "value": "2mH",
+      "left": "N3",
+      "right": "N4",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "dx": 0,
+      "dy": 0
+    },
+    {
+      "idx": 3,
+      "ref": "L3",
+      "value": "10uH",
+      "left": "N5",
+      "right": "N6",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "dx": 0,
+      "dy": 0
+    }
+  ],
+  "matches_donor03_object_chunk": true,
+  "donor03_object_chunk_sha256": "b14031fdb99bccc4f7618730267b04cb3f5254f447cc08a95208f7b0d3c6672c",
+  "static_validation_issues": [],
+  "output_hashes": {
+    "pdsprj_sha256": "aba025f5dbd6926271ac2c3bc3859014d778756cee5d5dccf62b4aef71226f41",
+    "root_dsn_sha256": "107ca3ec587f674d38322b18ca0cf8d11d4a3568ce58257a9252b1267dcda076",
+    "root_cdb_sha256": "d475a88371e1d35dec383be57f5e118da183c98af4a78fdc2c1b967a786fd00f",
+    "object_chunk_sha256": "b14031fdb99bccc4f7618730267b04cb3f5254f447cc08a95208f7b0d3c6672c"
+  }
+}

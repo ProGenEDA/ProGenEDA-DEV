@@ -1,0 +1,86 @@
+{
+  "schema_version": "mixed-rcl-temp/v17-component-removal",
+  "generator_target": "proteus-8.13-mixed-rcl-component-removal-diagnostic",
+  "case_id": "RCL_V17_T02_1X_LC_REMOVE_R",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "B1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "B1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "B1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    }
+  ],
+  "metadata": {
+    "temporary": true,
+    "branch_modes": [
+      "LC"
+    ],
+    "object_order": "header, V0 bridge, donor-order units with whole C/L/R subgroups removed",
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "V0",
+        "right": "B1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B1",
+        "right": "G0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      }
+    ]
+  }
+}

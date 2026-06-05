@@ -1,0 +1,281 @@
+{
+  "batch_id": "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602",
+  "status": "static_generated_awaiting_user_proteus_netlist_test",
+  "source_feedback": "V13 single-unit/simple cases worked, but scaled cases with additional R/C/L components failed. User supplied a 4x C/L/R file for more evidence.",
+  "method": "Use the supplied 4x donor as the repeated-unit record schema. Emit one V0 power bridge, then complete C/L/R terminal units. Patch native mixed-family resistor records with variable visible-value length so component IDs and suffix links land at the donor-observed offsets.",
+  "donor_analysis": {
+    "project": "fixtures\\pdsprj\\rcl_4x_t07_unit_donor.pdsprj",
+    "pdsprj_sha256": "340b5972d35ce8b63c1aad6048c8fe33a2ea969ae2ad272acc316ce12f8459f5",
+    "root_dsn_len": 75928,
+    "root_cdb_len": 1594,
+    "object_chunk_len": 8281,
+    "object_chunk_sha256": "8cd8ba711e33de8a3c2b550d7e0614c79f7b2e7f192760745386e472ee1e0459",
+    "root_cdb_sha256": "6be9e1c65581bdd9004a2100b81f920e0f43b47035df44bc33eb51c97e985349",
+    "marker_counts": {
+      "$TERPOWER": 1,
+      "$TERINPUT": 12,
+      "$TEROUTPUT": 9,
+      "$TERGROUND": 4,
+      "WIRE": 25,
+      "RESISTOR": 8,
+      "REALIND": 12,
+      "CAPACITOR": 4,
+      "CAP10": 4,
+      "COMPONENT ID": 12,
+      "COMPONENT VALUE": 12
+    },
+    "observed_unit_order": "C output, C input+CAP+wires, L input, R input, L ground output+REALIND+wires, R output+RESISTOR+wires",
+    "observed_suffix_step_hex": "07d6",
+    "observed_global_ids": [
+      {
+        "unit": 1,
+        "C": 1,
+        "L": 2,
+        "R": 3
+      },
+      {
+        "unit": 2,
+        "C": 6,
+        "L": 7,
+        "R": 8
+      },
+      {
+        "unit": 3,
+        "C": 9,
+        "L": 10,
+        "R": 11
+      },
+      {
+        "unit": 4,
+        "C": 12,
+        "L": 13,
+        "R": 14
+      }
+    ],
+    "final_unit_right_wire_len": 51
+  },
+  "test_order": [
+    "RCL_V14_T00_EXACT_4X_DONOR_REPACK",
+    "RCL_V14_T00B_4X_DONOR_CHUNK_IN_E001",
+    "RCL_V14_T01_1X_UNIT_CONTIGUOUS_IDS",
+    "RCL_V14_T02_2X_UNIT_CONTIGUOUS_IDS",
+    "RCL_V14_T03_3X_UNIT_CONTIGUOUS_IDS",
+    "RCL_V14_T04_4X_UNIT_CONTIGUOUS_IDS",
+    "RCL_V14_T05_4X_UNIT_SUPPLIED_ID_GAPS",
+    "RCL_V14_T06_6X_UNIT_CONTIGUOUS_IDS",
+    "RCL_V14_T07_7X_UNIT_CONTIGUOUS_IDS",
+    "RCL_V14_T08_21X_UNIT_CONTIGUOUS_IDS"
+  ],
+  "cases": [
+    {
+      "case_id": "RCL_V14_T00_EXACT_4X_DONOR_REPACK",
+      "description": "Exact deterministic repack of the user-supplied 4x repeated C/L/R donor.",
+      "unit_count": null,
+      "component_count": null,
+      "object_chunk_len": 8281,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 12,
+        "$TEROUTPUT": 9,
+        "$TERGROUND": 4,
+        "WIRE": 25,
+        "RESISTOR": 8,
+        "REALIND": 12,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 12,
+        "COMPONENT VALUE": 12
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T00B_4X_DONOR_CHUNK_IN_E001",
+      "description": "User-supplied 4x donor object chunk and CDB inserted into the clean E001 base.",
+      "unit_count": null,
+      "component_count": null,
+      "object_chunk_len": 8281,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 12,
+        "$TEROUTPUT": 9,
+        "$TERGROUND": 4,
+        "WIRE": 25,
+        "RESISTOR": 8,
+        "REALIND": 12,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 12,
+        "COMPONENT VALUE": 12
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T01_1X_UNIT_CONTIGUOUS_IDS",
+      "description": "One repeated C/L/R unit using donor unit order.",
+      "unit_count": 1,
+      "component_count": 3,
+      "object_chunk_len": 2263,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 3,
+        "COMPONENT VALUE": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T02_2X_UNIT_CONTIGUOUS_IDS",
+      "description": "Two repeated C/L/R units using donor unit order.",
+      "unit_count": 2,
+      "component_count": 6,
+      "object_chunk_len": 4269,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 5,
+        "$TERGROUND": 2,
+        "WIRE": 13,
+        "RESISTOR": 4,
+        "REALIND": 6,
+        "CAPACITOR": 2,
+        "CAP10": 2,
+        "COMPONENT ID": 6,
+        "COMPONENT VALUE": 6
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T03_3X_UNIT_CONTIGUOUS_IDS",
+      "description": "Three repeated C/L/R units using donor unit order.",
+      "unit_count": 3,
+      "component_count": 9,
+      "object_chunk_len": 6275,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 9,
+        "$TEROUTPUT": 7,
+        "$TERGROUND": 3,
+        "WIRE": 19,
+        "RESISTOR": 6,
+        "REALIND": 9,
+        "CAPACITOR": 3,
+        "CAP10": 3,
+        "COMPONENT ID": 9,
+        "COMPONENT VALUE": 9
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T04_4X_UNIT_CONTIGUOUS_IDS",
+      "description": "Four repeated C/L/R units using contiguous IDs.",
+      "unit_count": 4,
+      "component_count": 12,
+      "object_chunk_len": 8281,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 12,
+        "$TEROUTPUT": 9,
+        "$TERGROUND": 4,
+        "WIRE": 25,
+        "RESISTOR": 8,
+        "REALIND": 12,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 12,
+        "COMPONENT VALUE": 12
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T05_4X_UNIT_SUPPLIED_ID_GAPS",
+      "description": "Four repeated C/L/R units using the exact global ID gaps observed in the supplied donor.",
+      "unit_count": 4,
+      "component_count": 12,
+      "object_chunk_len": 8281,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 12,
+        "$TEROUTPUT": 9,
+        "$TERGROUND": 4,
+        "WIRE": 25,
+        "RESISTOR": 8,
+        "REALIND": 12,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 12,
+        "COMPONENT VALUE": 12
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T06_6X_UNIT_CONTIGUOUS_IDS",
+      "description": "Six repeated C/L/R units using donor unit order.",
+      "unit_count": 6,
+      "component_count": 18,
+      "object_chunk_len": 12293,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 18,
+        "$TEROUTPUT": 13,
+        "$TERGROUND": 6,
+        "WIRE": 37,
+        "RESISTOR": 12,
+        "REALIND": 18,
+        "CAPACITOR": 6,
+        "CAP10": 6,
+        "COMPONENT ID": 18,
+        "COMPONENT VALUE": 18
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T07_7X_UNIT_CONTIGUOUS_IDS",
+      "description": "Seven repeated C/L/R units using donor unit order.",
+      "unit_count": 7,
+      "component_count": 21,
+      "object_chunk_len": 14299,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 21,
+        "$TEROUTPUT": 15,
+        "$TERGROUND": 7,
+        "WIRE": 43,
+        "RESISTOR": 14,
+        "REALIND": 21,
+        "CAPACITOR": 7,
+        "CAP10": 7,
+        "COMPONENT ID": 21,
+        "COMPONENT VALUE": 21
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V14_T08_21X_UNIT_CONTIGUOUS_IDS",
+      "description": "Twenty-one repeated C/L/R units using donor unit order.",
+      "unit_count": 21,
+      "component_count": 63,
+      "object_chunk_len": 42383,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 63,
+        "$TEROUTPUT": 43,
+        "$TERGROUND": 21,
+        "WIRE": 127,
+        "RESISTOR": 42,
+        "REALIND": 63,
+        "CAPACITOR": 21,
+        "CAP10": 21,
+        "COMPONENT ID": 63,
+        "COMPONENT VALUE": 63
+      },
+      "static_validation_issues": []
+    }
+  ]
+}

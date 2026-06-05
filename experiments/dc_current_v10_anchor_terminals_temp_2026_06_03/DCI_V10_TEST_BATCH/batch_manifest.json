@@ -1,0 +1,125 @@
+{
+  "batch_id": "DC_CURRENT_V10_ANCHOR_TERMINALS_STATIC_20260603",
+  "status": "static_generated_awaiting_user_proteus_open_netlist_test",
+  "source_feedback": "V9 feedback: T03 and onward failed with ISIS/VG dll errors; T00/T01/T02 not reported as failing.",
+  "method": "Connected current-load donor source block plus donor DI/I0 anchor terminal pair before generated body.",
+  "test_order": [
+    "DCI_V10_T00_CONN_DONOR",
+    "DCI_V10_T01_R_ONLY_ANCHOR",
+    "DCI_V10_T02_RCL_SIMPLE_ANCHOR",
+    "DCI_V10_T03_6COMP_ANCHOR_I4",
+    "DCI_V10_T04_6COMP_ANCHOR_ID"
+  ],
+  "cases": [
+    {
+      "case_id": "DCI_V10_T00_CONN_DONOR",
+      "description": "Control: exact connected current-source plus resistor-load donor transplanted into E001.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 2,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "RESISTOR": 2,
+        "WIRE": 4,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2,
+        "CAP10": 0
+      },
+      "object_chunk_len": 1310,
+      "root_cdb_len": 329,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCI_V10_T01_R_ONLY_ANCHOR",
+      "description": "Generated resistor-only load with connected CSOURCE block plus donor DI/I0 anchor terminals.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 2,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "RESISTOR": 2,
+        "WIRE": 4,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2,
+        "CAP10": 0
+      },
+      "object_chunk_len": 1513,
+      "root_cdb_len": 327,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCI_V10_T02_RCL_SIMPLE_ANCHOR",
+      "description": "Generated simple R/C/L load with connected CSOURCE block plus donor DI/I0 anchor terminals.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 5,
+        "$TERGROUND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "RESISTOR": 2,
+        "WIRE": 8,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "CAP10": 1
+      },
+      "object_chunk_len": 2865,
+      "root_cdb_len": 592,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCI_V10_T03_6COMP_ANCHOR_I4",
+      "description": "Generated six-component R/C/L load with donor anchor terminals and fixed visible source ref I4.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 8,
+        "$TERGROUND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 2,
+        "CAPACITOR": 3,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 14,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "CAP10": 3
+      },
+      "object_chunk_len": 4863,
+      "root_cdb_len": 964,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "DCI_V10_T04_6COMP_ANCHOR_ID",
+      "description": "Generated six-component R/C/L load with donor anchor terminals and visible source ref patched to source ID.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 8,
+        "$TERGROUND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 2,
+        "CAPACITOR": 3,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 14,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "CAP10": 3
+      },
+      "object_chunk_len": 4863,
+      "root_cdb_len": 964,
+      "static_validation_issues": []
+    }
+  ]
+}

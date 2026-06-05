@@ -1,0 +1,111 @@
+{
+  "case_id": "DCI_V9_T02_SOURCE_NET_SIMPLE_NO_SOURCE_CONTROL",
+  "description": "Control: generated simple source-net R/C/L body using DI/I0, without a current source object.",
+  "status": "temporary_dc_current_v9_connected_source_diagnostics_not_locked",
+  "output": "DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_TEST_BATCH\\DCI_V9_T02_SOURCE_NET_SIMPLE_NO_SOURCE_CONTROL\\DCI_V9_T02_SOURCE_NET_SIMPLE_NO_SOURCE_CONTROL.pdsprj",
+  "object_chunk_len": 2008,
+  "root_cdb_len": 487,
+  "root_dsn_len": 69655,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 2,
+    "WIRE": 6,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3,
+    "CAP10": 1
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 66704,
+    "second_isis": 68758,
+    "second_object_data": 68793,
+    "object_data_pointer": 68806
+  },
+  "hashes": {
+    "DCI_V9_T02_SOURCE_NET_SIMPLE_NO_SOURCE_CONTROL.pdsprj": "2db9b248533c9ccbd1b2fffc286c5ad515bf3daa764e13742f371e90919c2434",
+    "DCI_V9_T02_SOURCE_NET_SIMPLE_NO_SOURCE_CONTROL.ROOT.CDB.bin": "48eab5443c0b13bf9e2ae0e8e4bb07de087f825a812713c1d501544d6fe10273",
+    "DCI_V9_T02_SOURCE_NET_SIMPLE_NO_SOURCE_CONTROL.ROOT.DSN.bin": "08d7ddd14274c79cc5bc8e056e7f0228e99c1e32ddde8e603e26f44f5887fc4c",
+    "DCI_V9_T02_SOURCE_NET_SIMPLE_NO_SOURCE_CONTROL.OBJECT_CHUNK.bin": "8485b58af56524cecb11238d5a7c3a250fee7de9f4320f1327a5bd877f4f6a01",
+    "object_chunk": "8485b58af56524cecb11238d5a7c3a250fee7de9f4320f1327a5bd877f4f6a01",
+    "ROOT.CDB": "48eab5443c0b13bf9e2ae0e8e4bb07de087f825a812713c1d501544d6fe10273"
+  },
+  "input": {
+    "base_payload_name": "MIXED_RCL_LOCKED_T03_01_SIMPLE_LOOP",
+    "source_kind": "dc_current",
+    "source_position": "none_control",
+    "groups": [
+      {
+        "mode": "RCL",
+        "start": "DI",
+        "end": "I0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RCL"
+      ],
+      "group_count": 1,
+      "component_count": 3,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "resistor_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "DV",
+      "source_net_negative": "D0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "B1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B1",
+        "right": "I0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "DI",
+        "right": "A1",
+        "global_id": 3,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      }
+    ]
+  }
+}

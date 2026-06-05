@@ -10,7 +10,7 @@ from typing import Any
 from .circuit_ir import CircuitIR, Issue
 from .pdsprj import read_internal_file, write_project_from_parts
 from .templates import Fixture, FixtureRegistry
-from .validation import ValidationReport, validate_circuit
+from .validation import ValidationReport, is_and_reference_circuit, validate_circuit
 from .versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
 
@@ -78,6 +78,9 @@ def select_validated_fixture(ir: CircuitIR, registry: FixtureRegistry) -> tuple[
         and not ir.circuit.layout.has_rendered_geometry
     ):
         return registry.get("hc08_d02_four_gates_unwired"), "hc08_d02_unwired_control"
+
+    if is_and_reference_circuit(ir):
+        return registry.get("e001_empty"), "experimental_and_reference_from_fresh_e001_base"
     return None
 
 
@@ -118,10 +121,23 @@ def generate_project(
     if selected is None:
         raise GenerationBlocked(_blocked_no_recipe(ir))
     fixture, recipe = selected
-    project_xml = patch_project_xml_version(read_internal_file(fixture.path, "PROJECT.XML"), PROTEUS_813)
-    root_dsn = patch_root_dsn_version(read_internal_file(fixture.path, "ROOT.DSN"), PROTEUS_813)
     out = Path(output_path)
-    write_project_from_parts(fixture.path, out, {"PROJECT.XML": project_xml, "ROOT.DSN": root_dsn})
+    if recipe == "experimental_and_reference_from_fresh_e001_base":
+        base = registry.get("e001_empty")
+        scaffold = registry.get("hc08_d03_logic_io")
+        write_project_from_parts(
+            base.path,
+            out,
+            {
+                "PROJECT.XML": patch_project_xml_version(read_internal_file(base.path, "PROJECT.XML"), PROTEUS_813),
+                "ROOT.DSN": patch_root_dsn_version(read_internal_file(scaffold.path, "ROOT.DSN"), PROTEUS_813),
+                "ROOT.CDB": read_internal_file(scaffold.path, "ROOT.CDB"),
+            },
+        )
+    else:
+        project_xml = patch_project_xml_version(read_internal_file(fixture.path, "PROJECT.XML"), PROTEUS_813)
+        root_dsn = patch_root_dsn_version(read_internal_file(fixture.path, "ROOT.DSN"), PROTEUS_813)
+        write_project_from_parts(fixture.path, out, {"PROJECT.XML": project_xml, "ROOT.DSN": root_dsn})
     result_template_path = out.with_suffix(".result-template.json")
     result_template = {
         "test_id": f"GEN_{ir.circuit.name}",

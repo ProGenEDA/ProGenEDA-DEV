@@ -1,0 +1,139 @@
+{
+  "schema_version": "mixed-passive-temp/v1",
+  "generator_target": "proteus-8.13-mixed-resistor-capacitor-terminal-power-ground",
+  "project": {
+    "name": "MIXED_V1_T01_6_COMPONENTS_ODD_R_EVEN_C",
+    "output_basename": "MIXED_V1_T01_6_COMPONENTS_ODD_R_EVEN_C",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "source_resistor_case": "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "N1"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 5080000,
+        "orientation_hint": "horizontal"
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N1",
+        "N2"
+      ],
+      "visual": {
+        "x": -3048000,
+        "y": 1270000,
+        "orientation_hint": "horizontal"
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "3k",
+      "nodes": [
+        "V0",
+        "N2"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": -2540000,
+        "orientation_hint": "horizontal"
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "C4",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N2",
+        "N3"
+      ],
+      "visual": {
+        "x": -3048000,
+        "y": -6350000,
+        "orientation_hint": "horizontal"
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "R5",
+      "type": "RESISTOR",
+      "value": "5k",
+      "nodes": [
+        "N3",
+        "G0"
+      ],
+      "visual": {
+        "x": -3048000,
+        "y": -10160000,
+        "orientation_hint": "horizontal"
+      }
+    },
+    {
+      "idx": 6,
+      "source_ref": "R6",
+      "ref": "C6",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": -13970000,
+        "orientation_hint": "horizontal"
+      }
+    }
+  ],
+  "metadata": {
+    "method": "odd components use resistor V9 records; even components use V10/V13 capacitor terminal records; one power bridge and G0 ground endpoints",
+    "object_order": "header, power bridge, capacitor output array, capacitor groups, resistor input array, resistor output array, separator, resistor groups",
+    "spacing": {
+      "safe_x_step": 3810000,
+      "safe_y_step": 3810000
+    }
+  }
+}

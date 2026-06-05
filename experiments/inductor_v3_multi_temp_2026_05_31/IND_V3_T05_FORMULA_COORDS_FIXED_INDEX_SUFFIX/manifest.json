@@ -1,0 +1,67 @@
+{
+  "case_id": "IND_V3_T05_FORMULA_COORDS_FIXED_INDEX_SUFFIX",
+  "source": "inductor V3 multi-inductor diagnostics",
+  "notes": "Same style as failed V2 T7, but fixes the L2 REALIND template/suffix issue. This tests whether recomputed multi geometry is also unsafe.",
+  "component_count": 3,
+  "power_bridge_count": 0,
+  "ground_terminal_count": 0,
+  "object_chunk_len": 2043,
+  "root_dsn_len": 68329,
+  "root_cdb_len": 512,
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65343,
+    "second_isis": 67432,
+    "second_object_data": 67467,
+    "object_data_pointer": 67480
+  },
+  "marker_counts": {
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "REALIND": 9,
+    "WIRE": 6
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "ref": "L1",
+      "value": "1mH",
+      "left": "N1",
+      "right": "N2",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "mode": "formula_coordinates_with_per_index_inductor_template"
+    },
+    {
+      "idx": 2,
+      "ref": "L2",
+      "value": "2mH",
+      "left": "N3",
+      "right": "N4",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "mode": "formula_coordinates_with_per_index_inductor_template"
+    },
+    {
+      "idx": 3,
+      "ref": "L3",
+      "value": "10uH",
+      "left": "N5",
+      "right": "N6",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "mode": "formula_coordinates_with_per_index_inductor_template"
+    }
+  ],
+  "matches_donor03_object_chunk": false,
+  "donor03_object_chunk_sha256": "b14031fdb99bccc4f7618730267b04cb3f5254f447cc08a95208f7b0d3c6672c",
+  "static_validation_issues": [],
+  "output_hashes": {
+    "pdsprj_sha256": "74cfb42db861e4148a91ed0b5e58464d27b72bf95a684cb09d94ce5f9945ee3a",
+    "root_dsn_sha256": "243d2e18ac633db648dcb524b325d0fdceff989d7535804fa67c16cd479b1f1d",
+    "root_cdb_sha256": "d475a88371e1d35dec383be57f5e118da183c98af4a78fdc2c1b967a786fd00f",
+    "object_chunk_sha256": "fc77c88ae2f2c74f4bb731dbfa2c98755dc3c7ba45b76b8a37af9a0c30885b85"
+  }
+}

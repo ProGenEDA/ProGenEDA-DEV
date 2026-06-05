@@ -1,0 +1,175 @@
+{
+  "batch_id": "MIXED_RCL_V17_COMPONENT_REMOVAL_STATIC_20260602",
+  "status": "static_generated_awaiting_user_proteus_open_netlist_test",
+  "source_feedback": "User reported all V16 wire-offset-fix cases worked and requested a 3R/4C/1L project by removing components from accepted full units.",
+  "method": "Use accepted V16 full-unit templates, remove only whole C/L/R terminal-component-wire subgroups, and give the final kept subgroup a valid final FF wire terminator.",
+  "test_order": [
+    "RCL_V17_T00_1X_FULL_RCL_CONTROL",
+    "RCL_V17_T01_1X_RC_REMOVE_L",
+    "RCL_V17_T02_1X_LC_REMOVE_R",
+    "RCL_V17_T03_1X_RL_REMOVE_C",
+    "RCL_V17_T04_1X_C_ONLY_REMOVE_RL",
+    "RCL_V17_T05_REQUESTED_3R_4C_1L"
+  ],
+  "cases": [
+    {
+      "case_id": "RCL_V17_T00_1X_FULL_RCL_CONTROL",
+      "description": "One full accepted V16-style RCL branch: V0 -> R -> C -> L -> G0.",
+      "branch_modes": [
+        "RCL"
+      ],
+      "component_count": 3,
+      "resistor_count": 1,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "object_chunk_len": 2263,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 3,
+        "COMPONENT VALUE": 3
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V17_T01_1X_RC_REMOVE_L",
+      "description": "One RC branch made by removing the L subgroup and converting the capacitor output terminal to G0.",
+      "branch_modes": [
+        "RC"
+      ],
+      "component_count": 2,
+      "resistor_count": 1,
+      "capacitor_count": 1,
+      "inductor_count": 0,
+      "object_chunk_len": 1583,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 1,
+        "WIRE": 5,
+        "RESISTOR": 2,
+        "REALIND": 0,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V17_T02_1X_LC_REMOVE_R",
+      "description": "One LC branch made by removing the R subgroup and connecting C input to V0.",
+      "branch_modes": [
+        "LC"
+      ],
+      "component_count": 2,
+      "resistor_count": 0,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "object_chunk_len": 1609,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 1,
+        "WIRE": 5,
+        "RESISTOR": 0,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V17_T03_1X_RL_REMOVE_C",
+      "description": "One RL branch made by removing the C subgroup and sharing R output/L input on A1.",
+      "branch_modes": [
+        "RL"
+      ],
+      "component_count": 2,
+      "resistor_count": 1,
+      "capacitor_count": 0,
+      "inductor_count": 1,
+      "object_chunk_len": 1591,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 1,
+        "WIRE": 5,
+        "RESISTOR": 2,
+        "REALIND": 3,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 2,
+        "COMPONENT VALUE": 2
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V17_T04_1X_C_ONLY_REMOVE_RL",
+      "description": "One capacitor-only branch between V0 and G0.",
+      "branch_modes": [
+        "C"
+      ],
+      "component_count": 1,
+      "resistor_count": 0,
+      "capacitor_count": 1,
+      "inductor_count": 0,
+      "object_chunk_len": 929,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERGROUND": 1,
+        "WIRE": 3,
+        "RESISTOR": 0,
+        "REALIND": 0,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 1,
+        "COMPONENT VALUE": 1
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "RCL_V17_T05_REQUESTED_3R_4C_1L",
+      "description": "Requested mixed count: one RCL branch, two RC branches, and one C-only branch, giving 3R/4C/1L.",
+      "branch_modes": [
+        "RCL",
+        "RC",
+        "RC",
+        "C"
+      ],
+      "component_count": 8,
+      "resistor_count": 3,
+      "capacitor_count": 4,
+      "inductor_count": 1,
+      "object_chunk_len": 5587,
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 5,
+        "$TERGROUND": 4,
+        "WIRE": 17,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 4,
+        "CAP10": 4,
+        "COMPONENT ID": 8,
+        "COMPONENT VALUE": 8
+      },
+      "static_validation_issues": []
+    }
+  ]
+}

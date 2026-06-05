@@ -1,0 +1,97 @@
+{
+  "base_payload_name": "MIXED_RCL_LOCKED_T07_05_BASIC_VOLTAGE_DIVIDER",
+  "source_kind": "dc_current",
+  "source_rule": "V12 accepted: DV/D0 terminals, V1/10V source ref/value, visible VSOURCE geometry, final model CSOURCE",
+  "source": {
+    "idx": 5,
+    "ref": "V1",
+    "value": "10V",
+    "model": "CSOURCE"
+  },
+  "groups": [
+    {
+      "mode": "RL",
+      "start": "DV",
+      "end": "N1"
+    },
+    {
+      "mode": "RC",
+      "start": "N1",
+      "end": "D0"
+    }
+  ],
+  "rcl_counts": {
+    "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+    "group_modes": [
+      "RL",
+      "RC"
+    ],
+    "group_count": 2,
+    "component_count": 4,
+    "capacitor_count": 1,
+    "inductor_count": 1,
+    "resistor_count": 2,
+    "power_bridge_count": 0,
+    "ground_terminal_count": 0,
+    "source_net_positive": "DV",
+    "source_net_negative": "D0"
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "A1",
+      "right": "N1",
+      "global_id": 1,
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": -3556000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "DV",
+      "right": "A1",
+      "global_id": 2,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A2",
+      "right": "D0",
+      "global_id": 3,
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": 2794000,
+      "y": 2540000
+    },
+    {
+      "idx": 4,
+      "unit": 2,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "10k",
+      "left": "N1",
+      "right": "A2",
+      "global_id": 4,
+      "in_suffix": "1506",
+      "out_suffix": "1538",
+      "x": 2794000,
+      "y": 5080000
+    }
+  ]
+}

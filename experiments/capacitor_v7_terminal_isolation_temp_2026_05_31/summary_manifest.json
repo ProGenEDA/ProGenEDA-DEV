@@ -1,0 +1,333 @@
+{
+  "case": "CAPACITOR_V7_TERMINAL_ISOLATION_TEMP_2026_05_31",
+  "status": "temporary_diagnostic_not_locked",
+  "method": "One-variable isolation around the known-opening V4 T04 single terminal-cap case after every V6 case failed.",
+  "test_order": [
+    "CAP_V7_T01_V4_T04_REPRO_SANITY",
+    "CAP_V7_T02_SINGLE_TERMINAL_CAP_1NF",
+    "CAP_V7_T03_SINGLE_TERMINAL_CAP_PLUS_EXTRA_CDB_ONLY",
+    "CAP_V7_T04_SINGLE_TERMINAL_CAP_PLUS_FREE_1UF",
+    "CAP_V7_T05_FREE_1UF_BEFORE_SINGLE_TERMINAL_CAP",
+    "CAP_V7_T06_TWO_TERMINAL_CAPS_1UF_CAP_SUFFIX",
+    "CAP_V7_T07_TWO_TERMINAL_CAPS_1UF_RES_SUFFIX_TERMS_FIRST"
+  ],
+  "decision_rule": [
+    "If T01 fails, the V4 T04 opening report was not reproducible and we must return to exact T02/T04 baseline.",
+    "If T01 works but T02 fails, 1nF value mutation breaks terminal-attached capacitor records.",
+    "If T03 fails, extra CDB-only capacitor records break terminal-attached cap projects.",
+    "If T04/T05 fail, mixing free and terminal-attached capacitor visual records is unsafe.",
+    "If T06/T07 fail, multiple terminal-attached caps require a real multi-terminal-cap donor."
+  ],
+  "cases": [
+    {
+      "case_id": "CAP_V7_T01_V4_T04_REPRO_SANITY",
+      "status": "temporary_capacitor_v7_terminal_isolation_not_locked",
+      "description": "Rebuild the known-opening V4 T04 shape: one translated terminal-attached C1 1uF.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 674,
+      "root_cdb_len": 252,
+      "root_dsn_len": 66662,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2,
+          "1uF": 1,
+          "1nF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 1,
+          "CAP": 4,
+          "CAP10": 2,
+          "1uF": 1,
+          "1nF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65765,
+        "second_object_data": 65800,
+        "object_data_pointer": 65813
+      },
+      "validations": {
+        "expected_relation": "Should match the V4 T04 generated method."
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V7_T01_V4_T04_REPRO_SANITY.pdsprj": "378c0da161a970d3de10b6ebd6f0e563ad19daded726be3d6892ae9d55e555fa",
+        "CAP_V7_T01_V4_T04_REPRO_SANITY.ROOT.CDB.bin": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89",
+        "CAP_V7_T01_V4_T04_REPRO_SANITY.ROOT.DSN.bin": "a0f28f51d9d15e84111d1b9f6438369d603ab04195fa36b48e0c83d8bff0f174",
+        "object_chunk": "6652c624673817307af20e2b30da8e79072ddbdfc1111e31efc12c28ebd819d6",
+        "ROOT.CDB": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89"
+      }
+    },
+    {
+      "case_id": "CAP_V7_T02_SINGLE_TERMINAL_CAP_1NF",
+      "status": "temporary_capacitor_v7_terminal_isolation_not_locked",
+      "description": "Only change V4 T04 from 1uF to 1nF with a matching one-cap CDB.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 674,
+      "root_cdb_len": 252,
+      "root_dsn_len": 66662,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2,
+          "1uF": 0,
+          "1nF": 1
+        },
+        "root_cdb": {
+          "CAPACITOR": 1,
+          "CAP": 4,
+          "CAP10": 2,
+          "1uF": 0,
+          "1nF": 1
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65765,
+        "second_object_data": 65800,
+        "object_data_pointer": 65813
+      },
+      "validations": {},
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V7_T02_SINGLE_TERMINAL_CAP_1NF.pdsprj": "a4328638820eb5de3e2e0762d1ac0483b9992ab1bef7b84e8d45d82ad56ecdca",
+        "CAP_V7_T02_SINGLE_TERMINAL_CAP_1NF.ROOT.CDB.bin": "89681419a04af42151ed38a25c09cfa13cd5827cb27631301bda5f8c17440008",
+        "CAP_V7_T02_SINGLE_TERMINAL_CAP_1NF.ROOT.DSN.bin": "f887046f62090fb17648474c076dd1fbcf4f451b597561d3a67ff4ce00293182",
+        "object_chunk": "a2c9a04ae3b73204307a0776736a46a4c60a30c5b3a41bff4871610f17145f19",
+        "ROOT.CDB": "89681419a04af42151ed38a25c09cfa13cd5827cb27631301bda5f8c17440008"
+      }
+    },
+    {
+      "case_id": "CAP_V7_T03_SINGLE_TERMINAL_CAP_PLUS_EXTRA_CDB_ONLY",
+      "status": "temporary_capacitor_v7_terminal_isolation_not_locked",
+      "description": "Known-opening C1 1uF terminal group plus an extra C2 CDB record, no C2 visual object.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 674,
+      "root_cdb_len": 386,
+      "root_dsn_len": 66662,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2,
+          "1uF": 1,
+          "1nF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2,
+          "1nF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65765,
+        "second_object_data": 65800,
+        "object_data_pointer": 65813
+      },
+      "validations": {},
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V7_T03_SINGLE_TERMINAL_CAP_PLUS_EXTRA_CDB_ONLY.pdsprj": "a9be3d3f5033d68b4a1f6997bb781ace2b723d84bfcbb08fbf50919fb83ae261",
+        "CAP_V7_T03_SINGLE_TERMINAL_CAP_PLUS_EXTRA_CDB_ONLY.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V7_T03_SINGLE_TERMINAL_CAP_PLUS_EXTRA_CDB_ONLY.ROOT.DSN.bin": "a0f28f51d9d15e84111d1b9f6438369d603ab04195fa36b48e0c83d8bff0f174",
+        "object_chunk": "6652c624673817307af20e2b30da8e79072ddbdfc1111e31efc12c28ebd819d6",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V7_T04_SINGLE_TERMINAL_CAP_PLUS_FREE_1UF",
+      "status": "temporary_capacitor_v7_terminal_isolation_not_locked",
+      "description": "Known-opening C1 1uF terminal group plus one free C2 1uF visual record.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1040,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67028,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2,
+          "1uF": 2,
+          "1nF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2,
+          "1nF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66131,
+        "second_object_data": 66166,
+        "object_data_pointer": 66179
+      },
+      "validations": {},
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V7_T04_SINGLE_TERMINAL_CAP_PLUS_FREE_1UF.pdsprj": "0e1b579547c1f0ad0d3d0de1c158e38ebc30ce7e42841bd1e1ed97385b081340",
+        "CAP_V7_T04_SINGLE_TERMINAL_CAP_PLUS_FREE_1UF.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V7_T04_SINGLE_TERMINAL_CAP_PLUS_FREE_1UF.ROOT.DSN.bin": "d011c16fa102691e5d6e9c6d86e34c050e638c775c6bb549d6d12ad10f10cc92",
+        "object_chunk": "48e32f006cb0194f5fbe8aeca60877654d921f452ba1fec7a577f0d3480d13aa",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V7_T05_FREE_1UF_BEFORE_SINGLE_TERMINAL_CAP",
+      "status": "temporary_capacitor_v7_terminal_isolation_not_locked",
+      "description": "Same objects as T04, but free C2 appears before terminal-attached C1 in OBJECT DATA.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap3_three_capacitors.pdsprj",
+      "object_chunk_len": 1039,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67027,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "WIRE": 2,
+          "1uF": 2,
+          "1nF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2,
+          "1nF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66130,
+        "second_object_data": 66165,
+        "object_data_pointer": 66178
+      },
+      "validations": {},
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V7_T05_FREE_1UF_BEFORE_SINGLE_TERMINAL_CAP.pdsprj": "c7d8943fee86374b99fd113a302aa1dba05f326ba02b57ef586b941660c0fe33",
+        "CAP_V7_T05_FREE_1UF_BEFORE_SINGLE_TERMINAL_CAP.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V7_T05_FREE_1UF_BEFORE_SINGLE_TERMINAL_CAP.ROOT.DSN.bin": "d42d431d5d7588c3bcd552c04b6d2b1897ae57e056abb3c46a185cef1f992e8b",
+        "object_chunk": "1956f17923bcd039ebd9116811782a8f29d23e8150c66f7f051b275f25d24ebc",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V7_T06_TWO_TERMINAL_CAPS_1UF_CAP_SUFFIX",
+      "status": "temporary_capacitor_v7_terminal_isolation_not_locked",
+      "description": "Two terminal-attached capacitors using 1uF and CAP_T02 suffix family.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1347,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67335,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4,
+          "1uF": 2,
+          "1nF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2,
+          "1nF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66438,
+        "second_object_data": 66473,
+        "object_data_pointer": 66486
+      },
+      "validations": {},
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V7_T06_TWO_TERMINAL_CAPS_1UF_CAP_SUFFIX.pdsprj": "c93f0fb9241657c87da5c817db80ba96e74b865d365336ee83387f87a2722fa0",
+        "CAP_V7_T06_TWO_TERMINAL_CAPS_1UF_CAP_SUFFIX.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V7_T06_TWO_TERMINAL_CAPS_1UF_CAP_SUFFIX.ROOT.DSN.bin": "2f9bc8578989f8c5b37842b924f668f9610ef91f2b32f9ab3a085b1f1678179d",
+        "object_chunk": "5742efdd5a372eb8e79d26262df19327956d689c5203c6d6fa24ba58f83245bd",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    },
+    {
+      "case_id": "CAP_V7_T07_TWO_TERMINAL_CAPS_1UF_RES_SUFFIX_TERMS_FIRST",
+      "status": "temporary_capacitor_v7_terminal_isolation_not_locked",
+      "description": "Two terminal-attached capacitors using 1uF, resistor suffix family, and terminals-first order.",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1347,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67335,
+      "marker_counts": {
+        "object_chunk": {
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "WIRE": 4,
+          "1uF": 2,
+          "1nF": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4,
+          "1uF": 2,
+          "1nF": 0
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66438,
+        "second_object_data": 66473,
+        "object_data_pointer": 66486
+      },
+      "validations": {},
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V7_T07_TWO_TERMINAL_CAPS_1UF_RES_SUFFIX_TERMS_FIRST.pdsprj": "c363db86d396d6da3f9371d2faff7036e0f25b3493516afa6cffcce6a113ef81",
+        "CAP_V7_T07_TWO_TERMINAL_CAPS_1UF_RES_SUFFIX_TERMS_FIRST.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V7_T07_TWO_TERMINAL_CAPS_1UF_RES_SUFFIX_TERMS_FIRST.ROOT.DSN.bin": "b9227fb4ecbd6d4915610a48ba909811ce71382ac951047d24d730f270b7fa72",
+        "object_chunk": "a1c422c985ed327d5f452d7d4ddfce29f5a9410ef2b13f99712209bb0c33b265",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      }
+    }
+  ]
+}

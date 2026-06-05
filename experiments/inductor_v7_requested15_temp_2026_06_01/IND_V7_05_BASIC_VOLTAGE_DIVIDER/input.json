@@ -1,0 +1,91 @@
+{
+  "schema_version": "inductor-temp-v6/v0",
+  "generator_target": "proteus-8.13-inductor-6-21-diagnostic",
+  "case_id": "IND_V7_05_BASIC_VOLTAGE_DIVIDER",
+  "source_resistor_case": null,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "VT",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "9mH",
+      "nodes": [
+        "V0",
+        "VT"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "5mH",
+      "nodes": [
+        "VT",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "power_ground_after_first_left_wire_extended",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "9mH",
+        "visible_value": "9mH",
+        "left": "V0",
+        "right": "VT",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 2,
+        "source_ref": "R2",
+        "ref": "L2",
+        "value": "5mH",
+        "visible_value": "5mH",
+        "left": "VT",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "04c2",
+        "out_suffix": "04f4",
+        "x": -7366000,
+        "y": 2540000
+      }
+    ]
+  }
+}

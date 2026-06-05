@@ -1,0 +1,277 @@
+{
+  "case": "CAPACITOR_V4_TEMP_2026_05_30",
+  "status": "temporary_diagnostic_not_locked",
+  "method": "Exact donor reproduction guards first, then same-length patch, coordinate translation, and only then a two-cap generated case.",
+  "important_rule": "Do not promote capacitor until Proteus opens the ordered diagnostics without VGDVC/library errors.",
+  "test_order": [
+    "CAP_V4_T01_EXACT_T01_SINGLE_CAP",
+    "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL",
+    "CAP_V4_T03_PATCHED_C2_SAME_POSITION",
+    "CAP_V4_T04_TRANSLATED_T02_GROUP",
+    "CAP_V4_T05_TWO_ISOLATED_CAPS"
+  ],
+  "cases": [
+    {
+      "case_id": "CAP_V4_T01_EXACT_T01_SINGLE_CAP",
+      "status": "temporary_capacitor_v4_diagnostic_not_locked",
+      "description": "Exact CAP_T01 object chunk plus exact generated C1 ROOT.CDB, rebuilt from E001.",
+      "source": "CAP_T01 exact object chunk transplant",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t01_single_capacitor_1uf.pdsprj",
+      "object_chunk_len": 367,
+      "root_cdb_len": 252,
+      "root_dsn_len": 66355,
+      "marker_counts": {
+        "object_chunk": {
+          "$TERINPUT": 0,
+          "$TEROUTPUT": 0,
+          "$TERPOWER": 0,
+          "$TERGROUND": 0,
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "WIRE": 0
+        },
+        "root_cdb": {
+          "CAPACITOR": 1,
+          "CAP": 4,
+          "CAP10": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65458,
+        "second_object_data": 65493,
+        "object_data_pointer": 65506
+      },
+      "validations": {
+        "t01_cdb_exact": true,
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V4_T01_EXACT_T01_SINGLE_CAP.pdsprj": "ddcd0e9974baf9053bb12b50e1b778f584fc731c13229e0adb32f894de56cd6a",
+        "CAP_V4_T01_EXACT_T01_SINGLE_CAP.ROOT.CDB.bin": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89",
+        "CAP_V4_T01_EXACT_T01_SINGLE_CAP.ROOT.DSN.bin": "c42a7408634cf87d9f05f2bbf213dbd94548303b084c80613d92308c37e87d59",
+        "object_chunk": "587c1030ab62673176668f301245fbe5269b408f35367e1f10eb7cdf8e3a5aa4",
+        "ROOT.CDB": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89"
+      },
+      "output_files": [
+        "CAP_V4_T01_EXACT_T01_SINGLE_CAP.pdsprj",
+        "CAP_V4_T01_EXACT_T01_SINGLE_CAP.ROOT.CDB.bin",
+        "CAP_V4_T01_EXACT_T01_SINGLE_CAP.ROOT.DSN.bin",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL",
+      "status": "temporary_capacitor_v4_diagnostic_not_locked",
+      "description": "Exact CAP_T02 terminal-capacitor-terminal object chunk plus exact generated C1 ROOT.CDB, rebuilt from E001.",
+      "source": "CAP_T02 exact object chunk transplant",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 674,
+      "root_cdb_len": 252,
+      "root_dsn_len": 66662,
+      "marker_counts": {
+        "object_chunk": {
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "$TERPOWER": 0,
+          "$TERGROUND": 0,
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "WIRE": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 1,
+          "CAP": 4,
+          "CAP10": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65765,
+        "second_object_data": 65800,
+        "object_data_pointer": 65813
+      },
+      "validations": {
+        "t02_rebuild_exact": true,
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL.pdsprj": "5f4b291237ed1db58f1e3fd0175fc8e4ef5d0a5f0bc11bdce0042ee219bd0dd1",
+        "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL.ROOT.CDB.bin": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89",
+        "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL.ROOT.DSN.bin": "1e8a35a33e20ed8ef9b8cd26120771cbe6e5dc30971451df1d11ac9a1e4a249e",
+        "object_chunk": "d6524a189e6e0282700b715804030d6262474b7adeb77688fde39bbb2aac7591",
+        "ROOT.CDB": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89"
+      },
+      "output_files": [
+        "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL.pdsprj",
+        "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL.ROOT.CDB.bin",
+        "CAP_V4_T02_EXACT_T02_TERMINAL_CAP_TERMINAL.ROOT.DSN.bin",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "CAP_V4_T03_PATCHED_C2_SAME_POSITION",
+      "status": "temporary_capacitor_v4_diagnostic_not_locked",
+      "description": "One generated CAP_T02-style group with C2/N3/N4 labels at the donor coordinates.",
+      "source": "CAP_T02 group with same-length ref and terminal label patches",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 674,
+      "root_cdb_len": 252,
+      "root_dsn_len": 66662,
+      "marker_counts": {
+        "object_chunk": {
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "$TERPOWER": 0,
+          "$TERGROUND": 0,
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "WIRE": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 1,
+          "CAP": 4,
+          "CAP10": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65765,
+        "second_object_data": 65800,
+        "object_data_pointer": 65813
+      },
+      "validations": {
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V4_T03_PATCHED_C2_SAME_POSITION.pdsprj": "1460d2f73c0ee007b73705c4dea607f4da2dfe08674c7ef9b7c9a51336e72bc1",
+        "CAP_V4_T03_PATCHED_C2_SAME_POSITION.ROOT.CDB.bin": "fab8390899f05374058c0eb4d7593cb9614a930a6ae4aa85e7ca2b533d137e48",
+        "CAP_V4_T03_PATCHED_C2_SAME_POSITION.ROOT.DSN.bin": "0cacc814921549ff36efa6aec2474e2e8d63c8fe1144bb7360e7f0c4b7cd424a",
+        "object_chunk": "adae5542761369b1fd30f747c30db76de9e154ffc88b6b298ed86f7284705dbb",
+        "ROOT.CDB": "fab8390899f05374058c0eb4d7593cb9614a930a6ae4aa85e7ca2b533d137e48"
+      },
+      "output_files": [
+        "CAP_V4_T03_PATCHED_C2_SAME_POSITION.pdsprj",
+        "CAP_V4_T03_PATCHED_C2_SAME_POSITION.ROOT.CDB.bin",
+        "CAP_V4_T03_PATCHED_C2_SAME_POSITION.ROOT.DSN.bin",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "CAP_V4_T04_TRANSLATED_T02_GROUP",
+      "status": "temporary_capacitor_v4_diagnostic_not_locked",
+      "description": "One generated CAP_T02-style group translated by the locked safe spacing.",
+      "source": "CAP_T02 group with coordinate translation only",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 674,
+      "root_cdb_len": 252,
+      "root_dsn_len": 66662,
+      "marker_counts": {
+        "object_chunk": {
+          "$TERINPUT": 1,
+          "$TEROUTPUT": 1,
+          "$TERPOWER": 0,
+          "$TERGROUND": 0,
+          "CAPACITOR": 1,
+          "CAP10": 1,
+          "WIRE": 2
+        },
+        "root_cdb": {
+          "CAPACITOR": 1,
+          "CAP": 4,
+          "CAP10": 2
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 65765,
+        "second_object_data": 65800,
+        "object_data_pointer": 65813
+      },
+      "validations": {
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V4_T04_TRANSLATED_T02_GROUP.pdsprj": "378c0da161a970d3de10b6ebd6f0e563ad19daded726be3d6892ae9d55e555fa",
+        "CAP_V4_T04_TRANSLATED_T02_GROUP.ROOT.CDB.bin": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89",
+        "CAP_V4_T04_TRANSLATED_T02_GROUP.ROOT.DSN.bin": "a0f28f51d9d15e84111d1b9f6438369d603ab04195fa36b48e0c83d8bff0f174",
+        "object_chunk": "6652c624673817307af20e2b30da8e79072ddbdfc1111e31efc12c28ebd819d6",
+        "ROOT.CDB": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89"
+      },
+      "output_files": [
+        "CAP_V4_T04_TRANSLATED_T02_GROUP.pdsprj",
+        "CAP_V4_T04_TRANSLATED_T02_GROUP.ROOT.CDB.bin",
+        "CAP_V4_T04_TRANSLATED_T02_GROUP.ROOT.DSN.bin",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    },
+    {
+      "case_id": "CAP_V4_T05_TWO_ISOLATED_CAPS",
+      "status": "temporary_capacitor_v4_diagnostic_not_locked",
+      "description": "Two generated CAP_T02-style groups with generated two-cap ROOT.CDB. This is expected to be the first risky case.",
+      "source": "CAP_T02 group duplicated sequentially after exact one-cap guards",
+      "base_project": "e001_empty_project.pdsprj",
+      "donor_header_project": "cap_t02_capacitor_between_two_terminals.pdsprj",
+      "object_chunk_len": 1347,
+      "root_cdb_len": 386,
+      "root_dsn_len": 67335,
+      "marker_counts": {
+        "object_chunk": {
+          "$TERINPUT": 2,
+          "$TEROUTPUT": 2,
+          "$TERPOWER": 0,
+          "$TERGROUND": 0,
+          "CAPACITOR": 2,
+          "CAP10": 2,
+          "WIRE": 4
+        },
+        "root_cdb": {
+          "CAPACITOR": 2,
+          "CAP": 8,
+          "CAP10": 4
+        }
+      },
+      "section_pointer_values": {
+        "insert": 64167,
+        "first_isis": 65045,
+        "second_isis": 66438,
+        "second_object_data": 66473,
+        "object_data_pointer": 66486
+      },
+      "validations": {
+        "static_issues": []
+      },
+      "static_validation_issues": [],
+      "output_hashes": {
+        "CAP_V4_T05_TWO_ISOLATED_CAPS.pdsprj": "07041d1b4cef3c99d8c800f322ba4aa35559cc9aeac9bbe8ce837bc6cf954bc8",
+        "CAP_V4_T05_TWO_ISOLATED_CAPS.ROOT.CDB.bin": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae",
+        "CAP_V4_T05_TWO_ISOLATED_CAPS.ROOT.DSN.bin": "d9af4d6776f5caf0770e26a31bd706f442ecc452849c95b5dc0f0976ea3d8efe",
+        "object_chunk": "e0851cc4bcdf8128c4f5ee7cf1a5400a0e0fd288d0893c600cd030a8a31ffbc7",
+        "ROOT.CDB": "78144eac316e46e1608fdd7e1fc5597faa1d1735a01e18ab2f8790ca97fdd5ae"
+      },
+      "output_files": [
+        "CAP_V4_T05_TWO_ISOLATED_CAPS.pdsprj",
+        "CAP_V4_T05_TWO_ISOLATED_CAPS.ROOT.CDB.bin",
+        "CAP_V4_T05_TWO_ISOLATED_CAPS.ROOT.DSN.bin",
+        "manifest.json",
+        "README_TEST_FIRST.txt"
+      ]
+    }
+  ]
+}

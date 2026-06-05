@@ -1,0 +1,100 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project_name": "Simple Loop",
+  "output_basename": "01_SIMPLE_LOOP",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "donor_fixture_id": "r21_v9_resistor_terminal_donor",
+  "power_bridge_fixture_id": "power_terminal_bridge_donor",
+  "power_bridge_core_len_bytes": 255,
+  "power_bridge_count": 1,
+  "power_nodes": [
+    "V0"
+  ],
+  "node_count_requested": 2,
+  "component_count_requested": 1,
+  "component_count_emitted_cdb": 1,
+  "component_count_emitted_dsn": 1,
+  "terminal_count": 4,
+  "input_terminal_count": 1,
+  "output_terminal_count": 1,
+  "power_terminal_count": 1,
+  "ground_terminal_count": 1,
+  "short_wire_count": 2,
+  "bridge_wire_count": 1,
+  "visual_wire_count": 0,
+  "visual_wire_skipped_count": 0,
+  "wire_count": 3,
+  "object_group_count": 1,
+  "auto_placed_count": 0,
+  "layout_adjusted_count": 0,
+  "object_chunk_len": 910,
+  "root_cdb_len": 221,
+  "root_dsn_len": 66513,
+  "terminator_validation": {
+    "final_object_has_final_terminator": true,
+    "premature_terminator_issues": []
+  },
+  "link_suffix_validation": {
+    "checked": true,
+    "issues": []
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 64660,
+    "second_isis": 65616,
+    "second_object_data": 65651,
+    "object_data_pointer": 65664
+  },
+  "static_validation_issues": [],
+  "topology": [
+    {
+      "idx": 1,
+      "ref": "R1",
+      "value": "1k",
+      "visible_value": "1k",
+      "left": "V0",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0159",
+      "out_suffix": "018b",
+      "angle_tenths": -900,
+      "pin1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "pin2": {
+        "x": -6350000,
+        "y": 3810000
+      },
+      "x": -6350000,
+      "y": 5080000,
+      "auto_placed": false
+    }
+  ],
+  "known_limitations": [
+    "Two-character node labels only; use V0/G0 instead of VCC/GND.",
+    "Power support emits one donor-derived $TERPOWER -> $TEROUTPUT bridge for the power node.",
+    "Ground terminals are supported only on right endpoints.",
+    "Resistor drawing supports locked 90-degree rotations only; arbitrary diagonal component angles and routed bus/junction geometry are still experimental.",
+    "Standalone layout.visual_wires are intentionally skipped in production until VGDVC-safe wire records are validated."
+  ],
+  "output_files": [
+    "01_SIMPLE_LOOP.pdsprj",
+    "01_SIMPLE_LOOP.ROOT.CDB.bin",
+    "01_SIMPLE_LOOP.ROOT.DSN.bin",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "01_SIMPLE_LOOP.pdsprj": "babce434a83ad523af5a709295bc963c0bef6605ba7b40907d818c9d5f9bbe7c",
+    "01_SIMPLE_LOOP.ROOT.CDB.bin": "a3af4098f6eb5bc46501fdabe58d0f66b2bb3aac9917be1692e2525daa684c1d",
+    "01_SIMPLE_LOOP.ROOT.DSN.bin": "efa8bf786fdfb7e2d7791a9970d34f224e55b08214cafb49fa64caa1178e8552",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41",
+    "power_bridge_donor": "d06b97bec98b2a6990a3e9e948afa0a848acc56815c4c5ee458d4e2f4c979d55"
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema_version": "capacitor-network-temp/v12",
+  "generator_target": "proteus-8.13-capacitor-v10-manual-terminal-order",
+  "project": {
+    "name": "14_H_BRIDGE_RESISTOR_VERSION",
+    "output_basename": "14_H_BRIDGE_RESISTOR_VERSION",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "source_resistor_case": "14_H_BRIDGE_RESISTOR_VERSION",
+  "nodes": [
+    {
+      "id": "V0"
+    },
+    {
+      "id": "L1"
+    },
+    {
+      "id": "G0"
+    },
+    {
+      "id": "R1"
+    }
+  ],
+  "components": [
+    {
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "L1"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 5080000,
+        "orientation_hint": "horizontal_v10_only"
+      }
+    },
+    {
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "2uF",
+      "nodes": [
+        "L1",
+        "G0"
+      ],
+      "visual": {
+        "x": -6858000,
+        "y": 2540000,
+        "orientation_hint": "horizontal_v10_only"
+      }
+    },
+    {
+      "ref": "C3",
+      "type": "CAPACITOR",
+      "value": "3uF",
+      "nodes": [
+        "V0",
+        "R1"
+      ],
+      "visual": {
+        "x": -4318000,
+        "y": 5080000,
+        "orientation_hint": "horizontal_v10_only"
+      }
+    },
+    {
+      "ref": "C4",
+      "type": "CAPACITOR",
+      "value": "4uF",
+      "nodes": [
+        "R1",
+        "G0"
+      ],
+      "visual": {
+        "x": -4318000,
+        "y": 2540000,
+        "orientation_hint": "horizontal_v10_only"
+      }
+    },
+    {
+      "ref": "C5",
+      "type": "CAPACITOR",
+      "value": "5uF",
+      "nodes": [
+        "L1",
+        "R1"
+      ],
+      "visual": {
+        "x": -4318000,
+        "y": 2540000,
+        "orientation_hint": "horizontal_v10_only"
+      }
+    }
+  ],
+  "metadata": {
+    "source": "requested_resistor_networks_oriented_2026_05_30 converted R->C",
+    "method": "V10 manual donor outputs-first terminal-capacitor order",
+    "known_limitations": [
+      "Uses terminal-label topology; no standalone bus/junction wires.",
+      "V0 and G0 are ordinary terminal labels in this temp batch, not power/ground symbols."
+    ]
+  }
+}

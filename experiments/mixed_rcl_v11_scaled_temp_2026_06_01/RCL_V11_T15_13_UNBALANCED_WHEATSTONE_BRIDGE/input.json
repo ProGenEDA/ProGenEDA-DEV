@@ -1,0 +1,198 @@
+{
+  "schema_version": "mixed-rcl-temp/v11-scaled",
+  "generator_target": "proteus-8.13-scaled-mixed-rcl-terminal-power-ground-diagnostic",
+  "case_id": "RCL_V11_T15_13_UNBALANCED_WHEATSTONE_BRIDGE",
+  "source_resistor_case": "13_UNBALANCED_WHEATSTONE_BRIDGE",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "L1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "R1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "L1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "left_upper_arm"
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "L1",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "left_lower_arm"
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "V0",
+        "R1"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "right_upper_arm"
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "R1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "right_lower_arm"
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "9mH",
+      "nodes": [
+        "L1",
+        "R1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 0,
+        "orientation_hint": "horizontal",
+        "role": "bridge_measurement_resistor"
+      }
+    }
+  ],
+  "metadata": {
+    "method": "mixed R/C/L using accepted capacitor block and repeated V10 native R/L pair blocks",
+    "object_order": "header, power bridge, capacitor outputs, capacitor groups, repeated native R/L pair blocks",
+    "temporary": true,
+    "conversion_notes": [],
+    "topology": [
+      {
+        "idx": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k",
+        "left": "V0",
+        "right": "L1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0627",
+        "out_suffix": "0659",
+        "x": -7366000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "ref": "C1",
+        "kind": "CAPACITOR",
+        "value": "1uF",
+        "visible_value": "1uF",
+        "left": "L1",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "011a",
+        "out_suffix": "00e8",
+        "cap_visual_index_byte_344": 1,
+        "wire_right_len": 49,
+        "x": -7366000,
+        "y": 2540000,
+        "idx": 2,
+        "ordinal": 1,
+        "source_ref": "R2"
+      },
+      {
+        "idx": 3,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "2mH",
+        "left": "V0",
+        "right": "R1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0401",
+        "out_suffix": "0433",
+        "x": -3556000,
+        "y": 5080000,
+        "rl_pair_index": 1
+      },
+      {
+        "idx": 4,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "4k",
+        "left": "R1",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0a73",
+        "out_suffix": "0aa5",
+        "x": -3556000,
+        "y": 2540000,
+        "rl_pair_index": 2
+      },
+      {
+        "idx": 5,
+        "kind": "INDUCTOR",
+        "ref": "L2",
+        "value": "9mH",
+        "left": "L1",
+        "right": "R1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "084d",
+        "out_suffix": "087f",
+        "x": -7366000,
+        "y": 0,
+        "rl_pair_index": 2
+      }
+    ]
+  }
+}

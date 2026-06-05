@@ -1,0 +1,55 @@
+{
+  "schema_version": "mixed-rcl-temp/v10-terminal-rl-donor",
+  "generator_target": "proteus-8.13-terminal-rl-boundary-diagnostic",
+  "case_id": "RCL_V10_T04_SERIES_CHUNK_IN_E001",
+  "description": "Manual series donor object chunk and CDB inserted into the clean E001 base. This is a control for donor header/base compatibility.",
+  "nodes": [
+    {
+      "id": "N2",
+      "kind": "internal"
+    },
+    {
+      "id": "N3",
+      "kind": "internal"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "N2",
+        "N3"
+      ],
+      "visual": {
+        "x": -9398000,
+        "y": 3556000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "N1",
+        "N2"
+      ],
+      "visual": {
+        "x": -9652000,
+        "y": 2032000
+      }
+    }
+  ],
+  "metadata": {
+    "temporary": true,
+    "object_order": "header, all inputs, L output+REALIND+wires, R output+RESISTOR+wires",
+    "topology": []
+  }
+}

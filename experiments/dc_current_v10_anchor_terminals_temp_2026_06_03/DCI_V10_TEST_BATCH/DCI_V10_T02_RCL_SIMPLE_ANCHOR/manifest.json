@@ -1,0 +1,117 @@
+{
+  "case_id": "DCI_V10_T02_RCL_SIMPLE_ANCHOR",
+  "description": "Generated simple R/C/L load with connected CSOURCE block plus donor DI/I0 anchor terminals.",
+  "status": "temporary_dc_current_v10_anchor_terminals_not_locked",
+  "output": "DCI_V10_TEST_BATCH\\DCI_V10_T02_RCL_SIMPLE_ANCHOR\\DCI_V10_T02_RCL_SIMPLE_ANCHOR.pdsprj",
+  "object_chunk_len": 2865,
+  "root_cdb_len": 592,
+  "root_dsn_len": 71639,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 5,
+    "$TEROUTPUT": 5,
+    "$TERGROUND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 2,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 2,
+    "WIRE": 8,
+    "COMPONENT ID": 4,
+    "COMPONENT VALUE": 4,
+    "CAP10": 1
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67831,
+    "second_isis": 70742,
+    "second_object_data": 70777,
+    "object_data_pointer": 70790
+  },
+  "hashes": {
+    "DCI_V10_T02_RCL_SIMPLE_ANCHOR.pdsprj": "a6c82d81dd63afad77c4e714fec7be068b24988b74c88a4ac0e3d945f8a23aee",
+    "DCI_V10_T02_RCL_SIMPLE_ANCHOR.ROOT.CDB.bin": "be3123b7489407f5cfceccd3a39a9c75f329fdb757fa0888fe0eb7d66e7064ad",
+    "DCI_V10_T02_RCL_SIMPLE_ANCHOR.ROOT.DSN.bin": "3cc99c36e30b221b8de506016afb0bd748a45f8afc383a5cdb60c1bb120b5115",
+    "DCI_V10_T02_RCL_SIMPLE_ANCHOR.OBJECT_CHUNK.bin": "08b9f7ae624e35e7fe6423b2d15d25466c6e020d5fda91bb851d3d50209a47e7",
+    "object_chunk": "08b9f7ae624e35e7fe6423b2d15d25466c6e020d5fda91bb851d3d50209a47e7",
+    "ROOT.CDB": "be3123b7489407f5cfceccd3a39a9c75f329fdb757fa0888fe0eb7d66e7064ad"
+  },
+  "input": {
+    "source_kind": "dc_current",
+    "source_block": "connected_current_load_donor_chunk_1_655",
+    "anchor_pair": "connected_current_load_donor_chunk_655_858",
+    "source": {
+      "idx": 4,
+      "ref": "I4",
+      "value": "500mA",
+      "model": "CSOURCE"
+    },
+    "groups": [
+      {
+        "mode": "RCL",
+        "start": "DI",
+        "end": "I0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RCL"
+      ],
+      "group_count": 1,
+      "component_count": 3,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "resistor_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "DV",
+      "source_net_negative": "D0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "B1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "B1",
+        "right": "I0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "DI",
+        "right": "A1",
+        "global_id": 3,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      }
+    ]
+  }
+}

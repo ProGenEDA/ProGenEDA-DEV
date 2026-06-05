@@ -1,0 +1,84 @@
+{
+  "schema_version": "mixed-rcl-temp/v10-terminal-rl-donor",
+  "generator_target": "proteus-8.13-terminal-rl-boundary-diagnostic",
+  "case_id": "RCL_V10_T08_NATIVE_POWER_GROUND_SERIES",
+  "description": "Generated V0 to G0 R+L series using one donor-derived V0 power bridge and G0 ground endpoint.",
+  "nodes": [
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "V0",
+      "kind": "power"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "N1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "N1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    }
+  ],
+  "metadata": {
+    "temporary": true,
+    "object_order": "header, all inputs, L output+REALIND+wires, R output+RESISTOR+wires",
+    "topology": [
+      {
+        "idx": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "1mH",
+        "left": "N1",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0401",
+        "out_suffix": "0433",
+        "x": -3556000,
+        "y": 5080000
+      },
+      {
+        "idx": 2,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k",
+        "left": "V0",
+        "right": "N1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0627",
+        "out_suffix": "0659",
+        "x": -7366000,
+        "y": 5080000
+      }
+    ]
+  }
+}

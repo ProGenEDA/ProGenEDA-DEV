@@ -1,0 +1,48 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project": {
+    "name": "PG01_SINGLE",
+    "output_basename": "PG01_SINGLE",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "G0"
+      ]
+    }
+  ],
+  "layout": {
+    "mode": "manual_component_positions",
+    "coordinate_units": "proteus_internal",
+    "component_positions": {
+      "R1": {
+        "x": -6350000,
+        "y": 5080000
+      }
+    }
+  },
+  "metadata": {
+    "source": "proteusgen predefined resistor acceptance case",
+    "case_slug": "pg01_single",
+    "notes": [
+      "Uses V0/G0 two-character power/ground labels for the locked V9 endpoint method."
+    ]
+  }
+}

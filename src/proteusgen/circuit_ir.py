@@ -105,6 +105,7 @@ class Circuit:
     components: tuple[Component, ...]
     nets: tuple[Net, ...]
     connections: tuple[Connection, ...]
+    equation: str | None = None
     layout: Layout = Layout()
 
 
@@ -179,8 +180,12 @@ def parse_circuit_ir(payload: Any) -> tuple[CircuitIR | None, list[Issue]]:
         issues.append(Issue("INVALID_TYPE", "`mode` must be a string.", "$.target.mode"))
 
     circuit_obj = _mapping(root.get("circuit"), "$.circuit", issues)
-    _unexpected(circuit_obj, {"name", "components", "nets", "connections", "layout"}, "$.circuit", issues)
+    _unexpected(circuit_obj, {"name", "components", "nets", "connections", "equation", "layout"}, "$.circuit", issues)
     name = _string(circuit_obj, "name", "$.circuit", issues)
+    equation = circuit_obj.get("equation")
+    if equation is not None and not isinstance(equation, str):
+        issues.append(Issue("INVALID_TYPE", "`equation` must be a string.", "$.circuit.equation"))
+        equation = None
     components: list[Component] = []
     for index, raw in enumerate(_array(circuit_obj.get("components"), "$.circuit.components", issues)):
         item = _mapping(raw, f"$.circuit.components[{index}]", issues)
@@ -291,6 +296,7 @@ def parse_circuit_ir(payload: Any) -> tuple[CircuitIR | None, list[Issue]]:
                 components=tuple(components),
                 nets=tuple(nets),
                 connections=tuple(connections),
+                equation=equation,
                 layout=Layout(
                     terminals=tuple(terminals),
                     wires=tuple(wires),

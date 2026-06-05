@@ -1,0 +1,84 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project": {
+    "name": "Parallel Circuit",
+    "output_basename": "03_PARALLEL_CIRCUIT",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "G0"
+      ]
+    },
+    {
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "2k",
+      "nodes": [
+        "V0",
+        "G0"
+      ]
+    },
+    {
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "3k",
+      "nodes": [
+        "V0",
+        "G0"
+      ]
+    },
+    {
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "4k",
+      "nodes": [
+        "V0",
+        "G0"
+      ]
+    }
+  ],
+  "layout": {
+    "mode": "manual_component_positions",
+    "coordinate_units": "proteus_internal",
+    "component_positions": {
+      "R1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "R2": {
+        "x": -6350000,
+        "y": 3556000
+      },
+      "R3": {
+        "x": -6350000,
+        "y": 2032000
+      },
+      "R4": {
+        "x": -6350000,
+        "y": 508000
+      }
+    }
+  },
+  "metadata": {
+    "source": "user requested resistor network list 2026-05-30",
+    "description": "Four resistors side-by-side, each connected from power to ground."
+  }
+}

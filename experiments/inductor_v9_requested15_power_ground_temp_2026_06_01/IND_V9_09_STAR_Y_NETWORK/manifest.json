@@ -1,0 +1,91 @@
+{
+  "case_id": "IND_V9_09_STAR_Y_NETWORK",
+  "status": "temporary_diagnostic_not_locked",
+  "description": "Power/ground inductor version of requested topology: Three resistors sharing a central node, with outer nodes at power, ground, and an output terminal.",
+  "component_count": 3,
+  "node_count": 4,
+  "mode": "sequential_groups",
+  "donor_record_project": "inductor_05_six_terminal.pdsprj",
+  "donor_dsn_project": "inductor_05_six_terminal.pdsprj",
+  "power_bridge_count": 1,
+  "ground_terminal_count": 1,
+  "object_chunk_len": 2297,
+  "root_cdb_len": 511,
+  "root_dsn_len": 68583,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 1,
+    "REALIND": 9,
+    "WIRE": 7
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65343,
+    "second_isis": 67686,
+    "second_object_data": 67721,
+    "object_data_pointer": 67734
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "value": "1mH",
+      "left": "V0",
+      "right": "C0",
+      "slot": 1,
+      "suffix_policy": "extend_from_donor05",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "01b2",
+      "out_suffix": "01e4",
+      "x": -7366000,
+      "y": 5080000,
+      "wire_right_len": 49
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "value": "2mH",
+      "left": "C0",
+      "right": "G0",
+      "slot": 2,
+      "suffix_policy": "extend_from_donor05",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "045a",
+      "out_suffix": "048c",
+      "x": -7366000,
+      "y": 2540000,
+      "wire_right_len": 49
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "value": "3mH",
+      "left": "C0",
+      "right": "O1",
+      "slot": 3,
+      "suffix_policy": "extend_from_donor05",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0702",
+      "out_suffix": "0734",
+      "x": -7366000,
+      "y": 0,
+      "wire_right_len": 50
+    }
+  ],
+  "static_validation_issues": [],
+  "output_hashes": {
+    "IND_V9_09_STAR_Y_NETWORK.pdsprj": "4f8935948bf299660506b0c745ddb16d3e55880f18ff4711f97ca8fd7c4ab903",
+    "IND_V9_09_STAR_Y_NETWORK.ROOT.CDB.bin": "111c61d8d58f131c8b58c251acb05eb97e396e9c0dae8f10f35e402791169f47",
+    "IND_V9_09_STAR_Y_NETWORK.ROOT.DSN.bin": "e5a4344c8f33823751d0b429d3904bc84e45e5ffcc2d8d93a786d117047c88ee",
+    "object_chunk": "301b2ccac1a7a655a5d4666edde08c0644a818d06741a822275a79db4a6aaeed",
+    "ROOT.CDB": "111c61d8d58f131c8b58c251acb05eb97e396e9c0dae8f10f35e402791169f47"
+  }
+}

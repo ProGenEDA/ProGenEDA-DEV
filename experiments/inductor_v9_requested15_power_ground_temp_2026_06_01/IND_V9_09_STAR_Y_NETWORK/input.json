@@ -1,0 +1,127 @@
+{
+  "schema_version": "inductor-temp-v8/v0",
+  "generator_target": "proteus-8.13-inductor-six-donor-diagnostic",
+  "case_id": "IND_V9_09_STAR_Y_NETWORK",
+  "source_resistor_case": null,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "C0",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "O1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "V0",
+        "C0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "C0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "3mH",
+      "nodes": [
+        "C0",
+        "O1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 0
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "sequential_groups",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "1mH",
+        "left": "V0",
+        "right": "C0",
+        "slot": 1,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 2,
+        "source_ref": "R2",
+        "ref": "L2",
+        "value": "2mH",
+        "left": "C0",
+        "right": "G0",
+        "slot": 2,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "045a",
+        "out_suffix": "048c",
+        "x": -7366000,
+        "y": 2540000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 3,
+        "source_ref": "R3",
+        "ref": "L3",
+        "value": "3mH",
+        "left": "C0",
+        "right": "O1",
+        "slot": 3,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0702",
+        "out_suffix": "0734",
+        "x": -7366000,
+        "y": 0,
+        "wire_right_len": 50
+      }
+    ]
+  }
+}

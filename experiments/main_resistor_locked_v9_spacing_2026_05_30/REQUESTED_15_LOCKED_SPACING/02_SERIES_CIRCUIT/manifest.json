@@ -1,0 +1,172 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project_name": "Series Circuit",
+  "output_basename": "02_SERIES_CIRCUIT",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "donor_fixture_id": "r21_v9_resistor_terminal_donor",
+  "power_bridge_fixture_id": "power_terminal_bridge_donor",
+  "power_bridge_core_len_bytes": 255,
+  "power_bridge_count": 1,
+  "power_nodes": [
+    "V0"
+  ],
+  "node_count_requested": 5,
+  "component_count_requested": 4,
+  "component_count_emitted_cdb": 4,
+  "component_count_emitted_dsn": 4,
+  "terminal_count": 10,
+  "input_terminal_count": 4,
+  "output_terminal_count": 4,
+  "power_terminal_count": 1,
+  "ground_terminal_count": 1,
+  "short_wire_count": 8,
+  "bridge_wire_count": 1,
+  "visual_wire_count": 0,
+  "visual_wire_skipped_count": 0,
+  "wire_count": 9,
+  "object_group_count": 4,
+  "auto_placed_count": 0,
+  "layout_adjusted_count": 3,
+  "object_chunk_len": 2869,
+  "root_cdb_len": 530,
+  "root_dsn_len": 68472,
+  "terminator_validation": {
+    "final_object_has_final_terminator": true,
+    "premature_terminator_issues": []
+  },
+  "link_suffix_validation": {
+    "checked": true,
+    "issues": []
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 64660,
+    "second_isis": 67575,
+    "second_object_data": 67610,
+    "object_data_pointer": 67623
+  },
+  "static_validation_issues": [],
+  "topology": [
+    {
+      "idx": 1,
+      "ref": "R1",
+      "value": "1k",
+      "visible_value": "1k",
+      "left": "V0",
+      "right": "N1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0159",
+      "out_suffix": "018b",
+      "angle_tenths": 0,
+      "pin1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "pin2": {
+        "x": -5080000,
+        "y": 5080000
+      },
+      "x": -6350000,
+      "y": 5080000,
+      "auto_placed": false
+    },
+    {
+      "idx": 2,
+      "ref": "R2",
+      "value": "2k",
+      "visible_value": "2k",
+      "left": "N1",
+      "right": "N2",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0317",
+      "out_suffix": "0349",
+      "angle_tenths": 0,
+      "pin1": {
+        "x": -3810000,
+        "y": 5080000
+      },
+      "pin2": {
+        "x": -2540000,
+        "y": 5080000
+      },
+      "x": -3810000,
+      "y": 5080000,
+      "auto_placed": false
+    },
+    {
+      "idx": 3,
+      "ref": "R3",
+      "value": "3k",
+      "visible_value": "3k",
+      "left": "N2",
+      "right": "N3",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "04d5",
+      "out_suffix": "0507",
+      "angle_tenths": 0,
+      "pin1": {
+        "x": -1270000,
+        "y": 5080000
+      },
+      "pin2": {
+        "x": 0,
+        "y": 5080000
+      },
+      "x": -1270000,
+      "y": 5080000,
+      "auto_placed": false
+    },
+    {
+      "idx": 4,
+      "ref": "R4",
+      "value": "4k",
+      "visible_value": "4k",
+      "left": "N3",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0693",
+      "out_suffix": "06c5",
+      "angle_tenths": 0,
+      "pin1": {
+        "x": 1270000,
+        "y": 5080000
+      },
+      "pin2": {
+        "x": 2540000,
+        "y": 5080000
+      },
+      "x": 1270000,
+      "y": 5080000,
+      "auto_placed": false
+    }
+  ],
+  "known_limitations": [
+    "Two-character node labels only; use V0/G0 instead of VCC/GND.",
+    "Power support emits one donor-derived $TERPOWER -> $TEROUTPUT bridge for the power node.",
+    "Ground terminals are supported only on right endpoints.",
+    "Resistor drawing supports locked 90-degree rotations only; arbitrary diagonal component angles and routed bus/junction geometry are still experimental.",
+    "Standalone layout.visual_wires are intentionally skipped in production until VGDVC-safe wire records are validated."
+  ],
+  "output_files": [
+    "02_SERIES_CIRCUIT.pdsprj",
+    "02_SERIES_CIRCUIT.ROOT.CDB.bin",
+    "02_SERIES_CIRCUIT.ROOT.DSN.bin",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "02_SERIES_CIRCUIT.pdsprj": "e12946414a01943626ae749fb935628511946077030bca66c43706df35f878fd",
+    "02_SERIES_CIRCUIT.ROOT.CDB.bin": "62daf4be94493d1f53dddf6b40ddbe1cfcd4ba672c3e8eaeaf0b4ffd0705fca0",
+    "02_SERIES_CIRCUIT.ROOT.DSN.bin": "1f91924569c029b3b650d5daecee90b4f5e75daba32f16d90b9096dcd15cf319",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41",
+    "power_bridge_donor": "d06b97bec98b2a6990a3e9e948afa0a848acc56815c4c5ee458d4e2f4c979d55"
+  }
+}

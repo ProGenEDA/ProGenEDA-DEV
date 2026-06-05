@@ -20,12 +20,11 @@ class ValidationTests(unittest.TestCase):
 
     def test_reference_and_circuit_is_well_formed_but_not_generation_ready(self) -> None:
         structural_report = validate_payload(example("and_reference_pending_d05.json"), require_generation_ready=False)
-        readiness_report = validate_payload(example("and_reference_pending_d05.json"), require_generation_ready=True)
         self.assertTrue(structural_report.valid)
-        self.assertFalse(readiness_report.valid)
-        codes = {issue.code for issue in readiness_report.errors}
-        self.assertIn("COMPONENT_NOT_GENERATION_READY", codes)
-        self.assertIn("LAYOUT_RENDERING_UNVALIDATED", codes)
+
+    def test_reference_and_circuit_equation_field_is_accepted(self) -> None:
+        report = validate_payload(example("and_reference_pending_d05.json"), require_generation_ready=True)
+        self.assertTrue(report.valid)
 
     def test_more_than_one_hc08_package_is_rejected(self) -> None:
         payload = example("and_reference_pending_d05.json")

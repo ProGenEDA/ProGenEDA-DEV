@@ -1,0 +1,100 @@
+{
+  "case_id": "RCL_V11_T03_01_SIMPLE_LOOP",
+  "status": "temporary_mixed_rcl_v11_scaled_not_locked",
+  "description": "Mixed R/C/L version of requested topology 01_SIMPLE_LOOP.",
+  "component_count": 3,
+  "node_count": 4,
+  "resistor_count": 1,
+  "capacitor_count": 1,
+  "inductor_count": 1,
+  "rl_pair_count": 1,
+  "power_bridge_count": 1,
+  "ground_terminal_count": 1,
+  "object_order": "header, power bridge, capacitor outputs, capacitor groups, repeated native R/L pair blocks",
+  "conversion_notes": [
+    "Expanded the one-component source into R/C/L series so the output exercises all three families."
+  ],
+  "object_chunk_len": 2262,
+  "root_cdb_len": 486,
+  "root_dsn_len": 69036,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 1,
+    "WIRE": 7,
+    "RESISTOR": 2,
+    "REALIND": 3,
+    "CAPACITOR": 1,
+    "CAP10": 1,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65831,
+    "second_isis": 68139,
+    "second_object_data": 68174,
+    "object_data_pointer": 68187
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "1k",
+      "left": "V0",
+      "right": "X1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0627",
+      "out_suffix": "0659",
+      "x": -7366000,
+      "y": 5080000,
+      "rl_pair_index": 1
+    },
+    {
+      "ref": "C1",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "X1",
+      "right": "X2",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "011a",
+      "out_suffix": "00e8",
+      "cap_visual_index_byte_344": 1,
+      "wire_right_len": 49,
+      "x": -3556000,
+      "y": 5080000,
+      "idx": 2,
+      "ordinal": 1,
+      "source_ref": "R1"
+    },
+    {
+      "idx": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "1mH",
+      "left": "X2",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0401",
+      "out_suffix": "0433",
+      "x": 254000,
+      "y": 5080000,
+      "rl_pair_index": 1
+    }
+  ],
+  "static_validation_issues": [],
+  "output_hashes": {
+    "RCL_V11_T03_01_SIMPLE_LOOP.pdsprj": "be005c1b192c37cdd1b738865c805aef5fda8d5e51e7ce36551f4f619133ca69",
+    "RCL_V11_T03_01_SIMPLE_LOOP.ROOT.CDB.bin": "7942960292d357c4d6895efd61f33e012985b969792dd2adb0ce7e4d51098cdd",
+    "RCL_V11_T03_01_SIMPLE_LOOP.ROOT.DSN.bin": "ac9c2ffb0d38619c5ccd1acc6dac46a513bfec75a32e2009fc9f6d6d893b1008",
+    "RCL_V11_T03_01_SIMPLE_LOOP.OBJECT_CHUNK.bin": "7b6976fa5badbb4be765f141f7d057ac56655bf3f2a47de844e63f2765651baa",
+    "object_chunk": "7b6976fa5badbb4be765f141f7d057ac56655bf3f2a47de844e63f2765651baa",
+    "ROOT.CDB": "7942960292d357c4d6895efd61f33e012985b969792dd2adb0ce7e4d51098cdd"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "project": {
+    "name": "RCL_REQUESTED_FILTER_VALUES",
+    "output_basename": "RCL_REQUESTED_FILTER_VALUES",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "groups": [
+    {
+      "mode": "RL",
+      "start": "V0",
+      "end": "B0"
+    },
+    {
+      "mode": "C",
+      "start": "A1",
+      "end": "N2"
+    },
+    {
+      "mode": "L",
+      "start": "B0",
+      "end": "N3"
+    },
+    {
+      "mode": "R",
+      "start": "N2",
+      "end": "N3"
+    },
+    {
+      "mode": "L",
+      "start": "N2",
+      "end": "G0"
+    },
+    {
+      "mode": "C",
+      "start": "N3",
+      "end": "G0"
+    }
+  ],
+  "component_values": {
+    "R1": "10R",
+    "R2": "50R",
+    "L1": "2mH",
+    "L2": "5mH",
+    "L3": "10m",
+    "C1": "4u7",
+    "C2": "10u"
+  },
+  "metadata": {
+    "description": "User-requested RCL bridge/filter network from image, emitted with power V0 and ground G0.",
+    "topology": [
+      "R1 connects V0 to A1.",
+      "L1 connects A1 to B0.",
+      "C1 connects A1 to N2.",
+      "L2 connects B0 to N3.",
+      "R2 connects N2 to N3.",
+      "L3 connects N2 to G0.",
+      "C2 connects N3 to G0."
+    ],
+    "compact_value_notes": {
+      "R1": "10R means 10 ohm.",
+      "R2": "50R means 50 ohm.",
+      "C1": "4u7 means 4.7 uF.",
+      "C2": "10u means 10 uF.",
+      "L3": "10m means 10 mH."
+    }
+  }
+}

@@ -1,0 +1,252 @@
+{
+  "batch_id": "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601",
+  "status": "static_generated_awaiting_user_proteus_test",
+  "source_fixture": "rlc_manual_donor",
+  "donor_analysis": {
+    "root_dsn_len": 68734,
+    "root_cdb_len": 481,
+    "object_chunk_len": 1087,
+    "object_chunk_sha256": "5d29339611393e1ed68e883f90ab897ee9334f681184af39fe6a96ac9229b2a2",
+    "root_cdb_sha256": "272bee9fd4ff64fd72e2008fcc84f70d35c1493106af7a1aa5c6447163dff123",
+    "marker_counts": {
+      "$TERPOWER": 0,
+      "$TERINPUT": 0,
+      "$TEROUTPUT": 0,
+      "$TERGROUND": 0,
+      "WIRE": 0,
+      "RESISTOR": 2,
+      "CAPACITOR": 1,
+      "CAP10": 1,
+      "REALIND": 3,
+      "COMPONENT ID": 3
+    },
+    "chunk_marker_positions": {
+      "L1": [
+        4
+      ],
+      "R1": [
+        377
+      ],
+      "C1": [
+        724
+      ],
+      "REALIND": [
+        144,
+        225,
+        334
+      ],
+      "RESISTOR": [
+        517,
+        680
+      ],
+      "CAPACITOR": [
+        952
+      ],
+      "COMPONENT ID": [
+        53,
+        426,
+        773
+      ]
+    },
+    "observed_free_component_order": [
+      {
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "record_start_guess": 1
+      },
+      {
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "record_start_guess": 375
+      },
+      {
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "record_start_guess": 722
+      }
+    ],
+    "note": "The manual donor contains free L/R/C component records and matching CDB entries, but no terminal or WIRE records."
+  },
+  "cases": [
+    {
+      "case_id": "RCL_V5_T01_EXACT_DONOR_REPACK",
+      "description": "Deterministic repack of the supplied RLC donor with no internal file changes.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 1087
+    },
+    {
+      "case_id": "RCL_V5_T02_DONOR_DSN_CDB_ON_E001_CONTAINER",
+      "description": "E001 container/project XML with the manual donor ROOT.DSN and ROOT.CDB copied intact.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 1087
+    },
+    {
+      "case_id": "RCL_V5_T03_DONOR_CHUNK_DONOR_HEADER_E001",
+      "description": "Manual donor object chunk and CDB inserted into E001 using the manual donor DSN device/header section.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 1087
+    },
+    {
+      "case_id": "RCL_V5_T04_DONOR_CHUNK_RESISTOR_HEADER_E001",
+      "description": "Manual donor object chunk and CDB inserted into E001 using the locked resistor donor DSN device/header section.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 1087
+    },
+    {
+      "case_id": "RCL_V5_T05_LRC_ORDER_DONOR_CDB",
+      "description": "power bridge, inductor block, resistor block, capacitor block; matches manual donor L/R/C family order. CDB mode: manual donor CDB.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 2263
+    },
+    {
+      "case_id": "RCL_V5_T06_LRC_ORDER_GENERATED_CDB",
+      "description": "power bridge, inductor block, resistor block, capacitor block; matches manual donor L/R/C family order. CDB mode: generated CDB in L/R/C spec order.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 2263
+    },
+    {
+      "case_id": "RCL_V5_T07_IND_CAP_RES_DONOR_CDB",
+      "description": "power bridge, inductor block, capacitor block, resistor block. CDB mode: manual donor CDB.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 2263
+    },
+    {
+      "case_id": "RCL_V5_T08_CL_JOINED_THEN_RES_DONOR_CDB",
+      "description": "power bridge, known-good capacitor+inductor outputs-first block, then resistor block. CDB mode: manual donor CDB.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 2263
+    },
+    {
+      "case_id": "RCL_V5_T09_V2_ORDER_DONOR_CDB",
+      "description": "power bridge, capacitor block, resistor block, inductor block; V2 order retested with manual donor CDB. CDB mode: manual donor CDB.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 1,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 3,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 2263
+    },
+    {
+      "case_id": "RCL_V5_T10_LRC_NO_POWER_DONOR_CDB",
+      "description": "no power bridge, inductor block, resistor block, capacitor block. CDB mode: manual donor CDB; no power bridge isolation.",
+      "static_validation_issues": [],
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 3,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 1,
+        "WIRE": 6,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "COMPONENT ID": 3
+      },
+      "object_chunk_len": 2008
+    }
+  ]
+}

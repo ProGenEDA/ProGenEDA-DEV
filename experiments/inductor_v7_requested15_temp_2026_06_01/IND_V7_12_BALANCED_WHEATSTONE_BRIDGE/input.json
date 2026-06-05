@@ -1,0 +1,191 @@
+{
+  "schema_version": "inductor-temp-v6/v0",
+  "generator_target": "proteus-8.13-inductor-6-21-diagnostic",
+  "case_id": "IND_V7_12_BALANCED_WHEATSTONE_BRIDGE",
+  "source_resistor_case": null,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "L1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "R1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "V0",
+        "L1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "L1",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "10uH",
+      "nodes": [
+        "V0",
+        "R1"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "L4",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "R1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "L5",
+      "type": "INDUCTOR",
+      "value": "9mH",
+      "nodes": [
+        "L1",
+        "R1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 0
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "power_ground_after_first_left_wire_extended",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "1mH",
+        "visible_value": "1mH",
+        "left": "V0",
+        "right": "L1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 2,
+        "source_ref": "R2",
+        "ref": "L2",
+        "value": "1mH",
+        "visible_value": "1mH",
+        "left": "L1",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "04c2",
+        "out_suffix": "04f4",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "source_ref": "R3",
+        "ref": "L3",
+        "value": "10uH",
+        "visible_value": "10uH",
+        "left": "V0",
+        "right": "R1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 3,
+        "suffix_policy": "extended",
+        "in_suffix": "0703",
+        "out_suffix": "0735",
+        "x": -3556000,
+        "y": 5080000
+      },
+      {
+        "idx": 4,
+        "source_ref": "R4",
+        "ref": "L4",
+        "value": "1mH",
+        "visible_value": "1mH",
+        "left": "R1",
+        "right": "G0",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "slot": 1,
+        "suffix_policy": "extended",
+        "in_suffix": "0a13",
+        "out_suffix": "0a45",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 5,
+        "source_ref": "R5",
+        "ref": "L5",
+        "value": "9mH",
+        "visible_value": "9mH",
+        "left": "L1",
+        "right": "R1",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "slot": 2,
+        "suffix_policy": "extended",
+        "in_suffix": "0d23",
+        "out_suffix": "0d55",
+        "x": -7366000,
+        "y": 0
+      }
+    ]
+  }
+}

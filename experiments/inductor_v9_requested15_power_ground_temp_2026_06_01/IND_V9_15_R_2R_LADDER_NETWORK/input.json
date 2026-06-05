@@ -1,0 +1,327 @@
+{
+  "schema_version": "inductor-temp-v8/v0",
+  "generator_target": "proteus-8.13-inductor-six-donor-diagnostic",
+  "case_id": "IND_V9_15_R_2R_LADDER_NETWORK",
+  "source_resistor_case": null,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "A1",
+      "kind": "internal"
+    },
+    {
+      "id": "A2",
+      "kind": "internal"
+    },
+    {
+      "id": "A3",
+      "kind": "internal"
+    },
+    {
+      "id": "A4",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "L1",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "V0",
+        "A1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "L2",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "A1",
+        "A2"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "A2",
+        "A3"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "L4",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "A3",
+        "A4"
+      ],
+      "visual": {
+        "x": 4064000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "L5",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "A1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 6,
+      "source_ref": "R6",
+      "ref": "L6",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "A2",
+        "G0"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 7,
+      "source_ref": "R7",
+      "ref": "L7",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "A3",
+        "G0"
+      ],
+      "visual": {
+        "x": 4064000,
+        "y": 2540000
+      }
+    },
+    {
+      "idx": 8,
+      "source_ref": "R8",
+      "ref": "L8",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "A4",
+        "G0"
+      ],
+      "visual": {
+        "x": 7874000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 9,
+      "source_ref": "R9",
+      "ref": "L9",
+      "type": "INDUCTOR",
+      "value": "2mH",
+      "nodes": [
+        "A4",
+        "G0"
+      ],
+      "visual": {
+        "x": 7874000,
+        "y": 2540000
+      }
+    }
+  ],
+  "metadata": {
+    "mode": "sequential_groups",
+    "topology": [
+      {
+        "idx": 1,
+        "source_ref": "R1",
+        "ref": "L1",
+        "value": "1mH",
+        "left": "V0",
+        "right": "A1",
+        "slot": 1,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "01b2",
+        "out_suffix": "01e4",
+        "x": -7366000,
+        "y": 5080000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 2,
+        "source_ref": "R2",
+        "ref": "L2",
+        "value": "1mH",
+        "left": "A1",
+        "right": "A2",
+        "slot": 2,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "045a",
+        "out_suffix": "048c",
+        "x": -3556000,
+        "y": 5080000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 3,
+        "source_ref": "R3",
+        "ref": "L3",
+        "value": "1mH",
+        "left": "A2",
+        "right": "A3",
+        "slot": 3,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "0702",
+        "out_suffix": "0734",
+        "x": 254000,
+        "y": 5080000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 4,
+        "source_ref": "R4",
+        "ref": "L4",
+        "value": "1mH",
+        "left": "A3",
+        "right": "A4",
+        "slot": 4,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TEROUTPUT",
+        "in_suffix": "09aa",
+        "out_suffix": "09dc",
+        "x": 4064000,
+        "y": 5080000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 5,
+        "source_ref": "R5",
+        "ref": "L5",
+        "value": "2mH",
+        "left": "A1",
+        "right": "G0",
+        "slot": 5,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0c52",
+        "out_suffix": "0c84",
+        "x": -3556000,
+        "y": 2540000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 6,
+        "source_ref": "R6",
+        "ref": "L6",
+        "value": "2mH",
+        "left": "A2",
+        "right": "G0",
+        "slot": 6,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "0efa",
+        "out_suffix": "0f2c",
+        "x": 254000,
+        "y": 2540000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 7,
+        "source_ref": "R7",
+        "ref": "L7",
+        "value": "2mH",
+        "left": "A3",
+        "right": "G0",
+        "slot": 1,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "11a2",
+        "out_suffix": "11d4",
+        "x": 4064000,
+        "y": 2540000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 8,
+        "source_ref": "R8",
+        "ref": "L8",
+        "value": "2mH",
+        "left": "A4",
+        "right": "G0",
+        "slot": 2,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "144a",
+        "out_suffix": "147c",
+        "x": 7874000,
+        "y": 5080000,
+        "wire_right_len": 49
+      },
+      {
+        "idx": 9,
+        "source_ref": "R9",
+        "ref": "L9",
+        "value": "2mH",
+        "left": "A4",
+        "right": "G0",
+        "slot": 3,
+        "suffix_policy": "extend_from_donor05",
+        "input_marker": "$TERINPUT",
+        "output_marker": "$TERGROUND",
+        "in_suffix": "16f2",
+        "out_suffix": "1724",
+        "x": 7874000,
+        "y": 2540000,
+        "wire_right_len": 50
+      }
+    ]
+  }
+}

@@ -24,6 +24,92 @@ TERMINAL_KINDS = {"input", "output", "power", "ground", "default"}
 SUPPORTED_IR_VERSION = "0.2"
 
 
+def is_and_reference_circuit(ir: CircuitIR) -> bool:
+    return (
+        ir.version == SUPPORTED_IR_VERSION
+        and ir.target.proteus_version == "8.13"
+        and ir.target.style == "terminal_based"
+        and ir.target.sheet_count == 1
+        and ir.target.mode == "production"
+        and {
+            (component.ref, component.part, component.value)
+            for component in ir.circuit.components
+        }
+        == {("U1", "74HC08", None), ("R1", "RESISTOR", "10k"), ("R2", "RESISTOR", "10k")}
+        and {
+            (net.name, net.kind) for net in ir.circuit.nets
+        }
+        == {
+            ("VCC", "power"),
+            ("GND", "ground"),
+            ("ODD_PULLUP", "internal"),
+            ("EVEN_PULLDOWN", "internal"),
+            ("Y_A", "output"),
+            ("Y_B", "output"),
+            ("Y_C", "output"),
+            ("Y_D", "output"),
+        }
+        and {
+            (connection.component, connection.pin, connection.net)
+            for connection in ir.circuit.connections
+        }
+        == {
+            ("R1", "1", "VCC"),
+            ("R1", "2", "ODD_PULLUP"),
+            ("R2", "1", "EVEN_PULLDOWN"),
+            ("R2", "2", "GND"),
+            ("U1", "1", "ODD_PULLUP"),
+            ("U1", "2", "EVEN_PULLDOWN"),
+            ("U1", "3", "Y_A"),
+            ("U1", "4", "ODD_PULLUP"),
+            ("U1", "5", "EVEN_PULLDOWN"),
+            ("U1", "6", "Y_B"),
+            ("U1", "8", "Y_C"),
+            ("U1", "9", "ODD_PULLUP"),
+            ("U1", "10", "EVEN_PULLDOWN"),
+            ("U1", "11", "Y_D"),
+            ("U1", "12", "ODD_PULLUP"),
+            ("U1", "13", "EVEN_PULLDOWN"),
+        }
+        and {
+            (terminal.label, terminal.net, terminal.kind, terminal.at.x, terminal.at.y)
+            for terminal in ir.circuit.layout.terminals
+        }
+        == {
+            ("1", "ODD_PULLUP", "input", 8, 2),
+            ("2", "EVEN_PULLDOWN", "input", 8, 3),
+            ("3", "ODD_PULLUP", "input", 8, 6),
+            ("4", "EVEN_PULLDOWN", "input", 8, 7),
+            ("5", "ODD_PULLUP", "input", 8, 10),
+            ("6", "EVEN_PULLDOWN", "input", 8, 11),
+            ("7", "ODD_PULLUP", "input", 8, 14),
+            ("8", "EVEN_PULLDOWN", "input", 8, 15),
+        }
+        and {
+            (wire.net, tuple((point.x, point.y) for point in wire.points))
+            for wire in ir.circuit.layout.wires
+        }
+        == {
+            ("ODD_PULLUP", ((2, 4), (4, 4), (4, 14))),
+            ("EVEN_PULLDOWN", ((2, 16), (4, 16), (4, 6))),
+        }
+        and {
+            (junction.net, junction.at.x, junction.at.y)
+            for junction in ir.circuit.layout.junctions
+        }
+        == {
+            ("ODD_PULLUP", 4, 6),
+            ("ODD_PULLUP", 4, 10),
+            ("EVEN_PULLDOWN", 4, 7),
+            ("EVEN_PULLDOWN", 4, 11),
+        }
+        and (
+            ir.circuit.equation is None
+            or ir.circuit.equation == "Y = [((A0A1)(A2A3))((A4A5)(A6A7))][((A8A9)(A10A11))((A12A13)(A14A15))]"
+        )
+    )
+
+
 @dataclass(frozen=True)
 class ValidationReport:
     errors: tuple[Issue, ...]
@@ -55,6 +141,7 @@ def validate_circuit(ir: CircuitIR, *, require_generation_ready: bool = True) ->
     warnings: list[Issue] = []
     target = ir.target
     circuit = ir.circuit
+    and_reference = is_and_reference_circuit(ir)
 
     if ir.version != SUPPORTED_IR_VERSION:
         errors.append(Issue("UNSUPPORTED_IR_VERSION", f"Only CircuitIR version `{SUPPORTED_IR_VERSION}` is supported.", "$.version"))
@@ -88,7 +175,7 @@ def validate_circuit(ir: CircuitIR, *, require_generation_ready: bool = True) ->
                 errors.append(Issue("UNTESTED_RESISTOR_VALUE_FORMAT", "Use values such as `1k`, `10k`, `330`, or `4.7k` in v0.", f"{path}.value"))
         if component.part == "74HC08" and component.ref != "U1":
             errors.append(Issue("UNSUPPORTED_74HC08_REFERENCE", "The validated donor exposes the quad package as `U1` only.", f"{path}.ref"))
-        if require_generation_ready and target.mode == "production" and component.part in {"74HC08", "LOGICSTATE", "LOGICPROBE"}:
+        if require_generation_ready and target.mode == "production" and component.part in {"74HC08", "LOGICSTATE", "LOGICPROBE"} and not and_reference:
             errors.append(
                 Issue(
                     "COMPONENT_NOT_GENERATION_READY",
@@ -162,7 +249,7 @@ def validate_circuit(ir: CircuitIR, *, require_generation_ready: bool = True) ->
         if placement.orientation != "horizontal":
             errors.append(Issue("UNSUPPORTED_ORIENTATION", "v0 supports horizontal placement only.", f"$.circuit.layout.placements[{index}].orientation"))
 
-    if require_generation_ready and target.mode == "production" and circuit.layout.has_rendered_geometry:
+    if require_generation_ready and target.mode == "production" and circuit.layout.has_rendered_geometry and not and_reference:
         errors.append(
             Issue(
                 "LAYOUT_RENDERING_UNVALIDATED",

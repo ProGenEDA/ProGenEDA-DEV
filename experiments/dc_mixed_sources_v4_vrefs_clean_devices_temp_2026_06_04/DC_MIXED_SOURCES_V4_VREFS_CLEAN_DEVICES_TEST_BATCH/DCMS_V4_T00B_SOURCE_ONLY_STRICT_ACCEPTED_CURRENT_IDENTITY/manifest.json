@@ -1,0 +1,89 @@
+{
+  "case_id": "DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY",
+  "description": "Control: source-only VSOURCE plus CSOURCE, but current source keeps accepted V2/10V identity.",
+  "status": "temporary_dc_mixed_sources_v4_not_locked",
+  "output": "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_TEST_BATCH\\DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY\\DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY.pdsprj",
+  "source_count": 2,
+  "rcl_component_count": 0,
+  "object_chunk_len": 1301,
+  "root_cdb_len": 322,
+  "root_dsn_len": 70193,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 2,
+    "$TEROUTPUT": 2,
+    "$TERGROUND": 0,
+    "VSOURCE": 3,
+    "CSOURCE": 1,
+    "CAPACITOR": 0,
+    "REALIND": 0,
+    "RESISTOR": 0,
+    "WIRE": 4,
+    "COMPONENT ID": 2,
+    "COMPONENT VALUE": 2,
+    "CAP10": 0
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSOURCE": 1,
+    "CSOURCE": 1,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0,
+    "CAP10": 3
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67949,
+    "second_isis": 69296,
+    "second_object_data": 69331,
+    "object_data_pointer": 69344
+  },
+  "hashes": {
+    "DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY.pdsprj": "63b62de21992383d20aeecc8b8106ff3df3a9456bf4e51e7f4d19533e71be975",
+    "DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY.ROOT.CDB.bin": "590e11fd56267dc5b0ba25f559dac2759824a55384ee5134b416d7f8915f4b35",
+    "DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY.ROOT.DSN.bin": "07970e8c91d2d0150015a78baf84f3010440954530c8196023a8ff8b15783f9b",
+    "DCMS_V4_T00B_SOURCE_ONLY_STRICT_ACCEPTED_CURRENT_IDENTITY.OBJECT_CHUNK.bin": "f3ea8ac962a70062eea7ec5d8d1cbad3d887e40e97f6835b7508f879ebfd8085",
+    "object_chunk": "f3ea8ac962a70062eea7ec5d8d1cbad3d887e40e97f6835b7508f879ebfd8085",
+    "ROOT.CDB": "590e11fd56267dc5b0ba25f559dac2759824a55384ee5134b416d7f8915f4b35",
+    "devices": "0287bbb44e7bc78f184ef5981a772da0a64d69009de49041221d5629cbcfb7b2"
+  },
+  "input": {
+    "control": "source_only_mixed_voltage_current",
+    "source_count": 2,
+    "rcl_component_count": 0,
+    "intended_values": {
+      "V1": "12V",
+      "V2": "2A"
+    },
+    "sources": [
+      {
+        "kind": "dc_voltage",
+        "ref": "V1",
+        "value": "12V",
+        "visible_value": "12V",
+        "positive": "DV",
+        "negative": "D0",
+        "model": "VSOURCE",
+        "global_id": 1
+      },
+      {
+        "kind": "dc_current",
+        "ref": "V2",
+        "value": "10V",
+        "visible_value": "10V",
+        "positive": "D1",
+        "negative": "D0",
+        "model": "CSOURCE",
+        "global_id": 2
+      }
+    ]
+  }
+}

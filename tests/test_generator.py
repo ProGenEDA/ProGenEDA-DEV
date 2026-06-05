@@ -38,10 +38,13 @@ class GeneratorTests(unittest.TestCase):
 
     def test_and_reference_is_blocked_pending_d05(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(GenerationBlocked) as exc_info:
-                generate_project(ir_for("and_reference_pending_d05.json"), Path(directory) / "and.pdsprj")
-            codes = {issue.code for issue in exc_info.exception.report.errors}
-            self.assertIn("COMPONENT_NOT_GENERATION_READY", codes)
+            output = Path(directory) / "and.pdsprj"
+            result = generate_project(ir_for("and_reference_pending_d05.json"), output)
+            self.assertEqual(result.fixture_id, "e001_empty")
+            self.assertEqual(result.recipe, "experimental_and_reference_from_fresh_e001_base")
+            self.assertTrue(output.exists())
+            self.assertIn(b"74HC08", read_internal_file(output, "ROOT.DSN"))
+            self.assertFalse(compare_projects(output, repository_root() / "fixtures" / "pdsprj" / "e001_empty_project.pdsprj")["semantic_equal"])
 
     def test_semantic_comparison_ignores_known_save_noise(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

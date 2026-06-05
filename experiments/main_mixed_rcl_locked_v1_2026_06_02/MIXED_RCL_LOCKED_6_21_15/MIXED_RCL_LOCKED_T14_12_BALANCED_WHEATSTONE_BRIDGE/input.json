@@ -1,0 +1,59 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "project": {
+    "name": "MIXED_RCL_LOCKED_T14_12_BALANCED_WHEATSTONE_BRIDGE",
+    "output_basename": "MIXED_RCL_LOCKED_T14_12_BALANCED_WHEATSTONE_BRIDGE",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RC",
+      "start": "V0",
+      "end": "N1"
+    },
+    {
+      "mode": "LC",
+      "start": "N1",
+      "end": "G0"
+    },
+    {
+      "mode": "RC",
+      "start": "V0",
+      "end": "N2"
+    },
+    {
+      "mode": "LC",
+      "start": "N2",
+      "end": "G0"
+    },
+    {
+      "mode": "RL",
+      "start": "N1",
+      "end": "N2"
+    }
+  ],
+  "metadata": {
+    "source": "locked mixed R/C/L examples",
+    "description": "Balanced Wheatstone bridge with symmetric mixed side branches."
+  }
+}

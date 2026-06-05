@@ -12,9 +12,12 @@ from .circuit_ir import load_json, parse_circuit_ir
 from .comparison import compare_projects
 from .generator import GenerationBlocked, generate_project
 from .inspectors import find_all
+from .mixed_passive import MixedPassiveGenerationBlocked, generate_mixed_passive_project_from_payload
+from .mixed_rcl import MixedRclGenerationBlocked, generate_mixed_rcl_project_from_payload
 from .pdsprj import inspect_pdsprj, read_internal_file
 from .reports import summarize_pdsprj
 from .results import record_result, validate_result
+from .resistor_v9 import ResistorGenerationBlocked, generate_resistor_project_from_payload
 from .templates import FixtureRegistry
 from .validation import validate_payload
 from .versioning import read_root_dsn_version
@@ -73,6 +76,39 @@ def generate_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def generate_resistors_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_resistor_project_from_payload(payload, args.outdir)
+    except ResistorGenerationBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    _print(result.as_dict())
+    return 0
+
+
+def generate_mixed_passives_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_mixed_passive_project_from_payload(payload, args.outdir)
+    except MixedPassiveGenerationBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    _print(result.as_dict())
+    return 0
+
+
+def generate_mixed_rcl_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_mixed_rcl_project_from_payload(payload, args.outdir)
+    except MixedRclGenerationBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    _print(result.as_dict())
+    return 0
+
+
 def compare_command(args: argparse.Namespace) -> int:
     result = compare_projects(args.generated, args.reference)
     _print(result)
@@ -115,6 +151,21 @@ def build_parser() -> argparse.ArgumentParser:
     generate_parser.add_argument("circuit")
     generate_parser.add_argument("--output", required=True)
     generate_parser.set_defaults(function=generate_command)
+
+    resistor_parser = subparsers.add_parser("generate-resistors", help="Generate a V9 resistor-terminal project from CircuitIR v0.1")
+    resistor_parser.add_argument("circuit")
+    resistor_parser.add_argument("--outdir", required=True)
+    resistor_parser.set_defaults(function=generate_resistors_command)
+
+    mixed_parser = subparsers.add_parser("generate-mixed-passives", help="Generate a locked mixed resistor/capacitor terminal project")
+    mixed_parser.add_argument("circuit")
+    mixed_parser.add_argument("--outdir", required=True)
+    mixed_parser.set_defaults(function=generate_mixed_passives_command)
+
+    mixed_rcl_parser = subparsers.add_parser("generate-mixed-rcl", help="Generate a locked mixed resistor/capacitor/inductor terminal project")
+    mixed_rcl_parser.add_argument("circuit")
+    mixed_rcl_parser.add_argument("--outdir", required=True)
+    mixed_rcl_parser.set_defaults(function=generate_mixed_rcl_command)
 
     compare_parser = subparsers.add_parser("compare", help="Compare generated and resaved/oracle projects")
     compare_parser.add_argument("generated")

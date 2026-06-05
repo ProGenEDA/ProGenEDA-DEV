@@ -1,0 +1,98 @@
+{
+  "schema_version": "proteus-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-v9-resistor-terminal",
+  "project": {
+    "name": "Delta Network",
+    "output_basename": "08_DELTA_NETWORK",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "D1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    }
+  ],
+  "components": [
+    {
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "D1"
+      ],
+      "visual": {
+        "orientation_hint": "horizontal",
+        "role": "delta_top_side"
+      }
+    },
+    {
+      "ref": "R2",
+      "type": "RESISTOR",
+      "value": "2k",
+      "nodes": [
+        "D1",
+        "G0"
+      ],
+      "visual": {
+        "orientation_hint": "vertical",
+        "role": "delta_right_side"
+      }
+    },
+    {
+      "ref": "R3",
+      "type": "RESISTOR",
+      "value": "3k",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "orientation_hint": "horizontal",
+        "role": "delta_bottom_side"
+      }
+    }
+  ],
+  "layout": {
+    "mode": "manual_component_positions",
+    "coordinate_units": "proteus_internal",
+    "component_positions": {
+      "R1": {
+        "x": -6350000,
+        "y": 5080000
+      },
+      "R2": {
+        "x": -5080000,
+        "y": 5080000
+      },
+      "R3": {
+        "x": -6350000,
+        "y": 3810000
+      }
+    },
+    "visual_wires": [
+      {
+        "x1": -6350000,
+        "y1": 5080000,
+        "x2": -6350000,
+        "y2": 3810000
+      }
+    ]
+  },
+  "metadata": {
+    "source": "user requested resistor network list 2026-05-30",
+    "description": "Three resistors end-to-end forming a closed triangle between V0, D1, and G0.",
+    "notes": [
+      "Regenerated after Proteus angle-field and visual-wire support; vertical branches use real -900 tenths resistor records."
+    ]
+  }
+}

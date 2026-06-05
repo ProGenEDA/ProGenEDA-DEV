@@ -1,0 +1,147 @@
+{
+  "case_id": "RCL_V13_T13_11_WHEATSTONE_BRIDGE",
+  "status": "temporary_mixed_rcl_v13_rl_inputs_first_not_locked",
+  "description": "Mixed R/C/L version of requested topology 11_WHEATSTONE_BRIDGE.",
+  "component_count": 4,
+  "node_count": 4,
+  "resistor_count": 1,
+  "capacitor_count": 2,
+  "inductor_count": 1,
+  "rl_pair_count": 1,
+  "power_bridge_count": 1,
+  "ground_terminal_count": 2,
+  "object_order": "header, power bridge, capacitor outputs, capacitor groups, all native R/L inputs, then native L/R output-component bodies with global component IDs",
+  "emission_order": [
+    {
+      "global_id": 1,
+      "idx": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1"
+    },
+    {
+      "global_id": 2,
+      "idx": 4,
+      "kind": "CAPACITOR",
+      "ref": "C2"
+    },
+    {
+      "global_id": 3,
+      "idx": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1"
+    },
+    {
+      "global_id": 4,
+      "idx": 1,
+      "kind": "RESISTOR",
+      "ref": "R1"
+    }
+  ],
+  "conversion_notes": [],
+  "object_chunk_len": 2934,
+  "root_cdb_len": 620,
+  "root_dsn_len": 69708,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 2,
+    "WIRE": 9,
+    "RESISTOR": 2,
+    "REALIND": 3,
+    "CAPACITOR": 2,
+    "CAP10": 2,
+    "COMPONENT ID": 4,
+    "COMPONENT VALUE": 4
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 65831,
+    "second_isis": 68811,
+    "second_object_data": 68846,
+    "object_data_pointer": 68859
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "1k",
+      "left": "V0",
+      "right": "L1",
+      "global_id": 4,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0627",
+      "out_suffix": "0659",
+      "x": -7366000,
+      "y": 5080000,
+      "rl_pair_index": 1
+    },
+    {
+      "ref": "C1",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "L1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "011a",
+      "out_suffix": "00e8",
+      "cap_visual_index_byte_344": 1,
+      "wire_right_len": 49,
+      "x": -7366000,
+      "y": 2540000,
+      "idx": 2,
+      "ordinal": 1,
+      "global_id": 1,
+      "source_ref": "R2"
+    },
+    {
+      "idx": 3,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "3mH",
+      "left": "V0",
+      "right": "R1",
+      "global_id": 3,
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0401",
+      "out_suffix": "0433",
+      "x": -3556000,
+      "y": 5080000,
+      "rl_pair_index": 1
+    },
+    {
+      "ref": "C2",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "R1",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0352",
+      "out_suffix": "0320",
+      "cap_visual_index_byte_344": 2,
+      "wire_right_len": 49,
+      "x": -3556000,
+      "y": 2540000,
+      "idx": 4,
+      "ordinal": 2,
+      "global_id": 2,
+      "source_ref": "R4"
+    }
+  ],
+  "static_validation_issues": [],
+  "output_hashes": {
+    "RCL_V13_T13_11_WHEATSTONE_BRIDGE.pdsprj": "36410323b24fd5e018152a22f2b4f418d020b288710f9052d1c1fabbe5f6c5aa",
+    "RCL_V13_T13_11_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "f1195796070862c7f2a3782b325a8b67ac3761d6dcfcb7c5eee513298b6269be",
+    "RCL_V13_T13_11_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "fc8927fefad34cc32a629de52a648a635fbec04f0ac93d1020ee2bb6fca094a6",
+    "RCL_V13_T13_11_WHEATSTONE_BRIDGE.OBJECT_CHUNK.bin": "188a2ad9e549f3f10a401b1f8f849dc14165824af0e28f87dae788741addf5db",
+    "object_chunk": "188a2ad9e549f3f10a401b1f8f849dc14165824af0e28f87dae788741addf5db",
+    "ROOT.CDB": "f1195796070862c7f2a3782b325a8b67ac3761d6dcfcb7c5eee513298b6269be"
+  }
+}

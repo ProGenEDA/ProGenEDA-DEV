@@ -1,0 +1,367 @@
+[
+  {
+    "case": "01_SIMPLE_LOOP",
+    "title": "Simple Loop",
+    "description": "A single resistor connected directly between the power terminal and ground.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\01_SIMPLE_LOOP\\01_SIMPLE_LOOP.pdsprj",
+    "resistor_count": 1,
+    "node_count": 2,
+    "power_terminal_count": 1,
+    "ground_terminal_count": 1,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-G0 1k"
+    ],
+    "output_hashes": {
+      "01_SIMPLE_LOOP.pdsprj": "f1e041f0539fc1031d86fe994ffc8ce3cdf8720ad9253941068be76ad8edda1c",
+      "01_SIMPLE_LOOP.ROOT.CDB.bin": "a3af4098f6eb5bc46501fdabe58d0f66b2bb3aac9917be1692e2525daa684c1d",
+      "01_SIMPLE_LOOP.ROOT.DSN.bin": "88aa2b3879dc5952f93121873a9c0d0439fd258f67c3c21262135d67d610a658",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "02_SERIES_CIRCUIT",
+    "title": "Series Circuit",
+    "description": "Four resistors connected end-to-end in one path from power to ground.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\02_SERIES_CIRCUIT\\02_SERIES_CIRCUIT.pdsprj",
+    "resistor_count": 4,
+    "node_count": 5,
+    "power_terminal_count": 1,
+    "ground_terminal_count": 1,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-N1 1k",
+      "R2: N1-N2 2k",
+      "R3: N2-N3 3k",
+      "R4: N3-G0 4k"
+    ],
+    "output_hashes": {
+      "02_SERIES_CIRCUIT.pdsprj": "9abecbdb96416c8d9c8d7601ffacd02e81e3462d3d51b8c9c9d009ce80cec13d",
+      "02_SERIES_CIRCUIT.ROOT.CDB.bin": "62daf4be94493d1f53dddf6b40ddbe1cfcd4ba672c3e8eaeaf0b4ffd0705fca0",
+      "02_SERIES_CIRCUIT.ROOT.DSN.bin": "1479822d0138608c2e62b235cf3f7c7b06c91d0d88b93bd144e83eaac6eb07c1",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "03_PARALLEL_CIRCUIT",
+    "title": "Parallel Circuit",
+    "description": "Four resistors side-by-side, each connected from power to ground.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\03_PARALLEL_CIRCUIT\\03_PARALLEL_CIRCUIT.pdsprj",
+    "resistor_count": 4,
+    "node_count": 2,
+    "power_terminal_count": 4,
+    "ground_terminal_count": 4,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-G0 1k",
+      "R2: V0-G0 2k",
+      "R3: V0-G0 3k",
+      "R4: V0-G0 4k"
+    ],
+    "output_hashes": {
+      "03_PARALLEL_CIRCUIT.pdsprj": "b9046f9276c4c1ee0d4d97906dbdb02183a03df875a21a14ffca37d43a38978c",
+      "03_PARALLEL_CIRCUIT.ROOT.CDB.bin": "62daf4be94493d1f53dddf6b40ddbe1cfcd4ba672c3e8eaeaf0b4ffd0705fca0",
+      "03_PARALLEL_CIRCUIT.ROOT.DSN.bin": "2d4d0ac6760e6cbacba14dda5f369698f1b71f52703d0dd9e81eb725053d181c",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "04_SERIES_PARALLEL_COMBO",
+    "title": "Series-Parallel Combo",
+    "description": "A series resistor feeding a parallel group, then returning to ground.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\04_SERIES_PARALLEL_COMBO\\04_SERIES_PARALLEL_COMBO.pdsprj",
+    "resistor_count": 4,
+    "node_count": 3,
+    "power_terminal_count": 1,
+    "ground_terminal_count": 3,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-N1 1k",
+      "R2: N1-G0 2k",
+      "R3: N1-G0 3k",
+      "R4: N1-G0 4k"
+    ],
+    "output_hashes": {
+      "04_SERIES_PARALLEL_COMBO.pdsprj": "c5cac208739da7be7b8b6d0e78f7542541142bdf50802f6be052035020c5ab60",
+      "04_SERIES_PARALLEL_COMBO.ROOT.CDB.bin": "62daf4be94493d1f53dddf6b40ddbe1cfcd4ba672c3e8eaeaf0b4ffd0705fca0",
+      "04_SERIES_PARALLEL_COMBO.ROOT.DSN.bin": "8c881a065404416f21d926b3ead19d397043a6a06d7bdd25a5d73dc831338208",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "05_BASIC_VOLTAGE_DIVIDER",
+    "title": "Basic Voltage Divider",
+    "description": "Two resistors in series between power and ground with one midpoint tap.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\05_BASIC_VOLTAGE_DIVIDER\\05_BASIC_VOLTAGE_DIVIDER.pdsprj",
+    "resistor_count": 2,
+    "node_count": 3,
+    "power_terminal_count": 1,
+    "ground_terminal_count": 1,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-VT 10k",
+      "R2: VT-G0 5k"
+    ],
+    "output_hashes": {
+      "05_BASIC_VOLTAGE_DIVIDER.pdsprj": "eb42ae63ac7b045d64201d4fb7fd7bb8576916b6dcac7f224bf908854669d56a",
+      "05_BASIC_VOLTAGE_DIVIDER.ROOT.CDB.bin": "086992c77b4c66e41e5a9a9c0b8cf39f32d08660366b2985f9563b4a274284d1",
+      "05_BASIC_VOLTAGE_DIVIDER.ROOT.DSN.bin": "c3323c99b0f66bb97fc67c1fe2c0558fb2139add1cc982ebfa7deaabc4ba0fbd",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "06_MULTI_STEP_VOLTAGE_DIVIDER",
+    "title": "Multi-Step Voltage Divider",
+    "description": "Five series resistors creating four voltage tapping points.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\06_MULTI_STEP_VOLTAGE_DIVIDER\\06_MULTI_STEP_VOLTAGE_DIVIDER.pdsprj",
+    "resistor_count": 5,
+    "node_count": 6,
+    "power_terminal_count": 1,
+    "ground_terminal_count": 1,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-T1 1k",
+      "R2: T1-T2 2k",
+      "R3: T2-T3 3k",
+      "R4: T3-T4 4k",
+      "R5: T4-G0 5k"
+    ],
+    "output_hashes": {
+      "06_MULTI_STEP_VOLTAGE_DIVIDER.pdsprj": "45367dfad9d329b4dc97c5569864f45f07c429da47424998579692e53e42e40c",
+      "06_MULTI_STEP_VOLTAGE_DIVIDER.ROOT.CDB.bin": "74bd0cfc98d19346962a4a3b9edf16a4812725541721a1535d6fb07387fea631",
+      "06_MULTI_STEP_VOLTAGE_DIVIDER.ROOT.DSN.bin": "8034a0a8cc331ccf4ac4c5971cb3373d2f394f7af05b976f1903ce78351f5ad0",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "07_CURRENT_DIVIDER",
+    "title": "Current Divider",
+    "description": "Five parallel resistors across power and ground to split current.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\07_CURRENT_DIVIDER\\07_CURRENT_DIVIDER.pdsprj",
+    "resistor_count": 5,
+    "node_count": 2,
+    "power_terminal_count": 5,
+    "ground_terminal_count": 5,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-G0 1k",
+      "R2: V0-G0 2k",
+      "R3: V0-G0 3k",
+      "R4: V0-G0 4k",
+      "R5: V0-G0 5k"
+    ],
+    "output_hashes": {
+      "07_CURRENT_DIVIDER.pdsprj": "11264382e68c0984213f407e28b678644eed73d23873b30f033ff74eeea4cf9f",
+      "07_CURRENT_DIVIDER.ROOT.CDB.bin": "74bd0cfc98d19346962a4a3b9edf16a4812725541721a1535d6fb07387fea631",
+      "07_CURRENT_DIVIDER.ROOT.DSN.bin": "96e947ae18276f263442cc706d32a20ac7558a5ff4771f737f04bdfc226a7850",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "08_DELTA_NETWORK",
+    "title": "Delta Network",
+    "description": "Three resistors end-to-end forming a closed triangle between V0, D1, and G0.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\08_DELTA_NETWORK\\08_DELTA_NETWORK.pdsprj",
+    "resistor_count": 3,
+    "node_count": 3,
+    "power_terminal_count": 2,
+    "ground_terminal_count": 2,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-D1 1k",
+      "R2: D1-G0 2k",
+      "R3: V0-G0 3k"
+    ],
+    "output_hashes": {
+      "08_DELTA_NETWORK.pdsprj": "6f8f461a91cd2f567babce8e6f5f273cf018e04dda2e17f752637c4e48aee1d4",
+      "08_DELTA_NETWORK.ROOT.CDB.bin": "15b4fd2a295b2f026731702cddad8b780eeb944372ea0f15323c90707412bf4d",
+      "08_DELTA_NETWORK.ROOT.DSN.bin": "36cff4b46b2fdf99760b41e6191b96e6884eff029b4475d8add8a415a31d2d32",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "09_STAR_Y_NETWORK",
+    "title": "Star Y Network",
+    "description": "Three resistors sharing a central node, with outer nodes at power, ground, and an output terminal.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\09_STAR_Y_NETWORK\\09_STAR_Y_NETWORK.pdsprj",
+    "resistor_count": 3,
+    "node_count": 4,
+    "power_terminal_count": 1,
+    "ground_terminal_count": 1,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-C0 1k",
+      "R2: C0-G0 2k",
+      "R3: C0-O1 3k"
+    ],
+    "output_hashes": {
+      "09_STAR_Y_NETWORK.pdsprj": "82d7a2292e976567a4b372f95422a4b21bcd183ad87a5247e307e06a5bf61c56",
+      "09_STAR_Y_NETWORK.ROOT.CDB.bin": "15b4fd2a295b2f026731702cddad8b780eeb944372ea0f15323c90707412bf4d",
+      "09_STAR_Y_NETWORK.ROOT.DSN.bin": "535a565d539608d16b2e65b964031be2ac5a40fb513e413bcd3b0aeda0189ca2",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "10_DELTA_TO_STAR_SETUP",
+    "title": "Delta to Star Setup",
+    "description": "A delta network and a star network side-by-side for comparison.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\10_DELTA_TO_STAR_SETUP\\10_DELTA_TO_STAR_SETUP.pdsprj",
+    "resistor_count": 6,
+    "node_count": 5,
+    "power_terminal_count": 3,
+    "ground_terminal_count": 3,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-D1 3k",
+      "R2: D1-G0 3k",
+      "R3: V0-G0 3k",
+      "R4: V0-S0 1k",
+      "R5: S0-G0 1k",
+      "R6: S0-O1 1k"
+    ],
+    "output_hashes": {
+      "10_DELTA_TO_STAR_SETUP.pdsprj": "48606fd8e5913ce4e84628d818b02ad734274df6467f97aee30a7a518cec09d9",
+      "10_DELTA_TO_STAR_SETUP.ROOT.CDB.bin": "73c1f212c30105a597ffd7b88e8dd35549cc2f6e42aa5736d4831b9493fb9242",
+      "10_DELTA_TO_STAR_SETUP.ROOT.DSN.bin": "2d4842eb6a472caa0cfd9fd1b2ee7eeb2badcfcbd69e8a720da74284305174e4",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "11_WHEATSTONE_BRIDGE",
+    "title": "Wheatstone Bridge",
+    "description": "Four-resistor diamond with power at top, ground at bottom, and side measurement nodes.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\11_WHEATSTONE_BRIDGE\\11_WHEATSTONE_BRIDGE.pdsprj",
+    "resistor_count": 4,
+    "node_count": 4,
+    "power_terminal_count": 2,
+    "ground_terminal_count": 2,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-L1 1k",
+      "R2: L1-G0 2k",
+      "R3: V0-R1 3k",
+      "R4: R1-G0 4k"
+    ],
+    "output_hashes": {
+      "11_WHEATSTONE_BRIDGE.pdsprj": "e9464d471e3f40181e50ebf3d86e2f29c45a60b385ce7394fe0d41f9fe01a61c",
+      "11_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "62daf4be94493d1f53dddf6b40ddbe1cfcd4ba672c3e8eaeaf0b4ffd0705fca0",
+      "11_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "08eaec7d3f8eee6c0feaedeaf8c6a1cab5eade764b14840eebbe4f8f55867aa1",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "12_BALANCED_WHEATSTONE_BRIDGE",
+    "title": "Balanced Wheatstone Bridge",
+    "description": "Wheatstone bridge with equal ratios on both sides, plus high-value bridge measurement resistor.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\12_BALANCED_WHEATSTONE_BRIDGE\\12_BALANCED_WHEATSTONE_BRIDGE.pdsprj",
+    "resistor_count": 5,
+    "node_count": 4,
+    "power_terminal_count": 2,
+    "ground_terminal_count": 2,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-L1 1k",
+      "R2: L1-G0 1k",
+      "R3: V0-R1 1k",
+      "R4: R1-G0 1k",
+      "R5: L1-R1 10k"
+    ],
+    "output_hashes": {
+      "12_BALANCED_WHEATSTONE_BRIDGE.pdsprj": "3d91d52f7952be1b62bd59c8801b5fa22034d3a1dced519986788bbe69547e8e",
+      "12_BALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "7908d8d0b7090e945421bab65bd153aebfe0a1858f9c7df9b4c106fd92183413",
+      "12_BALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "d375978c9e1b2fc3cc152d66a76de9e555e8f0eab78b126bee93bca78b10ccf5",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "13_UNBALANCED_WHEATSTONE_BRIDGE",
+    "title": "Unbalanced Wheatstone Bridge",
+    "description": "Wheatstone bridge with unequal side ratios and a bridge measurement resistor.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\13_UNBALANCED_WHEATSTONE_BRIDGE\\13_UNBALANCED_WHEATSTONE_BRIDGE.pdsprj",
+    "resistor_count": 5,
+    "node_count": 4,
+    "power_terminal_count": 2,
+    "ground_terminal_count": 2,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-L1 1k",
+      "R2: L1-G0 3k",
+      "R3: V0-R1 2k",
+      "R4: R1-G0 4k",
+      "R5: L1-R1 10k"
+    ],
+    "output_hashes": {
+      "13_UNBALANCED_WHEATSTONE_BRIDGE.pdsprj": "faa6c301ab7cae46e4744d2635a445ebed7df323ec37a57503077edb31265b2d",
+      "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.CDB.bin": "cc572278453c627d981a3ef30967bb3255c6dfda5dbbd60c2d4cb0724587c4e0",
+      "13_UNBALANCED_WHEATSTONE_BRIDGE.ROOT.DSN.bin": "a54cdb31e1810db48ee6f0ddda5220d1f439facfe20f8832bd22cf49e123d4e6",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "14_H_BRIDGE_RESISTOR_VERSION",
+    "title": "H-Bridge Resistor Version",
+    "description": "Two vertical series branches with a fifth resistor bridging their middle joints.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\14_H_BRIDGE_RESISTOR_VERSION\\14_H_BRIDGE_RESISTOR_VERSION.pdsprj",
+    "resistor_count": 5,
+    "node_count": 4,
+    "power_terminal_count": 2,
+    "ground_terminal_count": 2,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-L1 1k",
+      "R2: L1-G0 2k",
+      "R3: V0-R1 3k",
+      "R4: R1-G0 4k",
+      "R5: L1-R1 5k"
+    ],
+    "output_hashes": {
+      "14_H_BRIDGE_RESISTOR_VERSION.pdsprj": "035eaec101d49b3b9ad00a5061a58586031b30af3c085d65485cc58a12cda8c5",
+      "14_H_BRIDGE_RESISTOR_VERSION.ROOT.CDB.bin": "74bd0cfc98d19346962a4a3b9edf16a4812725541721a1535d6fb07387fea631",
+      "14_H_BRIDGE_RESISTOR_VERSION.ROOT.DSN.bin": "c18e043674f17bc00af4a2a789923aa148494d83f3e8a81152f99ae58be86997",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  },
+  {
+    "case": "15_R_2R_LADDER_NETWORK",
+    "title": "R-2R Ladder Network",
+    "description": "A four-step R-2R ladder using 1k and 2k resistor values.",
+    "output_path": "experiments\\requested_resistor_networks_2026_05_30\\15_R_2R_LADDER_NETWORK\\15_R_2R_LADDER_NETWORK.pdsprj",
+    "resistor_count": 9,
+    "node_count": 6,
+    "power_terminal_count": 1,
+    "ground_terminal_count": 5,
+    "static_validation_issues": [],
+    "topology": [
+      "R1: V0-A1 1k",
+      "R2: A1-A2 1k",
+      "R3: A2-A3 1k",
+      "R4: A3-A4 1k",
+      "R5: A1-G0 2k",
+      "R6: A2-G0 2k",
+      "R7: A3-G0 2k",
+      "R8: A4-G0 2k",
+      "R9: A4-G0 2k"
+    ],
+    "output_hashes": {
+      "15_R_2R_LADDER_NETWORK.pdsprj": "1c8c904d8d35c1cc2a926e8ce3ce4c3f30d39e09b65c2b0b8941c2db6c5dc173",
+      "15_R_2R_LADDER_NETWORK.ROOT.CDB.bin": "ebf13ee8893b7810623fc77e8d888ddd69b7db9de3b24275feaf6fe339cf539d",
+      "15_R_2R_LADDER_NETWORK.ROOT.DSN.bin": "6354087dba0b523311f880f16ab639d2f072f75ae4c289f577a0b00863d5586c",
+      "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+      "donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41"
+    }
+  }
+]

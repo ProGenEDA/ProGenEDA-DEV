@@ -1,0 +1,138 @@
+{
+  "schema_version": "mixed-rcl-temp/v2",
+  "generator_target": "proteus-8.13-mixed-rcl-terminal-power-ground-diagnostic",
+  "case_id": "RCL_V2_T12_10_DELTA_TO_STAR_SETUP",
+  "source_resistor_case": "10_DELTA_TO_STAR_SETUP",
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "D1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "S0",
+      "kind": "internal"
+    },
+    {
+      "id": "O1",
+      "kind": "internal"
+    }
+  ],
+  "components": [
+    {
+      "idx": 1,
+      "source_ref": "R1",
+      "ref": "R1",
+      "type": "RESISTOR",
+      "value": "3k",
+      "nodes": [
+        "V0",
+        "D1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000,
+        "orientation_hint": "horizontal",
+        "role": "delta_top_side"
+      }
+    },
+    {
+      "idx": 2,
+      "source_ref": "R2",
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "D1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "delta_right_side"
+      }
+    },
+    {
+      "idx": 3,
+      "source_ref": "R3",
+      "ref": "L3",
+      "type": "INDUCTOR",
+      "value": "3mH",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 2540000,
+        "orientation_hint": "horizontal",
+        "role": "delta_bottom_side"
+      }
+    },
+    {
+      "idx": 4,
+      "source_ref": "R4",
+      "ref": "R4",
+      "type": "RESISTOR",
+      "value": "1k",
+      "nodes": [
+        "V0",
+        "S0"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 5080000,
+        "orientation_hint": "vertical",
+        "role": "star_power_to_center"
+      }
+    },
+    {
+      "idx": 5,
+      "source_ref": "R5",
+      "ref": "C5",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "S0",
+        "G0"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 2540000,
+        "orientation_hint": "vertical",
+        "role": "star_center_to_ground"
+      }
+    },
+    {
+      "idx": 6,
+      "source_ref": "R6",
+      "ref": "L6",
+      "type": "INDUCTOR",
+      "value": "1mH",
+      "nodes": [
+        "S0",
+        "O1"
+      ],
+      "visual": {
+        "x": 254000,
+        "y": 0,
+        "orientation_hint": "horizontal",
+        "role": "star_center_to_output"
+      }
+    }
+  ],
+  "metadata": {
+    "method": "mixed R/C/L with all three passive families present in each requested case",
+    "object_order": "header, power bridge, capacitor outputs, capacitor groups, resistor inputs, resistor outputs, resistor separator, resistor groups, donor05 sequential inductor groups",
+    "temporary": true,
+    "conversion_notes": []
+  }
+}
