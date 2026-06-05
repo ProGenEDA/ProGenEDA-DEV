@@ -3272,6 +3272,52 @@ is required to be byte-identical to the already accepted fixed oracle object
 chunk.
 ```
 
+User feedback:
+
+```text
+All V9 cases worked.
+```
+
+Interpretation:
+
+```text
+The fixed resistor wire endpoints and passive/source boundary rule are accepted
+for the tested pure DCV+DCV passive scope. V9 confirms byte-exact R-only oracle
+rebuild, R-only 10V/5V source mutation, and RC/RL scale-up variants.
+```
+
+## DC Mixed Sources V15 Requested Five Pack
+
+`DC_MIXED_SOURCES_V15_REQUESTED5_AFTER_V9_ACCEPTANCE_TEMP_2026_06_05`
+regenerates only the five requested mixed DC voltage/current source R/C/L
+circuits after V9 acceptance. It reuses the already accepted V13/V14 mixed
+source method and removes the old T00 control from the final archive.
+
+Test order:
+
+```text
+DCMS_V15_T01_CIRCUIT_1_12V_2A
+DCMS_V15_T02_CIRCUIT_2_TWO_5V_1A
+DCMS_V15_T03_CIRCUIT_3_24V_TWO_0A5
+DCMS_V15_T04_CIRCUIT_4_TWO_15V_TWO_3A
+DCMS_V15_T05_CIRCUIT_5_THREE_9V_1A5
+```
+
+Static checks:
+
+```text
+projects generated: 5
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+all cases use ordinary source-net terminals with 0 $TERPOWER and 0 $TERGROUND records
+static_validation_issues: empty in all generated manifests
+```
+
+The DC Mixed Sources V15 archive SHA256 is:
+
+```text
+ca6ec49ef909df918f875bb63c0a92890cea6108034399c39fe4e14cc9f30a15
+```
+
 ## Supported Combinations Current Scope
 
 As of 2026-06-05, supported component-family combinations in the deterministic
@@ -3284,13 +3330,12 @@ three passive families: R+C+L
 passive topology with V0/G0 power/ground terminals: R, C, L, R+C, R+C+L
 single-source source-driven topology without separate power/ground terminals: DC voltage, DC current, or AC voltage + R, C, L, R+C, R+L, C+L, R+C+L
 multi-source DC topology: multiple DC voltage sources + multiple DC current sources + R/C/L
-two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+DCI, ACV+ACV with tested R/C/L subgroup loads
+two-source source-driven passive topology accepted in tested scope: DCV+DCV for V9 R-only and RC/RL variants, DCI+DCI, DCV+DCI, ACV+ACV with tested R/C/L subgroup loads
 ```
 
 Out of current scope or not locked:
 
 ```text
-pure DCV+DCV source-driven passive loads: pending Source Passive V9 fixed-wire/source-boundary test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented
