@@ -3148,6 +3148,67 @@ Test T00 first. If T00 fails, stop and report T00 specifically because that
 means the fixed oracle copy itself is not accepted from the batch/archive.
 ```
 
+User feedback:
+
+```text
+All V7 cases worked.
+```
+
+Interpretation:
+
+```text
+The user-fixed V3 T03 project is a valid oracle. Exact copy, deterministic
+deflated repack, ZIP_STORED repack, E001 ROOT.DSN/ROOT.CDB transplant, and
+ROOT.CDB-only source value mutation to 10V/5V are all safe for this scope.
+The remaining failure is in generated ROOT.DSN object mutation, not in the
+packer/container path.
+```
+
+## Source Passive V8 Compact Fixed-Suffix Probe
+
+`SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_TEMP_2026_06_05` tests the next
+mutation surface after V7 acceptance.
+
+V8 method:
+
+```text
+T00: accepted V7-style fixed ROOT.DSN, CDB-only 10V/5V source values
+T01: fixed passive prefix, fixed source units visibly patched to 10V/5V, CDB also 10V/5V
+T02: generated R-only body with exact visible values 1k/2k/1G and normal mixed-RCL suffixes
+T03: generated R-only body with exact visible values and compact fixed-oracle suffixes
+T04: generated RC/RL body with exact visible values and normal mixed-RCL suffixes
+T05: generated RC/RL body with exact visible values and compact fixed-oracle suffixes
+T06: generated RC/RL body with compact suffixes and visible/CDB source values 10V/5V
+```
+
+Test order:
+
+```text
+SRCP_V8_T00_FIXED_CDB_ONLY_10V_5V_ACCEPTED_CONTROL
+SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V
+SRCP_V8_T02_R_ONLY_STANDARD_SUFFIX_EXACT_VALUES
+SRCP_V8_T03_R_ONLY_COMPACT_SUFFIX_EXACT_VALUES
+SRCP_V8_T04_RC_RL_STANDARD_SUFFIX_EXACT_VALUES
+SRCP_V8_T05_RC_RL_COMPACT_SUFFIX_EXACT_VALUES
+SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V
+```
+
+Static checks:
+
+```text
+projects generated: 7
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+static_validation_issues: empty in all generated manifests
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+credential scan: no Groq, MongoDB, or Hugging Face token-pattern matches
+```
+
+The Source Passive V8 archive SHA256 is:
+
+```text
+89655b0da8db0d43b8e890be0040d34c70cd5a19e28a4f36b95c25dba06e451e
+```
+
 ## Supported Combinations Current Scope
 
 As of 2026-06-05, supported component-family combinations in the deterministic
@@ -3166,7 +3227,7 @@ two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+D
 Out of current scope or not locked:
 
 ```text
-pure DCV+DCV source-driven passive loads: pending Source Passive V7 fixed-file control test
+pure DCV+DCV source-driven passive loads: pending Source Passive V8 compact fixed-suffix scale-up test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented

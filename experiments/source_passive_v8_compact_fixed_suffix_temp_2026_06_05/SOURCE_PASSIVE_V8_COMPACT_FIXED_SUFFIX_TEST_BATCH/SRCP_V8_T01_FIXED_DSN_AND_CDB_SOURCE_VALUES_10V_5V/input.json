@@ -1,0 +1,34 @@
+{
+  "method": "direct_fixed_oracle_source_visible_value_mutation",
+  "source_values": [
+    "10V",
+    "5V"
+  ],
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "model": "VSOURCE",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 4,
+      "out_suffix": "1300",
+      "in_suffix": "1399",
+      "value": "10V",
+      "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE"
+    },
+    {
+      "kind": "dc_voltage",
+      "ref": "V2",
+      "model": "VSOURCE",
+      "positive": "D1",
+      "negative": "D0",
+      "global_id": 5,
+      "out_suffix": "1589",
+      "in_suffix": "1622",
+      "value": "5V",
+      "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE"
+    }
+  ],
+  "ROOT_DSN_passive_prefix": "byte-for-byte user-fixed passive prefix"
+}

@@ -724,11 +724,20 @@
     {
       "id": "R081",
       "title": "Pure DCV2 passive controls must prove fixed-file copy and repack first",
-      "status": "source_passive_v7_static_generated_pending_user_test",
-      "confidence": 0.86,
+      "status": "confirmed_v7_all_worked",
+      "confidence": 0.92,
       "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", ".pdsprj repacking", "ROOT.DSN object stream"],
-      "evidence": ["SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_STATIC_20260605"],
-      "rule": "Before further pure DCV+DCV passive generation, prove the user-fixed V3 T03 file survives exact copying, deterministic repacking, ZIP_STORED repacking, and E001 ROOT.DSN/ROOT.CDB transplant. SOURCE_PASSIVE_V7 uses the fixed file as the oracle and keeps ROOT.DSN unchanged in all cases; only T04 mutates ROOT.CDB source values from 1V/1V to 10V/5V."
+      "evidence": ["SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_STATIC_20260605", "SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "rule": "The user-fixed V3 T03 file is a valid pure DCV+DCV passive oracle. User testing confirmed exact copying, deterministic deflated repacking, ZIP_STORED repacking, E001 ROOT.DSN/ROOT.CDB transplant, and ROOT.CDB-only source value mutation from 1V/1V to 10V/5V all work. Packer/container context is not the cause of the prior bad-object failures."
+    },
+    {
+      "id": "R082",
+      "title": "Pure DCV2 passive scale-up must isolate source visible values and compact passive suffixes",
+      "status": "source_passive_v8_static_generated_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "passive suffix mapping", "visible resistor values"],
+      "evidence": ["SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605", "V5-vs-fixed object chunk comparison 2026-06-05", "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_STATIC_20260605"],
+      "rule": "V5 differed from the fixed oracle in visible resistor value lengths and passive terminal/link suffixes. SOURCE_PASSIVE_V8 therefore tests exact resistor visible strings (1k, 2k, 1G), direct fixed source visible-value mutation, and generated passive bodies with both the normal mixed-RCL suffix bases and a compact fixed-oracle suffix sequence before promoting pure DCV+DCV passive scale-up."
     }
   ]
 }

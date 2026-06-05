@@ -1,0 +1,1 @@
+Open and simulate SRCP_V8_T03_R_ONLY_COMPACT_SUFFIX_EXACT_VALUES.pdsprj

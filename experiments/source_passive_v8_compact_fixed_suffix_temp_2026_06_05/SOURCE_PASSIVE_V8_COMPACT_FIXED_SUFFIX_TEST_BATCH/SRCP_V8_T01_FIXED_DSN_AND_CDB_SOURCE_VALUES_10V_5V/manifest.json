@@ -1,0 +1,86 @@
+{
+  "case_id": "SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V",
+  "description": "Fixed oracle passive prefix with source units patched visibly to 10V/5V and matching ROOT.CDB source values.",
+  "status": "temporary_source_passive_v8_compact_fixed_suffix_pending_user_test",
+  "output": "SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V\\SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V.pdsprj",
+  "object_chunk_len": 3260,
+  "root_cdb_len": 632,
+  "root_dsn_len": 72151,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 5,
+    "$TEROUTPUT": 4,
+    "$TERGROUND": 1,
+    "WIRE": 10,
+    "RESISTOR": 6,
+    "REALIND": 0,
+    "CAPACITOR": 0,
+    "CAP10": 0,
+    "COMPONENT ID": 5,
+    "COMPONENT VALUE": 5
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "WIRE": 0,
+    "RESISTOR": 1,
+    "REALIND": 2,
+    "CAPACITOR": 1,
+    "CAP10": 3,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67948,
+    "second_isis": 71254,
+    "second_object_data": 71289,
+    "object_data_pointer": 71302
+  },
+  "hashes": {
+    "SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V.pdsprj": "1ade5a5e5ac02f2cd4baad719b4d18e2faf48dde9c6b67a71be74c322c34fc75",
+    "SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V.ROOT.DSN.bin": "9a756a2e436068eaa1f2f0a262049aedf5c0e8087313f781f102633409001417",
+    "SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V.ROOT.CDB.bin": "632f9aaa77f5d166d73be40141b58fcf40c41114d30afb8686a8ec7523f8c39e",
+    "SRCP_V8_T01_FIXED_DSN_AND_CDB_SOURCE_VALUES_10V_5V.OBJECT_CHUNK.bin": "b95d087a5cd7a505cfa6592e7c6a39580726293b15b8865521a8c2420a62ffde",
+    "object_chunk": "b95d087a5cd7a505cfa6592e7c6a39580726293b15b8865521a8c2420a62ffde",
+    "ROOT.CDB": "632f9aaa77f5d166d73be40141b58fcf40c41114d30afb8686a8ec7523f8c39e",
+    "devices": "2064ed99d7723776c8622a6783c78114df02f772ac8af97db5ee238676143c3d"
+  },
+  "input": {
+    "method": "direct_fixed_oracle_source_visible_value_mutation",
+    "source_values": [
+      "10V",
+      "5V"
+    ],
+    "sources": [
+      {
+        "kind": "dc_voltage",
+        "ref": "V1",
+        "model": "VSOURCE",
+        "positive": "DV",
+        "negative": "D0",
+        "global_id": 4,
+        "out_suffix": "1300",
+        "in_suffix": "1399",
+        "value": "10V",
+        "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE"
+      },
+      {
+        "kind": "dc_voltage",
+        "ref": "V2",
+        "model": "VSOURCE",
+        "positive": "D1",
+        "negative": "D0",
+        "global_id": 5,
+        "out_suffix": "1589",
+        "in_suffix": "1622",
+        "value": "5V",
+        "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE"
+      }
+    ],
+    "ROOT_DSN_passive_prefix": "byte-for-byte user-fixed passive prefix"
+  }
+}

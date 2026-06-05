@@ -1,0 +1,1 @@
+Open and simulate SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V.pdsprj

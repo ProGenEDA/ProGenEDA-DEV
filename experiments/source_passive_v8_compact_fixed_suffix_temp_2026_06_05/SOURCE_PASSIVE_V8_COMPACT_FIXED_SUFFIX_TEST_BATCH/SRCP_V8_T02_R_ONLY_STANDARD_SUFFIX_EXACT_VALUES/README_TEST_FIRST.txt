@@ -1,0 +1,1 @@
+Open and simulate SRCP_V8_T02_R_ONLY_STANDARD_SUFFIX_EXACT_VALUES.pdsprj

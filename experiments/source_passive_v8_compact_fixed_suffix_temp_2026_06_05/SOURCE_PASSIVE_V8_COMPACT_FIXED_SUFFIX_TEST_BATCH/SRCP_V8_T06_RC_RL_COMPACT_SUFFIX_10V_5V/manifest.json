@@ -1,0 +1,213 @@
+{
+  "case_id": "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V",
+  "description": "Generated RC/RL body using compact fixed-oracle suffixes and visible/CDB source values 10V and 5V.",
+  "status": "temporary_source_passive_v8_compact_fixed_suffix_pending_user_test",
+  "output": "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V\\SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V.pdsprj",
+  "object_chunk_len": 4613,
+  "root_cdb_len": 897,
+  "root_dsn_len": 73504,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 7,
+    "$TEROUTPUT": 6,
+    "$TERGROUND": 1,
+    "WIRE": 14,
+    "RESISTOR": 6,
+    "REALIND": 3,
+    "CAPACITOR": 1,
+    "CAP10": 1,
+    "COMPONENT ID": 7,
+    "COMPONENT VALUE": 7
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "WIRE": 0,
+    "RESISTOR": 1,
+    "REALIND": 2,
+    "CAPACITOR": 1,
+    "CAP10": 3,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67948,
+    "second_isis": 72607,
+    "second_object_data": 72642,
+    "object_data_pointer": 72655
+  },
+  "hashes": {
+    "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V.pdsprj": "3bdd16e02dc7808f80a871331f94a727b062062d72be6ba007d24416a293ec68",
+    "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V.ROOT.DSN.bin": "14d862091f1c5769ce2443335bd6d1239d90061aff74e1a3b99b85a7d48692e4",
+    "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V.ROOT.CDB.bin": "f0695ea272922bb7f28bcce1ce7840a1ae16a766ac893f2162feb695efdaf9d9",
+    "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V.OBJECT_CHUNK.bin": "ed15220f986be853a0f6bb2b06011332e6fa165982b0ae035fcc87f46541ed8f",
+    "object_chunk": "ed15220f986be853a0f6bb2b06011332e6fa165982b0ae035fcc87f46541ed8f",
+    "ROOT.CDB": "f0695ea272922bb7f28bcce1ce7840a1ae16a766ac893f2162feb695efdaf9d9",
+    "devices": "2064ed99d7723776c8622a6783c78114df02f772ac8af97db5ee238676143c3d"
+  },
+  "input": {
+    "schema_version": "mixed-rcl-circuit-ir/v0.1",
+    "generator_target": "proteus-8.13-mixed-rcl-locked",
+    "project": {
+      "name": "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V",
+      "output_basename": "SRCP_V8_T06_RC_RL_COMPACT_SUFFIX_10V_5V",
+      "base": "e001_empty",
+      "units": "proteus_internal"
+    },
+    "groups": [
+      {
+        "mode": "RC",
+        "start": "DV",
+        "end": "D0"
+      },
+      {
+        "mode": "RL",
+        "start": "D1",
+        "end": "D0"
+      },
+      {
+        "mode": "R",
+        "start": "D0",
+        "end": "G0"
+      }
+    ],
+    "source_count": 2,
+    "source_rule": "user-fixed component-first VSOURCE units appended after generated passive source-net body",
+    "sources": [
+      {
+        "kind": "dc_voltage",
+        "ref": "V1",
+        "model": "VSOURCE",
+        "positive": "DV",
+        "negative": "D0",
+        "global_id": 6,
+        "out_suffix": "1300",
+        "in_suffix": "1399",
+        "value": "10V",
+        "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE"
+      },
+      {
+        "kind": "dc_voltage",
+        "ref": "V2",
+        "model": "VSOURCE",
+        "positive": "D1",
+        "negative": "D0",
+        "global_id": 7,
+        "out_suffix": "1589",
+        "in_suffix": "1622",
+        "value": "5V",
+        "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE"
+      }
+    ],
+    "visible_values": {
+      "R1": "1k",
+      "C1": "1uF",
+      "R2": "2k",
+      "L1": "5mH",
+      "R3": "1G"
+    },
+    "exact_cdb_values": {
+      "R1": "1k",
+      "C1": "1uF",
+      "R2": "2k",
+      "L1": "5mH",
+      "R3": "1G"
+    },
+    "suffix_mode": "compact_fixed",
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "D0",
+        "global_id": 1,
+        "in_suffix": "06c0",
+        "out_suffix": "068e",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k",
+        "left": "DV",
+        "right": "A1",
+        "global_id": 2,
+        "in_suffix": "0bc4",
+        "out_suffix": "0bf6",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 3,
+        "unit": 2,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "A2",
+        "right": "D0",
+        "global_id": 3,
+        "in_suffix": "0b96",
+        "out_suffix": "0bc8",
+        "x": 6604000,
+        "y": 2540000
+      },
+      {
+        "idx": 4,
+        "unit": 2,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "2k",
+        "left": "D1",
+        "right": "A2",
+        "global_id": 4,
+        "in_suffix": "0e51",
+        "out_suffix": "0e83",
+        "x": 2794000,
+        "y": 5080000
+      },
+      {
+        "idx": 5,
+        "unit": 3,
+        "kind": "RESISTOR",
+        "ref": "R3",
+        "value": "1G",
+        "left": "D0",
+        "right": "G0",
+        "global_id": 5,
+        "in_suffix": "10de",
+        "out_suffix": "1110",
+        "x": 12954000,
+        "y": 5080000
+      }
+    ],
+    "counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RC",
+        "RL",
+        "R"
+      ],
+      "group_count": 3,
+      "component_count": 5,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "resistor_count": 3,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 1
+    },
+    "wire_repair": {
+      "repaired_wire_count": 0,
+      "repairs": []
+    }
+  }
+}
