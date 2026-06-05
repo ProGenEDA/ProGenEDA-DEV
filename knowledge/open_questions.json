@@ -6,581 +6,882 @@
       "priority": "high",
       "question": "What is the exact ROOT.DSN template structure needed to add additional visible resistor objects from known-good user-created templates?",
       "status": "resolved_for_v9_resistor_terminal_method",
-      "needed_for": ["resistor_generator_v0"]
+      "needed_for": [
+        "resistor_generator_v0"
+      ]
     },
     {
       "id": "Q002",
       "priority": "high",
       "question": "How are resistor, terminal, and short-wire coordinates represented in ROOT.DSN?",
       "status": "resolved_for_horizontal_and_90_degree_v9_resistor_records",
-      "needed_for": ["layout_generation"]
+      "needed_for": [
+        "layout_generation"
+      ]
     },
     {
       "id": "Q003",
       "priority": "high",
       "question": "Can a full resistor unit terminal--resistor--terminal be reused safely by editing labels, refs, values, and coordinates?",
       "status": "resolved_for_v9_with_suffix_and_terminator_validation",
-      "needed_for": ["resistor_generator_v0"]
+      "needed_for": [
+        "resistor_generator_v0"
+      ]
     },
     {
       "id": "Q004",
       "priority": "medium",
       "question": "Can terminals be placed directly on resistor pins, or are short wire stubs required?",
       "status": "resolved_for_current_scope_short_wire_stubs_required",
-      "needed_for": ["simplified_terminal_based_layout"]
+      "needed_for": [
+        "simplified_terminal_based_layout"
+      ]
     },
     {
       "id": "Q005",
       "priority": "medium",
       "question": "What is the minimum valid ROOT.CDB seed for generated resistor circuits?",
       "status": "resolved_for_v9_generate_one_cdb_record_per_resistor",
-      "needed_for": ["packer_generator_v0"]
+      "needed_for": [
+        "packer_generator_v0"
+      ]
     },
     {
       "id": "Q006",
       "priority": "medium",
       "question": "Which ZIP compression methods and internal file orderings does Proteus accept for .pdsprj repacks?",
       "status": "pending_60_tests",
-      "needed_for": ["repacking_stability"]
+      "needed_for": [
+        "repacking_stability"
+      ]
     },
     {
       "id": "Q007",
       "priority": "medium",
       "question": "How should duplicate resistor references and duplicate terminal labels be handled by validator rules?",
       "status": "pending_60_tests",
-      "needed_for": ["validator_v0"]
+      "needed_for": [
+        "validator_v0"
+      ]
     },
     {
       "id": "Q008",
       "priority": "high_later",
       "question": "What controlled one-component tests are required for DC source, AC source, inductor, capacitor, LED, switch, clock, logic probe, and basic 74xx ICs?",
       "status": "active_for_capacitor_first",
-      "needed_for": ["component_expansion"]
+      "needed_for": [
+        "component_expansion"
+      ]
     },
     {
       "id": "Q009",
       "priority": "high",
       "question": "Can the D05 exact-picture oracle establish safe complete-record transforms for one 74HC08 package plus pull-up/pull-down wires, terminals, junctions, and resistor metadata?",
       "status": "awaiting_hc08_d05_oracle",
-      "needed_for": ["and_reference_acceptance", "hc08_generation_v0"]
+      "needed_for": [
+        "and_reference_acceptance",
+        "hc08_generation_v0"
+      ]
     },
     {
       "id": "Q010",
       "priority": "medium",
       "question": "Do the main power-bridge resistor outputs survive manual Proteus 8.13 save-as/reopen and visual comparison for all requested topologies?",
       "status": "user_visual_no_error_acceptance_received_current_scope_formal_save_reopen_diff_pending",
-      "needed_for": ["resistor_generator_release_acceptance"]
+      "needed_for": [
+        "resistor_generator_release_acceptance"
+      ]
     },
     {
       "id": "Q011",
       "priority": "high",
       "question": "What exact Proteus-created standalone WIRE donor record is safe for visible resistor bus/junction drawing without VGDVC.dll errors?",
       "status": "pending_safe_wire_donor_after_visual_wire_vgdvc_report",
-      "needed_for": ["visible_bus_wire_generation"]
+      "needed_for": [
+        "visible_bus_wire_generation"
+      ]
     },
     {
       "id": "Q012",
       "priority": "high",
       "question": "Which CAPACITOR_V7_TERMINAL_ISOLATION_TEMP_20260531 diagnostic is the first to fail in Proteus 8.13?",
       "status": "answered_t04_and_t06_failed_t07_partial_t01_t02_t03_t05_worked",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q013",
       "priority": "high",
       "question": "Does CAPACITOR_V8_TERMINAL_ORDER_TEMP_20260531 T02 or another V9-order variant display two terminal-attached capacitors correctly in Proteus 8.13?",
       "status": "answered_only_t01_worked_t02_to_t06_failed",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q014",
       "priority": "high",
       "question": "What valid ROOT.DSN object stream does Proteus create for two or more terminal-attached capacitors?",
       "status": "answered_by_manual_cap2_donor_structure_pending_generated_acceptance",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q015",
       "priority": "high",
       "question": "Does CAPACITOR_V9_UNIQUE_INDEX_TEMP_20260531 T02 open and render two complete terminal-attached capacitors after fixing byte 344 to 1 and 2?",
       "status": "answered_no_t01_worked_t03_partial_rest_failed",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q016",
       "priority": "high",
       "question": "Does CAPACITOR_V10_MANUAL_DONOR_TEMP_20260531 open, mutate, and scale terminal-attached capacitors when using the manual donor's outputs-first object order?",
       "status": "answered_yes_all_v10_cases_worked",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q017",
       "priority": "high",
       "question": "Do CAPACITOR_V11_NETWORKS_TEMP_20260531 6C and 21C generated networks open and render all terminal-attached capacitors using the accepted V10 order?",
       "status": "answered_yes_all_v11_cases_worked",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q018",
       "priority": "high",
       "question": "Do CAPACITOR_V12_REQUESTED15_TEMP_20260531 requested capacitor networks open and render all 15 resistor-equivalent topologies using the accepted V10/V11 order?",
       "status": "superseded_by_v13_power_ground_spacing_pack_before_user_test",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q019",
       "priority": "high",
       "question": "Do CAPACITOR_V13_POWER_GROUND_SPACING_TEMP_20260531 wider-spaced requested capacitor networks open and render all 15 topologies with one power terminal bridge and G0 ground endpoints?",
       "status": "awaiting_user_proteus_test_v13_power_ground_spacing",
-      "needed_for": ["capacitor_generator_promotion"]
+      "needed_for": [
+        "capacitor_generator_promotion"
+      ]
     },
     {
       "id": "Q020",
       "priority": "high",
       "question": "Do MIXED_RES_CAP_V1_6R_21R_TEMP_20260531 mixed passive projects open and render the 6-component and 21-component odd-resistor/even-capacitor topologies with power and ground terminals?",
       "status": "answered_yes_user_accepted_with_spacing_adjustment_request",
-      "needed_for": ["mixed_passive_generator_promotion"]
+      "needed_for": [
+        "mixed_passive_generator_promotion"
+      ]
     },
     {
       "id": "Q021",
       "priority": "medium",
       "question": "Do MAIN_MIXED_RES_CAP_LOCKED_V1_20260531 outputs with reduced 2540000 safe spacing pass user Proteus open/render and save/reopen comparison?",
       "status": "answered_yes_user_accepted_main_locked_spacing",
-      "needed_for": ["mixed_passive_release_acceptance"]
+      "needed_for": [
+        "mixed_passive_release_acceptance"
+      ]
     },
     {
       "id": "Q022",
       "priority": "high",
       "question": "What controlled Proteus-created donor files establish safe terminal-attached inductor generation from E001?",
       "status": "donors_received_v1_static_pack_awaiting_user_proteus_test",
-      "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q023",
       "priority": "high",
       "question": "Do INDUCTOR_V1_TERMINAL_TEMP_20260531 generated projects open and render terminal-attached inductors, renamed/translated inductors, three inductors, and power/ground inductor cases?",
       "status": "answered_no_all_v1_cases_vgdvc",
-      "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q024",
       "priority": "high",
       "question": "Do inductor outputs work when preserving the donor REALIND terminal/component link suffix bytes instead of using resistor V9 suffixes?",
       "status": "answered_partial_v2_t01_to_t06_and_t08_to_t09_worked_t07_failed",
-      "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q025",
       "priority": "high",
       "question": "Do INDUCTOR_V3_MULTI_TEMP_20260531 multi-inductor diagnostics open when using per-index REALIND templates and donor-relative geometry, and does the formula-coordinate variant still fail?",
       "status": "answered_yes_all_v3_cases_worked",
-      "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q026",
       "priority": "high",
       "question": "Do INDUCTOR_V4_POWER_GROUND_TEMP_20260531 generated power/ground inductor networks open with the locked passive power bridge and G0 ground endpoints?",
       "status": "answered_no_t01_t02_t03_t05_bad_object_record_t04_isisdll",
-      "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q027",
       "priority": "high",
       "question": "Do INDUCTOR_V5_DONOR04_ORDER_TEMP_20260531 power/ground diagnostics open when preserving the accepted inductor_04 object order?",
       "status": "answered_yes_all_v5_cases_worked",
-      "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q028",
       "priority": "medium",
       "question": "What Proteus-created donor/order supports multi-inductor networks that include V0 and G0 after the generic V4 bridge-first order failed?",
       "status": "answered_by_v8_donor05_sequential_power_ground_probe_worked",
-      "needed_for": ["larger_inductor_power_ground_networks", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "larger_inductor_power_ground_networks",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q029",
       "priority": "high",
       "question": "Do the requested 6/21 inductor networks, 15 inductor topologies, and resistor/capacitor/inductor mixed circuits open/render correctly before inductor promotion?",
       "status": "partially_answered_v8_6_21_worked_v3_cl_worked_v5_free_rlc_controls_worked_v6_terminal_c_l_worked_v7_free_lc_r_final_worked_v8_all_terminal_failed_v9_rl_boundary_failed_manual_rl_donor_required",
-      "needed_for": ["inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q030",
       "priority": "high",
       "question": "What exact Proteus-created object order and suffix/link pattern does Proteus use for six or more terminal-attached inductors?",
       "status": "answered_v8_all_cases_worked_donor05_sequential_order_confirmed",
-      "needed_for": ["larger_inductor_networks", "inductor_generator_promotion", "mixed_passive_rcl_generator"]
+      "needed_for": [
+        "larger_inductor_networks",
+        "inductor_generator_promotion",
+        "mixed_passive_rcl_generator"
+      ]
     },
     {
       "id": "Q031",
       "priority": "high",
       "question": "Which MIXED_RCL_V5_MANUAL_DONOR_TEMP_2026_06_01 donor controls and generated L/R/C terminal-topology variants open in Proteus?",
       "status": "answered_t01_to_t04_worked_t05_onward_failed",
-      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "resistor_inductor_boundary_resolution"
+      ]
     },
     {
       "id": "Q032",
       "priority": "high",
       "question": "Which MIXED_RCL_V6_TERMINAL_BOUNDARY_TEMP_2026_06_01 cases open when only one or two families are terminal-attached and the remaining families are exact free donor records?",
       "status": "answered_t01_t02_t04_t05_t10_worked_all_terminal_r_cases_failed",
-      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "resistor_inductor_boundary_resolution"
+      ]
     },
     {
       "id": "Q033",
       "priority": "high",
       "question": "Can MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_TEMP_2026_06_01 make terminal-attached resistor coexist with free L/C or terminal C+L by changing final order, ordinal, component index, suffixes, or donor header?",
       "status": "partially_answered_v7_t02_to_t07_free_lc_r_final_worked_t08_to_t12_unreported",
-      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "resistor_inductor_boundary_resolution"
+      ]
     },
     {
       "id": "Q034",
       "priority": "high",
       "question": "Do MIXED_RCL_V8_R_LAST_TERMINAL_POWER_TEMP_2026_06_01 cases open when terminal C/L blocks and V0/G0 are placed before a final resistor block?",
       "status": "answered_only_t01_worked_t02_to_t08_failed",
-      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution", "rcl_6_21_and_15_topology_generation"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "resistor_inductor_boundary_resolution",
+        "rcl_6_21_and_15_topology_generation"
+      ]
     },
     {
       "id": "Q035",
       "priority": "high",
       "question": "Can any MIXED_RCL_V9_RL_BOUNDARY_TEMP_2026_06_01 minimal terminal R+L order/index/suffix case open in Proteus?",
       "status": "answered_no_all_v9_generated_rl_boundary_cases_failed",
-      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution", "manual_rl_donor_decision"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "resistor_inductor_boundary_resolution",
+        "manual_rl_donor_decision"
+      ]
     },
     {
       "id": "Q036",
       "priority": "high",
       "question": "What exact Proteus-created object order and link/suffix pattern does Proteus use for a terminal-attached RESISTOR and terminal-attached REALIND in the same clean E001-based project?",
       "status": "answered_v10_all_cases_worked_native_terminal_rl_order_confirmed",
-      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution", "rcl_6_21_and_15_topology_generation"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "resistor_inductor_boundary_resolution",
+        "rcl_6_21_and_15_topology_generation"
+      ]
     },
     {
       "id": "Q037",
       "priority": "high",
       "question": "Do MIXED_RCL_V10_TERMINAL_RL_DONOR_TEMP_2026_06_01 donor controls and donor-native generated R+L variants open/render correctly in Proteus?",
       "status": "answered_yes_all_v10_cases_worked",
-      "needed_for": ["mixed_passive_rcl_generator", "resistor_inductor_boundary_resolution", "rcl_6_21_and_15_topology_generation"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "resistor_inductor_boundary_resolution",
+        "rcl_6_21_and_15_topology_generation"
+      ]
     },
     {
       "id": "Q038",
       "priority": "high",
       "question": "Do MIXED_RCL_V11_SCALED_TEMP_2026_06_01 6-component, 21-component, and 15 requested mixed R/C/L topology cases open/render correctly in Proteus?",
       "status": "answered_no_v11_netlist_simulation_failed_duplicate_part_references_and_6_21_failed",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q039",
       "priority": "high",
       "question": "Do MIXED_RCL_V12_GLOBAL_IDS_TEMP_2026_06_02 6-component, 21-component, and 15 requested mixed R/C/L topology cases pass Proteus netlist/simulation after global component IDs and object-order CDB are used?",
       "status": "partially_answered_single_1c_1l_1r_cases_worked_multi_component_cases_failed",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q040",
       "priority": "high",
       "question": "Do MIXED_RCL_V13_RL_INPUTS_FIRST_TEMP_2026_06_02 6-component, 21-component, and 15 requested mixed R/C/L topology cases pass Proteus netlist/simulation when all R/L input terminals are emitted before all L/R bodies?",
       "status": "answered_no_multi_component_cases_failed_after_single_unit_cases_worked",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q041",
       "priority": "high",
       "question": "Do MIXED_RCL_V14_REPEATED_UNIT_TEMP_2026_06_02 controls and repeated C/L/R unit cases pass Proteus open and netlist/simulation, especially T05 4x supplied ID gaps, T06 6x, and T08 21x?",
       "status": "answered_controls_worked_all_generated_cases_bad_object_record",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q042",
       "priority": "high",
       "question": "Which MIXED_RCL_V15_MUTATION_ISOLATION_TEMP_2026_06_02 case first fails: label-only mutation, generated-coordinate mutation with donor labels restored, or exact first-unit object-stream shortening?",
       "status": "answered_label_only_passed_generated_body_and_50b_shortening_failed_51b_shortening_passed",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q043",
       "priority": "high",
       "question": "Do MIXED_RCL_V16_WIRE_OFFSET_FIX_TEMP_2026_06_02 generated repeated-unit cases open and pass Proteus netlist/simulation after patching wire coordinates at WIRE-marker+9?",
       "status": "answered_yes_all_v16_cases_worked",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q044",
       "priority": "high",
       "question": "Do MIXED_RCL_V17_COMPONENT_REMOVAL_TEMP_2026_06_02 RC, LC, RL, C-only, and requested 3R/4C/1L subgroup-removal cases open and pass Proteus netlist/simulation?",
       "status": "answered_yes_all_v17_component_removal_cases_worked",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q045",
       "priority": "high",
       "question": "Do MIXED_RCL_V18_FINAL_TOPOLOGY_TEMP_2026_06_02 6-component, 21-component, and 15 requested mixed R/C/L topology cases open and pass Proteus netlist/simulation using the accepted V17 subgroup-removal method?",
       "status": "blocked_v18_t02_21_topology_rejected_by_user_count_only_not_circuit_rule",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q046",
       "priority": "high",
       "question": "Does MIXED_RCL_V19_CORRECT_21_TEMP_2026_06_02 corrected 21-component R/C/L circuit open and pass Proteus netlist/simulation, with two seven-component V0-to-M0 strings and one seven-component M0-to-G0 string?",
       "status": "answered_yes_v19_correct_21_worked_user_confirmed",
-      "needed_for": ["mixed_passive_rcl_generator", "rcl_6_21_and_15_topology_generation", "mixed_rcl_promotion"]
+      "needed_for": [
+        "mixed_passive_rcl_generator",
+        "rcl_6_21_and_15_topology_generation",
+        "mixed_rcl_promotion"
+      ]
     },
     {
       "id": "Q047",
       "priority": "medium",
       "question": "Does REQUESTED_RCL_FILTER_VALUES_MAIN_20260602 open/render correctly in Proteus 8.13 using singleton R/L groups and three-character compact value overrides?",
       "status": "awaiting_user_proteus_test_requested_rcl_filter_values",
-      "needed_for": ["mixed_rcl_value_override_release_confidence", "planner_value_contract"]
+      "needed_for": [
+        "mixed_rcl_value_override_release_confidence",
+        "planner_value_contract"
+      ]
     },
     {
       "id": "Q048",
       "priority": "high",
       "question": "Which DC_SOURCES_V5_SOURCE_NET_TEMP_2026_06_03 case first passes or fails in Proteus when using source nets DV/D0 and no $TERPOWER/$TERGROUND records?",
       "status": "answered_first_three_worked_t03_t04_vgcvc_dll",
-      "needed_for": ["dc_voltage_source_generation", "source_net_rules", "dc_current_followup"]
+      "needed_for": [
+        "dc_voltage_source_generation",
+        "source_net_rules",
+        "dc_current_followup"
+      ]
     },
     {
       "id": "Q049",
       "priority": "high",
       "question": "Which DC_SOURCES_V6_SOURCE_BLOCK_FIX_TEMP_2026_06_03 source-block variant first opens and netlists after V5 proved generated source-net R/C/L works but generated VSOURCE insertion fails?",
       "status": "answered_t02_t04_failed_workspace_indicates_t00_t01_t03_t05_t06_opened",
-      "needed_for": ["dc_voltage_source_generation", "source_net_rules", "dc_current_followup"]
+      "needed_for": [
+        "dc_voltage_source_generation",
+        "source_net_rules",
+        "dc_current_followup"
+      ]
     },
     {
       "id": "Q050",
       "priority": "high",
       "question": "Do DC_SOURCES_V7_ACCEPTED_SOURCE_FIRST_TEMP_2026_06_03 6-component and corrected 21-rule DC-voltage source-driven R/C/L circuits open and netlist using the accepted V6 source-first method?",
       "status": "answered_yes_all_v7_cases_worked",
-      "needed_for": ["dc_voltage_source_generation", "source_net_rules", "dc_current_followup"]
+      "needed_for": [
+        "dc_voltage_source_generation",
+        "source_net_rules",
+        "dc_current_followup"
+      ]
     },
     {
       "id": "Q051",
       "priority": "high",
       "question": "Do DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_TEMP_2026_06_03 all 15 DC-voltage and all 15 DC-current source-driven R/C/L topology cases open and netlist?",
       "status": "answered_dcv_all_worked_dci_all_failed",
-      "needed_for": ["dc_voltage_source_generation", "dc_current_source_generation", "source_net_rules", "ac_source_followup"]
+      "needed_for": [
+        "dc_voltage_source_generation",
+        "dc_current_source_generation",
+        "source_net_rules",
+        "ac_source_followup"
+      ]
     },
     {
       "id": "Q052",
       "priority": "high",
       "question": "Which DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_TEMP_2026_06_03 case first works for DC-current source-driven generated R/C/L output: connected CSOURCE block with source-last CDB, source-first CDB, or standalone CSOURCE block with source-last CDB?",
       "status": "answered_t03_and_onward_failed_controls_not_reported_as_failing",
-      "needed_for": ["dc_current_source_generation", "source_net_rules", "ac_source_followup"]
+      "needed_for": [
+        "dc_current_source_generation",
+        "source_net_rules",
+        "ac_source_followup"
+      ]
     },
     {
       "id": "Q053",
       "priority": "high",
       "question": "Do DC_CURRENT_V10_ANCHOR_TERMINALS_TEMP_2026_06_03 generated DC-current cases work when the donor DI/I0 anchor terminal pair is preserved immediately after the connected CSOURCE block?",
       "status": "answered_t02_t03_t04_failed_t00_t01_not_reported_as_failing",
-      "needed_for": ["dc_current_source_generation", "source_net_rules", "ac_source_followup"]
+      "needed_for": [
+        "dc_current_source_generation",
+        "source_net_rules",
+        "ac_source_followup"
+      ]
     },
     {
       "id": "Q054",
       "priority": "high",
       "question": "Do DC_CURRENT_V11_DCV_STYLE_DEVICES_TEMP_2026_06_03 generated DC-current mixed R/C/L cases work when they use the DCV-style clean CAP+REALIND+RESISTOR+CSOURCE device table with no duplicate RESISTOR entry?",
       "status": "answered_no_all_v11_cases_isis_dll_error",
-      "needed_for": ["dc_current_source_generation", "source_net_rules", "ac_source_followup"]
+      "needed_for": [
+        "dc_current_source_generation",
+        "source_net_rules",
+        "ac_source_followup"
+      ]
     },
     {
       "id": "Q055",
       "priority": "high",
       "question": "Do DC_CURRENT_V12_MANUAL_TESTING_STUDY_TEMP_2026_06_03 cases work, especially the exact manual copy/transplant controls and the generated DCV-geometry-with-CSOURCE-metadata candidates?",
       "status": "answered_yes_all_v12_cases_worked",
-      "needed_for": ["dc_current_source_generation", "source_net_rules", "ac_source_followup"]
+      "needed_for": [
+        "dc_current_source_generation",
+        "source_net_rules",
+        "ac_source_followup"
+      ]
     },
     {
       "id": "Q056",
       "priority": "high",
       "question": "Do DC_CURRENT_V13_15_TOPOLOGIES_TEMP_2026_06_04 all 15 DC-current source-driven R/C/L topology cases open and netlist using the V12 accepted DCV-geometry-with-CSOURCE-metadata method?",
       "status": "answered_yes_all_v13_dci_topologies_worked",
-      "needed_for": ["dc_current_source_generation", "source_net_rules", "ac_source_followup"]
+      "needed_for": [
+        "dc_current_source_generation",
+        "source_net_rules",
+        "ac_source_followup"
+      ]
     },
     {
       "id": "Q057",
       "priority": "high",
       "question": "What user-created Proteus 8.13 donors are needed to establish AC voltage and AC current source-driven R/C/L generation with ordinary source-net terminals and no default power/ground terminals?",
       "status": "answered_ac_voltage_confirmed_ac_current_out_of_scope_by_user",
-      "needed_for": ["ac_voltage_source_generation", "ac_current_source_generation", "source_net_rules"]
+      "needed_for": [
+        "ac_voltage_source_generation",
+        "ac_current_source_generation",
+        "source_net_rules"
+      ]
     },
     {
       "id": "Q058",
       "priority": "high",
       "question": "Which AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_TEMP_2026_06_04 cases open and netlist: exact/transplant controls, AV/A0 no-source R/C/L control, source-first VSINE insertion, or source-last load-donor VSINE insertion?",
       "status": "answered_t00_to_t04_worked_t05_onward_vgdvc_dll",
-      "needed_for": ["ac_voltage_source_generation", "source_net_rules", "ac_current_source_followup"]
+      "needed_for": [
+        "ac_voltage_source_generation",
+        "source_net_rules",
+        "ac_current_source_followup"
+      ]
     },
     {
       "id": "Q059",
       "priority": "high",
       "question": "Do AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_TEMP_2026_06_04 cases work, especially T02-T04 using the exact non-final AV/A0 VSINE unit extracted from the two-source donor?",
       "status": "answered_yes_all_v2_cases_worked",
-      "needed_for": ["ac_voltage_source_generation", "source_net_rules", "ac_current_source_followup"]
+      "needed_for": [
+        "ac_voltage_source_generation",
+        "source_net_rules",
+        "ac_current_source_followup"
+      ]
     },
     {
       "id": "Q060",
       "priority": "high",
       "question": "Do DC_MIXED_SOURCES_V1_REQUESTED5_TEMP_2026_06_04 requested complex R/C/L circuits with multiple DC voltage and DC current sources open and netlist in Proteus?",
       "status": "answered_no_all_v1_cases_isis_dll_error",
-      "needed_for": ["multi_source_dc_generation", "source_net_rules", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_net_rules",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q061",
       "priority": "high",
       "question": "Do DC_MIXED_SOURCES_V2_STRICT_CDB_TEMP_2026_06_04 requested multi-source DC R/C/L circuits work after source CDB rows are changed to donor-style +/- pin mappings?",
       "status": "answered_no_all_v2_cases_isis_dll",
-      "needed_for": ["multi_source_dc_generation", "source_cdb_rules", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_cdb_rules",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q062",
       "priority": "high",
       "question": "Do DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_TEMP_2026_06_04 controls and requested multi-source DC R/C/L circuits work when source refs stay V-style and device metadata is rebuilt cleanly?",
       "status": "answered_no_all_v4_cases_isis_dll",
-      "needed_for": ["multi_source_dc_generation", "source_net_rules", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_net_rules",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q063",
       "priority": "high",
       "question": "Which MX5_SHORT_NAMES_STATIC_20260604 cases work: A0/A1 known-good short-path controls, B0/B1 V4 source-only controls, B2 patched manual DCI mixed-source control, or C1-C5 requested circuits?",
       "status": "superseded_by_mx6_after_user_supplied_all3_source_donor",
-      "needed_for": ["multi_source_dc_generation", "source_net_rules", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_net_rules",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q064",
       "priority": "high",
       "question": "Which MX6_ALL3_SOURCE_DONOR_STATIC_20260604 cases work using the supplied all-source donor metadata: D0 exact copy, D1 transplant, E0/E1 source-only controls, F1/G1 device-order A/B, or F2-F5 requested circuits?",
       "status": "answered_d0_d1_worked_e0_e1_bad_object_rest_isis",
-      "needed_for": ["multi_source_dc_generation", "source_net_rules", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_net_rules",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q065",
       "priority": "high",
       "question": "Which DC_MIXED_SOURCES_V7_ALL3_RECORDS_TEMP_2026_06_04 cases work when source objects are duplicated from the all-source donor's own VSOURCE/CSOURCE records?",
       "status": "answered_t00_to_t03_worked_t04_onward_isis_dll",
-      "needed_for": ["multi_source_dc_generation", "source_object_records", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_object_records",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q066",
       "priority": "high",
       "question": "Which DC_MIXED_SOURCES_V8_SPLICED_DEVICES_TEMP_2026_06_04 cases work after replacing whole-section source+R/C/L concatenation with entry-level CSOURCE device splicing?",
       "status": "superseded_by_user_supplied_v9_mixed_source_rcl_donor",
-      "needed_for": ["multi_source_dc_generation", "device_section_rules", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "device_section_rules",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q067",
       "priority": "high",
       "question": "Which DC_MIXED_SOURCES_V9_DONOR_TAIL_TEMP_2026_06_05 cases work after preserving the manual mixed source plus R/C/L donor's source-tail ordering, coherent device section, and ordinary terminal-label topology?",
       "status": "answered_t00_t01_t02_worked_t03_onward_vgdvc",
-      "needed_for": ["multi_source_dc_generation", "source_rcl_join_order", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_rcl_join_order",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q068",
       "priority": "high",
       "question": "Which DC_MIXED_SOURCES_V10_FINAL_UNIT_TEMP_2026_06_05 cases work after testing generated CDB on donor-safe objects and restoring only the donor final RL unit into the generated R/C/L prefix?",
       "status": "answered_t00_to_t04_worked_t05_t06_vgdvc_t07_t08_missing_library_crash",
-      "needed_for": ["multi_source_dc_generation", "source_rcl_join_order", "final_rl_order_rule", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_rcl_join_order",
+        "final_rl_order_rule",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q069",
       "priority": "high",
       "question": "Which DC_MIXED_SOURCES_V11_GROUP_BOUNDARY_TEMP_2026_06_05 cases work after switching from final-output splicing to whole donor group-boundary splicing and generated-prefix suffix remapping?",
       "status": "answered_t03_t05_opened_t02_t04_t06_t07_vgdvc_sources_too_far",
-      "needed_for": ["multi_source_dc_generation", "source_rcl_join_order", "terminal_suffix_mapping", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_rcl_join_order",
+        "terminal_suffix_mapping",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q070",
       "priority": "high",
       "question": "Do DC_MIXED_SOURCES_V12_SUFFIXMAP_COORDS_TEMP_2026_06_05 cases open after using only suffix-map variants and relocating the source visual blocks closer to their connected terminal clusters?",
       "status": "answered_all_opened_v0_terminal_far_with_long_cross_sheet_line",
-      "needed_for": ["multi_source_dc_generation", "terminal_suffix_mapping", "source_coordinate_rules", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "terminal_suffix_mapping",
+        "source_coordinate_rules",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q071",
       "priority": "high",
       "question": "Do DC_MIXED_SOURCES_V13_V0_SOURCE_GEOMETRY_TEMP_2026_06_05 cases open and remove the long V0/source visual line after repairing negative-row WIRE coordinates and moving the leading V0 terminal beside VSOURCE?",
       "status": "answered_yes_opened_visuals_good_enough",
-      "needed_for": ["multi_source_dc_generation", "source_coordinate_rules", "wire_coordinate_rules", "requested_five_mixed_source_circuits", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "source_coordinate_rules",
+        "wire_coordinate_rules",
+        "requested_five_mixed_source_circuits",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q072",
       "priority": "high",
       "question": "Do DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_TEMP_2026_06_05 T01-T05 open, render, and netlist as the five requested mixed DC voltage/current source R/C/L circuits after duplicating V13 donor source units?",
       "status": "answered_yes_all_v14_requested5_worked",
-      "needed_for": ["multi_source_dc_generation", "requested_five_mixed_source_circuits", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "requested_five_mixed_source_circuits",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q073",
       "priority": "high",
       "question": "Do DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_TEMP_2026_06_05 cases open, render, and netlist as the 15 locked mixed R/C/L topology circuits with one 10V DC voltage source using DV/D0 source nets?",
       "status": "awaiting_user_proteus_test_dc_voltage_v15_15_rcl_topologies",
-      "needed_for": ["dc_voltage_source_generation", "mixed_rcl_topology_generation", "first_release_scope"]
+      "needed_for": [
+        "dc_voltage_source_generation",
+        "mixed_rcl_topology_generation",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q074",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_TEMP_2026_06_05 cases open, render, and netlist for source-driven R-only, C-only, L-only, RC, RL, and LC loads across DC voltage, DC current, and AC voltage?",
       "status": "answered_yes_all_source_passive_v1_cases_worked",
-      "needed_for": ["source_driven_single_family_passives", "source_driven_two_family_passives", "first_release_scope"]
+      "needed_for": [
+        "source_driven_single_family_passives",
+        "source_driven_two_family_passives",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q075",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V2_TWO_SOURCE_TEMP_2026_06_05 cases open, render, and netlist for two-source DC voltage, DC current, mixed DC voltage/current, and AC voltage source-driven passive loads?",
       "status": "answered_partial_dcv2_t01_t02_failed_bad_object_spice_v2_branch_rest_worked",
-      "needed_for": ["two_source_generation", "source_driven_passives", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "source_driven_passives",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q076",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEMP_2026_06_05 T01/T02 simulate correctly with G0 as the shared two-DC-voltage-source return, or are the D0 plus 1G G0-reference fallback cases T03/T04 required?",
       "status": "answered_no_generated_v3_bad_object_but_user_fixed_v3_t03_supplied",
-      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "simulation_reference_rule", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "dc_voltage_source_generation",
+        "source_driven_passives",
+        "simulation_reference_rule",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q077",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V4_DCV2_MANUAL2X_TEMP_2026_06_05 T01/T02 open and simulate when using the manual two-DC-voltage-source donor's separate source returns, and do T03/T04 or T05/T06 isolate shared-return or CDB-order behavior?",
       "status": "answered_rejected_v4_vgdvc_reported",
-      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "manual_two_source_return_rule", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "dc_voltage_source_generation",
+        "source_driven_passives",
+        "manual_two_source_return_rule",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q078",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V5_FIXED_V3_ORDER_TEMP_2026_06_05 T02/T04 open and simulate when using the user-fixed V3 component-first source order and source-style CDB rows, and do T03/T05 prove whether 10V/5V value mutation is safe?",
       "status": "answered_no_v5_vgdvc_wrong_direction_preserve_v3_dsn_instead",
-      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "fixed_v3_source_order_rule", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "dc_voltage_source_generation",
+        "source_driven_passives",
+        "fixed_v3_source_order_rule",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q079",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_TEMP_2026_06_05 CDB-only variants preserve generated V3 open/visual behavior while fixing the pure DCV+DCV bad-object or simulation issue?",
       "status": "answered_no_all_v6_cases_bad_object_record",
-      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "v3_visual_stream_preservation", "ROOT.CDB_source_row_rule", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "dc_voltage_source_generation",
+        "source_driven_passives",
+        "v3_visual_stream_preservation",
+        "ROOT.CDB_source_row_rule",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q080",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_TEMP_2026_06_05 exact-copy, no-change repack, E001 transplant, and CDB-only value mutation controls work from the user-fixed pure DCV+DCV file?",
       "status": "answered_yes_all_v7_fixed_file_controls_worked",
-      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "fixed_file_oracle_validation", "pdsprj_repacking_stability", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "dc_voltage_source_generation",
+        "source_driven_passives",
+        "fixed_file_oracle_validation",
+        "pdsprj_repacking_stability",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q081",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_TEMP_2026_06_05 direct source-visible mutation and generated exact-value compact-suffix R-only/RC-RL pure DCV+DCV cases work?",
       "status": "answered_no_t02_onward_vgdvc",
-      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "pure_dcv2_scale_up", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "dc_voltage_source_generation",
+        "source_driven_passives",
+        "pure_dcv2_scale_up",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q082",
       "priority": "high",
       "question": "Do SOURCE_PASSIVE_V9_FIXED_WIRE_SOURCE_BOUNDARY_TEMP_2026_06_05 T00-T03 open and simulate after fixing resistor wire endpoints, preserving source wire bytes, and trimming the passive-source boundary?",
       "status": "answered_yes_all_v9_cases_worked",
-      "needed_for": ["two_source_generation", "dc_voltage_source_generation", "source_driven_passives", "pure_dcv2_scale_up", "first_release_scope"]
+      "needed_for": [
+        "two_source_generation",
+        "dc_voltage_source_generation",
+        "source_driven_passives",
+        "pure_dcv2_scale_up",
+        "first_release_scope"
+      ]
     },
     {
       "id": "Q083",
       "priority": "high",
       "question": "Do DC_MIXED_SOURCES_V15_REQUESTED5_AFTER_V9_ACCEPTANCE_TEMP_2026_06_05 T01-T05 open, render, and netlist as the five requested mixed DC voltage/current source R/C/L circuits after V9 acceptance?",
       "status": "answered_yes_all_v15_requested5_worked",
-      "needed_for": ["multi_source_dc_generation", "requested_five_mixed_source_circuits", "first_release_scope"]
+      "needed_for": [
+        "multi_source_dc_generation",
+        "requested_five_mixed_source_circuits",
+        "first_release_scope"
+      ]
     }
   ]
 }

@@ -1,0 +1,71 @@
+{
+  "case_id": "DCS_V2_T05_COMPLEX_RLC_01",
+  "description": "Pasted circuit 1: 12V source at A1/G0, 2A current source at D1/G0, mixed branch network.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.1",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "12V",
+      "positive": "A1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "2A",
+      "positive": "D1",
+      "negative": "G0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "R",
+      "start": "A1",
+      "end": "B1"
+    },
+    {
+      "mode": "C",
+      "start": "B1",
+      "end": "G0"
+    },
+    {
+      "mode": "L",
+      "start": "B1",
+      "end": "C1"
+    },
+    {
+      "mode": "R",
+      "start": "C1",
+      "end": "G0"
+    },
+    {
+      "mode": "L",
+      "start": "C1",
+      "end": "D1"
+    },
+    {
+      "mode": "C",
+      "start": "D1",
+      "end": "N1"
+    },
+    {
+      "mode": "R",
+      "start": "N1",
+      "end": "G0"
+    }
+  ],
+  "component_values": {
+    "R1": "1k0",
+    "C1": "10u",
+    "L1": "100",
+    "R2": "470",
+    "L2": "220",
+    "C2": "22u",
+    "R3": "100"
+  },
+  "metadata": {
+    "test_order": 5,
+    "source_text": "Circuit 1 from pasted request"
+  }
+}

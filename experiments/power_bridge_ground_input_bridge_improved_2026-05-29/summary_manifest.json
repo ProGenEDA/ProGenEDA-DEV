@@ -1,0 +1,81 @@
+{
+  "case": "POWER_BRIDGE_GROUND_INPUT_BRIDGE_IMPROVED_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated_for_improved_ground_bridge",
+  "locked_user_confirmed": [
+    "LOCKED_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE",
+    "LOCKED_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE"
+  ],
+  "new_experiments": [
+    "IMPROVED_T03_6R_POWER_BRIDGE_GROUND_INPUT_BRIDGE",
+    "IMPROVED_T04_R21_POWER_BRIDGE_GROUND_INPUT_BRIDGE"
+  ],
+  "change_from_clean_t3_t4": "Ground bridge is shifted near the ground endpoint and uses attached $TERINPUT(G0), not $TEROUTPUT(G0).",
+  "zip": {
+    "filename": "POWER_BRIDGE_GROUND_INPUT_BRIDGE_IMPROVED_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 167820,
+    "sha256": "ff9ae239fe5abdf1366018dcd8de03e02158095e3e83ac8a0bb52a1a3f1ca9b6"
+  },
+  "script": {
+    "filename": "generate_power_bridge_ground_input_bridge_improved_attempts.py",
+    "size_bytes": 17467,
+    "sha256": "8f79c97ea3241016af5e7f1e4a1df10297f459099d784b9dd2912a916ea8a4f7"
+  },
+  "attempts": [
+    {
+      "case_id": "LOCKED_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE",
+      "status": "locked_working_reference",
+      "mode": "power_bridge_only_ground_shortwire",
+      "method": "Locked working method: exact power bridge + short-wire endpoint ground.",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_target_xy": {"x": -4572000, "y": -1778000},
+      "resistor_count": 6,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 2, "TERINPUT": 6, "TEROUTPUT": 5, "WIRE": 13, "COMPONENT_ID": 6},
+      "static_validation_issues": [],
+      "project_sha256": "2bd553350634b1250247f8d72b93106bba843e558830128cf554efc14323d265",
+      "root_dsn_sha256": "39336ccfe5fc16a319d4a92e131a5157f087dc07a88d88693598cc61f18a08d9"
+    },
+    {
+      "case_id": "LOCKED_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE",
+      "status": "locked_working_reference",
+      "mode": "power_bridge_only_ground_shortwire",
+      "method": "Locked working method: exact power bridge + short-wire endpoint ground.",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_target_xy": {"x": 10668000, "y": 1270000},
+      "resistor_count": 21,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 1, "TERINPUT": 21, "TEROUTPUT": 21, "WIRE": 43, "COMPONENT_ID": 21},
+      "static_validation_issues": [],
+      "project_sha256": "2bd553350634b1250247f8d72b93106bba843e558830128cf554efc14323d265",
+      "root_dsn_sha256": "39336ccfe5fc16a319d4a92e131a5157f087dc07a88d88693598cc61f18a08d9"
+    },
+    {
+      "case_id": "IMPROVED_T03_6R_POWER_BRIDGE_GROUND_INPUT_BRIDGE",
+      "status": "experimental_unvalidated",
+      "mode": "input_ground_bridge",
+      "method": "Working exact power bridge + improved ground bridge using attached $TERINPUT(G0), shifted near the ground endpoint instead of overlapping the power bridge.",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_target_xy": {"x": -4572000, "y": -1778000},
+      "resistor_count": 6,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 1, "TERINPUT": 7, "TEROUTPUT": 7, "WIRE": 14, "COMPONENT_ID": 6},
+      "static_validation_issues": [],
+      "project_sha256": "8bd715a9e3619a7aac196890566f9bb8a4658fe4782f8bd6eadf0cfb3ee95689",
+      "root_dsn_sha256": "32f59fb68235a48c7a72330aed7bb2698316d2b54ee39a1424d1b47234c367c2"
+    },
+    {
+      "case_id": "IMPROVED_T04_R21_POWER_BRIDGE_GROUND_INPUT_BRIDGE",
+      "status": "experimental_unvalidated",
+      "mode": "input_ground_bridge",
+      "method": "Working exact power bridge + improved ground bridge using attached $TERINPUT(G0), shifted near the ground endpoint instead of overlapping the power bridge.",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_target_xy": {"x": 10668000, "y": 1270000},
+      "resistor_count": 21,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 1, "TERINPUT": 22, "TEROUTPUT": 22, "WIRE": 44, "COMPONENT_ID": 21},
+      "static_validation_issues": [],
+      "project_sha256": "f0a562391f4760d86985283a642c958b0942867fbb25c04fe5177f1f41aad1bd",
+      "root_dsn_sha256": "ae7947a67d1d53fd5608c30d6e4c7aaed210854cbff0913244437d40ec31c0cc"
+    }
+  ]
+}

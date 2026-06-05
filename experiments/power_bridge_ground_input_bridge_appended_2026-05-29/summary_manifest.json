@@ -1,0 +1,95 @@
+{
+  "case": "POWER_BRIDGE_GROUND_INPUT_BRIDGE_APPENDED_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated_for_appended_ground_bridge",
+  "reason_for_redo": "Previous corrected ground bridge was inserted before normal resistor objects, and Proteus showed only terminals/no resistors. This attempt preserves the known-good power bridge + full normal resistor network first, then appends the experimental ground input bridge at the end.",
+  "zip": {
+    "filename": "POWER_BRIDGE_GROUND_INPUT_BRIDGE_APPENDED_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 167614,
+    "sha256": "06fe152f2ff477875de3af5432f2c76bf6305be0d71bf2201859a8689617a8d1"
+  },
+  "script": {
+    "filename": "generate_power_bridge_ground_input_bridge_appended_attempts.py",
+    "size_bytes": 16643,
+    "sha256": "2eda013c1dd69841344a209b2ae527ec5993ddfa0bf82911d57d3c17ff84c1f0"
+  },
+  "attempts": [
+    {
+      "case_id": "REF_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE",
+      "status": "locked_reference",
+      "mode": "reference_power_bridge_ground_shortwire",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_anchor_xy": {"x": -4572000, "y": -2032000},
+      "project_file": "REF_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj",
+      "resistor_count": 6,
+      "object_chunk_len": 4175,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 2, "TERINPUT": 6, "TEROUTPUT": 5, "WIRE": 13, "COMPONENT_ID": 6},
+      "first_input_marker_offset": 270,
+      "static_validation_issues": [],
+      "hashes": {
+        "REF_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj": "871fd0fd1ee0968e1c476ef45b74735e46cd2d418594293df2758d243863f724",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "39336ccfe5fc16a319d4a92e131a5157f087dc07a88d88693598cc61f18a08d9"
+      }
+    },
+    {
+      "case_id": "REF_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE",
+      "status": "locked_reference",
+      "mode": "reference_power_bridge_ground_shortwire",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_anchor_xy": {"x": 10668000, "y": 1016000},
+      "project_file": "REF_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj",
+      "resistor_count": 21,
+      "object_chunk_len": 13970,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 1, "TERINPUT": 21, "TEROUTPUT": 21, "WIRE": 43, "COMPONENT_ID": 21},
+      "first_input_marker_offset": 270,
+      "static_validation_issues": [],
+      "hashes": {
+        "REF_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj": "6ad2803c4f34efb2d57e2ab6cb8003a8731ebaa36d9d015f2030a6d40b138ea4",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "2402ee97fc5b9acb5d7cfa4accba214f4abb59887d23d05ecb7544f667cf4fca"
+      }
+    },
+    {
+      "case_id": "APPEND_T03_6R_GROUND_INPUT_BRIDGE_AFTER_NETWORK",
+      "status": "experimental_unvalidated",
+      "mode": "appended_ground_input_bridge",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_anchor_xy": {"x": -4572000, "y": -2032000},
+      "project_file": "APPEND_T03_6R_GROUND_INPUT_BRIDGE_AFTER_NETWORK.pdsprj",
+      "resistor_count": 6,
+      "object_chunk_len": 4416,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 1, "TERINPUT": 7, "TEROUTPUT": 7, "WIRE": 14, "COMPONENT_ID": 6},
+      "first_input_marker_offset": 270,
+      "terminal_bridge_marker_offsets_near_end": [[4189, "$TERINPUT"], [4292, "$TERGROUND"], [4391, "WIRE"]],
+      "static_validation_issues": [],
+      "hashes": {
+        "APPEND_T03_6R_GROUND_INPUT_BRIDGE_AFTER_NETWORK.pdsprj": "0903d98792741cd29b449f91b1f56c0169fedb697ddfa129c38860b65c740f22",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "f207c01f4447ec257914b75ef00828e9e5a560b018ab0a9f0dc677d08690e137"
+      }
+    },
+    {
+      "case_id": "APPEND_T04_R21_GROUND_INPUT_BRIDGE_AFTER_NETWORK",
+      "status": "experimental_unvalidated",
+      "mode": "appended_ground_input_bridge",
+      "power_node": "V0",
+      "ground_node": "G0",
+      "ground_bridge_anchor_xy": {"x": 10668000, "y": 1016000},
+      "project_file": "APPEND_T04_R21_GROUND_INPUT_BRIDGE_AFTER_NETWORK.pdsprj",
+      "resistor_count": 21,
+      "object_chunk_len": 14211,
+      "marker_counts": {"TERPOWER": 1, "TERGROUND": 1, "TERINPUT": 22, "TEROUTPUT": 22, "WIRE": 44, "COMPONENT_ID": 21},
+      "first_input_marker_offset": 270,
+      "terminal_bridge_marker_offsets_near_end": [[13984, "$TERINPUT"], [14087, "$TERGROUND"], [14186, "WIRE"]],
+      "static_validation_issues": [],
+      "hashes": {
+        "APPEND_T04_R21_GROUND_INPUT_BRIDGE_AFTER_NETWORK.pdsprj": "18e796894e0071d99e8f0ac79d716bc24c3df654cc5ccdd3670766a69b4349b8",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "e6e97a1a5d84e3788afdb9e252f57dcbd121dc3045a5840a28a245f8d94e6a3a"
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "case_id": "DCS_V4_T07_DCV_21_RCL_FIRST_REPLACE_POWER",
+  "description": "Correct 21-component R/C/L topology in normal V0/G0 labels with V0 bridge removed; add 10V DC source after R/C/L using output V0 and input G0.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.4",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "10V",
+      "positive": "V0",
+      "negative": "G0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "V0",
+      "end": "D1"
+    },
+    {
+      "mode": "RC",
+      "start": "D1",
+      "end": "D2"
+    },
+    {
+      "mode": "LC",
+      "start": "D2",
+      "end": "M0"
+    },
+    {
+      "mode": "RCL",
+      "start": "V0",
+      "end": "E1"
+    },
+    {
+      "mode": "RL",
+      "start": "E1",
+      "end": "E2"
+    },
+    {
+      "mode": "RC",
+      "start": "E2",
+      "end": "M0"
+    },
+    {
+      "mode": "RCL",
+      "start": "M0",
+      "end": "F1"
+    },
+    {
+      "mode": "LC",
+      "start": "F1",
+      "end": "F2"
+    },
+    {
+      "mode": "RL",
+      "start": "F2",
+      "end": "G0"
+    }
+  ],
+  "component_values": {},
+  "metadata": {
+    "source_position": "after_rcl",
+    "power_bridge_policy": "remove_power_bridge_keep_ground",
+    "test_order": 10,
+    "requested_batch": "21 component DC voltage source"
+  }
+}

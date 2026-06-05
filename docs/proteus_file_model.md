@@ -3354,3 +3354,173 @@ AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented
 ```
+
+## Main Branch DC Source Notes Preserved
+
+## DC Source Donor Notes (Static, Pending User Test)
+
+`DC_SOURCES_V1_TEMP_20260603` is the first temp-only DC source batch. It is
+not promoted to main code yet.
+
+Observed source donor model:
+
+```text
+DC voltage source default donor unit: 652 bytes
+DC current source default donor unit: 653 bytes
+DC voltage device marker: VSOURCE
+DC current device marker: CSOURCE
+source positive terminal: $TEROUTPUT
+source negative terminal: $TERINPUT
+source experiments emit: no $TERPOWER records
+```
+
+The temp generator prepends patched source units to accepted mixed R/C/L
+groups with the automatic V0 bridge removed. Topology is still represented by
+repeated terminal labels. For simple 6/21 source tests the reserved labels are:
+
+```text
+DC voltage: DV positive, D0 negative
+DC current: DI positive, I0 negative
+```
+
+For the five pasted complex DC-source R/C/L circuits, source terminals use the
+actual circuit node labels to connect by label. If an R/C/L endpoint is `G0`,
+the existing passive renderer still emits the accepted G0 ground endpoint for
+that passive component; the source negative side itself remains an input
+terminal.
+
+Static validation for all nine temp cases passed: no object chunk boundary
+issues, no duplicate component IDs or references, and every `.pdsprj` contains
+`PROJECT.XML`, `ROOT.DSN`, `ROOT.CDB`, and `SCRIPTS/PWRRAILS.DAT`. The temp
+archive SHA256 is:
+
+```text
+59b1345168f8e1934b6ab73f0db07523ada0825b6e9bfd1a3a0b0b8ba2955ee5
+```
+
+User Proteus feedback for V1:
+
+```text
+All V1 generated DC-source projects hard-crashed Proteus before an error
+dialog appeared.
+```
+
+Local byte review found that V1 wrote `ROOT.CDB` with the wrong encoders:
+
+```text
+wrong V1 string encoding: 4-byte length + ASCII
+accepted CDB string encoding: 1-byte length + ASCII
+wrong V1 source property text: no trailing NUL
+accepted source property text: trailing NUL included in the length field
+```
+
+`DC_SOURCES_V2_CDB_FIX_TEMP_20260603` corrects those CDB encoders. Its source
+CDB records now match the manual donor field lengths:
+
+```text
+VSOURCE property length: 0x18
+CSOURCE property length: 0x1a
+```
+
+V2 is still temp-only and pending Proteus open/render/netlist testing. Its
+archive SHA256 is:
+
+```text
+7eade429748d7694a9498e5d2756c9789f816151926e0ab81dc7ed689808e523
+```
+
+User Proteus feedback for V2:
+
+```text
+All V2 generated DC-source projects gave ISIS.dll errors.
+```
+
+V2 fixed the CDB string/text encoders, but local review found it still broke a
+known mixed-component rule: source units were emitted first in `ROOT.DSN`, while
+`ROOT.CDB` rows were sorted by numeric component ID. Because generated source
+IDs were high and passive R/C/L IDs were low, the source CDB rows appeared
+after passive rows. This violates the accepted mixed R/C/L rule that CDB
+component rows must align with DSN object-emission order.
+
+`DC_SOURCES_V3_OBJECT_ORDER_TEMP_20260603` is the next temp-only diagnostic
+batch. It adds eight controls before generated source+R/C/L cases:
+
+```text
+T00A exact DC voltage donor repack
+T00B exact DC voltage donor object chunk and CDB transplanted into E001
+T00C exact DC current donor repack
+T00D exact DC current donor object chunk and CDB transplanted into E001
+T00E exact DC voltage + resistor-load donor repack
+T00F exact DC voltage + resistor-load donor object chunk and CDB transplanted into E001
+T00G exact DC current + resistor-load donor repack
+T00H exact DC current + resistor-load donor object chunk and CDB transplanted into E001
+```
+
+Generated V3 cases then repeat the requested DC voltage/current 6-component,
+correct 21-component, and five complex source+R/C/L circuits. V3 writes source
+CDB rows first, then passive R/C/L rows, matching the generated DSN object
+stream. Static checks passed for all 17 files: required internal files present,
+zero manifest chunk/static issues, and spot checks show source CDB tokens before
+passive tokens in generated cases. The temp archive SHA256 is:
+
+```text
+9c68a4d77007a811aca923e7f0fc845817c6725986f026f6deeb84c0cd4f7a6f
+```
+
+V3 is not a promotion point. Test controls first; if any T00 control fails, the
+source donor transplant/device-section path is wrong. If T00 controls pass but
+generated cases fail, the remaining issue is source record mutation or merged
+source+R/C/L device/CDB composition.
+
+User Proteus feedback for V3:
+
+```text
+The donor/exact-copy controls opened, but every generated source+R/C/L circuit
+gave ISIS.dll errors.
+```
+
+This proves exact DC source records and exact source donor transplants are
+valid, but V3's generated source+R/C/L construction is still invalid. The V3
+generated path changed the accepted R/C/L supply shape: it removed the normal
+mixed-RCL V0 bridge, changed R/C/L supply labels away from the normal V0/G0
+shape for simple tests, and prepended source records.
+
+`DC_SOURCES_V4_ADD_TO_NORMAL_RCL_TEMP_20260603` follows the next diagnostic
+rule: produce the R/C/L circuit normally first, then add a DC source whose
+terminals use the same labels as the R/C/L supply nets.
+
+```text
+source positive side: $TEROUTPUT labelled V0
+source negative side: $TERINPUT labelled G0
+normal R/C/L labels: V0 and G0 preserved
+```
+
+V4 contains this ordered test ladder:
+
+```text
+T00A normal locked 6-component R/C/L baseline
+T00B exact DC voltage source donor repack
+T00C exact DC current source donor repack
+T01  normal 6-component R/C/L first, add 10V source after it, keep V0 bridge/G0 endpoints
+T02  10V source first, then normal 6-component R/C/L, keep V0 bridge/G0 endpoints
+T03  normal 6-component R/C/L first, remove only V0 bridge, add 10V source after it
+T04  10V source first, then 6-component R/C/L with only V0 bridge removed
+T05  normal 6-component R/C/L first, remove only V0 bridge, add 1A current source after it
+T06  1A current source first, then 6-component R/C/L with only V0 bridge removed
+T07  corrected 21-component R/C/L first, remove only V0 bridge, add 10V source after it
+T08  corrected 21-component R/C/L first, remove only V0 bridge, add 1A current source after it
+```
+
+Static checks passed for all 11 V4 files: required internal files present, zero
+manifest chunk/static issues, and tests/fixture verification passed. The temp
+archive SHA256 is:
+
+```text
+b3274e253eb0767b60e44fea6c786c57854a559f24f3d0287f173b3e38ca59cd
+```
+
+V4 is not a promotion point. If T01/T02 open, source records can coexist with
+the normal R/C/L power and ground terminals. If T03/T04 open, a source can
+replace the V0 power bridge while preserving accepted G0 endpoints. If T05/T06
+open, the same result applies to current sources. T07/T08 then test scaling to
+the corrected 21 topology.

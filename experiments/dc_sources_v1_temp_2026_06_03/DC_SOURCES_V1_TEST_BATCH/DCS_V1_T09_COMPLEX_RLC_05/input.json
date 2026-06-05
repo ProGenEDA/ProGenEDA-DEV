@@ -1,0 +1,85 @@
+{
+  "case_id": "DCS_V1_T09_COMPLEX_RLC_05",
+  "description": "Pasted circuit 5: three 9V voltage sources and one 1.5A current source.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.1",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "09V",
+      "positive": "A1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_voltage",
+      "ref": "V2",
+      "value": "09V",
+      "positive": "B1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_voltage",
+      "ref": "V3",
+      "value": "09V",
+      "positive": "D1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "1500m",
+      "positive": "D1",
+      "negative": "G0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "L",
+      "start": "A1",
+      "end": "B1"
+    },
+    {
+      "mode": "C",
+      "start": "B1",
+      "end": "G0"
+    },
+    {
+      "mode": "R",
+      "start": "B1",
+      "end": "C1"
+    },
+    {
+      "mode": "L",
+      "start": "C1",
+      "end": "N1"
+    },
+    {
+      "mode": "C",
+      "start": "N1",
+      "end": "G0"
+    },
+    {
+      "mode": "R",
+      "start": "C1",
+      "end": "D1"
+    },
+    {
+      "mode": "C",
+      "start": "D1",
+      "end": "G0"
+    }
+  ],
+  "component_values": {
+    "L1": "150",
+    "C1": "10u",
+    "R1": "100",
+    "L2": "470",
+    "C2": "22u",
+    "R2": "470",
+    "C3": "1u0"
+  },
+  "metadata": {
+    "test_order": 9,
+    "source_text": "Circuit 5 from pasted request"
+  }
+}

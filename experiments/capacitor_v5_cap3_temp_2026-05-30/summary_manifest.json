@@ -1,0 +1,37 @@
+{
+  "case": "CAPACITOR_V5_CAP3_TEMP_2026_05_30",
+  "status": "temporary_diagnostic_not_locked_pending_proteus_test",
+  "source_donor": {
+    "path": "C:/Users/tahab/Downloads/cap3.pdsprj",
+    "sha256": "bf113dccf780d67bd09ce4be51dd26544ef25ce4edc85322da6b0e75292d79c8",
+    "root_cdb_size_bytes": 520,
+    "root_cdb_sha256": "09e9fa018b2ad60b1305c412e336ec52d24b49c4e541ef703186ccd00fdf3063",
+    "object_chunk_size_bytes": 1097,
+    "object_chunk_sha256": "6a52d94234037876b2b9533a363ca1a15084acefa447bfdcab5771b3f0a853da"
+  },
+  "generated_local_path": "D:/Coding/protuesgen/experiments/capacitor_v5_cap3_temp_2026_05_30",
+  "zip": {
+    "path": "D:/Coding/protuesgen/experiments/CAPACITOR_V5_CAP3_TEMP_2026_05_30.zip",
+    "size_bytes": 168343,
+    "sha256": "4ee1a4f39c7189c8360e4466800c8041c300fa2f13a6785c4283d5b5b6278627"
+  },
+  "generator_script": "D:/Coding/protuesgen/tools/proteus_generation/2026-05-30/generate_capacitor_v5_cap3_temp.py",
+  "method": "Use cap3 free capacitor CDB/object records and avoid terminal endpoint groups after V4 T05 failed.",
+  "static_results": {
+    "fixture_registry_valid": true,
+    "pytest": "31 passed, 40 subtests passed",
+    "all_case_static_validation_issues_empty": true,
+    "cap3_cdb_guard": "byte-exact",
+    "cap3_object_guard": "byte-exact"
+  },
+  "test_order": [
+    "CAP_V5_T01_EXACT_CAP3_TRANSPLANT",
+    "CAP_V5_T02_REGENERATED_CAP3_EXACT",
+    "CAP_V5_T03_TWO_FREE_CAPS_ZERO_FLAGS",
+    "CAP_V5_T04_TWO_FREE_CAPS_DONOR_FLAG",
+    "CAP_V5_T05_THREE_FREE_CAPS_TRANSLATED",
+    "CAP_V5_T06_THREE_FREE_CAPS_RENAMED"
+  ],
+  "paired_note": "T03/T04 are paired. If T03 fails, still test T04 to isolate the cap3 FFFFFFFF component-table flag.",
+  "do_not_promote_before": "Proteus 8.13 opens enough V5 diagnostics without VGDVC/library errors, then terminal-attached capacitor topology must be tested separately."
+}

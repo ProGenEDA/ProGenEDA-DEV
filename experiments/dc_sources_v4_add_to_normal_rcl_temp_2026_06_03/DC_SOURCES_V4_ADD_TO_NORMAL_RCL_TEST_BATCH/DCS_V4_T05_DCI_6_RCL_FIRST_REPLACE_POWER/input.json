@@ -1,0 +1,38 @@
+{
+  "case_id": "DCS_V4_T05_DCI_6_RCL_FIRST_REPLACE_POWER",
+  "description": "Normal 6-component R/C/L stream with V0 power bridge removed and G0 endpoints kept; add 1A DC current source after R/C/L using output V0 and input G0.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.4",
+  "sources": [
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "1A",
+      "positive": "V0",
+      "negative": "G0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "V0",
+      "end": "G0"
+    },
+    {
+      "mode": "RC",
+      "start": "V0",
+      "end": "G0"
+    },
+    {
+      "mode": "C",
+      "start": "V0",
+      "end": "G0"
+    }
+  ],
+  "component_values": {},
+  "metadata": {
+    "source_position": "after_rcl",
+    "power_bridge_policy": "remove_power_bridge_keep_ground",
+    "test_order": 8,
+    "requested_method": "current source replaces power bridge, same labels"
+  }
+}

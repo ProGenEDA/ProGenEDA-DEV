@@ -1,0 +1,59 @@
+{
+  "case": "GROUND_TERMINAL_ENDPOINT_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated",
+  "purpose": "Test simple ground-terminal endpoint method analogous to locked short-wire power method, but replacing $TEROUTPUT with $TERGROUND at grounded right endpoints.",
+  "method": "$TERGROUND endpoint short-wire method: replace V9 $TEROUTPUT with $TERGROUND where component.nodes[1] equals ground node G0.",
+  "marker_length_note": "$TEROUTPUT and $TERGROUND are both 10 bytes, so replacement is marker-length safe.",
+  "zip": {
+    "filename": "GROUND_TERMINAL_ENDPOINT_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 84031,
+    "sha256": "3564db348871ebdf79b2a501e7566b1464e6417f84241285611b1451e1c9f770"
+  },
+  "script": {
+    "filename": "generate_ground_terminal_endpoint_attempts.py",
+    "sha256": "c9676ea576ca9cd9f333ae51b955bef326805e72985ae00a519de95fd9415bb3"
+  },
+  "attempts": [
+    {
+      "case_id": "GROUND_T01_6R_G0_ENDPOINT_ATTEMPT",
+      "base": "CONTROL_E001_EMPTY_BASE.pdsprj",
+      "project_file": "GROUND_T01_6R_G0_ENDPOINT_ATTEMPT.pdsprj",
+      "resistor_count": 6,
+      "ground_terminal_count": 2,
+      "ground_node": "G0",
+      "static_validation_issues": [],
+      "topology_summary": [
+        "R1: N0 - N1",
+        "R2: N1 - N2",
+        "R3: N0 - N2",
+        "R4: N2 - N3",
+        "R5: N3 - G0 ($TERGROUND endpoint)",
+        "R6: N0 - G0 ($TERGROUND endpoint)"
+      ],
+      "hashes": {
+        "GROUND_T01_6R_G0_ENDPOINT_ATTEMPT.pdsprj": "ffe3a2e71b5246e6b561bbfdcc078348514eb3086f75ee99e3c1038a77dc1e0e",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "7df563e84313e55bbfe86321e3398b9ce88502484d0478f236d37c8d0313f61e"
+      }
+    },
+    {
+      "case_id": "GROUND_T02_R21_G0_ENDPOINT_ATTEMPT",
+      "base": "CONTROL_E001_EMPTY_BASE.pdsprj",
+      "project_file": "GROUND_T02_R21_G0_ENDPOINT_ATTEMPT.pdsprj",
+      "resistor_count": 21,
+      "ground_terminal_count": 1,
+      "ground_node": "G0",
+      "static_validation_issues": [],
+      "topology_summary": [
+        "R21 V9 reference topology",
+        "final tail node Z0 renamed to G0",
+        "RL right endpoint is $TERGROUND labelled G0"
+      ],
+      "hashes": {
+        "GROUND_T02_R21_G0_ENDPOINT_ATTEMPT.pdsprj": "8d6d44b7c051d6aebe8e840bcc06b536b55a9397a72e0569122cecbc6189c1db",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "0e6fff654a96c95979d718d90e8edd2c0eae65cc48cd75b3baa8cdff6c42c8fd"
+      }
+    }
+  ]
+}

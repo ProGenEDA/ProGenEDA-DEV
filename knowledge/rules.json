@@ -6,8 +6,14 @@
       "title": "PDSPrj is ZIP-style container",
       "status": "confirmed",
       "confidence": 0.99,
-      "applies_to": ["Proteus 8.13", "Proteus 8.16"],
-      "evidence": ["p8_13 phase 1 extraction", "p8_16 ENA extraction"],
+      "applies_to": [
+        "Proteus 8.13",
+        "Proteus 8.16"
+      ],
+      "evidence": [
+        "p8_13 phase 1 extraction",
+        "p8_16 ENA extraction"
+      ],
       "rule": ".pdsprj files begin with PK and contain internal project files such as PROJECT.XML, ROOT.DSN, ROOT.CDB, and SCRIPTS/PWRRAILS.DAT."
     },
     {
@@ -15,8 +21,16 @@
       "title": "ROOT.DSN controls visual object existence",
       "status": "confirmed",
       "confidence": 0.96,
-      "applies_to": ["Proteus 8.13"],
-      "evidence": ["MT01", "MT02", "MT03", "MT05", "Batch02 topology comparisons"],
+      "applies_to": [
+        "Proteus 8.13"
+      ],
+      "evidence": [
+        "MT01",
+        "MT02",
+        "MT03",
+        "MT05",
+        "Batch02 topology comparisons"
+      ],
       "rule": "Components visible in ROOT.DSN appear in Proteus even if ROOT.CDB is missing entries; CDB-only components do not create visible schematic objects."
     },
     {
@@ -24,8 +38,20 @@
       "title": "ROOT.CDB controls resistor values and references",
       "status": "confirmed",
       "confidence": 0.98,
-      "applies_to": ["Proteus 8.13"],
-      "evidence": ["TEST_A", "TEST_B", "TEST_C", "MT06", "MT07", "MT08", "MT09", "MT10", "MT11"],
+      "applies_to": [
+        "Proteus 8.13"
+      ],
+      "evidence": [
+        "TEST_A",
+        "TEST_B",
+        "TEST_C",
+        "MT06",
+        "MT07",
+        "MT08",
+        "MT09",
+        "MT10",
+        "MT11"
+      ],
       "rule": "For existing resistors, ROOT.CDB is authoritative for value and reference designator. ROOT.DSN display metadata can be normalized from ROOT.CDB on open/save."
     },
     {
@@ -33,8 +59,15 @@
       "title": "Terminal labels live in ROOT.DSN",
       "status": "confirmed",
       "confidence": 0.98,
-      "applies_to": ["Proteus 8.13"],
-      "evidence": ["TEST_D1", "TEST_D2", "Batch02 terminal-only projects", "MT12"],
+      "applies_to": [
+        "Proteus 8.13"
+      ],
+      "evidence": [
+        "TEST_D1",
+        "TEST_D2",
+        "Batch02 terminal-only projects",
+        "MT12"
+      ],
       "rule": "INPUT, OUTPUT, POWER, and GROUND terminal objects and labels are stored in ROOT.DSN. Terminal-only changes do not alter ROOT.CDB."
     },
     {
@@ -42,8 +75,15 @@
       "title": "Topology is ROOT.DSN-controlled",
       "status": "confirmed",
       "confidence": 0.95,
-      "applies_to": ["Proteus 8.13"],
-      "evidence": ["B02_E007 series vs B02_E008 parallel", "MT12", "MT13", "MT14"],
+      "applies_to": [
+        "Proteus 8.13"
+      ],
+      "evidence": [
+        "B02_E007 series vs B02_E008 parallel",
+        "MT12",
+        "MT13",
+        "MT14"
+      ],
       "rule": "Series/parallel/ladder topology changes are represented in ROOT.DSN through terminal labels, wire stubs, and object layout. ROOT.CDB can remain identical across different topologies with the same component refs/values."
     },
     {
@@ -51,8 +91,12 @@
       "title": "ROOT.CDB must exist",
       "status": "confirmed",
       "confidence": 0.95,
-      "applies_to": ["Proteus 8.13"],
-      "evidence": ["MT04"],
+      "applies_to": [
+        "Proteus 8.13"
+      ],
+      "evidence": [
+        "MT04"
+      ],
       "rule": "Removing ROOT.CDB entirely causes fatal Proteus/ISIS failure. A generator must include ROOT.CDB, even if minimal."
     },
     {
@@ -60,8 +104,14 @@
       "title": "PWRRAILS.DAT unchanged in early terminal/passive tests",
       "status": "confirmed_for_scope",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "early resistor/terminal scope"],
-      "evidence": ["Phase1 terminal tests", "Batch02 resistor networks"],
+      "applies_to": [
+        "Proteus 8.13",
+        "early resistor/terminal scope"
+      ],
+      "evidence": [
+        "Phase1 terminal tests",
+        "Batch02 resistor networks"
+      ],
       "rule": "Visible VCC/GND terminals and resistor networks did not modify SCRIPTS/PWRRAILS.DAT. For early generator versions, copy this file unchanged from a template."
     },
     {
@@ -69,8 +119,14 @@
       "title": "V9 resistor generator uses linked endpoint groups",
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["memory R21 V9 user-confirmed artifact", "RESISTOR_V9_STATIC_BATCH_20260530"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "memory R21 V9 user-confirmed artifact",
+        "RESISTOR_V9_STATIC_BATCH_20260530"
+      ],
       "rule": "For generated resistor networks, emit matching input/output terminal records, a resistor visual record, and two short-wire records with consistent link suffixes and only one final terminator at the end of the object stream."
     },
     {
@@ -78,8 +134,15 @@
       "title": "V9 resistor generation uses E001 as base",
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.94,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["memory final/README.md", "r21_v9_resistor_terminal_donor fixture", "RESISTOR_V9_STATIC_BATCH_20260530"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "memory final/README.md",
+        "r21_v9_resistor_terminal_donor fixture",
+        "RESISTOR_V9_STATIC_BATCH_20260530"
+      ],
       "rule": "Use the blank E001 project as the .pdsprj container base for resistor generation. Donor projects may provide byte-record templates, but generated outputs replace ROOT.CDB and ROOT.DSN and copy PROJECT.XML/PWRRAILS from E001."
     },
     {
@@ -87,8 +150,15 @@
       "title": "Power and ground endpoint terminals are label-width constrained",
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["memory final/power_terminal_output_bridge_method.md", "memory final/ground_terminal_short_wire_method.md", "MAIN_POWER_BRIDGE_RESISTOR_15_20260530"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "memory final/power_terminal_output_bridge_method.md",
+        "memory final/ground_terminal_short_wire_method.md",
+        "MAIN_POWER_BRIDGE_RESISTOR_15_20260530"
+      ],
       "rule": "For the locked resistor V9 method, use two-character labels such as V0 and G0. Power bridge labels and resistor terminal labels remain two-character; $TERGROUND is safe as a right endpoint replacement for $TEROUTPUT."
     },
     {
@@ -96,8 +166,14 @@
       "title": "Resistor visual rotation field",
       "status": "confirmed_for_static_generation",
       "confidence": 0.82,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["public Proteus sample corpus scan", "REQUESTED_RESISTOR_NETWORKS_15_ORIENTED_STATIC_20260530"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "public Proteus sample corpus scan",
+        "REQUESTED_RESISTOR_NETWORKS_15_ORIENTED_STATIC_20260530"
+      ],
       "rule": "In the V9 resistor visual record, the four bytes after the final model placement x/y pair store rotation as a signed tenths-of-degrees value in the low 16 bits. 0 is horizontal; -900 is vertical down. Vertical generation must rotate terminal/wire endpoint positions along the same axis."
     },
     {
@@ -105,8 +181,15 @@
       "title": "Standalone visual wires are disabled in production resistor generation",
       "status": "blocked_pending_safe_wire_donor",
       "confidence": 0.84,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["REQUESTED_RESISTOR_NETWORKS_15_ORIENTED_VISUAL_WIRES_STATIC_20260530", "user reported VGDVC.dll errors on parallel-and-later visual-wire cases", "MAIN_RESISTOR_SAFE_LAYOUT_VGDVC_GUARD_20260530"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "REQUESTED_RESISTOR_NETWORKS_15_ORIENTED_VISUAL_WIRES_STATIC_20260530",
+        "user reported VGDVC.dll errors on parallel-and-later visual-wire cases",
+        "MAIN_RESISTOR_SAFE_LAYOUT_VGDVC_GUARD_20260530"
+      ],
       "rule": "Do not emit standalone layout.visual_wires in the production resistor generator. Parse and record them as skipped until a Proteus-created donor establishes VGDVC-safe standalone wire records."
     },
     {
@@ -114,8 +197,15 @@
       "title": "Power nodes use donor-derived output bridge",
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.94,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["memory final/power_bridge_ground_shortwire_method.md", "MAIN_R21_POWER_BRIDGE_REPRO_20260530", "MAIN_POWER_BRIDGE_RESISTOR_15_20260530"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "memory final/power_bridge_ground_shortwire_method.md",
+        "MAIN_R21_POWER_BRIDGE_REPRO_20260530",
+        "MAIN_POWER_BRIDGE_RESISTOR_15_20260530"
+      ],
       "rule": "The main resistor generator must emit one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge for the power node. Powered resistor endpoints stay ordinary $TERINPUT(V0) terminals so same-name terminal topology connects them to the bridge."
     },
     {
@@ -123,8 +213,15 @@
       "title": "Dense resistor layouts are stretched before generation",
       "status": "confirmed_for_resistor_scope",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["user reported overlapped generated resistor circuits", "MAIN_RESISTOR_SAFE_LAYOUT_VGDVC_GUARD_20260530", "MAIN_RESISTOR_LOCKED_V9_SPACING_20260530"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "user reported overlapped generated resistor circuits",
+        "MAIN_RESISTOR_SAFE_LAYOUT_VGDVC_GUARD_20260530",
+        "MAIN_RESISTOR_LOCKED_V9_SPACING_20260530"
+      ],
       "rule": "Treat manual component coordinates as placement hints. If repeated x/y positions are closer than the safe V9 grid, stretch them before emitting ROOT.DSN so terminal records, short wires, and resistor visual bodies do not overlap. The current production safe grid is 2540000 internal units on both x and y."
     },
     {
@@ -132,8 +229,15 @@
       "title": "Resistor generator is locked as main for current scope",
       "status": "locked_current_scope",
       "confidence": 0.95,
-      "applies_to": ["Proteus 8.13", "resistor terminal V9 method"],
-      "evidence": ["MAIN_RESISTOR_LOCKED_V9_METHOD_AUDIT_20260530", "MAIN_RESISTOR_LOCKED_V9_SPACING_20260530", "user Proteus visual/no-error acceptance"],
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor terminal V9 method"
+      ],
+      "evidence": [
+        "MAIN_RESISTOR_LOCKED_V9_METHOD_AUDIT_20260530",
+        "MAIN_RESISTOR_LOCKED_V9_SPACING_20260530",
+        "user Proteus visual/no-error acceptance"
+      ],
       "rule": "Use src/proteusgen/resistor_v9.py as the main resistor generator. Do not reintroduce direct $TERPOWER resistor endpoints or standalone production visual wires. New component work starts with capacitor support."
     },
     {
@@ -141,8 +245,28 @@
       "title": "Capacitor work stays temporary until Proteus accepts guarded diagnostics",
       "status": "v13_power_ground_spacing_pending",
       "confidence": 0.95,
-      "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["capacitor V2/V3 VGDVC negative evidence", "CAPACITOR_V4_USER_FEEDBACK_20260530", "CAPACITOR_V5_USER_FEEDBACK_20260530", "CAPACITOR_V6_USER_FEEDBACK_20260531", "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531", "CAPACITOR_V7_USER_FEEDBACK_20260531", "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531", "CAPACITOR_V8_USER_FEEDBACK_20260531", "CAPACITOR_V9_UNIQUE_INDEX_STATIC_20260531", "CAPACITOR_V9_USER_FEEDBACK_20260531", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531", "CAPACITOR_V11_NETWORKS_STATIC_20260531", "CAPACITOR_V11_USER_FEEDBACK_20260531", "CAPACITOR_V12_REQUESTED15_STATIC_20260531", "CAPACITOR_V13_POWER_GROUND_SPACING_STATIC_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "capacitor experimental method"
+      ],
+      "evidence": [
+        "capacitor V2/V3 VGDVC negative evidence",
+        "CAPACITOR_V4_USER_FEEDBACK_20260530",
+        "CAPACITOR_V5_USER_FEEDBACK_20260530",
+        "CAPACITOR_V6_USER_FEEDBACK_20260531",
+        "CAPACITOR_V7_TERMINAL_ISOLATION_STATIC_20260531",
+        "CAPACITOR_V7_USER_FEEDBACK_20260531",
+        "CAPACITOR_V8_TERMINAL_ORDER_STATIC_20260531",
+        "CAPACITOR_V8_USER_FEEDBACK_20260531",
+        "CAPACITOR_V9_UNIQUE_INDEX_STATIC_20260531",
+        "CAPACITOR_V9_USER_FEEDBACK_20260531",
+        "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531",
+        "CAPACITOR_V10_USER_FEEDBACK_20260531",
+        "CAPACITOR_V11_NETWORKS_STATIC_20260531",
+        "CAPACITOR_V11_USER_FEEDBACK_20260531",
+        "CAPACITOR_V12_REQUESTED15_STATIC_20260531",
+        "CAPACITOR_V13_POWER_GROUND_SPACING_STATIC_20260531"
+      ],
       "rule": "Free capacitor multi-component generation using CAP_T01 visual cores and cap3-derived CDB/object expansion is user-accepted. V10 confirms the manual donor outputs-first order opens for exact, translated, renamed, and three-cap terminal-attached cases. V11 confirms the same method scales to 6C and 21C terminal-label networks. Keep the capacitor generator temporary until the V13 wider-spacing requested 15 capacitor-network pack with real power/ground terminals is Proteus accepted."
     },
     {
@@ -150,8 +274,19 @@
       "title": "Manual two-terminal-cap donor uses outputs-first object order",
       "status": "user_confirmed_for_v10_and_v11_networks",
       "confidence": 0.94,
-      "applies_to": ["Proteus 8.13", "capacitor experimental method"],
-      "evidence": ["cap2_with_terminals_manual fixture", "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531", "CAPACITOR_V10_USER_FEEDBACK_20260531", "CAPACITOR_V11_NETWORKS_STATIC_20260531", "CAPACITOR_V11_USER_FEEDBACK_20260531", "CAPACITOR_V12_REQUESTED15_STATIC_20260531", "CAPACITOR_V13_POWER_GROUND_SPACING_STATIC_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "capacitor experimental method"
+      ],
+      "evidence": [
+        "cap2_with_terminals_manual fixture",
+        "CAPACITOR_V10_MANUAL_DONOR_STATIC_20260531",
+        "CAPACITOR_V10_USER_FEEDBACK_20260531",
+        "CAPACITOR_V11_NETWORKS_STATIC_20260531",
+        "CAPACITOR_V11_USER_FEEDBACK_20260531",
+        "CAPACITOR_V12_REQUESTED15_STATIC_20260531",
+        "CAPACITOR_V13_POWER_GROUND_SPACING_STATIC_20260531"
+      ],
       "rule": "The user-made two-terminal-capacitor donor object chunk is ordered as: header, all $TEROUTPUT records, then each $TERINPUT/CAPACITOR/left-wire/right-wire group. Every non-final right-wire record is 49 bytes, omitting the usual trailing terminator byte; the final right-wire record is 50 bytes and ends with FF."
     },
     {
@@ -159,8 +294,16 @@
       "title": "Mixed resistor/capacitor passive generation is locked",
       "status": "locked_current_scope",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive experimental method"],
-      "evidence": ["MIXED_RES_CAP_V1_6R_21R_STATIC_20260531", "MIXED_RES_CAP_V1_USER_FEEDBACK_20260531", "MAIN_MIXED_RES_CAP_LOCKED_V1_STATIC_20260531", "MAIN_MIXED_RES_CAP_LOCKED_V1_USER_FEEDBACK_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive experimental method"
+      ],
+      "evidence": [
+        "MIXED_RES_CAP_V1_6R_21R_STATIC_20260531",
+        "MIXED_RES_CAP_V1_USER_FEEDBACK_20260531",
+        "MAIN_MIXED_RES_CAP_LOCKED_V1_STATIC_20260531",
+        "MAIN_MIXED_RES_CAP_LOCKED_V1_USER_FEEDBACK_20260531"
+      ],
       "rule": "Use src/proteusgen/mixed_passive.py as the main mixed resistor/capacitor generator for the current scope. The locked object stream order is header, one power bridge, capacitor output array, capacitor groups, resistor input array, resistor output array, separator, resistor groups. Use a 2540000 internal-unit safe grid and shift duplicate positions so components are not generated on top of each other."
     },
     {
@@ -168,8 +311,15 @@
       "title": "Inductor generation requires controlled donors before coding",
       "status": "donors_received_v1_pending_user_test",
       "confidence": 0.82,
-      "applies_to": ["Proteus 8.13", "inductor planned method"],
-      "evidence": ["user requested inductor next 20260531", "BIG06 inductor/source empty-CDB trial opened/saved/simulated but is not a controlled donor", "INDUCTOR_V1_DONOR_ANALYSIS_STATIC_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor planned method"
+      ],
+      "evidence": [
+        "user requested inductor next 20260531",
+        "BIG06 inductor/source empty-CDB trial opened/saved/simulated but is not a controlled donor",
+        "INDUCTOR_V1_DONOR_ANALYSIS_STATIC_20260531"
+      ],
       "rule": "Do not infer inductor object bytes from unrelated corpus scans. Use the user-created E001-based inductor donors as record templates, then test the same terminal-first method used for resistor/capacitor generation."
     },
     {
@@ -177,8 +327,16 @@
       "title": "Inductor V1 donor object order",
       "status": "rejected_v1_all_generated_cases_vgdvc",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "inductor temporary V1 method"],
-      "evidence": ["inductor_02_two_terminal.pdsprj", "inductor_03_three_terminal.pdsprj", "INDUCTOR_V1_TERMINAL_STATIC_20260531", "INDUCTOR_V1_USER_FEEDBACK_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary V1 method"
+      ],
+      "evidence": [
+        "inductor_02_two_terminal.pdsprj",
+        "inductor_03_three_terminal.pdsprj",
+        "INDUCTOR_V1_TERMINAL_STATIC_20260531",
+        "INDUCTOR_V1_USER_FEEDBACK_20260531"
+      ],
       "rule": "The first inductor V1 generator used the user-created three-terminal-inductor donor order, but all V1 generated outputs caused VGDVC.dll errors. Do not reuse V1 as positive evidence. Initial diff against the known-good two-terminal donor shows the first mutation is the terminal/component link suffix sequence; V2 must preserve donor REALIND link suffix bytes before testing further mutations."
     },
     {
@@ -186,8 +344,15 @@
       "title": "Inductor V2 starts with exact donor controls",
       "status": "user_confirmed_partial_t7_failed",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "inductor temporary V2 method"],
-      "evidence": ["INDUCTOR_V1_USER_FEEDBACK_20260531", "INDUCTOR_V2_SUFFIX_STATIC_20260531", "INDUCTOR_V2_USER_FEEDBACK_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary V2 method"
+      ],
+      "evidence": [
+        "INDUCTOR_V1_USER_FEEDBACK_20260531",
+        "INDUCTOR_V2_SUFFIX_STATIC_20260531",
+        "INDUCTOR_V2_USER_FEEDBACK_20260531"
+      ],
       "rule": "Exact inductor donor repacks, exact donor object chunks inserted into E001, suffix-preserved single-inductor mutation, renamed/translated single-inductor mutation, and exact power/ground donor insertion work in Proteus 8.13. The generated three-inductor V2 T7 case failed, so multi-inductor generation must not be promoted from V2."
     },
     {
@@ -195,8 +360,15 @@
       "title": "Inductor multi-generation needs per-index diagnostics",
       "status": "user_confirmed_for_v3_multi_generation",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "inductor temporary V3 method"],
-      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_MULTI_STATIC_20260531", "INDUCTOR_V3_USER_FEEDBACK_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary V3 method"
+      ],
+      "evidence": [
+        "INDUCTOR_V2_USER_FEEDBACK_20260531",
+        "INDUCTOR_V3_MULTI_STATIC_20260531",
+        "INDUCTOR_V3_USER_FEEDBACK_20260531"
+      ],
       "rule": "For multi-inductor generation, preserve the REALIND visual record for each donor index rather than selecting only by visible value length. V3 confirms exact per-index rebuild, text mutation with donor geometry, rigid donor-geometry translation, renamed rigid translation, and formula-coordinate rebuild with per-index REALIND templates all open in Proteus 8.13."
     },
     {
@@ -204,8 +376,16 @@
       "title": "Inductor power/ground generation remains lock-candidate",
       "status": "rejected_v4_generic_bridge_order",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "inductor temporary V4 method"],
-      "evidence": ["INDUCTOR_V2_USER_FEEDBACK_20260531", "INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V4_POWER_GROUND_STATIC_20260531", "INDUCTOR_V4_USER_FEEDBACK_20260531"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary V4 method"
+      ],
+      "evidence": [
+        "INDUCTOR_V2_USER_FEEDBACK_20260531",
+        "INDUCTOR_V3_USER_FEEDBACK_20260531",
+        "INDUCTOR_V4_POWER_GROUND_STATIC_20260531",
+        "INDUCTOR_V4_USER_FEEDBACK_20260531"
+      ],
       "rule": "Do not prepend the generic passive $TERPOWER -> $TEROUTPUT(V0) bridge before generated REALIND groups. V4 T1, T2, T3, and T5 opened partially then reported bad object record; V4 T4 gave an ISIS.dll error. The visible result showed a detached power bridge plus a separate V0 input label, so generic passive bridge ordering is rejected for inductors."
     },
     {
@@ -213,8 +393,15 @@
       "title": "Inductor power/ground must preserve donor04 order",
       "status": "user_confirmed_for_single_power_ground_mutation",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "inductor temporary V5 method"],
-      "evidence": ["INDUCTOR_V4_USER_FEEDBACK_20260531", "INDUCTOR_V5_DONOR04_ORDER_STATIC_20260531", "INDUCTOR_V5_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary V5 method"
+      ],
+      "evidence": [
+        "INDUCTOR_V4_USER_FEEDBACK_20260531",
+        "INDUCTOR_V5_DONOR04_ORDER_STATIC_20260531",
+        "INDUCTOR_V5_USER_FEEDBACK_20260601"
+      ],
       "rule": "The accepted inductor_04 power/ground donor order is input terminal, REALIND, trimmed left wire, power terminal, output terminal, bridge wire, ground terminal, final ground wire. V5 confirms exact donor04 chunk controls plus small ref/value/internal-node mutations work when preserving this order."
     },
     {
@@ -222,8 +409,21 @@
       "title": "Inductor promotion was premature and is demoted to temporary",
       "status": "retracted_premature_main_lock",
       "confidence": 0.96,
-      "applies_to": ["Proteus 8.13", "inductor temporary generator"],
-      "evidence": ["INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V5_USER_FEEDBACK_20260601", "INDUCTOR_PREMATURE_MAIN_LOCK_CORRECTION_20260601", "INDUCTOR_V6_6_21_STATIC_20260601", "INDUCTOR_V7_REQUESTED15_STATIC_20260601", "MIXED_RCL_V1_STATIC_20260601", "INDUCTOR_V6_6_21_USER_FEEDBACK_20260601", "INDUCTOR_V7_REQUESTED15_USER_FEEDBACK_20260601", "MIXED_RCL_V1_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary generator"
+      ],
+      "evidence": [
+        "INDUCTOR_V3_USER_FEEDBACK_20260531",
+        "INDUCTOR_V5_USER_FEEDBACK_20260601",
+        "INDUCTOR_PREMATURE_MAIN_LOCK_CORRECTION_20260601",
+        "INDUCTOR_V6_6_21_STATIC_20260601",
+        "INDUCTOR_V7_REQUESTED15_STATIC_20260601",
+        "MIXED_RCL_V1_STATIC_20260601",
+        "INDUCTOR_V6_6_21_USER_FEEDBACK_20260601",
+        "INDUCTOR_V7_REQUESTED15_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V1_USER_FEEDBACK_20260601"
+      ],
       "rule": "Do not treat src/proteusgen/inductor.py or the generate-inductors CLI as main/locked. The current inductor implementation is copied to tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main. The V6 6/21, V7 requested-15, and R/C/L V1 packs all failed in Proteus, so inductor promotion is blocked until new larger inductor donor evidence is supplied."
     },
     {
@@ -231,8 +431,15 @@
       "title": "Inductor donor03 does not extrapolate past three components",
       "status": "rejected_for_scale_generation",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "inductor temporary generator"],
-      "evidence": ["INDUCTOR_V3_USER_FEEDBACK_20260531", "INDUCTOR_V6_6_21_STATIC_20260601", "INDUCTOR_V6_6_21_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary generator"
+      ],
+      "evidence": [
+        "INDUCTOR_V3_USER_FEEDBACK_20260531",
+        "INDUCTOR_V6_6_21_STATIC_20260601",
+        "INDUCTOR_V6_6_21_USER_FEEDBACK_20260601"
+      ],
       "rule": "The accepted three-inductor V3 donor can be used only within its known three-slot scope. Repeating donor suffixes or extending suffixes from the third donor slot failed for six and twenty-one inductor generated projects. Do not generate larger inductor networks until a Proteus-created six-or-more-inductor donor provides the real object order and link/suffix pattern."
     },
     {
@@ -240,8 +447,15 @@
       "title": "Six-inductor donor uses sequential groups",
       "status": "user_confirmed_for_v8_six_donor_method",
       "confidence": 0.94,
-      "applies_to": ["Proteus 8.13", "inductor temporary V8 method"],
-      "evidence": ["inductor_05_six_terminal fixture", "INDUCTOR_V8_DONOR05_STATIC_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary V8 method"
+      ],
+      "evidence": [
+        "inductor_05_six_terminal fixture",
+        "INDUCTOR_V8_DONOR05_STATIC_20260601",
+        "INDUCTOR_V8_USER_FEEDBACK_20260601"
+      ],
       "rule": "The six-inductor donor object chunk is ordered as six repeated $TERINPUT/$TEROUTPUT/REALIND/left-wire/right-wire groups, not as the three-inductor donor order. The capacitor-family trim rule does apply: non-final right-wire records are 49 bytes and the final right-wire is 50 bytes. User testing confirmed V8 exact controls, six/21 generated sequential cases, the outputs-first probe, and the sequential power/ground bridge probe worked; prefer donor05 sequential order for the next inductor topology packs."
     },
     {
@@ -249,8 +463,14 @@
       "title": "Requested inductor topology packs stay temporary until user-opened",
       "status": "static_generated_pending_user_test",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "inductor temporary V9 method"],
-      "evidence": ["INDUCTOR_V8_USER_FEEDBACK_20260601", "INDUCTOR_V9_REQUESTED15_POWER_GROUND_STATIC_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "inductor temporary V9 method"
+      ],
+      "evidence": [
+        "INDUCTOR_V8_USER_FEEDBACK_20260601",
+        "INDUCTOR_V9_REQUESTED15_POWER_GROUND_STATIC_20260601"
+      ],
       "rule": "Generate requested multi-inductor V0/G0 topology packs from the accepted donor05 sequential method and donor-derived V0 bridge. Do not promote inductor code to main until the requested 15 inductor circuits and the later R/C/L mixed circuits are user-accepted."
     },
     {
@@ -258,8 +478,29 @@
       "title": "R/C/L mixed generation uses accepted V8 inductors",
       "status": "blocked_pending_manual_terminal_rl_donor",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V2 method"],
-      "evidence": ["MIXED_RCL_V1_USER_FEEDBACK_20260601", "INDUCTOR_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V2_V8_STATIC_20260601", "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601", "MIXED_RCL_V3_ISOLATION_STATIC_20260601", "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V2 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V1_USER_FEEDBACK_20260601",
+        "INDUCTOR_V8_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V2_V8_STATIC_20260601",
+        "MIXED_RCL_V2_V8_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V3_ISOLATION_STATIC_20260601",
+        "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V4_RESISTOR_BOUNDARY_STATIC_20260601",
+        "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601",
+        "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601",
+        "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601",
+        "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601",
+        "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"
+      ],
       "rule": "Do not reuse the failed R/C/L V1 inductor composition or the V2 R/C-then-L-last object order. V3 confirms capacitor+inductor can work when the capacitor-family block precedes the inductor block or uses joined outputs-first ordering. V5 confirms free R/L/C component records can coexist and be inserted into E001. V6 shows terminal-attached C and L work around a free resistor. V7 T02-T07 show a terminal-attached resistor can coexist with free L/C when the resistor block is placed last/final. V8 shows this does not extend to terminal C/L plus final R: only the free L/C control T01 worked, and no-power all-terminal T02 failed. V9 then showed all generated minimal terminal R+L order/index/suffix variants failed. Stop generated guessing at this boundary and require a Proteus-created terminal-attached resistor plus terminal-attached inductor donor before producing more R/C/L topology packs."
     },
     {
@@ -267,8 +508,15 @@
       "title": "Manual RLC donor is a family-order donor, not a topology donor",
       "status": "controls_user_confirmed_terminal_topology_failed",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V5 method"],
-      "evidence": ["rlc_manual_donor fixture", "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V5 method"
+      ],
+      "evidence": [
+        "rlc_manual_donor fixture",
+        "MIXED_RCL_V5_MANUAL_DONOR_STATIC_20260601",
+        "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601"
+      ],
       "rule": "The user-supplied rlc_manual_donor object chunk contains free component records in L1, R1, C1 order with matching ROOT.CDB entries, but contains no $TERINPUT, $TEROUTPUT, $TERPOWER, $TERGROUND, or WIRE records. User testing confirmed V5 T01-T04 donor controls work, so this donor is valid evidence for free component coexistence, DSN header compatibility, and CDB metadata. It is not evidence for generated terminal topology: V5 T05-T10 all failed."
     },
     {
@@ -276,8 +524,15 @@
       "title": "RLC terminal topology must be isolated by family",
       "status": "answered_terminal_resistor_is_blocker",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V6 method"],
-      "evidence": ["MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V6 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V6_TERMINAL_BOUNDARY_STATIC_20260601",
+        "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601"
+      ],
       "rule": "V6 identifies the family boundary: terminal-attached L with free R/C works, terminal-attached C with free L/R works, terminal-attached C+L with free R works in disconnected and connected forms, but terminal-attached R fails in every tested combination containing an inductor. Do not generate R/C/L topologies with the current V9 resistor terminal record until resistor-specific diagnostics pass."
     },
     {
@@ -285,8 +540,17 @@
       "title": "RLC terminal resistor suffix and order must be tested before topology generation",
       "status": "answered_free_lc_r_final_accepted_all_terminal_failed",
       "confidence": 0.84,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V7 method"],
-      "evidence": ["MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V7 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_STATIC_20260601",
+        "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601"
+      ],
       "rule": "V7 T02-T07 show terminal R can coexist with free L/C if free L/C records are first and the resistor terminal block is final. The specific ordinal/index/suffix policy was not the deciding factor because all tested variants T02-T07 worked. V8 shows that this rule does not solve all-terminal R/C/L: only T01 worked, and T02 without power/ground failed. Do not infer full all-terminal R/C/L support from the V7 free-L/C result."
     },
     {
@@ -294,8 +558,15 @@
       "title": "RLC terminal resistor final ordering is positive only for free L/C scope",
       "status": "partial_confirmed_not_sufficient_for_terminal_l",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V7/V8 method"],
-      "evidence": ["MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V7/V8 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_STATIC_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601"
+      ],
       "rule": "When a project contains free capacitor and inductor donor records, a terminal-attached resistor works if its complete terminal/resistor/wire block is the final object block. This is not sufficient when the inductor is terminal-attached: V8 T02 failed without power/ground. Do not proceed to larger R/C/L topologies until a minimal terminal R plus terminal L case works or a manual donor reveals the native Proteus R/L object order."
     },
     {
@@ -303,8 +574,17 @@
       "title": "RLC active blocker is terminal resistor plus terminal inductor",
       "status": "answered_all_generated_rl_failed_manual_donor_required",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V8/V9 method"],
-      "evidence": ["MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V8/V9 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V7_RESISTOR_SUFFIX_ORDER_USER_FEEDBACK_PARTIAL_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V9_RL_BOUNDARY_STATIC_20260601",
+        "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601"
+      ],
       "rule": "The first failing condition is not power/ground, shared terminal labels, or large component count. V8 T02 failed with disconnected labels and no power/ground. Existing positive evidence covers terminal C+L with free R and terminal R with free L/C. V9 directly tested minimal terminal R+L order, index, and suffix hypotheses; the user reported none worked. Do not generate larger mixed R/C/L circuits until a clean Proteus-created terminal R+L donor is analyzed."
     },
     {
@@ -312,8 +592,21 @@
       "title": "Manual terminal R+L donor is required",
       "status": "user_confirmed_for_v10_terminal_rl_method",
       "confidence": 0.94,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L terminal method"],
-      "evidence": ["MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601", "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601", "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601", "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601", "rl_terminal_disconnected fixture", "rl_terminal_series fixture", "MIXED_RCL_V10_TERMINAL_RL_DONOR_STATIC_20260601", "MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L terminal method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V3_ISOLATION_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V5_MANUAL_DONOR_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V6_TERMINAL_BOUNDARY_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V8_R_LAST_TERMINAL_POWER_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V9_RL_BOUNDARY_USER_FEEDBACK_20260601",
+        "rl_terminal_disconnected fixture",
+        "rl_terminal_series fixture",
+        "MIXED_RCL_V10_TERMINAL_RL_DONOR_STATIC_20260601",
+        "MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601"
+      ],
       "rule": "The corpus includes Proteus-created terminal R+L donors. The disconnected donor is the primary mutation template: its native object order is header, both inputs, L output+REALIND+wires, then R output+RESISTOR+wires. User testing confirmed V10 donor controls, donor-native mutation, connected labels, translation, and V0/G0 R+L all work. Larger mixed R/C/L still requires V11 6/21 and requested-15 acceptance before promotion."
     },
     {
@@ -321,8 +614,15 @@
       "title": "Native terminal R+L order uses inputs-first mixed groups",
       "status": "user_confirmed_for_v10_terminal_rl_method",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L terminal method"],
-      "evidence": ["rl_terminal_disconnected fixture", "MIXED_RCL_V10_TERMINAL_RL_DONOR_STATIC_20260601", "MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L terminal method"
+      ],
+      "evidence": [
+        "rl_terminal_disconnected fixture",
+        "MIXED_RCL_V10_TERMINAL_RL_DONOR_STATIC_20260601",
+        "MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601"
+      ],
       "rule": "For a Proteus-created disconnected terminal R+L project, ROOT.DSN object data is not normal resistor V9 order and not inductor sequential group order. It is header, two $TERINPUT records, then the inductor's $TEROUTPUT/REALIND/left-wire/right-wire group, then the resistor's $TEROUTPUT/boundary-byte/RESISTOR/left-wire/right-wire group. V10 confirms this native order is safe for single-pair mutation, connected labels, coordinate translation, and V0/G0 R+L."
     },
     {
@@ -330,8 +630,15 @@
       "title": "Scaled RCL uses repeated native R/L pairs",
       "status": "rejected_for_simulation_netlist_duplicate_ids",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V11 method"],
-      "evidence": ["MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601", "MIXED_RCL_V11_SCALED_STATIC_20260601", "MIXED_RCL_V11_USER_FEEDBACK_NETLIST_DUPLICATES_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V11 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V10_TERMINAL_RL_DONOR_USER_FEEDBACK_20260601",
+        "MIXED_RCL_V11_SCALED_STATIC_20260601",
+        "MIXED_RCL_V11_USER_FEEDBACK_NETLIST_DUPLICATES_20260602"
+      ],
       "rule": "V11's scaled object order was not enough for simulation. It emitted one donor-derived V0 bridge, the accepted capacitor output/group block, then repeated native R/L pair blocks, but it reused per-family DSN component IDs and wrote ROOT.CDB in source order. Proteus netlist compilation reported duplicate part references and duplicate generated X00000001 handles. Do not promote or reuse V11 without global component identity and CDB ordering fixes."
     },
     {
@@ -339,8 +646,15 @@
       "title": "Mixed RCL simulation needs global component IDs",
       "status": "partial_confirmed_single_clr_only_multi_component_failed",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V12 method"],
-      "evidence": ["MIXED_RCL_V11_USER_FEEDBACK_NETLIST_DUPLICATES_20260602", "MIXED_RCL_V12_GLOBAL_IDS_STATIC_20260602", "MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V12 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V11_USER_FEEDBACK_NETLIST_DUPLICATES_20260602",
+        "MIXED_RCL_V12_GLOBAL_IDS_STATIC_20260602",
+        "MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602"
+      ],
       "rule": "For mixed terminal R/C/L projects, visible component refs are not enough. The DSN component identity field used by CAPACITOR, REALIND, and RESISTOR records must be globally unique across families, and ROOT.CDB component tables must use the same IDs in DSN object-emission order. V12 fixed the single 1C+1L+1R cases such as simple loop and basic divider, but user testing reported that remaining cases with additional resistor, capacitor, or inductor components still failed. Therefore global IDs and object-order CDB are necessary but not sufficient for scaled R/C/L."
     },
     {
@@ -348,8 +662,15 @@
       "title": "Scaled RCL may require all R/L inputs before R/L bodies",
       "status": "rejected_by_later_user_feedback_for_multi_component_scaling",
       "confidence": 0.74,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V13 method"],
-      "evidence": ["MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602", "MIXED_RCL_V13_RL_INPUTS_FIRST_STATIC_20260602", "MIXED_RCL_V13_USER_FEEDBACK_PARTIAL_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V13 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V12_USER_FEEDBACK_PARTIAL_20260602",
+        "MIXED_RCL_V13_RL_INPUTS_FIRST_STATIC_20260602",
+        "MIXED_RCL_V13_USER_FEEDBACK_PARTIAL_20260602"
+      ],
       "rule": "The one-pair R+L donor proves only that both R/L input terminals precede that pair's output/component bodies. V12 repeated complete native L/R pair blocks, placing pair 2 inputs after pair 1 bodies; user testing then showed only single 1C+1L+1R cases worked. V13 kept global IDs and CDB object-order alignment, and emitted every R/L input terminal first across all native pairs before L/R bodies, but user feedback still reported multi-component cases failed. Do not promote V13."
     },
     {
@@ -357,8 +678,15 @@
       "title": "Scaled RCL donor repeats complete C/L/R units",
       "status": "confirmed_donor_transplant_but_generated_mutation_failed",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V14 method"],
-      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602", "MIXED_RCL_V14_USER_FEEDBACK_BAD_OBJECT_AFTER_CONTROLS_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V14 method"
+      ],
+      "evidence": [
+        "rcl_4x_t07_unit_donor fixture",
+        "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602",
+        "MIXED_RCL_V14_USER_FEEDBACK_BAD_OBJECT_AFTER_CONTROLS_20260602"
+      ],
       "rule": "The supplied 4x mixed R/C/L donor does not use pooled capacitor blocks or pooled R/L input arrays. Its ROOT.DSN object data is one V0 power bridge followed by four complete units: C output, C input+CAPACITOR+wires, L input, R input, L $TERGROUND+REALIND+wires, then R output+RESISTOR+wires. Suffixes advance by 0x07d6, equal to the 2006-byte non-final unit length, and the final unit's R right-wire record is 51 bytes with the final FF terminator. V14 T00 and T00B proved that exact donor repack and donor chunk+CDB insertion into E001 are valid. Every generated V14 case after that failed with Bad Object Record/corrupt pink wires, so the repeated-unit donor shape is real but V14's mutation strategy is not safe."
     },
     {
@@ -366,8 +694,14 @@
       "title": "Mixed RCL resistor record offsets depend on visible value length",
       "status": "static_donor_observed_not_independently_accepted",
       "confidence": 0.82,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L resistor records"],
-      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L resistor records"
+      ],
+      "evidence": [
+        "rcl_4x_t07_unit_donor fixture",
+        "MIXED_RCL_V14_REPEATED_UNIT_STATIC_20260602"
+      ],
       "rule": "The RESISTOR record inside the supplied mixed R/C/L donor has visible value '10k' with length 3. As a result, the component identity field is at value_offset+252, observed as byte offset 325 for the donor record, and the pin-link suffix fields start at value_offset+265 and value_offset+269. Fixed resistor-only V9 offsets are unsafe for mixed-family resistor records when the visible value length changes."
     },
     {
@@ -375,8 +709,15 @@
       "title": "RCL Bad Object Record boundary is generated mutation",
       "status": "answered_v15_label_only_safe_generated_body_and_50b_shortening_failed",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V15 method"],
-      "evidence": ["MIXED_RCL_V14_USER_FEEDBACK_BAD_OBJECT_AFTER_CONTROLS_20260602", "MIXED_RCL_V15_MUTATION_ISOLATION_STATIC_20260602", "MIXED_RCL_V15_USER_FEEDBACK_MUTATION_ISOLATION_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V15 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V14_USER_FEEDBACK_BAD_OBJECT_AFTER_CONTROLS_20260602",
+        "MIXED_RCL_V15_MUTATION_ISOLATION_STATIC_20260602",
+        "MIXED_RCL_V15_USER_FEEDBACK_MUTATION_ISOLATION_20260602"
+      ],
       "rule": "Because V14 T00 and T00B worked, the exact 4x donor object chunk, donor CDB, and E001 transplant path are valid. V15 user testing showed full 4x donor terminal-label mutations T01-T03 worked, while the generated-body case T04 failed. Exact first-unit shortening with a 50-byte final right-wire record failed in T05/T06, but the 51-byte final right-wire variant T07 worked. Therefore terminal labels are safe, generated body/coordinate mutation was the active corruption boundary, and shortened RCL streams must preserve the donor's extra final FF terminator byte."
     },
     {
@@ -384,8 +725,16 @@
       "title": "Mixed RCL wire coordinates are marker-relative",
       "status": "user_confirmed_for_v16_repeated_units",
       "confidence": 0.94,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L wire records"],
-      "evidence": ["rcl_4x_t07_unit_donor fixture", "MIXED_RCL_V15_USER_FEEDBACK_MUTATION_ISOLATION_20260602", "MIXED_RCL_V16_WIRE_OFFSET_FIX_STATIC_20260602", "MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L wire records"
+      ],
+      "evidence": [
+        "rcl_4x_t07_unit_donor fixture",
+        "MIXED_RCL_V15_USER_FEEDBACK_MUTATION_ISOLATION_20260602",
+        "MIXED_RCL_V16_WIRE_OFFSET_FIX_STATIC_20260602",
+        "MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602"
+      ],
       "rule": "Do not patch mixed RCL WIRE coordinates at a fixed byte offset. In the 4x RCL donor, capacitor and inductor wire records contain the WIRE marker at byte 24 and coordinates at byte 33, but resistor wire records contain the WIRE marker at byte 25 and coordinates at byte 34. Patch WIRE coordinates at marker_position + 9. V14 used byte 33 for all wires, corrupting resistor wire records and producing Bad Object Record/pink-wire rendering. V16 user testing confirmed this marker-relative rule works for 1x, 2x, 3x, 4x, 6x, 7x, and 21x full R/C/L repeated-unit outputs."
     },
     {
@@ -393,8 +742,15 @@
       "title": "Mixed RCL component removal stays diagnostic",
       "status": "user_confirmed_for_v17_component_removal",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V17 method"],
-      "evidence": ["MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V17_COMPONENT_REMOVAL_STATIC_20260602", "MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V17 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602",
+        "MIXED_RCL_V17_COMPONENT_REMOVAL_STATIC_20260602",
+        "MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602"
+      ],
       "rule": "Whole C/L/R subgroups can be removed from accepted V16 repeated units to form RC, LC, RL, and C-only branches. V17 keeps donor subgroup order, patches WIRE coordinates at marker_position + 9, and gives the final kept subgroup a valid final FF wire terminator. User testing confirmed the RC, LC, RL, C-only, and requested 3R/4C/1L cases worked, so this method is valid for the temporary V18 final-topology pack."
     },
     {
@@ -402,8 +758,15 @@
       "title": "Mixed RCL final topology pack uses V17 subgroup-removal units",
       "status": "rejected_for_v18_21_count_only_topology",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L temporary V18 method"],
-      "evidence": ["MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V18_FINAL_TOPOLOGY_STATIC_20260602", "MIXED_RCL_V18_USER_FEEDBACK_T02_21_TOPOLOGY_REJECTED_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L temporary V18 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602",
+        "MIXED_RCL_V18_FINAL_TOPOLOGY_STATIC_20260602",
+        "MIXED_RCL_V18_USER_FEEDBACK_T02_21_TOPOLOGY_REJECTED_20260602"
+      ],
       "rule": "V18 correctly reused accepted V17 full/removal groups, E001 base, V0 bridge, G0 endpoints, marker-relative WIRE coordinate patching, and global component IDs, but its T02 21-component case is invalid as a final acceptance case because it emitted seven independent V0-to-G0 RCL branches. A 21-component test must follow the accepted 21-circuit topology, not merely contain 21 components. Do not promote V18 as final."
     },
     {
@@ -411,8 +774,15 @@
       "title": "Correct 21 circuit topology has three seven-component paths",
       "status": "user_confirmed_for_v19_correct_21",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L V19 method"],
-      "evidence": ["MIXED_RCL_V18_USER_FEEDBACK_T02_21_TOPOLOGY_REJECTED_20260602", "MIXED_RCL_V19_CORRECT_21_STATIC_20260602", "MIXED_RCL_V19_USER_FEEDBACK_WORKED_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L V19 method"
+      ],
+      "evidence": [
+        "MIXED_RCL_V18_USER_FEEDBACK_T02_21_TOPOLOGY_REJECTED_20260602",
+        "MIXED_RCL_V19_CORRECT_21_STATIC_20260602",
+        "MIXED_RCL_V19_USER_FEEDBACK_WORKED_20260602"
+      ],
       "rule": "The corrected 21-component mixed R/C/L circuit must follow the earlier accepted 21R/21RC rule: one seven-component series string from V0 to M0, a second seven-component series string from V0 to M0, and a third seven-component series string from M0 to G0. V19 implements this with accepted V17 groups arranged as RCL+RC+LC, RCL+RL+RC, and RCL+LC+RL, giving exactly 7 resistors, 7 capacitors, and 7 inductors. User testing confirmed this corrected 21 circuit worked."
     },
     {
@@ -420,8 +790,16 @@
       "title": "Mixed RCL generator is locked as main for current scope",
       "status": "locked_current_scope",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L main generator"],
-      "evidence": ["MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602", "MIXED_RCL_V19_USER_FEEDBACK_WORKED_20260602", "MAIN_MIXED_RCL_LOCKED_V1_STATIC_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L main generator"
+      ],
+      "evidence": [
+        "MIXED_RCL_V16_USER_FEEDBACK_ALL_WORKED_20260602",
+        "MIXED_RCL_V17_USER_FEEDBACK_ALL_WORKED_20260602",
+        "MIXED_RCL_V19_USER_FEEDBACK_WORKED_20260602",
+        "MAIN_MIXED_RCL_LOCKED_V1_STATIC_20260602"
+      ],
       "rule": "Use src/proteusgen/mixed_rcl.py as the main mixed resistor/capacitor/inductor generator for the current scope. It emits E001-based projects using the accepted 4x RCL donor schema, marker-relative WIRE coordinate patching, global component IDs, ROOT.CDB in object-emission ID order, and accepted whole-subgroup modes RCL, RC, LC, RL, C, R, and L. The locked examples include the 6-component case, corrected 21-rule topology, and 15 requested topologies."
     },
     {
@@ -429,8 +807,13 @@
       "title": "Mixed RCL value overrides must keep donor value length",
       "status": "static_generated_pending_user_test",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "mixed passive R/C/L main generator"],
-      "evidence": ["REQUESTED_RCL_FILTER_VALUES_MAIN_STATIC_20260602"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed passive R/C/L main generator"
+      ],
+      "evidence": [
+        "REQUESTED_RCL_FILTER_VALUES_MAIN_STATIC_20260602"
+      ],
       "rule": "When overriding visible values in src/proteusgen/mixed_rcl.py, keep the existing donor value field length. Current safe overrides are exactly three ASCII characters for resistors, capacitors, and inductors. Use compact Proteus text such as 10R for 10 ohm, 50R for 50 ohm, 4u7 for 4.7 uF, 10u for 10 uF, and 10m for 10 mH. A two-character resistor value such as 10 corrupts the mixed-family resistor record because downstream fields shift."
     },
     {
@@ -438,8 +821,16 @@
       "title": "DC voltage source-net diagnostics use ordinary terminals",
       "status": "partially_confirmed_source_nets_generated_source_failed",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "DC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["user-created testing.pdsprj combined donor", "DC_SOURCES_V5_SOURCE_NET_STATIC_20260603", "DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "user-created testing.pdsprj combined donor",
+        "DC_SOURCES_V5_SOURCE_NET_STATIC_20260603",
+        "DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603"
+      ],
       "rule": "The user-made combined DC-voltage plus six-component R/C/L donor contains no $TERPOWER and no $TERGROUND records. Its source-driven nets use ordinary terminal labels: DV for the DC-voltage positive net and D0 for the negative net. V5 user testing confirmed the manual donor transplant, manual label-only mutation, and generated source-net R/C/L body with no source object worked. The generated VSOURCE-first and VSOURCE-last cases both failed with VGC/VG... dll, so the source-net conversion is accepted as a direction but generated VSOURCE insertion remains unresolved."
     },
     {
@@ -447,8 +838,16 @@
       "title": "DC voltage source block must preserve donor source bytes",
       "status": "partially_confirmed_source_first_preserved_bytes",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "DC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603", "DC_SOURCES_V6_SOURCE_BLOCK_FIX_STATIC_20260603", "DC_SOURCES_V6_USER_FEEDBACK_T02_T04_FAILED_20260603"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "DC_SOURCES_V5_USER_FEEDBACK_FIRST_THREE_WORKED_20260603",
+        "DC_SOURCES_V6_SOURCE_BLOCK_FIX_STATIC_20260603",
+        "DC_SOURCES_V6_USER_FEEDBACK_T02_T04_FAILED_20260603"
+      ],
       "rule": "After V5 isolated the failure to generated VSOURCE insertion, V6 showed the unsafe variants: T02 failed when the source used V5/resistor-style patched suffixes even with the 49-byte non-final source wire, and T04 failed when the manual source block was placed after the R/C/L body. Workspace files and user feedback indicate T00, T01, T03, T05, and T06 opened. Therefore DC-voltage source insertion should be source-first, should preserve standalone/manual source terminal/component suffix bytes, and should keep the second source wire in the 49-byte non-final form before the generated R/C/L source-net body."
     },
     {
@@ -456,8 +855,16 @@
       "title": "DC voltage source 6/21 confirmation uses source-first only",
       "status": "user_confirmed_for_v7_6_and_21",
       "confidence": 0.91,
-      "applies_to": ["Proteus 8.13", "DC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_SOURCES_V6_USER_FEEDBACK_T02_T04_FAILED_20260603", "DC_SOURCES_V7_ACCEPTED_SOURCE_FIRST_STATIC_20260603", "DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "DC_SOURCES_V6_USER_FEEDBACK_T02_T04_FAILED_20260603",
+        "DC_SOURCES_V7_ACCEPTED_SOURCE_FIRST_STATIC_20260603",
+        "DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603"
+      ],
       "rule": "V7 applies only the V6 accepted source-first family to requested source-driven mixed R/C/L circuits. User testing confirmed all V7 cases worked: the 6-component DC-voltage source-driven circuit, the corrected 21-rule source-driven circuit using the standalone source block, and the manual source-block fallback. Source-driven DC-voltage circuits therefore use source nets DV/D0, no $TERPOWER records, no $TERGROUND records, no V0/G0 terminal labels, source-first ROOT.CDB order, and source global ID equal to the next component ID after the R/C/L specs."
     },
     {
@@ -465,8 +872,17 @@
       "title": "DC current source uses DI/I0 source-net convention",
       "status": "rejected_for_v8_standalone_source_block",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["dc_current_01_default user donor", "dc_current_03_resistor_load user donor", "DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_STATIC_20260603", "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC current source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "dc_current_01_default user donor",
+        "dc_current_03_resistor_load user donor",
+        "DC_SOURCES_V8_15_VOLTAGE_15_CURRENT_STATIC_20260603",
+        "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603"
+      ],
       "rule": "The user-created DC-current donors show a CSOURCE with an ordinary output terminal labelled DI and an ordinary input terminal labelled I0; I1/I4 are source references, not nets. The DI/I0 source-net convention remains valid evidence, but V8's current-source implementation is rejected: all DC-current generated topology cases failed while all DC-voltage cases worked. Do not use the standalone dc_current_01_default source block with ref I1/value 1A as the final current-source insertion method."
     },
     {
@@ -474,8 +890,16 @@
       "title": "DC current source connected-load donor is the active diagnostic direction",
       "status": "rejected_without_anchor_terminals",
       "confidence": 0.82,
-      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_STATIC_20260603", "DC_CURRENT_V9_USER_FEEDBACK_T03_ONWARD_FAILED_20260603"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC current source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "dc_current_03_resistor_load user donor",
+        "DC_CURRENT_V9_CONNECTED_SOURCE_DIAGNOSTICS_STATIC_20260603",
+        "DC_CURRENT_V9_USER_FEEDBACK_T03_ONWARD_FAILED_20260603"
+      ],
       "rule": "The user-made dc_current_03_resistor_load donor uses a connected CSOURCE record with visible ref I4, value 500mA, a 347-byte source record, source object before the resistor load, and a CDB where passive component records precede the current-source record. V9 proved that copying only the connected source block before generated R/C/L is not sufficient: T03 and onward failed with ISIS/VG dll errors. Do not use the source block alone as the final current-source method."
     },
     {
@@ -483,8 +907,16 @@
       "title": "DC current source may require donor DI/I0 anchor terminals",
       "status": "insufficient_when_device_table_has_duplicate_resistor",
       "confidence": 0.82,
-      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["dc_current_03_resistor_load user donor", "DC_CURRENT_V10_ANCHOR_TERMINALS_STATIC_20260603", "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC current source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "dc_current_03_resistor_load user donor",
+        "DC_CURRENT_V10_ANCHOR_TERMINALS_STATIC_20260603",
+        "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603"
+      ],
       "rule": "The connected current-load donor places a load-side DI $TERINPUT and I0 $TEROUTPUT immediately after the CSOURCE block and before the resistor component. V10 preserved this donor anchor terminal pair, chunk[655:858], after the connected source block, chunk[1:655]. User feedback rejected T02/T03/T04 mixed R/C/L anchor cases with ISIS dll errors, while T00/T01 were not reported as failing. V10 mixed cases used a combined device table with duplicate RESISTOR entries, so the anchor pair alone is not sufficient when device metadata is not DCV-style clean."
     },
     {
@@ -492,8 +924,17 @@
       "title": "DC current mixed cases should mirror DCV clean device table",
       "status": "rejected_for_v11_current_geometry",
       "confidence": 0.84,
-      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603", "DC_CURRENT_V11_DCV_STYLE_DEVICES_STATIC_20260603", "DC_CURRENT_V11_USER_FEEDBACK_ALL_ISIS_DLL_20260603"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC current source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603",
+        "DC_CURRENT_V10_USER_FEEDBACK_T02_T03_T04_FAILED_20260603",
+        "DC_CURRENT_V11_DCV_STYLE_DEVICES_STATIC_20260603",
+        "DC_CURRENT_V11_USER_FEEDBACK_ALL_ISIS_DLL_20260603"
+      ],
       "rule": "Accepted DC-voltage mixed source cases use one clean device table with CAP, REALIND, RESISTOR, and VSOURCE. V10 mixed current cases instead had CAP, REALIND, RESISTOR, CSOURCE, and a second RESISTOR entry due combining the R/C/L donor table with the connected current-load donor table. V11 fixed the duplicate metadata by producing CAP + REALIND + RESISTOR + CSOURCE, but user feedback reported all V11 cases still gave ISIS dll errors. Therefore clean device metadata alone is not sufficient when the source geometry remains from the DI/I0 current-source donor family."
     },
     {
@@ -501,8 +942,16 @@
       "title": "Manual DC current source uses DCV geometry with CSOURCE metadata",
       "status": "user_confirmed_for_v12_manual_dci_method",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["user-supplied testing.pdsprj 2026-06-03 15:50", "DC_CURRENT_V12_MANUAL_TESTING_STUDY_STATIC_20260603", "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC current source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "user-supplied testing.pdsprj 2026-06-03 15:50",
+        "DC_CURRENT_V12_MANUAL_TESTING_STUDY_STATIC_20260603",
+        "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604"
+      ],
       "rule": "The new user-supplied testing.pdsprj for DC current uses the same source net labels as DC voltage: DV for the positive/source side and D0 for the negative side. Its source reference/value are V1/10V, its visible source subckt text remains VSOURCE, but its final object model marker, ROOT.CDB model entry, and device-table model are CSOURCE. Its device table order is CAP, CSOURCE, REALIND, RESISTOR. User testing confirmed all V12 cases worked, including exact manual controls and generated R/C/L candidates that reused accepted DCV source geometry patched only at the final model marker to CSOURCE."
     },
     {
@@ -510,8 +959,16 @@
       "title": "DC current 15-topology pack applies V12 source method",
       "status": "user_confirmed_for_v13_15_topologies",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "DC current source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604", "DC_CURRENT_V13_15_TOPOLOGIES_STATIC_20260604", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC current source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604",
+        "DC_CURRENT_V13_15_TOPOLOGIES_STATIC_20260604",
+        "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604"
+      ],
       "rule": "For broad DC-current source topology generation, map the locked V0/G0 mixed R/C/L topology body to ordinary DV/D0 source nets, remove $TERPOWER/$TERGROUND and V0/G0 terminal labels, insert the accepted source-first DCV geometry patched to CSOURCE metadata, keep source ref/value V1/10V, and use a clean device table with CAP, CSOURCE, REALIND, and RESISTOR. User testing confirmed all 15 V13 DC-current source-driven topology cases worked."
     },
     {
@@ -519,8 +976,18 @@
       "title": "DC source-driven RCL generation is locked for current scope",
       "status": "locked_current_scope",
       "confidence": 0.91,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "mixed R/C/L source-driven circuits"],
-      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603",
+        "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603",
+        "DC_CURRENT_V12_USER_FEEDBACK_ALL_WORKED_20260604",
+        "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604"
+      ],
       "rule": "For source-driven DC mixed R/C/L circuits, do not emit default V0 power terminals or G0 ground terminals unless a later explicit user request requires a separate power/ground symbol. DC voltage uses the accepted source-first VSOURCE method with ordinary DV/D0 source-net terminals. DC current uses the same accepted source-first source geometry and DV/D0 net labels, but its model identity is CSOURCE in the final object marker, ROOT.CDB, and device table. Both source types are confirmed across the requested 15 topology set."
     },
     {
@@ -528,8 +995,19 @@
       "title": "AC voltage source donors use VSINE with AV/A0 terminals",
       "status": "v1_generated_source_insertion_rejected",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "AC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["user-supplied ac_voltage_01_default.pdsprj", "user-supplied ac_voltage_02_variant.pdsprj", "user-supplied 2xac_voltage_02_variant.pdsprj", "user-supplied ac_voltage_03_resistor_load.pdsprj", "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_STATIC_20260604", "AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "AC voltage source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "user-supplied ac_voltage_01_default.pdsprj",
+        "user-supplied ac_voltage_02_variant.pdsprj",
+        "user-supplied 2xac_voltage_02_variant.pdsprj",
+        "user-supplied ac_voltage_03_resistor_load.pdsprj",
+        "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_STATIC_20260604",
+        "AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604"
+      ],
       "rule": "The supplied AC-voltage donors use ordinary two-character source-net labels AV and A0 and no $TERPOWER/$TERGROUND records in the source object chunk. The source model is VSINE, not VSOURCE. In ROOT.CDB, the source ref is V1, both the value field and model field are VSINE, and amplitude/frequency are property text fields such as {VA=20v} and {FREQ=5000hz}. V1 proved exact donor controls, E001 transplants, and generated AV/A0 R/C/L with no source work, but rejected generated source insertion from T05 onward with VGDVC.dll. Do not reuse V1's final standalone source block as a non-final generated source unit."
     },
     {
@@ -537,8 +1015,16 @@
       "title": "AC voltage V2 tests exact non-final two-source VSINE unit",
       "status": "user_confirmed_for_v2_source_first_nonfinal_unit",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "AC voltage source temporary method", "mixed R/C/L source-driven circuits"],
-      "evidence": ["AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604", "AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_STATIC_20260604", "AC_VOLTAGE_V2_USER_FEEDBACK_ALL_WORKED_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "AC voltage source temporary method",
+        "mixed R/C/L source-driven circuits"
+      ],
+      "evidence": [
+        "AC_VOLTAGE_V1_USER_FEEDBACK_T05_ONWARD_VGDVC_20260604",
+        "AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_STATIC_20260604",
+        "AC_VOLTAGE_V2_USER_FEEDBACK_ALL_WORKED_20260604"
+      ],
       "rule": "The two-source AC-voltage donor shows the first non-final AV/A0 VSINE unit is 673 bytes: output AV, input A0, V1 VSINE record, and two non-final 50-byte wire records. V2 user testing confirmed all generated cases worked, including simple, six-component, and corrected 21-rule R/C/L candidates using the exact non-final source unit. AC voltage source generation should therefore use source-first non-final donor source units rather than reusing a final standalone source block shape."
     },
     {
@@ -546,8 +1032,19 @@
       "title": "Multiple DC sources use donor-spaced source-first units",
       "status": "v1_v2_rejected_unresolved_multi_source_identity",
       "confidence": 0.78,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V1_REQUESTED5_STATIC_20260604", "DC_MIXED_SOURCES_V1_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits"
+      ],
+      "evidence": [
+        "DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603",
+        "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604",
+        "DC_MIXED_SOURCES_V1_REQUESTED5_STATIC_20260604",
+        "DC_MIXED_SOURCES_V1_USER_FEEDBACK_ALL_ISIS_DLL_20260604",
+        "DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604"
+      ],
       "rule": "V1 prepended donor-spaced source units before the accepted R/C/L source-net body, but all requested multi-source cases failed with ISIS.dll. V2 changed only source CDB rows to donor-style +/- pin names and also failed. Therefore the failure is not solved by source CDB pin maps alone; do not reuse V1/V2's combination of I-style current refs, concatenated device metadata, and mixed source rows."
     },
     {
@@ -555,8 +1052,18 @@
       "title": "Generated source CDB rows do not blindly use donor +/- maps",
       "status": "v2_rejected_plus_minus_hypothesis",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "source CDB generation"],
-      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "accepted generated V7/V13 ROOT.CDB byte checks", "DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "source CDB generation"
+      ],
+      "evidence": [
+        "DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603",
+        "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604",
+        "accepted generated V7/V13 ROOT.CDB byte checks",
+        "DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604"
+      ],
       "rule": "Manual source donors can contain +/- pin names in ROOT.CDB, but the accepted generated DC-voltage and DC-current source-driven R/C/L packs use passive-style source row maps and work. V2 proved that forcing +/- source rows does not fix mixed multi-source ISIS.dll failures. Treat +/- as donor-specific evidence, not a universal generated-source rule."
     },
     {
@@ -564,8 +1071,17 @@
       "title": "Mixed DC source V4 tests V-style refs and clean device metadata",
       "status": "rejected_all_cases_isis_dll",
       "confidence": 0.84,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_STATIC_20260604", "DC_MIXED_SOURCES_V4_USER_FEEDBACK_ALL_ISIS_DLL_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V2_USER_FEEDBACK_ALL_ISIS_DLL_20260604",
+        "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_STATIC_20260604",
+        "DC_MIXED_SOURCES_V4_USER_FEEDBACK_ALL_ISIS_DLL_20260604"
+      ],
       "rule": "V4 used archived four-source DCV units for unique source suffixes, V-style refs, accepted generated passive CDB maps, CSOURCE final model identity for current sources, and a clean ordered device section. User testing reported all V4 cases failed with ISIS.dll, including source-only controls. Therefore V-style refs plus clean device ordering are not sufficient, and the immediate failure is in mixed source object/device handling or long path/name handling, before R/C/L topology matters."
     },
     {
@@ -573,8 +1089,16 @@
       "title": "MX5 short-name mixed source diagnostics isolate path and source metadata",
       "status": "superseded_by_mx6_all3_source_donor",
       "confidence": 0.78,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["DC_MIXED_SOURCES_V4_USER_FEEDBACK_ALL_ISIS_DLL_20260604", "MX5_SHORT_NAMES_STATIC_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V4_USER_FEEDBACK_ALL_ISIS_DLL_20260604",
+        "MX5_SHORT_NAMES_STATIC_20260604"
+      ],
       "rule": "MX5 wrote short-name controls A0/A1/B0/B1/B2/C1-C5, but the user then supplied an all-source donor containing VSOURCE, CSOURCE, and VSINE. MX6 supersedes MX5 as the preferred next test because it uses that donor's combined source-family metadata."
     },
     {
@@ -582,8 +1106,18 @@
       "title": "All-source donor supplies combined source-family metadata",
       "status": "mx6_partially_confirmed_records_must_come_from_all3",
       "confidence": 0.87,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "AC voltage source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["ALL3_SOURCE_DONOR_OBSERVATION_20260604", "MX6_ALL3_SOURCE_DONOR_STATIC_20260604", "MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "AC voltage source",
+        "multi-source mixed R/C/L circuits"
+      ],
+      "evidence": [
+        "ALL3_SOURCE_DONOR_OBSERVATION_20260604",
+        "MX6_ALL3_SOURCE_DONOR_STATIC_20260604",
+        "MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604"
+      ],
       "rule": "The user-supplied 45454New Project.pdsprj contains VSOURCE, CSOURCE, and VSINE source-family metadata in one project. D0 exact copy and D1 E001 transplant worked, proving its object chunk/CDB/device metadata are packer-safe. MX6 E0/E1 failed with bad object record because they still used old 4x-DCV source-unit records. Therefore mixed source generation must use the all-source donor's own source object records, not just its device table."
     },
     {
@@ -591,8 +1125,17 @@
       "title": "V7 tests all-source donor VSOURCE/CSOURCE object records",
       "status": "partially_confirmed_source_only_rejected_with_rcl_join",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits"],
-      "evidence": ["MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604", "DC_MIXED_SOURCES_V7_ALL3_RECORDS_STATIC_20260604", "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits"
+      ],
+      "evidence": [
+        "MX6_USER_FEEDBACK_D0_D1_WORKED_E_BAD_OBJECT_REST_ISIS_20260604",
+        "DC_MIXED_SOURCES_V7_ALL3_RECORDS_STATIC_20260604",
+        "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604"
+      ],
       "rule": "V7 duplicated the all-source donor's own VSOURCE and CSOURCE records directly. User feedback indicates T00-T03 worked, so donor copy/transplant and duplicated source-only VSOURCE/CSOURCE records are safe. T04 onward failed with ISIS.dll, so the failure starts when generated R/C/L records are added through the synthetic all-source+R/C/L join. Do not treat source CDB pin maps as the primary failure after V7; investigate device-section composition and source/RCL join ordering."
     },
     {
@@ -600,8 +1143,20 @@
       "title": "Mixed DC source device sections should be spliced by entry, not concatenated whole",
       "status": "superseded_by_v9_user_supplied_mixed_source_rcl_donor",
       "confidence": 0.78,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN device metadata"],
-      "evidence": ["DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603", "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604", "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604", "DC_MIXED_SOURCES_V8_SPLICED_DEVICES_STATIC_20260604", "user-supplied RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits",
+        "ROOT.DSN device metadata"
+      ],
+      "evidence": [
+        "DC_SOURCES_V7_USER_FEEDBACK_ALL_WORKED_20260603",
+        "DC_CURRENT_V13_USER_FEEDBACK_ALL_WORKED_20260604",
+        "DC_MIXED_SOURCES_V7_USER_FEEDBACK_AFTER_T3_ISIS_20260604",
+        "DC_MIXED_SOURCES_V8_SPLICED_DEVICES_STATIC_20260604",
+        "user-supplied RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj"
+      ],
       "rule": "Accepted single-source DCV and DCI packs used coherent donor device sections that already contained their source family plus R/C/L devices. V7 failed only after combining all-source metadata with R/C/L metadata for requested circuits. V8 tested entry-level CSOURCE device splicing, but the later user-supplied mixed source plus R/C/L donor provides a stronger complete-source/RCL ordering authority, so V8 is superseded as the next decision point."
     },
     {
@@ -609,8 +1164,19 @@
       "title": "Mixed DC source plus RCL donor uses source-tail object order",
       "status": "v9_controls_passed_generated_body_rejected",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN object ordering", "ROOT.CDB source ordering"],
-      "evidence": ["user-supplied RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj", "DC_MIXED_SOURCES_V9_DONOR_TAIL_STATIC_20260605", "DC_MIXED_SOURCES_V9_USER_FEEDBACK_T03_ONWARD_VGDVC_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits",
+        "ROOT.DSN object ordering",
+        "ROOT.CDB source ordering"
+      ],
+      "evidence": [
+        "user-supplied RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj",
+        "DC_MIXED_SOURCES_V9_DONOR_TAIL_STATIC_20260605",
+        "DC_MIXED_SOURCES_V9_USER_FEEDBACK_T03_ONWARD_VGDVC_20260605"
+      ],
       "rule": "The working mixed source plus corrected 21-component R/C/L donor keeps the R/C/L body first and appends the VSOURCE/CSOURCE source records at the tail. It removes actual $TERPOWER/$TERGROUND bridge objects from the object chunk but keeps the leading ordinary $TEROUTPUT V0 terminal. Its coherent device section order is CAP, CSOURCE, REALIND, RESISTOR, VSOURCE. Its ROOT.CDB rows are passives first, then I1 CSOURCE, then V1 VSOURCE. V9 user testing confirmed donor copy/transplant and terminal label mutation work, but generated-body replacement fails from T03 onward with VGDVC.dll. Do not replace the full donor body for mixed-source R/C/L until final-unit/order mutations are isolated."
     },
     {
@@ -618,8 +1184,19 @@
       "title": "Mixed DC source generated body failure starts at final RL ordering",
       "status": "v10_final_output_splice_rejected_group_boundary_required",
       "confidence": 0.84,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN object ordering"],
-      "evidence": ["DC_MIXED_SOURCES_V9_USER_FEEDBACK_T03_ONWARD_VGDVC_20260605", "donor-vs-generated byte comparison 2026-06-05", "DC_MIXED_SOURCES_V10_FINAL_UNIT_STATIC_20260605", "DC_MIXED_SOURCES_V10_USER_FEEDBACK_T05_ONWARD_ERRORS_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits",
+        "ROOT.DSN object ordering"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V9_USER_FEEDBACK_T03_ONWARD_VGDVC_20260605",
+        "donor-vs-generated byte comparison 2026-06-05",
+        "DC_MIXED_SOURCES_V10_FINAL_UNIT_STATIC_20260605",
+        "DC_MIXED_SOURCES_V10_USER_FEEDBACK_T05_ONWARD_ERRORS_20260605"
+      ],
       "rule": "V9 T03 shares the donor source tail byte-for-byte, so the VGDVC.dll failure is in the generated R/C/L body, not in the appended source tail. Byte comparison shows a semantic mismatch in the final RL group. V10 proved generated CDB rows are safe on donor object streams because T03 and T04 worked, but generated-prefix splices still failed. T05/T06 gave VGDVC.dll, and T07/T08 produced a missing-library/crash path. The V10 splice started too late at OUT A9 offset 13019; the complete donor final RL group starts at IN A9 offset 12813 and includes the preceding group input/output terminal records. Do not splice mid-group."
     },
     {
@@ -627,8 +1204,20 @@
       "title": "Mixed DC source diagnostics must splice whole donor RCL groups",
       "status": "v11_suffixmap_confirmed_plain_group_splices_rejected",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "ROOT.DSN object ordering", "terminal suffix mapping"],
-      "evidence": ["DC_MIXED_SOURCES_V10_USER_FEEDBACK_T05_ONWARD_ERRORS_20260605", "donor-vs-generated suffix comparison 2026-06-05", "DC_MIXED_SOURCES_V11_GROUP_BOUNDARY_STATIC_20260605", "DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits",
+        "ROOT.DSN object ordering",
+        "terminal suffix mapping"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V10_USER_FEEDBACK_T05_ONWARD_ERRORS_20260605",
+        "donor-vs-generated suffix comparison 2026-06-05",
+        "DC_MIXED_SOURCES_V11_GROUP_BOUNDARY_STATIC_20260605",
+        "DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605"
+      ],
       "rule": "Generated-prefix splice cases must cut only at whole donor group boundaries and must remap generated prefix terminal/link suffix bytes to the donor suffix scheme before joining to donor suffix records. V11 T03 and T05, the suffix-map variants, opened; T02, T04, T06, and T07 all gave VGDVC.dll. Plain group-boundary splicing is therefore not enough. Avoid variable-length DVO-to-D0 label shrinking on generated splice cases unless separately proven, because V10 T07/T08 showed that shrink-patched generated splices can corrupt device identity into a missing-library dialog."
     },
     {
@@ -636,8 +1225,19 @@
       "title": "Mixed DC source visual relocation must preserve source suffix bytes",
       "status": "v12_confirmed_open_visual_v0_wire_issue",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "source visual coordinates", "terminal suffix mapping"],
-      "evidence": ["DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605", "DC_MIXED_SOURCES_V12_SUFFIXMAP_COORDS_STATIC_20260605", "DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits",
+        "source visual coordinates",
+        "terminal suffix mapping"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V11_USER_FEEDBACK_SUFFIXMAP_OPENED_PLAIN_FAILED_20260605",
+        "DC_MIXED_SOURCES_V12_SUFFIXMAP_COORDS_STATIC_20260605",
+        "DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605"
+      ],
       "rule": "V11 suffix-map cases opened but the source blocks were visually too far from their connected terminal labels. V12 relocated donor source sub-blocks by patching only terminal symbol/label coordinates, WIRE coordinates, and source component coordinate fields while preserving record lengths and terminal/link suffix bytes. User testing reported all V12 cases opened, confirming source relocation is safe, but the leading V0 terminal remained away from the source and a long line crossed the sheet."
     },
     {
@@ -645,8 +1245,19 @@
       "title": "Mixed RCL negative-row nonfinal wire high byte must be repaired",
       "status": "user_confirmed_v13_open_visual_good_enough",
       "confidence": 0.91,
-      "applies_to": ["Proteus 8.13", "mixed R/C/L circuits", "multi-source mixed R/C/L circuits", "WIRE coordinate records", "visual geometry"],
-      "evidence": ["DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605", "V12 long-wire coordinate audit 2026-06-05", "DC_MIXED_SOURCES_V13_V0_SOURCE_GEOMETRY_STATIC_20260605", "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed R/C/L circuits",
+        "multi-source mixed R/C/L circuits",
+        "WIRE coordinate records",
+        "visual geometry"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V12_USER_FEEDBACK_ALL_OPENED_V0_SOURCE_WIRE_ISSUE_20260605",
+        "V12 long-wire coordinate audit 2026-06-05",
+        "DC_MIXED_SOURCES_V13_V0_SOURCE_GEOMETRY_STATIC_20260605",
+        "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605"
+      ],
       "rule": "Some generated non-final WIRE records in lower rows contain a negative y2 coordinate whose high byte has been overwritten to 00, producing y2-y1 = 0x01000000 and a sheet-crossing visual line. V13 repairs those wire y2 fields after suffix mapping and before source/V0 coordinate relocation. It also moves the leading ordinary OUT V0 terminal beside the VSOURCE upper wire point while preserving suffix bytes. User feedback confirmed the V13 outputs open and the visuals are good enough for this stage."
     },
     {
@@ -654,8 +1265,20 @@
       "title": "Requested mixed DC-source circuits duplicate V13 source units",
       "status": "locked_current_scope",
       "confidence": 0.93,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "requested five mixed source circuits"],
-      "evidence": ["DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_STATIC_20260605", "DC_MIXED_SOURCES_V14_USER_FEEDBACK_ALL_WORKED_20260605", "DC_MIXED_SOURCES_V15_REQUESTED5_AFTER_V9_STATIC_20260605", "DC_MIXED_SOURCES_V15_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "multi-source mixed R/C/L circuits",
+        "requested five mixed source circuits"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605",
+        "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_STATIC_20260605",
+        "DC_MIXED_SOURCES_V14_USER_FEEDBACK_ALL_WORKED_20260605",
+        "DC_MIXED_SOURCES_V15_REQUESTED5_AFTER_V9_STATIC_20260605",
+        "DC_MIXED_SOURCES_V15_USER_FEEDBACK_ALL_WORKED_20260605"
+      ],
       "rule": "For complex mixed DC voltage/current source R/C/L circuits, generate the passive R/C/L source-net body first, then append duplicated donor-derived VSOURCE/CSOURCE units using V13-safe coordinate relocation, source-local positive terminals, repaired generated WIRE high bytes, unique source global IDs, source values patched in both ROOT.DSN visible value records and ROOT.CDB rows, and passives-first/source-last ROOT.CDB ordering. User testing confirmed all five requested V14 circuits and the clean post-V9 V15 rerun worked, so this method is locked for the current multi-source DC scope."
     },
     {
@@ -663,8 +1286,18 @@
       "title": "DC-voltage RCL topology pack uses source-first VSOURCE plus V13 wire repair",
       "status": "v15_static_generated_pending_user_test",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "mixed R/C/L source-driven circuits", "15 locked topology set", "WIRE coordinate records"],
-      "evidence": ["DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_STATIC_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "mixed R/C/L source-driven circuits",
+        "15 locked topology set",
+        "WIRE coordinate records"
+      ],
+      "evidence": [
+        "DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603",
+        "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605",
+        "DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_STATIC_20260605"
+      ],
       "rule": "For the 15 locked mixed R/C/L topology examples driven by one DC voltage source, use the accepted V8 source-first standalone VSOURCE block with DV as the positive source net and D0 as the negative source net, emit no $TERPOWER/$TERGROUND or V0/G0 labels, and apply the V13 negative-row WIRE high-byte repair before packing."
     },
     {
@@ -672,8 +1305,18 @@
       "title": "Source-driven single and two-family passive probes reuse accepted source families",
       "status": "locked_current_scope",
       "confidence": 0.9,
-      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "AC voltage source", "single-family passive loads", "two-family passive loads"],
-      "evidence": ["SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_STATIC_20260605", "SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "DC voltage source",
+        "DC current source",
+        "AC voltage source",
+        "single-family passive loads",
+        "two-family passive loads"
+      ],
+      "evidence": [
+        "SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_STATIC_20260605",
+        "SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605"
+      ],
       "rule": "Source-driven generation is not limited to full R/C/L loads. User testing confirmed SOURCE_PASSIVE_V1 worked for R-only, C-only, L-only, RC, RL, and LC loads across DC voltage, DC current, and AC voltage. Continue using the accepted source-family methods: DCV V15 source-first VSOURCE plus V13 WIRE repair, DCI V13 DCV-geometry patched to CSOURCE identity plus V13 WIRE repair, and ACV V2 exact non-final AV/A0 VSINE unit."
     },
     {
@@ -681,8 +1324,21 @@
       "title": "Two-source passive probes use V14 DC source duplication and duplicated ACV V2 units",
       "status": "partially_confirmed_dcv2_v3_grounded_rejected_v4_pending",
       "confidence": 0.82,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "DC current source", "AC voltage source", "single-family passive loads", "two-family passive loads", "R/C/L passive loads"],
-      "evidence": ["SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605", "SOURCE_PASSIVE_V2_TWO_SOURCE_STATIC_20260605", "SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "DC current source",
+        "AC voltage source",
+        "single-family passive loads",
+        "two-family passive loads",
+        "R/C/L passive loads"
+      ],
+      "evidence": [
+        "SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605",
+        "SOURCE_PASSIVE_V2_TWO_SOURCE_STATIC_20260605",
+        "SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605"
+      ],
       "rule": "SOURCE_PASSIVE_V2 tested source multiplicity after V1 proved single-source passive loads. User feedback confirmed the V2 cases worked except the pure two-DC-voltage-source cases SRCP_V2_DCV2_T01_R_ONLY and SRCP_V2_DCV2_T02_RC_RL, which gave a bad object record, opened visibly correct, then failed simulation with SPICE singular #V2#branch. Therefore do not lock pure DCV+DCV source-driven passive loads with only a common D0 return. DC current two-source, mixed DC voltage/current, and AC voltage two-source passive loads remain provisionally accepted from this batch."
     },
     {
@@ -690,8 +1346,19 @@
       "title": "Generated V3 DCV2 grounded-return order is rejected",
       "status": "superseded_by_user_fixed_v3_order_donor",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "SPICE simulation reference"],
-      "evidence": ["SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605", "SOURCE_PASSIVE_V3_DCV2_GROUNDED_STATIC_20260605", "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "source-driven passives",
+        "SPICE simulation reference"
+      ],
+      "evidence": [
+        "SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605",
+        "SOURCE_PASSIVE_V3_DCV2_GROUNDED_STATIC_20260605",
+        "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605",
+        "USER_FIXED_V3_T03_COMPARISON_20260605"
+      ],
       "rule": "SOURCE_PASSIVE_V3 generated pure DCV+DCV grounded-return cases by splitting source output terminals to the front of the object stream and using generated passive-style source CDB rows. User testing reported every generated V3 case gave bad object record. A later user-fixed V3 T03 file still contains the D0-to-G0 high-value reference, so $TERGROUND alone is not the proven cause. Do not reuse generated V3's split-output source ordering or passive-style source CDB rows."
     },
     {
@@ -699,8 +1366,19 @@
       "title": "Pure DCV2 passive loads should mirror manual two-source donor returns",
       "status": "rejected_v4_vgdvc_reported",
       "confidence": 0.78,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "manual 2x DCV donor"],
-      "evidence": ["MANUAL_2X_DCV_DONOR_OBSERVATION_20260605", "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "SOURCE_PASSIVE_V4_DCV2_MANUAL2X_STATIC_20260605", "SOURCE_PASSIVE_V4_USER_FEEDBACK_VGDVC_REPORTED_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "source-driven passives",
+        "manual 2x DCV donor"
+      ],
+      "evidence": [
+        "MANUAL_2X_DCV_DONOR_OBSERVATION_20260605",
+        "SOURCE_PASSIVE_V3_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605",
+        "SOURCE_PASSIVE_V4_DCV2_MANUAL2X_STATIC_20260605",
+        "SOURCE_PASSIVE_V4_USER_FEEDBACK_VGDVC_REPORTED_20260605"
+      ],
       "rule": "The manual two-DC-voltage-source donor contains no $TERPOWER or $TERGROUND records and uses two ordinary source-net terminal pairs, but SOURCE_PASSIVE_V4 reported VGDVC errors when adapted for source-driven passive loads. Do not continue the V4 manual-2x-source route until a smaller donor-preserving diagnostic proves which byte range is safe."
     },
     {
@@ -708,8 +1386,18 @@
       "title": "Pure DCV2 passive fallback uses fixed V3 component-first source units",
       "status": "rejected_v5_vgdvc_reported",
       "confidence": 0.86,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "SPICE simulation reference"],
-      "evidence": ["USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V5_FIXED_V3_ORDER_STATIC_20260605", "SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "source-driven passives",
+        "SPICE simulation reference"
+      ],
+      "evidence": [
+        "USER_FIXED_V3_T03_COMPARISON_20260605",
+        "SOURCE_PASSIVE_V5_FIXED_V3_ORDER_STATIC_20260605",
+        "SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605"
+      ],
       "rule": "The user-fixed V3 T03 file uses passive R/C/L groups first, then component-first VSOURCE units ordered as VSOURCE, output terminal, wire, input terminal, wire, but generated SOURCE_PASSIVE_V5 cases using that reconstructed order gave VGDVC.dll. User clarified generated V3 at least opened and rendered correctly. Do not replace the generated V3 ROOT.DSN object stream with reconstructed fixed-order source units."
     },
     {
@@ -717,8 +1405,19 @@
       "title": "Pure DCV2 passive debugging preserves V3 DSN and tests CDB only",
       "status": "rejected_v6_all_bad_object_record",
       "confidence": 0.88,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "ROOT.CDB source rows"],
-      "evidence": ["SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_STATIC_20260605", "SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "source-driven passives",
+        "ROOT.CDB source rows"
+      ],
+      "evidence": [
+        "SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605",
+        "USER_FIXED_V3_T03_COMPARISON_20260605",
+        "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_STATIC_20260605",
+        "SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605"
+      ],
       "rule": "SOURCE_PASSIVE_V6 preserved generated V3 ROOT.DSN byte-for-byte and tested CDB variants, including exact user-fixed CDB and source-style +/1 -/2 rows, but user testing reported all V6 cases gave bad object record. Therefore CDB-only mutation over generated V3 ROOT.DSN is rejected for pure DCV+DCV source-driven passive repair."
     },
     {
@@ -726,8 +1425,20 @@
       "title": "Pure DCV2 passive controls must prove fixed-file copy and repack first",
       "status": "confirmed_v7_all_worked",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", ".pdsprj repacking", "ROOT.DSN object stream"],
-      "evidence": ["SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_STATIC_20260605", "SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "source-driven passives",
+        ".pdsprj repacking",
+        "ROOT.DSN object stream"
+      ],
+      "evidence": [
+        "SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605",
+        "USER_FIXED_V3_T03_COMPARISON_20260605",
+        "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_STATIC_20260605",
+        "SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605"
+      ],
       "rule": "The user-fixed V3 T03 file is a valid pure DCV+DCV passive oracle. User testing confirmed exact copying, deterministic deflated repacking, ZIP_STORED repacking, E001 ROOT.DSN/ROOT.CDB transplant, and ROOT.CDB-only source value mutation from 1V/1V to 10V/5V all work. Packer/container context is not the cause of the prior bad-object failures."
     },
     {
@@ -735,8 +1446,20 @@
       "title": "Pure DCV2 passive scale-up must isolate source visible values and compact passive suffixes",
       "status": "rejected_v8_t02_onward_vgdvc",
       "confidence": 0.84,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "passive suffix mapping", "visible resistor values"],
-      "evidence": ["SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605", "V5-vs-fixed object chunk comparison 2026-06-05", "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_STATIC_20260605", "SOURCE_PASSIVE_V8_USER_FEEDBACK_T02_ONWARD_VGDVC_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "source-driven passives",
+        "passive suffix mapping",
+        "visible resistor values"
+      ],
+      "evidence": [
+        "SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605",
+        "V5-vs-fixed object chunk comparison 2026-06-05",
+        "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_STATIC_20260605",
+        "SOURCE_PASSIVE_V8_USER_FEEDBACK_T02_ONWARD_VGDVC_20260605"
+      ],
       "rule": "SOURCE_PASSIVE_V8 proved the fixed-file controls remain safe but generated passive body rebuilds still fail: user feedback reported T02 and onward gave VGDVC.dll. Exact resistor visible strings and compact fixed-oracle suffixes are not sufficient. Do not reuse V8's generated passive-body path for pure DCV+DCV passive scale-up."
     },
     {
@@ -744,8 +1467,20 @@
       "title": "Pure DCV2 passive rebuild must preserve resistor wire endpoints and source-boundary bytes",
       "status": "confirmed_v9_all_worked",
       "confidence": 0.92,
-      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "WIRE coordinate records", "passive-source object boundary"],
-      "evidence": ["SOURCE_PASSIVE_V8_USER_FEEDBACK_T02_ONWARD_VGDVC_20260605", "fixed-oracle-vs-v8-byte-comparison 2026-06-05", "SOURCE_PASSIVE_V9_FIXED_WIRE_SOURCE_BOUNDARY_STATIC_20260605", "SOURCE_PASSIVE_V9_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "applies_to": [
+        "Proteus 8.13",
+        "two-source circuits",
+        "DC voltage source",
+        "source-driven passives",
+        "WIRE coordinate records",
+        "passive-source object boundary"
+      ],
+      "evidence": [
+        "SOURCE_PASSIVE_V8_USER_FEEDBACK_T02_ONWARD_VGDVC_20260605",
+        "fixed-oracle-vs-v8-byte-comparison 2026-06-05",
+        "SOURCE_PASSIVE_V9_FIXED_WIRE_SOURCE_BOUNDARY_STATIC_20260605",
+        "SOURCE_PASSIVE_V9_USER_FEEDBACK_ALL_WORKED_20260605"
+      ],
       "rule": "Byte comparison after V8 found two concrete generated ROOT.DSN defects: resistor left-wire records collapsed to the terminal coordinate instead of running from terminal to resistor body, and non-final source input-wire bytes were overwritten at the passive/source boundary. SOURCE_PASSIVE_V9 fixes resistor wire endpoints, preserves non-final source wire bytes, and trims the passive-source boundary by two bytes. User testing confirmed all V9 cases worked, including byte-exact R-only oracle rebuild, R-only 10V/5V mutation, and RC/RL scale-up variants."
     }
   ]

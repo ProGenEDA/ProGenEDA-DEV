@@ -1,0 +1,69 @@
+{
+  "case": "POWER_GROUND_SHORTWIRE_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated_combined_locked_methods",
+  "purpose": "Generate 6R and R21 with both locked short-wire power terminal and locked short-wire ground terminal methods.",
+  "method": "Combined locked short-wire endpoint methods only. $TERPOWER replaces $TERINPUT at powered left endpoints; $TERGROUND replaces $TEROUTPUT at grounded right endpoints. No terminal bridge method is used.",
+  "zip": {
+    "filename": "POWER_GROUND_SHORTWIRE_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 84980,
+    "sha256": "c441556fc4eb53a41bfb957283609444b547b7bba4b4f5f0d71635ceb28762e6"
+  },
+  "script": {
+    "filename": "generate_power_ground_shortwire_attempts.py",
+    "size_bytes": 13904,
+    "sha256": "219869e11db356fbc576ec35985d866806f62b811039cfc595a401ec8179d4f5",
+    "stored_as": "tools/proteus_generation/2026-05-29/scripts_b64/generate_power_ground_shortwire_attempts.py.b64.txt"
+  },
+  "attempts": [
+    {
+      "case_id": "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT",
+      "project_file": "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT.pdsprj",
+      "resistor_count": 6,
+      "power_node": "V0",
+      "ground_node": "G0",
+      "power_terminal_count": 3,
+      "ground_terminal_count": 2,
+      "static_validation_issues": [],
+      "topology_summary": [
+        "R1: V0 - N1, power endpoint",
+        "R2: N1 - N2",
+        "R3: V0 - N2, power endpoint",
+        "R4: N2 - N3",
+        "R5: N3 - G0, ground endpoint",
+        "R6: V0 - G0, power endpoint and ground endpoint"
+      ],
+      "hashes": {
+        "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT.pdsprj": "41049b93feb20c8c4181ab63fb0f191dfd4a9879f19b90eb3aef1e76b5d07aea",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "27309b08b12ea7ef80504b1c79334ecabfbca61e3705c1852588f47408e68e6d"
+      }
+    },
+    {
+      "case_id": "BOTH_T02_R21_V0_G0_SHORTWIRE_ATTEMPT",
+      "project_file": "BOTH_T02_R21_V0_G0_SHORTWIRE_ATTEMPT.pdsprj",
+      "resistor_count": 21,
+      "power_node": "V0",
+      "ground_node": "G0",
+      "power_terminal_count": 2,
+      "ground_terminal_count": 1,
+      "static_validation_issues": [],
+      "topology_summary": [
+        "Branch A starts at V0 through R1.",
+        "Branch B starts at V0 through R8.",
+        "Tail ends at G0 through RL."
+      ],
+      "hashes": {
+        "BOTH_T02_R21_V0_G0_SHORTWIRE_ATTEMPT.pdsprj": "41d53b8af99fa61c4840aa2c197da871f0fb6482e4e1217c676d01e6cbc68485",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "b40454bf5a6fc7fa0a27f9251ff5f2fa597a2663b1366ba120888776a1361f3e"
+      }
+    }
+  ],
+  "locked_methods_used": [
+    "final/power_terminal_short_wire_method.md",
+    "final/ground_terminal_short_wire_method.md"
+  ],
+  "source_artifact": "R21_E001_B02_V9_NO_PREMATURE_TERMINATORS (2).zip",
+  "source_artifact_sha256": "6d020c05599077fd28846982fe6b2bebfc0085ddec534c179ce3e29f2133ac0e",
+  "inner_v9_artifact": "R21_E001_B02_V9_NO_PREMATURE_TERMINATORS.zip"
+}

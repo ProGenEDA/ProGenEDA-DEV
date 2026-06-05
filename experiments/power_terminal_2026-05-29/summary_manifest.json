@@ -1,0 +1,155 @@
+{
+  "case": "POWER_TERMINAL_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated",
+  "attempts": [
+    {
+      "case_id": "POWER_T01_6R_V0_ATTEMPT",
+      "experimental_status": "UNVALIDATED_POWER_TERMINAL_ATTEMPT",
+      "base": "CONTROL_E001_EMPTY_BASE.pdsprj",
+      "power_terminal_experimental_method": "Clone a V9 $TERINPUT record, replace marker with $TERPOWER, keep two-character label, insert before resistor object groups.",
+      "power_node": "V0",
+      "power_info": {
+        "node": "V0",
+        "x": -8382000,
+        "y": 5080000,
+        "suffix": "0bcd",
+        "method": "cloned $TERINPUT record with marker changed to $TERPOWER"
+      },
+      "note": "Corrected 6R topology with original left common N0 renamed to V0 and attached to an experimental $TERPOWER terminal.",
+      "project_file": "POWER_T01_6R_V0_ATTEMPT.pdsprj",
+      "resistor_count": 6,
+      "power_terminal_count": 1,
+      "object_chunk_len": 4023,
+      "dsn_len": 69626,
+      "cdb_len": 736,
+      "static_validation_issues": [],
+      "topology": [
+        {
+          "ref": "R1",
+          "value": "1k",
+          "left": "V0",
+          "right": "N1",
+          "x": -6350000,
+          "y": 5080000,
+          "role": "top horizontal",
+          "in_suffix": "0159",
+          "out_suffix": "018b"
+        },
+        {
+          "ref": "R2",
+          "value": "2k",
+          "left": "N1",
+          "right": "N2",
+          "x": -2540000,
+          "y": 4318000,
+          "role": "upper right vertical in source; horizontal V9 symbol",
+          "in_suffix": "0317",
+          "out_suffix": "0349"
+        },
+        {
+          "ref": "R3",
+          "value": "3k",
+          "left": "V0",
+          "right": "N2",
+          "x": -6350000,
+          "y": 3556000,
+          "role": "middle horizontal",
+          "in_suffix": "04d5",
+          "out_suffix": "0507"
+        },
+        {
+          "ref": "R4",
+          "value": "4k",
+          "left": "N2",
+          "right": "N3",
+          "x": -2540000,
+          "y": 2032000,
+          "role": "lower right vertical 1 in source; horizontal V9 symbol",
+          "in_suffix": "0693",
+          "out_suffix": "06c5"
+        },
+        {
+          "ref": "R5",
+          "value": "5k",
+          "left": "N3",
+          "right": "N4",
+          "x": -2540000,
+          "y": 508000,
+          "role": "lower right vertical 2 in source; horizontal V9 symbol",
+          "in_suffix": "0851",
+          "out_suffix": "0883"
+        },
+        {
+          "ref": "R6",
+          "value": "6k",
+          "left": "V0",
+          "right": "N4",
+          "x": -6350000,
+          "y": -1016000,
+          "role": "bottom horizontal",
+          "in_suffix": "0a0f",
+          "out_suffix": "0a41"
+        }
+      ],
+      "hashes": {
+        "POWER_T01_6R_V0_ATTEMPT.pdsprj": "fb8ab4c7bb8e1fdf6febe26acd656d76fd9fc14b4b0c42f64c9a9c91fad37793",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "5c967fcacbc0b2f00952b09d269b319585f3d682ac13e88ba3ca4ba2f1558e24",
+        "CONTROL_E001_EMPTY_BASE.pdsprj": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f"
+      },
+      "limitations": [
+        "This is an experimental power-terminal attempt, not a locked method.",
+        "$TERPOWER record layout has not yet been validated by controlled donor project.",
+        "V0 is used as a two-character power-net label to avoid variable-length terminal-label changes.",
+        "SCRIPTS/PWRRAILS.DAT is copied unchanged from blank E001."
+      ]
+    },
+    {
+      "case_id": "POWER_T02_R21_V0_ATTEMPT",
+      "experimental_status": "UNVALIDATED_POWER_TERMINAL_ATTEMPT",
+      "base": "CONTROL_E001_EMPTY_BASE.pdsprj",
+      "power_terminal_experimental_method": "Clone a V9 $TERINPUT record, replace marker with $TERPOWER, keep two-character label, insert before resistor object groups.",
+      "power_node": "V0",
+      "power_info": {
+        "node": "V0",
+        "x": -8382000,
+        "y": 5080000,
+        "suffix": "25ef",
+        "method": "cloned $TERINPUT record with marker changed to $TERPOWER"
+      },
+      "note": "V9 R21 reference topology with original start node N0 renamed to V0 and attached to an experimental $TERPOWER terminal.",
+      "project_file": "POWER_T02_R21_V0_ATTEMPT.pdsprj",
+      "resistor_count": 21,
+      "power_terminal_count": 1,
+      "object_chunk_len": 13818,
+      "dsn_len": 79421,
+      "cdb_len": 2293,
+      "static_validation_issues": [],
+      "topology_summary": [
+        "Branch A: V0 - R1 - A1 - R2 - A2 - R3 - A3 - R4 - A4 - R5 - A5 - R6 - A6 - R7 - M0",
+        "Branch B: V0 - R8 - B1 - R9 - B2 - RA - B3 - RB - B4 - RC - B5 - RD - B6 - RE - M0",
+        "Tail: M0 - RF - C1 - RG - C2 - RH - C3 - RI - C4 - RJ - C5 - RK - C6 - RL - Z0"
+      ],
+      "hashes": {
+        "POWER_T02_R21_V0_ATTEMPT.pdsprj": "04370ebbb706b0107e8438ab21cd4ffd643c90be5d21e424970ba5603f8b16f3",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "b5787c36f9954d072028b920e2114a54d1ba95679066d4a32b939cbad6d166d1",
+        "CONTROL_E001_EMPTY_BASE.pdsprj": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f"
+      },
+      "limitations": [
+        "This is an experimental power-terminal attempt, not a locked method.",
+        "$TERPOWER record layout has not yet been validated by controlled donor project.",
+        "V0 is used as a two-character power-net label to avoid variable-length terminal-label changes.",
+        "SCRIPTS/PWRRAILS.DAT is copied unchanged from blank E001."
+      ]
+    }
+  ],
+  "source_artifact": "/mnt/data/R21_E001_B02_V9_NO_PREMATURE_TERMINATORS (2).zip",
+  "source_artifact_sha256": "6d020c05599077fd28846982fe6b2bebfc0085ddec534c179ce3e29f2133ac0e",
+  "inner_v9_artifact": "R21_E001_B02_V9_NO_PREMATURE_TERMINATORS.zip",
+  "zip": {
+    "filename": "POWER_TERMINAL_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 87588,
+    "sha256": "ff441b3b17e85b2db273e142304cd16ce0d3dbe8d2f933ad9af50a18acbba231"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "DCS_V1_T01_DCV_6_COMPONENTS",
+  "description": "Six mixed R/C/L components connected across a default 10V DC voltage source terminal pair DV/D0.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.1",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "10V",
+      "positive": "DV",
+      "negative": "D0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "DV",
+      "end": "D0"
+    },
+    {
+      "mode": "RC",
+      "start": "DV",
+      "end": "D0"
+    },
+    {
+      "mode": "C",
+      "start": "DV",
+      "end": "D0"
+    }
+  ],
+  "component_values": {},
+  "metadata": {
+    "test_order": 1,
+    "requested_batch": "6 component DC voltage source"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "case_id": "DCS_V1_T04_DCI_21_COMPONENTS",
+  "description": "Correct 21-component mixed R/C/L topology driven by a default 1A DC current source terminal pair DI/I0.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.1",
+  "sources": [
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "1A",
+      "positive": "DI",
+      "negative": "I0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "DI",
+      "end": "D1"
+    },
+    {
+      "mode": "RC",
+      "start": "D1",
+      "end": "D2"
+    },
+    {
+      "mode": "LC",
+      "start": "D2",
+      "end": "M0"
+    },
+    {
+      "mode": "RCL",
+      "start": "DI",
+      "end": "E1"
+    },
+    {
+      "mode": "RL",
+      "start": "E1",
+      "end": "E2"
+    },
+    {
+      "mode": "RC",
+      "start": "E2",
+      "end": "M0"
+    },
+    {
+      "mode": "RCL",
+      "start": "M0",
+      "end": "F1"
+    },
+    {
+      "mode": "LC",
+      "start": "F1",
+      "end": "F2"
+    },
+    {
+      "mode": "RL",
+      "start": "F2",
+      "end": "I0"
+    }
+  ],
+  "component_values": {},
+  "metadata": {
+    "test_order": 4,
+    "requested_batch": "21 component DC current source"
+  }
+}

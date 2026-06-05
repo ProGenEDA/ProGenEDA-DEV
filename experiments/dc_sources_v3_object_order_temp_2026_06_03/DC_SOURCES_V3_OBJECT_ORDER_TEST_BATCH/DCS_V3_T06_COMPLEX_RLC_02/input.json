@@ -1,0 +1,84 @@
+{
+  "case_id": "DCS_V3_T06_COMPLEX_RLC_02",
+  "description": "Pasted circuit 2: two 5V voltage sources and one 1A current source with three branches.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.3",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "05V",
+      "positive": "A1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_voltage",
+      "ref": "V2",
+      "value": "05V",
+      "positive": "D1",
+      "negative": "G0"
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "1A",
+      "positive": "D1",
+      "negative": "G0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "R",
+      "start": "A1",
+      "end": "B1"
+    },
+    {
+      "mode": "C",
+      "start": "B1",
+      "end": "G0"
+    },
+    {
+      "mode": "C",
+      "start": "B1",
+      "end": "N1"
+    },
+    {
+      "mode": "R",
+      "start": "N1",
+      "end": "G0"
+    },
+    {
+      "mode": "L",
+      "start": "B1",
+      "end": "C1"
+    },
+    {
+      "mode": "L",
+      "start": "C1",
+      "end": "G0"
+    },
+    {
+      "mode": "R",
+      "start": "C1",
+      "end": "D1"
+    },
+    {
+      "mode": "C",
+      "start": "D1",
+      "end": "G0"
+    }
+  ],
+  "component_values": {
+    "R1": "050",
+    "C1": "47u",
+    "C2": "10u",
+    "R2": "220",
+    "L1": "50m",
+    "L2": "150",
+    "R3": "330",
+    "C3": "100"
+  },
+  "metadata": {
+    "test_order": 14,
+    "source_text": "Circuit 2 from pasted request"
+  }
+}

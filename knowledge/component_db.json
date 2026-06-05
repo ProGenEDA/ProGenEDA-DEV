@@ -4,10 +4,19 @@
     "RESISTOR": {
       "status": "locked_main_generator_current_scope",
       "category": "passive",
-      "proteus_names_observed": ["RESISTOR", "RES"],
+      "proteus_names_observed": [
+        "RESISTOR",
+        "RES"
+      ],
       "pins": [
-        {"name": "1", "type": "passive"},
-        {"name": "2", "type": "passive"}
+        {
+          "name": "1",
+          "type": "passive"
+        },
+        {
+          "name": "2",
+          "type": "passive"
+        }
       ],
       "generation": {
         "visual_authority": "ROOT.DSN",
@@ -63,7 +72,9 @@
     "DC_VOLTAGE_SOURCE": {
       "status": "locked_current_scope",
       "category": "source",
-      "proteus_names_observed": ["VSOURCE"],
+      "proteus_names_observed": [
+        "VSOURCE"
+      ],
       "generation": {
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
@@ -76,7 +87,9 @@
     "DC_CURRENT_SOURCE": {
       "status": "locked_current_scope",
       "category": "source",
-      "proteus_names_observed": ["CSOURCE"],
+      "proteus_names_observed": [
+        "CSOURCE"
+      ],
       "generation": {
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
@@ -89,7 +102,9 @@
     "AC_VOLTAGE_SOURCE": {
       "status": "confirmed_v2_current_scope",
       "category": "source",
-      "proteus_names_observed": ["VSINE"],
+      "proteus_names_observed": [
+        "VSINE"
+      ],
       "generation": {
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
@@ -99,11 +114,16 @@
         "temporary_recipe": "AC_VOLTAGE_V1_SOURCE_DIAGNOSTICS_TEMP_2026_06_04 proved exact donor controls, E001 transplants, and generated AV/A0 R/C/L no-source control worked, but generated source insertion T05 onward failed with VGDVC.dll. AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_TEMP_2026_06_04 used the exact 673-byte non-final AV/A0 VSINE unit extracted from the two-source donor, and user feedback confirmed all V2 cases worked. Observed source model and CDB value field are VSINE; amplitude/frequency live in ROOT.CDB/source-record properties such as {VA=20v} and {FREQ=5000hz}."
       }
     },
-    "AC_CURRENT_SOURCE": {"status": "out_of_scope_by_user_for_current_release", "category": "source"},
+    "AC_CURRENT_SOURCE": {
+      "status": "out_of_scope_by_user_for_current_release",
+      "category": "source"
+    },
     "INDUCTOR": {
       "status": "temporary_v9_requested15_power_ground_pending_user_test",
       "category": "passive",
-      "proteus_names_observed": ["REALIND"],
+      "proteus_names_observed": [
+        "REALIND"
+      ],
       "controlled_donors": [
         "inductor_01_single_free",
         "inductor_02_two_terminal",
@@ -128,7 +148,11 @@
     "CAPACITOR": {
       "status": "v11_large_network_validated_v13_power_ground_spacing_pending",
       "category": "passive",
-      "proteus_names_observed": ["CAPACITOR", "CAP", "CAP10"],
+      "proteus_names_observed": [
+        "CAPACITOR",
+        "CAP",
+        "CAP10"
+      ],
       "generation": {
         "visual_authority": "ROOT.DSN",
         "metadata_authority": "ROOT.CDB",
@@ -163,32 +187,107 @@
         "temporary_history": "tools/proteus_generation/2026-06-01/generate_mixed_rcl_v1_temp.py combined locked resistor V9 records, locked resistor/capacitor mixed records, and temporary inductor V6 REALIND records; MIXED_RCL_V1_TEMP_2026_06_01.zip was rejected by user Proteus testing. After donor05/V8 was accepted, generate_mixed_rcl_v2_v8_temp.py tried locked resistor V9 records, locked capacitor manual-order records, V8 donor05 sequential inductor records as a final contiguous block, one V0 power bridge, and G0 ground endpoints; the user reported all V2 files gave VGCVC.dll. V3 showed only C+L T03 and T05 worked; every case containing both resistor and inductor failed. The user supplied rlc_manual_donor, whose object chunk has free L/R/C components in L1, R1, C1 order with matching CDB but no terminals or wires. V5 T01-T04 donor controls worked, while V5 T05-T10 generated terminal-topology variants failed. V6 showed terminal C/L combinations work around a free resistor, but every terminal-attached resistor case failed. V7 partial feedback confirmed T02-T07 worked, meaning terminal R can coexist with free L/C when the resistor block is final. V8 then showed this does not solve terminal C/L plus terminal R: only the free-L/C control T01 worked, and no-power disconnected all-terminal T02 failed. V9 isolated minimal terminal R+L order/index/suffix variants; the user reported none worked. The user then supplied rl_terminal_disconnected and rl_terminal_series. V10 uses the disconnected donor's native object order: header, both inputs, L output+REALIND+wires, then R output+RESISTOR+wires. User testing confirmed V10 opened/rendered, including donor-native mutation, connected labels, translation, and V0/G0 R+L; later feedback clarified visual opening is not simulation acceptance. V11 scaled the method with one V0 bridge, the accepted capacitor block, and repeated native R/L pair blocks for 6, 21, and 15 requested mixed R/C/L topology cases, but Proteus simulation/netlist failed with duplicate part references and generated X00000001 handles because component IDs were reused per family and CDB was source-ordered. V12 writes DSN component IDs globally across C/L/R and writes ROOT.CDB tables in DSN object-emission order; user testing confirmed the single 1C+1L+1R cases worked, but multi-component cases still failed. V13 kept global IDs and object-order CDB, and tried all R/L inputs before all L/R bodies, but user feedback still reported multi-component failures. The user then supplied rcl_4x_t07_unit_donor. V14 used that 4x donor as the repeated complete C/L/R unit schema and included exact donor controls plus generated 1x, 2x, 3x, 4x, 6x, 7x, and 21x cases. User testing confirmed T00 exact donor repack and T00B donor chunk+CDB in E001 worked, but every generated case after that gave Bad Object Record and corrupt pink-wire rendering. V15 proved label-only full-donor mutation works, generated body mutation fails, and first-unit shortening needs the 51-byte final right-wire shape. Byte inspection found the V14 bug: mixed RCL resistor wire records have WIRE at byte 25 and coordinates at byte 34, while C/L wires use WIRE at byte 24 and coordinates at byte 33. V16 patches wire coordinates at WIRE-marker+9; user testing confirmed all V16 1x/2x/3x/4x/6x/7x/21x repeated full-unit cases worked. V17 removes whole C/L/R subgroups from accepted V16 units; user testing confirmed RC, LC, RL, C-only, and the requested 3R/4C/1L project all worked. V18 used accepted V17 groups for the final test pack, but user feedback rejected T02 because the 21-component circuit only had 21 components and did not follow the accepted 21-circuit rule. V19 corrected the 21 topology as two seven-component V0-to-M0 series strings and one seven-component M0-to-G0 series string, balanced as 7R/7C/7L; user testing confirmed it worked, so the method was promoted into main code."
       }
     },
-    "LED": {"status": "found_in_corpus_not_controlled", "category": "display_indicator"},
-    "CLOCK": {"status": "found_in_corpus_not_controlled", "category": "digital_source"},
-    "LOGICSTATE": {"status": "clean_donor_available_not_generation_ready", "category": "digital_source", "clean_source": "HC08_D03"},
-    "LOGICPROBE": {"status": "clean_donor_available_not_generation_ready", "category": "instrument", "clean_source": "HC08_D03"},
-    "74LS00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
-    "74HC00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
-    "74HCT00": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_nand"},
-    "74LS04": {"status": "found_in_corpus_not_controlled", "category": "logic_ic", "family": "hex_inverter"},
-    "74HC04": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "hex_inverter"},
-    "74LS08": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_and"},
+    "LED": {
+      "status": "found_in_corpus_not_controlled",
+      "category": "display_indicator"
+    },
+    "CLOCK": {
+      "status": "found_in_corpus_not_controlled",
+      "category": "digital_source"
+    },
+    "LOGICSTATE": {
+      "status": "clean_donor_available_not_generation_ready",
+      "category": "digital_source",
+      "clean_source": "HC08_D03"
+    },
+    "LOGICPROBE": {
+      "status": "clean_donor_available_not_generation_ready",
+      "category": "instrument",
+      "clean_source": "HC08_D03"
+    },
+    "74LS00": {
+      "status": "requested_not_yet_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_nand"
+    },
+    "74HC00": {
+      "status": "requested_not_yet_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_nand"
+    },
+    "74HCT00": {
+      "status": "requested_not_yet_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_nand"
+    },
+    "74LS04": {
+      "status": "found_in_corpus_not_controlled",
+      "category": "logic_ic",
+      "family": "hex_inverter"
+    },
+    "74HC04": {
+      "status": "found_in_user_corpus_not_controlled",
+      "category": "logic_ic",
+      "family": "hex_inverter"
+    },
+    "74LS08": {
+      "status": "requested_not_yet_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_and"
+    },
     "74HC08": {
       "status": "diagnostic_control_only_pending_d05",
       "category": "logic_ic",
       "family": "quad_2_input_and",
-      "clean_sources": ["HC08_D01", "HC08_D02", "HC08_D03"],
+      "clean_sources": [
+        "HC08_D01",
+        "HC08_D02",
+        "HC08_D03"
+      ],
       "v0_limit": "one U1 quad package",
       "generation_gate": "HC08_D05 exact-picture oracle and Proteus 8.13 acceptance result required"
     },
-    "74LS32": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_or"},
-    "74HC32": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "quad_2_input_or"},
-    "74LS86": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "quad_2_input_xor"},
-    "74HC86": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "quad_2_input_xor"},
-    "74LS74": {"status": "requested_not_yet_controlled", "category": "logic_ic", "family": "dual_d_flip_flop"},
-    "74HC74": {"status": "found_in_user_corpus_not_controlled", "category": "logic_ic", "family": "dual_d_flip_flop"},
-    "7447": {"status": "requested_not_yet_controlled", "category": "display_decoder"},
-    "7SEG-COM-ANODE": {"status": "found_in_user_corpus_not_controlled", "category": "display"},
-    "7SEG-COM-CATHODE": {"status": "found_in_user_corpus_not_controlled", "category": "display"}
+    "74LS32": {
+      "status": "requested_not_yet_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_or"
+    },
+    "74HC32": {
+      "status": "found_in_user_corpus_not_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_or"
+    },
+    "74LS86": {
+      "status": "requested_not_yet_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_xor"
+    },
+    "74HC86": {
+      "status": "found_in_user_corpus_not_controlled",
+      "category": "logic_ic",
+      "family": "quad_2_input_xor"
+    },
+    "74LS74": {
+      "status": "requested_not_yet_controlled",
+      "category": "logic_ic",
+      "family": "dual_d_flip_flop"
+    },
+    "74HC74": {
+      "status": "found_in_user_corpus_not_controlled",
+      "category": "logic_ic",
+      "family": "dual_d_flip_flop"
+    },
+    "7447": {
+      "status": "requested_not_yet_controlled",
+      "category": "display_decoder"
+    },
+    "7SEG-COM-ANODE": {
+      "status": "found_in_user_corpus_not_controlled",
+      "category": "display"
+    },
+    "7SEG-COM-CATHODE": {
+      "status": "found_in_user_corpus_not_controlled",
+      "category": "display"
+    }
   }
 }

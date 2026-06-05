@@ -1,0 +1,64 @@
+{
+  "case": "POWER_TERMINAL_OUTPUT_LABEL_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated",
+  "purpose": "Test whether same-named $TERPOWER and $TEROUTPUT terminals auto-connect, without a short wire from the power terminal to the resistor pin.",
+  "online_lookup": "No reliable primary source was found by assistant web search to confirm behavior; this is an empirical test.",
+  "zip": {
+    "filename": "POWER_TERMINAL_OUTPUT_LABEL_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 90231,
+    "sha256": "7211ed39ab8b36cd4fd58f374a06d7ec28f71be13b0c32805279fbcad110682f"
+  },
+  "script": {
+    "filename": "generate_power_output_label_attempts.py",
+    "sha256": "9686c5043bba84cf59e00204d435dc0efd3082c1758fe474079c9eaec67df52b"
+  },
+  "attempts": [
+    {
+      "case_id": "POWER_T05_6R_V0_OUTPUT_LABEL_ATTEMPT",
+      "base": "CONTROL_E001_EMPTY_BASE.pdsprj",
+      "project_file": "POWER_T05_6R_V0_OUTPUT_LABEL_ATTEMPT.pdsprj",
+      "resistor_count": 6,
+      "power_terminal_count": 1,
+      "v0_output_endpoint_count": 3,
+      "object_chunk_len": 4026,
+      "dsn_len": 69629,
+      "cdb_len": 736,
+      "static_validation_issues": [],
+      "hashes": {
+        "POWER_T05_6R_V0_OUTPUT_LABEL_ATTEMPT.pdsprj": "827f8e054c95840d2320446cf324dbc2ff401cfc35516d9b468c54df184252d5",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "fa55594a8a610343d3676ad5487b7a215b5dfbfe6818dba69e4101e2cbf0cd71"
+      },
+      "topology": [
+        "R1: V0 - N1, left endpoint is $TEROUTPUT labelled V0",
+        "R2: N1 - N2",
+        "R3: V0 - N2, left endpoint is $TEROUTPUT labelled V0",
+        "R4: N2 - N3",
+        "R5: N3 - N4",
+        "R6: V0 - N4, left endpoint is $TEROUTPUT labelled V0"
+      ]
+    },
+    {
+      "case_id": "POWER_T06_R21_V0_OUTPUT_LABEL_ATTEMPT",
+      "base": "CONTROL_E001_EMPTY_BASE.pdsprj",
+      "project_file": "POWER_T06_R21_V0_OUTPUT_LABEL_ATTEMPT.pdsprj",
+      "resistor_count": 21,
+      "power_terminal_count": 1,
+      "v0_output_endpoint_count": 2,
+      "object_chunk_len": 13820,
+      "dsn_len": 79423,
+      "cdb_len": 2293,
+      "static_validation_issues": [],
+      "hashes": {
+        "POWER_T06_R21_V0_OUTPUT_LABEL_ATTEMPT.pdsprj": "916943827752b04c91f7acc1f3b0e87aca09b96d8c2d12663327b3f549229b91",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "7fc82735e039586658cb475f79fe80635da1faaac52d23ba6726172e12c3c6dd"
+      },
+      "topology_summary": [
+        "Branch A starts at V0 through R1; R1 left endpoint is $TEROUTPUT labelled V0.",
+        "Branch B starts at V0 through R8; R8 left endpoint is $TEROUTPUT labelled V0.",
+        "A separate $TERPOWER labelled V0 is present."
+      ]
+    }
+  ]
+}

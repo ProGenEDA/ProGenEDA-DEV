@@ -1,0 +1,36 @@
+{
+  "case_id": "DCS_V3_T03_DCI_6_COMPONENTS",
+  "description": "Six mixed R/C/L components connected across a default 1A DC current source terminal pair DI/I0.",
+  "source_experiment_schema": "dc-source-rcl-temp/v0.3",
+  "sources": [
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "1A",
+      "positive": "DI",
+      "negative": "I0"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "RCL",
+      "start": "DI",
+      "end": "I0"
+    },
+    {
+      "mode": "RC",
+      "start": "DI",
+      "end": "I0"
+    },
+    {
+      "mode": "C",
+      "start": "DI",
+      "end": "I0"
+    }
+  ],
+  "component_values": {},
+  "metadata": {
+    "test_order": 11,
+    "requested_batch": "6 component DC current source"
+  }
+}

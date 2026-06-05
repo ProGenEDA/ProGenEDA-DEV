@@ -1,0 +1,123 @@
+{
+  "case": "POWER_BRIDGE_GROUND_TERMINAL_CLEAN_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated",
+  "root_cause_previous_vgdvc": "previous fixed generator extracted/assembled a donor bridge with wrong core boundary/length. It placed first normal $TERINPUT at offset 283 instead of 270, unlike the user-confirmed working POWER_T10 bridge.",
+  "fix": "use exact bridge core bytes 1..255 from the user-confirmed working POWER_T10 object stream; prepend object-data 00 once; append normal V9 object stream starting from normal[1:].",
+  "zip": {
+    "filename": "POWER_BRIDGE_GROUND_TERMINAL_CLEAN_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 150097,
+    "sha256": "12e253bbb9112778883b3103479f074346ad5fdbf0aeb8090c37a243d87d2aaf"
+  },
+  "script": {
+    "filename": "generate_power_bridge_ground_terminal_clean_attempts.py",
+    "size_bytes": 9909,
+    "sha256": "69fc401880de135d85025d9eb6a17ad9ded7ebd7afd5d61fa6fd83c1ea11d5eb",
+    "stored_as": "tools/proteus_generation/2026-05-29/scripts_b64/generate_power_bridge_ground_terminal_clean_attempts.py.b64.txt"
+  },
+  "attempts": [
+    {
+      "case_id": "CLEAN_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE",
+      "mode": "power_bridge_ground_shortwire",
+      "method": "Exact working power bridge core + locked ground short-wire endpoint.",
+      "bridge_core_len_bytes": 255,
+      "power_node": "V0",
+      "ground_node": "G0",
+      "project_file": "CLEAN_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj",
+      "resistor_count": 6,
+      "object_chunk_len": 5072,
+      "first_TERINPUT_marker_offset": 270,
+      "marker_counts": {
+        "TERPOWER": 1,
+        "TERGROUND": 2,
+        "TERINPUT": 6,
+        "TEROUTPUT": 5,
+        "WIRE": 13,
+        "COMPONENT_ID": 6
+      },
+      "static_validation_issues": [],
+      "hashes": {
+        "CLEAN_T01_6R_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj": "e5505f7b37831e2b2d4ffc7ad78a17f2373ef1b64f8e25f1c9c264a79c7b240a",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "bf41efb83fd752327f64fc12e3d0d76ea544f7cd1c45f7b1f7044ec3d1d5d6cc"
+      }
+    },
+    {
+      "case_id": "CLEAN_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE",
+      "mode": "power_bridge_ground_shortwire",
+      "method": "Exact working power bridge core + locked ground short-wire endpoint.",
+      "bridge_core_len_bytes": 255,
+      "power_node": "V0",
+      "ground_node": "G0",
+      "project_file": "CLEAN_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj",
+      "resistor_count": 21,
+      "object_chunk_len": 14867,
+      "first_TERINPUT_marker_offset": 270,
+      "marker_counts": {
+        "TERPOWER": 1,
+        "TERGROUND": 1,
+        "TERINPUT": 21,
+        "TEROUTPUT": 21,
+        "WIRE": 43,
+        "COMPONENT_ID": 21
+      },
+      "static_validation_issues": [],
+      "hashes": {
+        "CLEAN_T02_R21_POWER_BRIDGE_GROUND_SHORTWIRE.pdsprj": "8cfa0480fdb2f7f0b22542c897be11da55768cb60ceb0bb449e445302f0ddc41",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "7d2bc40a0f5abe3954de510e8e12c654e73b38b1bfe3d0496547d80ca730ed72"
+      }
+    },
+    {
+      "case_id": "CLEAN_T03_6R_POWER_BRIDGE_GROUND_POWERLAYOUT_BRIDGE",
+      "mode": "power_bridge_ground_powerlayout_bridge",
+      "method": "Exact working power bridge core + experimental ground bridge made from same power layout.",
+      "bridge_core_len_bytes": 255,
+      "power_node": "V0",
+      "ground_node": "G0",
+      "project_file": "CLEAN_T03_6R_POWER_BRIDGE_GROUND_POWERLAYOUT_BRIDGE.pdsprj",
+      "resistor_count": 6,
+      "object_chunk_len": 5328,
+      "first_TERINPUT_marker_offset": 526,
+      "marker_counts": {
+        "TERPOWER": 1,
+        "TERGROUND": 1,
+        "TERINPUT": 6,
+        "TEROUTPUT": 8,
+        "WIRE": 14,
+        "COMPONENT_ID": 6
+      },
+      "static_validation_issues": [],
+      "hashes": {
+        "CLEAN_T03_6R_POWER_BRIDGE_GROUND_POWERLAYOUT_BRIDGE.pdsprj": "66491c1250404a4139f7a1850f4c9cfb613da1a147be63820e839e9411d82c80",
+        "ROOT.CDB": "8473399e95eb72b74438fe65f69e35de25d9806aa963a5961eb20c95872e99fd",
+        "ROOT.DSN": "fe6f959d3b6ac5db12f07ec5808142e3b116010a5d73452859697671c54319a0"
+      }
+    },
+    {
+      "case_id": "CLEAN_T04_R21_POWER_BRIDGE_GROUND_POWERLAYOUT_BRIDGE",
+      "mode": "power_bridge_ground_powerlayout_bridge",
+      "method": "Exact working power bridge core + experimental ground bridge made from same power layout.",
+      "bridge_core_len_bytes": 255,
+      "power_node": "V0",
+      "ground_node": "G0",
+      "project_file": "CLEAN_T04_R21_POWER_BRIDGE_GROUND_POWERLAYOUT_BRIDGE.pdsprj",
+      "resistor_count": 21,
+      "object_chunk_len": 15123,
+      "first_TERINPUT_marker_offset": 526,
+      "marker_counts": {
+        "TERPOWER": 1,
+        "TERGROUND": 1,
+        "TERINPUT": 21,
+        "TEROUTPUT": 23,
+        "WIRE": 44,
+        "COMPONENT_ID": 21
+      },
+      "static_validation_issues": [],
+      "hashes": {
+        "CLEAN_T04_R21_POWER_BRIDGE_GROUND_POWERLAYOUT_BRIDGE.pdsprj": "8599cef249f5949eae5f4780ec938d20a63e9428a6d02fd2971e76498f87b7ba",
+        "ROOT.CDB": "c5761d5ea7c1f9eb4ab831e32cc16110e48b98de87f42466e507581ceed31b84",
+        "ROOT.DSN": "290320f24ebd6af1212e8a4647a397236523f3c9fa1a19fecbf456fa09f6ad3d"
+      }
+    }
+  ]
+}

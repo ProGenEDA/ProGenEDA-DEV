@@ -1,0 +1,75 @@
+{
+  "case": "GROUND_TERMINAL_BRIDGE_ATTEMPTS_2026_05_29",
+  "status": "experimental_unvalidated",
+  "purpose": "Test terminal-style ground connection: separate $TERGROUND physically wired to same-label input/output terminal, relying on terminal label to connect to resistor network.",
+  "zip": {
+    "filename": "GROUND_TERMINAL_BRIDGE_ATTEMPTS_2026_05_29.zip",
+    "size_bytes": 168839,
+    "sha256": "d8dabd4eff641eb610a31692f4d83d48ce826fb05fc83e1316ea34a648fb25fc"
+  },
+  "script": {
+    "filename": "generate_ground_terminal_bridge_attempts.py",
+    "sha256": "bb6718997da3eb3a0215fc4f18ce7d8f372ecbd1d1405e1925de70fdfde7d9de"
+  },
+  "attempts": [
+    {
+      "case_id": "GROUND_T03_R21_G0_OUTPUT_BRIDGE_ATTEMPT",
+      "ground_node": "G0",
+      "bridge_style": "output",
+      "bridge_structure": "$TERGROUND(G0) physically wired to $TEROUTPUT(G0); resistor endpoints keep normal V9 terminal labels",
+      "project_file": "GROUND_T03_R21_G0_OUTPUT_BRIDGE_ATTEMPT.pdsprj",
+      "resistor_count": 21,
+      "ground_terminal_count": 1,
+      "bridge_attached_terminal_count": 1,
+      "extra_bridge_wire_count": 1,
+      "static_validation_issues": [],
+      "project_sha256": "9fc15e614a01deaf6e4f8af7abb5872d8ce564274cc19cb97db72ebd19fdc038"
+    },
+    {
+      "case_id": "GROUND_T04_R21_G0_INPUT_BRIDGE_ATTEMPT",
+      "ground_node": "G0",
+      "bridge_style": "input",
+      "bridge_structure": "$TERGROUND(G0) physically wired to $TERINPUT(G0); resistor endpoints keep normal V9 terminal labels",
+      "project_file": "GROUND_T04_R21_G0_INPUT_BRIDGE_ATTEMPT.pdsprj",
+      "resistor_count": 21,
+      "ground_terminal_count": 1,
+      "bridge_attached_terminal_count": 1,
+      "extra_bridge_wire_count": 1,
+      "static_validation_issues": [],
+      "project_sha256": "a93bd1c28ab57448cc6a7ea61e4d744108eb5a4dfac9794a5d9d57f5fc95d127"
+    },
+    {
+      "case_id": "GROUND_T05_6R_G0_OUTPUT_BRIDGE_ATTEMPT",
+      "ground_node": "G0",
+      "bridge_style": "output",
+      "bridge_structure": "$TERGROUND(G0) physically wired to $TEROUTPUT(G0); resistor endpoints keep normal V9 terminal labels",
+      "project_file": "GROUND_T05_6R_G0_OUTPUT_BRIDGE_ATTEMPT.pdsprj",
+      "resistor_count": 6,
+      "ground_terminal_count": 1,
+      "bridge_attached_terminal_count": 1,
+      "extra_bridge_wire_count": 1,
+      "static_validation_issues": [],
+      "project_sha256": "3d740823274fcb3a7915f5f313f1063ca36bb6db3be757d658e8007be057ea7e"
+    },
+    {
+      "case_id": "GROUND_T06_6R_G0_INPUT_BRIDGE_ATTEMPT",
+      "ground_node": "G0",
+      "bridge_style": "input",
+      "bridge_structure": "$TERGROUND(G0) physically wired to $TERINPUT(G0); resistor endpoints keep normal V9 terminal labels",
+      "project_file": "GROUND_T06_6R_G0_INPUT_BRIDGE_ATTEMPT.pdsprj",
+      "resistor_count": 6,
+      "ground_terminal_count": 1,
+      "bridge_attached_terminal_count": 1,
+      "extra_bridge_wire_count": 1,
+      "static_validation_issues": [],
+      "project_sha256": "994504694ba0a12210ad316ba7e6256f722525ba6c413d9fb487bff6b55e367f"
+    }
+  ],
+  "source_artifact": "R21_E001_B02_V9_NO_PREMATURE_TERMINATORS (2).zip",
+  "source_artifact_sha256": "6d020c05599077fd28846982fe6b2bebfc0085ddec534c179ce3e29f2133ac0e",
+  "notes": [
+    "This is not yet locked. It must be tested in Proteus.",
+    "The working ground method already locked is the short-wire endpoint method in final/ground_terminal_short_wire_method.md.",
+    "The output ZIP contains generation_code_used.py in each attempt folder."
+  ]
+}

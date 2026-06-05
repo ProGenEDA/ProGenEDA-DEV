@@ -1,0 +1,61 @@
+{
+  "case": "CAPACITOR_DONOR_ANALYSIS_2026_05_29",
+  "status": "donor_analysis_recorded_no_generated_method_locked_yet",
+  "source_zip": {
+    "filename": "CAP_T04_POWER_CAPACITOR_GROUND.zip",
+    "size_bytes": 54395,
+    "sha256": "dc8d935023675dd82c5f64c032ead939d2c37c6a0a3c84dcac8b8dd185331da0"
+  },
+  "analysis_zip": {
+    "filename": "CAPACITOR_DONOR_ANALYSIS_2026_05_29.zip",
+    "size_bytes": 3534,
+    "sha256": "53e3c0b9cbf00e73a54248c2f909d959116590122415ac76478f4e5bd88eea06"
+  },
+  "donor_files": {
+    "CONTROL_E001_EMPTY_BASE.pdsprj": {
+      "size_bytes": 10549,
+      "sha256": "3f6d521b7cd77b4ad9211d9f68858fca0521cf25b9f1e2c331c50e6aec733761",
+      "ROOT.CDB": {"size_bytes": 118, "sha256": "10be1d2f8c5ba51c9f0eae813590b848bf3894acd3143a0b97636b75bea61490"},
+      "ROOT.DSN": {"size_bytes": 65117, "sha256": "19a0f467b8ad33383b76b9a098f3dfd8125e319b29b91b35495ed4be333031c5"}
+    },
+    "CAP_T01_SINGLE_CAPACITOR_1uF.pdsprj": {
+      "size_bytes": 10981,
+      "sha256": "8427b2e10bc4729f85279b4357384df5a7c9a903c4a0f41533cf8b50e0f99d98",
+      "ROOT.CDB": {"size_bytes": 252, "sha256": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89", "marker_counts": {"CAPACITOR": 1, "CAP": 4, "C1": 2, "1uF": 1}},
+      "ROOT.DSN": {"size_bytes": 66355, "sha256": "ab2bb2f75b2af1a33aab749c27b994824dff0ad9675a0c952be4e40507c5f483", "marker_counts": {"CAPACITOR": 2, "COMPONENT ID": 2, "WIRE": 4, "$TERINPUT": 1, "$TEROUTPUT": 1, "$TERPOWER": 1, "$TERGROUND": 1, "C1": 1, "1uF": 1, "CAP10": 1}}
+    },
+    "CAP_T02_CAPACITOR_BETWEEN_TWO_TERMINALS.pdsprj": {
+      "size_bytes": 11095,
+      "sha256": "8a5c4dc42de9d8bd5279fc16282f2b3667c5e94abbd1baa10186efe98d6a2710",
+      "ROOT.CDB": {"size_bytes": 252, "sha256": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89"},
+      "ROOT.DSN": {"size_bytes": 66662, "sha256": "97f990e1786dee6b40663c29ec8899c814051e6efeb7d9fb8b21b90220a02140", "marker_counts": {"CAPACITOR": 2, "COMPONENT ID": 2, "WIRE": 6, "$TERINPUT": 2, "$TEROUTPUT": 2, "$TERPOWER": 1, "$TERGROUND": 1, "C1": 1, "1uF": 1, "CAP10": 1}}
+    },
+    "CAP_T03_RESISTOR_CAPACITOR_SERIES.pdsprj": {
+      "size_bytes": 11228,
+      "sha256": "93c4c1784f394617a721820bf122791ba12160603d67111a0d8f850aaaec883c",
+      "ROOT.CDB": {"size_bytes": 350, "sha256": "65394f214db6fb4da8d7c91df60b0a209b34e3a797d259fe5a84ca7ed4f6613f", "marker_counts": {"CAPACITOR": 1, "RESISTOR": 1, "C1": 2, "1uF": 1}},
+      "ROOT.DSN": {"size_bytes": 67240, "sha256": "788149128993a29a951be102269b0b72e917df6275b64fd63a4634ab6d292baa", "marker_counts": {"CAPACITOR": 2, "RESISTOR": 3, "COMPONENT ID": 3, "WIRE": 5, "$TERINPUT": 1, "$TEROUTPUT": 1, "$TERPOWER": 1, "$TERGROUND": 1, "C1": 1, "1uF": 1, "CAP10": 1}}
+    },
+    "CAP_T04_POWER_CAPACITOR_GROUND.pdsprj": {
+      "size_bytes": 11289,
+      "sha256": "10587102df61a979e78e47c077c8514289b505c14c96892324c5b881a904ffee",
+      "ROOT.CDB": {"size_bytes": 252, "sha256": "3c3f5c6acbbecc43474571f1482d4d586a7fa7381c61d0a1fda26591584f1d89"},
+      "ROOT.DSN": {"size_bytes": 67411, "sha256": "2dbc374fd2c9ddea2e0ddebc1426bbd35c12704ce8613b5e43763d9715c95ac5", "marker_counts": {"CAPACITOR": 2, "COMPONENT ID": 2, "WIRE": 7, "$TERINPUT": 2, "$TEROUTPUT": 2, "$TERPOWER": 2, "$TERGROUND": 2, "RESISTOR": 1, "C1": 1, "1uF": 1, "CAP10": 1}}
+    }
+  },
+  "observations": [
+    "Capacitor is CDB-backed and cannot be handled as a DSN-only object.",
+    "CAP_T01/02/04 share the same 252-byte capacitor ROOT.CDB hash, which is useful for template extraction.",
+    "CAP_T03 mixed resistor-capacitor ROOT.CDB is 350 bytes, useful for component ordering when multiple component families are present.",
+    "CAP_T02 shows capacitor with two endpoint terminals and two extra wires around the capacitor visual object.",
+    "CAP_T04 is useful later for full power-capacitor-ground validation, but should not be blindly cloned as a generator method."
+  ],
+  "next_steps": [
+    "derive capacitor CDB template",
+    "derive capacitor DSN visual template and patch offsets",
+    "generate first empty-E001 capacitor attempt",
+    "test capacitor between terminals",
+    "test resistor-capacitor series",
+    "test power-capacitor-ground using locked power bridge and ground short-wire"
+  ]
+}
