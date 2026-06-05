@@ -1,0 +1,98 @@
+{
+  "batch_id": "SOURCE_PASSIVE_V9_FIXED_WIRE_SOURCE_BOUNDARY_STATIC_20260605",
+  "status": "static_generated_awaiting_user_proteus_open_simulation_test",
+  "source_feedback": "V8 T02 and onward gave VGDVC.dll.",
+  "method": "Fix resistor wire endpoints, preserve non-final source wire bytes, and trim the passive-source boundary. T00 must be byte-identical to the fixed oracle object chunk.",
+  "test_order": [
+    "SRCP_V9_T00_R_ONLY_REBUILT_BYTE_EXACT_FIXED_ORACLE",
+    "SRCP_V9_T01_R_ONLY_FIXED_WIRES_10V_5V",
+    "SRCP_V9_T02_RC_RL_FIXED_R_WIRES_1V",
+    "SRCP_V9_T03_RC_RL_FIXED_R_WIRES_10V_5V"
+  ],
+  "cases": [
+    {
+      "case_id": "SRCP_V9_T00_R_ONLY_REBUILT_BYTE_EXACT_FIXED_ORACLE",
+      "description": "R-only pure DCV2 rebuilt through the generator; must be byte-identical to the accepted fixed oracle object chunk.",
+      "object_chunk_len": 3259,
+      "root_cdb_len": 631,
+      "fixed_oracle_object_chunk_match": true,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V9_T01_R_ONLY_FIXED_WIRES_10V_5V",
+      "description": "R-only pure DCV2 rebuilt with fixed resistor wires/source-boundary rules and source values 10V/5V.",
+      "object_chunk_len": 3260,
+      "root_cdb_len": 632,
+      "fixed_oracle_object_chunk_match": false,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V9_T02_RC_RL_FIXED_R_WIRES_1V",
+      "description": "RC/RL pure DCV2 scale-up using fixed resistor wires and preserved source-boundary rules.",
+      "object_chunk_len": 4611,
+      "root_cdb_len": 896,
+      "fixed_oracle_object_chunk_match": false,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V9_T03_RC_RL_FIXED_R_WIRES_10V_5V",
+      "description": "RC/RL pure DCV2 scale-up using fixed resistor wires/source-boundary rules and source values 10V/5V.",
+      "object_chunk_len": 4612,
+      "root_cdb_len": 897,
+      "fixed_oracle_object_chunk_match": false,
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "static_validation_issues": []
+    }
+  ]
+}

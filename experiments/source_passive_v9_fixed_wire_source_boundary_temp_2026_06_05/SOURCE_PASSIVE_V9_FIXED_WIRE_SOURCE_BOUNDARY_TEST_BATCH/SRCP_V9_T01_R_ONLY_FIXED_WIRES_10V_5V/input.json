@@ -1,0 +1,122 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "groups": [
+    {
+      "mode": "R",
+      "start": "DV",
+      "end": "D0"
+    },
+    {
+      "mode": "R",
+      "start": "D1",
+      "end": "D0"
+    },
+    {
+      "mode": "R",
+      "start": "D0",
+      "end": "G0"
+    }
+  ],
+  "source_count": 2,
+  "source_rule": "user-fixed component-first VSOURCE units; preserve nonfinal source wire bytes",
+  "passive_rule": "fixed resistor wire spans plus compact fixed-oracle suffixes; trim passive final byte before source units",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "model": "VSOURCE",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 4,
+      "out_suffix": "1300",
+      "in_suffix": "1399",
+      "value": "10V",
+      "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE",
+      "nonfinal_source_wire_rule": "preserve trimmed non-final in-wire bytes exactly; do not overwrite last coordinate byte"
+    },
+    {
+      "kind": "dc_voltage",
+      "ref": "V2",
+      "model": "VSOURCE",
+      "positive": "D1",
+      "negative": "D0",
+      "global_id": 5,
+      "out_suffix": "1589",
+      "in_suffix": "1622",
+      "value": "5V",
+      "fixed_order": "VSOURCE, $TEROUTPUT, WIRE, $TERINPUT, WIRE",
+      "nonfinal_source_wire_rule": "preserve trimmed non-final in-wire bytes exactly; do not overwrite last coordinate byte"
+    }
+  ],
+  "visible_values": {
+    "R1": "1k",
+    "R2": "2k",
+    "R3": "1G"
+  },
+  "exact_cdb_values": {
+    "R1": "1k",
+    "R2": "2k",
+    "R3": "1G"
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "1k",
+      "left": "DV",
+      "right": "D0",
+      "global_id": 1,
+      "in_suffix": "0bc4",
+      "out_suffix": "0bf6",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 2,
+      "unit": 2,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "2k",
+      "left": "D1",
+      "right": "D0",
+      "global_id": 2,
+      "in_suffix": "0e51",
+      "out_suffix": "0e83",
+      "x": 2794000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 3,
+      "kind": "RESISTOR",
+      "ref": "R3",
+      "value": "1G",
+      "left": "D0",
+      "right": "G0",
+      "global_id": 3,
+      "in_suffix": "10de",
+      "out_suffix": "1110",
+      "x": 12954000,
+      "y": 5080000
+    }
+  ],
+  "counts": {
+    "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+    "group_modes": [
+      "R",
+      "R",
+      "R"
+    ],
+    "group_count": 3,
+    "component_count": 3,
+    "capacitor_count": 0,
+    "inductor_count": 0,
+    "resistor_count": 3,
+    "power_bridge_count": 0,
+    "ground_terminal_count": 1
+  },
+  "required_fixed_chunk_match": false
+}

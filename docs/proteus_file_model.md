@@ -3209,6 +3209,69 @@ The Source Passive V8 archive SHA256 is:
 89655b0da8db0d43b8e890be0040d34c70cd5a19e28a4f36b95c25dba06e451e
 ```
 
+User feedback:
+
+```text
+T02 and onward all gave VGDVC.dll error.
+```
+
+Interpretation:
+
+```text
+V8 did not fix generated passive-body rebuilds. The safe V7 fixed-file
+controls remain valid, but exact visible resistor values and compact suffixes
+alone are not enough. Byte-level comparison showed the generated resistor wire
+records did not match the accepted oracle and that the source-boundary wire
+byte patch was corrupting a coordinate byte in non-final source units.
+```
+
+## Source Passive V9 Fixed Wire/Source-Boundary Probe
+
+`SOURCE_PASSIVE_V9_FIXED_WIRE_SOURCE_BOUNDARY_TEMP_2026_06_05` tests the
+concrete byte-level differences found after V8 failed.
+
+V9 method:
+
+```text
+Fix resistor left-wire endpoints so they run from input terminal to resistor body.
+Fix resistor right-wire endpoints so they run from resistor body to output/ground terminal.
+Preserve non-final source input-wire bytes instead of overwriting their last byte.
+Trim the passive/source object boundary by two bytes before appending source units.
+Require T00 to reproduce the accepted fixed oracle object chunk byte-for-byte.
+```
+
+Test order:
+
+```text
+SRCP_V9_T00_R_ONLY_REBUILT_BYTE_EXACT_FIXED_ORACLE
+SRCP_V9_T01_R_ONLY_FIXED_WIRES_10V_5V
+SRCP_V9_T02_RC_RL_FIXED_R_WIRES_1V
+SRCP_V9_T03_RC_RL_FIXED_R_WIRES_10V_5V
+```
+
+Static checks:
+
+```text
+projects generated: 4
+T00 generated object chunk is byte-identical to the user-fixed oracle object chunk
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+static_validation_issues: empty in all generated manifests
+```
+
+The Source Passive V9 archive SHA256 is:
+
+```text
+2af4dd92244fbc7eca785dc1bb760820329cb3c81cbfe2da04333332cabd18e0
+```
+
+Important Proteus test instruction:
+
+```text
+Test T00 first. If T00 fails, stop and report T00 specifically because V9 T00
+is required to be byte-identical to the already accepted fixed oracle object
+chunk.
+```
+
 ## Supported Combinations Current Scope
 
 As of 2026-06-05, supported component-family combinations in the deterministic
@@ -3227,7 +3290,7 @@ two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+D
 Out of current scope or not locked:
 
 ```text
-pure DCV+DCV source-driven passive loads: pending Source Passive V8 compact fixed-suffix scale-up test
+pure DCV+DCV source-driven passive loads: pending Source Passive V9 fixed-wire/source-boundary test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented

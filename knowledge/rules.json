@@ -733,11 +733,20 @@
     {
       "id": "R082",
       "title": "Pure DCV2 passive scale-up must isolate source visible values and compact passive suffixes",
-      "status": "source_passive_v8_static_generated_pending_user_test",
+      "status": "rejected_v8_t02_onward_vgdvc",
       "confidence": 0.84,
       "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "passive suffix mapping", "visible resistor values"],
-      "evidence": ["SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605", "V5-vs-fixed object chunk comparison 2026-06-05", "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_STATIC_20260605"],
-      "rule": "V5 differed from the fixed oracle in visible resistor value lengths and passive terminal/link suffixes. SOURCE_PASSIVE_V8 therefore tests exact resistor visible strings (1k, 2k, 1G), direct fixed source visible-value mutation, and generated passive bodies with both the normal mixed-RCL suffix bases and a compact fixed-oracle suffix sequence before promoting pure DCV+DCV passive scale-up."
+      "evidence": ["SOURCE_PASSIVE_V7_USER_FEEDBACK_ALL_WORKED_20260605", "V5-vs-fixed object chunk comparison 2026-06-05", "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_STATIC_20260605", "SOURCE_PASSIVE_V8_USER_FEEDBACK_T02_ONWARD_VGDVC_20260605"],
+      "rule": "SOURCE_PASSIVE_V8 proved the fixed-file controls remain safe but generated passive body rebuilds still fail: user feedback reported T02 and onward gave VGDVC.dll. Exact resistor visible strings and compact fixed-oracle suffixes are not sufficient. Do not reuse V8's generated passive-body path for pure DCV+DCV passive scale-up."
+    },
+    {
+      "id": "R083",
+      "title": "Pure DCV2 passive rebuild must preserve resistor wire endpoints and source-boundary bytes",
+      "status": "source_passive_v9_static_generated_pending_user_test",
+      "confidence": 0.88,
+      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "WIRE coordinate records", "passive-source object boundary"],
+      "evidence": ["SOURCE_PASSIVE_V8_USER_FEEDBACK_T02_ONWARD_VGDVC_20260605", "fixed-oracle-vs-v8-byte-comparison 2026-06-05", "SOURCE_PASSIVE_V9_FIXED_WIRE_SOURCE_BOUNDARY_STATIC_20260605"],
+      "rule": "Byte comparison after V8 found two concrete generated ROOT.DSN defects: resistor left-wire records collapsed to the terminal coordinate instead of running from terminal to resistor body, and non-final source input-wire bytes were overwritten at the passive/source boundary. SOURCE_PASSIVE_V9 fixes resistor wire endpoints, preserves non-final source wire bytes, trims the passive-source boundary by two bytes, and requires T00 to be byte-identical to the accepted fixed oracle object chunk before testing source-value and RC/RL scale-up variants."
     }
   ]
 }
