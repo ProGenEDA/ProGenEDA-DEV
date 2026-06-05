@@ -1,0 +1,222 @@
+{
+  "case_id": "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB",
+  "description": "Two manual-donor DC voltage sources with separate returns driving RC and RL branches.",
+  "status": "temporary_source_passive_v4_dcv2_manual2x_pending_user_test",
+  "output": "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB\\SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB.pdsprj",
+  "object_chunk_len": 3963,
+  "root_cdb_len": 791,
+  "root_dsn_len": 72854,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 6,
+    "$TEROUTPUT": 6,
+    "$TERGROUND": 0,
+    "VSOURCE": 4,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 4,
+    "WIRE": 12,
+    "COMPONENT ID": 6,
+    "COMPONENT VALUE": 6,
+    "CAP10": 1
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSOURCE": 1,
+    "CSOURCE": 1,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0,
+    "CAP10": 3
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67948,
+    "second_isis": 71957,
+    "second_object_data": 71992,
+    "object_data_pointer": 72005
+  },
+  "hashes": {
+    "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB.pdsprj": "d47bd66b0db48d8657eeb219a25339852260116b33604eb64bc17520576d292e",
+    "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB.ROOT.CDB.bin": "89bd6f3abd84dab95cdffe420662d89fe30a554041487e3df60eeb10869266cc",
+    "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB.ROOT.DSN.bin": "8c86d0cfb083a1f89c167215853d11124c61f90adef5d355d26da7ca5f93e875",
+    "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB.OBJECT_CHUNK.bin": "31644825e6dd41d56de793ab30ab6d39dc14db60b777ba50ad531a0964fcf3d8",
+    "object_chunk": "31644825e6dd41d56de793ab30ab6d39dc14db60b777ba50ad531a0964fcf3d8",
+    "ROOT.CDB": "89bd6f3abd84dab95cdffe420662d89fe30a554041487e3df60eeb10869266cc",
+    "devices": "a85b8b95cffe269479b55ff9d431bdbc45ca3c2f7693aed91359135c8e5890ea"
+  },
+  "input": {
+    "schema_version": "mixed-rcl-circuit-ir/v0.1",
+    "generator_target": "proteus-8.13-mixed-rcl-locked",
+    "project": {
+      "name": "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB",
+      "output_basename": "SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB",
+      "base": "E001_EMPTY_BASE",
+      "units": "proteus_internal"
+    },
+    "nodes": [
+      {
+        "id": "DV",
+        "kind": "source_net"
+      },
+      {
+        "id": "D0",
+        "kind": "source_net"
+      },
+      {
+        "id": "D1",
+        "kind": "source_net"
+      },
+      {
+        "id": "D2",
+        "kind": "source_net"
+      }
+    ],
+    "groups": [
+      {
+        "mode": "RC",
+        "start": "DV",
+        "end": "D0"
+      },
+      {
+        "mode": "RL",
+        "start": "D1",
+        "end": "D2"
+      }
+    ],
+    "metadata": {
+      "description": "Two manual-donor DC voltage sources with separate returns driving RC and RL branches.",
+      "source_kind": "dc_voltage_dc_voltage",
+      "diagnostic_rule": "preferred: manual 2x DCV source block, separate returns DV/D0 and D1/D2, source rows first in CDB.",
+      "cdb_order": "sources_first"
+    },
+    "source_count": 2,
+    "source_rule": "Manual 2x DC voltage source donor block placed before generated source-net passive body; no $TERGROUND records.",
+    "sources": {
+      "source_block": "manual 2x dc_voltage donor without final FF",
+      "label_replacements": {
+        "DV1": "D1",
+        "D01": "D2"
+      },
+      "source_ids": [
+        5,
+        6
+      ],
+      "terminals": [
+        [
+          "OUT",
+          "DV"
+        ],
+        [
+          "IN",
+          "D0"
+        ],
+        [
+          "OUT",
+          "D1"
+        ],
+        [
+          "IN",
+          "D2"
+        ]
+      ]
+    },
+    "visible_values": {
+      "R1": "1k0",
+      "C1": "1uF",
+      "R2": "2k0",
+      "L1": "5mH"
+    },
+    "exact_cdb_values": {
+      "R1": "1k",
+      "C1": "1uF",
+      "R2": "2k",
+      "L1": "5mH"
+    },
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RC",
+        "RL"
+      ],
+      "group_count": 2,
+      "component_count": 4,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "resistor_count": 2,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_negative": "D0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "D0",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "1k0",
+        "left": "DV",
+        "right": "A1",
+        "global_id": 2,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      },
+      {
+        "idx": 3,
+        "unit": 2,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "A2",
+        "right": "D2",
+        "global_id": 3,
+        "in_suffix": "12df",
+        "out_suffix": "1311",
+        "x": 6604000,
+        "y": 2540000
+      },
+      {
+        "idx": 4,
+        "unit": 2,
+        "kind": "RESISTOR",
+        "ref": "R2",
+        "value": "2k0",
+        "left": "D1",
+        "right": "A2",
+        "global_id": 4,
+        "in_suffix": "1506",
+        "out_suffix": "1538",
+        "x": 2794000,
+        "y": 5080000
+      }
+    ],
+    "wire_repair": {
+      "repaired_wire_count": 0,
+      "repairs": []
+    }
+  }
+}

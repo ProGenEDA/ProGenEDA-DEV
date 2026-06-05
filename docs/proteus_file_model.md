@@ -2863,10 +2863,80 @@ The Source Passive V3 archive SHA256 is:
 0644d1df5e2315eeb053bde6f4814e82b60ece0f2156c3106ab9517322e1088b
 ```
 
-This is pending Proteus open/simulation feedback. If T01/T02 pass, lock G0 as
-the shared return for pure DCV+DCV source-driven passive loads. If only T03/T04
-pass, preserve D0 naming but add an explicit high-value G0 reference path for
-simulation.
+User feedback:
+
+```text
+all SOURCE_PASSIVE_V3 cases gave bad object record
+```
+
+Interpretation:
+
+```text
+The grounded-return repair was the wrong direction. Do not use $TERGROUND/G0
+endpoint grounding, including the D0 plus 1G G0-reference fallback, as the
+correction for pure DCV+DCV source-driven passive loads.
+```
+
+## Source Passive V4 DCV2 Manual 2x Source Probe
+
+`SOURCE_PASSIVE_V4_DCV2_MANUAL2X_TEMP_2026_06_05` supersedes V3. It uses the
+manual `2x dc_voltage_01_default_10v.pdsprj` source block as the authority for
+pure two-DC-voltage-source structure.
+
+Manual donor observation:
+
+```text
+no $TERGROUND records
+no $TERPOWER records
+two VSOURCE records
+ordinary terminal pairs: DV/D0 and DV1/D01
+```
+
+V4 method:
+
+```text
+T01/T02 preferred rule: manual 2x DCV donor block with separate returns
+  first source: DV/D0
+  second source: D1/D2, shrunk from donor DV1/D01 for two-character labels
+T03/T04 control: same manual donor block but force both source returns to D0
+T05/T06 CDB-order check: same preferred separate-return geometry with passive
+  rows first instead of source rows first
+power/ground records: none
+$TERGROUND records: none
+```
+
+Test order:
+
+```text
+SRCP_V4_DCV2_T01_R_ONLY_SEPARATE_RETURNS_SOURCE_FIRST_CDB
+SRCP_V4_DCV2_T02_RC_RL_SEPARATE_RETURNS_SOURCE_FIRST_CDB
+SRCP_V4_DCV2_T03_R_ONLY_SHARED_D0_SOURCE_FIRST_CDB
+SRCP_V4_DCV2_T04_RC_RL_SHARED_D0_SOURCE_FIRST_CDB
+SRCP_V4_DCV2_T05_R_ONLY_SEPARATE_RETURNS_PASSIVE_FIRST_CDB
+SRCP_V4_DCV2_T06_RC_RL_SEPARATE_RETURNS_PASSIVE_FIRST_CDB
+```
+
+Static checks:
+
+```text
+projects generated: 6
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+static_validation_issues: empty in all six generated manifests
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+credential scan: no Groq, MongoDB, or Hugging Face token-pattern matches
+```
+
+The Source Passive V4 archive SHA256 is:
+
+```text
+e39a8fe52f31523054d9f56c5786ed598986939769f90adbe89763543795e713
+```
+
+This is pending Proteus open/simulation feedback. If T01/T02 pass, prefer the
+manual donor's separate-return source-pair structure for pure DCV+DCV passive
+loads. T03/T04 isolate the old shared-D0 behavior, and T05/T06 isolate whether
+ROOT.CDB source/passive row order matters.
 
 ## Supported Combinations Current Scope
 
@@ -2886,7 +2956,7 @@ two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+D
 Out of current scope or not locked:
 
 ```text
-pure DCV+DCV source-driven passive loads: pending Source Passive V3 grounded-return user test
+pure DCV+DCV source-driven passive loads: pending Source Passive V4 manual two-source donor test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented
