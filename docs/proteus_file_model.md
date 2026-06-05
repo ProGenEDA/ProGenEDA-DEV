@@ -3083,8 +3083,70 @@ The Source Passive V6 archive SHA256 is:
 9ab250ecd933014b08c4b30e86bae3a2f2ab5c2700fbbf07023bee69a05d6a99
 ```
 
-This is pending Proteus open/simulation feedback. T01/T02 are the main R-only
-CDB repair candidates. If one works, T07 is the matching RC/RL scale-up check.
+User feedback:
+
+```text
+All V6 cases gave bad object record.
+```
+
+Interpretation:
+
+```text
+CDB-only mutation over generated V3 ROOT.DSN is rejected for pure DCV+DCV
+source-driven passive repair. Stop mutating generated V3 and first prove that
+the user-fixed oracle project survives exact copy, repack, and E001 transplant.
+```
+
+## Source Passive V7 Fixed-File Controls
+
+`SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_TEMP_2026_06_05` uses the user-fixed V3
+T03 file directly as the oracle surface. It does not reconstruct source object
+records.
+
+V7 method:
+
+```text
+T00: exact byte-for-byte copy of the user-fixed project
+T01: same internal files repacked with deterministic deflated ZIP writer
+T02: same internal files repacked with ZIP_STORED
+T03: E001 base with ROOT.DSN and ROOT.CDB copied directly from the fixed project
+T04: fixed ROOT.DSN unchanged, fixed ROOT.CDB source values changed from 1V/1V to 10V/5V
+```
+
+Test order:
+
+```text
+SRCP_V7_T00_USER_FIXED_EXACT_COPY
+SRCP_V7_T01_USER_FIXED_REPACK_DEFLATED_NO_CHANGES
+SRCP_V7_T02_USER_FIXED_REPACK_STORED_NO_CHANGES
+SRCP_V7_T03_USER_FIXED_DSN_CDB_IN_E001
+SRCP_V7_T04_USER_FIXED_CDB_ONLY_10V_5V
+```
+
+Static checks:
+
+```text
+projects generated: 5
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+all cases preserve the fixed ROOT.DSN object stream: object_chunk_len=3259
+T00-T03 preserve fixed ROOT.CDB; T04 changes only ROOT.CDB source values
+static_validation_issues: empty in all generated manifests
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+credential scan: no Groq, MongoDB, or Hugging Face token-pattern matches
+```
+
+The Source Passive V7 archive SHA256 is:
+
+```text
+daf7a4ff7d04cc2276044d11d3578bf55fb0922fa8b0794b71005f58855c708c
+```
+
+Important Proteus test instruction:
+
+```text
+Test T00 first. If T00 fails, stop and report T00 specifically because that
+means the fixed oracle copy itself is not accepted from the batch/archive.
+```
 
 ## Supported Combinations Current Scope
 
@@ -3104,7 +3166,7 @@ two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+D
 Out of current scope or not locked:
 
 ```text
-pure DCV+DCV source-driven passive loads: pending Source Passive V6 V3-DSN/CDB-only test
+pure DCV+DCV source-driven passive loads: pending Source Passive V7 fixed-file control test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented

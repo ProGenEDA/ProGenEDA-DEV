@@ -1,0 +1,66 @@
+{
+  "batch_id": "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_STATIC_20260605",
+  "status": "static_generated_awaiting_user_proteus_open_simulation_test",
+  "source_feedback": "V6 CDB-only variants over generated V3 all gave bad object record.",
+  "method": "Use the user-fixed V3 T03 project as the oracle and isolate exact-copy, no-change repack, E001 transplant, and CDB-only value mutation.",
+  "test_order": [
+    "SRCP_V7_T00_USER_FIXED_EXACT_COPY",
+    "SRCP_V7_T01_USER_FIXED_REPACK_DEFLATED_NO_CHANGES",
+    "SRCP_V7_T02_USER_FIXED_REPACK_STORED_NO_CHANGES",
+    "SRCP_V7_T03_USER_FIXED_DSN_CDB_IN_E001",
+    "SRCP_V7_T04_USER_FIXED_CDB_ONLY_10V_5V"
+  ],
+  "important_test_instruction": "Test T00 first. If T00 fails, stop and report it because the fixed oracle copy itself is not accepted.",
+  "cases": [
+    {
+      "case_id": "SRCP_V7_T00_USER_FIXED_EXACT_COPY",
+      "mode": "exact_copy",
+      "description": "Exact byte-for-byte copy of the user-fixed V3 T03 project. If this fails, the supplied fixed project is not a valid oracle in this environment.",
+      "object_chunk_len": 3259,
+      "root_cdb_len": 631,
+      "fixed_root_dsn_preserved": true,
+      "fixed_root_cdb_preserved": true,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V7_T01_USER_FIXED_REPACK_DEFLATED_NO_CHANGES",
+      "mode": "fixed_repack_deflated",
+      "description": "Same internal files from the user-fixed project, repacked with the repository deterministic deflated writer and no ROOT changes.",
+      "object_chunk_len": 3259,
+      "root_cdb_len": 631,
+      "fixed_root_dsn_preserved": true,
+      "fixed_root_cdb_preserved": true,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V7_T02_USER_FIXED_REPACK_STORED_NO_CHANGES",
+      "mode": "fixed_repack_stored",
+      "description": "Same internal files from the user-fixed project, repacked with ZIP_STORED and no ROOT changes.",
+      "object_chunk_len": 3259,
+      "root_cdb_len": 631,
+      "fixed_root_dsn_preserved": true,
+      "fixed_root_cdb_preserved": true,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V7_T03_USER_FIXED_DSN_CDB_IN_E001",
+      "mode": "fixed_dsn_cdb_in_e001",
+      "description": "E001 base container with only ROOT.DSN and ROOT.CDB copied directly from the user-fixed project.",
+      "object_chunk_len": 3259,
+      "root_cdb_len": 631,
+      "fixed_root_dsn_preserved": true,
+      "fixed_root_cdb_preserved": true,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V7_T04_USER_FIXED_CDB_ONLY_10V_5V",
+      "mode": "fixed_cdb_values_10v_5v",
+      "description": "User-fixed project repacked with fixed ROOT.DSN unchanged and only ROOT.CDB source values changed from 1V/1V to 10V/5V.",
+      "object_chunk_len": 3259,
+      "root_cdb_len": 632,
+      "fixed_root_dsn_preserved": true,
+      "fixed_root_cdb_preserved": false,
+      "static_validation_issues": []
+    }
+  ]
+}

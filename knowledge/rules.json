@@ -715,11 +715,20 @@
     {
       "id": "R080",
       "title": "Pure DCV2 passive debugging preserves V3 DSN and tests CDB only",
-      "status": "source_passive_v6_static_generated_pending_user_test",
-      "confidence": 0.84,
+      "status": "rejected_v6_all_bad_object_record",
+      "confidence": 0.88,
       "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "ROOT.CDB source rows"],
-      "evidence": ["SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_STATIC_20260605"],
-      "rule": "Because generated V3 opened/rendered but V5 gave VGDVC, the next safe variable is ROOT.CDB only. SOURCE_PASSIVE_V6 preserves generated V3 ROOT.DSN byte-for-byte and tests CDB variants: exact user-fixed CDB, source-style +/1 -/2 rows with -1 field, value mutations 1V/1V versus 10V/5V, and isolated pin-map versus terminal-side-field changes. Do not change V3 visual object ordering while this CDB-only probe is pending."
+      "evidence": ["SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_STATIC_20260605", "SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605"],
+      "rule": "SOURCE_PASSIVE_V6 preserved generated V3 ROOT.DSN byte-for-byte and tested CDB variants, including exact user-fixed CDB and source-style +/1 -/2 rows, but user testing reported all V6 cases gave bad object record. Therefore CDB-only mutation over generated V3 ROOT.DSN is rejected for pure DCV+DCV source-driven passive repair."
+    },
+    {
+      "id": "R081",
+      "title": "Pure DCV2 passive controls must prove fixed-file copy and repack first",
+      "status": "source_passive_v7_static_generated_pending_user_test",
+      "confidence": 0.86,
+      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", ".pdsprj repacking", "ROOT.DSN object stream"],
+      "evidence": ["SOURCE_PASSIVE_V6_USER_FEEDBACK_ALL_BAD_OBJECT_RECORD_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_STATIC_20260605"],
+      "rule": "Before further pure DCV+DCV passive generation, prove the user-fixed V3 T03 file survives exact copying, deterministic repacking, ZIP_STORED repacking, and E001 ROOT.DSN/ROOT.CDB transplant. SOURCE_PASSIVE_V7 uses the fixed file as the oracle and keeps ROOT.DSN unchanged in all cases; only T04 mutates ROOT.CDB source values from 1V/1V to 10V/5V."
     }
   ]
 }
