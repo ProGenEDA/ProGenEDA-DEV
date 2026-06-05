@@ -1,0 +1,124 @@
+{
+  "case_id": "SRCP_V1_DCI_T06_CL_ONLY",
+  "description": "DC-current source-driven C+L load: one accepted LC subgroup path from source positive to source negative. using V13 accepted DCI identity.",
+  "status": "temporary_source_passive_v1_dci_pending_user_test",
+  "output": "SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_TEST_BATCH\\SRCP_V1_DCI_T06_CL_ONLY\\SRCP_V1_DCI_T06_CL_ONLY.pdsprj",
+  "object_chunk_len": 2004,
+  "root_cdb_len": 486,
+  "root_dsn_len": 70289,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 0,
+    "VSOURCE": 1,
+    "CSOURCE": 1,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 0,
+    "WIRE": 6,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3,
+    "CAP10": 1
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 1,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0,
+    "CAP10": 3
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67342,
+    "second_isis": 69392,
+    "second_object_data": 69427,
+    "object_data_pointer": 69440
+  },
+  "hashes": {
+    "SRCP_V1_DCI_T06_CL_ONLY.pdsprj": "d69544474904ea16b0eaf18332461d023f2f29d88dfa49983df4c5162baf9dde",
+    "SRCP_V1_DCI_T06_CL_ONLY.ROOT.CDB.bin": "df3e8e14adf0ae9524eb94eca63a579088ae83c23cb73e59deb77ea5a25c05c9",
+    "SRCP_V1_DCI_T06_CL_ONLY.ROOT.DSN.bin": "938d0e449d6a0680d2846a0f8cfd630c8a4ff2bb3ab5e5a9bae6a68a9b9a7748",
+    "SRCP_V1_DCI_T06_CL_ONLY.OBJECT_CHUNK.bin": "a8a23d451a59a8cd920fef700921cab88f0dfbebf5af2c99901ebb89499acedf",
+    "object_chunk": "a8a23d451a59a8cd920fef700921cab88f0dfbebf5af2c99901ebb89499acedf",
+    "ROOT.CDB": "df3e8e14adf0ae9524eb94eca63a579088ae83c23cb73e59deb77ea5a25c05c9",
+    "devices": "8b7a7a4fd19cb5e8662c5707ca5dcc997a13bf845b6b7b82bd203c9ce8883d82"
+  },
+  "input": {
+    "base_payload_name": "SOURCE_PASSIVE_V1_T06_CL_ONLY",
+    "source_kind": "dc_current",
+    "source_rule": "V13 accepted DCI path: DCV source geometry, DV/D0 labels, final/CDB/device CSOURCE identity.",
+    "passive_family_combo": "C+L",
+    "source": {
+      "idx": 3,
+      "ref": "V1",
+      "value": "10V",
+      "model": "CSOURCE"
+    },
+    "groups": [
+      {
+        "mode": "LC",
+        "start": "DV",
+        "end": "D0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "LC"
+      ],
+      "group_count": 1,
+      "component_count": 2,
+      "capacitor_count": 1,
+      "inductor_count": 1,
+      "resistor_count": 0,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "DV",
+      "source_net_negative": "D0"
+    },
+    "wire_repair": {
+      "repaired_wire_count": 0,
+      "repairs": []
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "DV",
+        "right": "A1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "A1",
+        "right": "D0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      }
+    ]
+  }
+}

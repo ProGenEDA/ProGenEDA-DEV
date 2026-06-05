@@ -1,0 +1,123 @@
+{
+  "case_id": "SRCP_V1_ACV_T04_RC_ONLY",
+  "description": "AC-voltage source-driven R+C load: one accepted RC subgroup path from source positive to source negative. using accepted V2 non-final AV/A0 unit.",
+  "status": "temporary_source_passive_v1_acv_pending_user_test",
+  "output": "SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_TEST_BATCH\\SRCP_V1_ACV_T04_RC_ONLY\\SRCP_V1_ACV_T04_RC_ONLY.pdsprj",
+  "object_chunk_len": 2001,
+  "root_cdb_len": 484,
+  "root_dsn_len": 70457,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 3,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 0,
+    "VSINE": 3,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 0,
+    "RESISTOR": 2,
+    "WIRE": 6,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSINE": 1,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67513,
+    "second_isis": 69560,
+    "second_object_data": 69595,
+    "object_data_pointer": 69608
+  },
+  "hashes": {
+    "SRCP_V1_ACV_T04_RC_ONLY.pdsprj": "91ca053551304c51997745c3cef4df331e707014d4a06df07660cf47d2a37230",
+    "SRCP_V1_ACV_T04_RC_ONLY.ROOT.CDB.bin": "5d2379efbe51aeb5ed9f731331d4a8485d39a6a31d0ec7441bf22e42364c6169",
+    "SRCP_V1_ACV_T04_RC_ONLY.ROOT.DSN.bin": "5a27d27c0ae480001e7ccfaa3b3093e1b52a2f15f1f2adebab44093e828c981e",
+    "SRCP_V1_ACV_T04_RC_ONLY.OBJECT_CHUNK.bin": "6281a58f7ecb403fd7088a66496668ca5532b65ed1b0ace2a3744a43cc73be22",
+    "object_chunk": "6281a58f7ecb403fd7088a66496668ca5532b65ed1b0ace2a3744a43cc73be22",
+    "ROOT.CDB": "5d2379efbe51aeb5ed9f731331d4a8485d39a6a31d0ec7441bf22e42364c6169",
+    "devices": "2fcee230c92f7566a59b9d72e7cc0226dfe95133bb3cc32cbe3e84814012b84b"
+  },
+  "input": {
+    "base_payload_name": "SOURCE_PASSIVE_V1_T04_RC_ONLY",
+    "source_kind": "ac_voltage",
+    "source_model": "VSINE",
+    "source_position": "before_rcl",
+    "source_block_kind": "two_source_nonfinal_av_a0",
+    "source": {
+      "idx": 3,
+      "ref": "V1",
+      "value": "VSINE",
+      "properties": "{VA=20v}\n{FREQ=5000hz}\n{PRIMITIVE=ANALOGUE}\n\u0000"
+    },
+    "groups": [
+      {
+        "mode": "RC",
+        "start": "AV",
+        "end": "A0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "RC"
+      ],
+      "group_count": 1,
+      "component_count": 2,
+      "capacitor_count": 1,
+      "inductor_count": 0,
+      "resistor_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "AV",
+      "source_net_negative": "A0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "A1",
+        "right": "A0",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "AV",
+        "right": "A1",
+        "global_id": 2,
+        "in_suffix": "0d30",
+        "out_suffix": "0d62",
+        "x": -7366000,
+        "y": 5080000
+      }
+    ],
+    "passive_family_combo": "R+C",
+    "source_rule": "V2 accepted ACV path: source-first exact non-final AV/A0 VSINE unit from two-source donor."
+  }
+}

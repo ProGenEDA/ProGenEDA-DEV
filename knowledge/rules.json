@@ -666,6 +666,15 @@
       "applies_to": ["Proteus 8.13", "DC voltage source", "mixed R/C/L source-driven circuits", "15 locked topology set", "WIRE coordinate records"],
       "evidence": ["DC_SOURCES_V8_USER_FEEDBACK_DCV_WORKED_DCI_FAILED_20260603", "DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_STATIC_20260605"],
       "rule": "For the 15 locked mixed R/C/L topology examples driven by one DC voltage source, use the accepted V8 source-first standalone VSOURCE block with DV as the positive source net and D0 as the negative source net, emit no $TERPOWER/$TERGROUND or V0/G0 labels, and apply the V13 negative-row WIRE high-byte repair before packing."
+    },
+    {
+      "id": "R075",
+      "title": "Source-driven single and two-family passive probes reuse accepted source families",
+      "status": "source_passive_v1_static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "AC voltage source", "single-family passive loads", "two-family passive loads"],
+      "evidence": ["SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_STATIC_20260605"],
+      "rule": "The source-driven scope should not be assumed limited to full R/C/L loads. SOURCE_PASSIVE_V1 tests R-only, C-only, L-only, RC, RL, and LC loads across DC voltage, DC current, and AC voltage using the already accepted source-family methods: DCV V15 source-first VSOURCE plus V13 WIRE repair, DCI V13 DCV-geometry patched to CSOURCE identity plus V13 WIRE repair, and ACV V2 exact non-final AV/A0 VSINE unit. Static generation is clean, but these combinations are not locked until Proteus open/netlist feedback is received."
     }
   ]
 }

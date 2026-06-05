@@ -1,0 +1,109 @@
+{
+  "case_id": "SRCP_V1_ACV_T02_C_ONLY",
+  "description": "AC-voltage source-driven C-only load: one capacitor path from source positive to source negative. using accepted V2 non-final AV/A0 unit.",
+  "status": "temporary_source_passive_v1_acv_pending_user_test",
+  "output": "SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_TEST_BATCH\\SRCP_V1_ACV_T02_C_ONLY\\SRCP_V1_ACV_T02_C_ONLY.pdsprj",
+  "object_chunk_len": 1347,
+  "root_cdb_len": 380,
+  "root_dsn_len": 69803,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 2,
+    "$TEROUTPUT": 2,
+    "$TERGROUND": 0,
+    "VSINE": 3,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 0,
+    "RESISTOR": 0,
+    "WIRE": 4,
+    "COMPONENT ID": 2,
+    "COMPONENT VALUE": 2
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSINE": 1,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67513,
+    "second_isis": 68906,
+    "second_object_data": 68941,
+    "object_data_pointer": 68954
+  },
+  "hashes": {
+    "SRCP_V1_ACV_T02_C_ONLY.pdsprj": "f2a89da85f418909ac09d4dd8aaf2efdd33de9ec7e515b08afbbcdce267a919f",
+    "SRCP_V1_ACV_T02_C_ONLY.ROOT.CDB.bin": "cb982d930e7bccb13aff344c62a24ea18c781e75eb5897949f722619643fce80",
+    "SRCP_V1_ACV_T02_C_ONLY.ROOT.DSN.bin": "e9f9ee00fbd7f7ee6f7d9b1ccf1c18ca41aa260c49bad413c8ff7b930fa70ef3",
+    "SRCP_V1_ACV_T02_C_ONLY.OBJECT_CHUNK.bin": "6f5bba05b62c02db91ef14f9c7dd377b705f74442c1c9fe4d963f919546396e7",
+    "object_chunk": "6f5bba05b62c02db91ef14f9c7dd377b705f74442c1c9fe4d963f919546396e7",
+    "ROOT.CDB": "cb982d930e7bccb13aff344c62a24ea18c781e75eb5897949f722619643fce80",
+    "devices": "2fcee230c92f7566a59b9d72e7cc0226dfe95133bb3cc32cbe3e84814012b84b"
+  },
+  "input": {
+    "base_payload_name": "SOURCE_PASSIVE_V1_T02_C_ONLY",
+    "source_kind": "ac_voltage",
+    "source_model": "VSINE",
+    "source_position": "before_rcl",
+    "source_block_kind": "two_source_nonfinal_av_a0",
+    "source": {
+      "idx": 2,
+      "ref": "V1",
+      "value": "VSINE",
+      "properties": "{VA=20v}\n{FREQ=5000hz}\n{PRIMITIVE=ANALOGUE}\n\u0000"
+    },
+    "groups": [
+      {
+        "mode": "C",
+        "start": "AV",
+        "end": "A0"
+      }
+    ],
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "C"
+      ],
+      "group_count": 1,
+      "component_count": 1,
+      "capacitor_count": 1,
+      "inductor_count": 0,
+      "resistor_count": 0,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "AV",
+      "source_net_negative": "A0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "AV",
+        "right": "A0",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      }
+    ],
+    "passive_family_combo": "C",
+    "source_rule": "V2 accepted ACV path: source-first exact non-final AV/A0 VSINE unit from two-source donor."
+  }
+}
