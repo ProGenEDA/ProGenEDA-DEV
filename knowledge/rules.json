@@ -653,10 +653,10 @@
       "id": "R073",
       "title": "Requested mixed DC-source circuits duplicate V13 source units",
       "status": "locked_current_scope",
-      "confidence": 0.9,
+      "confidence": 0.93,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "multi-source mixed R/C/L circuits", "requested five mixed source circuits"],
-      "evidence": ["DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_STATIC_20260605", "DC_MIXED_SOURCES_V14_USER_FEEDBACK_ALL_WORKED_20260605"],
-      "rule": "For complex mixed DC voltage/current source R/C/L circuits, generate the passive R/C/L source-net body first, then append duplicated donor-derived VSOURCE/CSOURCE units using V13-safe coordinate relocation, source-local positive terminals, repaired generated WIRE high bytes, unique source global IDs, source values patched in both ROOT.DSN visible value records and ROOT.CDB rows, and passives-first/source-last ROOT.CDB ordering. User testing confirmed all five requested V14 mixed-source circuits worked, so this method is locked for the current multi-source DC scope."
+      "evidence": ["DC_MIXED_SOURCES_V13_USER_FEEDBACK_OPEN_VISUAL_GOOD_ENOUGH_20260605", "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_STATIC_20260605", "DC_MIXED_SOURCES_V14_USER_FEEDBACK_ALL_WORKED_20260605", "DC_MIXED_SOURCES_V15_REQUESTED5_AFTER_V9_STATIC_20260605", "DC_MIXED_SOURCES_V15_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "rule": "For complex mixed DC voltage/current source R/C/L circuits, generate the passive R/C/L source-net body first, then append duplicated donor-derived VSOURCE/CSOURCE units using V13-safe coordinate relocation, source-local positive terminals, repaired generated WIRE high bytes, unique source global IDs, source values patched in both ROOT.DSN visible value records and ROOT.CDB rows, and passives-first/source-last ROOT.CDB ordering. User testing confirmed all five requested V14 circuits and the clean post-V9 V15 rerun worked, so this method is locked for the current multi-source DC scope."
     },
     {
       "id": "R074",

@@ -3318,6 +3318,20 @@ The DC Mixed Sources V15 archive SHA256 is:
 ca6ec49ef909df918f875bb63c0a92890cea6108034399c39fe4e14cc9f30a15
 ```
 
+User feedback:
+
+```text
+All five V15 cases worked.
+```
+
+Interpretation:
+
+```text
+The V13/V14 duplicated-source-unit method remains locked after V9 acceptance.
+V15 is the clean five-circuit pack for the requested mixed DC voltage/current
+source R/C/L circuits.
+```
+
 ## Supported Combinations Current Scope
 
 As of 2026-06-05, supported component-family combinations in the deterministic
