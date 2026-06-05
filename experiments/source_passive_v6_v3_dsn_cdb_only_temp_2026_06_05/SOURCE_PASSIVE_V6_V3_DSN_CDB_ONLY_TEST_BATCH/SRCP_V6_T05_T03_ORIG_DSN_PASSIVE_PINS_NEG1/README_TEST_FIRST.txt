@@ -1,0 +1,1 @@
+Open and simulate SRCP_V6_T05_T03_ORIG_DSN_PASSIVE_PINS_NEG1.pdsprj

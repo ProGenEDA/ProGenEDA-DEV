@@ -706,11 +706,20 @@
     {
       "id": "R079",
       "title": "Pure DCV2 passive fallback uses fixed V3 component-first source units",
-      "status": "source_passive_v5_static_generated_pending_user_test",
-      "confidence": 0.83,
+      "status": "rejected_v5_vgdvc_reported",
+      "confidence": 0.86,
       "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "SPICE simulation reference"],
-      "evidence": ["USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V5_FIXED_V3_ORDER_STATIC_20260605"],
-      "rule": "The user-fixed V3 T03 file uses passive R/C/L groups first, then component-first VSOURCE units ordered as VSOURCE, output terminal, wire, input terminal, wire. Its ROOT.CDB source rows use +/1 and -/2 pin names and a -1 terminal-side field. SOURCE_PASSIVE_V5 tests this fixed order and CDB style for R-only and RC/RL pure DCV+DCV loads, with both fixed-file 1V/1V source values and requested 10V/5V value mutations. Do not lock this rule until V5 Proteus feedback is received."
+      "evidence": ["USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V5_FIXED_V3_ORDER_STATIC_20260605", "SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605"],
+      "rule": "The user-fixed V3 T03 file uses passive R/C/L groups first, then component-first VSOURCE units ordered as VSOURCE, output terminal, wire, input terminal, wire, but generated SOURCE_PASSIVE_V5 cases using that reconstructed order gave VGDVC.dll. User clarified generated V3 at least opened and rendered correctly. Do not replace the generated V3 ROOT.DSN object stream with reconstructed fixed-order source units."
+    },
+    {
+      "id": "R080",
+      "title": "Pure DCV2 passive debugging preserves V3 DSN and tests CDB only",
+      "status": "source_passive_v6_static_generated_pending_user_test",
+      "confidence": 0.84,
+      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "ROOT.CDB source rows"],
+      "evidence": ["SOURCE_PASSIVE_V5_USER_FEEDBACK_VGDVC_REPORTED_20260605", "USER_FIXED_V3_T03_COMPARISON_20260605", "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_STATIC_20260605"],
+      "rule": "Because generated V3 opened/rendered but V5 gave VGDVC, the next safe variable is ROOT.CDB only. SOURCE_PASSIVE_V6 preserves generated V3 ROOT.DSN byte-for-byte and tests CDB variants: exact user-fixed CDB, source-style +/1 -/2 rows with -1 field, value mutations 1V/1V versus 10V/5V, and isolated pin-map versus terminal-side-field changes. Do not change V3 visual object ordering while this CDB-only probe is pending."
     }
   ]
 }

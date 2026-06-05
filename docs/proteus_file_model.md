@@ -3019,10 +3019,72 @@ The Source Passive V5 archive SHA256 is:
 db0ccf1eb534b75c8d82697424221518064ec11627ab4245f36b15376a1b5546
 ```
 
-This is pending Proteus open/simulation feedback. If T02 and T04 pass, the fixed
-V3 order and CDB row style become the preferred pure DCV+DCV source-driven
-passive correction. T03/T05 isolate whether changing source values back to
-10V/5V is safe.
+User feedback:
+
+```text
+V5 gave VGDVC.dll. The user clarified this was the wrong direction because
+generated V3 at least opened and had correct visuals.
+```
+
+Interpretation:
+
+```text
+Do not replace generated V3's visual object stream with reconstructed fixed-file
+source order. Preserve generated V3 ROOT.DSN and isolate ROOT.CDB changes only.
+```
+
+## Source Passive V6 V3 DSN / CDB-Only Probe
+
+`SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_TEMP_2026_06_05` preserves the generated V3
+`ROOT.DSN` byte-for-byte and changes only `ROOT.CDB` in candidate cases.
+
+V6 method:
+
+```text
+T00: original generated V3 T03 copied unchanged
+T01: generated V3 T03 ROOT.DSN + exact user-fixed ROOT.CDB
+T02: generated V3 T03 ROOT.DSN + regenerated source-style CDB, 1V/1V
+T03: generated V3 T03 ROOT.DSN + regenerated source-style CDB, 10V/5V
+T04: generated V3 T03 ROOT.DSN + source +/1 -/2 pins but row field 0
+T05: generated V3 T03 ROOT.DSN + passive 1/2 pins but row field -1
+T06: original generated V3 T04 copied unchanged
+T07: generated V3 T04 ROOT.DSN + regenerated source-style CDB, 1V/1V
+T08: generated V3 T04 ROOT.DSN + regenerated source-style CDB, 10V/5V
+```
+
+Test order:
+
+```text
+SRCP_V6_T00_V3_T03_ORIGINAL_COPY
+SRCP_V6_T01_T03_ORIG_DSN_FIXED_CDB_EXACT
+SRCP_V6_T02_T03_ORIG_DSN_SOURCE_CDB_1V
+SRCP_V6_T03_T03_ORIG_DSN_SOURCE_CDB_10V_5V
+SRCP_V6_T04_T03_ORIG_DSN_SOURCE_PINS_FIELD0
+SRCP_V6_T05_T03_ORIG_DSN_PASSIVE_PINS_NEG1
+SRCP_V6_T06_V3_T04_ORIGINAL_COPY
+SRCP_V6_T07_T04_ORIG_DSN_SOURCE_CDB_1V
+SRCP_V6_T08_T04_ORIG_DSN_SOURCE_CDB_10V_5V
+```
+
+Static checks:
+
+```text
+projects generated: 9
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+candidate ROOT.DSN/object chunks preserve generated V3 visual stream
+static_validation_issues: empty in all generated manifests
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+credential scan: no Groq, MongoDB, or Hugging Face token-pattern matches
+```
+
+The Source Passive V6 archive SHA256 is:
+
+```text
+9ab250ecd933014b08c4b30e86bae3a2f2ab5c2700fbbf07023bee69a05d6a99
+```
+
+This is pending Proteus open/simulation feedback. T01/T02 are the main R-only
+CDB repair candidates. If one works, T07 is the matching RC/RL scale-up check.
 
 ## Supported Combinations Current Scope
 
@@ -3042,7 +3104,7 @@ two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+D
 Out of current scope or not locked:
 
 ```text
-pure DCV+DCV source-driven passive loads: pending Source Passive V5 fixed V3 order test
+pure DCV+DCV source-driven passive loads: pending Source Passive V6 V3-DSN/CDB-only test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented

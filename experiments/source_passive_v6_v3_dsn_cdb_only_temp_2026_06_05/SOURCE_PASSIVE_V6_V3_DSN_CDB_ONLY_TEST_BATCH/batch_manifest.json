@@ -1,0 +1,208 @@
+{
+  "batch_id": "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_STATIC_20260605",
+  "status": "static_generated_awaiting_user_proteus_open_simulation_test",
+  "source_feedback": "V5 gave VGDVC; user clarified generated V3 opened and visuals were correct.",
+  "method": "Preserve generated V3 ROOT.DSN exactly and test CDB-only source row variants.",
+  "test_order": [
+    "SRCP_V6_T00_V3_T03_ORIGINAL_COPY",
+    "SRCP_V6_T01_T03_ORIG_DSN_FIXED_CDB_EXACT",
+    "SRCP_V6_T02_T03_ORIG_DSN_SOURCE_CDB_1V",
+    "SRCP_V6_T03_T03_ORIG_DSN_SOURCE_CDB_10V_5V",
+    "SRCP_V6_T04_T03_ORIG_DSN_SOURCE_PINS_FIELD0",
+    "SRCP_V6_T05_T03_ORIG_DSN_PASSIVE_PINS_NEG1",
+    "SRCP_V6_T06_V3_T04_ORIGINAL_COPY",
+    "SRCP_V6_T07_T04_ORIG_DSN_SOURCE_CDB_1V",
+    "SRCP_V6_T08_T04_ORIG_DSN_SOURCE_CDB_10V_5V"
+  ],
+  "cases": [
+    {
+      "case_id": "SRCP_V6_T00_V3_T03_ORIGINAL_COPY",
+      "description": "Original generated V3 T03 copied unchanged as the visual/open baseline.",
+      "cdb_mode": "copy_original",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3262,
+      "root_cdb_len": 628,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T01_T03_ORIG_DSN_FIXED_CDB_EXACT",
+      "description": "Generated V3 T03 ROOT.DSN preserved; ROOT.CDB replaced with the exact user-fixed CDB.",
+      "cdb_mode": "exact_fixed_cdb",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3262,
+      "root_cdb_len": 631,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T02_T03_ORIG_DSN_SOURCE_CDB_1V",
+      "description": "Generated V3 T03 ROOT.DSN preserved; regenerated source-style CDB with 1V/1V source values.",
+      "cdb_mode": "source_pins_neg1_1v",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3262,
+      "root_cdb_len": 631,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T03_T03_ORIG_DSN_SOURCE_CDB_10V_5V",
+      "description": "Generated V3 T03 ROOT.DSN preserved; regenerated source-style CDB with 10V/5V source values.",
+      "cdb_mode": "source_pins_neg1_10v_5v",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3262,
+      "root_cdb_len": 632,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T04_T03_ORIG_DSN_SOURCE_PINS_FIELD0",
+      "description": "Generated V3 T03 ROOT.DSN preserved; source +/1 -/2 pins but source row final field kept at 0.",
+      "cdb_mode": "source_pins_field0",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3262,
+      "root_cdb_len": 632,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T05_T03_ORIG_DSN_PASSIVE_PINS_NEG1",
+      "description": "Generated V3 T03 ROOT.DSN preserved; passive 1/2 pins but source row final field changed to -1.",
+      "cdb_mode": "passive_pins_neg1",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "RESISTOR": 6,
+        "REALIND": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5
+      },
+      "object_chunk_len": 3262,
+      "root_cdb_len": 628,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T06_V3_T04_ORIGINAL_COPY",
+      "description": "Original generated V3 T04 copied unchanged as the RC/RL baseline.",
+      "cdb_mode": "copy_original",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "object_chunk_len": 4614,
+      "root_cdb_len": 893,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T07_T04_ORIG_DSN_SOURCE_CDB_1V",
+      "description": "Generated V3 T04 ROOT.DSN preserved; source-style CDB with 1V/1V source values.",
+      "cdb_mode": "source_pins_neg1_1v",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "object_chunk_len": 4614,
+      "root_cdb_len": 896,
+      "static_validation_issues": []
+    },
+    {
+      "case_id": "SRCP_V6_T08_T04_ORIG_DSN_SOURCE_CDB_10V_5V",
+      "description": "Generated V3 T04 ROOT.DSN preserved; source-style CDB with 10V/5V source values.",
+      "cdb_mode": "source_pins_neg1_10v_5v",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "RESISTOR": 6,
+        "REALIND": 3,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7
+      },
+      "object_chunk_len": 4614,
+      "root_cdb_len": 897,
+      "static_validation_issues": []
+    }
+  ]
+}
