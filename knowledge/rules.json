@@ -679,11 +679,20 @@
     {
       "id": "R076",
       "title": "Two-source passive probes use V14 DC source duplication and duplicated ACV V2 units",
-      "status": "source_passive_v2_static_generated_pending_user_test",
+      "status": "partially_confirmed_dcv2_needs_grounded_return_probe",
       "confidence": 0.82,
       "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "DC current source", "AC voltage source", "single-family passive loads", "two-family passive loads", "R/C/L passive loads"],
-      "evidence": ["SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605", "SOURCE_PASSIVE_V2_TWO_SOURCE_STATIC_20260605"],
-      "rule": "SOURCE_PASSIVE_V2 tests source multiplicity after V1 proved single-source passive loads. DC two-source cases reuse the locked V14 mixed-DC source-unit duplication method with common D0 return. AC two-source cases duplicate the accepted ACV V2 non-final VSINE unit, patch it to unique two-character terminal labels and suffix bytes, and keep AC current out of scope. Static generation is clean, but two-source support is not locked until Proteus open/netlist feedback is received."
+      "evidence": ["SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605", "SOURCE_PASSIVE_V2_TWO_SOURCE_STATIC_20260605", "SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605"],
+      "rule": "SOURCE_PASSIVE_V2 tested source multiplicity after V1 proved single-source passive loads. User feedback confirmed the V2 cases worked except the pure two-DC-voltage-source cases SRCP_V2_DCV2_T01_R_ONLY and SRCP_V2_DCV2_T02_RC_RL, which gave a bad object record, opened visibly correct, then failed simulation with SPICE singular #V2#branch. Therefore do not lock pure DCV+DCV source-driven passive loads with only a common D0 return. DC current two-source, mixed DC voltage/current, and AC voltage two-source passive loads remain provisionally accepted from this batch."
+    },
+    {
+      "id": "R077",
+      "title": "Pure two-DC-voltage-source passive loads need an explicit simulation return",
+      "status": "source_passive_v3_static_generated_pending_user_test",
+      "confidence": 0.78,
+      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "source-driven passives", "SPICE simulation reference"],
+      "evidence": ["SOURCE_PASSIVE_V2_USER_FEEDBACK_DCV2_T01_T02_BAD_OBJECT_SPICE_V2_BRANCH_20260605", "SOURCE_PASSIVE_V3_DCV2_GROUNDED_STATIC_20260605"],
+      "rule": "When a reduced source-driven circuit contains two ideal DC voltage sources and no DC current source, a shared ordinary D0 return may open visually but can leave SPICE with a singular voltage-source branch. SOURCE_PASSIVE_V3 tests two safer return rules: preferred cases T01/T02 use G0 as the shared source-negative/passive-return node, and fallback cases T03/T04 keep D0 but add a 1G D0-to-G0 reference resistor. This rule is not locked until the V3 Proteus open/simulation feedback is received."
     }
   ]
 }

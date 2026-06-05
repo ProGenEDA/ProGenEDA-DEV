@@ -2805,8 +2805,68 @@ The Source Passive V2 archive SHA256 is:
 3220de4791a8a7011358208a9ebaa5a735d6c2a7584b13e0cc4728eca412404c
 ```
 
-This is a pending two-source probe, not locked support, until the user confirms
-Proteus open/netlist behavior.
+User feedback:
+
+```text
+all V2 cases worked except:
+SRCP_V2_DCV2_T01_R_ONLY
+SRCP_V2_DCV2_T02_RC_RL
+
+Both failing pure DCV+DCV cases gave a bad object record, then opened and looked
+visibly correct. On simulation, SPICE reported a singular matrix on #V2#branch
+and Real Time Simulation failed to start.
+```
+
+Therefore V2 is partially accepted. DC-current two-source cases, mixed
+DC-voltage/DC-current cases, and AC-voltage two-source cases remain
+provisionally accepted from this batch. Pure DCV+DCV source-driven passive loads
+must not be locked with only a shared D0 return.
+
+## Source Passive V3 DCV2 Grounded-Return Probe
+
+`SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEMP_2026_06_05` is a focused correction pack
+for the two failing V2 pure DC voltage source cases.
+
+Method:
+
+```text
+T01/T02 preferred rule: source negative terminals and passive returns share G0
+T03/T04 fallback rule: keep D0 source return and add a 1G D0-to-G0 reference resistor
+source objects: V14 donor-derived duplicated VSOURCE units
+passive body: accepted mixed_rcl subgroup modes
+purpose: remove the SPICE #V2#branch singular matrix while preserving local source terminals
+```
+
+Test order:
+
+```text
+SRCP_V3_DCV2_T01_R_ONLY_G0_RETURN
+SRCP_V3_DCV2_T02_RC_RL_G0_RETURN
+SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF
+SRCP_V3_DCV2_T04_RC_RL_D0_WITH_1G_REF
+```
+
+Static checks:
+
+```text
+projects generated: 4
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks intentionally contain $TERGROUND endpoints for simulation reference
+static_validation_issues: empty in all four generated manifests
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+credential scan: no Groq, MongoDB, or Hugging Face token-pattern matches
+```
+
+The Source Passive V3 archive SHA256 is:
+
+```text
+0644d1df5e2315eeb053bde6f4814e82b60ece0f2156c3106ab9517322e1088b
+```
+
+This is pending Proteus open/simulation feedback. If T01/T02 pass, lock G0 as
+the shared return for pure DCV+DCV source-driven passive loads. If only T03/T04
+pass, preserve D0 naming but add an explicit high-value G0 reference path for
+simulation.
 
 ## Supported Combinations Current Scope
 
@@ -2820,12 +2880,13 @@ three passive families: R+C+L
 passive topology with V0/G0 power/ground terminals: R, C, L, R+C, R+C+L
 single-source source-driven topology without separate power/ground terminals: DC voltage, DC current, or AC voltage + R, C, L, R+C, R+L, C+L, R+C+L
 multi-source DC topology: multiple DC voltage sources + multiple DC current sources + R/C/L
+two-source source-driven passive topology provisionally accepted: DCI+DCI, DCV+DCI, ACV+ACV with tested R/C/L subgroup loads
 ```
 
 Out of current scope or not locked:
 
 ```text
-two-source passive loads: pending Source Passive V2 user test
+pure DCV+DCV source-driven passive loads: pending Source Passive V3 grounded-return user test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented

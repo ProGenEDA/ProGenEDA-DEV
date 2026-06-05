@@ -1,0 +1,106 @@
+{
+  "batch_id": "SOURCE_PASSIVE_V3_DCV2_GROUNDED_STATIC_20260605",
+  "status": "static_generated_awaiting_user_proteus_open_simulation_test",
+  "source_feedback": "V2 DCV2 T01/T02 opened but gave bad object record and SPICE singular #V2#branch on simulation.",
+  "method": "Focused DCV2 replacement: explicit G0 shared return first, D0 plus 1G G0 reference as fallback.",
+  "test_order": [
+    "SRCP_V3_DCV2_T01_R_ONLY_G0_RETURN",
+    "SRCP_V3_DCV2_T02_RC_RL_G0_RETURN",
+    "SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF",
+    "SRCP_V3_DCV2_T04_RC_RL_D0_WITH_1G_REF"
+  ],
+  "cases": [
+    {
+      "case_id": "SRCP_V3_DCV2_T01_R_ONLY_G0_RETURN",
+      "description": "Two DC voltage sources, each driving one resistor branch to shared grounded G0 return.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 4,
+        "$TEROUTPUT": 2,
+        "$TERGROUND": 2,
+        "VSOURCE": 4,
+        "CSOURCE": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "RESISTOR": 4,
+        "WIRE": 8,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "CAP10": 0
+      },
+      "object_chunk_len": 2608,
+      "root_cdb_len": 525,
+      "static_validation_issues": [],
+      "reference_rule": "preferred: source negative terminals and passive returns share G0."
+    },
+    {
+      "case_id": "SRCP_V3_DCV2_T02_RC_RL_G0_RETURN",
+      "description": "Two DC voltage sources driving RC and RL branches to shared grounded G0 return.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 2,
+        "VSOURCE": 4,
+        "CSOURCE": 0,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "RESISTOR": 4,
+        "WIRE": 12,
+        "COMPONENT ID": 6,
+        "COMPONENT VALUE": 6,
+        "CAP10": 1
+      },
+      "object_chunk_len": 3960,
+      "root_cdb_len": 790,
+      "static_validation_issues": [],
+      "reference_rule": "preferred: source negative terminals and passive returns share G0."
+    },
+    {
+      "case_id": "SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF",
+      "description": "Two DC voltage sources with D0 return and a high-value D0-to-G0 simulation reference.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 4,
+        "$TERGROUND": 1,
+        "VSOURCE": 4,
+        "CSOURCE": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "RESISTOR": 6,
+        "WIRE": 10,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5,
+        "CAP10": 0
+      },
+      "object_chunk_len": 3262,
+      "root_cdb_len": 628,
+      "static_validation_issues": [],
+      "reference_rule": "diagnostic fallback: keep D0 return and add a 1G reference resistor to G0."
+    },
+    {
+      "case_id": "SRCP_V3_DCV2_T04_RC_RL_D0_WITH_1G_REF",
+      "description": "Two DC voltage sources driving RC/RL branches with D0 return and a high-value G0 reference.",
+      "marker_counts": {
+        "$TERPOWER": 0,
+        "$TERINPUT": 7,
+        "$TEROUTPUT": 6,
+        "$TERGROUND": 1,
+        "VSOURCE": 4,
+        "CSOURCE": 0,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "RESISTOR": 6,
+        "WIRE": 14,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "CAP10": 1
+      },
+      "object_chunk_len": 4614,
+      "root_cdb_len": 893,
+      "static_validation_issues": [],
+      "reference_rule": "diagnostic fallback: keep D0 return and add a 1G reference resistor to G0."
+    }
+  ]
+}
