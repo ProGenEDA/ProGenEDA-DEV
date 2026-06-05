@@ -1,0 +1,129 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "project": {
+    "name": "SRCP_V2_DCV2_T01_R_ONLY",
+    "output_basename": "SRCP_V2_DCV2_T01_R_ONLY",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "DV",
+      "kind": "source_net"
+    },
+    {
+      "id": "D0",
+      "kind": "source_net"
+    },
+    {
+      "id": "D1",
+      "kind": "source_net"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "R",
+      "start": "DV",
+      "end": "D0"
+    },
+    {
+      "mode": "R",
+      "start": "D1",
+      "end": "D0"
+    }
+  ],
+  "metadata": {
+    "description": "Two DC voltage sources, each driving one resistor branch to common D0.",
+    "source_kind": "dc_voltage_dc_voltage"
+  },
+  "source_count": 2,
+  "source_rule": "V14 locked DC mixed-source method: generated source-net passive body plus duplicated donor-derived VSOURCE/CSOURCE units.",
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "model": "VSOURCE",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 3,
+      "out_suffix": "7000",
+      "in_suffix": "7032",
+      "target": [
+        -9906000,
+        4064000
+      ]
+    },
+    {
+      "kind": "dc_voltage",
+      "ref": "V2",
+      "model": "VSOURCE",
+      "positive": "D1",
+      "negative": "D0",
+      "global_id": 4,
+      "out_suffix": "7080",
+      "in_suffix": "70b2",
+      "target": [
+        254000,
+        4064000
+      ]
+    }
+  ],
+  "visible_values": {
+    "R1": "1k0",
+    "R2": "2k0"
+  },
+  "exact_cdb_values": {
+    "R1": "1k",
+    "R2": "2k"
+  },
+  "rcl_counts": {
+    "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+    "group_modes": [
+      "R",
+      "R"
+    ],
+    "group_count": 2,
+    "component_count": 2,
+    "capacitor_count": 0,
+    "inductor_count": 0,
+    "resistor_count": 2,
+    "power_bridge_count": 0,
+    "ground_terminal_count": 0,
+    "source_net_negative": "D0"
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "1k0",
+      "left": "DV",
+      "right": "D0",
+      "global_id": 1,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 2,
+      "unit": 2,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "2k0",
+      "left": "D1",
+      "right": "D0",
+      "global_id": 2,
+      "in_suffix": "1506",
+      "out_suffix": "1538",
+      "x": 2794000,
+      "y": 5080000
+    }
+  ],
+  "wire_repair": {
+    "repaired_wire_count": 0,
+    "repairs": []
+  }
+}

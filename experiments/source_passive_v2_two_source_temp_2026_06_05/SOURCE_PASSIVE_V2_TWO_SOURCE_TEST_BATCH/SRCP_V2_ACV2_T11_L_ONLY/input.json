@@ -1,0 +1,136 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "project": {
+    "name": "SRCP_V2_ACV2_T11_L_ONLY",
+    "output_basename": "SRCP_V2_ACV2_T11_L_ONLY",
+    "base": "E001_EMPTY_BASE",
+    "units": "proteus_internal"
+  },
+  "nodes": [
+    {
+      "id": "AV",
+      "kind": "source_net"
+    },
+    {
+      "id": "A0",
+      "kind": "source_net"
+    },
+    {
+      "id": "BV",
+      "kind": "source_net"
+    },
+    {
+      "id": "B0",
+      "kind": "source_net"
+    }
+  ],
+  "groups": [
+    {
+      "mode": "L",
+      "start": "AV",
+      "end": "A0"
+    },
+    {
+      "mode": "L",
+      "start": "BV",
+      "end": "B0"
+    }
+  ],
+  "metadata": {
+    "description": "Two AC voltage sources, each driving one inductor branch.",
+    "source_kind": "ac_voltage_ac_voltage"
+  },
+  "source_count": 2,
+  "source_rule": "ACV V2-derived duplicate exact non-final AV/A0 VSINE unit, repatched to AV/A0 and BV/B0.",
+  "sources": [
+    {
+      "kind": "ac_voltage",
+      "ref": "V1",
+      "model": "VSINE",
+      "positive": "AV",
+      "negative": "A0",
+      "global_id": 3,
+      "out_suffix": "7600",
+      "in_suffix": "7632",
+      "dx": 0,
+      "dy": 0
+    },
+    {
+      "kind": "ac_voltage",
+      "ref": "V2",
+      "model": "VSINE",
+      "positive": "BV",
+      "negative": "B0",
+      "global_id": 4,
+      "out_suffix": "7680",
+      "in_suffix": "76b2",
+      "dx": 0,
+      "dy": -1524000
+    }
+  ],
+  "visible_values": {
+    "L1": "5mH",
+    "L2": "2mH"
+  },
+  "exact_cdb_values": {
+    "L1": "5mH",
+    "L2": "2mH"
+  },
+  "rcl_counts": {
+    "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+    "group_modes": [
+      "L",
+      "L"
+    ],
+    "group_count": 2,
+    "component_count": 2,
+    "capacitor_count": 0,
+    "inductor_count": 2,
+    "resistor_count": 0,
+    "power_bridge_count": 0,
+    "ground_terminal_count": 0,
+    "source_net_positive": "DV",
+    "source_net_negative": "D0"
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "AV",
+      "right": "A0",
+      "global_id": 1,
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": -3556000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 2,
+      "kind": "INDUCTOR",
+      "ref": "L2",
+      "value": "5mH",
+      "left": "BV",
+      "right": "B0",
+      "global_id": 2,
+      "in_suffix": "12df",
+      "out_suffix": "1311",
+      "x": 6604000,
+      "y": 2540000
+    }
+  ],
+  "wire_repair": {
+    "repaired_wire_count": 1,
+    "repairs": [
+      {
+        "wire_marker": 1322,
+        "old_y2": 15761216,
+        "new_y2": -1016000
+      }
+    ]
+  }
+}

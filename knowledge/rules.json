@@ -670,11 +670,20 @@
     {
       "id": "R075",
       "title": "Source-driven single and two-family passive probes reuse accepted source families",
-      "status": "source_passive_v1_static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "locked_current_scope",
+      "confidence": 0.9,
       "applies_to": ["Proteus 8.13", "DC voltage source", "DC current source", "AC voltage source", "single-family passive loads", "two-family passive loads"],
-      "evidence": ["SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_STATIC_20260605"],
-      "rule": "The source-driven scope should not be assumed limited to full R/C/L loads. SOURCE_PASSIVE_V1 tests R-only, C-only, L-only, RC, RL, and LC loads across DC voltage, DC current, and AC voltage using the already accepted source-family methods: DCV V15 source-first VSOURCE plus V13 WIRE repair, DCI V13 DCV-geometry patched to CSOURCE identity plus V13 WIRE repair, and ACV V2 exact non-final AV/A0 VSINE unit. Static generation is clean, but these combinations are not locked until Proteus open/netlist feedback is received."
+      "evidence": ["SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_STATIC_20260605", "SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605"],
+      "rule": "Source-driven generation is not limited to full R/C/L loads. User testing confirmed SOURCE_PASSIVE_V1 worked for R-only, C-only, L-only, RC, RL, and LC loads across DC voltage, DC current, and AC voltage. Continue using the accepted source-family methods: DCV V15 source-first VSOURCE plus V13 WIRE repair, DCI V13 DCV-geometry patched to CSOURCE identity plus V13 WIRE repair, and ACV V2 exact non-final AV/A0 VSINE unit."
+    },
+    {
+      "id": "R076",
+      "title": "Two-source passive probes use V14 DC source duplication and duplicated ACV V2 units",
+      "status": "source_passive_v2_static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": ["Proteus 8.13", "two-source circuits", "DC voltage source", "DC current source", "AC voltage source", "single-family passive loads", "two-family passive loads", "R/C/L passive loads"],
+      "evidence": ["SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605", "SOURCE_PASSIVE_V2_TWO_SOURCE_STATIC_20260605"],
+      "rule": "SOURCE_PASSIVE_V2 tests source multiplicity after V1 proved single-source passive loads. DC two-source cases reuse the locked V14 mixed-DC source-unit duplication method with common D0 return. AC two-source cases duplicate the accepted ACV V2 non-final VSINE unit, patch it to unique two-character terminal labels and suffix bytes, and keep AC current out of scope. Static generation is clean, but two-source support is not locked until Proteus open/netlist feedback is received."
     }
   ]
 }

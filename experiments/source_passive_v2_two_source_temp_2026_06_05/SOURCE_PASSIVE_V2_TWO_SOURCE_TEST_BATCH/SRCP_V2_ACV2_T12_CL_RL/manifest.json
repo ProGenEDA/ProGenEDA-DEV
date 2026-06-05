@@ -1,0 +1,224 @@
+{
+  "case_id": "SRCP_V2_ACV2_T12_CL_RL",
+  "description": "Two AC voltage sources driving CL and RL two-family branches.",
+  "status": "temporary_source_passive_v2_two_source_pending_user_test",
+  "output": "SOURCE_PASSIVE_V2_TWO_SOURCE_TEST_BATCH\\SRCP_V2_ACV2_T12_CL_RL\\SRCP_V2_ACV2_T12_CL_RL.pdsprj",
+  "object_chunk_len": 4034,
+  "root_cdb_len": 873,
+  "root_dsn_len": 72490,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 6,
+    "$TEROUTPUT": 6,
+    "$TERGROUND": 0,
+    "VSINE": 6,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 6,
+    "RESISTOR": 2,
+    "WIRE": 12,
+    "COMPONENT ID": 6,
+    "COMPONENT VALUE": 6
+  },
+  "device_marker_counts": {
+    "$TERPOWER": 0,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERGROUND": 0,
+    "VSINE": 1,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 2,
+    "RESISTOR": 1,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0
+  },
+  "static_validation_issues": [],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67513,
+    "second_isis": 71593,
+    "second_object_data": 71628,
+    "object_data_pointer": 71641
+  },
+  "hashes": {
+    "SRCP_V2_ACV2_T12_CL_RL.pdsprj": "f596618c79745414c6cbfba21865ddd065efaab83efdf77e434a617ee6013b7d",
+    "SRCP_V2_ACV2_T12_CL_RL.ROOT.CDB.bin": "fffc06b02922a49e40fa6aa4ad16987166860a633f665ddc1e3fd5dd3f90293c",
+    "SRCP_V2_ACV2_T12_CL_RL.ROOT.DSN.bin": "d42e45011b766515ab91e612d27d0bd27c88fcd570badbed2e430206e9237218",
+    "SRCP_V2_ACV2_T12_CL_RL.OBJECT_CHUNK.bin": "82d0b7ce141cacebb36319cc63dfa25943071c74bb35987700efeaa780923dd8",
+    "object_chunk": "82d0b7ce141cacebb36319cc63dfa25943071c74bb35987700efeaa780923dd8",
+    "ROOT.CDB": "fffc06b02922a49e40fa6aa4ad16987166860a633f665ddc1e3fd5dd3f90293c",
+    "devices": "2fcee230c92f7566a59b9d72e7cc0226dfe95133bb3cc32cbe3e84814012b84b"
+  },
+  "input": {
+    "schema_version": "mixed-rcl-circuit-ir/v0.1",
+    "generator_target": "proteus-8.13-mixed-rcl-locked",
+    "project": {
+      "name": "SRCP_V2_ACV2_T12_CL_RL",
+      "output_basename": "SRCP_V2_ACV2_T12_CL_RL",
+      "base": "E001_EMPTY_BASE",
+      "units": "proteus_internal"
+    },
+    "nodes": [
+      {
+        "id": "AV",
+        "kind": "source_net"
+      },
+      {
+        "id": "A0",
+        "kind": "source_net"
+      },
+      {
+        "id": "BV",
+        "kind": "source_net"
+      },
+      {
+        "id": "B0",
+        "kind": "source_net"
+      }
+    ],
+    "groups": [
+      {
+        "mode": "LC",
+        "start": "AV",
+        "end": "A0"
+      },
+      {
+        "mode": "RL",
+        "start": "BV",
+        "end": "B0"
+      }
+    ],
+    "metadata": {
+      "description": "Two AC voltage sources driving CL and RL two-family branches.",
+      "source_kind": "ac_voltage_ac_voltage"
+    },
+    "source_count": 2,
+    "source_rule": "ACV V2-derived duplicate exact non-final AV/A0 VSINE unit, repatched to AV/A0 and BV/B0.",
+    "sources": [
+      {
+        "kind": "ac_voltage",
+        "ref": "V1",
+        "model": "VSINE",
+        "positive": "AV",
+        "negative": "A0",
+        "global_id": 5,
+        "out_suffix": "7600",
+        "in_suffix": "7632",
+        "dx": 0,
+        "dy": 0
+      },
+      {
+        "kind": "ac_voltage",
+        "ref": "V2",
+        "model": "VSINE",
+        "positive": "BV",
+        "negative": "B0",
+        "global_id": 6,
+        "out_suffix": "7680",
+        "in_suffix": "76b2",
+        "dx": 0,
+        "dy": -1524000
+      }
+    ],
+    "visible_values": {
+      "C1": "1uF",
+      "L1": "5mH",
+      "R1": "2k0",
+      "L2": "2mH"
+    },
+    "exact_cdb_values": {
+      "C1": "1uF",
+      "L1": "5mH",
+      "R1": "2k",
+      "L2": "2mH"
+    },
+    "rcl_counts": {
+      "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+      "group_modes": [
+        "LC",
+        "RL"
+      ],
+      "group_count": 2,
+      "component_count": 4,
+      "capacitor_count": 1,
+      "inductor_count": 2,
+      "resistor_count": 1,
+      "power_bridge_count": 0,
+      "ground_terminal_count": 0,
+      "source_net_positive": "DV",
+      "source_net_negative": "D0"
+    },
+    "topology": [
+      {
+        "idx": 1,
+        "unit": 1,
+        "kind": "CAPACITOR",
+        "ref": "C1",
+        "value": "1uF",
+        "left": "AV",
+        "right": "A1",
+        "global_id": 1,
+        "in_suffix": "082c",
+        "out_suffix": "07fa",
+        "x": -7366000,
+        "y": 2540000
+      },
+      {
+        "idx": 2,
+        "unit": 1,
+        "kind": "INDUCTOR",
+        "ref": "L1",
+        "value": "5mH",
+        "left": "A1",
+        "right": "A0",
+        "global_id": 2,
+        "in_suffix": "0b09",
+        "out_suffix": "0b3b",
+        "x": -3556000,
+        "y": 2540000
+      },
+      {
+        "idx": 3,
+        "unit": 2,
+        "kind": "INDUCTOR",
+        "ref": "L2",
+        "value": "5mH",
+        "left": "A2",
+        "right": "B0",
+        "global_id": 3,
+        "in_suffix": "12df",
+        "out_suffix": "1311",
+        "x": 6604000,
+        "y": 2540000
+      },
+      {
+        "idx": 4,
+        "unit": 2,
+        "kind": "RESISTOR",
+        "ref": "R1",
+        "value": "10k",
+        "left": "BV",
+        "right": "A2",
+        "global_id": 4,
+        "in_suffix": "1506",
+        "out_suffix": "1538",
+        "x": 2794000,
+        "y": 5080000
+      }
+    ],
+    "wire_repair": {
+      "repaired_wire_count": 1,
+      "repairs": [
+        {
+          "wire_marker": 1322,
+          "old_y2": 15761216,
+          "new_y2": -1016000
+        }
+      ]
+    }
+  }
+}

@@ -2747,6 +2747,67 @@ The Source Passive V1 archive SHA256 is:
 This is a pending probe, not locked support, until the user confirms Proteus
 open/netlist behavior.
 
+User feedback:
+
+```text
+all SOURCE_PASSIVE_V1 cases worked
+```
+
+This locks source-driven R-only, C-only, L-only, RC, RL, and LC loads for DC
+voltage, DC current, and AC voltage sources in the current scope.
+
+## Source Passive V2 Two-Source Probe
+
+`SOURCE_PASSIVE_V2_TWO_SOURCE_TEMP_2026_06_05` tests source multiplicity after
+Source Passive V1 proved single-source passive loads.
+
+Method:
+
+```text
+DC two-source cases: V14 locked mixed-DC source-unit duplication with common D0 return
+AC two-source cases: duplicated ACV V2 exact non-final VSINE unit with unique two-character labels and suffix bytes
+passive body: accepted mixed_rcl subgroup modes
+AC current: intentionally out of scope
+```
+
+Test order:
+
+```text
+SRCP_V2_DCV2_T01_R_ONLY
+SRCP_V2_DCV2_T02_RC_RL
+SRCP_V2_DCI2_T03_R_ONLY
+SRCP_V2_DCI2_T04_RC_RL
+SRCP_V2_DCV_DCI_T05_R_ONLY
+SRCP_V2_DCV_DCI_T06_RCL_RC
+SRCP_V2_ACV2_T07_R_ONLY
+SRCP_V2_ACV2_T08_RC_RL
+SRCP_V2_ACV2_T09_RCL_RC
+SRCP_V2_ACV2_T10_C_ONLY
+SRCP_V2_ACV2_T11_L_ONLY
+SRCP_V2_ACV2_T12_CL_RL
+```
+
+Static checks:
+
+```text
+projects generated: 12
+required internals present in all projects: PROJECT.XML, ROOT.DSN, ROOT.CDB, SCRIPTS/PWRRAILS.DAT
+generated object chunks contain: 0 $TERPOWER, 0 $TERGROUND
+generated object chunks contain: 0 V0 labels, 0 G0 labels
+long/corrupt WIRE audit: 0 in every generated Source Passive V2 case
+focused mixed R/C/L regression: 7 passed, 34 subtests passed
+credential scan: no Groq, MongoDB, or Hugging Face token-pattern matches
+```
+
+The Source Passive V2 archive SHA256 is:
+
+```text
+3220de4791a8a7011358208a9ebaa5a735d6c2a7584b13e0cc4728eca412404c
+```
+
+This is a pending two-source probe, not locked support, until the user confirms
+Proteus open/netlist behavior.
+
 ## Supported Combinations Current Scope
 
 As of 2026-06-05, supported component-family combinations in the deterministic
@@ -2757,14 +2818,14 @@ single passive family: R, C, L
 two passive families: R+C, R+L, C+L
 three passive families: R+C+L
 passive topology with V0/G0 power/ground terminals: R, C, L, R+C, R+C+L
-source-driven topology without separate power/ground terminals: DC voltage + R/C/L, DC current + R/C/L, AC voltage + R/C/L
+single-source source-driven topology without separate power/ground terminals: DC voltage, DC current, or AC voltage + R, C, L, R+C, R+L, C+L, R+C+L
 multi-source DC topology: multiple DC voltage sources + multiple DC current sources + R/C/L
 ```
 
 Out of current scope or not locked:
 
 ```text
-source-driven single/two-family passive loads: pending Source Passive V1 user test
+two-source passive loads: pending Source Passive V2 user test
 AC current source: explicitly skipped by user
 ICs: planned next family, not yet implemented
 buttons/switches: planned later, not yet implemented
