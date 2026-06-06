@@ -17,6 +17,8 @@ OUTPUT_MARKER = b"$TEROUTPUT"
 INPUT_SIZE = 103
 OUTPUT_SIZE = 104
 TERMINAL_LABEL_X_OFFSET = 381000
+ORIENTATION_PRESERVE = "preserve"
+ORIENTATION_BY_TERMINAL_ROLE = "terminal_role"
 
 
 @dataclass(frozen=True)
@@ -172,7 +174,11 @@ def _ordinary_terminal_events(chunk: bytes) -> list[tuple[int, str, int]]:
 def replace_ordinary_terminals(
     chunk: bytes,
     templates: BidirTemplates,
+    *,
+    orientation_policy: str = ORIENTATION_PRESERVE,
 ) -> tuple[bytes, list[TerminalReplacement]]:
+    if orientation_policy not in {ORIENTATION_PRESERVE, ORIENTATION_BY_TERMINAL_ROLE}:
+        raise ValueError(f"Unsupported bidirectional orientation policy {orientation_policy!r}.")
     events = _ordinary_terminal_events(chunk)
     converted = bytearray(chunk)
     metadata: list[TerminalReplacement] = []
@@ -183,7 +189,10 @@ def replace_ordinary_terminals(
         label_start = length_offset + 1
         label = record[label_start : label_start + label_length].decode("ascii")
         symbol_x, symbol_y = struct.unpack("<ii", record[1:9])
-        angle_tenths = struct.unpack("<I", record[9:13])[0]
+        original_angle = struct.unpack("<I", record[9:13])[0]
+        angle_tenths = (
+            0 if kind == "output" else 1800
+        ) if orientation_policy == ORIENTATION_BY_TERMINAL_ROLE else original_angle
         suffix = struct.unpack("<H", record[-4:-2])[0]
         replacement = build_bidir_record(
             templates,

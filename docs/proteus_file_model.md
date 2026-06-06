@@ -46,6 +46,21 @@ input/output records and leaves `$TERPOWER` and `$TERGROUND` unchanged. This is
 not production-ready until the generated passive and source-driven pack passes
 manual Proteus testing.
 
+V1 manual testing established that preserving the ordinary record's numeric
+angle is insufficient because both legacy input/output records commonly store
+zero. The bidirectional replacement must retain the endpoint role:
+
+```text
+ordinary output -> $TERBIDIR angle 0
+ordinary input  -> $TERBIDIR angle 1800
+```
+
+Manual one- and two-DC-voltage-source donors also show that `ROOT.CDB` voltage
+source rows require named pin mappings `+ -> 1` and `- -> 2`. Encoding a
+`VSOURCE` row with passive unnamed `1/2` mappings produces the observed
+bad-object warning. The V2 experiment uses complete donor-native bidirectional
+DCV units and activates the terminal and source-body suffix links together.
+
 ## Layout Safety
 
 Manual component coordinates are accepted as placement hints, but the production resistor generator now stretches dense repeated x/y positions to a safe grid before writing `ROOT.DSN`. The current guard spacing is `2540000` internal units on x and `2540000` internal units on y. This keeps vertically oriented component/terminal groups farther apart while preserving the locked terminal-to-component offsets.

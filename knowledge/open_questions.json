@@ -913,12 +913,25 @@
       "id": "Q086",
       "priority": "high",
       "question": "Do BIDIRECTIONAL_V1_TEMP_2026_06_07 T00A-T10 open, render, and simulate after replacing every ordinary $TERINPUT/$TEROUTPUT record with an orientation-correct donor-derived $TERBIDIR record while preserving suffix links, power/ground terminals, component records, source records, and wires?",
-      "status": "awaiting_user_proteus_acceptance",
+      "status": "answered_partial_t00a_t08_and_t10_worked_t09_failed_dcv_orientation_incomplete",
       "needed_for": [
         "bidirectional_terminal_generation",
         "resistor_terminal_generation",
         "mixed_passive_terminal_generation",
         "mixed_rcl_terminal_generation",
+        "source_driven_terminal_generation",
+        "first_release_scope"
+      ]
+    },
+    {
+      "id": "Q087",
+      "priority": "high",
+      "question": "Do BIDIRECTIONAL_V2_ORIENTATION_DCV_TEMP_2026_06_07 T00A-T04 open without bad-object warnings, show true 0/180-degree bidirectional endpoints, and simulate after using donor-native DCV units plus +/1/-/2 CDB pin mappings? Does shared-negative T04 simulate when isolated T03 does not?",
+      "status": "awaiting_user_proteus_acceptance",
+      "needed_for": [
+        "bidirectional_terminal_generation",
+        "dc_voltage_source_generation",
+        "two_source_generation",
         "source_driven_terminal_generation",
         "first_release_scope"
       ]

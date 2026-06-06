@@ -262,6 +262,28 @@ Evidence:
   unchanged suffix occurrence counts, and clean static validation.
 - Manual Proteus open and simulation testing is still required before promotion.
 
+## D022: Correct bidirectional orientation and rebuild DCV from clean units
+
+Decision: retain V1 as historical evidence and issue a focused V2 experiment.
+Map ordinary outputs to the 0-degree bidirectional donor and ordinary inputs to
+the 180-degree donor. For DC voltage sources, append complete clean
+bidirectional source units and emit source-specific CDB pin mappings instead of
+converting the older malformed source output.
+
+Evidence:
+
+- The user reported every V1 case except two-DCV T09 worked, but V1 displayed
+  only 0-degree bidirectional terminals.
+- The supplied passive and source donors consistently use 0 degrees on ordinary
+  output-role endpoints and 1800 tenths on input-role endpoints.
+- The supplied one- and two-DCV projects encode each voltage source CDB row as
+  `+ -> 1` and `- -> 2`; V1 instead encoded voltage sources as passive `1/2`
+  parts, explaining the repeatable bad-object warning.
+- T09 also contains two disconnected negative nets. V2 keeps that topology as a
+  diagnostic and adds a shared-negative case to distinguish binary-record
+  validity from a SPICE singular-matrix failure.
+- Production remains unchanged pending manual V2 acceptance.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.
