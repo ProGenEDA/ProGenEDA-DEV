@@ -16,6 +16,7 @@ LayoutStrategy = Literal["beautify", "manual", "legacy"]
 
 X_SPACING = 3_810_000
 Y_SPACING = 2_540_000
+SOURCE_Y_SPACING = 5_080_000
 LEGACY_SPACING = 2_540_000
 WRAP_SLOTS = 7
 ORIGIN_X = -7_366_000
@@ -83,7 +84,7 @@ class LayoutPlan:
 
     def as_dict(self) -> dict[str, Any]:
         return {
-            "layout_version": "proteusgen-layout/v0.1",
+            "layout_version": "proteusgen-layout/v0.2",
             "route": self.route,
             "strategy": self.strategy,
             "direction": self.direction,
@@ -323,17 +324,27 @@ def _legacy_positions(
 
 
 def _node_levels(edges: list[LayoutEdge], roots: list[str]) -> dict[str, int]:
+    outgoing: dict[str, list[str]] = defaultdict(list)
     adjacency: dict[str, list[str]] = defaultdict(list)
+    indegree: dict[str, int] = defaultdict(int)
     node_order: dict[str, int] = {}
     for edge in edges:
         node_order.setdefault(edge.left, len(node_order))
         node_order.setdefault(edge.right, len(node_order))
+        outgoing[edge.left].append(edge.right)
         adjacency[edge.left].append(edge.right)
         adjacency[edge.right].append(edge.left)
+        indegree[edge.right] += 1
+        indegree.setdefault(edge.left, 0)
 
     levels: dict[str, int] = {}
     queue: deque[str] = deque()
-    for root in roots:
+    for index, root in enumerate(roots):
+        # Always preserve the primary power/source root. Additional source
+        # positives start a lane only when they are not already downstream of
+        # another passive path.
+        if index > 0 and indegree.get(root, 0) > 0:
+            continue
         if root in adjacency and root not in levels:
             levels[root] = 0
             queue.append(root)
@@ -341,25 +352,28 @@ def _node_levels(edges: list[LayoutEdge], roots: list[str]) -> dict[str, int]:
         first = min(node_order, key=node_order.get)
         levels[first] = 0
         queue.append(first)
-    while queue:
-        node = queue.popleft()
-        for neighbor in sorted(adjacency[node], key=lambda item: node_order[item]):
-            if neighbor not in levels:
-                levels[neighbor] = levels[node] + 1
-                queue.append(neighbor)
 
-    for node in sorted(node_order, key=node_order.get):
-        if node in levels:
-            continue
-        anchor = max(levels.values(), default=-1) + 1
-        levels[node] = anchor
-        queue.append(node)
+    def expand() -> None:
         while queue:
-            current = queue.popleft()
-            for neighbor in sorted(adjacency[current], key=lambda item: node_order[item]):
+            node = queue.popleft()
+            for neighbor in sorted(outgoing[node], key=lambda item: node_order[item]):
                 if neighbor not in levels:
-                    levels[neighbor] = levels[current] + 1
+                    levels[neighbor] = levels[node] + 1
                     queue.append(neighbor)
+
+    expand()
+    while len(levels) < len(node_order):
+        remaining = [node for node in node_order if node not in levels]
+        attached = [
+            node
+            for node in remaining
+            if any(neighbor in levels for neighbor in adjacency[node])
+        ]
+        node = min(attached or remaining, key=node_order.get)
+        neighbor_levels = [levels[neighbor] for neighbor in adjacency[node] if neighbor in levels]
+        levels[node] = min(neighbor_levels) + 1 if neighbor_levels else max(levels.values(), default=-1) + 1
+        queue.append(node)
+        expand()
     return levels
 
 
@@ -446,8 +460,10 @@ def _beautified_positions(
         right_level = levels.get(edge.right, left_level + 1)
         column = min(left_level, right_level)
         max_column = max(max_column, column)
-        lower_node = edge.left if left_level <= right_level else edge.right
-        candidate_lane = node_lanes.get(lower_node, 0)
+        # CircuitIR endpoint order is the strongest available indication of
+        # intended visual flow. Using the left-node lane keeps consecutive
+        # components that share the same net label horizontally aligned.
+        candidate_lane = node_lanes.get(edge.left, node_lanes.get(edge.right, 0))
         if edge.ref in cycle_rank:
             candidate_lane = cycle_lane_base + cycle_rank[edge.ref]
         by_column[column].append((edge, candidate_lane))
@@ -497,14 +513,32 @@ def _source_positions(
 
     out: dict[str, Position] = {}
     positive_counts: dict[str, int] = defaultdict(int)
+    occupied: list[Position] = []
+    source_column_x = min(
+        (position.x for position in node_positions.values()),
+        default=ORIGIN_X,
+    ) - X_SPACING
     for source in sources:
         duplicate_index = positive_counts[source.positive]
         positive_counts[source.positive] += 1
         anchor = node_positions.get(source.positive, Position(ORIGIN_X, ORIGIN_Y))
-        out[source.ref] = Position(
-            anchor.x - X_SPACING,
-            anchor.y - duplicate_index * Y_SPACING,
+        position = Position(
+            source_column_x,
+            anchor.y - duplicate_index * SOURCE_Y_SPACING,
         )
+        while any(
+            abs(position.x - other.x) < X_SPACING
+            and abs(position.y - other.y) < SOURCE_Y_SPACING
+            for other in occupied
+        ):
+            lowest_in_column = min(
+                other.y
+                for other in occupied
+                if abs(position.x - other.x) < X_SPACING
+            )
+            position = Position(position.x, lowest_in_column - SOURCE_Y_SPACING)
+        out[source.ref] = position
+        occupied.append(position)
     return out
 
 
@@ -514,7 +548,8 @@ def _overlaps(component_positions: dict[str, Position], source_positions: dict[s
     found: list[dict[str, Any]] = []
     for index, (left_ref, left_kind, left) in enumerate(items):
         for right_ref, right_kind, right in items[index + 1 :]:
-            if abs(left.x - right.x) < 2_540_000 and abs(left.y - right.y) < 1_270_000:
+            y_clearance = SOURCE_Y_SPACING if left_kind == right_kind == "source" else 1_270_000
+            if abs(left.x - right.x) < 2_540_000 and abs(left.y - right.y) < y_clearance:
                 found.append(
                     {
                         "first": left_ref,
@@ -605,6 +640,13 @@ def plan_payload(payload: Any, strategy_override: str | None = None) -> LayoutPl
         "Placement-only experiment: no standalone routed wires or junction records are emitted.",
         "Legacy remains the pre-acceptance default when layout.strategy is omitted.",
     ]
+    if config.strategy == "beautify":
+        notes.extend(
+            [
+                "Directed endpoint order and repeated node labels guide horizontal continuity.",
+                "Sources use a dedicated left column with source-sized vertical clearance.",
+            ]
+        )
     if config.inferred:
         notes.append("Layout strategy was inferred as legacy for pre-acceptance compatibility.")
     return LayoutPlan(

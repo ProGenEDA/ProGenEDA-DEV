@@ -208,3 +208,9 @@ until Proteus acceptance.
 Generation writes `layout_plan.json` and mirrors its placement, bounds, wrap,
 adjustment, motif, and overlap data into the manifest. No standalone wire or
 junction generation is part of this stage.
+
+After the first visual review, directed endpoint order is used as a placement
+preference so repeated node labels stay on the same horizontal lane when branch
+separation permits. Sources occupy a dedicated left column with source-sized
+vertical clearance. The AC path translates all `VSINE` body and visible-field
+coordinates together with its terminals and short-wire records.

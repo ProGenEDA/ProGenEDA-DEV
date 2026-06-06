@@ -206,6 +206,25 @@ Evidence:
 - Manual Proteus open, visual, and simulation testing is still pending, so this
   evidence is not sufficient to change the production default.
 
+## D019: Correct source geometry and prefer repeated-node continuity
+
+Decision: retain V1 as historical evidence and issue a focused V2 pack for
+source clearance, complete AC-source translation, and repeated-label lane
+continuity.
+
+Evidence:
+
+- User reported V1 was very good overall, but two sources could overlap and the
+  AC source body was far from its terminals with long visual connections.
+- Record inspection found that V1 translated AC terminal and wire coordinates
+  but omitted the `VSINE` body and visible value coordinate fields.
+- V2 translates those fields, uses a dedicated source column with `5080000`
+  anchor clearance, and follows directed CircuitIR endpoint order when deriving
+  levels and lanes.
+- Static V2 checks show zero overlaps, unchanged record identities and CDB
+  bytes, compact AC body-to-anchor offsets, and one-lane continuity for repeated
+  series node labels. Manual Proteus testing remains pending.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

@@ -64,8 +64,12 @@ motifs, and overlap results.
 - Parallel paths use separate lanes.
 - High-degree nodes, cycles, parallel edges, and same-level bridge/chord edges
   are detected generically.
-- Sources are placed one horizontal spacing left of the first driven branch.
-- Multiple sources sharing a net stack vertically.
+- CircuitIR endpoint order guides the left-to-right spanning layout. Consecutive
+  components sharing the same node label prefer one horizontal lane.
+- Sources use a dedicated column one horizontal spacing left of the network.
+- Multiple sources stack with `5080000` units of anchor clearance.
+- AC source translation keeps the `VSINE` body, visible fields, terminals, and
+  attached short-wire records together.
 - Explicit resistor orientation is preserved.
 - Capacitor, inductor, and source rotations are not invented.
 - Object order, suffixes, global IDs, terminators, CDB order, and net labels are

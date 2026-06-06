@@ -1,0 +1,231 @@
+{
+  "schema_version": "source-driven-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-source-driven-rcl-locked",
+  "status": "locked_current_scope",
+  "project_name": "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY",
+  "output_basename": "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "source_donor_fixture_id": "source_dc_mixed_v15_donor",
+  "source_count": 2,
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "12V",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 5,
+      "target": [
+        -9906000,
+        4064000
+      ]
+    },
+    {
+      "kind": "dc_current",
+      "ref": "I1",
+      "value": "2A",
+      "positive": "N1",
+      "negative": "D0",
+      "global_id": 6,
+      "target": [
+        -8128000,
+        1524000
+      ]
+    }
+  ],
+  "component_count_requested": 4,
+  "component_count_emitted_cdb": 4,
+  "component_count_emitted_dsn": 4,
+  "group_count": 2,
+  "group_modes": [
+    "RC",
+    "RL"
+  ],
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A1",
+      "right": "N1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -7366000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "DV",
+      "right": "A1",
+      "global_id": 2,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 2,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "A2",
+      "right": "D0",
+      "global_id": 3,
+      "in_suffix": "12df",
+      "out_suffix": "1311",
+      "x": 6604000,
+      "y": 2540000
+    },
+    {
+      "idx": 4,
+      "unit": 2,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "10k",
+      "left": "N1",
+      "right": "A2",
+      "global_id": 4,
+      "in_suffix": "1506",
+      "out_suffix": "1538",
+      "x": 2794000,
+      "y": 5080000
+    }
+  ],
+  "layout": {
+    "layout_version": "proteusgen-layout/v0.2",
+    "route": "source-driven",
+    "strategy": "legacy",
+    "direction": "left_to_right",
+    "experimental": false,
+    "component_positions": {
+      "C1": {
+        "x": -7366000,
+        "y": 2540000
+      },
+      "L1": {
+        "x": 6604000,
+        "y": 2540000
+      },
+      "R1": {
+        "x": -7366000,
+        "y": 5080000
+      },
+      "R2": {
+        "x": 2794000,
+        "y": 5080000
+      }
+    },
+    "source_positions": {
+      "I1": {
+        "x": -8128000,
+        "y": 1524000
+      },
+      "V1": {
+        "x": -9906000,
+        "y": 4064000
+      }
+    },
+    "node_positions": {},
+    "node_levels": {
+      "A1": 1,
+      "A2": 3,
+      "D0": 4,
+      "DV": 0,
+      "N1": 2
+    },
+    "bounds": {
+      "min_x": -10922000,
+      "min_y": 254000,
+      "max_x": 8890000,
+      "max_y": 6350000,
+      "width": 19812000,
+      "height": 6096000
+    },
+    "wrap_count": 0,
+    "adjustment_count": 0,
+    "overlap_count": 2,
+    "overlaps": [
+      {
+        "first": "C1",
+        "first_kind": "component",
+        "second": "I1",
+        "second_kind": "source"
+      },
+      {
+        "first": "V1",
+        "first_kind": "source",
+        "second": "I1",
+        "second_kind": "source"
+      }
+    ],
+    "motifs": [],
+    "notes": [
+      "Placement-only experiment: no standalone routed wires or junction records are emitted.",
+      "Legacy remains the pre-acceptance default when layout.strategy is omitted."
+    ]
+  },
+  "wire_repairs": [],
+  "object_chunk_len": 3963,
+  "root_cdb_len": 794,
+  "root_dsn_len": 72854,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "$TERINPUT": 6,
+    "$TEROUTPUT": 6,
+    "VSOURCE": 2,
+    "CSOURCE": 2,
+    "VSINE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 4,
+    "WIRE": 12
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 67948,
+    "second_isis": 71957,
+    "second_object_data": 71992,
+    "object_data_pointer": 72005
+  },
+  "static_validation_issues": [],
+  "metadata": {},
+  "component_value_overrides": {},
+  "known_limitations": [
+    "AC current sources are unsupported.",
+    "The accepted AC-voltage path supports one VSINE source.",
+    "DC voltage and DC current sources may be combined within the accepted nine-source limit.",
+    "Source and passive net labels are exactly two ASCII characters.",
+    "Passive geometry remains donor-derived horizontal terminal/component groups."
+  ],
+  "output_files": [
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.pdsprj",
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.ROOT.CDB.bin",
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.ROOT.DSN.bin",
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.OBJECT_CHUNK.bin",
+    "layout_plan.json",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.pdsprj": "8c13d02f0c1353425b89635a27e8953bdd6f4f5e9b6f53c11917c8e42137ff3d",
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.ROOT.CDB.bin": "1957ebc691174a52c47ed1ac813c494cbcfa9a45bceae8a54f5977aeaa657098",
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.ROOT.DSN.bin": "61fb9130645a54ad8031900ba7180ccee5f7dcfc025e303b360cba464a2640f9",
+    "BEAUTIFIER_V2_T01_DOUBLE_SOURCE_CLEARANCE_LEGACY.OBJECT_CHUNK.bin": "0c3348594e8f18ec4808a4707d41befbcdaf14a07321126712c116e11cfe6537",
+    "object_chunk": "0c3348594e8f18ec4808a4707d41befbcdaf14a07321126712c116e11cfe6537",
+    "ROOT.CDB": "1957ebc691174a52c47ed1ac813c494cbcfa9a45bceae8a54f5977aeaa657098",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "source_donor": "b25e04c905ccda879c3bc03e62a3d40246f710408e2221d5c9c8fd335e529aff"
+  }
+}

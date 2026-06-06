@@ -497,6 +497,8 @@ def _translate_source_text_fields(out: bytearray, start: int, end: int, dx: int,
         (b"\xff\x07CSOURCE", 9),
         (b"\x02\x00\x07CSOURCE", 10),
         (b"{PRIMITIVE=ANALOGUE}\n", len(b"{PRIMITIVE=ANALOGUE}\n")),
+        (b"\xff\x05VSINE", 7),
+        (b"\x02\x00\x05VSINE", 8),
     )
     data = bytes(out)
     for pattern, coord_delta in patterns:
