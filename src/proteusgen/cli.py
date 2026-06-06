@@ -12,6 +12,7 @@ from .circuit_ir import load_json, parse_circuit_ir
 from .comparison import compare_projects
 from .generator import GenerationBlocked, generate_project
 from .inspectors import find_all
+from .layout import LayoutError, plan_payload
 from .mixed_passive import MixedPassiveGenerationBlocked, generate_mixed_passive_project_from_payload
 from .mixed_rcl import MixedRclGenerationBlocked, generate_mixed_rcl_project_from_payload
 from .pdsprj import inspect_pdsprj, read_internal_file
@@ -80,7 +81,11 @@ def generate_command(args: argparse.Namespace) -> int:
 def generate_resistors_command(args: argparse.Namespace) -> int:
     payload = load_json(args.circuit)
     try:
-        result = generate_resistor_project_from_payload(payload, args.outdir)
+        result = generate_resistor_project_from_payload(
+            payload,
+            args.outdir,
+            layout_strategy=args.layout_strategy,
+        )
     except ResistorGenerationBlocked as exc:
         _print(exc.report.as_dict())
         return 2
@@ -91,7 +96,11 @@ def generate_resistors_command(args: argparse.Namespace) -> int:
 def generate_mixed_passives_command(args: argparse.Namespace) -> int:
     payload = load_json(args.circuit)
     try:
-        result = generate_mixed_passive_project_from_payload(payload, args.outdir)
+        result = generate_mixed_passive_project_from_payload(
+            payload,
+            args.outdir,
+            layout_strategy=args.layout_strategy,
+        )
     except MixedPassiveGenerationBlocked as exc:
         _print(exc.report.as_dict())
         return 2
@@ -102,7 +111,11 @@ def generate_mixed_passives_command(args: argparse.Namespace) -> int:
 def generate_mixed_rcl_command(args: argparse.Namespace) -> int:
     payload = load_json(args.circuit)
     try:
-        result = generate_mixed_rcl_project_from_payload(payload, args.outdir)
+        result = generate_mixed_rcl_project_from_payload(
+            payload,
+            args.outdir,
+            layout_strategy=args.layout_strategy,
+        )
     except MixedRclGenerationBlocked as exc:
         _print(exc.report.as_dict())
         return 2
@@ -113,11 +126,31 @@ def generate_mixed_rcl_command(args: argparse.Namespace) -> int:
 def generate_source_driven_command(args: argparse.Namespace) -> int:
     payload = load_json(args.circuit)
     try:
-        result = generate_source_driven_project_from_payload(payload, args.outdir)
+        result = generate_source_driven_project_from_payload(
+            payload,
+            args.outdir,
+            layout_strategy=args.layout_strategy,
+        )
     except SourceDrivenGenerationBlocked as exc:
         _print(exc.report.as_dict())
         return 2
     _print(result.as_dict())
+    return 0
+
+
+def plan_layout_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        plan = plan_payload(payload, args.layout_strategy)
+    except LayoutError as exc:
+        _print({"valid": False, "errors": [{"code": "INVALID_LAYOUT", "message": str(exc)}]})
+        return 2
+    rendered = json.dumps(plan.as_dict(), indent=2, sort_keys=True) + "\n"
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+    print(rendered, end="")
     return 0
 
 
@@ -167,16 +200,19 @@ def build_parser() -> argparse.ArgumentParser:
     resistor_parser = subparsers.add_parser("generate-resistors", help="Generate a V9 resistor-terminal project from CircuitIR v0.1")
     resistor_parser.add_argument("circuit")
     resistor_parser.add_argument("--outdir", required=True)
+    resistor_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
     resistor_parser.set_defaults(function=generate_resistors_command)
 
     mixed_parser = subparsers.add_parser("generate-mixed-passives", help="Generate a locked mixed resistor/capacitor terminal project")
     mixed_parser.add_argument("circuit")
     mixed_parser.add_argument("--outdir", required=True)
+    mixed_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
     mixed_parser.set_defaults(function=generate_mixed_passives_command)
 
     mixed_rcl_parser = subparsers.add_parser("generate-mixed-rcl", help="Generate a locked mixed resistor/capacitor/inductor terminal project")
     mixed_rcl_parser.add_argument("circuit")
     mixed_rcl_parser.add_argument("--outdir", required=True)
+    mixed_rcl_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
     mixed_rcl_parser.set_defaults(function=generate_mixed_rcl_command)
 
     source_parser = subparsers.add_parser(
@@ -185,7 +221,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     source_parser.add_argument("circuit")
     source_parser.add_argument("--outdir", required=True)
+    source_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
     source_parser.set_defaults(function=generate_source_driven_command)
+
+    layout_parser = subparsers.add_parser(
+        "plan-layout",
+        help="Preview deterministic component/source coordinates without generating a Proteus project",
+    )
+    layout_parser.add_argument("circuit")
+    layout_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
+    layout_parser.add_argument("--output", help="Optional JSON output path")
+    layout_parser.set_defaults(function=plan_layout_command)
 
     compare_parser = subparsers.add_parser("compare", help="Compare generated and resaved/oracle projects")
     compare_parser.add_argument("generated")

@@ -15,6 +15,13 @@ from pathlib import Path
 from typing import Any
 
 from .circuit_ir import Issue
+from .layout import (
+    LayoutError,
+    LayoutPlan,
+    actual_layout_plan,
+    apply_layout_to_payload,
+    plan_with_actual_positions,
+)
 from .pdsprj import read_internal_file, write_project_from_parts
 from .resistor_ir import (
     ComponentPosition,
@@ -46,6 +53,7 @@ class ResistorGenerationResult:
     output_path: Path
     cdb_path: Path
     dsn_path: Path
+    layout_path: Path
     manifest_path: Path
     readme_path: Path
     version_path: Path
@@ -56,6 +64,7 @@ class ResistorGenerationResult:
             "output_path": str(self.output_path),
             "root_cdb_path": str(self.cdb_path),
             "root_dsn_path": str(self.dsn_path),
+            "layout_plan_path": str(self.layout_path),
             "manifest_path": str(self.manifest_path),
             "readme_path": str(self.readme_path),
             "generator_version_path": str(self.version_path),
@@ -411,6 +420,7 @@ def build_object_chunk(
     ir: ResistorCircuitIR,
     templates: V9Templates,
     bridge_dsn: bytes | None = None,
+    layout_plan: LayoutPlan | None = None,
 ) -> tuple[bytes, list[dict[str, Any]], dict[str, Any]]:
     power_nodes = _power_nodes(ir)
     if len(power_nodes) > 1:
@@ -423,7 +433,14 @@ def build_object_chunk(
     maps: list[dict[str, Any]] = []
     auto_placed = 0
     ground_count = 0
-    safe_positions, layout_adjusted_count = _safe_component_positions(ir)
+    if layout_plan is not None and layout_plan.strategy in {"beautify", "manual"}:
+        safe_positions = {
+            ref: ComponentPosition(position.x, position.y)
+            for ref, position in layout_plan.component_positions.items()
+        }
+        layout_adjusted_count = layout_plan.adjustment_count
+    else:
+        safe_positions, layout_adjusted_count = _safe_component_positions(ir)
 
     for index, component in enumerate(ir.components, start=1):
         left, right = component.nodes
@@ -637,6 +654,7 @@ def generate_resistor_project(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_plan: LayoutPlan | None = None,
 ) -> ResistorGenerationResult:
     registry = registry or FixtureRegistry.load()
     failed_hashes = registry.verify_all()
@@ -653,7 +671,7 @@ def generate_resistor_project(
     donor_dsn = read_internal_file(donor.path, "ROOT.DSN")
     bridge_dsn = read_internal_file(bridge_donor.path, "ROOT.DSN")
     templates = _load_templates(donor_dsn, donor.path)
-    object_chunk, maps, generation_counts = build_object_chunk(ir, templates, bridge_dsn)
+    object_chunk, maps, generation_counts = build_object_chunk(ir, templates, bridge_dsn, layout_plan)
     cdb = build_cdb(ir.components)
     dsn, section_pointers = build_dsn(base_dsn, donor_dsn, object_chunk)
     dsn = patch_root_dsn_version(dsn, PROTEUS_813)
@@ -672,6 +690,7 @@ def generate_resistor_project(
     output_path = output_dir / f"{basename}.pdsprj"
     cdb_path = output_dir / f"{basename}.ROOT.CDB.bin"
     dsn_path = output_dir / f"{basename}.ROOT.DSN.bin"
+    layout_path = output_dir / "layout_plan.json"
     manifest_path = output_dir / "manifest.json"
     readme_path = output_dir / "README_TEST_FIRST.txt"
     version_path = output_dir / "generator_version.txt"
@@ -679,6 +698,12 @@ def generate_resistor_project(
     write_project_from_parts(base.path, output_path, {"PROJECT.XML": project_xml, "ROOT.CDB": cdb, "ROOT.DSN": dsn})
     cdb_path.write_bytes(cdb)
     dsn_path.write_bytes(dsn)
+    final_layout = (
+        plan_with_actual_positions(layout_plan, maps)
+        if layout_plan is not None
+        else actual_layout_plan("resistor", maps)
+    )
+    layout_path.write_text(json.dumps(final_layout.as_dict(), indent=2) + "\n", encoding="utf-8")
     version_path.write_text(
         "proteusgen resistor_v9 locked method\n"
         "base_fixture=e001_empty\n"
@@ -727,6 +752,7 @@ def generate_resistor_project(
         "object_group_count": len(ir.components),
         "auto_placed_count": generation_counts["auto_placed"],
         "layout_adjusted_count": generation_counts["layout_adjusted_count"],
+        "layout": final_layout.as_dict(),
         "object_chunk_len": len(object_chunk),
         "root_cdb_len": len(cdb),
         "root_dsn_len": len(dsn),
@@ -748,7 +774,15 @@ def generate_resistor_project(
             "Resistor drawing supports locked 90-degree rotations only; arbitrary diagonal component angles and routed bus/junction geometry are still experimental.",
             "Standalone layout.visual_wires are intentionally skipped in production until VGDVC-safe wire records are validated.",
         ],
-        "output_files": [output_path.name, cdb_path.name, dsn_path.name, manifest_path.name, readme_path.name, version_path.name],
+        "output_files": [
+            output_path.name,
+            cdb_path.name,
+            dsn_path.name,
+            layout_path.name,
+            manifest_path.name,
+            readme_path.name,
+            version_path.name,
+        ],
         "output_hashes": output_hashes,
     }
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -771,6 +805,7 @@ def generate_resistor_project(
         output_path=output_path,
         cdb_path=cdb_path,
         dsn_path=dsn_path,
+        layout_path=layout_path,
         manifest_path=manifest_path,
         readme_path=readme_path,
         version_path=version_path,
@@ -783,12 +818,18 @@ def generate_resistor_project_from_payload(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_strategy: str | None = None,
 ) -> ResistorGenerationResult:
-    ir, issues = parse_resistor_ir(payload)
+    try:
+        application = apply_layout_to_payload(payload, layout_strategy)
+    except LayoutError as exc:
+        issue = Issue("INVALID_LAYOUT", str(exc), "$.layout")
+        raise ResistorGenerationBlocked(ResistorValidationReport(errors=(issue,), warnings=(), circuit=None)) from exc
+    ir, issues = parse_resistor_ir(application.payload)
     if issues:
         raise ResistorGenerationBlocked(ResistorValidationReport(errors=tuple(issues), warnings=(), circuit=None))
     assert ir is not None
-    return generate_resistor_project(ir, outdir, registry=registry)
+    return generate_resistor_project(ir, outdir, registry=registry, layout_plan=application.plan)
 
 
 def validate_resistor_json_file(path: str | Path) -> ResistorValidationReport:

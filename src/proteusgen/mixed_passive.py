@@ -17,6 +17,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .circuit_ir import Issue
+from .layout import (
+    LayoutError,
+    LayoutPlan,
+    actual_layout_plan,
+    apply_layout_to_payload,
+    plan_with_actual_positions,
+)
 from .mixed_passive_ir import (
     MixedPassiveCircuitIR,
     MixedPassiveComponent,
@@ -46,6 +54,7 @@ class MixedPassiveGenerationResult:
     output_path: Path
     cdb_path: Path
     dsn_path: Path
+    layout_path: Path
     manifest_path: Path
     readme_path: Path
     version_path: Path
@@ -56,6 +65,7 @@ class MixedPassiveGenerationResult:
             "output_path": str(self.output_path),
             "root_cdb_path": str(self.cdb_path),
             "root_dsn_path": str(self.dsn_path),
+            "layout_plan_path": str(self.layout_path),
             "manifest_path": str(self.manifest_path),
             "readme_path": str(self.readme_path),
             "generator_version_path": str(self.version_path),
@@ -448,13 +458,21 @@ def build_object_chunk(
     cap_templates: ManualCapTemplates,
     res_templates: rv9.V9Templates,
     bridge_dsn: bytes,
+    layout_plan: LayoutPlan | None = None,
 ) -> tuple[bytes, list[dict[str, Any]], dict[str, Any]]:
     power_nodes = _power_nodes(ir)
     if len(power_nodes) > 1:
         raise ValueError("The locked mixed passive method supports one distinct power node per generated project.")
     bridge_cores = [rv9._load_power_bridge_core(bridge_dsn, node_id) for node_id in power_nodes]
     ground_nodes = _ground_nodes(ir)
-    safe_positions, layout_adjusted_count = _safe_component_positions(ir)
+    if layout_plan is not None and layout_plan.strategy in {"beautify", "manual"}:
+        safe_positions = {
+            ref: ComponentPosition(position.x, position.y)
+            for ref, position in layout_plan.component_positions.items()
+        }
+        layout_adjusted_count = layout_plan.adjustment_count
+    else:
+        safe_positions, layout_adjusted_count = _safe_component_positions(ir)
     cap_outputs: list[bytes] = []
     cap_groups: list[bytes] = []
     res_inputs: list[bytes] = []
@@ -576,6 +594,7 @@ def generate_mixed_passive_project(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_plan: LayoutPlan | None = None,
 ) -> MixedPassiveGenerationResult:
     registry = registry or FixtureRegistry.load()
     failed_hashes = registry.verify_all()
@@ -597,6 +616,7 @@ def generate_mixed_passive_project(
         cap_templates=cap_templates,
         res_templates=res_templates,
         bridge_dsn=bridge_dsn,
+        layout_plan=layout_plan,
     )
     cdb = build_cdb(ir.components)
     dsn, section_pointers = rv9.build_dsn(read_internal_file(base.path, "ROOT.DSN"), read_internal_file(resistor_donor.path, "ROOT.DSN"), object_chunk)
@@ -610,6 +630,7 @@ def generate_mixed_passive_project(
     output_path = output_dir / f"{basename}.pdsprj"
     cdb_path = output_dir / f"{basename}.ROOT.CDB.bin"
     dsn_path = output_dir / f"{basename}.ROOT.DSN.bin"
+    layout_path = output_dir / "layout_plan.json"
     manifest_path = output_dir / "manifest.json"
     readme_path = output_dir / "README_TEST_FIRST.txt"
     version_path = output_dir / "generator_version.txt"
@@ -617,6 +638,12 @@ def generate_mixed_passive_project(
     write_project_from_parts(base.path, output_path, {"PROJECT.XML": project_xml, "ROOT.CDB": cdb, "ROOT.DSN": dsn})
     cdb_path.write_bytes(cdb)
     dsn_path.write_bytes(dsn)
+    final_layout = (
+        plan_with_actual_positions(layout_plan, topology)
+        if layout_plan is not None
+        else actual_layout_plan("mixed-passive", topology)
+    )
+    layout_path.write_text(json.dumps(final_layout.as_dict(), indent=2) + "\n", encoding="utf-8")
     version_path.write_text(
         "proteusgen mixed_passive locked method\n"
         "base_fixture=e001_empty\n"
@@ -652,6 +679,7 @@ def generate_mixed_passive_project(
         "visual_wire_skipped_count": generation_counts["visual_wire_skipped_count"],
         "auto_placed_count": generation_counts["auto_placed"],
         "layout_adjusted_count": generation_counts["layout_adjusted_count"],
+        "layout": final_layout.as_dict(),
         "safe_spacing": {"x": SAFE_X_SPACING, "y": SAFE_Y_SPACING},
         "object_order": "header, power bridge, capacitor output array, capacitor groups, resistor input array, resistor output array, separator, resistor groups",
         "object_chunk_len": len(object_chunk),
@@ -666,7 +694,15 @@ def generate_mixed_passive_project(
             "Ground terminals are supported only on right endpoints.",
             "Standalone layout.visual_wires are intentionally skipped until VGDVC-safe records are validated.",
         ],
-        "output_files": [output_path.name, cdb_path.name, dsn_path.name, manifest_path.name, readme_path.name, version_path.name],
+        "output_files": [
+            output_path.name,
+            cdb_path.name,
+            dsn_path.name,
+            layout_path.name,
+            manifest_path.name,
+            readme_path.name,
+            version_path.name,
+        ],
         "output_hashes": {
             output_path.name: _sha256_file(output_path),
             cdb_path.name: _sha256_file(cdb_path),
@@ -691,7 +727,16 @@ def generate_mixed_passive_project(
         "- Dense or duplicate manual positions are stretched to the safe grid.\n",
         encoding="utf-8",
     )
-    return MixedPassiveGenerationResult(output_path, cdb_path, dsn_path, manifest_path, readme_path, version_path, manifest)
+    return MixedPassiveGenerationResult(
+        output_path,
+        cdb_path,
+        dsn_path,
+        layout_path,
+        manifest_path,
+        readme_path,
+        version_path,
+        manifest,
+    )
 
 
 def generate_mixed_passive_project_from_payload(
@@ -699,12 +744,25 @@ def generate_mixed_passive_project_from_payload(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_strategy: str | None = None,
 ) -> MixedPassiveGenerationResult:
-    ir, issues = parse_mixed_passive_ir(payload)
+    try:
+        application = apply_layout_to_payload(payload, layout_strategy)
+    except LayoutError as exc:
+        issue = Issue("INVALID_LAYOUT", str(exc), "$.layout")
+        raise MixedPassiveGenerationBlocked(
+            MixedPassiveValidationReport(errors=(issue,), warnings=(), circuit=None)
+        ) from exc
+    ir, issues = parse_mixed_passive_ir(application.payload)
     if issues:
         raise MixedPassiveGenerationBlocked(MixedPassiveValidationReport(errors=tuple(issues), warnings=(), circuit=None))
     assert ir is not None
-    return generate_mixed_passive_project(ir, outdir, registry=registry)
+    return generate_mixed_passive_project(
+        ir,
+        outdir,
+        registry=registry,
+        layout_plan=application.plan,
+    )
 
 
 def validate_mixed_passive_json_file(path: str | Path) -> MixedPassiveValidationReport:

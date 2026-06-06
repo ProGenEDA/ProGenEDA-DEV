@@ -3,7 +3,7 @@
   "$id": "https://example.local/proteusgen/resistor_circuit_ir_v0_1.schema.json",
   "title": "ProteusResistorCircuitIRV01",
   "type": "object",
-  "required": ["schema_version", "generator_target", "project", "nodes", "components", "layout"],
+  "required": ["schema_version", "generator_target", "project", "nodes", "components"],
   "additionalProperties": false,
   "properties": {
     "schema_version": {"const": "proteus-circuit-ir/v0.1"},
@@ -80,13 +80,26 @@
     },
     "layout": {
       "type": "object",
-      "required": ["mode", "coordinate_units", "component_positions"],
       "additionalProperties": false,
       "properties": {
+        "strategy": {"type": "string", "enum": ["beautify", "manual", "legacy"]},
+        "direction": {"const": "left_to_right"},
         "mode": {"enum": ["manual_component_positions", "branch_grid", "auto_grid"]},
         "coordinate_units": {"const": "proteus_internal"},
         "auto_place": {"type": "boolean"},
         "component_positions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["x", "y"],
+            "additionalProperties": false,
+            "properties": {
+              "x": {"type": "integer"},
+              "y": {"type": "integer"}
+            }
+          }
+        },
+        "source_positions": {
           "type": "object",
           "additionalProperties": {
             "type": "object",

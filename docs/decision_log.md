@@ -188,6 +188,24 @@ Implementation:
 - CLI: `proteusgen generate-mixed-passives`.
 - Spacing was reduced from the temporary `3810000` grid to the locked `2540000` safe grid. Duplicate manual positions are shifted so components are never emitted on top of each other.
 
+## D018: Keep topology-aware beautification opt-in until Proteus acceptance
+
+Decision: add one shared deterministic layout planner before binary emission,
+but keep `legacy` as the omitted-strategy default until the representative
+legacy-versus-beautified pack passes manual Proteus testing.
+
+Evidence:
+
+- The planner changes coordinates only and keeps all record construction inside
+  the accepted route emitters.
+- Automated tests verify deterministic output, exact manual placement, legacy
+  DSN/CDB parity, branch separation, seven-slot wrapping, source proximity, and
+  zero beautified placement overlaps.
+- Eleven representative legacy/beautified pairs generate with clean static
+  validation and identical `ROOT.CDB` files within each pair.
+- Manual Proteus open, visual, and simulation testing is still pending, so this
+  evidence is not sufficient to change the production default.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

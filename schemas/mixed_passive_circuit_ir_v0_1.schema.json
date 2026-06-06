@@ -4,7 +4,7 @@
   "title": "Proteus Mixed Passive CircuitIR v0.1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "generator_target", "project", "nodes", "components", "layout"],
+  "required": ["schema_version", "generator_target", "project", "nodes", "components"],
   "properties": {
     "schema_version": {"const": "proteus-mixed-passive-ir/v0.1"},
     "generator_target": {"const": "proteus-8.13-mixed-passive-terminal-power-ground"},
@@ -63,12 +63,25 @@
     "layout": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "coordinate_units", "component_positions"],
       "properties": {
+        "strategy": {"type": "string", "enum": ["beautify", "manual", "legacy"]},
+        "direction": {"const": "left_to_right"},
         "mode": {"type": "string", "enum": ["manual_component_positions", "branch_grid", "auto_grid"]},
         "coordinate_units": {"const": "proteus_internal"},
         "auto_place": {"type": "boolean", "default": false},
         "component_positions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y"],
+            "properties": {
+              "x": {"type": "integer"},
+              "y": {"type": "integer"}
+            }
+          }
+        },
+        "source_positions": {
           "type": "object",
           "additionalProperties": {
             "type": "object",

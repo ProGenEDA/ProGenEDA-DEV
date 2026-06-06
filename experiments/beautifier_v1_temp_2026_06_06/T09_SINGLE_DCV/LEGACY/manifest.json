@@ -1,0 +1,183 @@
+{
+  "schema_version": "source-driven-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-source-driven-rcl-locked",
+  "status": "locked_current_scope",
+  "project_name": "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY",
+  "output_basename": "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "source_donor_fixture_id": "source_dc_mixed_v15_donor",
+  "source_count": 1,
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "10V",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 4,
+      "target": [
+        -9906000,
+        4064000
+      ]
+    }
+  ],
+  "component_count_requested": 3,
+  "component_count_emitted_cdb": 3,
+  "component_count_emitted_dsn": 3,
+  "group_count": 2,
+  "group_modes": [
+    "RC",
+    "L"
+  ],
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A1",
+      "right": "N1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -7366000,
+      "y": 2540000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "DV",
+      "right": "A1",
+      "global_id": 2,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 2,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "N1",
+      "right": "D0",
+      "global_id": 3,
+      "in_suffix": "12df",
+      "out_suffix": "1311",
+      "x": 6604000,
+      "y": 2540000
+    }
+  ],
+  "layout": {
+    "layout_version": "proteusgen-layout/v0.1",
+    "route": "source-driven",
+    "strategy": "legacy",
+    "direction": "left_to_right",
+    "experimental": false,
+    "component_positions": {
+      "C1": {
+        "x": -7366000,
+        "y": 2540000
+      },
+      "L1": {
+        "x": 6604000,
+        "y": 2540000
+      },
+      "R1": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    "source_positions": {
+      "V1": {
+        "x": -9906000,
+        "y": 4064000
+      }
+    },
+    "node_positions": {},
+    "node_levels": {
+      "A1": 1,
+      "D0": 3,
+      "DV": 0,
+      "N1": 2
+    },
+    "bounds": {
+      "min_x": -10922000,
+      "min_y": 1270000,
+      "max_x": 8890000,
+      "max_y": 6350000,
+      "width": 19812000,
+      "height": 5080000
+    },
+    "wrap_count": 0,
+    "adjustment_count": 0,
+    "overlap_count": 0,
+    "overlaps": [],
+    "motifs": [],
+    "notes": [
+      "Placement-only experiment: no standalone routed wires or junction records are emitted.",
+      "Legacy remains the pre-acceptance default when layout.strategy is omitted."
+    ]
+  },
+  "wire_repairs": [],
+  "object_chunk_len": 2657,
+  "root_cdb_len": 588,
+  "root_dsn_len": 71548,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 4,
+    "VSOURCE": 2,
+    "CSOURCE": 0,
+    "VSINE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 2,
+    "WIRE": 8
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 67948,
+    "second_isis": 70651,
+    "second_object_data": 70686,
+    "object_data_pointer": 70699
+  },
+  "static_validation_issues": [],
+  "metadata": {},
+  "component_value_overrides": {},
+  "known_limitations": [
+    "AC current sources are unsupported.",
+    "The accepted AC-voltage path supports one VSINE source.",
+    "DC voltage and DC current sources may be combined within the accepted nine-source limit.",
+    "Source and passive net labels are exactly two ASCII characters.",
+    "Passive geometry remains donor-derived horizontal terminal/component groups."
+  ],
+  "output_files": [
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.pdsprj",
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.ROOT.CDB.bin",
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.ROOT.DSN.bin",
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.OBJECT_CHUNK.bin",
+    "layout_plan.json",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.pdsprj": "bbea54994eb201492f71b4de26b7c5ab6ef5dcc49df8912fd59a490995317067",
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.ROOT.CDB.bin": "f6bbfe57444d740d08e6e01d0d85c2def0435cede8aad557ca11479827072d51",
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.ROOT.DSN.bin": "357e3588d703af2a062d60033ea4ba026908758c7b8221b0a1348583a8a58131",
+    "BEAUTIFIER_V1_T09_SINGLE_DCV_LEGACY.OBJECT_CHUNK.bin": "6c649841023268d3c9bf739908c02b12fba0dcba76a0bb35b9ad021a0232210e",
+    "object_chunk": "6c649841023268d3c9bf739908c02b12fba0dcba76a0bb35b9ad021a0232210e",
+    "ROOT.CDB": "f6bbfe57444d740d08e6e01d0d85c2def0435cede8aad557ca11479827072d51",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "source_donor": "b25e04c905ccda879c3bc03e62a3d40246f710408e2221d5c9c8fd335e529aff"
+  }
+}

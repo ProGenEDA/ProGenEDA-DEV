@@ -191,3 +191,20 @@ inductor code moves into the main generator.
 - microcontrollers with firmware
 - PCB layout generation
 - simulation result verification
+
+## Experimental pre-emission beautifier
+
+`src/proteusgen/layout.py` normalizes the accepted resistor, mixed-passive,
+mixed-RCL, and source-driven inputs into passive graph edges and anchored source
+blocks. It produces coordinates only. Route emitters remain responsible for
+all binary records and electrical labels.
+
+The planner supports `beautify`, `manual`, and `legacy`. `beautify` derives
+levels and branch lanes from topology, uses a fixed deterministic grid, and
+wraps long paths after seven slots. `manual` requires exact positions.
+`legacy` delegates to the accepted route-specific placement and is the default
+until Proteus acceptance.
+
+Generation writes `layout_plan.json` and mirrors its placement, bounds, wrap,
+adjustment, motif, and overlap data into the manifest. No standalone wire or
+junction generation is part of this stage.

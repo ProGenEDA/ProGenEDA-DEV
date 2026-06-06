@@ -19,6 +19,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+from .layout import (
+    LayoutError,
+    LayoutPlan,
+    actual_layout_plan,
+    apply_layout_to_payload,
+    plan_with_actual_positions,
+)
 from . import mixed_rcl as rcl
 from . import resistor_v9 as rv9
 from .pdsprj import read_internal_file, write_project_from_parts
@@ -116,6 +123,7 @@ class SourceDrivenGenerationResult:
     cdb_path: Path
     dsn_path: Path
     chunk_path: Path
+    layout_path: Path
     manifest_path: Path
     readme_path: Path
     version_path: Path
@@ -127,6 +135,7 @@ class SourceDrivenGenerationResult:
             "root_cdb_path": str(self.cdb_path),
             "root_dsn_path": str(self.dsn_path),
             "object_chunk_path": str(self.chunk_path),
+            "layout_plan_path": str(self.layout_path),
             "manifest_path": str(self.manifest_path),
             "readme_path": str(self.readme_path),
             "generator_version_path": str(self.version_path),
@@ -386,6 +395,7 @@ def _build_dsn_with_devices(
 def _source_net_rcl(
     ir: SourceDrivenCircuitIR,
     templates: rcl.RclUnitTemplates,
+    layout_plan: LayoutPlan | None = None,
 ) -> tuple[bytes, list[rcl.RclSpec], list[dict[str, Any]], dict[str, Any]]:
     passive_ir = rcl.MixedRclCircuitIR(
         schema_version=rcl.SCHEMA_VERSION,
@@ -396,7 +406,11 @@ def _source_net_rcl(
         component_values=ir.component_values,
         metadata=ir.metadata,
     )
-    chunk_with_bridge, specs, topology, counts = rcl.build_object_chunk(passive_ir, templates)
+    chunk_with_bridge, specs, topology, counts = rcl.build_object_chunk(
+        passive_ir,
+        templates,
+        layout_plan,
+    )
     bridge_end = 1 + rv9.POWER_BRIDGE_CORE_SIZE
     body = bytearray(chunk_with_bridge[bridge_end:])
     if body.count(b"$TERPOWER") or body.count(b"$TERGROUND"):
@@ -738,6 +752,7 @@ def _build_dc_object_chunk(
     source_net_chunk: bytes,
     specs: list[rcl.RclSpec],
     donor_chunk: bytes,
+    layout_plan: LayoutPlan | None = None,
 ) -> tuple[bytes, list[dict[str, Any]], list[dict[str, int]]]:
     templates = _source_templates(donor_chunk)
     positions = _body_terminal_positions(source_net_chunk)
@@ -750,7 +765,16 @@ def _build_dc_object_chunk(
     for source_index, source in enumerate(ir.sources, start=1):
         duplicate_index = positive_counts.get(source.positive, 0)
         positive_counts[source.positive] = duplicate_index + 1
-        target = _source_target(source, positions, duplicate_index)
+        target_position = (
+            layout_plan.source_positions.get(source.ref)
+            if layout_plan is not None
+            else None
+        )
+        target = (
+            (target_position.x, target_position.y)
+            if target_position is not None
+            else _source_target(source, positions, duplicate_index)
+        )
         global_id = first_source_id + source_index - 1
         if source.kind == "dc_voltage":
             output, tail, info = _build_vsource_unit(
@@ -812,19 +836,30 @@ def _build_ac_object_chunk(
     specs: list[rcl.RclSpec],
     source: SourcePlan,
     two_source_project: Path,
+    layout_plan: LayoutPlan | None = None,
 ) -> tuple[bytes, list[dict[str, Any]]]:
     body = rv9._extract_object_chunk(read_internal_file(two_source_project, "ROOT.DSN"))[1:]
     block = bytearray(body[105:778])
     if len(block) != 673 or block.count(b"VSINE") != 3:
         raise RuntimeError("Accepted non-final AC source unit shape changed.")
+    target_position = (
+        layout_plan.source_positions.get(source.ref)
+        if layout_plan is not None
+        else None
+    )
+    if target_position is not None:
+        events = _terminal_events(bytes(block))
+        output_start = next(start for start, kind, _label in events if kind == "OUT")
+        dx = target_position.x - _s32(block, output_start + 1)
+        dy = target_position.y - _s32(block, output_start + 5)
+        block = bytearray(_translate_block(bytes(block), dx, dy))
     global_id = len(specs) + 1
     block[207:573] = _patch_ac_source_global_id(bytes(block[207:573]), global_id)
     block[-1] = 0x00
     patched = _patch_ac_terminal_labels(bytes(block), source)
     object_chunk = bytearray(b"\x00" + patched + source_net_chunk[1:])
     object_chunk[-1] = 0xFF
-    return bytes(object_chunk), [
-        {
+    metadata = {
             "kind": source.kind,
             "ref": source.ref,
             "value": source.value,
@@ -832,7 +867,9 @@ def _build_ac_object_chunk(
             "negative": source.negative,
             "global_id": global_id,
         }
-    ]
+    if target_position is not None:
+        metadata["target"] = [target_position.x, target_position.y]
+    return bytes(object_chunk), [metadata]
 
 
 def _build_cdb(
@@ -932,6 +969,7 @@ def generate_source_driven_project(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_plan: LayoutPlan | None = None,
 ) -> SourceDrivenGenerationResult:
     registry = registry or FixtureRegistry.load()
     failed_hashes = registry.verify_all()
@@ -944,7 +982,11 @@ def generate_source_driven_project(
     base = registry.get("e001_empty")
     rcl_donor = registry.get("rcl_4x_t07_unit_donor")
     templates = rcl._load_rcl_unit_templates(rcl_donor.path)
-    source_net_chunk, specs, topology, generation_counts = _source_net_rcl(ir, templates)
+    source_net_chunk, specs, topology, generation_counts = _source_net_rcl(
+        ir,
+        templates,
+        layout_plan,
+    )
 
     ac_source = next((item for item in ir.sources if item.kind == "ac_voltage"), None)
     wire_repairs: list[dict[str, int]] = []
@@ -952,14 +994,26 @@ def generate_source_driven_project(
         ac_two = registry.get("source_acv_two_source_donor")
         ac_variant = registry.get("source_acv_variant_donor")
         dsn_donor = registry.get("source_acv_load_donor")
-        object_chunk, source_metadata = _build_ac_object_chunk(source_net_chunk, specs, ac_source, ac_two.path)
+        object_chunk, source_metadata = _build_ac_object_chunk(
+            source_net_chunk,
+            specs,
+            ac_source,
+            ac_two.path,
+            layout_plan,
+        )
         ac_prop_text = _source_prop_text(ac_variant.path)
         cdb = _build_cdb(specs, ir.sources, ac_prop_text=ac_prop_text)
     else:
         dsn_donor = registry.get("source_dc_mixed_v15_donor")
         donor_dsn = read_internal_file(dsn_donor.path, "ROOT.DSN")
         donor_chunk = rv9._extract_object_chunk(donor_dsn)
-        object_chunk, source_metadata, wire_repairs = _build_dc_object_chunk(ir, source_net_chunk, specs, donor_chunk)
+        object_chunk, source_metadata, wire_repairs = _build_dc_object_chunk(
+            ir,
+            source_net_chunk,
+            specs,
+            donor_chunk,
+            layout_plan,
+        )
         cdb = _build_cdb(specs, ir.sources)
 
     donor_dsn = read_internal_file(dsn_donor.path, "ROOT.DSN")
@@ -983,6 +1037,7 @@ def generate_source_driven_project(
     cdb_path = output_dir / f"{basename}.ROOT.CDB.bin"
     dsn_path = output_dir / f"{basename}.ROOT.DSN.bin"
     chunk_path = output_dir / f"{basename}.OBJECT_CHUNK.bin"
+    layout_path = output_dir / "layout_plan.json"
     manifest_path = output_dir / "manifest.json"
     readme_path = output_dir / "README_TEST_FIRST.txt"
     version_path = output_dir / "generator_version.txt"
@@ -991,6 +1046,12 @@ def generate_source_driven_project(
     cdb_path.write_bytes(cdb)
     dsn_path.write_bytes(dsn)
     chunk_path.write_bytes(object_chunk)
+    final_layout = (
+        plan_with_actual_positions(layout_plan, topology, source_metadata)
+        if layout_plan is not None
+        else actual_layout_plan("source-driven", topology, source_metadata)
+    )
+    layout_path.write_text(json.dumps(final_layout.as_dict(), indent=2) + "\n", encoding="utf-8")
     version_path.write_text(
         "proteusgen source_driven locked method\n"
         "base_fixture=e001_empty\n"
@@ -1017,6 +1078,7 @@ def generate_source_driven_project(
         "group_count": generation_counts["group_count"],
         "group_modes": generation_counts["group_modes"],
         "topology": sorted(topology, key=lambda item: item["idx"]),
+        "layout": final_layout.as_dict(),
         "wire_repairs": wire_repairs,
         "object_chunk_len": len(object_chunk),
         "root_cdb_len": len(cdb),
@@ -1032,6 +1094,16 @@ def generate_source_driven_project(
             "DC voltage and DC current sources may be combined within the accepted nine-source limit.",
             "Source and passive net labels are exactly two ASCII characters.",
             "Passive geometry remains donor-derived horizontal terminal/component groups.",
+        ],
+        "output_files": [
+            output_path.name,
+            cdb_path.name,
+            dsn_path.name,
+            chunk_path.name,
+            layout_path.name,
+            manifest_path.name,
+            readme_path.name,
+            version_path.name,
         ],
         "output_hashes": {
             output_path.name: _sha256_file(output_path),
@@ -1059,6 +1131,7 @@ def generate_source_driven_project(
         cdb_path,
         dsn_path,
         chunk_path,
+        layout_path,
         manifest_path,
         readme_path,
         version_path,
@@ -1071,9 +1144,21 @@ def generate_source_driven_project_from_payload(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_strategy: str | None = None,
 ) -> SourceDrivenGenerationResult:
-    ir, issues = parse_source_driven_ir(payload)
+    try:
+        application = apply_layout_to_payload(payload, layout_strategy)
+    except LayoutError as exc:
+        raise SourceDrivenGenerationBlocked(
+            SourceDrivenValidationReport((str(exc),), (), None)
+        ) from exc
+    ir, issues = parse_source_driven_ir(application.payload)
     if issues:
         raise SourceDrivenGenerationBlocked(SourceDrivenValidationReport(tuple(issues), (), None))
     assert ir is not None
-    return generate_source_driven_project(ir, outdir, registry=registry)
+    return generate_source_driven_project(
+        ir,
+        outdir,
+        registry=registry,
+        layout_plan=application.plan,
+    )

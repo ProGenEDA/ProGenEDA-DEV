@@ -190,8 +190,22 @@ def parse_mixed_passive_ir(payload: Any) -> tuple[MixedPassiveCircuitIR | None, 
             )
         )
 
-    layout_obj = _mapping(root.get("layout"), "$.layout", issues)
-    _unexpected(layout_obj, {"mode", "coordinate_units", "component_positions", "visual_wires", "auto_place"}, "$.layout", issues)
+    layout_obj = _mapping(root.get("layout", {}), "$.layout", issues)
+    _unexpected(
+        layout_obj,
+        {
+            "mode",
+            "coordinate_units",
+            "component_positions",
+            "source_positions",
+            "visual_wires",
+            "auto_place",
+            "strategy",
+            "direction",
+        },
+        "$.layout",
+        issues,
+    )
     positions_raw = _mapping(layout_obj.get("component_positions", {}) or {}, "$.layout.component_positions", issues)
     positions: dict[str, ComponentPosition] = {}
     for ref, raw_position in positions_raw.items():
@@ -215,7 +229,25 @@ def parse_mixed_passive_ir(payload: Any) -> tuple[MixedPassiveCircuitIR | None, 
             issues.append(Issue("INVALID_VISUAL_WIRE", "Visual wires require integer x1, y1, x2, and y2.", path))
             continue
         visual_wires.append(VisualWire(x1=coords["x1"], y1=coords["y1"], x2=coords["x2"], y2=coords["y2"]))
-    auto_place = layout_obj.get("auto_place", False)
+    strategy = layout_obj.get("strategy")
+    if strategy is not None and strategy not in {"beautify", "manual", "legacy"}:
+        issues.append(
+            Issue(
+                "UNSUPPORTED_LAYOUT_STRATEGY",
+                "Use `beautify`, `manual`, or `legacy`.",
+                "$.layout.strategy",
+            )
+        )
+    direction = layout_obj.get("direction", "left_to_right")
+    if direction != "left_to_right":
+        issues.append(
+            Issue(
+                "UNSUPPORTED_LAYOUT_DIRECTION",
+                "Only `left_to_right` is currently supported.",
+                "$.layout.direction",
+            )
+        )
+    auto_place = layout_obj.get("auto_place", strategy == "beautify" or not layout_obj)
     if not isinstance(auto_place, bool):
         issues.append(Issue("INVALID_TYPE", "`auto_place` must be a boolean.", "$.layout.auto_place"))
         auto_place = False
@@ -234,8 +266,8 @@ def parse_mixed_passive_ir(payload: Any) -> tuple[MixedPassiveCircuitIR | None, 
             nodes=tuple(nodes),
             components=tuple(components),
             layout=MixedPassiveLayout(
-                mode=_nonempty_string(layout_obj, "mode", "$.layout", issues),
-                coordinate_units=_nonempty_string(layout_obj, "coordinate_units", "$.layout", issues),
+                mode=layout_obj.get("mode", "auto_grid" if strategy == "beautify" else "manual_component_positions"),
+                coordinate_units=layout_obj.get("coordinate_units", "proteus_internal"),
                 component_positions=positions,
                 visual_wires=tuple(visual_wires),
                 auto_place=auto_place,

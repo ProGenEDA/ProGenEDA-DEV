@@ -17,6 +17,14 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal
 
+from .layout import (
+    LayoutError,
+    LayoutPlan,
+    Position,
+    actual_layout_plan,
+    apply_layout_to_payload,
+    plan_with_actual_positions,
+)
 from . import mixed_passive as mp
 from . import resistor_v9 as rv9
 from .pdsprj import read_internal_file, write_project_from_parts
@@ -113,6 +121,7 @@ class MixedRclGenerationResult:
     cdb_path: Path
     dsn_path: Path
     chunk_path: Path
+    layout_path: Path
     manifest_path: Path
     readme_path: Path
     version_path: Path
@@ -124,6 +133,7 @@ class MixedRclGenerationResult:
             "root_cdb_path": str(self.cdb_path),
             "root_dsn_path": str(self.dsn_path),
             "object_chunk_path": str(self.chunk_path),
+            "layout_plan_path": str(self.layout_path),
             "manifest_path": str(self.manifest_path),
             "readme_path": str(self.readme_path),
             "generator_version_path": str(self.version_path),
@@ -731,6 +741,7 @@ def _make_specs(
     ids: dict[str, int],
     ref_counts: dict[str, int],
     component_values: dict[str, str],
+    component_positions: dict[str, Position] | None = None,
 ) -> dict[str, RclSpec]:
     dummy = {kind: ids.get(kind, 240 + "CLR".index(kind)) for kind in "CLR"}
     cap, ind, res = _unit_specs(unit_index, global_ids=(dummy["C"], dummy["L"], dummy["R"]))
@@ -741,7 +752,19 @@ def _make_specs(
         ref_counts[kind] += 1
         ref = _two_char(kind, ref_counts[kind])
         value = component_values.get(ref, spec.value)
-        return replace(spec, idx=ids[kind], ref=ref, source_ref=ref, value=value, visible_value=value, left=left, right=right)
+        position = (component_positions or {}).get(ref)
+        return replace(
+            spec,
+            idx=ids[kind],
+            ref=ref,
+            source_ref=ref,
+            value=value,
+            visible_value=value,
+            left=left,
+            right=right,
+            x=position.x if position is not None else spec.x,
+            y=position.y if position is not None else spec.y,
+        )
 
     if group_item.mode == "RCL":
         return {
@@ -894,10 +917,18 @@ def _patch_group(
     ids: dict[str, int],
     ref_counts: dict[str, int],
     component_values: dict[str, str],
+    component_positions: dict[str, Position] | None = None,
 ) -> tuple[bytes, list[RclSpec], list[dict[str, Any]]]:
     slot = templates.units[(unit_index - 1) % len(templates.units)]
     suffixes = _suffixes(unit_index)
-    specs = _make_specs(group_item, unit_index, ids, ref_counts, component_values)
+    specs = _make_specs(
+        group_item,
+        unit_index,
+        ids,
+        ref_counts,
+        component_values,
+        component_positions,
+    )
     final_kind = _last_emitted_group(group_item.mode) if is_final else ""
     parts: list[bytes] = []
     emitted: list[RclSpec] = []
@@ -922,7 +953,11 @@ def _patch_group(
     return b"".join(parts), emitted, topology
 
 
-def build_object_chunk(ir: MixedRclCircuitIR, templates: RclUnitTemplates) -> tuple[bytes, list[RclSpec], list[dict[str, Any]], dict[str, Any]]:
+def build_object_chunk(
+    ir: MixedRclCircuitIR,
+    templates: RclUnitTemplates,
+    layout_plan: LayoutPlan | None = None,
+) -> tuple[bytes, list[RclSpec], list[dict[str, Any]], dict[str, Any]]:
     ids_by_group = _ids_for_groups(ir.groups)
     ref_counts = {"C": 0, "L": 0, "R": 0}
     chunks: list[bytes] = []
@@ -937,6 +972,7 @@ def build_object_chunk(ir: MixedRclCircuitIR, templates: RclUnitTemplates) -> tu
             ids=ids,
             ref_counts=ref_counts,
             component_values=ir.component_values,
+            component_positions=layout_plan.component_positions if layout_plan is not None else None,
         )
         chunks.append(chunk)
         specs.extend(group_specs)
@@ -1062,6 +1098,7 @@ def generate_mixed_rcl_project(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_plan: LayoutPlan | None = None,
 ) -> MixedRclGenerationResult:
     registry = registry or FixtureRegistry.load()
     failed_hashes = registry.verify_all()
@@ -1074,7 +1111,7 @@ def generate_mixed_rcl_project(
     base = registry.get("e001_empty")
     donor = registry.get("rcl_4x_t07_unit_donor")
     templates = _load_rcl_unit_templates(donor.path)
-    object_chunk, specs, topology, generation_counts = build_object_chunk(ir, templates)
+    object_chunk, specs, topology, generation_counts = build_object_chunk(ir, templates, layout_plan)
     cdb = build_cdb(specs)
     dsn, section_pointers = rv9.build_dsn(read_internal_file(base.path, "ROOT.DSN"), read_internal_file(donor.path, "ROOT.DSN"), object_chunk)
     dsn = patch_root_dsn_version(dsn, PROTEUS_813)
@@ -1090,6 +1127,7 @@ def generate_mixed_rcl_project(
     cdb_path = output_dir / f"{basename}.ROOT.CDB.bin"
     dsn_path = output_dir / f"{basename}.ROOT.DSN.bin"
     chunk_path = output_dir / f"{basename}.OBJECT_CHUNK.bin"
+    layout_path = output_dir / "layout_plan.json"
     manifest_path = output_dir / "manifest.json"
     readme_path = output_dir / "README_TEST_FIRST.txt"
     version_path = output_dir / "generator_version.txt"
@@ -1098,6 +1136,12 @@ def generate_mixed_rcl_project(
     cdb_path.write_bytes(cdb)
     dsn_path.write_bytes(dsn)
     chunk_path.write_bytes(object_chunk)
+    final_layout = (
+        plan_with_actual_positions(layout_plan, topology)
+        if layout_plan is not None
+        else actual_layout_plan("mixed-rcl", topology)
+    )
+    layout_path.write_text(json.dumps(final_layout.as_dict(), indent=2) + "\n", encoding="utf-8")
     version_path.write_text(
         "proteusgen mixed_rcl locked method\n"
         "base_fixture=e001_empty\n"
@@ -1135,6 +1179,7 @@ def generate_mixed_rcl_project(
         "marker_counts": _marker_counts(object_chunk),
         "section_pointer_values": section_pointers,
         "topology": sorted(topology, key=lambda item: item["idx"]),
+        "layout": final_layout.as_dict(),
         "components": _component_payload(specs),
         "static_validation_issues": chunk_issues,
         "metadata": ir.metadata,
@@ -1151,6 +1196,7 @@ def generate_mixed_rcl_project(
             cdb_path.name,
             dsn_path.name,
             chunk_path.name,
+            layout_path.name,
             manifest_path.name,
             readme_path.name,
             version_path.name,
@@ -1182,7 +1228,17 @@ def generate_mixed_rcl_project(
         "- R/C/L, RC, LC, RL, C-only, R-only, and L-only blocks are made by removing whole subgroups from accepted donor units.\n",
         encoding="utf-8",
     )
-    return MixedRclGenerationResult(output_path, cdb_path, dsn_path, chunk_path, manifest_path, readme_path, version_path, manifest)
+    return MixedRclGenerationResult(
+        output_path,
+        cdb_path,
+        dsn_path,
+        chunk_path,
+        layout_path,
+        manifest_path,
+        readme_path,
+        version_path,
+        manifest,
+    )
 
 
 def generate_mixed_rcl_project_from_payload(
@@ -1190,12 +1246,24 @@ def generate_mixed_rcl_project_from_payload(
     outdir: str | Path,
     *,
     registry: FixtureRegistry | None = None,
+    layout_strategy: str | None = None,
 ) -> MixedRclGenerationResult:
-    ir, issues = parse_mixed_rcl_ir(payload)
+    try:
+        application = apply_layout_to_payload(payload, layout_strategy)
+    except LayoutError as exc:
+        raise MixedRclGenerationBlocked(
+            MixedRclValidationReport(errors=(str(exc),), warnings=(), circuit=None)
+        ) from exc
+    ir, issues = parse_mixed_rcl_ir(application.payload)
     if issues:
         raise MixedRclGenerationBlocked(MixedRclValidationReport(errors=tuple(issues), warnings=(), circuit=None))
     assert ir is not None
-    return generate_mixed_rcl_project(ir, outdir, registry=registry)
+    return generate_mixed_rcl_project(
+        ir,
+        outdir,
+        registry=registry,
+        layout_plan=application.plan,
+    )
 
 
 def validate_mixed_rcl_json_file(path: str | Path) -> MixedRclValidationReport:
