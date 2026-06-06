@@ -37,6 +37,43 @@ Prompt to editable OrCAD/PSpice project
 
 Avoid wording that implies the project is only a PSpice netlist generator.
 
+## Platform finding
+
+Current public product material positions OrCAD X as the OrCAD PCB design suite with integrated PSpice analysis. PSpice for TI is also described by TI as being based on the OrCAD Capture framework.
+
+For this project, assume the working OrCAD/Capture environment is Windows-first unless a verified official Linux build is found in the installed Cadence download portal or official documentation.
+
+Linux can still be used for:
+
+- repository work
+- Python analysis
+- file comparison
+- manifest generation
+- documentation
+- non-GUI validators
+
+Do not assume that OrCAD Capture visual project creation can be run natively on Linux until verified on the exact installed version.
+
+## Compliance guardrail
+
+This is not legal advice, but the project should be conservative.
+
+Route A is preferred for implementation and compliance because it uses the vendor tool itself, its supported automation/scripting/export behavior, or files saved by the tool. Route A should not bypass licensing, activation, cloud access, copy protection, or usage restrictions.
+
+Route B is not automatically safer. Controlled mutation and native-file study may be useful for research, interoperability analysis, or validation, but it can become legally risky if it depends on reverse engineering prohibited by the applicable EULA, bypassing technical protections, redistributing proprietary files, or cloning protected internal formats beyond what is allowed by law and the license.
+
+Before any public release based on Route B:
+
+- read the actual OrCAD/PSpice EULA shown during installation
+- read any academic/trial/commercial license restrictions
+- avoid decompiling executables or bypassing protection systems
+- do not redistribute vendor libraries, proprietary sample projects, or licensed assets unless permitted
+- keep generated outputs based on the user's own licensed environment or clean project templates
+- prefer official automation, documented interchange formats, or user-created clean-room templates
+- get legal/mentor review before commercial deployment
+
+Proteus and OrCAD/PSpice should both follow the same compliance rule: generate user projects without bypassing the vendor's protection mechanisms and without redistributing proprietary vendor assets.
+
 ## Why this exists
 
 KiCad prompt-to-schematic generation is already an active public direction. This track is intentionally different: the goal is Proteus-style native visual project generation for the OrCAD/PSpice ecosystem.
@@ -74,25 +111,26 @@ CircuitIR core
 
 ## Backend strategy
 
-Two implementation routes are allowed.
+Two implementation routes are allowed, but they are not equal in release risk.
 
 ### Route A: OrCAD-authoritative generation
 
-Use OrCAD/Capture-supported automation or scripting where possible to place components, wire nets, set references/values, configure simulation assets, and save native project files.
+Use OrCAD/Capture-supported automation, scripting, import/export behavior, or other vendor-supported mechanisms where possible to place components, wire nets, set references/values, configure simulation assets, and save native project files.
 
-This is the preferred first route because native files saved by OrCAD itself are more likely to open cleanly and look manually built.
+This is the preferred first route because native files saved by OrCAD itself are more likely to open cleanly, look manually built, and stay closer to license-compliant usage.
 
 ### Route B: controlled-mutation native-file generation
 
-Use the Proteus research method on OrCAD/PSpice project files:
+Use the Proteus research method on OrCAD/PSpice project files only inside a controlled, licensed, non-public research lane unless legal review approves wider use:
 
-1. Create small manual donor projects.
+1. Create small manual donor projects in a properly licensed OrCAD/PSpice environment.
 2. Save controlled mutations.
 3. Compare `.opj`, `.dsn`, library/model references, simulation-profile files, and related project artifacts.
 4. Identify component placement records, wire/net records, references, values, model links, source configuration, probes/markers, page metadata, and project-level bindings.
 5. Generate native files only after the record structure is validated by open/resave tests.
+6. Do not bypass technical protections or redistribute vendor-owned data.
 
-This route is more novel but must not be rushed before enough donor projects exist.
+This route is more novel but must not be treated as automatically legally safer than Route A.
 
 ## Target output package
 
