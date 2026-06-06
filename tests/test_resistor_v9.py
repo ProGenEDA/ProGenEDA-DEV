@@ -111,6 +111,7 @@ class ResistorV9Tests(unittest.TestCase):
 
     def test_dense_manual_positions_are_stretched_to_safe_grid(self) -> None:
         payload = predefined_resistor_cases()[1]
+        payload["layout"]["strategy"] = "legacy"
         payload["layout"]["component_positions"]["R2"] = {"x": -5080000, "y": 5080000}
         with tempfile.TemporaryDirectory() as directory:
             result = generate_resistor_project_from_payload(payload, directory)
@@ -120,6 +121,7 @@ class ResistorV9Tests(unittest.TestCase):
 
     def test_vertical_stack_positions_use_larger_row_spacing(self) -> None:
         payload = predefined_resistor_cases()[2]
+        payload["layout"]["strategy"] = "legacy"
         for component in payload["components"]:
             component["visual"] = {"orientation_hint": "vertical"}
         payload["layout"]["component_positions"] = {
@@ -140,6 +142,7 @@ class ResistorV9Tests(unittest.TestCase):
 
     def test_missing_position_is_rejected_without_auto_place(self) -> None:
         payload = predefined_resistor_cases()[0]
+        payload["layout"]["strategy"] = "legacy"
         payload["layout"]["component_positions"] = {}
         report = validate_resistor_payload(payload)
         self.assertTrue(any(issue.code == "MISSING_COMPONENT_POSITION" for issue in report.errors))
@@ -148,6 +151,7 @@ class ResistorV9Tests(unittest.TestCase):
 
     def test_missing_position_is_allowed_with_auto_place(self) -> None:
         payload = predefined_resistor_cases()[0]
+        payload["layout"]["strategy"] = "legacy"
         payload["layout"]["component_positions"] = {}
         payload["layout"]["auto_place"] = True
         with tempfile.TemporaryDirectory() as directory:

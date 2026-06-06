@@ -65,7 +65,7 @@ The mixed R/C/L generator reads `mixed-rcl-circuit-ir/v0.1` JSON. See `docs/mixe
 
 The source-driven generator reads `source-driven-rcl-circuit-ir/v0.1`. It supports one or more DC voltage/current sources and one AC voltage source. AC current is not supported. Source circuits use ordinary two-character source-net terminals and do not add the passive `V0` power bridge or `G0` ground terminals.
 
-The experimental deterministic beautifier is documented in `docs/beautifier.md`. It plans coordinates before binary emission and only translates complete donor-derived records. It does not post-process projects or create arbitrary wires and junctions.
+The accepted deterministic beautifier is documented in `docs/beautifier.md`. It is the default for payloads without explicit positions, plans coordinates before binary emission, and only translates complete donor-derived records. It does not post-process projects or create arbitrary wires and junctions.
 
 The temporary inductor work-in-progress lives under `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main`.
 

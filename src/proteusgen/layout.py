@@ -141,13 +141,16 @@ def parse_layout_config(payload: dict[str, Any], override: str | None = None) ->
 
     requested = override or raw.get("strategy")
     inferred = requested is None
-    # Beautify remains opt-in until the Proteus acceptance batch is complete.
-    strategy = requested or "legacy"
+    if requested is None:
+        has_positions = bool(raw.get("component_positions")) or bool(raw.get("source_positions"))
+        strategy = "manual" if has_positions else "beautify"
+    else:
+        strategy = requested
     if strategy not in {"beautify", "manual", "legacy"}:
         raise LayoutError("layout.strategy must be beautify, manual, or legacy.")
     direction = raw.get("direction", "left_to_right")
     if direction != "left_to_right":
-        raise LayoutError("The experimental beautifier currently supports direction=left_to_right only.")
+        raise LayoutError("The beautifier currently supports direction=left_to_right only.")
     return LayoutConfig(
         strategy=strategy,
         direction=direction,
@@ -637,8 +640,8 @@ def plan_payload(payload: Any, strategy_override: str | None = None) -> LayoutPl
         1 for ref, position in component_positions.items() if ref in requested and requested[ref] != position
     )
     notes = [
-        "Placement-only experiment: no standalone routed wires or junction records are emitted.",
-        "Legacy remains the pre-acceptance default when layout.strategy is omitted.",
+        "Placement-only layout: no standalone routed wires or junction records are emitted.",
+        "Omitted layout strategy defaults to beautify unless explicit positions require manual placement.",
     ]
     if config.strategy == "beautify":
         notes.extend(
@@ -648,7 +651,7 @@ def plan_payload(payload: Any, strategy_override: str | None = None) -> LayoutPl
             ]
         )
     if config.inferred:
-        notes.append("Layout strategy was inferred as legacy for pre-acceptance compatibility.")
+        notes.append(f"Layout strategy was inferred as {config.strategy}.")
     return LayoutPlan(
         route=route,
         strategy=config.strategy,
@@ -662,7 +665,7 @@ def plan_payload(payload: Any, strategy_override: str | None = None) -> LayoutPl
         adjustment_count=adjustment_count,
         overlaps=overlaps,
         motifs=_motifs(edges, levels),
-        experimental=config.strategy == "beautify",
+        experimental=False,
         notes=tuple(notes),
     )
 

@@ -1503,6 +1503,25 @@
         "MAIN_SOURCE_DRIVEN_PROMOTION_STATIC_20260606"
       ],
       "rule": "Use src/proteusgen/source_driven.py and the generate-source-driven CLI for source-driven circuits. DC voltage/current generation uses the accepted V15 donor-derived source units, ordinary two-character source-net terminals, source-local placement, unique global IDs, and V13 negative-wire high-byte repair. One AC voltage source uses the accepted V2 exact non-final VSINE unit. Passive groups use the locked mixed-RCL whole-group renderer. AC current remains unsupported. A circuit without a requested source must continue through the passive generator; source defaulting is a planner rule, not a generator mutation."
+    },
+    {
+      "id": "R085",
+      "title": "Topology-aware V2 beautifier is the production layout default",
+      "status": "locked_user_accepted",
+      "confidence": 0.97,
+      "applies_to": [
+        "Proteus 8.13",
+        "resistor layout",
+        "mixed passive layout",
+        "mixed RCL layout",
+        "source-driven layout"
+      ],
+      "evidence": [
+        "BEAUTIFIER_V2_SOURCE_NODE_STATIC_20260607",
+        "BEAUTIFIER_V2_USER_ACCEPTANCE_AND_PROMOTION_20260607",
+        "BEAUTIFIER_PRODUCTION_RELEASE_VERIFICATION_20260607"
+      ],
+      "rule": "Use the exact accepted V2 deterministic layout algorithm before binary emission. Omitted layout defaults to beautify, explicit component or source positions without a strategy infer manual, and explicit legacy remains available. Keep donor-derived component, terminal, source, and short-wire records together; do not synthesize standalone routed wires or junctions. Preserve double-source clearance, compact AC-source geometry, repeated-node lane preference, object identities, CDB ordering, and electrical labels."
     }
   ]
 }

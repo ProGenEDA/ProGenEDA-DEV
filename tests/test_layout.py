@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from proteusgen.layout import LayoutError, SOURCE_Y_SPACING, X_SPACING, plan_payload
+from proteusgen.layout import LayoutError, Position, SOURCE_Y_SPACING, X_SPACING, plan_payload
 from proteusgen.mixed_passive import (
     generate_mixed_passive_project,
     generate_mixed_passive_project_from_payload,
@@ -260,12 +260,23 @@ def test_legacy_strategy_matches_direct_emitters_byte_for_byte(tmp_path: Path) -
         assert direct.cdb_path.read_bytes() == legacy.cdb_path.read_bytes()
 
 
-def test_optional_layout_materializes_legacy_positions(tmp_path: Path) -> None:
+def test_optional_layout_defaults_to_beautify(tmp_path: Path) -> None:
     payload = predefined_resistor_cases()[4]
     del payload["layout"]
     result = generate_resistor_project_from_payload(payload, tmp_path / "optional")
-    assert result.manifest["layout"]["strategy"] == "legacy"
+    assert result.manifest["layout"]["strategy"] == "beautify"
     assert result.manifest["static_validation_issues"] == []
+
+
+def test_existing_positions_without_strategy_infer_manual() -> None:
+    payload = predefined_resistor_cases()[4]
+    payload["layout"].pop("strategy", None)
+    plan = plan_payload(payload)
+    assert plan.strategy == "manual"
+    assert plan.component_positions["R1"] == Position(
+        payload["layout"]["component_positions"]["R1"]["x"],
+        payload["layout"]["component_positions"]["R1"]["y"],
+    )
 
 
 def test_minimal_beautify_layout_validates_for_component_routes() -> None:

@@ -2,8 +2,9 @@
 
 ## Status
 
-The beautifier is experimental and opt-in until the representative Proteus
-acceptance pack passes. Existing generation remains on the `legacy` strategy.
+The V2 beautifier is accepted and is the production default when layout is
+omitted. Explicit positions without a strategy retain `manual` behavior, and
+`legacy` remains available for byte-compatible regression output.
 
 The layout stage runs before Proteus binary emission. It translates complete
 donor-derived component, terminal, source, and attached short-wire records. It
@@ -29,9 +30,8 @@ Supported strategies:
   requires a position.
 - `legacy`: preserve the accepted route-specific placement method.
 
-Existing resistor and mixed-passive payloads with component positions and no
-strategy retain manual behavior. During the acceptance phase, omitted strategy
-uses `legacy`. After user acceptance, the intended default is `beautify`.
+Existing payloads with component or source positions and no strategy retain
+manual behavior. Payloads without positions default to `beautify`.
 
 ## Commands
 
@@ -77,7 +77,7 @@ motifs, and overlap results.
 
 ## Acceptance pack
 
-Build the representative pack with:
+The original representative pack can be rebuilt with:
 
 ```powershell
 python tools\proteus_generation\2026-06-06\generate_beautifier_v1_temp.py
@@ -91,5 +91,6 @@ experiments/BEAUTIFIER_V1_REPRESENTATIVE_TEMP_2026_06_06.zip
 
 It contains paired legacy and beautified projects for divider, parallel,
 series-parallel, delta, star, Wheatstone, R-2R, corrected 21-component,
-single-DC, mixed-DC, and AC-voltage cases. Both members of every pair must open
-and represent the same electrical circuit before promotion.
+single-DC, mixed-DC, and AC-voltage cases. The accepted V2 follow-up additionally
+verified double-source separation, compact AC-source geometry, and repeated-node
+lane continuity.

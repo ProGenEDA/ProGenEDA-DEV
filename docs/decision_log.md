@@ -225,6 +225,22 @@ Evidence:
   bytes, compact AC body-to-anchor offsets, and one-lane continuity for repeated
   series node labels. Manual Proteus testing remains pending.
 
+## D020: Promote the accepted V2 beautifier as the default
+
+Decision: lock the exact V2 placement algorithm into production. Omitted layout
+uses `beautify`; payloads with explicit positions but no strategy use `manual`;
+explicit `legacy` remains available.
+
+Evidence:
+
+- The user confirmed the focused V2 projects worked and explicitly approved
+  locking the exact code.
+- V2 separates multiple sources, keeps AC source records together, and prefers
+  same-name node continuity without changing electrical record identities.
+- The existing full automated suite passed before promotion, including legacy
+  parity, deterministic placement, source clearance, wrapping, and overlap
+  checks.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

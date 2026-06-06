@@ -39,6 +39,7 @@ class MixedPassiveTests(unittest.TestCase):
 
     def test_locked_21_case_uses_compact_safe_row_spacing(self) -> None:
         payload = predefined_mixed_passive_cases()[1]
+        payload["layout"]["strategy"] = "legacy"
         with tempfile.TemporaryDirectory() as directory:
             result = generate_mixed_passive_project_from_payload(payload, directory)
             ys = sorted({item["y"] for item in result.manifest["topology"]}, reverse=True)
@@ -48,6 +49,7 @@ class MixedPassiveTests(unittest.TestCase):
 
     def test_duplicate_positions_are_moved_off_each_other(self) -> None:
         payload = predefined_mixed_passive_cases()[0]
+        payload["layout"]["strategy"] = "legacy"
         payload["layout"]["component_positions"]["C2"] = dict(payload["layout"]["component_positions"]["R1"])
         with tempfile.TemporaryDirectory() as directory:
             result = generate_mixed_passive_project_from_payload(payload, directory)
