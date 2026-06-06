@@ -1482,6 +1482,27 @@
         "SOURCE_PASSIVE_V9_USER_FEEDBACK_ALL_WORKED_20260605"
       ],
       "rule": "Byte comparison after V8 found two concrete generated ROOT.DSN defects: resistor left-wire records collapsed to the terminal coordinate instead of running from terminal to resistor body, and non-final source input-wire bytes were overwritten at the passive/source boundary. SOURCE_PASSIVE_V9 fixes resistor wire endpoints, preserves non-final source wire bytes, and trims the passive-source boundary by two bytes. User testing confirmed all V9 cases worked, including byte-exact R-only oracle rebuild, R-only 10V/5V mutation, and RC/RL scale-up variants."
+    },
+    {
+      "id": "R084",
+      "title": "Source-driven RCL generation is promoted to the production CLI",
+      "status": "locked_current_scope",
+      "confidence": 0.96,
+      "applies_to": [
+        "Proteus 8.13",
+        "production generator",
+        "DC voltage source",
+        "DC current source",
+        "AC voltage source",
+        "mixed R/C/L passives"
+      ],
+      "evidence": [
+        "DC_MIXED_SOURCES_V15_USER_FEEDBACK_ALL_WORKED_20260605",
+        "SOURCE_PASSIVE_V1_USER_FEEDBACK_ALL_WORKED_20260605",
+        "AC_VOLTAGE_V2_USER_FEEDBACK_ALL_WORKED_20260604",
+        "MAIN_SOURCE_DRIVEN_PROMOTION_STATIC_20260606"
+      ],
+      "rule": "Use src/proteusgen/source_driven.py and the generate-source-driven CLI for source-driven circuits. DC voltage/current generation uses the accepted V15 donor-derived source units, ordinary two-character source-net terminals, source-local placement, unique global IDs, and V13 negative-wire high-byte repair. One AC voltage source uses the accepted V2 exact non-final VSINE unit. Passive groups use the locked mixed-RCL whole-group renderer. AC current remains unsupported. A circuit without a requested source must continue through the passive generator; source defaulting is a planner rule, not a generator mutation."
     }
   ]
 }

@@ -9,7 +9,7 @@ Current target:
 - No modification of Proteus executables
 - No license circumvention
 - Generator input language: CircuitIR JSON
-- Current generated domain: locked V9 terminal-based resistor graphs from E001, locked mixed resistor/capacitor passive graphs, and locked mixed resistor/capacitor/inductor group-based graphs
+- Current generated domain: locked V9 terminal-based resistor graphs from E001, locked mixed resistor/capacitor/inductor group-based graphs, and locked source-driven R/C/L graphs using DC voltage, DC current, or one AC voltage source
 - Resistor generator status: accepted as main for the current scope
 - Capacitor status: terminal-attached capacitor records are accepted inside the locked mixed passive generator; standalone capacitor-only promotion remains in temporary V13 testing
 - Inductor status: standalone inductor generation remains temporary; mixed R/C/L generation is locked for the accepted group-based scope through the 6-component, corrected 21-rule, and 15 topology packs
@@ -45,6 +45,7 @@ proteusgen generate examples\single_resistor_vcc_gnd.json --output out\single_r1
 proteusgen generate-resistors examples\resistor_v9_power_ground.json --outdir out\single_r_power_ground
 proteusgen generate-mixed-passives path\to\mixed_passive.json --outdir out\mixed_passive
 proteusgen generate-mixed-rcl path\to\mixed_rcl.json --outdir out\mixed_rcl
+proteusgen generate-source-driven examples\source_driven_default_dcv.json --outdir out\source_driven
 python generate_from_json.py --input examples\resistor_v9_power_ground.json --outdir out\single_r_power_ground
 proteusgen compare out\single_r1.pdsprj path\to\resaved.pdsprj
 proteusgen record-result out\single_r1.result-template.json
@@ -58,6 +59,8 @@ The V9 resistor generator reads `proteus-circuit-ir/v0.1` JSON. See `docs/resist
 The mixed resistor/capacitor generator reads `proteus-mixed-passive-ir/v0.1` JSON. It uses the same two-character `V0`/`G0` power-ground convention and the locked safe-spacing rules.
 
 The mixed R/C/L generator reads `mixed-rcl-circuit-ir/v0.1` JSON. See `docs/mixed_rcl_json_input.md`. Its current locked input shape is group-based: each group is one accepted donor-derived `RCL`, `RC`, `LC`, `RL`, or `C` block with two-character terminal labels.
+
+The source-driven generator reads `source-driven-rcl-circuit-ir/v0.1`. It supports one or more DC voltage/current sources and one AC voltage source. AC current is not supported. Source circuits use ordinary two-character source-net terminals and do not add the passive `V0` power bridge or `G0` ground terminals.
 
 The temporary inductor work-in-progress lives under `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main`.
 

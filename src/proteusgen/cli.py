@@ -18,6 +18,7 @@ from .pdsprj import inspect_pdsprj, read_internal_file
 from .reports import summarize_pdsprj
 from .results import record_result, validate_result
 from .resistor_v9 import ResistorGenerationBlocked, generate_resistor_project_from_payload
+from .source_driven import SourceDrivenGenerationBlocked, generate_source_driven_project_from_payload
 from .templates import FixtureRegistry
 from .validation import validate_payload
 from .versioning import read_root_dsn_version
@@ -109,6 +110,17 @@ def generate_mixed_rcl_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def generate_source_driven_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_source_driven_project_from_payload(payload, args.outdir)
+    except SourceDrivenGenerationBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    _print(result.as_dict())
+    return 0
+
+
 def compare_command(args: argparse.Namespace) -> int:
     result = compare_projects(args.generated, args.reference)
     _print(result)
@@ -166,6 +178,14 @@ def build_parser() -> argparse.ArgumentParser:
     mixed_rcl_parser.add_argument("circuit")
     mixed_rcl_parser.add_argument("--outdir", required=True)
     mixed_rcl_parser.set_defaults(function=generate_mixed_rcl_command)
+
+    source_parser = subparsers.add_parser(
+        "generate-source-driven",
+        help="Generate a locked DC-voltage, DC-current, or AC-voltage source-driven R/C/L project",
+    )
+    source_parser.add_argument("circuit")
+    source_parser.add_argument("--outdir", required=True)
+    source_parser.set_defaults(function=generate_source_driven_command)
 
     compare_parser = subparsers.add_parser("compare", help="Compare generated and resaved/oracle projects")
     compare_parser.add_argument("generated")

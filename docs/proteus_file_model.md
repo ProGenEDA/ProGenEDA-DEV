@@ -3524,3 +3524,34 @@ the normal R/C/L power and ground terminals. If T03/T04 open, a source can
 replace the V0 power bridge while preserving accepted G0 endpoints. If T05/T06
 open, the same result applies to current sources. T07/T08 then test scaling to
 the corrected 21 topology.
+
+## Production source-driven promotion (2026-06-06)
+
+The accepted source methods are now exposed through
+`src/proteusgen/source_driven.py` and the `generate-source-driven` CLI.
+
+The production contract is `source-driven-rcl-circuit-ir/v0.1`:
+
+- passive groups use the locked `RCL`, `RC`, `LC`, `RL`, `R`, `C`, and `L`
+  whole-group renderer;
+- DC voltage/current source units come from the user-confirmed V15 mixed-source
+  donor and preserve the accepted V13 wire-coordinate repair;
+- one AC voltage source uses the user-confirmed V2 exact non-final VSINE unit;
+- source circuits contain ordinary two-character source-net terminals and no
+  `$TERPOWER` or `$TERGROUND` records;
+- AC current remains unsupported.
+
+Static promotion verification generated DC voltage, DC current, and AC voltage
+projects with all required container members and no object-chunk validation
+issues. The production DC object chunk for the accepted V15 circuit 1 was
+byte-identical to the accepted V15 object chunk (5969 bytes). The production AC
+simple-loop object chunk and `ROOT.CDB` were byte-identical to the accepted ACV
+V2 T02 output (2681-byte object chunk).
+
+Source selection is deliberately outside the deterministic compiler:
+
+- no source requested means use the passive generator unchanged;
+- a source requested without a type defaults in the planner to one 10 V DC
+  voltage source;
+- explicit DC voltage, DC current, or AC voltage requests select the matching
+  accepted source path.
