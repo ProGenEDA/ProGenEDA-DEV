@@ -1,33 +1,148 @@
-# PSpice
+# OrCAD / PSpice Visual Project Generator
 
-Reserved workspace for the PSpice generator track.
+Reserved workspace for the OrCAD/PSpice visual project generation track.
 
-This is separate from the Proteus generator work.
+This is separate from the Proteus generator work, but it follows the same product philosophy: a user types a circuit request on the website and receives native EDA project files that open as visual schematics, not just textual netlists.
 
-## Current target source
+## Correct product target
 
 Target reference: EE-215 Electronic Devices and Circuits lab manual.
 
-The PSpice generator should create runnable SPICE/PSpice netlists for the lab-manual circuits and the outputs students are expected to observe or calculate.
+The generator should create native OrCAD Capture / PSpice project files that open with a visible schematic laid out as if it was manually built.
+
+The primary deliverable is not a `.cir` or raw SPICE/PSpice netlist. Netlists may be emitted as secondary/debug artifacts, but they are not the product target.
 
 ## Generator direction
 
 The intended pipeline is:
 
-prompt to circuit JSON to PSpice netlist to runnable simulation output
+```text
+natural-language prompt
+  -> validated CircuitIR JSON
+  -> OrCAD/PSpice visual schematic project backend
+  -> native project files for download
+```
 
-The generator should focus on runnable simulation first, not OrCAD schematic drawing.
+The output should include an editable visual schematic project suitable for PSpice simulation setup. The user should be able to open the generated project and see placed components, wires/nets, sources, probes/markers where supported, values, references, and simulation-relevant setup.
 
-## Target output types
+## Naming rule
 
-The generator should support these output requests:
+Use precise wording in docs and UI:
 
-- DC operating point values
-- voltage and current measurements at named nodes/components
-- DC sweep tables and I-V curves
-- transient waveform plots for input and output voltages
-- RMS, peak, peak-to-peak, average DC, ripple, and period/frequency calculations
-- comparison-ready values matching lab manual blanks such as calculated, measured, and percent-difference fields
+```text
+OrCAD/PSpice visual project generator
+AI OrCAD Capture schematic generator with PSpice support
+Prompt to editable OrCAD/PSpice project
+```
+
+Avoid wording that implies the project is only a PSpice netlist generator.
+
+## Why this exists
+
+KiCad prompt-to-schematic generation is already an active public direction. This track is intentionally different: the goal is Proteus-style native visual project generation for the OrCAD/PSpice ecosystem.
+
+Cadence positions OrCAD as a PCB design and analysis suite with schematic capture, PSpice simulation, PCB layout, and professional design workflows. PSpice is the simulator, while the visual schematic entry side is OrCAD Capture. Therefore this repo track must treat visual project generation as the first-class target.
+
+## Compatibility with the Proteus generator
+
+Reusable from the Proteus work:
+
+- natural-language-to-CircuitIR concept
+- circuit validation
+- component map
+- topology model
+- layout model
+- test-case discipline
+- controlled-mutation experiments
+- manifest/output verification philosophy
+
+Not directly reusable from the Proteus work:
+
+- Proteus ROOT.DSN / ROOT.CDB binary patching
+- Proteus terminal donor objects
+- Proteus-specific object ordering
+- Proteus `.pdsprj` repacking logic
+
+The correct abstraction is:
+
+```text
+CircuitIR core
+  -> Proteus visual backend
+  -> OrCAD/PSpice visual backend
+  -> later KiCad visual backend
+```
+
+## Backend strategy
+
+Two implementation routes are allowed.
+
+### Route A: OrCAD-authoritative generation
+
+Use OrCAD/Capture-supported automation or scripting where possible to place components, wire nets, set references/values, configure simulation assets, and save native project files.
+
+This is the preferred first route because native files saved by OrCAD itself are more likely to open cleanly and look manually built.
+
+### Route B: controlled-mutation native-file generation
+
+Use the Proteus research method on OrCAD/PSpice project files:
+
+1. Create small manual donor projects.
+2. Save controlled mutations.
+3. Compare `.opj`, `.dsn`, library/model references, simulation-profile files, and related project artifacts.
+4. Identify component placement records, wire/net records, references, values, model links, source configuration, probes/markers, page metadata, and project-level bindings.
+5. Generate native files only after the record structure is validated by open/resave tests.
+
+This route is more novel but must not be rushed before enough donor projects exist.
+
+## Target output package
+
+Each generated project package should eventually contain:
+
+```text
+<project_name>.opj
+<project_name>.dsn
+required local libraries or references, if needed
+PSpice simulation profile/settings, if supported
+README_OPEN_FIRST.txt
+manifest.json
+optional generated netlist/debug export
+```
+
+The manifest should include:
+
+```text
+input_prompt
+input_json_sha256
+backend_name
+backend_version
+OrCAD/PSpice version target
+component count requested
+component count emitted
+net count
+wire count
+source/probe count
+simulation setup included or omitted
+libraries/models used
+known limitations
+validation status
+open/resave test status when available
+```
+
+## First supported circuit class
+
+Start with visual schematic generation for simple EE-215-style circuits:
+
+- resistor
+- capacitor
+- inductor
+- diode
+- DC voltage source
+- AC/sine voltage source
+- pulse/square source
+- ground node
+- voltage markers/probes where supported
+- current measurement mechanism where supported
+- basic `.OP`, `.DC`, `.TRAN`, and `.AC` simulation setup as secondary project configuration
 
 ## EE-215 experiment target map
 
@@ -50,9 +165,9 @@ The generator should support these output requests:
 17. MOSFET common-source amplifier: gain, waveform, and frequency-response style outputs.
 18. Diode switching application: transient switching waveform generation and timing behavior.
 
-## Initial implementation priority
+## Phase 1 implementation priority
 
-Phase 1 should support:
+Phase 1 should support visual schematic project generation for:
 
 - resistor
 - capacitor
@@ -61,19 +176,26 @@ Phase 1 should support:
 - DC voltage source
 - AC/sine voltage source
 - pulse/square source
-- ground node 0
-- voltage probe declarations
-- current measurement through voltage source or component-compatible method
-- .OP, .DC, .TRAN, and basic .AC analyses
+- ground node
+- basic visible wiring/nets
+- component references and values
+- simulation markers/probes if supported in the chosen generation route
 
-Phase 2 should add:
+## Phase 2 implementation priority
+
+Phase 2 should add visual schematic support for:
 
 - Zener diode models
 - LED diode models
 - BJT models and bias/amplifier templates
 - MOSFET models and bias/amplifier templates
 - transformer approximations for rectifier labs
+- richer simulation-profile generation
 
 ## Boundary
 
-This folder is for PSpice work only. Proteus generator records remain outside this folder.
+This folder is for OrCAD/PSpice visual project generation only.
+
+Do not reduce this track to netlist-only output. Netlists are allowed as secondary artifacts, but the main user-facing deliverable is a native visual schematic project.
+
+Proteus generator records remain outside this folder.
