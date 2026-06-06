@@ -241,6 +241,27 @@ Evidence:
   parity, deterministic placement, source clearance, wrapping, and overlap
   checks.
 
+## D021: Test bidirectional terminals through endpoint-record substitution
+
+Decision: keep production input/output terminal emitters unchanged while testing
+one generic temporary conversion stage. Replace only ordinary `$TERINPUT` and
+`$TEROUTPUT` records with donor-derived `$TERBIDIR` records; preserve special
+power/ground terminals, components, sources, wires, labels, coordinates, object
+order, and endpoint suffix links.
+
+Evidence:
+
+- The user supplied 27 Proteus 8.13 projects covering empty 0/180-degree
+  terminals, 1/2/4 scaling, resistor/capacitor/inductor/RCL circuits, DC voltage,
+  DC current, two-source, and AC-voltage cases.
+- All 170 bidirectional terminal records reconstruct byte-for-byte from two
+  empty orientation templates plus label, coordinates, suffix, and active-link
+  state.
+- The V1 pack converts ten current-generator outputs with zero remaining
+  ordinary terminal markers, unchanged component/source/wire marker counts,
+  unchanged suffix occurrence counts, and clean static validation.
+- Manual Proteus open and simulation testing is still required before promotion.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

@@ -1,0 +1,231 @@
+{
+  "schema_version": "proteus-mixed-passive-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-passive-terminal-power-ground",
+  "project_name": "BIDIR_V1_T03_RC_MIXED_BASELINE",
+  "output_basename": "BIDIR_V1_T03_RC_MIXED_BASELINE",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "resistor_donor_fixture_id": "r21_v9_resistor_terminal_donor",
+  "capacitor_donor_fixture_id": "cap2_with_terminals_manual",
+  "power_bridge_fixture_id": "power_terminal_bridge_donor",
+  "component_count_requested": 4,
+  "component_count_emitted_cdb": 4,
+  "component_count_emitted_dsn": 4,
+  "resistor_count": 2,
+  "capacitor_count": 2,
+  "node_count_requested": 4,
+  "power_bridge_count": 1,
+  "power_nodes": [
+    "V0"
+  ],
+  "ground_terminal_count": 2,
+  "terminal_count": 10,
+  "wire_count": 9,
+  "bridge_wire_count": 1,
+  "short_wire_count": 8,
+  "visual_wire_count": 0,
+  "visual_wire_skipped_count": 0,
+  "auto_placed_count": 0,
+  "layout_adjusted_count": 0,
+  "layout": {
+    "layout_version": "proteusgen-layout/v0.2",
+    "route": "mixed-passive",
+    "strategy": "beautify",
+    "direction": "left_to_right",
+    "experimental": false,
+    "component_positions": {
+      "C1": {
+        "x": 254000,
+        "y": 5080000
+      },
+      "C2": {
+        "x": 254000,
+        "y": 2540000
+      },
+      "R1": {
+        "x": -7366000,
+        "y": 5080000
+      },
+      "R2": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    "source_positions": {},
+    "node_positions": {
+      "G0": {
+        "x": 4064000,
+        "y": 5080000
+      },
+      "N1": {
+        "x": -3556000,
+        "y": 5080000
+      },
+      "N2": {
+        "x": 254000,
+        "y": 5080000
+      },
+      "V0": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    "node_levels": {
+      "G0": 3,
+      "N1": 1,
+      "N2": 2,
+      "V0": 0
+    },
+    "bounds": {
+      "min_x": -8382000,
+      "min_y": 1270000,
+      "max_x": 2540000,
+      "max_y": 6350000,
+      "width": 10922000,
+      "height": 5080000
+    },
+    "wrap_count": 0,
+    "adjustment_count": 0,
+    "overlap_count": 0,
+    "overlaps": [],
+    "motifs": [
+      {
+        "kind": "cycle",
+        "closing_components": [
+          "C2"
+        ]
+      },
+      {
+        "kind": "hub",
+        "node": "N2",
+        "degree": 3
+      },
+      {
+        "kind": "parallel",
+        "nodes": [
+          "G0",
+          "N2"
+        ],
+        "edge_count": 2
+      }
+    ],
+    "notes": [
+      "Placement-only layout: no standalone routed wires or junction records are emitted.",
+      "Omitted layout strategy defaults to beautify unless explicit positions require manual placement.",
+      "Directed endpoint order and repeated node labels guide horizontal continuity.",
+      "Sources use a dedicated left column with source-sized vertical clearance."
+    ]
+  },
+  "safe_spacing": {
+    "x": 2540000,
+    "y": 2540000
+  },
+  "object_order": "header, power bridge, capacitor output array, capacitor groups, resistor input array, resistor output array, separator, resistor groups",
+  "object_chunk_len": 2907,
+  "root_cdb_len": 592,
+  "root_dsn_len": 68510,
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 64660,
+    "second_isis": 67613,
+    "second_object_data": 67648,
+    "object_data_pointer": 67661
+  },
+  "static_validation_issues": [],
+  "topology": [
+    {
+      "ref": "R1",
+      "kind": "RESISTOR",
+      "value": "1k",
+      "visible_value": "1k",
+      "left": "V0",
+      "right": "N1",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0159",
+      "out_suffix": "018b",
+      "angle_tenths": 0,
+      "x": -7366000,
+      "y": 5080000,
+      "idx": 1,
+      "ordinal": 1
+    },
+    {
+      "ref": "R2",
+      "kind": "RESISTOR",
+      "value": "1k",
+      "visible_value": "1k",
+      "left": "N1",
+      "right": "N2",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TEROUTPUT",
+      "in_suffix": "0317",
+      "out_suffix": "0349",
+      "angle_tenths": 0,
+      "x": -3556000,
+      "y": 5080000,
+      "idx": 2,
+      "ordinal": 2
+    },
+    {
+      "ref": "C1",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "N2",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "011a",
+      "out_suffix": "00e8",
+      "cap_visual_index_byte_344": 1,
+      "wire_right_len": 49,
+      "x": 254000,
+      "y": 5080000,
+      "idx": 3,
+      "ordinal": 1
+    },
+    {
+      "ref": "C2",
+      "kind": "CAPACITOR",
+      "value": "1uF",
+      "visible_value": "1uF",
+      "left": "N2",
+      "right": "G0",
+      "input_marker": "$TERINPUT",
+      "output_marker": "$TERGROUND",
+      "in_suffix": "0352",
+      "out_suffix": "0320",
+      "cap_visual_index_byte_344": 2,
+      "wire_right_len": 49,
+      "x": 254000,
+      "y": 2540000,
+      "idx": 4,
+      "ordinal": 2
+    }
+  ],
+  "known_limitations": [
+    "Two-character node and component labels only.",
+    "Power support emits one donor-derived $TERPOWER -> $TEROUTPUT bridge for one power node.",
+    "Ground terminals are supported only on right endpoints.",
+    "Standalone layout.visual_wires are intentionally skipped until VGDVC-safe records are validated."
+  ],
+  "output_files": [
+    "BIDIR_V1_T03_RC_MIXED_BASELINE.pdsprj",
+    "BIDIR_V1_T03_RC_MIXED_BASELINE.ROOT.CDB.bin",
+    "BIDIR_V1_T03_RC_MIXED_BASELINE.ROOT.DSN.bin",
+    "layout_plan.json",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "BIDIR_V1_T03_RC_MIXED_BASELINE.pdsprj": "6aaaa3b583fe4bc1bec4be7b43af413301bbcc6b5488a6bd36147f82c2ffac97",
+    "BIDIR_V1_T03_RC_MIXED_BASELINE.ROOT.CDB.bin": "6c8fafda3a295938a7b0276222c1d7de0572cfd90ac10d6af0d59da22668a3be",
+    "BIDIR_V1_T03_RC_MIXED_BASELINE.ROOT.DSN.bin": "6cf1cdea071fe9e6024d80507b6656748f637175e11324ddacafed2f127a279d",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "resistor_donor_project": "e5ae153c51a662eeb0f5ac5086306d56e471ca06bfdeb44f7cc415456a4dae41",
+    "capacitor_donor_project": "2b0661808857e844d6b676c16eacf37b5bc47f0a6f589c183a66ee2675b3eaa5",
+    "power_bridge_donor": "d06b97bec98b2a6990a3e9e948afa0a848acc56815c4c5ee458d4e2f4c979d55"
+  }
+}

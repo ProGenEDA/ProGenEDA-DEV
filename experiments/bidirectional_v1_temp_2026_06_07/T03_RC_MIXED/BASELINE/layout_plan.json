@@ -1,0 +1,89 @@
+{
+  "layout_version": "proteusgen-layout/v0.2",
+  "route": "mixed-passive",
+  "strategy": "beautify",
+  "direction": "left_to_right",
+  "experimental": false,
+  "component_positions": {
+    "C1": {
+      "x": 254000,
+      "y": 5080000
+    },
+    "C2": {
+      "x": 254000,
+      "y": 2540000
+    },
+    "R1": {
+      "x": -7366000,
+      "y": 5080000
+    },
+    "R2": {
+      "x": -3556000,
+      "y": 5080000
+    }
+  },
+  "source_positions": {},
+  "node_positions": {
+    "G0": {
+      "x": 4064000,
+      "y": 5080000
+    },
+    "N1": {
+      "x": -3556000,
+      "y": 5080000
+    },
+    "N2": {
+      "x": 254000,
+      "y": 5080000
+    },
+    "V0": {
+      "x": -7366000,
+      "y": 5080000
+    }
+  },
+  "node_levels": {
+    "G0": 3,
+    "N1": 1,
+    "N2": 2,
+    "V0": 0
+  },
+  "bounds": {
+    "min_x": -8382000,
+    "min_y": 1270000,
+    "max_x": 2540000,
+    "max_y": 6350000,
+    "width": 10922000,
+    "height": 5080000
+  },
+  "wrap_count": 0,
+  "adjustment_count": 0,
+  "overlap_count": 0,
+  "overlaps": [],
+  "motifs": [
+    {
+      "kind": "cycle",
+      "closing_components": [
+        "C2"
+      ]
+    },
+    {
+      "kind": "hub",
+      "node": "N2",
+      "degree": 3
+    },
+    {
+      "kind": "parallel",
+      "nodes": [
+        "G0",
+        "N2"
+      ],
+      "edge_count": 2
+    }
+  ],
+  "notes": [
+    "Placement-only layout: no standalone routed wires or junction records are emitted.",
+    "Omitted layout strategy defaults to beautify unless explicit positions require manual placement.",
+    "Directed endpoint order and repeated node labels guide horizontal continuity.",
+    "Sources use a dedicated left column with source-sized vertical clearance."
+  ]
+}

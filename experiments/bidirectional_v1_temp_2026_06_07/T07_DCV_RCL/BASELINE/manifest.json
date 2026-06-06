@@ -1,0 +1,207 @@
+{
+  "schema_version": "source-driven-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-source-driven-rcl-locked",
+  "status": "locked_current_scope",
+  "project_name": "BIDIR_V1_T07_DCV_RCL_BASELINE",
+  "output_basename": "BIDIR_V1_T07_DCV_RCL_BASELINE",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "source_donor_fixture_id": "source_dc_mixed_v15_donor",
+  "source_count": 1,
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "10V",
+      "positive": "DV",
+      "negative": "D0",
+      "global_id": 4,
+      "target": [
+        -11176000,
+        5080000
+      ]
+    }
+  ],
+  "component_count_requested": 3,
+  "component_count_emitted_cdb": 3,
+  "component_count_emitted_dsn": 3,
+  "group_count": 1,
+  "group_modes": [
+    "RCL"
+  ],
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A1",
+      "right": "B1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -3556000,
+      "y": 5080000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "B1",
+      "right": "D0",
+      "global_id": 2,
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": 254000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "DV",
+      "right": "A1",
+      "global_id": 3,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 5080000
+    }
+  ],
+  "layout": {
+    "layout_version": "proteusgen-layout/v0.2",
+    "route": "source-driven",
+    "strategy": "beautify",
+    "direction": "left_to_right",
+    "experimental": false,
+    "component_positions": {
+      "C1": {
+        "x": -3556000,
+        "y": 5080000
+      },
+      "L1": {
+        "x": 254000,
+        "y": 5080000
+      },
+      "R1": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    "source_positions": {
+      "V1": {
+        "x": -11176000,
+        "y": 5080000
+      }
+    },
+    "node_positions": {
+      "A1": {
+        "x": -3556000,
+        "y": 5080000
+      },
+      "B1": {
+        "x": 254000,
+        "y": 5080000
+      },
+      "D0": {
+        "x": 4064000,
+        "y": 5080000
+      },
+      "DV": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    "node_levels": {
+      "A1": 1,
+      "B1": 2,
+      "D0": 3,
+      "DV": 0
+    },
+    "bounds": {
+      "min_x": -12192000,
+      "min_y": 3810000,
+      "max_x": 2540000,
+      "max_y": 6350000,
+      "width": 14732000,
+      "height": 2540000
+    },
+    "wrap_count": 0,
+    "adjustment_count": 0,
+    "overlap_count": 0,
+    "overlaps": [],
+    "motifs": [],
+    "notes": [
+      "Placement-only layout: no standalone routed wires or junction records are emitted.",
+      "Omitted layout strategy defaults to beautify unless explicit positions require manual placement.",
+      "Directed endpoint order and repeated node labels guide horizontal continuity.",
+      "Sources use a dedicated left column with source-sized vertical clearance."
+    ]
+  },
+  "wire_repairs": [],
+  "object_chunk_len": 2657,
+  "root_cdb_len": 588,
+  "root_dsn_len": 71548,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 4,
+    "VSOURCE": 2,
+    "CSOURCE": 0,
+    "VSINE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 3,
+    "RESISTOR": 2,
+    "WIRE": 8
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 67948,
+    "second_isis": 70651,
+    "second_object_data": 70686,
+    "object_data_pointer": 70699
+  },
+  "static_validation_issues": [],
+  "metadata": {
+    "description": "Default 10V DC voltage source driving one RCL path."
+  },
+  "component_value_overrides": {
+    "R1": "10k",
+    "C1": "1uF",
+    "L1": "5mH"
+  },
+  "known_limitations": [
+    "AC current sources are unsupported.",
+    "The accepted AC-voltage path supports one VSINE source.",
+    "DC voltage and DC current sources may be combined within the accepted nine-source limit.",
+    "Source and passive net labels are exactly two ASCII characters.",
+    "Passive geometry remains donor-derived horizontal terminal/component groups."
+  ],
+  "output_files": [
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.pdsprj",
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.ROOT.CDB.bin",
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.ROOT.DSN.bin",
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.OBJECT_CHUNK.bin",
+    "layout_plan.json",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.pdsprj": "768f9d477c6843c99ba37f40ea1bbe132a9c2c8cfb891ca7b109565f0d6f70b1",
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.ROOT.CDB.bin": "8bec6180d58af14742076edab7e1d7ecc364716ee047af946707417b78a0d8c2",
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.ROOT.DSN.bin": "a7e0b98b6e245f51225169ccce04b1f8baecc5a1316e10dc7048fb62c7e01710",
+    "BIDIR_V1_T07_DCV_RCL_BASELINE.OBJECT_CHUNK.bin": "111abb1e85824b48baf62ecfba154c6f18dba1e41a00ea29e23542f2ff345263",
+    "object_chunk": "111abb1e85824b48baf62ecfba154c6f18dba1e41a00ea29e23542f2ff345263",
+    "ROOT.CDB": "8bec6180d58af14742076edab7e1d7ecc364716ee047af946707417b78a0d8c2",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "source_donor": "b25e04c905ccda879c3bc03e62a3d40246f710408e2221d5c9c8fd335e529aff"
+  }
+}

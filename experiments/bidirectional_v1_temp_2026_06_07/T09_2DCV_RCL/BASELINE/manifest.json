@@ -1,0 +1,276 @@
+{
+  "schema_version": "source-driven-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-source-driven-rcl-locked",
+  "status": "locked_current_scope",
+  "project_name": "BIDIR_V1_T09_2DCV_RCL_BASELINE",
+  "output_basename": "BIDIR_V1_T09_2DCV_RCL_BASELINE",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "source_donor_fixture_id": "source_dc_mixed_v15_donor",
+  "source_count": 2,
+  "sources": [
+    {
+      "kind": "dc_voltage",
+      "ref": "V1",
+      "value": "10V",
+      "positive": "A1",
+      "negative": "A0",
+      "global_id": 6,
+      "target": [
+        -11176000,
+        5080000
+      ]
+    },
+    {
+      "kind": "dc_voltage",
+      "ref": "V2",
+      "value": "5V",
+      "positive": "B1",
+      "negative": "B0",
+      "global_id": 7,
+      "target": [
+        -11176000,
+        0
+      ]
+    }
+  ],
+  "component_count_requested": 5,
+  "component_count_emitted_cdb": 5,
+  "component_count_emitted_dsn": 5,
+  "group_count": 2,
+  "group_modes": [
+    "RCL",
+    "RL"
+  ],
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A1",
+      "right": "B1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 2,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "B1",
+      "right": "A0",
+      "global_id": 2,
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": -3556000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "A1",
+      "right": "A1",
+      "global_id": 3,
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -7366000,
+      "y": 0
+    },
+    {
+      "idx": 4,
+      "unit": 2,
+      "kind": "INDUCTOR",
+      "ref": "L2",
+      "value": "5mH",
+      "left": "A2",
+      "right": "B0",
+      "global_id": 4,
+      "in_suffix": "12df",
+      "out_suffix": "1311",
+      "x": 254000,
+      "y": 2540000
+    },
+    {
+      "idx": 5,
+      "unit": 2,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "10k",
+      "left": "B1",
+      "right": "A2",
+      "global_id": 5,
+      "in_suffix": "1506",
+      "out_suffix": "1538",
+      "x": -3556000,
+      "y": 2540000
+    }
+  ],
+  "layout": {
+    "layout_version": "proteusgen-layout/v0.2",
+    "route": "source-driven",
+    "strategy": "beautify",
+    "direction": "left_to_right",
+    "experimental": false,
+    "component_positions": {
+      "C1": {
+        "x": -7366000,
+        "y": 5080000
+      },
+      "L1": {
+        "x": -3556000,
+        "y": 5080000
+      },
+      "L2": {
+        "x": 254000,
+        "y": 2540000
+      },
+      "R1": {
+        "x": -7366000,
+        "y": 0
+      },
+      "R2": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    "source_positions": {
+      "V1": {
+        "x": -11176000,
+        "y": 5080000
+      },
+      "V2": {
+        "x": -11176000,
+        "y": 0
+      }
+    },
+    "node_positions": {
+      "A0": {
+        "x": 254000,
+        "y": 5080000
+      },
+      "A1": {
+        "x": -7366000,
+        "y": 5080000
+      },
+      "A2": {
+        "x": 254000,
+        "y": 2540000
+      },
+      "B0": {
+        "x": 4064000,
+        "y": 5080000
+      },
+      "B1": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    "node_levels": {
+      "A0": 2,
+      "A1": 0,
+      "A2": 2,
+      "B0": 3,
+      "B1": 1
+    },
+    "bounds": {
+      "min_x": -12192000,
+      "min_y": -1270000,
+      "max_x": 2540000,
+      "max_y": 6350000,
+      "width": 14732000,
+      "height": 7620000
+    },
+    "wrap_count": 0,
+    "adjustment_count": 0,
+    "overlap_count": 0,
+    "overlaps": [],
+    "motifs": [
+      {
+        "kind": "cycle",
+        "closing_components": [
+          "R1"
+        ]
+      },
+      {
+        "kind": "hub",
+        "node": "A1",
+        "degree": 3
+      },
+      {
+        "kind": "hub",
+        "node": "B1",
+        "degree": 3
+      }
+    ],
+    "notes": [
+      "Placement-only layout: no standalone routed wires or junction records are emitted.",
+      "Omitted layout strategy defaults to beautify unless explicit positions require manual placement.",
+      "Directed endpoint order and repeated node labels guide horizontal continuity.",
+      "Sources use a dedicated left column with source-sized vertical clearance."
+    ]
+  },
+  "wire_repairs": [],
+  "object_chunk_len": 4640,
+  "root_cdb_len": 923,
+  "root_dsn_len": 73531,
+  "marker_counts": {
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "$TERINPUT": 7,
+    "$TEROUTPUT": 7,
+    "VSOURCE": 4,
+    "CSOURCE": 0,
+    "VSINE": 0,
+    "CAPACITOR": 1,
+    "REALIND": 6,
+    "RESISTOR": 4,
+    "WIRE": 14
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 67948,
+    "second_isis": 72634,
+    "second_object_data": 72669,
+    "object_data_pointer": 72682
+  },
+  "static_validation_issues": [],
+  "metadata": {},
+  "component_value_overrides": {},
+  "known_limitations": [
+    "AC current sources are unsupported.",
+    "The accepted AC-voltage path supports one VSINE source.",
+    "DC voltage and DC current sources may be combined within the accepted nine-source limit.",
+    "Source and passive net labels are exactly two ASCII characters.",
+    "Passive geometry remains donor-derived horizontal terminal/component groups."
+  ],
+  "output_files": [
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.pdsprj",
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.ROOT.CDB.bin",
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.ROOT.DSN.bin",
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.OBJECT_CHUNK.bin",
+    "layout_plan.json",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.pdsprj": "a238c0120d366bfd4cb219a0a24c0e3431f89bfcc3fde80302d66b97390678fd",
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.ROOT.CDB.bin": "5e5fda44416a296117c3dfaf418f8c36673825953b03fcfdbe6d0078e19c8324",
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.ROOT.DSN.bin": "f588fa983796b8a64fb3ea8ea9b3afac126d2e32226377a11f9a8de68bb8d992",
+    "BIDIR_V1_T09_2DCV_RCL_BASELINE.OBJECT_CHUNK.bin": "3c275d0eaaae4379aaf5d1b99fa2cf74682b05a2bc4ce5b717d1ce597bf451c2",
+    "object_chunk": "3c275d0eaaae4379aaf5d1b99fa2cf74682b05a2bc4ce5b717d1ce597bf451c2",
+    "ROOT.CDB": "5e5fda44416a296117c3dfaf418f8c36673825953b03fcfdbe6d0078e19c8324",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "source_donor": "b25e04c905ccda879c3bc03e62a3d40246f710408e2221d5c9c8fd335e529aff"
+  }
+}

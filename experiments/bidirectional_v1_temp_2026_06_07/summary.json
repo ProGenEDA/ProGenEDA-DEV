@@ -1,0 +1,931 @@
+{
+  "phase": "bidirectional_v1_temp",
+  "donor_manifest_count": 27,
+  "donor_validation": {
+    "project_count": 27,
+    "terminal_record_count": 170,
+    "failures": []
+  },
+  "case_count": 12,
+  "cases": [
+    {
+      "test_id": "T00A_EXACT_EMPTY_REBUILD",
+      "kind": "exact_rebuild_control",
+      "donor": "bider_180bider_empty.pdsprj",
+      "terminal_count": 2,
+      "object_chunk_sha256": "76dbde9118bca69ac7fe613daed28fbe22c1600fe35585f7953fbfc64f56ca01",
+      "object_chunk_equal": true,
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 64660,
+        "second_isis": 64923,
+        "second_object_data": 64958,
+        "object_data_pointer": 64971
+      },
+      "output": "BIDIR_V1_T00A_EXACT_EMPTY_REBUILD.pdsprj",
+      "output_sha256": "eea7c25f6c053c80c6762974a45c387370144a46541c154f6d23f7d98963c82d",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T00B_EXACT_RESISTOR_REBUILD",
+      "kind": "exact_rebuild_control",
+      "donor": "biderwithresistor.pdsprj",
+      "terminal_count": 2,
+      "object_chunk_sha256": "902424057382e0203156eff10b6c8a83c985fd4ec4f68690faef0163b5cd4c72",
+      "object_chunk_equal": true,
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 64660,
+        "second_isis": 65370,
+        "second_object_data": 65405,
+        "object_data_pointer": 65418
+      },
+      "output": "BIDIR_V1_T00B_EXACT_RESISTOR_REBUILD.pdsprj",
+      "output_sha256": "93477edc1fb2bbbf5a4908038639f485ade477947bf6f1657f5e2134c5aacf21",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T01_R_SINGLE_INTERNAL",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T01_R_SINGLE_INTERNAL\\BASELINE\\BIDIR_V1_T01_R_SINGLE_INTERNAL_BASELINE.pdsprj",
+      "bidirectional_project": "T01_R_SINGLE_INTERNAL\\BIDIR\\BIDIR_V1_T01_R_SINGLE_INTERNAL.pdsprj",
+      "ordinary_terminal_count_before": 2,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 2,
+      "power_terminal_count": 0,
+      "ground_terminal_count": 0,
+      "wire_count": 2,
+      "component_id_count": 1,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "input",
+          "label": "N0",
+          "angle_tenths": 0,
+          "suffix": "0159",
+          "old_start": 1,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "018b",
+          "old_start": 104,
+          "old_size": 104,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "47fa59041a20e8fd16beaf45c461d8e168ddc723ced839f5a972cc24b6434d9d",
+      "object_chunk_after_sha256": "91db6c9e7368345040f88ffb516cb66600f373b8679e7b1b4d336b124d489f1f",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 64660,
+        "second_isis": 65360,
+        "second_object_data": 65395,
+        "object_data_pointer": 65408
+      },
+      "output_sha256": "213e65eed09f283bcd06c1d524735bee5cfe4a11d040d6c619495046b8238cd8",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T02_R4_POWER_GROUND",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T02_R4_POWER_GROUND\\BASELINE\\BIDIR_V1_T02_R4_POWER_GROUND_BASELINE.pdsprj",
+      "bidirectional_project": "T02_R4_POWER_GROUND\\BIDIR\\BIDIR_V1_T02_R4_POWER_GROUND.pdsprj",
+      "ordinary_terminal_count_before": 8,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 8,
+      "power_terminal_count": 1,
+      "ground_terminal_count": 1,
+      "wire_count": 9,
+      "component_id_count": 4,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "fd90",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "0159",
+          "old_start": 256,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "0317",
+          "old_start": 359,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "N2",
+          "angle_tenths": 0,
+          "suffix": "04d5",
+          "old_start": 462,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "N3",
+          "angle_tenths": 0,
+          "suffix": "0693",
+          "old_start": 565,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "018b",
+          "old_start": 668,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N2",
+          "angle_tenths": 0,
+          "suffix": "0349",
+          "old_start": 772,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N3",
+          "angle_tenths": 0,
+          "suffix": "0507",
+          "old_start": 876,
+          "old_size": 104,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "e915db7ce519db41b7cd4e25b4479747886738c725900f2771da8e494b391331",
+      "object_chunk_after_sha256": "a3bf04ee24b1573de1ed28fef837fc789dfae1bfc1d126df0d5a57e7451126ca",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 64660,
+        "second_isis": 67571,
+        "second_object_data": 67606,
+        "object_data_pointer": 67619
+      },
+      "output_sha256": "a882e79caa466380b35e729a99a6c791f28102867dad983bc7a0138fd936e7e4",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T03_RC_MIXED",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T03_RC_MIXED\\BASELINE\\BIDIR_V1_T03_RC_MIXED_BASELINE.pdsprj",
+      "bidirectional_project": "T03_RC_MIXED\\BIDIR\\BIDIR_V1_T03_RC_MIXED.pdsprj",
+      "ordinary_terminal_count_before": 7,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 7,
+      "power_terminal_count": 1,
+      "ground_terminal_count": 2,
+      "wire_count": 9,
+      "component_id_count": 4,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "fd90",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "N2",
+          "angle_tenths": 0,
+          "suffix": "011a",
+          "old_start": 464,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "N2",
+          "angle_tenths": 0,
+          "suffix": "0352",
+          "old_start": 1032,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "0159",
+          "old_start": 1600,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "0317",
+          "old_start": 1703,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "018b",
+          "old_start": 1806,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N2",
+          "angle_tenths": 0,
+          "suffix": "0349",
+          "old_start": 1910,
+          "old_size": 104,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "dfc402b03f1fc88821f0cfcf57da1861b9e9cc01ada09f3792934ded7bc85d4d",
+      "object_chunk_after_sha256": "0dc3db12d6fb31b94e6fccf15e3b54f956bcfbc91331d34c1b960e1f577b8a7f",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 64660,
+        "second_isis": 67610,
+        "second_object_data": 67645,
+        "object_data_pointer": 67658
+      },
+      "output_sha256": "491ade909c7b09074d9ca37ab630d948668aafdb512e16ea4e9476b2acc1ad62",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T04_CAP_ONLY_POWER_GROUND",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T04_CAP_ONLY_POWER_GROUND\\BASELINE\\BIDIR_V1_T04_CAP_ONLY_POWER_GROUND_BASELINE.pdsprj",
+      "bidirectional_project": "T04_CAP_ONLY_POWER_GROUND\\BIDIR\\BIDIR_V1_T04_CAP_ONLY_POWER_GROUND.pdsprj",
+      "ordinary_terminal_count_before": 2,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 2,
+      "power_terminal_count": 1,
+      "ground_terminal_count": 1,
+      "wire_count": 3,
+      "component_id_count": 1,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "058c",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "082c",
+          "old_start": 360,
+          "old_size": 103,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "7ad0c5d82b2cf6a951d5ba925d80e93022777fe8c08caa04c016b7599c93cce4",
+      "object_chunk_after_sha256": "fc89c6856d35d65adcfd34c76b0ed77b319b1058972e8b4a5db443516a02dff9",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 66704,
+        "second_isis": 67678,
+        "second_object_data": 67713,
+        "object_data_pointer": 67726
+      },
+      "output_sha256": "398c953a5c0fc8f1edf69e1d89e581dd6e95d5a45fb68b241687ed4701dc5b68",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T05_IND_ONLY_POWER_GROUND",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T05_IND_ONLY_POWER_GROUND\\BASELINE\\BIDIR_V1_T05_IND_ONLY_POWER_GROUND_BASELINE.pdsprj",
+      "bidirectional_project": "T05_IND_ONLY_POWER_GROUND\\BIDIR\\BIDIR_V1_T05_IND_ONLY_POWER_GROUND.pdsprj",
+      "ordinary_terminal_count_before": 2,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 2,
+      "power_terminal_count": 1,
+      "ground_terminal_count": 1,
+      "wire_count": 3,
+      "component_id_count": 1,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "058c",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "0b09",
+          "old_start": 256,
+          "old_size": 103,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "d849cc629463109e9b2e408110df224e13b02910227fe20e7eb9dbc552e54e53",
+      "object_chunk_after_sha256": "8bb2b778a3ed996136fabe1ef6481badcdc0e0e5f20318dddb30bf6d918fc8d9",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 66704,
+        "second_isis": 67686,
+        "second_object_data": 67721,
+        "object_data_pointer": 67734
+      },
+      "output_sha256": "fff921f70e1eb2b21ee74c62a57fd21189271ac227e7fcb5d26a6ff0e9119f56",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T06_RCL_POWER_GROUND",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T06_RCL_POWER_GROUND\\BASELINE\\BIDIR_V1_T06_RCL_POWER_GROUND_BASELINE.pdsprj",
+      "bidirectional_project": "T06_RCL_POWER_GROUND\\BIDIR\\BIDIR_V1_T06_RCL_POWER_GROUND.pdsprj",
+      "ordinary_terminal_count_before": 6,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 6,
+      "power_terminal_count": 1,
+      "ground_terminal_count": 1,
+      "wire_count": 7,
+      "component_id_count": 3,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "058c",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "07fa",
+          "old_start": 256,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "082c",
+          "old_start": 360,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "0b09",
+          "old_start": 928,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "V0",
+          "angle_tenths": 0,
+          "suffix": "0d30",
+          "old_start": 1031,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "0d62",
+          "old_start": 1711,
+          "old_size": 104,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "5fd17e57b719a6e80ed7a736ca79d6a0ea0d6f268ef3da83e4054d811d77696e",
+      "object_chunk_after_sha256": "25f6f248b464e5757c3d9849d18428d16ef95c908d9de2c76e52c795d2f0d58e",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 66704,
+        "second_isis": 69010,
+        "second_object_data": 69045,
+        "object_data_pointer": 69058
+      },
+      "output_sha256": "173c2c1ea08649088e73a76bc7e56b6d90aa75de94b8343103b8c2d326ccd4b0",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T07_DCV_RCL",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T07_DCV_RCL\\BASELINE\\BIDIR_V1_T07_DCV_RCL_BASELINE.pdsprj",
+      "bidirectional_project": "T07_DCV_RCL\\BIDIR\\BIDIR_V1_T07_DCV_RCL.pdsprj",
+      "ordinary_terminal_count_before": 8,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 8,
+      "power_terminal_count": 0,
+      "ground_terminal_count": 0,
+      "wire_count": 8,
+      "component_id_count": 4,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "DV",
+          "angle_tenths": 0,
+          "suffix": "7000",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "07fa",
+          "old_start": 105,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "082c",
+          "old_start": 209,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "0b09",
+          "old_start": 777,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "DV",
+          "angle_tenths": 0,
+          "suffix": "0d30",
+          "old_start": 880,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "D0",
+          "angle_tenths": 0,
+          "suffix": "0b3b",
+          "old_start": 983,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "0d62",
+          "old_start": 1560,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "D0",
+          "angle_tenths": 0,
+          "suffix": "7032",
+          "old_start": 2111,
+          "old_size": 103,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "111abb1e85824b48baf62ecfba154c6f18dba1e41a00ea29e23542f2ff345263",
+      "object_chunk_after_sha256": "b7d24df2e0a5e182859c5f84438d7304b28c4dd26b1be5342389f394556237d6",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67948,
+        "second_isis": 70647,
+        "second_object_data": 70682,
+        "object_data_pointer": 70695
+      },
+      "output_sha256": "9c50f233720c7a1f0ad191e930d2ebdb88b139cf94558f5089ebc595ddeb5c5a",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T08_DCV_DCC_RCL",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T08_DCV_DCC_RCL\\BASELINE\\BIDIR_V1_T08_DCV_DCC_RCL_BASELINE.pdsprj",
+      "bidirectional_project": "T08_DCV_DCC_RCL\\BIDIR\\BIDIR_V1_T08_DCV_DCC_RCL.pdsprj",
+      "ordinary_terminal_count_before": 12,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 12,
+      "power_terminal_count": 0,
+      "ground_terminal_count": 0,
+      "wire_count": 12,
+      "component_id_count": 6,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "DV",
+          "angle_tenths": 0,
+          "suffix": "7000",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "07fa",
+          "old_start": 105,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "082c",
+          "old_start": 209,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "DV",
+          "angle_tenths": 0,
+          "suffix": "0d30",
+          "old_start": 777,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "0d62",
+          "old_start": 880,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A2",
+          "angle_tenths": 0,
+          "suffix": "12df",
+          "old_start": 1431,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "1506",
+          "old_start": 1534,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "D0",
+          "angle_tenths": 0,
+          "suffix": "1311",
+          "old_start": 1637,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A2",
+          "angle_tenths": 0,
+          "suffix": "1538",
+          "old_start": 2214,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "D0",
+          "angle_tenths": 0,
+          "suffix": "7032",
+          "old_start": 2765,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "D0",
+          "angle_tenths": 0,
+          "suffix": "70b2",
+          "old_start": 3311,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "N1",
+          "angle_tenths": 0,
+          "suffix": "7080",
+          "old_start": 3414,
+          "old_size": 104,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "0b13d73502bc1b19f6337611c3176111373500c955d36985142fb28449d4fcfd",
+      "object_chunk_after_sha256": "e3b9a558367782bb10b0a0d04aefd9bbdd6aa9b27de0874b9fecbb43f6a3bb20",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67948,
+        "second_isis": 71951,
+        "second_object_data": 71986,
+        "object_data_pointer": 71999
+      },
+      "output_sha256": "6ad031694ce2c9c25e12705ca8509a213b34a7da4ed2e97198d64079ef0456da",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T09_2DCV_RCL",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T09_2DCV_RCL\\BASELINE\\BIDIR_V1_T09_2DCV_RCL_BASELINE.pdsprj",
+      "bidirectional_project": "T09_2DCV_RCL\\BIDIR\\BIDIR_V1_T09_2DCV_RCL.pdsprj",
+      "ordinary_terminal_count_before": 14,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 14,
+      "power_terminal_count": 0,
+      "ground_terminal_count": 0,
+      "wire_count": 14,
+      "component_id_count": 7,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "7000",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "7080",
+          "old_start": 105,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "07fa",
+          "old_start": 209,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "082c",
+          "old_start": 313,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "0b09",
+          "old_start": 881,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "0d30",
+          "old_start": 984,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A0",
+          "angle_tenths": 0,
+          "suffix": "0b3b",
+          "old_start": 1087,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "0d62",
+          "old_start": 1664,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A2",
+          "angle_tenths": 0,
+          "suffix": "12df",
+          "old_start": 2215,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "B1",
+          "angle_tenths": 0,
+          "suffix": "1506",
+          "old_start": 2318,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "B0",
+          "angle_tenths": 0,
+          "suffix": "1311",
+          "old_start": 2421,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A2",
+          "angle_tenths": 0,
+          "suffix": "1538",
+          "old_start": 2998,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A0",
+          "angle_tenths": 0,
+          "suffix": "7032",
+          "old_start": 3549,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "B0",
+          "angle_tenths": 0,
+          "suffix": "70b2",
+          "old_start": 4095,
+          "old_size": 103,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "3c275d0eaaae4379aaf5d1b99fa2cf74682b05a2bc4ce5b717d1ce597bf451c2",
+      "object_chunk_after_sha256": "c2901268fd5924c8e6f7939dc1c90e6c8b407563c41cc90895546e76f422804b",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67948,
+        "second_isis": 72627,
+        "second_object_data": 72662,
+        "object_data_pointer": 72675
+      },
+      "output_sha256": "bb811d451f1b41e37d64b6fa3f6b748fa86a1e2d4a19af8eb32fd3de909d8f46",
+      "static_validation_issues": []
+    },
+    {
+      "test_id": "T10_ACV_RC",
+      "kind": "generated_terminal_conversion",
+      "baseline_project": "T10_ACV_RC\\BASELINE\\BIDIR_V1_T10_ACV_RC_BASELINE.pdsprj",
+      "bidirectional_project": "T10_ACV_RC\\BIDIR\\BIDIR_V1_T10_ACV_RC.pdsprj",
+      "ordinary_terminal_count_before": 6,
+      "ordinary_terminal_count_after": 0,
+      "bidirectional_terminal_count": 6,
+      "power_terminal_count": 0,
+      "ground_terminal_count": 0,
+      "wire_count": 6,
+      "component_id_count": 3,
+      "root_cdb_unchanged": true,
+      "component_and_wire_marker_counts_unchanged": true,
+      "replacements": [
+        {
+          "kind": "output",
+          "label": "AV",
+          "angle_tenths": 0,
+          "suffix": "05fb",
+          "old_start": 1,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A0",
+          "angle_tenths": 0,
+          "suffix": "062d",
+          "old_start": 105,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A0",
+          "angle_tenths": 0,
+          "suffix": "07fa",
+          "old_start": 674,
+          "old_size": 104,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "082c",
+          "old_start": 778,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "input",
+          "label": "AV",
+          "angle_tenths": 0,
+          "suffix": "0d30",
+          "old_start": 1346,
+          "old_size": 103,
+          "new_size": 103
+        },
+        {
+          "kind": "output",
+          "label": "A1",
+          "angle_tenths": 0,
+          "suffix": "0d62",
+          "old_start": 1449,
+          "old_size": 104,
+          "new_size": 103
+        }
+      ],
+      "object_chunk_before_sha256": "757d90a43bad513fba782d2c3a44b9032287633c8ced3d39ad64c6afed048697",
+      "object_chunk_after_sha256": "f68d849f84818e890b33b3ca0e07ec2ef307c352fc2720eae23a4a2309505edd",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67513,
+        "second_isis": 69557,
+        "second_object_data": 69592,
+        "object_data_pointer": 69605
+      },
+      "output_sha256": "86baa27f1efe36c26513e14cd217cb72201ae7305af7dacd8e3928ee03133d72",
+      "static_validation_issues": []
+    }
+  ]
+}

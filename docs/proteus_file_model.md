@@ -37,6 +37,15 @@ The generator now patches this field for supported 90-degree orientations. For `
 
 `layout.visual_wires` is parsed but currently skipped by the production generator. Earlier generated standalone `WIRE` records passed static checks but were associated with user-reported VGDVC failures in parallel-and-later resistor cases. Keep routed bus/junction wire records experimental until a Proteus-created donor proves a VGDVC-safe standalone wire method.
 
+Bidirectional terminals are represented by a distinct `$TERBIDIR` object record,
+not by renaming an input/output marker in place. The current experimental corpus
+shows a variable record size of `101 + label_length` bytes, orientation values
+of 0 or 1800 tenths of a degree, and the same two-byte endpoint suffix linkage
+used by component records. The June 7 V1 experiment replaces only ordinary
+input/output records and leaves `$TERPOWER` and `$TERGROUND` unchanged. This is
+not production-ready until the generated passive and source-driven pack passes
+manual Proteus testing.
+
 ## Layout Safety
 
 Manual component coordinates are accepted as placement hints, but the production resistor generator now stretches dense repeated x/y positions to a safe grid before writing `ROOT.DSN`. The current guard spacing is `2540000` internal units on x and `2540000` internal units on y. This keeps vertically oriented component/terminal groups farther apart while preserving the locked terminal-to-component offsets.
