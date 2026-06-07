@@ -1,0 +1,79 @@
+{
+  "mode": "mixed_ic_logic_and_or_rcl",
+  "ic_gate_count": 15,
+  "ic_packages": [
+    {
+      "ref": "U1",
+      "part": "74HC08",
+      "gates": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    {
+      "ref": "U2",
+      "part": "74HC08",
+      "gates": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    {
+      "ref": "U3",
+      "part": "74HC32",
+      "gates": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    {
+      "ref": "U4",
+      "part": "74HC32",
+      "gates": [
+        "A",
+        "B",
+        "C"
+      ]
+    }
+  ],
+  "logic": "Eight AND gates create A1..A8 from X1..XF plus V0. Seven OR gates reduce A1..A8 to Y0.",
+  "rlc_load": [
+    {
+      "ref": "R1",
+      "value": "10k",
+      "nodes": [
+        "Y0",
+        "P1"
+      ]
+    },
+    {
+      "ref": "C1",
+      "value": "1uF",
+      "nodes": [
+        "P1",
+        "P2"
+      ]
+    },
+    {
+      "ref": "L1",
+      "value": "5mH",
+      "nodes": [
+        "P2",
+        "G0"
+      ]
+    }
+  ],
+  "terminal_policy": {
+    "ic_signal_pins": "$TERINPUT/$TEROUTPUT",
+    "passive_endpoints": "$TERBIDIR after production conversion",
+    "logic_high": "V0 power terminal bridge",
+    "ground": "G0 ground terminal",
+    "ic_supply": "hidden; ignore physical pin 14 and pin 7 for both packages/families"
+  }
+}

@@ -1629,8 +1629,8 @@
     {
       "id": "R091",
       "title": "74HC32 Boolean expression synthesis starts with OR-only reductions",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "accepted_manual_proteus_test",
+      "confidence": 0.91,
       "applies_to": [
         "Proteus 8.13",
         "74HC32",
@@ -1642,11 +1642,33 @@
         "IC_HC08_HC32_V1_USER_ACCEPTANCE_20260607",
         "IC_HC08_LOGIC_V1_USER_ACCEPTANCE_20260608",
         "IC_HC32_LOGIC_V1_STATIC_20260608",
+        "IC_HC32_LOGIC_V1_USER_ACCEPTANCE_20260608",
         "src/proteusgen/logic_expression.py",
         "tests/test_logic_expression.py",
         "tools/proteus_generation/2026-06-08/generate_ic_hc32_logic_v1_temp.py"
       ],
-      "rule": "The OR expression interpreter accepts OR, +, |, and || operators and rejects AND, XOR, NOT, and mixed operators. It uses the same deterministic two-input reduction shape as the accepted HC08 AND path, but emits donor-derived 74HC32/74OR2 component-first gate records from IC_HC32_M02_ALL4_IO. HC32 gate record ids and pin-link ids are 32-bit unaligned fields and must be patched separately from the older HC08 16-bit suffix method. The first generated test maps a 15-input OR expression across U1:A-D, U2:A-D, U3:A-D, and U4:A-B; manual Proteus testing is pending."
+      "rule": "The OR expression interpreter accepts OR, +, |, and || operators and rejects AND, XOR, NOT, and mixed operators. It uses the same deterministic two-input reduction shape as the accepted HC08 AND path, but emits donor-derived 74HC32/74OR2 component-first gate records from IC_HC32_M02_ALL4_IO. HC32 gate record ids and pin-link ids are 32-bit unaligned fields and must be patched separately from the older HC08 16-bit suffix method. The first generated test maps a 15-input OR expression across U1:A-D, U2:A-D, U3:A-D, and U4:A-B; user testing confirmed it worked in Proteus."
+    },
+    {
+      "id": "R092",
+      "title": "Mixed 74HC08 and 74HC32 with RCL starts with a 15-gate diagnostic",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.8,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC08",
+        "74HC32",
+        "mixed AND/OR logic",
+        "R/C/L passive load",
+        "bidirectional passive terminals"
+      ],
+      "evidence": [
+        "IC_HC08_LOGIC_V1_USER_ACCEPTANCE_20260608",
+        "IC_HC32_LOGIC_V1_USER_ACCEPTANCE_20260608",
+        "IC_AND_OR_RCL_V1_STATIC_20260608",
+        "tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v1_temp.py"
+      ],
+      "rule": "The first mixed AND/OR/RCL diagnostic intentionally emits exactly fifteen IC gate subparts, not a fourteen-gate pure reduction tree. It uses eight 74HC08 AND2 gates to create A1..A8, seven 74HC32 OR2 gates to reduce those nodes to Y0, then routes Y0 through a resistor, capacitor, and inductor branch to G0. IC signal pins remain ordinary input/output terminals. The R/C/L branch and the V0 power bridge are converted with the accepted production bidirectional endpoint method. Manual Proteus testing is pending."
     }
   ]
 }

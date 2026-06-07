@@ -1,0 +1,88 @@
+{
+  "batch": "IC_AND_OR_RCL_V1_TEMP_2026_06_08",
+  "purpose": "First mixed 74HC08/74HC32/RCL test with exactly fifteen IC gate subparts.",
+  "promotion_status": "temporary_pending_user_proteus_testing",
+  "test_order": [
+    "T01_15IC_AND_OR_RCL_MIXED"
+  ],
+  "cases": [
+    {
+      "case_id": "T01_15IC_AND_OR_RCL_MIXED",
+      "description": "Mixed AND/OR/RCL diagnostic with exactly 15 IC gate subparts: 8 AND2 + 7 OR2, then a series R-C-L branch.",
+      "method": "accepted_hc08_gate_records_plus_accepted_hc32_component_first_records_plus_bidirectional_converted_rcl_records",
+      "status": "temporary_pending_user_proteus_testing",
+      "ic_gate_count": 15,
+      "and_gate_count": 8,
+      "or_gate_count": 7,
+      "passive_component_count": 3,
+      "terminal_policy": {
+        "ic_signal_pins": "$TERINPUT/$TEROUTPUT",
+        "passive_endpoints": "$TERBIDIR after production conversion",
+        "logic_high": "V0 power terminal bridge",
+        "ground": "G0 ground terminal",
+        "ic_supply": "hidden; ignore physical pin 14 and pin 7 for both packages/families"
+      },
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 68646,
+        "second_isis": 83590,
+        "second_object_data": 83625,
+        "object_data_pointer": 83638
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 24,
+        "74AND2": 8,
+        "74HC32": 21,
+        "74OR2": 7,
+        "$TERINPUT": 30,
+        "$TEROUTPUT": 15,
+        "$TERBIDIR": 6,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 52,
+        "COMPONENT ID": 18,
+        "COMPONENT VALUE": 18,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 4,
+        "74AND2": 2,
+        "74HC32": 4,
+        "74OR2": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "output_hashes": {
+        "project": "971370cac1e4ea382cc7338ab906f004ff467ffd0b2138d647b408c7a26ce041",
+        "ROOT.DSN": "5eb62e6fbe5f1dd39cbe5630deedc23ec540622267b5700da2f77d34c5fae4c6",
+        "ROOT.CDB": "c26ddc67db3507884a8f5c55739da1996a987ba362f180a2c05101a8e8aad9a0",
+        "object_chunk": "02514653d643521948069aa9e9c97ae31a2f042b5aab2c10ed83a2d417e9325d"
+      }
+    }
+  ],
+  "archive_sha256": "0c8d3290832af57e7bb8a7c5da8ea67eea919753f9ede1c3fe81f91472c2634e"
+}

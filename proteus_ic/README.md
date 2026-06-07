@@ -31,6 +31,7 @@ The current expression packs are created by:
 ```text
 python tools/proteus_generation/2026-06-08/generate_ic_hc08_logic_v1_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_hc32_logic_v1_temp.py
+python tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v1_temp.py
 ```
 
 Status:
@@ -40,12 +41,15 @@ Status:
   production-style HC08 user circuits.
 - `IC_HC08_LOGIC_V1_TEMP_2026_06_08` passed user Proteus testing for the
   15-input AND expression mapped across four `74HC08` packages.
-- `IC_HC32_LOGIC_V1_TEMP_2026_06_08` is static-clean and pending user Proteus
-  testing for the 15-input OR expression mapped across four `74HC32` packages.
+- `IC_HC32_LOGIC_V1_TEMP_2026_06_08` passed user Proteus testing for the
+  15-input OR expression mapped across four `74HC32` packages.
+- `IC_AND_OR_RCL_V1_TEMP_2026_06_08` is static-clean and pending user Proteus
+  testing. It intentionally contains exactly 15 IC gate subparts: eight
+  `74HC08` AND2 gates, seven `74HC32` OR2 gates, then an R-C-L output branch.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test the HC32 OR expression pack, then request donors for
+- Current next step: test the mixed AND/OR/RCL pack, then request donors for
   the remaining 74HC families.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
