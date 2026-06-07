@@ -1,8 +1,7 @@
 # Proteus IC Generation Workspace
 
 This folder is the temporary IC learning area. Production IC generation remains
-disabled until the generated packs open, save/reopen, and simulate in Proteus
-8.13.
+disabled until a production-style temporary pack is accepted in Proteus 8.13.
 
 Current rules:
 
@@ -24,3 +23,11 @@ The first generated pack is created by:
 python tools/proteus_generation/2026-06-07/generate_ic_hc08_hc32_v1_temp.py
 ```
 
+Status:
+
+- `IC_HC08_HC32_V1_TEMP_2026_06_07` passed user Proteus testing.
+- The accepted baseline covers exact donor repack, E001 transplant, label-only
+  mutation, two-package HC08 control, power/ground logic constants, diagnostic
+  RCL-load transplant, and HC32 all-four cross-family controls.
+- Next step: create a temporary production-style HC08 generator pack that
+  composes requested gate counts from complete accepted donor records.

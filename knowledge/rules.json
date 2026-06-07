@@ -1565,8 +1565,8 @@
     {
       "id": "R088",
       "title": "IC generation starts from ordinary-terminal donor learning",
-      "status": "temporary_pending_proteus_acceptance",
-      "confidence": 0.86,
+      "status": "accepted_donor_learning_baseline_pending_production_generator",
+      "confidence": 0.92,
       "applies_to": [
         "Proteus 8.13",
         "74HC08",
@@ -1575,12 +1575,13 @@
       ],
       "evidence": [
         "IC_HC08_HC32_V1_STATIC_20260607",
+        "IC_HC08_HC32_V1_USER_ACCEPTANCE_20260607",
         "IC_HC08_M01_ALL4_IO",
         "IC_HC08_M02_TWO_PACKAGES_IO",
         "IC_HC08_M03_TRUTH_TABLE_PG",
         "IC_HC32_M02_ALL4_IO"
       ],
-      "rule": "For the IC phase, do not emit DC voltage, DC current, AC voltage, or AC current source components. Treat combinational 74-series IC supply as hidden unless a donor proves otherwise. Use ordinary input and output terminals on IC pins, not bidirectional terminals. Power and ground terminals are allowed only as logic HIGH/LOW net ties. Promote no IC generator until exact donor repack, E001 transplant, label-only mutation, package scaling, save/reopen, and simulation checks pass in Proteus 8.13."
+      "rule": "For the IC phase, do not emit DC voltage, DC current, AC voltage, or AC current source components. Treat combinational 74-series IC supply as hidden unless a donor proves otherwise. Use ordinary input and output terminals on IC pins, not bidirectional terminals. Power and ground terminals are allowed only as logic HIGH/LOW net ties. The V1 donor-learning pack passed user Proteus testing for exact donor repack, E001 transplant, label-only mutation, two-package scaling control, power/ground logic constants, diagnostic RCL-load transplant, and HC32 cross-family controls. Production IC generation is still gated on a temporary production-style HC08 pack that composes requested gate counts from these accepted donor records."
     }
   ]
 }

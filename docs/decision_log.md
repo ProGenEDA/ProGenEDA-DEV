@@ -344,6 +344,26 @@ Evidence:
   load section, so it is diagnostic only under the IC no-bidirectional-terminal
   rule.
 
+## D026: Accept V1 HC08/HC32 donor-learning pack as the IC baseline
+
+Decision: treat `IC_HC08_HC32_V1_TEMP_2026_06_07` as the accepted baseline for
+ordinary-terminal quad two-input gate donor transforms. This unlocks the next
+temporary step: a production-style HC08 pack that composes requested gate counts
+from complete accepted donor records. It does not yet promote production IC
+generation into the main generator.
+
+Evidence:
+
+- The user reported all V1 cases worked in Proteus.
+- V1 covered exact donor repack, E001 transplant, repeated transplant,
+  all-four HC08 transplant, label-only HC08 mutation, two-package HC08 control,
+  two-package label mutation, HC08 power/ground logic constants, diagnostic HC08
+  RCL load transplant, HC32 all-four transplant, and HC32 label-only mutation.
+- Pure IC cases use ordinary input/output terminals and zero `$TERBIDIR`
+  records; the only `$TERBIDIR` case remains explicitly diagnostic.
+- The HC32 single-gate donor remains rejected as HC32 evidence because its
+  internal records are HC08/AND records.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.
