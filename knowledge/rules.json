@@ -1582,6 +1582,26 @@
         "IC_HC32_M02_ALL4_IO"
       ],
       "rule": "For the IC phase, do not emit DC voltage, DC current, AC voltage, or AC current source components. Treat combinational 74-series IC supply as hidden unless a donor proves otherwise. Use ordinary input and output terminals on IC pins, not bidirectional terminals. Power and ground terminals are allowed only as logic HIGH/LOW net ties. The V1 donor-learning pack passed user Proteus testing for exact donor repack, E001 transplant, label-only mutation, two-package scaling control, power/ground logic constants, diagnostic RCL-load transplant, and HC32 cross-family controls. Production IC generation is still gated on a temporary production-style HC08 pack that composes requested gate counts from these accepted donor records."
+    },
+    {
+      "id": "R089",
+      "title": "74HC08 user DIP pins normalize to Proteus gate subparts",
+      "status": "locked_input_normalization_rule",
+      "confidence": 0.91,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC08",
+        "planner input normalization",
+        "DIP14 user descriptions",
+        "digital IC subparts"
+      ],
+      "evidence": [
+        "IC_HC08_HC32_V1_USER_ACCEPTANCE_20260607",
+        "proteus_ic/docs/74hc08_user_input_rules.md",
+        "proteus_ic/docs/74hc08_user_input_examples.json",
+        "tests/test_ic_pinmap.py"
+      ],
+      "rule": "When a user describes a 74HC08 as a 14-pin DIP package, ignore pin 14/VCC/+5V and pin 7/GND/0V as hidden IC supply connections. Do not emit U1 pin-14 or pin-7 connections. Map signal pins to the accepted Proteus subparts: pins 1/2/3 are U1:A IN1/IN2/OUT, pins 4/5/6 are U1:B IN1/IN2/OUT, pins 9/10/8 are U1:C IN1/IN2/OUT, and pins 12/13/11 are U1:D IN1/IN2/OUT. Power and ground terminals remain allowed only for logic constants or passive ground/supply nodes. Fail closed on unsupported pins rather than silently dropping them."
     }
   ]
 }

@@ -31,3 +31,6 @@ Status:
   RCL-load transplant, and HC32 all-four cross-family controls.
 - Next step: create a temporary production-style HC08 generator pack that
   composes requested gate counts from complete accepted donor records.
+- User DIP14 input normalization is documented in
+  `docs/74hc08_user_input_rules.md` and machine-readable examples live in
+  `docs/74hc08_user_input_examples.json`.

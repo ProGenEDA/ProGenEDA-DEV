@@ -1,0 +1,103 @@
+{
+  "schema_version": "proteusgen-ic-user-input-examples/v0.1",
+  "device": "74HC08",
+  "policy": {
+    "physical_package_allowed_in_user_text": true,
+    "emit_whole_dip_symbol": false,
+    "hidden_supply_pins": {
+      "14": "VCC",
+      "7": "GND"
+    },
+    "hidden_supply_action": "ignore_as_ic_pin_connections",
+    "ic_pin_terminal_policy": "input_output_only"
+  },
+  "examples": [
+    {
+      "id": "HC08_USER_T01_GATE1_PURE_AND",
+      "title": "Pure Digital AND Gate Using Gate 1",
+      "user_pin_mentions_to_ignore": [
+        {"pin": "14", "meaning": "VCC hidden supply"},
+        {"pin": "7", "meaning": "GND hidden supply"}
+      ],
+      "normalized_connections": [
+        {"component": "U1", "pin": "1", "net": "A_IN"},
+        {"component": "U1", "pin": "2", "net": "B_IN"},
+        {"component": "U1", "pin": "3", "net": "Y1"}
+      ]
+    },
+    {
+      "id": "HC08_USER_T02_GATE1_RC_DELAY",
+      "title": "RC Turn-On Delay on Gate 1 Input 1B",
+      "user_pin_mentions_to_ignore": [
+        {"pin": "14", "meaning": "VCC hidden supply"},
+        {"pin": "7", "meaning": "GND hidden supply"}
+      ],
+      "normalized_connections": [
+        {"component": "U1", "pin": "1", "net": "A_IN"},
+        {"component": "R1", "pin": "1", "net": "B_IN"},
+        {"component": "R1", "pin": "2", "net": "B_DELAY"},
+        {"component": "C1", "pin": "1", "net": "B_DELAY"},
+        {"component": "C1", "pin": "2", "net": "GND"},
+        {"component": "U1", "pin": "2", "net": "B_DELAY"},
+        {"component": "U1", "pin": "3", "net": "Y_DELAY"}
+      ]
+    },
+    {
+      "id": "HC08_USER_T03_GATE2_LC_OUTPUT_FILTER",
+      "title": "LC Low-Pass Filtered Output on Gate 2",
+      "user_pin_mentions_to_ignore": [
+        {"pin": "14", "meaning": "VCC hidden supply"},
+        {"pin": "7", "meaning": "GND hidden supply"}
+      ],
+      "normalized_connections": [
+        {"component": "U1", "pin": "4", "net": "A_FAST"},
+        {"component": "U1", "pin": "5", "net": "B_FAST"},
+        {"component": "U1", "pin": "6", "net": "GATE2_Y"},
+        {"component": "L1", "pin": "1", "net": "GATE2_Y"},
+        {"component": "L1", "pin": "2", "net": "ANALOG_OUT"},
+        {"component": "C1", "pin": "1", "net": "ANALOG_OUT"},
+        {"component": "C1", "pin": "2", "net": "GND"}
+      ]
+    },
+    {
+      "id": "HC08_USER_T04_GATE3_RLC_INPUT_FILTER",
+      "title": "RLC Damped Noise Filter on Gate 3 Input 3B",
+      "user_pin_mentions_to_ignore": [
+        {"pin": "14", "meaning": "VCC hidden supply"},
+        {"pin": "7", "meaning": "GND hidden supply"}
+      ],
+      "normalized_connections": [
+        {"component": "U1", "pin": "9", "net": "CLEAN_A"},
+        {"component": "L1", "pin": "1", "net": "NOISY_B"},
+        {"component": "L1", "pin": "2", "net": "FILTER_MID"},
+        {"component": "R1", "pin": "1", "net": "FILTER_MID"},
+        {"component": "R1", "pin": "2", "net": "FILTERED_B"},
+        {"component": "C1", "pin": "1", "net": "FILTERED_B"},
+        {"component": "C1", "pin": "2", "net": "GND"},
+        {"component": "U1", "pin": "10", "net": "FILTERED_B"},
+        {"component": "U1", "pin": "8", "net": "CLEAN_Y"}
+      ]
+    },
+    {
+      "id": "HC08_USER_T05_GATE4_DUAL_RC_WINDOW",
+      "title": "Dual-RC Coincidence Timing Window on Gate 4",
+      "user_pin_mentions_to_ignore": [
+        {"pin": "14", "meaning": "VCC hidden supply"},
+        {"pin": "7", "meaning": "GND hidden supply"}
+      ],
+      "normalized_connections": [
+        {"component": "R1", "pin": "1", "net": "TRIG"},
+        {"component": "R1", "pin": "2", "net": "FAST_RC"},
+        {"component": "C1", "pin": "1", "net": "FAST_RC"},
+        {"component": "C1", "pin": "2", "net": "GND"},
+        {"component": "U1", "pin": "12", "net": "FAST_RC"},
+        {"component": "R2", "pin": "1", "net": "TRIG"},
+        {"component": "R2", "pin": "2", "net": "SLOW_RC"},
+        {"component": "C2", "pin": "1", "net": "SLOW_RC"},
+        {"component": "C2", "pin": "2", "net": "GND"},
+        {"component": "U1", "pin": "13", "net": "SLOW_RC"},
+        {"component": "U1", "pin": "11", "net": "WINDOW_Y"}
+      ]
+    }
+  ]
+}

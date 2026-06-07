@@ -20,6 +20,23 @@
     "D": {"OUT": "11", "IN1": "12", "IN2": "13"}
   },
   "supply_pins": {"GND": "7", "VCC": "14"},
+  "dip_user_input_policy": {
+    "ignore_supply_pins": ["7", "14"],
+    "supply_pin_reason": "Proteus 74HC08 subpart donors use hidden supply. User-described pin 14/VCC and pin 7/GND connections are not emitted as IC pin connections.",
+    "pin_to_subpart": {
+      "1": {"gate": "1", "alias": "1A", "proteus_subpart": "A", "role": "IN1"},
+      "2": {"gate": "1", "alias": "1B", "proteus_subpart": "A", "role": "IN2"},
+      "3": {"gate": "1", "alias": "1Y", "proteus_subpart": "A", "role": "OUT"},
+      "4": {"gate": "2", "alias": "2A", "proteus_subpart": "B", "role": "IN1"},
+      "5": {"gate": "2", "alias": "2B", "proteus_subpart": "B", "role": "IN2"},
+      "6": {"gate": "2", "alias": "2Y", "proteus_subpart": "B", "role": "OUT"},
+      "8": {"gate": "3", "alias": "3Y", "proteus_subpart": "C", "role": "OUT"},
+      "9": {"gate": "3", "alias": "3A", "proteus_subpart": "C", "role": "IN1"},
+      "10": {"gate": "3", "alias": "3B", "proteus_subpart": "C", "role": "IN2"},
+      "11": {"gate": "4", "alias": "4Y", "proteus_subpart": "D", "role": "OUT"},
+      "12": {"gate": "4", "alias": "4A", "proteus_subpart": "D", "role": "IN1"},
+      "13": {"gate": "4", "alias": "4B", "proteus_subpart": "D", "role": "IN2"}
+    }
+  },
   "status": "temporary_donor_learning"
 }
-

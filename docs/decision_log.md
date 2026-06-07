@@ -364,6 +364,26 @@ Evidence:
 - The HC32 single-gate donor remains rejected as HC32 evidence because its
   internal records are HC08/AND records.
 
+## D027: Normalize 74HC08 DIP pin descriptions before IC generation
+
+Decision: allow users to describe `74HC08` circuits using ordinary DIP14 pin
+language, but normalize that input before CircuitIR/generation. Drop pin 14/VCC
+and pin 7/GND as hidden IC supply connections, then map signal pins to the
+accepted Proteus subparts.
+
+Evidence:
+
+- User supplied five representative `74HC08` circuits: pure gate 1 AND, gate 1
+  RC input delay, gate 2 LC output filter, gate 3 RLC input filter, and gate 4
+  dual-RC timing window.
+- Proteus donor learning confirmed visible IC symbols are subparts such as
+  `U1:A`, `U1:B`, `U1:C`, and `U1:D`, not one full DIP14 package.
+- The normalized pin rule is now captured in `proteus_ic/registry/74hc08.json`,
+  `proteus_ic/docs/74hc08_user_input_rules.md`, and
+  `src/proteusgen/ic_pinmap.py`.
+- The rule fails closed on unsupported pins; only known hidden supply pins are
+  ignored.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.
