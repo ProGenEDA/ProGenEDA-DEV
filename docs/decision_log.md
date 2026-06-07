@@ -384,6 +384,26 @@ Evidence:
 - The rule fails closed on unsupported pins; only known hidden supply pins are
   ignored.
 
+## D028: Split IC terminal policy and start AND-expression synthesis
+
+Decision: keep ordinary `$TERINPUT`/`$TEROUTPUT` records only for IC signal
+pins. In mixed IC/passive circuits, R/C/L endpoints must use the accepted
+donor-derived bidirectional terminal method, while power/ground terminals keep
+their special accepted handling. Start Boolean expression synthesis with an
+AND-only parser that maps reductions onto `74HC08` subparts.
+
+Evidence:
+
+- The user confirmed all five `IC_HC08_REAL_V1_TEMP_2026_06_07` production-style
+  HC08 circuits worked in Proteus.
+- User clarified that only IC pins should remain ordinary input/output
+  terminals; non-IC endpoints must follow the bidirectional production policy.
+- `src/proteusgen/logic_expression.py` now parses AND-only expressions and
+  builds deterministic two-input reduction trees.
+- `IC_HC08_LOGIC_V1_TEMP_2026_06_08` generates the requested 15-input AND
+  expression as fourteen `74HC08` gates across four packages, pending Proteus
+  testing.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

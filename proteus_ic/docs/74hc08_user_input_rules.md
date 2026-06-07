@@ -29,6 +29,18 @@ Do not create visible VCC/GND package-power pin connections for `74HC08` supply.
 Power and ground terminals may still be generated when the user uses HIGH/LOW as
 logic constants or when passive components need a ground reference.
 
+Terminal policy is split by object family:
+
+```text
+74HC08 signal pins -> ordinary input/output terminals
+R/C/L endpoints    -> donor-derived bidirectional terminals
+power/ground nodes -> accepted power/ground special terminal handling
+```
+
+Do not convert IC signal pins to bidirectional terminals. Do convert passive
+ordinary endpoints to the production bidirectional method before promotion of a
+mixed IC/passive generator.
+
 ## Physical Pin Map
 
 ```text
@@ -147,3 +159,36 @@ U1 pin 11 -> WINDOW_Y
 
 Fail closed if a user asks for unsupported package pins such as pin 15. Drop
 only known hidden supply pins 7 and 14. Do not silently drop any signal pin.
+
+## Boolean Expression Rule
+
+The first expression interpreter is AND-only for `74HC08`.
+
+Supported forms:
+
+```text
+Y = X1 AND X2 AND X3
+Y = X_1 * X_2 * X_3
+Y = X_1 \cdot X_2 \cdot X_{10}
+```
+
+Unsupported operators such as OR, XOR, NOT, `+`, `|`, and `!` must fail closed
+until their IC families are accepted. The generator reduces an AND expression
+into a deterministic two-input tree and allocates gates in package order:
+
+```text
+U1:A, U1:B, U1:C, U1:D, U2:A, ...
+```
+
+For the temporary IC tests, long input indexes are compacted to two-character
+terminal labels:
+
+```text
+X10 -> XA
+X11 -> XB
+X12 -> XC
+X13 -> XD
+X14 -> XE
+X15 -> XF
+Y   -> Y0
+```

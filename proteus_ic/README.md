@@ -9,8 +9,11 @@ Current rules:
   sources.
 - IC supply is hidden unless a donor proves otherwise.
 - IC pins use ordinary `$TERINPUT` and `$TEROUTPUT` terminal records.
-- IC projects must not use `$TERBIDIR` records in production.
-- Power and ground terminals are used only as logic HIGH/LOW node ties.
+- Non-IC endpoints in mixed IC circuits follow the main generator policy:
+  passive endpoints use donor-derived `$TERBIDIR`, and power/ground retain the
+  accepted special terminal handling.
+- Power and ground terminals are used only as logic HIGH/LOW node ties or
+  passive supply/reference nodes, not package supply pins.
 
 First targets:
 
@@ -26,11 +29,13 @@ python tools/proteus_generation/2026-06-07/generate_ic_hc08_hc32_v1_temp.py
 Status:
 
 - `IC_HC08_HC32_V1_TEMP_2026_06_07` passed user Proteus testing.
+- `IC_HC08_REAL_V1_TEMP_2026_06_07` passed user Proteus testing for the five
+  production-style HC08 user circuits.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Next step: create a temporary production-style HC08 generator pack that
-  composes requested gate counts from complete accepted donor records.
+- Current next step: test expression-driven 74HC08 generation from
+  `IC_HC08_LOGIC_V1_TEMP_2026_06_08`.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

@@ -1576,12 +1576,14 @@
       "evidence": [
         "IC_HC08_HC32_V1_STATIC_20260607",
         "IC_HC08_HC32_V1_USER_ACCEPTANCE_20260607",
+        "IC_HC08_REAL_V1_STATIC_20260607",
+        "IC_HC08_REAL_V1_USER_ACCEPTANCE_20260608",
         "IC_HC08_M01_ALL4_IO",
         "IC_HC08_M02_TWO_PACKAGES_IO",
         "IC_HC08_M03_TRUTH_TABLE_PG",
         "IC_HC32_M02_ALL4_IO"
       ],
-      "rule": "For the IC phase, do not emit DC voltage, DC current, AC voltage, or AC current source components. Treat combinational 74-series IC supply as hidden unless a donor proves otherwise. Use ordinary input and output terminals on IC pins, not bidirectional terminals. Power and ground terminals are allowed only as logic HIGH/LOW net ties. The V1 donor-learning pack passed user Proteus testing for exact donor repack, E001 transplant, label-only mutation, two-package scaling control, power/ground logic constants, diagnostic RCL-load transplant, and HC32 cross-family controls. Production IC generation is still gated on a temporary production-style HC08 pack that composes requested gate counts from these accepted donor records."
+      "rule": "For the IC phase, do not emit DC voltage, DC current, AC voltage, or AC current source components. Treat combinational 74-series IC supply as hidden unless a donor proves otherwise. Use ordinary input and output terminals on IC signal pins. In mixed IC/passive circuits, R/C/L endpoints use the accepted donor-derived bidirectional terminal method, and power/ground terminals keep their accepted special terminal handling for logic constants or passive references. The V1 donor-learning pack passed user Proteus testing for exact donor repack, E001 transplant, label-only mutation, two-package scaling control, power/ground logic constants, diagnostic RCL-load transplant, and HC32 cross-family controls. The real HC08 five-circuit pack also passed user Proteus testing, so production-style HC08 composition is accepted for the tested gate/passive shapes while expression-driven multi-package output remains pending manual Proteus testing."
     },
     {
       "id": "R089",
@@ -1602,6 +1604,26 @@
         "tests/test_ic_pinmap.py"
       ],
       "rule": "When a user describes a 74HC08 as a 14-pin DIP package, ignore pin 14/VCC/+5V and pin 7/GND/0V as hidden IC supply connections. Do not emit U1 pin-14 or pin-7 connections. Map signal pins to the accepted Proteus subparts: pins 1/2/3 are U1:A IN1/IN2/OUT, pins 4/5/6 are U1:B IN1/IN2/OUT, pins 9/10/8 are U1:C IN1/IN2/OUT, and pins 12/13/11 are U1:D IN1/IN2/OUT. Power and ground terminals remain allowed only for logic constants or passive ground/supply nodes. Fail closed on unsupported pins rather than silently dropping them."
+    },
+    {
+      "id": "R090",
+      "title": "74HC08 Boolean expression synthesis starts with AND-only reductions",
+      "status": "temporary_pending_user_acceptance",
+      "confidence": 0.86,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC08",
+        "Boolean expression parser",
+        "AND-only logic synthesis",
+        "multi-package IC allocation"
+      ],
+      "evidence": [
+        "IC_HC08_REAL_V1_USER_ACCEPTANCE_20260608",
+        "IC_HC08_LOGIC_V1_STATIC_20260608",
+        "src/proteusgen/logic_expression.py",
+        "tests/test_logic_expression.py"
+      ],
+      "rule": "The first Boolean expression interpreter supports AND-only assignments. Accept symbols such as AND, *, &, &&, middle-dot, and LaTeX \\cdot as AND operators; reject OR, XOR, NOT, +, |, !, and unsupported operators. Normalize variables such as X_1 and X_{10}, compact temporary Proteus labels X10..X15 to XA..XF, reduce the expression through deterministic two-input AND tree levels, and allocate gates in package order U1:A, U1:B, U1:C, U1:D, U2:A, and onward. Ignore pin 14 and pin 7 as hidden package supply for every 74HC08 package."
     }
   ]
 }
