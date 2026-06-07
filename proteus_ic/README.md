@@ -31,11 +31,13 @@ Status:
 - `IC_HC08_HC32_V1_TEMP_2026_06_07` passed user Proteus testing.
 - `IC_HC08_REAL_V1_TEMP_2026_06_07` passed user Proteus testing for the five
   production-style HC08 user circuits.
+- `IC_HC08_LOGIC_V1_TEMP_2026_06_08` passed user Proteus testing for the
+  15-input AND expression mapped across four `74HC08` packages.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test expression-driven 74HC08 generation from
-  `IC_HC08_LOGIC_V1_TEMP_2026_06_08`.
+- Current next step: reuse the accepted quad-gate emitter for `74HC32` OR, then
+  request donors for the remaining 74HC families.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

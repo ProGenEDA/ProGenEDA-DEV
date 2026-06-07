@@ -1608,8 +1608,8 @@
     {
       "id": "R090",
       "title": "74HC08 Boolean expression synthesis starts with AND-only reductions",
-      "status": "temporary_pending_user_acceptance",
-      "confidence": 0.86,
+      "status": "accepted_manual_proteus_test",
+      "confidence": 0.92,
       "applies_to": [
         "Proteus 8.13",
         "74HC08",
@@ -1620,10 +1620,11 @@
       "evidence": [
         "IC_HC08_REAL_V1_USER_ACCEPTANCE_20260608",
         "IC_HC08_LOGIC_V1_STATIC_20260608",
+        "IC_HC08_LOGIC_V1_USER_ACCEPTANCE_20260608",
         "src/proteusgen/logic_expression.py",
         "tests/test_logic_expression.py"
       ],
-      "rule": "The first Boolean expression interpreter supports AND-only assignments. Accept symbols such as AND, *, &, &&, middle-dot, and LaTeX \\cdot as AND operators; reject OR, XOR, NOT, +, |, !, and unsupported operators. Normalize variables such as X_1 and X_{10}, compact temporary Proteus labels X10..X15 to XA..XF, reduce the expression through deterministic two-input AND tree levels, and allocate gates in package order U1:A, U1:B, U1:C, U1:D, U2:A, and onward. Ignore pin 14 and pin 7 as hidden package supply for every 74HC08 package."
+      "rule": "The first Boolean expression interpreter supports AND-only assignments. Accept symbols such as AND, *, &, &&, middle-dot, and LaTeX \\cdot as AND operators; reject OR, XOR, NOT, +, |, !, and unsupported operators. Normalize variables such as X_1 and X_{10}, compact temporary Proteus labels X10..X15 to XA..XF, reduce the expression through deterministic two-input AND tree levels, and allocate gates in package order U1:A, U1:B, U1:C, U1:D, U2:A, and onward. Ignore pin 14 and pin 7 as hidden package supply for every 74HC08 package. The 15-input, four-package HC08 AND expression pack passed manual Proteus testing."
     }
   ]
 }

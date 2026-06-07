@@ -400,9 +400,9 @@ Evidence:
   terminals; non-IC endpoints must follow the bidirectional production policy.
 - `src/proteusgen/logic_expression.py` now parses AND-only expressions and
   builds deterministic two-input reduction trees.
-- `IC_HC08_LOGIC_V1_TEMP_2026_06_08` generates the requested 15-input AND
-  expression as fourteen `74HC08` gates across four packages, pending Proteus
-  testing.
+- The user confirmed `IC_HC08_LOGIC_V1_TEMP_2026_06_08` worked in Proteus for
+  the requested 15-input AND expression as fourteen `74HC08` gates across four
+  packages.
 
 ## Inactive / removed
 
