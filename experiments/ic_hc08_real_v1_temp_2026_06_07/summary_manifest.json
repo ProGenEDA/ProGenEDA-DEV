@@ -1,0 +1,594 @@
+{
+  "batch": "IC_HC08_REAL_V1_TEMP_2026_06_07",
+  "purpose": "First real 74HC08 user-circuit pack using gate subpart slices and locked passive R/C/L fragments.",
+  "promotion_status": "temporary_pending_user_proteus_testing",
+  "test_order": [
+    "T01_HC08_GATE1_PURE_AND",
+    "T02_HC08_GATE1_RC_TURN_ON_DELAY",
+    "T03_HC08_GATE2_LC_OUTPUT_FILTER",
+    "T04_HC08_GATE3_RLC_INPUT_FILTER",
+    "T05_HC08_GATE4_DUAL_RC_WINDOW"
+  ],
+  "shared_rules": [
+    "Ignore 74HC08 supply pins 14/VCC/+5V and 7/GND/0V; do not generate explicit IC supply pins.",
+    "Use U1:A/B/C/D subparts for gates 1..4.",
+    "Use ordinary input and output terminals for IC signal pins.",
+    "Use ground terminals only where the user ties a signal/passive branch to ground.",
+    "Do not use bidirectional terminals, DCV/DCC/ACV/ACC source records, LOGICSTATE, or LOGICPROBE in this IC pack."
+  ],
+  "cases": [
+    {
+      "case_id": "T01_HC08_GATE1_PURE_AND",
+      "title": "Pure Digital AND Gate, Gate 1",
+      "description": "U1:A with input terminals A1/B1 and output terminal Y1. Package supply pins 14 and 7 are ignored.",
+      "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+      "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+      "gate": "A",
+      "gate_subpart": "U1:A",
+      "gate_pin_mapping": {
+        "index": 1,
+        "inputs": [
+          "A1",
+          "B1"
+        ],
+        "output": "Y1",
+        "pins": [
+          [
+            "A",
+            "1"
+          ],
+          [
+            "B",
+            "2"
+          ],
+          [
+            "Y",
+            "3"
+          ]
+        ]
+      },
+      "passive_topology": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67599,
+        "second_isis": 68490,
+        "second_object_data": 68525,
+        "object_data_pointer": 68538
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 3,
+        "COMPONENT ID": 1,
+        "COMPONENT VALUE": 1,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "output_hashes": {
+        "project": "629a8cfbe0eb794e2bf0edb95c3a8d61352f637a9ba504ebe1ebe7aebabcc12e",
+        "ROOT.DSN": "0ff904204499f00e52fbcf77c3dfeca83996249725d44d83d5c81563c7ea5e9f",
+        "ROOT.CDB": "f585d0fa1277dce5138c58d1fb523444b5f64efc1de664b9cbba7670ffcee2fa",
+        "object_chunk": "45c28ec50262a17ac7739f84015ef8d7d97525f7a5756d74d6e5aa76a35b0d42"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T02_HC08_GATE1_RC_TURN_ON_DELAY",
+      "title": "RC Turn-On Delay, Gate 1",
+      "description": "Signal A goes direct to A1. Signal B passes through R1 to B1, with C1 from B1 to ground.",
+      "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+      "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+      "gate": "A",
+      "gate_subpart": "U1:A",
+      "gate_pin_mapping": {
+        "index": 1,
+        "inputs": [
+          "A1",
+          "B1"
+        ],
+        "output": "Y1",
+        "pins": [
+          [
+            "A",
+            "1"
+          ],
+          [
+            "B",
+            "2"
+          ],
+          [
+            "Y",
+            "3"
+          ]
+        ]
+      },
+      "passive_topology": [
+        {
+          "idx": 5,
+          "unit": 1,
+          "kind": "RESISTOR",
+          "ref": "R1",
+          "value": "10k",
+          "left": "B0",
+          "right": "B1",
+          "in_suffix": "0d30",
+          "out_suffix": "0d62",
+          "x": -10160000,
+          "y": 4826000
+        },
+        {
+          "idx": 6,
+          "unit": 2,
+          "kind": "CAPACITOR",
+          "ref": "C1",
+          "value": "1uF",
+          "left": "B1",
+          "right": "G0",
+          "in_suffix": "1002",
+          "out_suffix": "0fd0",
+          "x": -10160000,
+          "y": 3810000
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67599,
+        "second_isis": 69816,
+        "second_object_data": 69851,
+        "object_data_pointer": 69864
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "$TERINPUT": 4,
+        "$TEROUTPUT": 2,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "COMPONENT ID": 3,
+        "COMPONENT VALUE": 3,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "output_hashes": {
+        "project": "823dbb2c8959479b8c902f7cc6b87cecbacf741bef92b58bf7476af3d61a4d94",
+        "ROOT.DSN": "6f6d5ccbd3f7b2d5c0edc687173117c9e4e94d55919e71c3339e2f6351d889ae",
+        "ROOT.CDB": "b9ac1f55b82ea8459227d82ec8a9902eff81cacbde639cdfb83ac09ec34a5790",
+        "object_chunk": "748022c23ebd35ab3c1afac1d098d57ac43593d40d368c7aa1e32a844f5ecebb"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T03_HC08_GATE2_LC_OUTPUT_FILTER",
+      "title": "LC Low-Pass Filtered Output, Gate 2",
+      "description": "U1:B output Y2 feeds L1 to node N2, then C1 goes from N2 to ground.",
+      "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+      "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+      "gate": "B",
+      "gate_subpart": "U1:B",
+      "gate_pin_mapping": {
+        "index": 2,
+        "inputs": [
+          "A2",
+          "B2"
+        ],
+        "output": "Y2",
+        "pins": [
+          [
+            "A",
+            "4"
+          ],
+          [
+            "B",
+            "5"
+          ],
+          [
+            "Y",
+            "6"
+          ]
+        ]
+      },
+      "passive_topology": [
+        {
+          "idx": 5,
+          "unit": 1,
+          "kind": "INDUCTOR",
+          "ref": "L1",
+          "value": "5mH",
+          "left": "Y2",
+          "right": "N2",
+          "in_suffix": "0b09",
+          "out_suffix": "0b3b",
+          "x": -4064000,
+          "y": 3302000
+        },
+        {
+          "idx": 6,
+          "unit": 2,
+          "kind": "CAPACITOR",
+          "ref": "C1",
+          "value": "1uF",
+          "left": "N2",
+          "right": "G0",
+          "in_suffix": "1002",
+          "out_suffix": "0fd0",
+          "x": -2286000,
+          "y": 2286000
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67599,
+        "second_isis": 69842,
+        "second_object_data": 69877,
+        "object_data_pointer": 69890
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "$TERINPUT": 4,
+        "$TEROUTPUT": 2,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 1,
+        "WIRE": 7,
+        "COMPONENT ID": 3,
+        "COMPONENT VALUE": 3,
+        "RESISTOR": 0,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "output_hashes": {
+        "project": "a498ed050bdaf5721207d3d91e708060cbe832978458c336b06b67add36c0d9e",
+        "ROOT.DSN": "1bc262fe83861285b929171b1f6a4f5d4937a423b683fc36d746f51626aa123d",
+        "ROOT.CDB": "ee895979448d17ea5ccb56a2a762da706aa1caecdb780a4d5e893b9a6d859e12",
+        "object_chunk": "23b14a0ef2b1ac177c67f18fae99b092b32ed7e8590590cc09c1ae881e566ac1"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T04_HC08_GATE3_RLC_INPUT_FILTER",
+      "title": "RLC Damped Noise Filter on Input, Gate 3",
+      "description": "A3 is direct. Noisy B0 passes through L1 and R1 to B3, with C1 from B3 to ground.",
+      "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+      "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+      "gate": "C",
+      "gate_subpart": "U1:C",
+      "gate_pin_mapping": {
+        "index": 3,
+        "inputs": [
+          "A3",
+          "B3"
+        ],
+        "output": "Y3",
+        "pins": [
+          [
+            "A",
+            "9"
+          ],
+          [
+            "B",
+            "10"
+          ],
+          [
+            "Y",
+            "8"
+          ]
+        ]
+      },
+      "passive_topology": [
+        {
+          "idx": 5,
+          "unit": 1,
+          "kind": "INDUCTOR",
+          "ref": "L1",
+          "value": "5mH",
+          "left": "B0",
+          "right": "M3",
+          "in_suffix": "0b09",
+          "out_suffix": "0b3b",
+          "x": -12192000,
+          "y": 1270000
+        },
+        {
+          "idx": 6,
+          "unit": 2,
+          "kind": "RESISTOR",
+          "ref": "R1",
+          "value": "10k",
+          "left": "M3",
+          "right": "B3",
+          "in_suffix": "1506",
+          "out_suffix": "1538",
+          "x": -10160000,
+          "y": 1270000
+        },
+        {
+          "idx": 7,
+          "unit": 3,
+          "kind": "CAPACITOR",
+          "ref": "C1",
+          "value": "1uF",
+          "left": "B3",
+          "right": "G0",
+          "in_suffix": "17d8",
+          "out_suffix": "17a6",
+          "x": -10160000,
+          "y": 254000
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67599,
+        "second_isis": 70496,
+        "second_object_data": 70531,
+        "object_data_pointer": 70544
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "$TERINPUT": 5,
+        "$TEROUTPUT": 3,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 1,
+        "WIRE": 9,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "output_hashes": {
+        "project": "f4e0a795ccf60f979714cfe0ab154525b942d71856a177c2f9fb5adb04b40179",
+        "ROOT.DSN": "1fd245ec7a39dd11517b3535507c59e1f8e448c4efce5fc8c34e98ef53bab0c0",
+        "ROOT.CDB": "12863964be4e087a4cf8c6507bff43e8b591785960ae0aafab1ce1d566056785",
+        "object_chunk": "7775aa7ff4e8f3ac946aed0d77d22f7044abdd603ace03784fc4114a42e7dfeb"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T05_HC08_GATE4_DUAL_RC_WINDOW",
+      "title": "Dual-RC Coincidence Timing Window, Gate 4",
+      "description": "Master trigger T0 feeds R1/C1 to A4 and R2/C2 to B4. Output is Y4.",
+      "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+      "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+      "gate": "D",
+      "gate_subpart": "U1:D",
+      "gate_pin_mapping": {
+        "index": 4,
+        "inputs": [
+          "A4",
+          "B4"
+        ],
+        "output": "Y4",
+        "pins": [
+          [
+            "A",
+            "12"
+          ],
+          [
+            "B",
+            "13"
+          ],
+          [
+            "Y",
+            "11"
+          ]
+        ]
+      },
+      "passive_topology": [
+        {
+          "idx": 5,
+          "unit": 1,
+          "kind": "RESISTOR",
+          "ref": "R1",
+          "value": "10k",
+          "left": "T0",
+          "right": "A4",
+          "in_suffix": "0d30",
+          "out_suffix": "0d62",
+          "x": -10160000,
+          "y": 0
+        },
+        {
+          "idx": 6,
+          "unit": 2,
+          "kind": "CAPACITOR",
+          "ref": "C1",
+          "value": "1uF",
+          "left": "A4",
+          "right": "G0",
+          "in_suffix": "1002",
+          "out_suffix": "0fd0",
+          "x": -10160000,
+          "y": -762000
+        },
+        {
+          "idx": 7,
+          "unit": 3,
+          "kind": "RESISTOR",
+          "ref": "R2",
+          "value": "47k",
+          "left": "T0",
+          "right": "B4",
+          "in_suffix": "1cdc",
+          "out_suffix": "1d0e",
+          "x": -10160000,
+          "y": -1524000
+        },
+        {
+          "idx": 8,
+          "unit": 4,
+          "kind": "CAPACITOR",
+          "ref": "C2",
+          "value": "1uF",
+          "left": "B4",
+          "right": "G0",
+          "in_suffix": "1fae",
+          "out_suffix": "1f7c",
+          "x": -10160000,
+          "y": -2286000
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67599,
+        "second_isis": 71142,
+        "second_object_data": 71177,
+        "object_data_pointer": 71190
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "$TERINPUT": 6,
+        "$TEROUTPUT": 3,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 2,
+        "WIRE": 11,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5,
+        "RESISTOR": 4,
+        "CAPACITOR": 2,
+        "CAP10": 2,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 2,
+        "CAPACITOR": 2,
+        "CAP10": 4,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "output_hashes": {
+        "project": "b3334e3c4a71b34ab745db82238681142586f3b05c78c955123789081c098337",
+        "ROOT.DSN": "b858abfcbc20d70826b2cad21d69eb0dc9a5fffb50b5d4f90df782102745d87a",
+        "ROOT.CDB": "9d58800f1e41ab8f960e197b71dd9316d60267cb123a5dbe3a57a11bf86767e8",
+        "object_chunk": "1d0cb005e6942ad398835ad852426b4d52eb4cd91aac220b5462cf46644f4045"
+      },
+      "proteus_result_pending": true
+    }
+  ],
+  "archive_sha256": "64fda84e45ad442459d572a66b59739e9e2a4988d54602aa3db37d4c686dd743"
+}

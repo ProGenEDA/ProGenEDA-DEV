@@ -1,0 +1,112 @@
+{
+  "case_id": "T03_HC08_GATE2_LC_OUTPUT_FILTER",
+  "title": "LC Low-Pass Filtered Output, Gate 2",
+  "description": "U1:B output Y2 feeds L1 to node N2, then C1 goes from N2 to ground.",
+  "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+  "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+  "gate": "B",
+  "gate_subpart": "U1:B",
+  "gate_pin_mapping": {
+    "index": 2,
+    "inputs": [
+      "A2",
+      "B2"
+    ],
+    "output": "Y2",
+    "pins": [
+      [
+        "A",
+        "4"
+      ],
+      [
+        "B",
+        "5"
+      ],
+      [
+        "Y",
+        "6"
+      ]
+    ]
+  },
+  "passive_topology": [
+    {
+      "idx": 5,
+      "unit": 1,
+      "kind": "INDUCTOR",
+      "ref": "L1",
+      "value": "5mH",
+      "left": "Y2",
+      "right": "N2",
+      "in_suffix": "0b09",
+      "out_suffix": "0b3b",
+      "x": -4064000,
+      "y": 3302000
+    },
+    {
+      "idx": 6,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "N2",
+      "right": "G0",
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": -2286000,
+      "y": 2286000
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67599,
+    "second_isis": 69842,
+    "second_object_data": 69877,
+    "object_data_pointer": 69890
+  },
+  "static_validation_issues": [],
+  "marker_counts": {
+    "74HC08": 3,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 2,
+    "$TERBIDIR": 0,
+    "$TERPOWER": 0,
+    "$TERGROUND": 1,
+    "WIRE": 7,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3,
+    "RESISTOR": 0,
+    "CAPACITOR": 1,
+    "CAP10": 1,
+    "REALIND": 3,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "LOGICSTATE": 0,
+    "LOGICPROBE": 0
+  },
+  "cdb_marker_counts": {
+    "74HC08": 2,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERBIDIR": 0,
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0,
+    "RESISTOR": 0,
+    "CAPACITOR": 1,
+    "CAP10": 2,
+    "REALIND": 2,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "LOGICSTATE": 0,
+    "LOGICPROBE": 0
+  },
+  "output_hashes": {
+    "project": "a498ed050bdaf5721207d3d91e708060cbe832978458c336b06b67add36c0d9e",
+    "ROOT.DSN": "1bc262fe83861285b929171b1f6a4f5d4937a423b683fc36d746f51626aa123d",
+    "ROOT.CDB": "ee895979448d17ea5ccb56a2a762da706aa1caecdb780a4d5e893b9a6d859e12",
+    "object_chunk": "23b14a0ef2b1ac177c67f18fae99b092b32ed7e8590590cc09c1ae881e566ac1"
+  },
+  "proteus_result_pending": true
+}

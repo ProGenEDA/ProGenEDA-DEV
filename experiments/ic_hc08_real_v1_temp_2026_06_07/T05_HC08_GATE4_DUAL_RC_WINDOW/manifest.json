@@ -1,0 +1,138 @@
+{
+  "case_id": "T05_HC08_GATE4_DUAL_RC_WINDOW",
+  "title": "Dual-RC Coincidence Timing Window, Gate 4",
+  "description": "Master trigger T0 feeds R1/C1 to A4 and R2/C2 to B4. Output is Y4.",
+  "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+  "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+  "gate": "D",
+  "gate_subpart": "U1:D",
+  "gate_pin_mapping": {
+    "index": 4,
+    "inputs": [
+      "A4",
+      "B4"
+    ],
+    "output": "Y4",
+    "pins": [
+      [
+        "A",
+        "12"
+      ],
+      [
+        "B",
+        "13"
+      ],
+      [
+        "Y",
+        "11"
+      ]
+    ]
+  },
+  "passive_topology": [
+    {
+      "idx": 5,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "T0",
+      "right": "A4",
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -10160000,
+      "y": 0
+    },
+    {
+      "idx": 6,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "A4",
+      "right": "G0",
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": -10160000,
+      "y": -762000
+    },
+    {
+      "idx": 7,
+      "unit": 3,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "47k",
+      "left": "T0",
+      "right": "B4",
+      "in_suffix": "1cdc",
+      "out_suffix": "1d0e",
+      "x": -10160000,
+      "y": -1524000
+    },
+    {
+      "idx": 8,
+      "unit": 4,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "1uF",
+      "left": "B4",
+      "right": "G0",
+      "in_suffix": "1fae",
+      "out_suffix": "1f7c",
+      "x": -10160000,
+      "y": -2286000
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67599,
+    "second_isis": 71142,
+    "second_object_data": 71177,
+    "object_data_pointer": 71190
+  },
+  "static_validation_issues": [],
+  "marker_counts": {
+    "74HC08": 3,
+    "$TERINPUT": 6,
+    "$TEROUTPUT": 3,
+    "$TERBIDIR": 0,
+    "$TERPOWER": 0,
+    "$TERGROUND": 2,
+    "WIRE": 11,
+    "COMPONENT ID": 5,
+    "COMPONENT VALUE": 5,
+    "RESISTOR": 4,
+    "CAPACITOR": 2,
+    "CAP10": 2,
+    "REALIND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "LOGICSTATE": 0,
+    "LOGICPROBE": 0
+  },
+  "cdb_marker_counts": {
+    "74HC08": 2,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERBIDIR": 0,
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0,
+    "RESISTOR": 2,
+    "CAPACITOR": 2,
+    "CAP10": 4,
+    "REALIND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "LOGICSTATE": 0,
+    "LOGICPROBE": 0
+  },
+  "output_hashes": {
+    "project": "b3334e3c4a71b34ab745db82238681142586f3b05c78c955123789081c098337",
+    "ROOT.DSN": "b858abfcbc20d70826b2cad21d69eb0dc9a5fffb50b5d4f90df782102745d87a",
+    "ROOT.CDB": "9d58800f1e41ab8f960e197b71dd9316d60267cb123a5dbe3a57a11bf86767e8",
+    "object_chunk": "1d0cb005e6942ad398835ad852426b4d52eb4cd91aac220b5462cf46644f4045"
+  },
+  "proteus_result_pending": true
+}

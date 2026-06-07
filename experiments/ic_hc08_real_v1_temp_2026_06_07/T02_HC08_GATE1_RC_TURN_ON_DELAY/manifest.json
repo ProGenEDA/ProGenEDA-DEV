@@ -1,0 +1,112 @@
+{
+  "case_id": "T02_HC08_GATE1_RC_TURN_ON_DELAY",
+  "title": "RC Turn-On Delay, Gate 1",
+  "description": "Signal A goes direct to A1. Signal B passes through R1 to B1, with C1 from B1 to ground.",
+  "method": "hc08_m01_gate_slice_plus_locked_rcl_units",
+  "hidden_supply_policy": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for 74HC08 package supply.",
+  "gate": "A",
+  "gate_subpart": "U1:A",
+  "gate_pin_mapping": {
+    "index": 1,
+    "inputs": [
+      "A1",
+      "B1"
+    ],
+    "output": "Y1",
+    "pins": [
+      [
+        "A",
+        "1"
+      ],
+      [
+        "B",
+        "2"
+      ],
+      [
+        "Y",
+        "3"
+      ]
+    ]
+  },
+  "passive_topology": [
+    {
+      "idx": 5,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "B0",
+      "right": "B1",
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": -10160000,
+      "y": 4826000
+    },
+    {
+      "idx": 6,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "B1",
+      "right": "G0",
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": -10160000,
+      "y": 3810000
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 67599,
+    "second_isis": 69816,
+    "second_object_data": 69851,
+    "object_data_pointer": 69864
+  },
+  "static_validation_issues": [],
+  "marker_counts": {
+    "74HC08": 3,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 2,
+    "$TERBIDIR": 0,
+    "$TERPOWER": 0,
+    "$TERGROUND": 1,
+    "WIRE": 7,
+    "COMPONENT ID": 3,
+    "COMPONENT VALUE": 3,
+    "RESISTOR": 2,
+    "CAPACITOR": 1,
+    "CAP10": 1,
+    "REALIND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "LOGICSTATE": 0,
+    "LOGICPROBE": 0
+  },
+  "cdb_marker_counts": {
+    "74HC08": 2,
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERBIDIR": 0,
+    "$TERPOWER": 0,
+    "$TERGROUND": 0,
+    "WIRE": 0,
+    "COMPONENT ID": 0,
+    "COMPONENT VALUE": 0,
+    "RESISTOR": 1,
+    "CAPACITOR": 1,
+    "CAP10": 2,
+    "REALIND": 0,
+    "VSOURCE": 0,
+    "CSOURCE": 0,
+    "LOGICSTATE": 0,
+    "LOGICPROBE": 0
+  },
+  "output_hashes": {
+    "project": "823dbb2c8959479b8c902f7cc6b87cecbacf741bef92b58bf7476af3d61a4d94",
+    "ROOT.DSN": "6f6d5ccbd3f7b2d5c0edc687173117c9e4e94d55919e71c3339e2f6351d889ae",
+    "ROOT.CDB": "b9ac1f55b82ea8459227d82ec8a9902eff81cacbde639cdfb83ac09ec34a5790",
+    "object_chunk": "748022c23ebd35ab3c1afac1d098d57ac43593d40d368c7aa1e32a844f5ecebb"
+  },
+  "proteus_result_pending": true
+}
