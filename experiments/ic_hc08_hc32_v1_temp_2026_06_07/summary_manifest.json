@@ -1,0 +1,829 @@
+{
+  "batch": "IC_HC08_HC32_V1_TEMP_2026_06_07",
+  "purpose": "First IC donor reconstruction, E001 transplant, and label-only mutation pack.",
+  "do_not_promote": true,
+  "user_test_order": [
+    "T00_HC08_D01_EXACT_REPACK",
+    "T01_HC08_D01_E001_TRANSPLANT",
+    "T02_HC08_D01_REPEAT_TRANSPLANT",
+    "T03_HC08_M01_ALL4_E001_TRANSPLANT",
+    "T04_HC08_M01_ALL4_LABEL_ONLY",
+    "T05_HC08_M02_TWO_PACKAGES_E001_TRANSPLANT",
+    "T06_HC08_M02_TWO_PACKAGES_LABEL_ONLY",
+    "T07_HC08_M03_TRUTH_TABLE_PG_E001_TRANSPLANT",
+    "T08_HC08_M04_RCL_LOAD_DIAGNOSTIC_E001_TRANSPLANT",
+    "T09_HC32_M02_ALL4_E001_TRANSPLANT",
+    "T10_HC32_M02_ALL4_LABEL_ONLY"
+  ],
+  "known_donor_findings": {
+    "hc32_m01": "Rejected as HC32 evidence: internal markers show 74HC08/74AND2, not 74HC32/74OR2.",
+    "hc08_m04": "Diagnostic only: passive-load section contains $TERBIDIR markers, which conflicts with production IC terminal policy."
+  },
+  "cases": [
+    {
+      "case_id": "T00_HC08_D01_EXACT_REPACK",
+      "description": "Existing single-gate HC08 donor exact deterministic repack.",
+      "method": "exact_repack",
+      "donor_key": "hc08_d01",
+      "donor_path": "fixtures\\pdsprj\\hc08_d01_single_gate.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T00_HC08_D01_EXACT_REPACK\\T00_HC08_D01_EXACT_REPACK.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {},
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 3,
+        "COMPONENT ID": 1,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "6e7de7bce1c9ec070c6bf874938a1832db95ba77eb81d17cd98494f7e6c3335d",
+        "ROOT.DSN": "f51f30dd3adcea1b21ce4517d414e68192a87b3d90cbd94bf369feb3495193a4",
+        "ROOT.CDB": "232b9fa4b3bef734e7c223c14126c86d2d7748f0b84cf4a64a5d6015fbcccdca",
+        "object_chunk": "04be460df00bdbdf39711f981281c7b9eb014b1062ad0f7d30b1e70e8b4ea442"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T01_HC08_D01_E001_TRANSPLANT",
+      "description": "Single-gate HC08 object chunk and CDB transplanted into E001.",
+      "method": "e001_transplant",
+      "donor_key": "hc08_d01",
+      "donor_path": "fixtures\\pdsprj\\hc08_d01_single_gate.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T01_HC08_D01_E001_TRANSPLANT\\T01_HC08_D01_E001_TRANSPLANT.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65067,
+        "second_isis": 65952,
+        "second_object_data": 65987,
+        "object_data_pointer": 66000
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 3,
+        "COMPONENT ID": 1,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "1cc78679cfb9326ba549c22b6ef3c1f61468effc47c71d49a31a34225cffb85f",
+        "ROOT.DSN": "ed8ba5424380d5eef1bc98a41effb9704e83115afc557957e868af2b4aa5a6ed",
+        "ROOT.CDB": "232b9fa4b3bef734e7c223c14126c86d2d7748f0b84cf4a64a5d6015fbcccdca",
+        "object_chunk": "04be460df00bdbdf39711f981281c7b9eb014b1062ad0f7d30b1e70e8b4ea442"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T02_HC08_D01_REPEAT_TRANSPLANT",
+      "description": "Repeat single-gate HC08 transplant to verify deterministic output and one-gate donor stability.",
+      "method": "e001_transplant",
+      "donor_key": "hc08_d01",
+      "donor_path": "fixtures\\pdsprj\\hc08_d01_single_gate.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T02_HC08_D01_REPEAT_TRANSPLANT\\T02_HC08_D01_REPEAT_TRANSPLANT.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65067,
+        "second_isis": 65952,
+        "second_object_data": 65987,
+        "object_data_pointer": 66000
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 3,
+        "COMPONENT ID": 1,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "1cc78679cfb9326ba549c22b6ef3c1f61468effc47c71d49a31a34225cffb85f",
+        "ROOT.DSN": "ed8ba5424380d5eef1bc98a41effb9704e83115afc557957e868af2b4aa5a6ed",
+        "ROOT.CDB": "232b9fa4b3bef734e7c223c14126c86d2d7748f0b84cf4a64a5d6015fbcccdca",
+        "object_chunk": "04be460df00bdbdf39711f981281c7b9eb014b1062ad0f7d30b1e70e8b4ea442"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T03_HC08_M01_ALL4_E001_TRANSPLANT",
+      "description": "All four HC08 gates with ordinary input/output terminals transplanted into E001.",
+      "method": "e001_transplant",
+      "donor_key": "hc08_m01",
+      "donor_path": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T03_HC08_M01_ALL4_E001_TRANSPLANT\\T03_HC08_M01_ALL4_E001_TRANSPLANT.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65067,
+        "second_isis": 68487,
+        "second_object_data": 68522,
+        "object_data_pointer": 68535
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 12,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "cfc61f82b003bd2fe4ef475b1562b1b6cb58feef73ec221b5cfe2ce2d112f040",
+        "ROOT.DSN": "61f12514346d2098e43031168ab0e512a2dcab2b4a50ac32349eeda75f0e9849",
+        "ROOT.CDB": "a22039e90403fff2def974fa294dc99676f7ce037f29f2dda4e382f67494331f",
+        "object_chunk": "4d7ec2082f003f63b805a0428269c0e92029b992f327afccc116c35a3812c1ab"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T04_HC08_M01_ALL4_LABEL_ONLY",
+      "description": "All four HC08 gates with terminal labels mutated only.",
+      "method": "e001_transplant_label_only",
+      "donor_key": "hc08_m01",
+      "donor_path": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T04_HC08_M01_ALL4_LABEL_ONLY\\T04_HC08_M01_ALL4_LABEL_ONLY.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 15,
+          "old": "A1",
+          "new": "C1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 118,
+          "old": "B1",
+          "new": "D1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 221,
+          "old": "A2",
+          "new": "C2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 324,
+          "old": "B2",
+          "new": "D2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 427,
+          "old": "A3",
+          "new": "C3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 530,
+          "old": "B3",
+          "new": "D3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 633,
+          "old": "A4",
+          "new": "C4"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 736,
+          "old": "B4",
+          "new": "D4"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 839,
+          "old": "Y1",
+          "new": "Z1"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1476,
+          "old": "Y2",
+          "new": "Z2"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 2113,
+          "old": "Y3",
+          "new": "Z3"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 2750,
+          "old": "Y4",
+          "new": "Z4"
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65067,
+        "second_isis": 68487,
+        "second_object_data": 68522,
+        "object_data_pointer": 68535
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 12,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "86ec0f02df30e9706fd8d4eeadc04fcdbecb41ad0210a0b2549bfd21155989eb",
+        "ROOT.DSN": "bcee062a70e0df9bea31ae0298b82aa8fb779235b507ef56be25b63eaa531560",
+        "ROOT.CDB": "a22039e90403fff2def974fa294dc99676f7ce037f29f2dda4e382f67494331f",
+        "object_chunk": "d181b548f8f5f2b5a701585e9ae45414410c4cafa4e763ba3f86dcb103db0a94"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T05_HC08_M02_TWO_PACKAGES_E001_TRANSPLANT",
+      "description": "Two HC08 packages, U1:A and U2:A, transplanted into E001.",
+      "method": "e001_transplant",
+      "donor_key": "hc08_m02",
+      "donor_path": "proteus_ic\\donors\\74hc08\\IC_HC08_M02_TWO_PACKAGES_IO.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T05_HC08_M02_TWO_PACKAGES_E001_TRANSPLANT\\T05_HC08_M02_TWO_PACKAGES_E001_TRANSPLANT.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65067,
+        "second_isis": 66801,
+        "second_object_data": 66836,
+        "object_data_pointer": 66849
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 6,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 4,
+        "$TEROUTPUT": 2,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 6,
+        "COMPONENT ID": 2,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 4,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "ebd15a8156676cd21366d7115039cbcb9a598774ff198007eb358fdd2cff56eb",
+        "ROOT.DSN": "e90de086a8f42646aaa9a3c733f9d58461b2d896256ae097dd378b026fc87d1e",
+        "ROOT.CDB": "7ece663b46dccd62ff21cef85fb84bbf383e7037b4bd752296e2a2cc3d35f06d",
+        "object_chunk": "2635d639f35df839c4c67d689cb8a609495ea53f88c20621797aace803b39bc0"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T06_HC08_M02_TWO_PACKAGES_LABEL_ONLY",
+      "description": "Two HC08 packages with terminal labels mutated only.",
+      "method": "e001_transplant_label_only",
+      "donor_key": "hc08_m02",
+      "donor_path": "proteus_ic\\donors\\74hc08\\IC_HC08_M02_TWO_PACKAGES_IO.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T06_HC08_M02_TWO_PACKAGES_LABEL_ONLY\\T06_HC08_M02_TWO_PACKAGES_LABEL_ONLY.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 15,
+          "old": "A1",
+          "new": "C1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 118,
+          "old": "B1",
+          "new": "D1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 221,
+          "old": "A2",
+          "new": "C2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 324,
+          "old": "B2",
+          "new": "D2"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 427,
+          "old": "Y1",
+          "new": "Z1"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1064,
+          "old": "Y2",
+          "new": "Z2"
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65067,
+        "second_isis": 66801,
+        "second_object_data": 66836,
+        "object_data_pointer": 66849
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 6,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 4,
+        "$TEROUTPUT": 2,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 6,
+        "COMPONENT ID": 2,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 4,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "f51a35aca9e5daedd402fde0fab1ea486f2e7f9ba23f754fda955825a21a7fd6",
+        "ROOT.DSN": "9901db83252a47effd1b5012df9841b59e6d65cfd9bfe24c5c2822be0eae2bbf",
+        "ROOT.CDB": "7ece663b46dccd62ff21cef85fb84bbf383e7037b4bd752296e2a2cc3d35f06d",
+        "object_chunk": "68763bd15578691988b80896f72c2fe85bb19b9bae239a662fa3287b309c566e"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T07_HC08_M03_TRUTH_TABLE_PG_E001_TRANSPLANT",
+      "description": "HC08 truth-table power/ground logic-constant donor transplanted into E001.",
+      "method": "e001_transplant",
+      "donor_key": "hc08_m03",
+      "donor_path": "proteus_ic\\donors\\74hc08\\IC_HC08_M03_TRUTH_TABLE_PG.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T07_HC08_M03_TRUTH_TABLE_PG_E001_TRANSPLANT\\T07_HC08_M03_TRUTH_TABLE_PG_E001_TRANSPLANT.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65067,
+        "second_isis": 68998,
+        "second_object_data": 69033,
+        "object_data_pointer": 69046
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 12,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 6,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "COMPONENT ID": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "e00a111074c62c2bb8b2949122e8496ab44aa164f51cf6f3e2c74c0848d14844",
+        "ROOT.DSN": "225aa254f9e50da5352d547bc4e9179cb6645a8e54a6e943e3e4d7eb819b488a",
+        "ROOT.CDB": "a22039e90403fff2def974fa294dc99676f7ce037f29f2dda4e382f67494331f",
+        "object_chunk": "28fae01c743c79f086714c8018e0fd5119af5ab06a8c3cda83c8bf28a1452267"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T08_HC08_M04_RCL_LOAD_DIAGNOSTIC_E001_TRANSPLANT",
+      "description": "Diagnostic RCL-load donor transplant. Not production-locking because the donor contains bidirectional passive terminals.",
+      "method": "e001_transplant",
+      "donor_key": "hc08_m04",
+      "donor_path": "proteus_ic\\donors\\74hc08\\IC_HC08_M04_RCL_LOAD.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T08_HC08_M04_RCL_LOAD_DIAGNOSTIC_E001_TRANSPLANT\\T08_HC08_M04_RCL_LOAD_DIAGNOSTIC_E001_TRANSPLANT.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67599,
+        "second_isis": 70747,
+        "second_object_data": 70782,
+        "object_data_pointer": 70795
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 3,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 2,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 7,
+        "$TERPOWER": 0,
+        "$TERGROUND": 1,
+        "WIRE": 10,
+        "COMPONENT ID": 4,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3
+      },
+      "cdb_marker_counts": {
+        "74HC08": 2,
+        "74HC32": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2
+      },
+      "output_hashes": {
+        "project": "c3e8df3ca06fa698525a202a9f767f7881f419f141034e948dd9ac05575cc354",
+        "ROOT.DSN": "7216a00bc0646a5c8e46950722d54606f5afb79a905a1649e8450b7d5fba58b8",
+        "ROOT.CDB": "7c0a7320fcce70133e916f5a8877062f022af10a226c80496d80382a147c2cee",
+        "object_chunk": "b005fdc47471ef0e2a98402015a1b990e184bc9443fbd075957cce0d0c838a6d"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T09_HC32_M02_ALL4_E001_TRANSPLANT",
+      "description": "All four HC32 gates with ordinary input/output terminals transplanted into E001.",
+      "method": "e001_transplant",
+      "donor_key": "hc32_m02",
+      "donor_path": "proteus_ic\\donors\\74hc32\\IC_HC32_M02_ALL4_IO.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T09_HC32_M02_ALL4_E001_TRANSPLANT\\T09_HC32_M02_ALL4_E001_TRANSPLANT.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65218,
+        "second_isis": 68634,
+        "second_object_data": 68669,
+        "object_data_pointer": 68682
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 0,
+        "74HC32": 12,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 0,
+        "74HC32": 2,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "a1e3723b2de1584ec4efaab0ce1fbaa05f88eacbac3a293bc83ef6eed5f03d6b",
+        "ROOT.DSN": "d698339f273329cca532b7733b6267a9f3bc76d1f3ded422fdf98bfb6d639330",
+        "ROOT.CDB": "9c2d124bf9341aaac4e85732c9ab840687b5a76d5424ad9eb541569170961ceb",
+        "object_chunk": "c0acd25b0b76da5cd20d31387561ea2360812f39c605ef45c24444128994760e"
+      },
+      "proteus_result_pending": true
+    },
+    {
+      "case_id": "T10_HC32_M02_ALL4_LABEL_ONLY",
+      "description": "All four HC32 gates with terminal labels mutated only.",
+      "method": "e001_transplant_label_only",
+      "donor_key": "hc32_m02",
+      "donor_path": "proteus_ic\\donors\\74hc32\\IC_HC32_M02_ALL4_IO.pdsprj",
+      "output_path": "experiments\\ic_hc08_hc32_v1_temp_2026_06_07\\T10_HC32_M02_ALL4_LABEL_ONLY\\T10_HC32_M02_ALL4_LABEL_ONLY.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 397,
+          "old": "A1",
+          "new": "E1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 550,
+          "old": "B1",
+          "new": "F1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1239,
+          "old": "A2",
+          "new": "E2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1392,
+          "old": "B2",
+          "new": "F2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2081,
+          "old": "A3",
+          "new": "E3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2234,
+          "old": "B3",
+          "new": "F3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2923,
+          "old": "A4",
+          "new": "E4"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 3076,
+          "old": "B4",
+          "new": "F4"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 703,
+          "old": "Y1",
+          "new": "O1"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1545,
+          "old": "Y2",
+          "new": "O2"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 2387,
+          "old": "Y3",
+          "new": "O3"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 3229,
+          "old": "Y4",
+          "new": "O4"
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65218,
+        "second_isis": 68634,
+        "second_object_data": 68669,
+        "object_data_pointer": 68682
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC08": 0,
+        "74HC32": 12,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "cdb_marker_counts": {
+        "74HC08": 0,
+        "74HC32": 2,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0
+      },
+      "output_hashes": {
+        "project": "2a4dfb60cb886cafe8ef8c16dd54b45794fc15b32f18f1eab2c2cd26569c6f63",
+        "ROOT.DSN": "252e88e3367485bf68c715190d58e2ff2ab51bb0f0e40616c7c6b777fdaeacd0",
+        "ROOT.CDB": "9c2d124bf9341aaac4e85732c9ab840687b5a76d5424ad9eb541569170961ceb",
+        "object_chunk": "783b00cf63c57b41387d6f5af15e86339dba14cd13d622d55157f96d0b9511cd"
+      },
+      "proteus_result_pending": true
+    }
+  ],
+  "archive_sha256": "03b3d62a5e744cfe51e82460463c9f2db3ac9b04eb43850cb3060c7745e82d6f"
+}

@@ -323,6 +323,27 @@ Evidence:
 - Multi-source clearance remains `5080000`; the denser component grid passes
   deterministic placement and overlap checks.
 
+## D025: Start IC generation with donor learning, not production emission
+
+Decision: keep IC support in the temporary `proteus_ic` workspace until the
+generated IC packs pass Proteus open, save/reopen, and simulation checks. Use
+ordinary input/output terminals for IC pins, preserve hidden IC supply behavior,
+and reject DC/AC source components for IC generation.
+
+Evidence:
+
+- The imported HC08 all-four donor contains four `74HC08` subpart symbols,
+  eight `$TERINPUT` records, four `$TEROUTPUT` records, twelve short wires, and
+  no `$TERBIDIR` records.
+- The imported HC08 two-package donor contains `U1:A` and `U2:A` package rows,
+  which makes it the first package-scaling control.
+- The imported HC32 all-four donor is a true `74HC32`/`74OR2.MDF` donor, while
+  the supplied HC32 single-gate file internally contains `74HC08`/`74AND2.MDF`
+  and is rejected as HC32 evidence.
+- The imported HC08 RCL-load donor contains `$TERBIDIR` records in the passive
+  load section, so it is diagnostic only under the IC no-bidirectional-terminal
+  rule.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

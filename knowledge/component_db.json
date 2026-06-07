@@ -236,16 +236,22 @@
       "family": "quad_2_input_and"
     },
     "74HC08": {
-      "status": "diagnostic_control_only_pending_d05",
+      "status": "temporary_ic_donor_learning_v1_pending_proteus_acceptance",
       "category": "logic_ic",
       "family": "quad_2_input_and",
       "clean_sources": [
         "HC08_D01",
         "HC08_D02",
-        "HC08_D03"
+        "HC08_D03",
+        "IC_HC08_M01_ALL4_IO",
+        "IC_HC08_M02_TWO_PACKAGES_IO",
+        "IC_HC08_M03_TRUTH_TABLE_PG"
       ],
-      "v0_limit": "one U1 quad package",
-      "generation_gate": "HC08_D05 exact-picture oracle and Proteus 8.13 acceptance result required"
+      "diagnostic_only_sources": [
+        "IC_HC08_M04_RCL_LOAD contains bidirectional passive-load terminals"
+      ],
+      "ic_policy": "hidden supply; no DC/AC sources; production pins use input/output terminals only",
+      "generation_gate": "IC_HC08_HC32_V1_TEMP_2026_06_07 must pass Proteus open, save/reopen, and simulation before promotion"
     },
     "74LS32": {
       "status": "requested_not_yet_controlled",
@@ -253,9 +259,16 @@
       "family": "quad_2_input_or"
     },
     "74HC32": {
-      "status": "found_in_user_corpus_not_controlled",
+      "status": "temporary_ic_cross_family_pattern_check_pending_proteus_acceptance",
       "category": "logic_ic",
-      "family": "quad_2_input_or"
+      "family": "quad_2_input_or",
+      "clean_sources": [
+        "IC_HC32_M02_ALL4_IO"
+      ],
+      "rejected_sources": [
+        "IC_HC32_M01_ONE_GATE_IO internally contains 74HC08/74AND2.MDF, not 74HC32/74OR2.MDF"
+      ],
+      "ic_policy": "hidden supply; no DC/AC sources; production pins use input/output terminals only"
     },
     "74LS86": {
       "status": "requested_not_yet_controlled",
