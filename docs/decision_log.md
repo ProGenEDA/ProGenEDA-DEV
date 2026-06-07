@@ -284,6 +284,27 @@ Evidence:
   validity from a SPICE singular-matrix failure.
 - Production remains unchanged pending manual V2 acceptance.
 
+## D023: Require one broad pre-lock bidirectional regression pack
+
+Decision: treat the focused V2 method as manually confirmed, but delay
+production promotion until one expanded pack covers scale, topology, every
+passive family, DC current, AC voltage, and one through three DC voltage
+sources.
+
+Evidence:
+
+- The user reported every V2 case worked, including the true 180-degree
+  resistor endpoint, one clean DCV source, isolated two-DCV topology, and
+  shared-negative two-DCV topology.
+- V3 reuses the exact V2 conversion and clean-DCV functions; it does not
+  reconstruct the accepted method.
+- Eleven V3 cases cover a 20-resistor mesh, six-component R/C, capacitor-only,
+  inductor-only, Wheatstone, corrected 21-component RCL, DC current, AC voltage,
+  one-DCV bridge, larger two-DCV, and three-DCV circuits.
+- Static checks show zero ordinary endpoint records, role-correct bidirectional
+  angles, zero layout overlaps, valid source CDB rows and links, deterministic
+  output, and a clean existing regression suite.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

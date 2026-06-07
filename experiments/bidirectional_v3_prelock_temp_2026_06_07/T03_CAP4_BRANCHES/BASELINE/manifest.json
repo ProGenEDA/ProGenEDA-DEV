@@ -1,0 +1,301 @@
+{
+  "schema_version": "mixed-rcl-circuit-ir/v0.1",
+  "generator_target": "proteus-8.13-mixed-rcl-locked",
+  "status": "locked_current_scope",
+  "project_name": "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE",
+  "output_basename": "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE",
+  "base_project": "E001_EMPTY_BASE",
+  "base_fixture_id": "e001_empty",
+  "rcl_unit_donor_fixture_id": "rcl_4x_t07_unit_donor",
+  "component_count_requested": 4,
+  "component_count_emitted_cdb": 4,
+  "component_count_emitted_dsn": 4,
+  "resistor_count": 0,
+  "capacitor_count": 4,
+  "inductor_count": 0,
+  "node_count_emitted": 4,
+  "nodes": [
+    {
+      "id": "V0",
+      "kind": "power"
+    },
+    {
+      "id": "N1",
+      "kind": "internal"
+    },
+    {
+      "id": "G0",
+      "kind": "ground"
+    },
+    {
+      "id": "N2",
+      "kind": "internal"
+    }
+  ],
+  "group_count": 4,
+  "group_modes": [
+    "C",
+    "C",
+    "C",
+    "C"
+  ],
+  "power_bridge_count": 1,
+  "ground_terminal_count": 2,
+  "object_order": "header, V0 bridge, accepted RCL subgroup-removal groups",
+  "object_chunk_len": 2945,
+  "root_cdb_len": 654,
+  "root_dsn_len": 70592,
+  "marker_counts": {
+    "$TERPOWER": 1,
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 3,
+    "$TERGROUND": 2,
+    "WIRE": 9,
+    "RESISTOR": 0,
+    "REALIND": 0,
+    "CAPACITOR": 4,
+    "CAP10": 4,
+    "COMPONENT ID": 4,
+    "COMPONENT VALUE": 4
+  },
+  "section_pointer_values": {
+    "insert": 64167,
+    "first_isis": 66704,
+    "second_isis": 69695,
+    "second_object_data": 69730,
+    "object_data_pointer": 69743
+  },
+  "topology": [
+    {
+      "idx": 1,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "V0",
+      "right": "N1",
+      "global_id": 1,
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": -7366000,
+      "y": 5080000
+    },
+    {
+      "idx": 2,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "1uF",
+      "left": "N1",
+      "right": "G0",
+      "global_id": 2,
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": -3556000,
+      "y": 5080000
+    },
+    {
+      "idx": 3,
+      "unit": 3,
+      "kind": "CAPACITOR",
+      "ref": "C3",
+      "value": "1uF",
+      "left": "V0",
+      "right": "G0",
+      "global_id": 3,
+      "in_suffix": "17d8",
+      "out_suffix": "17a6",
+      "x": -7366000,
+      "y": 0
+    },
+    {
+      "idx": 4,
+      "unit": 4,
+      "kind": "CAPACITOR",
+      "ref": "C4",
+      "value": "1uF",
+      "left": "N1",
+      "right": "N2",
+      "global_id": 4,
+      "in_suffix": "1fae",
+      "out_suffix": "1f7c",
+      "x": -3556000,
+      "y": 2540000
+    }
+  ],
+  "layout": {
+    "layout_version": "proteusgen-layout/v0.2",
+    "route": "mixed-rcl",
+    "strategy": "beautify",
+    "direction": "left_to_right",
+    "experimental": false,
+    "component_positions": {
+      "C1": {
+        "x": -7366000,
+        "y": 5080000
+      },
+      "C2": {
+        "x": -3556000,
+        "y": 5080000
+      },
+      "C3": {
+        "x": -7366000,
+        "y": 0
+      },
+      "C4": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    },
+    "source_positions": {},
+    "node_positions": {
+      "G0": {
+        "x": -3556000,
+        "y": 2540000
+      },
+      "N1": {
+        "x": -3556000,
+        "y": 5080000
+      },
+      "N2": {
+        "x": 254000,
+        "y": 5080000
+      },
+      "V0": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    "node_levels": {
+      "G0": 1,
+      "N1": 1,
+      "N2": 2,
+      "V0": 0
+    },
+    "bounds": {
+      "min_x": -8382000,
+      "min_y": -1270000,
+      "max_x": -1270000,
+      "max_y": 6350000,
+      "width": 7112000,
+      "height": 7620000
+    },
+    "wrap_count": 0,
+    "adjustment_count": 0,
+    "overlap_count": 0,
+    "overlaps": [],
+    "motifs": [
+      {
+        "kind": "cycle",
+        "closing_components": [
+          "C3"
+        ]
+      },
+      {
+        "kind": "hub",
+        "node": "N1",
+        "degree": 3
+      },
+      {
+        "kind": "bridge_or_chord",
+        "components": [
+          "C2"
+        ]
+      }
+    ],
+    "notes": [
+      "Placement-only layout: no standalone routed wires or junction records are emitted.",
+      "Omitted layout strategy defaults to beautify unless explicit positions require manual placement.",
+      "Directed endpoint order and repeated node labels guide horizontal continuity.",
+      "Sources use a dedicated left column with source-sized vertical clearance."
+    ]
+  },
+  "components": [
+    {
+      "idx": 1,
+      "ref": "C1",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "N1"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 2,
+      "ref": "C2",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N1",
+        "G0"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 5080000
+      }
+    },
+    {
+      "idx": 3,
+      "ref": "C3",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "V0",
+        "G0"
+      ],
+      "visual": {
+        "x": -7366000,
+        "y": 0
+      }
+    },
+    {
+      "idx": 4,
+      "ref": "C4",
+      "type": "CAPACITOR",
+      "value": "1uF",
+      "nodes": [
+        "N1",
+        "N2"
+      ],
+      "visual": {
+        "x": -3556000,
+        "y": 2540000
+      }
+    }
+  ],
+  "static_validation_issues": [],
+  "metadata": {},
+  "component_value_overrides": {},
+  "known_limitations": [
+    "Current main R/C/L generation is group-based and limited to donor-removal blocks.",
+    "Terminal labels and generated refs are two ASCII characters.",
+    "Current visible value overrides must fit the existing donor record sizes.",
+    "The V0 power terminal is emitted through the donor-derived output bridge. Component endpoints use input/output/ground terminals.",
+    "Geometry is donor-derived horizontal component blocks; topology is encoded by repeated terminal labels."
+  ],
+  "output_files": [
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.pdsprj",
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.ROOT.CDB.bin",
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.ROOT.DSN.bin",
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.OBJECT_CHUNK.bin",
+    "layout_plan.json",
+    "manifest.json",
+    "README_TEST_FIRST.txt",
+    "generator_version.txt"
+  ],
+  "output_hashes": {
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.pdsprj": "318b55159ecf54bcb704885325535d75df058316fb3e0d2036fbd014d8de7397",
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.ROOT.CDB.bin": "db42cbd191086ec6e3ba4b369ea69a3d4a201135f04b8f9ecaf00d9ebd7c2542",
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.ROOT.DSN.bin": "f0627202fc339263c59bceb4534e48acd51f9bfa98b69b8a8294ad957f7bee51",
+    "BIDIR_V3_T03_CAP4_BRANCHES_BASELINE.OBJECT_CHUNK.bin": "92736e3660aeb920c664d9488640f6db0bf136a02e4f0722519c65f5674dbc62",
+    "object_chunk": "92736e3660aeb920c664d9488640f6db0bf136a02e4f0722519c65f5674dbc62",
+    "ROOT.CDB": "db42cbd191086ec6e3ba4b369ea69a3d4a201135f04b8f9ecaf00d9ebd7c2542",
+    "base_project": "74532bcb33fcc293da833d13eb30e5fa1fec7865ebb3793eed51602ec719781f",
+    "rcl_unit_donor": "340b5972d35ce8b63c1aad6048c8fe33a2ea969ae2ad272acc316ce12f8459f5"
+  }
+}

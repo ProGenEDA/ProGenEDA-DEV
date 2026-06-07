@@ -1522,6 +1522,26 @@
         "BEAUTIFIER_PRODUCTION_RELEASE_VERIFICATION_20260607"
       ],
       "rule": "Use the exact accepted V2 deterministic layout algorithm before binary emission. Omitted layout defaults to beautify, explicit component or source positions without a strategy infer manual, and explicit legacy remains available. Keep donor-derived component, terminal, source, and short-wire records together; do not synthesize standalone routed wires or junctions. Preserve double-source clearance, compact AC-source geometry, repeated-node lane preference, object identities, CDB ordering, and electrical labels."
+    },
+    {
+      "id": "R086",
+      "title": "Bidirectional endpoints require role-based orientation and source-native DCV records",
+      "status": "confirmed_v2_manual_acceptance_pending_production_promotion",
+      "confidence": 0.96,
+      "applies_to": [
+        "Proteus 8.13",
+        "bidirectional terminals",
+        "passive endpoint records",
+        "DC voltage sources",
+        "ROOT.CDB source rows"
+      ],
+      "evidence": [
+        "BIDIRECTIONAL_V1_USER_PARTIAL_20260607",
+        "BIDIRECTIONAL_V2_ORIENTATION_DCV_STATIC_20260607",
+        "BIDIRECTIONAL_V2_STATIC_VERIFICATION_20260607",
+        "BIDIRECTIONAL_V2_USER_ACCEPTANCE_20260607"
+      ],
+      "rule": "Build $TERBIDIR records from the exact orientation donors. Convert ordinary output-role endpoints to angle 0 and ordinary input-role endpoints to angle 1800; do not preserve the legacy numeric angle blindly. For DC voltage sources, use a complete donor-native bidirectional terminal/source/wire unit, activate each terminal suffix and matching source-body suffix together, and encode the ROOT.CDB pin map as +->1 and -->2. The user confirmed one- and two-source V2 cases, including isolated and shared-negative topologies, opened and simulated."
     }
   ]
 }

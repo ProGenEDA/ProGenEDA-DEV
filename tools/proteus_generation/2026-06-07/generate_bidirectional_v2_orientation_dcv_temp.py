@@ -192,9 +192,10 @@ def _convert_passive_case(
     *,
     base: Path,
     templates: Any,
+    prefix: str = "BIDIR_V2",
 ) -> dict[str, Any]:
     case_dir = OUT / test_id
-    baseline = generator(_renamed(payload, f"BIDIR_V2_{test_id}_BASELINE"), case_dir / "BASELINE", layout_strategy="beautify")
+    baseline = generator(_renamed(payload, f"{prefix}_{test_id}_BASELINE"), case_dir / "BASELINE", layout_strategy="beautify")
     original_dsn = baseline.dsn_path.read_bytes()
     original_chunk = rv9._extract_object_chunk(original_dsn)
     converted, replacements = replace_ordinary_terminals(
@@ -210,7 +211,7 @@ def _convert_passive_case(
     dsn = patch_root_dsn_version(dsn, PROTEUS_813)
     output_dir = case_dir / "BIDIR"
     output_dir.mkdir(parents=True)
-    output = output_dir / f"BIDIR_V2_{test_id}.pdsprj"
+    output = output_dir / f"{prefix}_{test_id}.pdsprj"
     write_project_from_parts(
         base,
         output,
@@ -242,8 +243,9 @@ def _generate_dcv_case(
     registry: FixtureRegistry,
     bidir_templates: Any,
     dcv_template: Any,
+    prefix: str = "BIDIR_V2",
 ) -> dict[str, Any]:
-    application = apply_layout_to_payload(_renamed(payload, f"BIDIR_V2_{test_id}"), "beautify")
+    application = apply_layout_to_payload(_renamed(payload, f"{prefix}_{test_id}"), "beautify")
     ir, parse_issues = sd.parse_source_driven_ir(application.payload)
     if parse_issues or ir is None:
         raise RuntimeError(f"{test_id} payload failed validation: {parse_issues}")
@@ -312,7 +314,7 @@ def _generate_dcv_case(
     project_xml = patch_project_xml_version(read_internal_file(base.path, "PROJECT.XML"), PROTEUS_813)
     case_dir = OUT / test_id
     case_dir.mkdir(parents=True)
-    output = case_dir / f"BIDIR_V2_{test_id}.pdsprj"
+    output = case_dir / f"{prefix}_{test_id}.pdsprj"
     write_project_from_parts(
         base.path,
         output,
