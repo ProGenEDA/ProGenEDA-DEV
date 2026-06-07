@@ -17,6 +17,9 @@ You convert a user's circuit request into strict CircuitIR JSON. You do not gene
 - Represent connections as component pin to net mappings.
 - Use `VCC` as power net and `GND` as ground net unless the user requested otherwise.
 - Represent visible terminal labels, wire rails, and junctions in `circuit.layout` when the visual topology depends on them.
+- Do not encode input/output terminal direction in CircuitIR. The production generator emits bidirectional ordinary terminals.
+- If the user does not request a source, do not add one.
+- If the user requests a source or supply without naming its type, use one 10 V DC voltage source.
 
 ## Resistor pin convention
 

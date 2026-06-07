@@ -49,8 +49,9 @@ class ResistorV9Tests(unittest.TestCase):
             dsn = read_internal_file(result.output_path, "ROOT.DSN")
             chunk = _extract_object_chunk(dsn)
             self.assertEqual(chunk.count(b"$TERPOWER"), 1)
-            self.assertEqual(chunk.count(b"$TERINPUT"), 1)
-            self.assertEqual(chunk.count(b"$TEROUTPUT"), 1)
+            self.assertEqual(chunk.count(b"$TERINPUT"), 0)
+            self.assertEqual(chunk.count(b"$TEROUTPUT"), 0)
+            self.assertEqual(chunk.count(b"$TERBIDIR"), 2)
 
     def test_invalid_long_node_label_is_rejected(self) -> None:
         payload = predefined_resistor_cases()[0]

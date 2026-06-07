@@ -305,6 +305,24 @@ Evidence:
   angles, zero layout overlaps, valid source CDB rows and links, deterministic
   output, and a clean existing regression suite.
 
+## D024: Promote V3 bidirectional endpoints and compact the beautifier grid
+
+Decision: make the exact user-confirmed V3 endpoint method the production
+default across resistor, mixed-passive, mixed-RCL, and source-driven routes.
+Ordinary input/output records are no longer emitted. Keep power and ground
+special terminals, use donor-native bidirectional DCV units, and reduce only
+the component layout grid to `3175000` horizontal by `2032000` vertical units.
+
+Evidence:
+
+- The user confirmed all eleven V3 projects opened, rendered, and simulated.
+- V3 covered R, C, L, RC, RCL, bridge, 21-component, DCI, ACV, and one through
+  three DCV cases.
+- The production implementation copies the accepted V3 helpers into the
+  package and runs conversion only at the final object-stream boundary.
+- Multi-source clearance remains `5080000`; the denser component grid passes
+  deterministic placement and overlap checks.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

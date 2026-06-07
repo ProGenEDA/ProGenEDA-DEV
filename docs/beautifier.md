@@ -56,8 +56,8 @@ motifs, and overlap results.
 ## Deterministic rules
 
 - Flow direction is left to right.
-- Horizontal component spacing is `3810000` Proteus internal units.
-- Vertical lane spacing is `2540000` units.
+- Horizontal component spacing is `3175000` Proteus internal units.
+- Vertical lane spacing is `2032000` units.
 - Long paths wrap after seven component slots.
 - `V0` and source-positive nets are roots.
 - `G0` and source-negative nets are sinks.
@@ -94,3 +94,6 @@ series-parallel, delta, star, Wheatstone, R-2R, corrected 21-component,
 single-DC, mixed-DC, and AC-voltage cases. The accepted V2 follow-up additionally
 verified double-source separation, compact AC-source geometry, and repeated-node
 lane continuity.
+
+The post-V3 compacting revision reduces only component column and lane spacing.
+It retains the accepted `5080000` multi-source clearance and all overlap checks.

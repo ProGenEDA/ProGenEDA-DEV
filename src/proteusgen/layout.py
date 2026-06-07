@@ -14,8 +14,10 @@ from typing import Any, Literal
 
 LayoutStrategy = Literal["beautify", "manual", "legacy"]
 
-X_SPACING = 3_810_000
-Y_SPACING = 2_540_000
+# The accepted donor records remain comfortably separated at this denser grid.
+# Source stacking keeps its larger independent clearance below.
+X_SPACING = 3_175_000
+Y_SPACING = 2_032_000
 SOURCE_Y_SPACING = 5_080_000
 LEGACY_SPACING = 2_540_000
 WRAP_SLOTS = 7

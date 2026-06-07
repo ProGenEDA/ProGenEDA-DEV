@@ -26,6 +26,7 @@ from .layout import (
     apply_layout_to_payload,
     plan_with_actual_positions,
 )
+from .bidirectional import BIDIR_MARKER, convert_production_terminals, load_production_templates
 from . import mixed_rcl as rcl
 from . import resistor_v9 as rv9
 from .pdsprj import read_internal_file, write_project_from_parts
@@ -939,6 +940,7 @@ def _marker_counts(data: bytes) -> dict[str, int]:
         "$TERGROUND",
         "$TERINPUT",
         "$TEROUTPUT",
+        "$TERBIDIR",
         "VSOURCE",
         "CSOURCE",
         "VSINE",
@@ -964,6 +966,82 @@ def _validate_object_chunk(
     if chunk.count(b"COMPONENT ID") != expected_components:
         issues.append("component ID count does not match passive plus source count")
     return issues
+
+
+def _build_clean_bidirectional_dcv_output(
+    ir: SourceDrivenCircuitIR,
+    source_net_chunk: bytes,
+    specs: list[rcl.RclSpec],
+    registry: FixtureRegistry,
+    layout_plan: LayoutPlan | None,
+) -> tuple[bytes, bytes, list[dict[str, Any]], list[Any], list[str]]:
+    from .bidirectional_dcv import (
+        build_corrected_dc_cdb,
+        build_dcv_unit,
+        load_dcv_unit_template,
+    )
+
+    bidir_templates = load_production_templates(registry)
+    dcv_template = load_dcv_unit_template(
+        registry.get("bidirectional_dcv_source_donor").path
+    )
+    passive_chunk, replacements, issues = convert_production_terminals(
+        source_net_chunk,
+        registry,
+    )
+    positions = _body_terminal_positions(source_net_chunk)
+    positive_counts: dict[str, int] = {}
+    units: list[bytes] = []
+    source_metadata: list[dict[str, Any]] = []
+    first_source_id = len(specs) + 1
+    for source_index, source in enumerate(ir.sources, start=1):
+        duplicate_index = positive_counts.get(source.positive, 0)
+        positive_counts[source.positive] = duplicate_index + 1
+        planned = (
+            layout_plan.source_positions.get(source.ref)
+            if layout_plan is not None
+            else None
+        )
+        target = (
+            (planned.x, planned.y)
+            if planned is not None
+            else _source_target(source, positions, duplicate_index)
+        )
+        unit, metadata = build_dcv_unit(
+            dcv_template,
+            bidir_templates,
+            source,
+            source_index=source_index,
+            global_id=first_source_id + source_index - 1,
+            target=target,
+        )
+        units.append(unit)
+        source_metadata.append(metadata)
+
+    object_chunk = b"\x00" + passive_chunk[1:-1] + b"".join(units) + b"\xff"
+    cdb = build_corrected_dc_cdb(specs, ir.sources)
+    if object_chunk.count(b"$TERINPUT") or object_chunk.count(b"$TEROUTPUT"):
+        issues.append("ordinary terminals remain in clean bidirectional DCV output")
+    expected_bidir = len(replacements) + 2 * len(ir.sources)
+    if object_chunk.count(BIDIR_MARKER) != expected_bidir:
+        issues.append(
+            f"bidirectional terminal count {object_chunk.count(BIDIR_MARKER)} != {expected_bidir}"
+        )
+    source_pin_map = (
+        rv9._u32(2)
+        + _enc_str("+")
+        + _enc_str("1")
+        + _enc_str("-")
+        + _enc_str("2")
+    )
+    if cdb.count(source_pin_map) != len(ir.sources):
+        issues.append("DCV CDB source pin mapping count is incorrect")
+    for source_index in range(1, len(ir.sources) + 1):
+        suffix_base = 0x7000 + (source_index - 1) * 0x80
+        for suffix in (suffix_base, suffix_base + 0x32):
+            if object_chunk.count(rv9._u16(suffix) + b"\x01\x00") != 2:
+                issues.append(f"source suffix {suffix:04x} is not linked exactly twice")
+    return object_chunk, cdb, source_metadata, replacements, issues
 
 
 def generate_source_driven_project(
@@ -992,29 +1070,54 @@ def generate_source_driven_project(
 
     ac_source = next((item for item in ir.sources if item.kind == "ac_voltage"), None)
     wire_repairs: list[dict[str, int]] = []
+    terminal_replacements: list[Any] = []
+    conversion_issues: list[str] = []
     if ac_source is not None:
         ac_two = registry.get("source_acv_two_source_donor")
         ac_variant = registry.get("source_acv_variant_donor")
         dsn_donor = registry.get("source_acv_load_donor")
-        object_chunk, source_metadata = _build_ac_object_chunk(
+        original_object_chunk, source_metadata = _build_ac_object_chunk(
             source_net_chunk,
             specs,
             ac_source,
             ac_two.path,
             layout_plan,
         )
+        object_chunk, terminal_replacements, conversion_issues = convert_production_terminals(
+            original_object_chunk,
+            registry,
+        )
         ac_prop_text = _source_prop_text(ac_variant.path)
         cdb = _build_cdb(specs, ir.sources, ac_prop_text=ac_prop_text)
+    elif all(source.kind == "dc_voltage" for source in ir.sources):
+        dsn_donor = registry.get("source_dc_mixed_v15_donor")
+        (
+            object_chunk,
+            cdb,
+            source_metadata,
+            terminal_replacements,
+            conversion_issues,
+        ) = _build_clean_bidirectional_dcv_output(
+            ir,
+            source_net_chunk,
+            specs,
+            registry,
+            layout_plan,
+        )
     else:
         dsn_donor = registry.get("source_dc_mixed_v15_donor")
         donor_dsn = read_internal_file(dsn_donor.path, "ROOT.DSN")
         donor_chunk = rv9._extract_object_chunk(donor_dsn)
-        object_chunk, source_metadata, wire_repairs = _build_dc_object_chunk(
+        original_object_chunk, source_metadata, wire_repairs = _build_dc_object_chunk(
             ir,
             source_net_chunk,
             specs,
             donor_chunk,
             layout_plan,
+        )
+        object_chunk, terminal_replacements, conversion_issues = convert_production_terminals(
+            original_object_chunk,
+            registry,
         )
         cdb = _build_cdb(specs, ir.sources)
 
@@ -1028,9 +1131,9 @@ def generate_source_driven_project(
     )
     dsn = patch_root_dsn_version(dsn, PROTEUS_813)
     project_xml = patch_project_xml_version(read_internal_file(base.path, "PROJECT.XML"), PROTEUS_813)
-    chunk_issues = _validate_object_chunk(object_chunk, specs, ir.sources)
+    chunk_issues = [*conversion_issues, *_validate_object_chunk(object_chunk, specs, ir.sources)]
     if rv9._extract_object_chunk(dsn) != object_chunk:
-        chunk_issues.append("ROOT.DSN object chunk differs from requested chunk")
+        chunk_issues.append("ROOT.DSN object chunk differs from bidirectional output")
 
     output_dir = Path(outdir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1058,7 +1161,8 @@ def generate_source_driven_project(
         "proteusgen source_driven locked method\n"
         "base_fixture=e001_empty\n"
         f"source_donor_fixture={dsn_donor.id}\n"
-        "method=accepted V15 multi-DC units or accepted V2 non-final AC-voltage unit\n",
+        "terminal_method=user-confirmed role-oriented bidirectional terminals\n"
+        "method=clean donor-native DCV units, accepted V15 mixed-DC units, or accepted V2 non-final AC-voltage unit\n",
         encoding="utf-8",
     )
 
@@ -1086,6 +1190,11 @@ def generate_source_driven_project(
         "root_cdb_len": len(cdb),
         "root_dsn_len": len(dsn),
         "marker_counts": _marker_counts(object_chunk),
+        "bidirectional_terminal_count": object_chunk.count(BIDIR_MARKER),
+        "bidirectional_orientation": {
+            "zero_degree_count": sum(item.angle_tenths == 0 for item in terminal_replacements),
+            "one_eighty_degree_count": sum(item.angle_tenths == 1800 for item in terminal_replacements),
+        },
         "section_pointer_values": section_pointers,
         "static_validation_issues": chunk_issues,
         "metadata": ir.metadata,
@@ -1095,7 +1204,7 @@ def generate_source_driven_project(
             "The accepted AC-voltage path supports one VSINE source.",
             "DC voltage and DC current sources may be combined within the accepted nine-source limit.",
             "Source and passive net labels are exactly two ASCII characters.",
-            "Passive geometry remains donor-derived horizontal terminal/component groups.",
+            "Passive geometry remains donor-derived horizontal bidirectional-terminal/component groups.",
         ],
         "output_files": [
             output_path.name,

@@ -13,9 +13,9 @@ Current target:
 - Resistor generator status: accepted as main for the current scope
 - Capacitor status: terminal-attached capacitor records are accepted inside the locked mixed passive generator; standalone capacitor-only promotion remains in temporary V13 testing
 - Inductor status: standalone inductor generation remains temporary; mixed R/C/L generation is locked for the accepted group-based scope through the 6-component, corrected 21-rule, and 15 topology packs
-- Current power/ground support: one donor-derived `$TERPOWER -> $TEROUTPUT(V0)` bridge feeds powered `V0` input terminals; `G0` right endpoints become `$TERGROUND`
+- Current terminal support: ordinary component and source endpoints use role-oriented `$TERBIDIR` records; one donor-derived `$TERPOWER -> $TERBIDIR(V0)` bridge feeds passive `V0`, while `G0` right endpoints remain `$TERGROUND`
 - Current resistor visual support: horizontal and 90-degree vertical records through `visual.orientation_hint`; `layout.visual_wires` is parsed but skipped in production until a safe donor is validated
-- Experimental layout support: topology-aware `beautify`, exact `manual`, and byte-compatible `legacy` strategies; `legacy` remains the default until the representative Proteus pack is accepted
+- Layout support: topology-aware `beautify` is the production default; exact `manual` and regression-oriented `legacy` remain available
 - Pending later composition milestone: one quad `74HC08` package with passive terminal/wire rails
 
 The repo is designed so Codex or another coding agent can read the knowledge files, schemas, and docs to build the validator/generator.
@@ -63,7 +63,7 @@ The mixed resistor/capacitor generator reads `proteus-mixed-passive-ir/v0.1` JSO
 
 The mixed R/C/L generator reads `mixed-rcl-circuit-ir/v0.1` JSON. See `docs/mixed_rcl_json_input.md`. Its current locked input shape is group-based: each group is one accepted donor-derived `RCL`, `RC`, `LC`, `RL`, or `C` block with two-character terminal labels.
 
-The source-driven generator reads `source-driven-rcl-circuit-ir/v0.1`. It supports one or more DC voltage/current sources and one AC voltage source. AC current is not supported. Source circuits use ordinary two-character source-net terminals and do not add the passive `V0` power bridge or `G0` ground terminals.
+The source-driven generator reads `source-driven-rcl-circuit-ir/v0.1`. It supports one or more DC voltage/current sources and one AC voltage source. AC current is not supported. Source circuits use bidirectional two-character source-net terminals and do not add the passive `V0` power bridge or `G0` ground terminals. Source selection remains a planner concern: no source request stays passive, while a source request without a type defaults to one 10 V DC voltage source.
 
 The accepted deterministic beautifier is documented in `docs/beautifier.md`. It is the default for payloads without explicit positions, plans coordinates before binary emission, and only translates complete donor-derived records. It does not post-process projects or create arbitrary wires and junctions.
 

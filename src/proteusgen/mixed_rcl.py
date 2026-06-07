@@ -25,6 +25,7 @@ from .layout import (
     apply_layout_to_payload,
     plan_with_actual_positions,
 )
+from .bidirectional import BIDIR_MARKER, convert_production_terminals
 from . import mixed_passive as mp
 from . import resistor_v9 as rv9
 from .pdsprj import read_internal_file, write_project_from_parts
@@ -1111,14 +1112,19 @@ def generate_mixed_rcl_project(
     base = registry.get("e001_empty")
     donor = registry.get("rcl_4x_t07_unit_donor")
     templates = _load_rcl_unit_templates(donor.path)
-    object_chunk, specs, topology, generation_counts = build_object_chunk(ir, templates, layout_plan)
+    original_object_chunk, specs, topology, generation_counts = build_object_chunk(ir, templates, layout_plan)
     cdb = build_cdb(specs)
+    chunk_issues = validate_object_chunk(original_object_chunk, specs, topology, generation_counts)
+    object_chunk, terminal_replacements, conversion_issues = convert_production_terminals(
+        original_object_chunk,
+        registry,
+    )
+    chunk_issues.extend(conversion_issues)
     dsn, section_pointers = rv9.build_dsn(read_internal_file(base.path, "ROOT.DSN"), read_internal_file(donor.path, "ROOT.DSN"), object_chunk)
     dsn = patch_root_dsn_version(dsn, PROTEUS_813)
     project_xml = patch_project_xml_version(read_internal_file(base.path, "PROJECT.XML"), PROTEUS_813)
-    chunk_issues = validate_object_chunk(object_chunk, specs, topology, generation_counts)
     if rv9._extract_object_chunk(dsn) != object_chunk:
-        chunk_issues.append("ROOT.DSN object chunk differs from requested chunk")
+        chunk_issues.append("ROOT.DSN object chunk differs from bidirectional output")
 
     output_dir = Path(outdir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1177,6 +1183,11 @@ def generate_mixed_rcl_project(
         "root_cdb_len": len(cdb),
         "root_dsn_len": len(dsn),
         "marker_counts": _marker_counts(object_chunk),
+        "bidirectional_terminal_count": object_chunk.count(BIDIR_MARKER),
+        "bidirectional_orientation": {
+            "zero_degree_count": sum(item.angle_tenths == 0 for item in terminal_replacements),
+            "one_eighty_degree_count": sum(item.angle_tenths == 1800 for item in terminal_replacements),
+        },
         "section_pointer_values": section_pointers,
         "topology": sorted(topology, key=lambda item: item["idx"]),
         "layout": final_layout.as_dict(),
@@ -1188,7 +1199,7 @@ def generate_mixed_rcl_project(
             "Current main R/C/L generation is group-based and limited to donor-removal blocks.",
             "Terminal labels and generated refs are two ASCII characters.",
             "Current visible value overrides must fit the existing donor record sizes.",
-            "The V0 power terminal is emitted through the donor-derived output bridge. Component endpoints use input/output/ground terminals.",
+            "The V0 power terminal is emitted through the donor-derived bidirectional bridge. Ordinary component endpoints use bidirectional terminals; G0 retains the ground terminal.",
             "Geometry is donor-derived horizontal component blocks; topology is encoded by repeated terminal labels.",
         ],
         "output_files": [
@@ -1222,9 +1233,9 @@ def generate_mixed_rcl_project(
         f"{generation_counts['capacitor_count']}C, {generation_counts['inductor_count']}L)\n"
         f"Static validation issues: {chunk_issues}\n\n"
         "Locked endpoint rules:\n"
-        "- V0/power uses the accepted donor-derived $TERPOWER -> $TEROUTPUT bridge.\n"
-        "- Component starts use $TERINPUT terminals.\n"
-        "- Component ends use $TEROUTPUT, except G0 endpoints use $TERGROUND.\n"
+        "- V0/power uses the accepted donor-derived $TERPOWER -> $TERBIDIR bridge.\n"
+        "- Ordinary component starts and ends use role-oriented $TERBIDIR terminals.\n"
+        "- G0 endpoints continue to use $TERGROUND.\n"
         "- R/C/L, RC, LC, RL, C-only, R-only, and L-only blocks are made by removing whole subgroups from accepted donor units.\n",
         encoding="utf-8",
     )

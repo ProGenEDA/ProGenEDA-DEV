@@ -25,6 +25,7 @@ from .layout import (
     apply_layout_to_payload,
     plan_with_actual_positions,
 )
+from .bidirectional import BIDIR_MARKER, convert_production_terminals
 from .mixed_passive_ir import (
     MixedPassiveCircuitIR,
     MixedPassiveComponent,
@@ -611,7 +612,7 @@ def generate_mixed_passive_project(
     cap_templates = _load_manual_cap_templates(cap_donor.path)
     res_templates = rv9._load_templates(read_internal_file(resistor_donor.path, "ROOT.DSN"), resistor_donor.path)
     bridge_dsn = read_internal_file(bridge_donor.path, "ROOT.DSN")
-    object_chunk, topology, generation_counts = build_object_chunk(
+    original_object_chunk, topology, generation_counts = build_object_chunk(
         ir,
         cap_templates=cap_templates,
         res_templates=res_templates,
@@ -619,10 +620,17 @@ def generate_mixed_passive_project(
         layout_plan=layout_plan,
     )
     cdb = build_cdb(ir.components)
+    chunk_issues = validate_object_chunk(original_object_chunk, topology, generation_counts)
+    object_chunk, terminal_replacements, conversion_issues = convert_production_terminals(
+        original_object_chunk,
+        registry,
+    )
+    chunk_issues.extend(conversion_issues)
     dsn, section_pointers = rv9.build_dsn(read_internal_file(base.path, "ROOT.DSN"), read_internal_file(resistor_donor.path, "ROOT.DSN"), object_chunk)
     dsn = patch_root_dsn_version(dsn, PROTEUS_813)
     project_xml = patch_project_xml_version(read_internal_file(base.path, "PROJECT.XML"), PROTEUS_813)
-    chunk_issues = validate_object_chunk(rv9._extract_object_chunk(dsn), topology, generation_counts)
+    if rv9._extract_object_chunk(dsn) != object_chunk:
+        chunk_issues.append("ROOT.DSN object chunk differs from bidirectional output")
 
     output_dir = Path(outdir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -672,6 +680,13 @@ def generate_mixed_passive_project(
         "power_nodes": generation_counts["power_nodes"],
         "ground_terminal_count": generation_counts["ground_terminal_count"],
         "terminal_count": len(ir.components) * 2 + generation_counts["power_bridge_count"] * 2,
+        "input_terminal_count": 0,
+        "output_terminal_count": 0,
+        "bidirectional_terminal_count": object_chunk.count(BIDIR_MARKER),
+        "bidirectional_orientation": {
+            "zero_degree_count": sum(item.angle_tenths == 0 for item in terminal_replacements),
+            "one_eighty_degree_count": sum(item.angle_tenths == 1800 for item in terminal_replacements),
+        },
         "wire_count": len(ir.components) * 2 + generation_counts["power_bridge_count"],
         "bridge_wire_count": generation_counts["power_bridge_count"],
         "short_wire_count": len(ir.components) * 2,
@@ -690,7 +705,7 @@ def generate_mixed_passive_project(
         "topology": topology,
         "known_limitations": [
             "Two-character node and component labels only.",
-            "Power support emits one donor-derived $TERPOWER -> $TEROUTPUT bridge for one power node.",
+            "Power support emits one donor-derived $TERPOWER -> $TERBIDIR bridge for one power node.",
             "Ground terminals are supported only on right endpoints.",
             "Standalone layout.visual_wires are intentionally skipped until VGDVC-safe records are validated.",
         ],
@@ -721,8 +736,8 @@ def generate_mixed_passive_project(
         f"Components: {len(ir.components)} ({generation_counts['resistor_count']} resistors, {generation_counts['capacitor_count']} capacitors)\n"
         f"Static validation issues: {chunk_issues}\n\n"
         "Locked endpoint rules:\n"
-        "- V0/power nodes use one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge.\n"
-        "- Powered component endpoints remain normal $TERINPUT(V0) terminals.\n"
+        "- V0/power nodes use one donor-derived $TERPOWER -> $TERBIDIR(V0) bridge.\n"
+        "- All ordinary component endpoints use role-oriented $TERBIDIR terminals.\n"
         "- G0/ground nodes on component.nodes[1] become $TERGROUND endpoints.\n"
         "- Dense or duplicate manual positions are stretched to the safe grid.\n",
         encoding="utf-8",

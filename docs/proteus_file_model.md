@@ -3579,3 +3579,32 @@ Source selection is deliberately outside the deterministic compiler:
   voltage source;
 - explicit DC voltage, DC current, or AC voltage requests select the matching
   accepted source path.
+
+## Bidirectional production terminal model (2026-06-07)
+
+The user-confirmed V3 pack established the production method for ordinary
+component and source-net endpoints:
+
+- ordinary `$TERINPUT` and `$TEROUTPUT` records are replaced only at the final
+  object-stream boundary by complete donor-derived `$TERBIDIR` records;
+- output-role endpoints use the accepted 0-degree donor form and input-role
+  endpoints use the accepted 180-degree donor form;
+- `$TERPOWER` and `$TERGROUND` records are not converted;
+- electrical connectivity remains label-based, and component/source records,
+  suffix links, IDs, CDB ordering, and short donor wires remain intact;
+- DC voltage sources use the clean bidirectional source donor as a complete
+  unit, with CDB polarity rows encoded as `+ -> 1` and `- -> 2`;
+- multiple DC voltage sources require unique donor-derived links and may share
+  a negative net without reusing source object identities.
+
+The production fixtures are:
+
+```text
+fixtures/pdsprj/bidirectional_terminal_0_donor.pdsprj
+fixtures/pdsprj/bidirectional_terminal_180_donor.pdsprj
+fixtures/pdsprj/bidirectional_dcv_source_donor.pdsprj
+```
+
+The accepted topology-aware beautifier remains in the emission path. Its
+production component grid uses 3,175,000 horizontal units and 2,032,000
+vertical units, while source stacks retain 5,080,000 vertical separation.

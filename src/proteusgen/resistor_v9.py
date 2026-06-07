@@ -22,6 +22,7 @@ from .layout import (
     apply_layout_to_payload,
     plan_with_actual_positions,
 )
+from .bidirectional import BIDIR_MARKER, convert_production_terminals
 from .pdsprj import read_internal_file, write_project_from_parts
 from .resistor_ir import (
     ComponentPosition,
@@ -671,18 +672,25 @@ def generate_resistor_project(
     donor_dsn = read_internal_file(donor.path, "ROOT.DSN")
     bridge_dsn = read_internal_file(bridge_donor.path, "ROOT.DSN")
     templates = _load_templates(donor_dsn, donor.path)
-    object_chunk, maps, generation_counts = build_object_chunk(ir, templates, bridge_dsn, layout_plan)
+    original_object_chunk, maps, generation_counts = build_object_chunk(ir, templates, bridge_dsn, layout_plan)
     cdb = build_cdb(ir.components)
-    dsn, section_pointers = build_dsn(base_dsn, donor_dsn, object_chunk)
-    dsn = patch_root_dsn_version(dsn, PROTEUS_813)
-    project_xml = patch_project_xml_version(read_internal_file(base.path, "PROJECT.XML"), PROTEUS_813)
     chunk_issues = validate_object_chunk(
-        _extract_object_chunk(dsn),
+        original_object_chunk,
         len(ir.components),
         maps,
         generation_counts["visual_wire_count"],
         generation_counts["power_bridge_count"],
     )
+    object_chunk, terminal_replacements, conversion_issues = convert_production_terminals(
+        original_object_chunk,
+        registry,
+    )
+    chunk_issues.extend(conversion_issues)
+    dsn, section_pointers = build_dsn(base_dsn, donor_dsn, object_chunk)
+    dsn = patch_root_dsn_version(dsn, PROTEUS_813)
+    project_xml = patch_project_xml_version(read_internal_file(base.path, "PROJECT.XML"), PROTEUS_813)
+    if _extract_object_chunk(dsn) != object_chunk:
+        chunk_issues.append("ROOT.DSN object chunk differs from bidirectional output")
 
     output_dir = Path(outdir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -736,10 +744,13 @@ def generate_resistor_project(
         "component_count_emitted_cdb": len(ir.components),
         "component_count_emitted_dsn": len(ir.components),
         "terminal_count": len(ir.components) * 2 + generation_counts["power_bridge_count"] * 2,
-        "input_terminal_count": len(ir.components),
-        "output_terminal_count": len(ir.components)
-        - generation_counts["ground_terminal_count"]
-        + generation_counts["power_bridge_count"],
+        "input_terminal_count": 0,
+        "output_terminal_count": 0,
+        "bidirectional_terminal_count": object_chunk.count(BIDIR_MARKER),
+        "bidirectional_orientation": {
+            "zero_degree_count": sum(item.angle_tenths == 0 for item in terminal_replacements),
+            "one_eighty_degree_count": sum(item.angle_tenths == 1800 for item in terminal_replacements),
+        },
         "power_terminal_count": generation_counts["power_bridge_count"],
         "ground_terminal_count": generation_counts["ground_terminal_count"],
         "short_wire_count": len(ir.components) * 2,
@@ -769,7 +780,7 @@ def generate_resistor_project(
         "topology": maps,
         "known_limitations": [
             "Two-character node labels only; use V0/G0 instead of VCC/GND.",
-            "Power support emits one donor-derived $TERPOWER -> $TEROUTPUT bridge for the power node.",
+            "Power support emits one donor-derived $TERPOWER -> $TERBIDIR bridge for the power node.",
             "Ground terminals are supported only on right endpoints.",
             "Resistor drawing supports locked 90-degree rotations only; arbitrary diagonal component angles and routed bus/junction geometry are still experimental.",
             "Standalone layout.visual_wires are intentionally skipped in production until VGDVC-safe wire records are validated.",
@@ -792,10 +803,10 @@ def generate_resistor_project(
         f"Project: {output_path.name}\n"
         f"Static validation issues: {chunk_issues}\n\n"
         "Current locked endpoint rules:\n"
-        "- V0/power nodes use one donor-derived $TERPOWER -> $TEROUTPUT(V0) bridge.\n"
-        "- Powered resistor endpoints remain normal $TERINPUT(V0) terminals.\n"
+        "- V0/power nodes use one donor-derived $TERPOWER -> $TERBIDIR(V0) bridge.\n"
+        "- All ordinary component endpoints use role-oriented $TERBIDIR terminals.\n"
         "- G0/ground nodes on component.nodes[1] become $TERGROUND endpoints.\n"
-        "- Other endpoints use V9 input/output terminal labels.\n"
+        "- Start-side bidirectional terminals face 180 degrees; end-side terminals face 0 degrees.\n"
         "Production safety rules:\n"
         "- Dense manual positions may be stretched to the safe V9 grid.\n"
         "- Standalone layout.visual_wires are skipped until VGDVC-safe records are validated.\n",

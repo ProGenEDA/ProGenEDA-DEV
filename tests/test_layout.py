@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from proteusgen.layout import LayoutError, Position, SOURCE_Y_SPACING, X_SPACING, plan_payload
+from proteusgen.layout import LayoutError, Position, SOURCE_Y_SPACING, X_SPACING, Y_SPACING, plan_payload
 from proteusgen.mixed_passive import (
     generate_mixed_passive_project,
     generate_mixed_passive_project_from_payload,
@@ -112,6 +112,12 @@ def test_beautifier_is_deterministic_and_separates_parallel_branches() -> None:
     assert not first.overlaps
     assert len({position.y for position in first.component_positions.values()}) > 1
     assert any(item["kind"] == "hub" for item in first.motifs)
+
+
+def test_beautifier_uses_compact_accepted_component_grid() -> None:
+    assert X_SPACING == 3_175_000
+    assert Y_SPACING == 2_032_000
+    assert SOURCE_Y_SPACING == 5_080_000
 
 
 def test_cycle_edges_receive_a_dedicated_lane() -> None:

@@ -34,6 +34,12 @@ class MixedRclTests(unittest.TestCase):
                     chunk = _extract_object_chunk(dsn)
                     self.assertEqual(chunk.count(b"$TERPOWER"), 1)
                     self.assertIn(b"$TERGROUND", chunk)
+                    self.assertNotIn(b"$TERINPUT", chunk)
+                    self.assertNotIn(b"$TEROUTPUT", chunk)
+                    self.assertEqual(
+                        chunk.count(b"$TERBIDIR"),
+                        manifest["bidirectional_terminal_count"],
+                    )
                     self.assertEqual(cdb.count(b"RESISTOR"), manifest["resistor_count"])
                     self.assertEqual(cdb.count(b"CAPACITOR"), manifest["capacitor_count"])
                     self.assertEqual(chunk.count(b"REALIND"), manifest["inductor_count"] * 3)

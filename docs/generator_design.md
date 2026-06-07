@@ -202,11 +202,13 @@ all binary records and electrical labels.
 The planner supports `beautify`, `manual`, and `legacy`. `beautify` derives
 levels and branch lanes from topology, uses a fixed deterministic grid, and
 wraps long paths after seven slots. `manual` requires exact positions.
-`legacy` delegates to the accepted route-specific placement and is the default
-until Proteus acceptance.
+`legacy` delegates to the accepted route-specific placement. The user-accepted
+`beautify` strategy is the production default.
 
 Generation writes `layout_plan.json` and mirrors its placement, bounds, wrap,
-adjustment, motif, and overlap data into the manifest. No standalone wire or
+adjustment, motif, and overlap data into the manifest. The compact production
+grid is `3175000` horizontal by `2032000` vertical units; multi-source vertical
+clearance remains `5080000`. No standalone wire or
 junction generation is part of this stage.
 
 After the first visual review, directed endpoint order is used as a placement

@@ -66,12 +66,19 @@ def test_generate_dc_voltage_source_project(tmp_path: Path) -> None:
     assert b"VSOURCE" in chunk
     assert b"$TERPOWER" not in chunk
     assert b"$TERGROUND" not in chunk
+    assert b"$TERINPUT" not in chunk and b"$TEROUTPUT" not in chunk
+    assert chunk.count(b"$TERBIDIR") == result.manifest["bidirectional_terminal_count"]
     assert result.manifest["static_validation_issues"] == []
+    cdb = read_internal_file(result.output_path, "ROOT.CDB")
+    assert b"\x01+\x011\x01-\x012" in cdb
 
 
 def test_generate_dc_current_source_project(tmp_path: Path) -> None:
     result = generate_source_driven_project_from_payload(payload("dc_current"), tmp_path)
-    assert b"CSOURCE" in result.chunk_path.read_bytes()
+    chunk = result.chunk_path.read_bytes()
+    assert b"CSOURCE" in chunk
+    assert b"$TERINPUT" not in chunk and b"$TEROUTPUT" not in chunk
+    assert b"$TERBIDIR" in chunk
     assert result.manifest["static_validation_issues"] == []
 
 
@@ -80,6 +87,8 @@ def test_generate_ac_voltage_source_project(tmp_path: Path) -> None:
     chunk = result.chunk_path.read_bytes()
     assert b"VSINE" in chunk
     assert b"\x02AV" in chunk and b"\x02A0" in chunk
+    assert b"$TERINPUT" not in chunk and b"$TEROUTPUT" not in chunk
+    assert b"$TERBIDIR" in chunk
     assert result.manifest["static_validation_issues"] == []
     assert b"VSINE" in read_internal_file(result.output_path, "ROOT.CDB")
 
