@@ -1625,6 +1625,28 @@
         "tests/test_logic_expression.py"
       ],
       "rule": "The first Boolean expression interpreter supports AND-only assignments. Accept symbols such as AND, *, &, &&, middle-dot, and LaTeX \\cdot as AND operators; reject OR, XOR, NOT, +, |, !, and unsupported operators. Normalize variables such as X_1 and X_{10}, compact temporary Proteus labels X10..X15 to XA..XF, reduce the expression through deterministic two-input AND tree levels, and allocate gates in package order U1:A, U1:B, U1:C, U1:D, U2:A, and onward. Ignore pin 14 and pin 7 as hidden package supply for every 74HC08 package. The 15-input, four-package HC08 AND expression pack passed manual Proteus testing."
+    },
+    {
+      "id": "R091",
+      "title": "74HC32 Boolean expression synthesis starts with OR-only reductions",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC32",
+        "Boolean expression parser",
+        "OR-only logic synthesis",
+        "multi-package IC allocation"
+      ],
+      "evidence": [
+        "IC_HC08_HC32_V1_USER_ACCEPTANCE_20260607",
+        "IC_HC08_LOGIC_V1_USER_ACCEPTANCE_20260608",
+        "IC_HC32_LOGIC_V1_STATIC_20260608",
+        "src/proteusgen/logic_expression.py",
+        "tests/test_logic_expression.py",
+        "tools/proteus_generation/2026-06-08/generate_ic_hc32_logic_v1_temp.py"
+      ],
+      "rule": "The OR expression interpreter accepts OR, +, |, and || operators and rejects AND, XOR, NOT, and mixed operators. It uses the same deterministic two-input reduction shape as the accepted HC08 AND path, but emits donor-derived 74HC32/74OR2 component-first gate records from IC_HC32_M02_ALL4_IO. HC32 gate record ids and pin-link ids are 32-bit unaligned fields and must be patched separately from the older HC08 16-bit suffix method. The first generated test maps a 15-input OR expression across U1:A-D, U2:A-D, U3:A-D, and U4:A-B; manual Proteus testing is pending."
     }
   ]
 }

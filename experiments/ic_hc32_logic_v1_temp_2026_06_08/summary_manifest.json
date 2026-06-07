@@ -1,0 +1,78 @@
+{
+  "batch": "IC_HC32_LOGIC_V1_TEMP_2026_06_08",
+  "purpose": "First Boolean-expression interpreter pack for 74HC32 OR-only synthesis.",
+  "promotion_status": "temporary_pending_user_proteus_testing",
+  "test_order": [
+    "T01_HC32_15_INPUT_OR_EXPR"
+  ],
+  "terminal_policy": {
+    "ic_signal_pins": "$TERINPUT/$TEROUTPUT",
+    "passive_power_ground_endpoints": "bidirectional/special terminal policy in mixed IC packs",
+    "ic_supply": "hidden; pin 14 and pin 7 are ignored for 74HC32 supply"
+  },
+  "cases": [
+    {
+      "case_id": "T01_HC32_15_INPUT_OR_EXPR",
+      "description": "Expression-driven 15-input OR tree using four 74HC32 packages and fourteen OR2 gates.",
+      "method": "or_expression_parser_plus_hc32_component_first_gate_slice_allocator",
+      "hidden_supply_policy": "Pins 14 and 7 on U1-U4 are ignored as hidden Proteus 74HC32 supply.",
+      "terminal_policy": "IC signal pins are ordinary input/output terminals; non-IC endpoints are not present in this pure logic case.",
+      "static_validation_issues": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65218,
+        "second_isis": 77054,
+        "second_object_data": 77089,
+        "object_data_pointer": 77102
+      },
+      "marker_counts": {
+        "74HC32": 42,
+        "74OR2": 14,
+        "74HC08": 0,
+        "74AND2": 0,
+        "$TERINPUT": 28,
+        "$TEROUTPUT": 14,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 42,
+        "COMPONENT ID": 14,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC32": 8,
+        "74OR2": 4,
+        "74HC08": 0,
+        "74AND2": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "output_hashes": {
+        "project": "ebd22c5fdcfbe2b7a893e60b8b908c11434ef034a0df97966bc2f2546464848d",
+        "ROOT.DSN": "8e8638d58125f6790e62844f0b0dbce570dde8f5a28defa82f5b17bb2b73b5ba",
+        "ROOT.CDB": "8455b11279f6e39f2ae6851c2ceb678fcb08ec4ceff5dfb45db59ca5ea608901",
+        "object_chunk": "473e277be2599a83fa10a67bdbdec57078d2986c7800f757b75648524f2bfee6"
+      },
+      "proteus_result_pending": true
+    }
+  ],
+  "archive_sha256": "85f07594f08c5179691e827b2f39ab12e9151d020c5e8e5cb743b799c8416656"
+}

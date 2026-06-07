@@ -20,10 +20,17 @@ First targets:
 - `74HC08` as the primary quad two-input gate family.
 - `74HC32` as the first cross-family pattern check.
 
-The first generated pack is created by:
+The first donor-learning pack is created by:
 
 ```text
 python tools/proteus_generation/2026-06-07/generate_ic_hc08_hc32_v1_temp.py
+```
+
+The current expression packs are created by:
+
+```text
+python tools/proteus_generation/2026-06-08/generate_ic_hc08_logic_v1_temp.py
+python tools/proteus_generation/2026-06-08/generate_ic_hc32_logic_v1_temp.py
 ```
 
 Status:
@@ -33,11 +40,13 @@ Status:
   production-style HC08 user circuits.
 - `IC_HC08_LOGIC_V1_TEMP_2026_06_08` passed user Proteus testing for the
   15-input AND expression mapped across four `74HC08` packages.
+- `IC_HC32_LOGIC_V1_TEMP_2026_06_08` is static-clean and pending user Proteus
+  testing for the 15-input OR expression mapped across four `74HC32` packages.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: reuse the accepted quad-gate emitter for `74HC32` OR, then
-  request donors for the remaining 74HC families.
+- Current next step: test the HC32 OR expression pack, then request donors for
+  the remaining 74HC families.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

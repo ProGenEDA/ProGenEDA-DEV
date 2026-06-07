@@ -1,0 +1,426 @@
+{
+  "expression": "Y = X_1 + X_2 + X_3 + X_4 + X_5 + X_6 + X_7 + X_8 + X_9 + X_{10} + X_{11} + X_{12} + X_{13} + X_{14} + X_{15}",
+  "parsed": {
+    "output": "Y",
+    "operation": "OR",
+    "inputs": [
+      "X1",
+      "X2",
+      "X3",
+      "X4",
+      "X5",
+      "X6",
+      "X7",
+      "X8",
+      "X9",
+      "X10",
+      "X11",
+      "X12",
+      "X13",
+      "X14",
+      "X15"
+    ]
+  },
+  "terminal_label_map": {
+    "X1": "X1",
+    "X2": "X2",
+    "X3": "X3",
+    "X4": "X4",
+    "X5": "X5",
+    "X6": "X6",
+    "X7": "X7",
+    "X8": "X8",
+    "X9": "X9",
+    "X10": "XA",
+    "X11": "XB",
+    "X12": "XC",
+    "X13": "XD",
+    "X14": "XE",
+    "X15": "XF",
+    "Y": "Y0"
+  },
+  "gate_count": 14,
+  "package_count": 4,
+  "tree_steps": [
+    {
+      "index": 1,
+      "level": 1,
+      "left": "X1",
+      "right": "X2",
+      "output": "A1"
+    },
+    {
+      "index": 2,
+      "level": 1,
+      "left": "X3",
+      "right": "X4",
+      "output": "A2"
+    },
+    {
+      "index": 3,
+      "level": 1,
+      "left": "X5",
+      "right": "X6",
+      "output": "A3"
+    },
+    {
+      "index": 4,
+      "level": 1,
+      "left": "X7",
+      "right": "X8",
+      "output": "A4"
+    },
+    {
+      "index": 5,
+      "level": 1,
+      "left": "X9",
+      "right": "XA",
+      "output": "A5"
+    },
+    {
+      "index": 6,
+      "level": 1,
+      "left": "XB",
+      "right": "XC",
+      "output": "A6"
+    },
+    {
+      "index": 7,
+      "level": 1,
+      "left": "XD",
+      "right": "XE",
+      "output": "A7"
+    },
+    {
+      "index": 8,
+      "level": 2,
+      "left": "A1",
+      "right": "A2",
+      "output": "B1"
+    },
+    {
+      "index": 9,
+      "level": 2,
+      "left": "A3",
+      "right": "A4",
+      "output": "B2"
+    },
+    {
+      "index": 10,
+      "level": 2,
+      "left": "A5",
+      "right": "A6",
+      "output": "B3"
+    },
+    {
+      "index": 11,
+      "level": 2,
+      "left": "A7",
+      "right": "XF",
+      "output": "B4"
+    },
+    {
+      "index": 12,
+      "level": 3,
+      "left": "B1",
+      "right": "B2",
+      "output": "C1"
+    },
+    {
+      "index": 13,
+      "level": 3,
+      "left": "B3",
+      "right": "B4",
+      "output": "C2"
+    },
+    {
+      "index": 14,
+      "level": 4,
+      "left": "C1",
+      "right": "C2",
+      "output": "Y0"
+    }
+  ],
+  "gate_topology": [
+    {
+      "object_id": 1,
+      "chip_alias": "IC1",
+      "package_ref": "U1",
+      "subpart_ref": "U1:A",
+      "gate_letter": "A",
+      "left_net": "X1",
+      "right_net": "X2",
+      "output_net": "A1",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "pin_ids": {
+        "in1": "000100d6",
+        "in2": "0001016f",
+        "out": "00010209"
+      }
+    },
+    {
+      "object_id": 2,
+      "chip_alias": "IC1",
+      "package_ref": "U1",
+      "subpart_ref": "U1:B",
+      "gate_letter": "B",
+      "left_net": "X3",
+      "right_net": "X4",
+      "output_net": "A2",
+      "physical_pins": {
+        "left": "4",
+        "right": "5",
+        "output": "6"
+      },
+      "pin_ids": {
+        "in1": "00010420",
+        "in2": "000104b9",
+        "out": "00010553"
+      }
+    },
+    {
+      "object_id": 3,
+      "chip_alias": "IC1",
+      "package_ref": "U1",
+      "subpart_ref": "U1:C",
+      "gate_letter": "C",
+      "left_net": "X5",
+      "right_net": "X6",
+      "output_net": "A3",
+      "physical_pins": {
+        "left": "9",
+        "right": "10",
+        "output": "8"
+      },
+      "pin_ids": {
+        "in1": "0001076a",
+        "in2": "00010803",
+        "out": "0001089d"
+      }
+    },
+    {
+      "object_id": 4,
+      "chip_alias": "IC1",
+      "package_ref": "U1",
+      "subpart_ref": "U1:D",
+      "gate_letter": "D",
+      "left_net": "X7",
+      "right_net": "X8",
+      "output_net": "A4",
+      "physical_pins": {
+        "left": "12",
+        "right": "13",
+        "output": "11"
+      },
+      "pin_ids": {
+        "in1": "00010ab4",
+        "in2": "00010b4d",
+        "out": "00010be7"
+      }
+    },
+    {
+      "object_id": 5,
+      "chip_alias": "IC2",
+      "package_ref": "U2",
+      "subpart_ref": "U2:A",
+      "gate_letter": "A",
+      "left_net": "X9",
+      "right_net": "XA",
+      "output_net": "A5",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "pin_ids": {
+        "in1": "00010dfe",
+        "in2": "00010e97",
+        "out": "00010f31"
+      }
+    },
+    {
+      "object_id": 6,
+      "chip_alias": "IC2",
+      "package_ref": "U2",
+      "subpart_ref": "U2:B",
+      "gate_letter": "B",
+      "left_net": "XB",
+      "right_net": "XC",
+      "output_net": "A6",
+      "physical_pins": {
+        "left": "4",
+        "right": "5",
+        "output": "6"
+      },
+      "pin_ids": {
+        "in1": "00011148",
+        "in2": "000111e1",
+        "out": "0001127b"
+      }
+    },
+    {
+      "object_id": 7,
+      "chip_alias": "IC2",
+      "package_ref": "U2",
+      "subpart_ref": "U2:C",
+      "gate_letter": "C",
+      "left_net": "XD",
+      "right_net": "XE",
+      "output_net": "A7",
+      "physical_pins": {
+        "left": "9",
+        "right": "10",
+        "output": "8"
+      },
+      "pin_ids": {
+        "in1": "00011492",
+        "in2": "0001152b",
+        "out": "000115c5"
+      }
+    },
+    {
+      "object_id": 8,
+      "chip_alias": "IC2",
+      "package_ref": "U2",
+      "subpart_ref": "U2:D",
+      "gate_letter": "D",
+      "left_net": "A1",
+      "right_net": "A2",
+      "output_net": "B1",
+      "physical_pins": {
+        "left": "12",
+        "right": "13",
+        "output": "11"
+      },
+      "pin_ids": {
+        "in1": "000117dc",
+        "in2": "00011875",
+        "out": "0001190f"
+      }
+    },
+    {
+      "object_id": 9,
+      "chip_alias": "IC3",
+      "package_ref": "U3",
+      "subpart_ref": "U3:A",
+      "gate_letter": "A",
+      "left_net": "A3",
+      "right_net": "A4",
+      "output_net": "B2",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "pin_ids": {
+        "in1": "00011b26",
+        "in2": "00011bbf",
+        "out": "00011c59"
+      }
+    },
+    {
+      "object_id": 10,
+      "chip_alias": "IC3",
+      "package_ref": "U3",
+      "subpart_ref": "U3:B",
+      "gate_letter": "B",
+      "left_net": "A5",
+      "right_net": "A6",
+      "output_net": "B3",
+      "physical_pins": {
+        "left": "4",
+        "right": "5",
+        "output": "6"
+      },
+      "pin_ids": {
+        "in1": "00011e70",
+        "in2": "00011f09",
+        "out": "00011fa3"
+      }
+    },
+    {
+      "object_id": 11,
+      "chip_alias": "IC3",
+      "package_ref": "U3",
+      "subpart_ref": "U3:C",
+      "gate_letter": "C",
+      "left_net": "A7",
+      "right_net": "XF",
+      "output_net": "B4",
+      "physical_pins": {
+        "left": "9",
+        "right": "10",
+        "output": "8"
+      },
+      "pin_ids": {
+        "in1": "000121ba",
+        "in2": "00012253",
+        "out": "000122ed"
+      }
+    },
+    {
+      "object_id": 12,
+      "chip_alias": "IC3",
+      "package_ref": "U3",
+      "subpart_ref": "U3:D",
+      "gate_letter": "D",
+      "left_net": "B1",
+      "right_net": "B2",
+      "output_net": "C1",
+      "physical_pins": {
+        "left": "12",
+        "right": "13",
+        "output": "11"
+      },
+      "pin_ids": {
+        "in1": "00012504",
+        "in2": "0001259d",
+        "out": "00012637"
+      }
+    },
+    {
+      "object_id": 13,
+      "chip_alias": "IC4",
+      "package_ref": "U4",
+      "subpart_ref": "U4:A",
+      "gate_letter": "A",
+      "left_net": "B3",
+      "right_net": "B4",
+      "output_net": "C2",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "pin_ids": {
+        "in1": "0001284e",
+        "in2": "000128e7",
+        "out": "00012981"
+      }
+    },
+    {
+      "object_id": 14,
+      "chip_alias": "IC4",
+      "package_ref": "U4",
+      "subpart_ref": "U4:B",
+      "gate_letter": "B",
+      "left_net": "C1",
+      "right_net": "C2",
+      "output_net": "Y0",
+      "physical_pins": {
+        "left": "4",
+        "right": "5",
+        "output": "6"
+      },
+      "pin_ids": {
+        "in1": "00012b98",
+        "in2": "00012c31",
+        "out": "00012ccb"
+      }
+    }
+  ]
+}
