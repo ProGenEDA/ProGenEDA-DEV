@@ -1,0 +1,16 @@
+{
+  "mode": "mixed_ic_logic_and_or_rcl_v2_manual_donor_method",
+  "ic_gate_count": 15,
+  "logic": "Eight 74HC08 AND2 gates produce A1..A8; seven 74HC32 OR2 gates reduce them to Y0.",
+  "rlc_load": [
+    "R1 Y0-P1",
+    "C1 P1-P2",
+    "L1 P2-G0"
+  ],
+  "terminal_policy": {
+    "all_signal_and_passive_endpoints": "$TERBIDIR",
+    "power_bridge": "$TERPOWER to $TERBIDIR V0",
+    "ground": "$TERGROUND G0",
+    "ic_supply": "hidden; no explicit pin 14 or pin 7 supply wiring"
+  }
+}

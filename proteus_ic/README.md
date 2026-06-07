@@ -32,6 +32,7 @@ The current expression packs are created by:
 python tools/proteus_generation/2026-06-08/generate_ic_hc08_logic_v1_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_hc32_logic_v1_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v1_temp.py
+python tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v2_manual_donor_temp.py
 ```
 
 Status:
@@ -43,14 +44,18 @@ Status:
   15-input AND expression mapped across four `74HC08` packages.
 - `IC_HC32_LOGIC_V1_TEMP_2026_06_08` passed user Proteus testing for the
   15-input OR expression mapped across four `74HC32` packages.
-- `IC_AND_OR_RCL_V1_TEMP_2026_06_08` is static-clean and pending user Proteus
-  testing. It intentionally contains exactly 15 IC gate subparts: eight
-  `74HC08` AND2 gates, seven `74HC32` OR2 gates, then an R-C-L output branch.
+- `IC_AND_OR_RCL_V1_TEMP_2026_06_08` was static-clean but failed user Proteus
+  testing with an ISIS.dll violation. Do not promote its mixed ordinary-IC /
+  bidirectional-passive terminal method.
+- `IC_AND_OR_RCL_V2_MANUAL_DONOR_TEMP_2026_06_08` is static-clean and pending
+  user Proteus testing. It first repacks the supplied manual donor, then tests
+  a generated 15-gate mixed circuit using the donor-style all-bidirectional
+  visible terminal family.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test the mixed AND/OR/RCL pack, then request donors for
-  the remaining 74HC families.
+- Current next step: test V2 in order: exact donor repack, donor DSN/CDB on
+  E001, then generated 15-gate all-bidirectional mixed AND/OR/RCL.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

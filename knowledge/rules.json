@@ -1652,8 +1652,8 @@
     {
       "id": "R092",
       "title": "Mixed 74HC08 and 74HC32 with RCL starts with a 15-gate diagnostic",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.8,
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 0.86,
       "applies_to": [
         "Proteus 8.13",
         "74HC08",
@@ -1666,9 +1666,31 @@
         "IC_HC08_LOGIC_V1_USER_ACCEPTANCE_20260608",
         "IC_HC32_LOGIC_V1_USER_ACCEPTANCE_20260608",
         "IC_AND_OR_RCL_V1_STATIC_20260608",
+        "IC_AND_OR_RCL_V1_USER_FAILURE_20260608",
         "tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v1_temp.py"
       ],
-      "rule": "The first mixed AND/OR/RCL diagnostic intentionally emits exactly fifteen IC gate subparts, not a fourteen-gate pure reduction tree. It uses eight 74HC08 AND2 gates to create A1..A8, seven 74HC32 OR2 gates to reduce those nodes to Y0, then routes Y0 through a resistor, capacitor, and inductor branch to G0. IC signal pins remain ordinary input/output terminals. The R/C/L branch and the V0 power bridge are converted with the accepted production bidirectional endpoint method. Manual Proteus testing is pending."
+      "rule": "The first mixed AND/OR/RCL diagnostic intentionally emitted exactly fifteen IC gate subparts, not a fourteen-gate pure reduction tree. It used eight 74HC08 AND2 gates to create A1..A8, seven 74HC32 OR2 gates to reduce those nodes to Y0, then routed Y0 through a resistor, capacitor, and inductor branch to G0. Although static validation was clean, user Proteus testing reported an ISIS.dll violation. Do not promote this V1 method: mixing ordinary IC input/output terminals with bidirectional passive endpoints and a merged device section is rejected for this shape."
+    },
+    {
+      "id": "R093",
+      "title": "Mixed 74HC08, 74HC32, and RCL should test donor-style bidirectional signal terminals",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.78,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC08",
+        "74HC32",
+        "mixed AND/OR logic",
+        "R/C/L passive load",
+        "bidirectional signal terminals"
+      ],
+      "evidence": [
+        "IC_AND_OR_RCL_V1_USER_FAILURE_20260608",
+        "IC_AND_OR_RCL_V2_MANUAL_DONOR_STATIC_20260608",
+        "C:/Users/tahab/Downloads/ddddddddzzzzzzzzzz.pdsprj",
+        "tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v2_manual_donor_temp.py"
+      ],
+      "rule": "The user-supplied mixed manual donor uses bidirectional terminals for all visible signal and passive connection points, plus special power/ground records, and places passive/terminal/wire records before bare IC component bodies. The V2 diagnostic therefore tests a generated 15-gate mixed circuit using the V1 topology, the manual donor device section, and conversion of every ordinary IC signal terminal to $TERBIDIR before packing. This is only a temporary hypothesis until manual Proteus open/simulation testing passes."
     }
   ]
 }

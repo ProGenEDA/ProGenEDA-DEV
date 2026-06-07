@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import struct
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -189,6 +190,29 @@ def _ordinary_terminal_events(chunk: bytes) -> list[tuple[int, str, int]]:
     return sorted(events)
 
 
+def _terminal_suffix_counts(chunk: bytes) -> Counter[int]:
+    counts: Counter[int] = Counter()
+    for start, _kind, size in _ordinary_terminal_events(chunk):
+        suffix = struct.unpack("<H", chunk[start + size - 4 : start + size - 2])[0]
+        if suffix:
+            counts[suffix] += 1
+    position = 0
+    while True:
+        marker = chunk.find(BIDIR_MARKER, position)
+        if marker < 0:
+            break
+        start = marker - 14
+        if start < 0 or chunk[start] != 0x10:
+            raise ValueError(f"Invalid bidirectional terminal start at marker {marker}.")
+        label_length = chunk[start + 30]
+        size = 101 + label_length
+        suffix = struct.unpack("<H", chunk[start + size - 4 : start + size - 2])[0]
+        if suffix:
+            counts[suffix] += 1
+        position = marker + 1
+    return counts
+
+
 def replace_ordinary_terminals(
     chunk: bytes,
     templates: BidirTemplates,
@@ -248,8 +272,9 @@ def validate_conversion(
         issues.append(f"replacement count {len(replacements)} != {expected}")
     if converted.count(INPUT_MARKER) or converted.count(OUTPUT_MARKER):
         issues.append("ordinary input/output terminal markers remain")
-    if converted.count(BIDIR_MARKER) != expected:
-        issues.append(f"$TERBIDIR count {converted.count(BIDIR_MARKER)} != {expected}")
+    expected_bidir = original.count(BIDIR_MARKER) + expected
+    if converted.count(BIDIR_MARKER) != expected_bidir:
+        issues.append(f"$TERBIDIR count {converted.count(BIDIR_MARKER)} != {expected_bidir}")
     for marker in (b"$TERPOWER", b"$TERGROUND", b"WIRE", b"COMPONENT ID"):
         if converted.count(marker) != original.count(marker):
             issues.append(f"{marker.decode('ascii')} count changed")
@@ -258,10 +283,10 @@ def validate_conversion(
             issues.append(f"{marker.decode('ascii')} count changed")
     if not converted or converted[0] != 0 or converted[-1] != 0xFF:
         issues.append("converted object chunk boundary is invalid")
-    for item in replacements:
-        suffix_bytes = struct.pack("<H", item.suffix)
-        if item.suffix and converted.count(suffix_bytes) != original.count(suffix_bytes):
-            issues.append(f"suffix {item.suffix:04x} occurrence count changed")
+    original_suffixes = _terminal_suffix_counts(original)
+    converted_suffixes = _terminal_suffix_counts(converted)
+    if converted_suffixes != original_suffixes:
+        issues.append("terminal suffix occurrence counts changed")
     return issues
 
 
