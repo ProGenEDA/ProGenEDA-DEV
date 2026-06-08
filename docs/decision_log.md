@@ -408,7 +408,7 @@ Evidence:
 
 Decision: keep IC pins directional and keep passive G0 on the previous donor
 `$TERGROUND` method. The passive-G0-as-`$TERBIDIR` experiment failed for T29,
-so it must not be promoted. The compact placement change remains under test
+so it must not be promoted. Compact small mixed-IC placement is accepted only
 with legacy ground restored.
 
 Evidence:
@@ -423,10 +423,31 @@ Evidence:
   compact placement.
 - `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08` restores `$TERGROUND(G0)`
   while keeping the compact small-circuit placement.
-- Static validation is clean for the V3 T29 retest. It preserves
+- User testing reported the V3 T29 retest worked. It preserves
   `$TERINPUT`/`$TEROUTPUT` for IC pins, keeps ordinary R/C/L endpoints as
   `$TERBIDIR`, and emits one `$TERGROUND` record for passive G0.
 - Active tests pass with `python -m pytest tests -q`.
+
+## D030: Add 74HC04 as unary inverter subparts
+
+Decision: treat `74HC04` as a hex unary inverter family using subparts
+`U1:A` through `U1:F`, not as an explicit DIP14 supply-pin object. The visible
+function model is `74INV.MDF`; pin 14/VCC and pin 7/GND remain hidden-supply
+metadata and are ignored during generation.
+
+Evidence:
+
+- User supplied five `74HC04` donors: one gate, all six gates, two packages,
+  logic constants, and RCL load.
+- Donor analysis shows `74HC04` records use `74INV.MDF`, six subparts, and one
+  signal input plus one signal output per subpart.
+- The manual HC04 input terminal labels are one-character labels, so the
+  temporary generator uses a dedicated resizable label patch for HC04 only.
+- `IC_HC04_ALL7_V1_TEMP_2026_06_08` is static-clean and active-tests-clean. It
+  covers single NOT, all-six NOT, logic constants, NOT with RCL load, and the
+  final all-seven-family circuit.
+- Manual Proteus testing is pending before HC04 is promoted into the main
+  combinational IC route.
 
 ## Inactive / removed
 

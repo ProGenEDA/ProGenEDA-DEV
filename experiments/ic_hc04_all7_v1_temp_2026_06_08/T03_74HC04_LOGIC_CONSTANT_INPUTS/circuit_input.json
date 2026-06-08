@@ -1,0 +1,32 @@
+{
+  "case_id": "T03_74HC04_LOGIC_CONSTANT_INPUTS",
+  "title": "NOT Gates with Logic Constants",
+  "logical_expression": "Y0 = not(V0); Y1 = not(G0)",
+  "description": "Power and ground labels are used as logic constants for input pins only; the HC04 package supply remains hidden.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc04",
+      "gate": "A",
+      "left": "V0",
+      "right": "",
+      "output": "Y0",
+      "note": ""
+    },
+    {
+      "family": "74hc04",
+      "gate": "B",
+      "left": "G0",
+      "right": "",
+      "output": "Y1",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

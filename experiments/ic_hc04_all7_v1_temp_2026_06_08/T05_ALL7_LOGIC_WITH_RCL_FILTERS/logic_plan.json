@@ -1,0 +1,527 @@
+{
+  "package_rows": [
+    {
+      "family": "74hc08",
+      "device": "74HC08",
+      "package_ref": "U1",
+      "package_number": 1
+    },
+    {
+      "family": "74hc32",
+      "device": "74HC32",
+      "package_ref": "U2",
+      "package_number": 2
+    },
+    {
+      "family": "74hc86",
+      "device": "74HC86",
+      "package_ref": "U3",
+      "package_number": 3
+    },
+    {
+      "family": "74hc00",
+      "device": "74HC00",
+      "package_ref": "U4",
+      "package_number": 4
+    },
+    {
+      "family": "74hc02",
+      "device": "74HC02",
+      "package_ref": "U5",
+      "package_number": 5
+    },
+    {
+      "family": "74hc04",
+      "device": "74HC04",
+      "package_ref": "U6",
+      "package_number": 6
+    },
+    {
+      "family": "74hc266",
+      "device": "74HC266",
+      "package_ref": "U7",
+      "package_number": 7
+    }
+  ],
+  "ic_topology": [
+    {
+      "object_id": 1,
+      "chip_alias": "IC1",
+      "package_ref": "U1",
+      "subpart_ref": "U1:A",
+      "gate_letter": "A",
+      "left_net": "A0",
+      "right_net": "B0",
+      "output_net": "G1",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "suffixes": {
+        "in1": "0379",
+        "in2": "03ab",
+        "out": "03dd"
+      },
+      "family": "74hc08",
+      "role": "AND2",
+      "device": "74HC08",
+      "note": "AND stage: A and B"
+    },
+    {
+      "object_id": 2,
+      "chip_alias": "IC2",
+      "package_ref": "U2",
+      "subpart_ref": "U2:A",
+      "gate_letter": "A",
+      "left_net": "C0",
+      "right_net": "D0",
+      "output_net": "G2",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "pin_ids": {
+        "in1": "00010420",
+        "in2": "000104b9",
+        "out": "00010553"
+      },
+      "family": "74hc32",
+      "role": "OR2",
+      "device": "74HC32",
+      "note": "OR stage: C or D"
+    },
+    {
+      "object_id": 3,
+      "family": "74hc86",
+      "role": "XOR2",
+      "device": "74HC86",
+      "package_ref": "U3",
+      "subpart_ref": "U3:A",
+      "gate_letter": "A",
+      "left_net": "B0",
+      "right_net": "C0",
+      "output_net": "G3",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "ids": {
+        "in1": "00020800",
+        "in2": "00020899",
+        "out": "00020933"
+      },
+      "note": "XOR stage: B xor C"
+    },
+    {
+      "object_id": 4,
+      "family": "74hc00",
+      "role": "NAND2",
+      "device": "74HC00",
+      "package_ref": "U4",
+      "subpart_ref": "U4:A",
+      "gate_letter": "A",
+      "left_net": "N1",
+      "right_net": "N2",
+      "output_net": "G4",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "ids": {
+        "in1": "51b0",
+        "in2": "51e2",
+        "out": "5214"
+      },
+      "note": "NAND compression from resistor-limited Node 1 and Node 2"
+    },
+    {
+      "object_id": 5,
+      "family": "74hc02",
+      "role": "NOR2",
+      "device": "74HC02",
+      "package_ref": "U5",
+      "subpart_ref": "U5:A",
+      "gate_letter": "A",
+      "left_net": "N2",
+      "right_net": "N3",
+      "output_net": "G5",
+      "physical_pins": {
+        "left": "2",
+        "right": "3",
+        "output": "1"
+      },
+      "ids": {
+        "in1": "00021000",
+        "in2": "00021099",
+        "out": "00021133"
+      },
+      "note": "NOR measurement/expansion node"
+    },
+    {
+      "object_id": 6,
+      "family": "74hc04",
+      "role": "NOT1",
+      "device": "74HC04",
+      "package_ref": "U6",
+      "subpart_ref": "U6:A",
+      "gate_letter": "A",
+      "left_net": "N3",
+      "right_net": "",
+      "output_net": "G6",
+      "physical_pins": {
+        "input": "1",
+        "output": "2"
+      },
+      "ids": {
+        "in": "52d0",
+        "out": "5334"
+      },
+      "note": "NOT stage from resistor-limited XOR node"
+    },
+    {
+      "object_id": 7,
+      "family": "74hc266",
+      "role": "XNOR2 candidate using observed 74XOR2 marker",
+      "device": "74HC266",
+      "package_ref": "U7",
+      "subpart_ref": "U7:A",
+      "gate_letter": "A",
+      "left_net": "N4",
+      "right_net": "N6",
+      "output_net": "G7",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "ids": {
+        "in1": "00021800",
+        "in2": "00021899",
+        "out": "00021933"
+      },
+      "note": "Final XNOR decision"
+    }
+  ],
+  "passive_topology": [
+    {
+      "idx": 8,
+      "unit": 1,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "V0",
+      "right": "G0",
+      "in_suffix": "082c",
+      "out_suffix": "07fa",
+      "x": 22860000,
+      "y": 4826000
+    },
+    {
+      "idx": 9,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C2",
+      "value": "1uF",
+      "left": "V0",
+      "right": "G0",
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": 22860000,
+      "y": 3556000
+    },
+    {
+      "idx": 10,
+      "unit": 3,
+      "kind": "CAPACITOR",
+      "ref": "C3",
+      "value": "1uF",
+      "left": "A0",
+      "right": "G0",
+      "in_suffix": "17d8",
+      "out_suffix": "17a6",
+      "x": 22860000,
+      "y": 2286000
+    },
+    {
+      "idx": 11,
+      "unit": 4,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "330",
+      "left": "G1",
+      "right": "N1",
+      "in_suffix": "24b2",
+      "out_suffix": "24e4",
+      "x": 22860000,
+      "y": 1016000
+    },
+    {
+      "idx": 12,
+      "unit": 5,
+      "kind": "RESISTOR",
+      "ref": "R2",
+      "value": "330",
+      "left": "G2",
+      "right": "N2",
+      "in_suffix": "2c88",
+      "out_suffix": "2cba",
+      "x": 22860000,
+      "y": -254000
+    },
+    {
+      "idx": 13,
+      "unit": 6,
+      "kind": "RESISTOR",
+      "ref": "R3",
+      "value": "330",
+      "left": "G3",
+      "right": "N3",
+      "in_suffix": "345e",
+      "out_suffix": "3490",
+      "x": 22860000,
+      "y": -1524000
+    },
+    {
+      "idx": 14,
+      "unit": 7,
+      "kind": "RESISTOR",
+      "ref": "R4",
+      "value": "330",
+      "left": "G4",
+      "right": "N4",
+      "in_suffix": "3c34",
+      "out_suffix": "3c66",
+      "x": 22860000,
+      "y": -2794000
+    },
+    {
+      "idx": 15,
+      "unit": 8,
+      "kind": "RESISTOR",
+      "ref": "R5",
+      "value": "330",
+      "left": "G5",
+      "right": "N5",
+      "in_suffix": "440a",
+      "out_suffix": "443c",
+      "x": 22860000,
+      "y": -4064000
+    },
+    {
+      "idx": 16,
+      "unit": 9,
+      "kind": "RESISTOR",
+      "ref": "R6",
+      "value": "10k",
+      "left": "G6",
+      "right": "N6",
+      "in_suffix": "4be0",
+      "out_suffix": "4c12",
+      "x": 22860000,
+      "y": -5334000
+    },
+    {
+      "idx": 17,
+      "unit": 10,
+      "kind": "CAPACITOR",
+      "ref": "C4",
+      "value": "1uF",
+      "left": "N6",
+      "right": "G0",
+      "in_suffix": "4eb2",
+      "out_suffix": "4e80",
+      "x": 22860000,
+      "y": -6604000
+    },
+    {
+      "idx": 18,
+      "unit": 11,
+      "kind": "RESISTOR",
+      "ref": "R7",
+      "value": "330",
+      "left": "G7",
+      "right": "Y0",
+      "in_suffix": "5b8c",
+      "out_suffix": "5bbe",
+      "x": 22860000,
+      "y": -7874000
+    }
+  ],
+  "passive_terminal_replacements": [
+    {
+      "kind": "output",
+      "label": "V0",
+      "angle_tenths": 0,
+      "suffix": 1420,
+      "old_start": 1,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "V0",
+      "angle_tenths": 1800,
+      "suffix": 2092,
+      "old_start": 360,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "V0",
+      "angle_tenths": 1800,
+      "suffix": 4098,
+      "old_start": 1032,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "A0",
+      "angle_tenths": 1800,
+      "suffix": 6104,
+      "old_start": 1704,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "G1",
+      "angle_tenths": 1800,
+      "suffix": 9394,
+      "old_start": 2272,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "N1",
+      "angle_tenths": 0,
+      "suffix": 9444,
+      "old_start": 2375,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "G2",
+      "angle_tenths": 1800,
+      "suffix": 11400,
+      "old_start": 2926,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "N2",
+      "angle_tenths": 0,
+      "suffix": 11450,
+      "old_start": 3029,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "G3",
+      "angle_tenths": 1800,
+      "suffix": 13406,
+      "old_start": 3580,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "N3",
+      "angle_tenths": 0,
+      "suffix": 13456,
+      "old_start": 3683,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "G4",
+      "angle_tenths": 1800,
+      "suffix": 15412,
+      "old_start": 4234,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "N4",
+      "angle_tenths": 0,
+      "suffix": 15462,
+      "old_start": 4337,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "G5",
+      "angle_tenths": 1800,
+      "suffix": 17418,
+      "old_start": 4888,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "N5",
+      "angle_tenths": 0,
+      "suffix": 17468,
+      "old_start": 4991,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "G6",
+      "angle_tenths": 1800,
+      "suffix": 19424,
+      "old_start": 5542,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "N6",
+      "angle_tenths": 0,
+      "suffix": 19474,
+      "old_start": 5645,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "N6",
+      "angle_tenths": 1800,
+      "suffix": 20146,
+      "old_start": 6300,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "G7",
+      "angle_tenths": 1800,
+      "suffix": 23436,
+      "old_start": 6868,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "Y0",
+      "angle_tenths": 0,
+      "suffix": 23486,
+      "old_start": 6971,
+      "old_size": 104,
+      "new_size": 103
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "case_id": "T02_74HC04_ALL6_NOT",
+  "title": "All Six 74HC04 Inverters",
+  "logical_expression": "Y0..Y5 = not(A0..F0)",
+  "description": "One 74HC04 package uses U1:A through U1:F with independent directional input/output terminal pairs.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc04",
+      "gate": "A",
+      "left": "A0",
+      "right": "",
+      "output": "Y0",
+      "note": ""
+    },
+    {
+      "family": "74hc04",
+      "gate": "B",
+      "left": "B0",
+      "right": "",
+      "output": "Y1",
+      "note": ""
+    },
+    {
+      "family": "74hc04",
+      "gate": "C",
+      "left": "C0",
+      "right": "",
+      "output": "Y2",
+      "note": ""
+    },
+    {
+      "family": "74hc04",
+      "gate": "D",
+      "left": "D0",
+      "right": "",
+      "output": "Y3",
+      "note": ""
+    },
+    {
+      "family": "74hc04",
+      "gate": "E",
+      "left": "E0",
+      "right": "",
+      "output": "Y4",
+      "note": ""
+    },
+    {
+      "family": "74hc04",
+      "gate": "F",
+      "left": "F0",
+      "right": "",
+      "output": "Y5",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

@@ -1,0 +1,24 @@
+{
+  "case_id": "T01_74HC04_ONE_GATE_NOT",
+  "title": "Pure NOT Gate",
+  "logical_expression": "Y = not(A)",
+  "description": "74HC04 U1:A input A0, output Y0. User DIP pin 1 maps to input and pin 2 maps to output; pins 14/7 are hidden supply metadata.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc04",
+      "gate": "A",
+      "left": "A0",
+      "right": "",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

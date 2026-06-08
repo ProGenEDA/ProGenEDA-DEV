@@ -22,6 +22,8 @@ First targets:
 - `74HC32` as the first cross-family pattern check.
 - `74HC00`, `74HC02`, `74HC86`, and `74HC266` as the next quad two-input
   combinational families.
+- `74HC04` as the first hex unary inverter family. It uses six subparts
+  `U1:A` through `U1:F` backed by the observed `74INV.MDF` model.
 
 The first donor-learning pack is created by:
 
@@ -42,6 +44,7 @@ python tools/proteus_generation/2026-06-08/generate_ic_remaining_generated_logic
 python tools/proteus_generation/2026-06-08/generate_ic_final_30_combinational_v1_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_final_last2_layout_ground_v2_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_final_t29_legacy_ground_v3_temp.py
+python tools/proteus_generation/2026-06-08/generate_ic_hc04_all7_v1_temp.py
 ```
 
 Status:
@@ -81,15 +84,18 @@ Status:
 - `IC_FINAL_LAST2_LAYOUT_GROUND_V2_TEMP_2026_06_08` partially failed user
   Proteus testing. T30 worked, but T29 failed after passive `G0` was converted
   to `$TERBIDIR`; do not promote bidirectional passive `G0`.
-- `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08` is static-clean and pending
-  user Proteus testing. It regenerates T29 with compact small-circuit placement
-  while restoring passive `G0` to the previous donor `$TERGROUND` method.
+- `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08` passed user Proteus testing.
+  It locks compact small-circuit placement only when passive `G0` stays on the
+  previous donor `$TERGROUND` method.
+- `IC_HC04_ALL7_V1_TEMP_2026_06_08` is static-clean and pending user Proteus
+  testing. It imports `74HC04`, generates one NOT gate, all six inverter
+  subparts, logic-constant NOT gates, a NOT/RCL load, and the final all-seven
+  combinational family circuit.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08`.
-  If it passes, lock compact placement while keeping passive `G0` on the
-  previous donor `$TERGROUND` method.
+- Current next step: test `IC_HC04_ALL7_V1_TEMP_2026_06_08`. If it passes,
+  lock HC04 NOT generation into the combinational IC method.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

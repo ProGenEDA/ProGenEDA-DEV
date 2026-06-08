@@ -1801,8 +1801,8 @@
     {
       "id": "R099",
       "title": "Compact T29 retest restores donor ground method",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "accepted_manual_proteus_test",
+      "confidence": 0.9,
       "applies_to": [
         "Proteus 8.13",
         "combinational ICs",
@@ -1813,10 +1813,31 @@
       "evidence": [
         "IC_FINAL_LAST2_LAYOUT_GROUND_V2_USER_PARTIAL_20260608",
         "IC_FINAL_T29_LEGACY_GROUND_V3_STATIC_20260608",
+        "IC_FINAL_T29_LEGACY_GROUND_V3_USER_ACCEPTANCE_20260608",
         "tools/proteus_generation/2026-06-08/generate_ic_final_t29_legacy_ground_v3_temp.py",
         "experiments/ic_final_t29_legacy_ground_v3_temp_2026_06_08/summary_manifest.json"
       ],
-      "rule": "The corrected V3 T29 retest keeps compact small-circuit placement but restores passive G0 to the previous donor $TERGROUND method. IC signal pins remain $TERINPUT/$TEROUTPUT and ordinary R/C/L endpoints remain $TERBIDIR. Static validation is clean and active tests pass; manual Proteus acceptance is required before locking this as the final T29 refinement."
+      "rule": "The corrected V3 T29 retest keeps compact small-circuit placement but restores passive G0 to the previous donor $TERGROUND method. IC signal pins remain $TERINPUT/$TEROUTPUT and ordinary R/C/L endpoints remain $TERBIDIR. User testing reported this V3 T29 output worked, so compact small mixed-IC placement is accepted only with passive G0 kept as donor $TERGROUND."
+    },
+    {
+      "id": "R100",
+      "title": "74HC04 NOT generation uses unary 74INV subparts",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC04",
+        "74INV",
+        "combinational ICs",
+        "mixed IC/passive circuits"
+      ],
+      "evidence": [
+        "IC_HC04_ALL7_V1_STATIC_20260608",
+        "tools/proteus_generation/2026-06-08/generate_ic_hc04_all7_v1_temp.py",
+        "proteus_ic/donors/74hc04/IC_74HC04_M04_LOGIC_CONSTANTS_PG.pdsprj",
+        "experiments/ic_hc04_all7_v1_temp_2026_06_08/summary_manifest.json"
+      ],
+      "rule": "The HC04 donor shows hex inverter subparts U1:A through U1:F using the 74INV.MDF model. Each subpart has one signal input and one signal output; user DIP pin 14/VCC and pin 7/GND are hidden-supply metadata and must not be emitted as explicit IC package pins. The HC04 donor's visible input terminal labels are one character, so HC04 generation currently uses a dedicated resizable terminal-label patch plus HC04-specific suffix and coordinate handling. This is static-clean and active-tests-clean but must pass manual Proteus testing before production lock-in."
     }
   ]
 }

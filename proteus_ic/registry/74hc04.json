@@ -1,0 +1,44 @@
+{
+  "schema_version": "proteusgen-ic-registry/v0.1",
+  "device": "74HC04",
+  "family": "74HC",
+  "logic_class": "hex_1input_gate",
+  "logical_type": "NOT1",
+  "proteus_markers": {
+    "device": "74HC04",
+    "modfile": "74INV.MDF",
+    "package": "DIL14",
+    "itfmod": "TTLHC"
+  },
+  "placement_mode": "combinational_subparts",
+  "hidden_power": true,
+  "production_terminal_policy": "input_output_only",
+  "subparts": {
+    "A": {"IN": "1", "OUT": "2"},
+    "B": {"IN": "3", "OUT": "4"},
+    "C": {"IN": "5", "OUT": "6"},
+    "D": {"IN": "9", "OUT": "8"},
+    "E": {"IN": "11", "OUT": "10"},
+    "F": {"IN": "13", "OUT": "12"}
+  },
+  "supply_pins": {"GND": "7", "VCC": "14"},
+  "dip_user_input_policy": {
+    "ignore_supply_pins": ["7", "14"],
+    "supply_pin_reason": "Proteus 74HC04 subpart donors use hidden supply. User-described pin 14/VCC and pin 7/GND connections are not emitted as IC pin connections.",
+    "pin_to_subpart": {
+      "1": {"gate": "1", "alias": "1A", "proteus_subpart": "A", "role": "IN"},
+      "2": {"gate": "1", "alias": "1Y", "proteus_subpart": "A", "role": "OUT"},
+      "3": {"gate": "2", "alias": "2A", "proteus_subpart": "B", "role": "IN"},
+      "4": {"gate": "2", "alias": "2Y", "proteus_subpart": "B", "role": "OUT"},
+      "5": {"gate": "3", "alias": "3A", "proteus_subpart": "C", "role": "IN"},
+      "6": {"gate": "3", "alias": "3Y", "proteus_subpart": "C", "role": "OUT"},
+      "8": {"gate": "4", "alias": "4Y", "proteus_subpart": "D", "role": "OUT"},
+      "9": {"gate": "4", "alias": "4A", "proteus_subpart": "D", "role": "IN"},
+      "10": {"gate": "5", "alias": "5Y", "proteus_subpart": "E", "role": "OUT"},
+      "11": {"gate": "5", "alias": "5A", "proteus_subpart": "E", "role": "IN"},
+      "12": {"gate": "6", "alias": "6Y", "proteus_subpart": "F", "role": "OUT"},
+      "13": {"gate": "6", "alias": "6A", "proteus_subpart": "F", "role": "IN"}
+    }
+  },
+  "status": "temporary_static_generated_pending_user_test"
+}

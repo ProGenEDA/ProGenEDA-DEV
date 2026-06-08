@@ -1,0 +1,150 @@
+{
+  "case_id": "T05_ALL7_LOGIC_WITH_RCL_FILTERS",
+  "title": "All Seven Combinational Families with R/C Filters",
+  "logical_expression": "N1=A.B; N2=C+D; N3=B xor C; N4=not(N1.N2); N5=not(N2+N3); N6=not(N3); Y=not(N4 xor N6)",
+  "description": "Final user blueprint normalized to Proteus 74HC266 for XNOR and two-character signal labels. Every logic stage output passes through a current-limiting resistor before becoming the next named node.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc08",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "G1",
+      "note": "AND stage: A and B"
+    },
+    {
+      "family": "74hc32",
+      "gate": "A",
+      "left": "C0",
+      "right": "D0",
+      "output": "G2",
+      "note": "OR stage: C or D"
+    },
+    {
+      "family": "74hc86",
+      "gate": "A",
+      "left": "B0",
+      "right": "C0",
+      "output": "G3",
+      "note": "XOR stage: B xor C"
+    },
+    {
+      "family": "74hc00",
+      "gate": "A",
+      "left": "N1",
+      "right": "N2",
+      "output": "G4",
+      "note": "NAND compression from resistor-limited Node 1 and Node 2"
+    },
+    {
+      "family": "74hc02",
+      "gate": "A",
+      "left": "N2",
+      "right": "N3",
+      "output": "G5",
+      "note": "NOR measurement/expansion node"
+    },
+    {
+      "family": "74hc04",
+      "gate": "A",
+      "left": "N3",
+      "right": "",
+      "output": "G6",
+      "note": "NOT stage from resistor-limited XOR node"
+    },
+    {
+      "family": "74hc266",
+      "gate": "A",
+      "left": "N4",
+      "right": "N6",
+      "output": "G7",
+      "note": "Final XNOR decision"
+    }
+  ],
+  "passives": [
+    {
+      "ref": "C1",
+      "kind": "C",
+      "value": "1uF",
+      "left": "V0",
+      "right": "G0"
+    },
+    {
+      "ref": "C2",
+      "kind": "C",
+      "value": "1uF",
+      "left": "V0",
+      "right": "G0"
+    },
+    {
+      "ref": "C3",
+      "kind": "C",
+      "value": "1uF",
+      "left": "A0",
+      "right": "G0"
+    },
+    {
+      "ref": "R1",
+      "kind": "R",
+      "value": "330",
+      "left": "G1",
+      "right": "N1"
+    },
+    {
+      "ref": "R2",
+      "kind": "R",
+      "value": "330",
+      "left": "G2",
+      "right": "N2"
+    },
+    {
+      "ref": "R3",
+      "kind": "R",
+      "value": "330",
+      "left": "G3",
+      "right": "N3"
+    },
+    {
+      "ref": "R4",
+      "kind": "R",
+      "value": "330",
+      "left": "G4",
+      "right": "N4"
+    },
+    {
+      "ref": "R5",
+      "kind": "R",
+      "value": "330",
+      "left": "G5",
+      "right": "N5"
+    },
+    {
+      "ref": "R6",
+      "kind": "R",
+      "value": "10k",
+      "left": "G6",
+      "right": "N6"
+    },
+    {
+      "ref": "C4",
+      "kind": "C",
+      "value": "1uF",
+      "left": "N6",
+      "right": "G0"
+    },
+    {
+      "ref": "R7",
+      "kind": "R",
+      "value": "330",
+      "left": "G7",
+      "right": "Y0"
+    }
+  ],
+  "direct_outputs": [],
+  "warning": "Requested capacitance values 10uF/100nF/10nF/1uF and R6=1k are represented with donor-safe visible text in this temporary pack; topology and component count are preserved."
+}
