@@ -46,6 +46,7 @@ python tools/proteus_generation/2026-06-08/generate_ic_final_30_combinational_v1
 python tools/proteus_generation/2026-06-08/generate_ic_final_last2_layout_ground_v2_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_final_t29_legacy_ground_v3_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_hc04_all7_v1_temp.py
+python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v1_temp.py
 ```
 
 Status:
@@ -92,6 +93,12 @@ Status:
   `74HC04`, generates one NOT gate, all six inverter subparts, logic-constant
   NOT gates, a NOT/RCL load, and the final all-seven combinational family
   circuit.
+- `IC_SEQUENTIAL_COUNTERS_V1_TEMP_2026_06_09` is static-clean and pending user
+  Proteus testing. It is a separate sequential/counter-only experiment for
+  `7490`/user-facing `74HC90`, `74HC160`, `74HC161`, and `74HC163`. Unlike the
+  locked combinational route, every visible sequential counter pin uses
+  donor-native `$TERBIDIR` terminals. Pin 14 is a real counter signal in this
+  donor set, not hidden supply.
 - The production route is now:
 
 ```text
