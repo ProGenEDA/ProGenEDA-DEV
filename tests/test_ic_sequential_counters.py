@@ -18,6 +18,13 @@ SCRIPT_V3 = (
     / "2026-06-09"
     / "generate_ic_sequential_counters_v3_mixed_retry_temp.py"
 )
+SCRIPT_V4 = (
+    ROOT
+    / "tools"
+    / "proteus_generation"
+    / "2026-06-09"
+    / "generate_ic_sequential_counters_v4_whole_donor_retry_temp.py"
+)
 
 
 def load_seq_module():
@@ -42,6 +49,16 @@ def load_seq_v2_module():
 
 def load_seq_v3_module():
     spec = importlib.util.spec_from_file_location("ic_sequential_counters_v3_mixed_retry_temp", SCRIPT_V3)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_seq_v4_module():
+    spec = importlib.util.spec_from_file_location("ic_sequential_counters_v4_whole_donor_retry_temp", SCRIPT_V4)
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -151,3 +168,22 @@ def test_counter_v3_patch_unit_records_source_slot_in_plan() -> None:
     assert unit.count(b"$TERINPUT") == 0
     assert unit.count(b"$TEROUTPUT") == 0
     assert {item["source_slot"] for item in plan} == {4}
+
+
+def test_counter_v4_whole_donor_retry_supports_only_whole_donor_counts() -> None:
+    seq = load_seq_v4_module()
+    assert seq.donor_kind_for_count(1) == "single"
+    assert seq.donor_kind_for_count(2) == "two"
+    assert seq.donor_kind_for_count(4) == "four"
+
+
+def test_counter_v4_same_length_device_patch_preserves_terminal_count() -> None:
+    seq = load_seq_v4_module()
+    family_lookup = {family.key: family for family in seq.seq.FAMILIES}
+    base = family_lookup["74hc192"]
+    packages = [family_lookup["74hc192"], family_lookup["74hc193"]]
+    chunk = _extract_object_chunk(read_internal_file(base.donor("two"), "ROOT.DSN"))
+    patched = seq.patch_device_groups(chunk, base, packages)
+    assert patched.count(b"$TERBIDIR") == chunk.count(b"$TERBIDIR")
+    assert patched.count(b"74HC192") == chunk.count(b"74HC192") // 2
+    assert patched.count(b"74HC193") == chunk.count(b"74HC192") // 2

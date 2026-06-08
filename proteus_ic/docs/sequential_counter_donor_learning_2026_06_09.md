@@ -156,6 +156,59 @@ Manual Proteus testing is still pending for V3. Do not promote heterogeneous
 mixed sequential-counter generation until these V3 retry files open and simulate
 where applicable.
 
+User manual Proteus result for V3:
+
+```text
+T00_CONTROL_74HC193_2X_UNIT_SLICES_FINAL_SLOT                 failed
+T01_CONTROL_4017_4020_2FAMILY_FINAL_SLOT                      failed
+T06_RETRY_74HC192_74HC193_UPDOWN_CHAIN_FINAL_SLOT             failed
+T07_RETRY_4017_4020_74HC4024_DIVIDER_CHAIN_FINAL_SLOT         failed
+T08_RETRY_74HC161_74HC192_4017_4020_CHAIN_FINAL_SLOT          failed
+```
+
+Since the same-family `T00` unit-slice control failed, the working conclusion is
+that sequential-counter unit slicing is unsafe. Do not use it for this IC class.
+
+## V4 Whole-Donor Retry
+
+V4 avoids unit slicing completely. It starts from complete 2x/4x donor object
+chunks that Proteus already accepts, then mutates only labels and same-length
+device identities in-place.
+
+Script:
+
+```text
+python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v4_whole_donor_retry_temp.py
+```
+
+Output:
+
+```text
+experiments/ic_sequential_counters_v4_whole_donor_retry_temp_2026_06_09
+experiments/IC_SEQUENTIAL_COUNTERS_V4_WHOLE_DONOR_RETRY_TEMP_2026_06_09.zip
+```
+
+V4 case list:
+
+- `T00_CONTROL_74HC193_2X_WHOLE_DONOR_LABELS`
+- `T01_RETRY_74HC192_74HC193_WHOLE_DONOR`
+- `T02_RETRY_4017_4020_WHOLE_DONOR`
+- `T03_RETRY_74HC161_74HC192_74HC193_74HC163_WHOLE_DONOR`
+- `T04_CONTROL_4020_4X_WHOLE_DONOR_LABELS`
+
+V4 intentionally does not force `74HC4024` into mixed 4017/4020 chains because
+the 74HC4024 donor has a different visible-terminal count and longer device
+marker. A manual mixed donor is required before promoting that shape.
+
+Automated result:
+
+```text
+0 static validation issues
+python -m pytest tests -q => 97 passed, 78 subtests passed
+```
+
+Manual Proteus testing is pending for V4.
+
 ## V2 Additional Pin Facts
 
 `74HC192` visible pins:
