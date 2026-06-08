@@ -1,7 +1,8 @@
 # Proteus IC Generation Workspace
 
-This folder is the temporary IC learning area. Production IC generation remains
-disabled until a production-style temporary pack is accepted in Proteus 8.13.
+This folder is the IC learning and donor evidence area. Production
+combinational IC generation is now enabled through the locked main CLI route
+after the user accepted the HC04/all-seven pack in Proteus 8.13.
 
 Current rules:
 
@@ -87,15 +88,25 @@ Status:
 - `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08` passed user Proteus testing.
   It locks compact small-circuit placement only when passive `G0` stays on the
   previous donor `$TERGROUND` method.
-- `IC_HC04_ALL7_V1_TEMP_2026_06_08` is static-clean and pending user Proteus
-  testing. It imports `74HC04`, generates one NOT gate, all six inverter
-  subparts, logic-constant NOT gates, a NOT/RCL load, and the final all-seven
-  combinational family circuit.
+- `IC_HC04_ALL7_V1_TEMP_2026_06_08` passed user Proteus testing. It imports
+  `74HC04`, generates one NOT gate, all six inverter subparts, logic-constant
+  NOT gates, a NOT/RCL load, and the final all-seven combinational family
+  circuit.
+- The production route is now:
+
+```text
+python -m proteusgen generate-ic-combinational circuit.json --outdir out --layout-strategy beautify
+```
+
+  The locked JSON route accepts `gates` plus optional R/C/L `passives`, supports
+  repeated packages for 15-input AND/OR reduction trees, keeps IC pins
+  directional, and keeps passive `G0` on the accepted donor `$TERGROUND`
+  method.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test `IC_HC04_ALL7_V1_TEMP_2026_06_08`. If it passes,
-  lock HC04 NOT generation into the combinational IC method.
+- Current next step: improve the IC layout/compaction heuristics as needed,
+  then continue to the next IC family group.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

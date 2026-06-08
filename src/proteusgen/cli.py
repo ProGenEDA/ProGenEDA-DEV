@@ -11,6 +11,10 @@ from typing import Any
 from .circuit_ir import load_json, parse_circuit_ir
 from .comparison import compare_projects
 from .generator import GenerationBlocked, generate_project
+from .ic_combinational import (
+    IcCombinationalGenerationBlocked,
+    generate_ic_combinational_project_from_payload,
+)
 from .inspectors import find_all
 from .layout import LayoutError, plan_payload
 from .mixed_passive import MixedPassiveGenerationBlocked, generate_mixed_passive_project_from_payload
@@ -138,6 +142,21 @@ def generate_source_driven_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def generate_ic_combinational_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_ic_combinational_project_from_payload(
+            payload,
+            args.outdir,
+            layout_strategy=args.layout_strategy,
+        )
+    except IcCombinationalGenerationBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    _print(result.as_dict())
+    return 0
+
+
 def plan_layout_command(args: argparse.Namespace) -> int:
     payload = load_json(args.circuit)
     try:
@@ -223,6 +242,15 @@ def build_parser() -> argparse.ArgumentParser:
     source_parser.add_argument("--outdir", required=True)
     source_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
     source_parser.set_defaults(function=generate_source_driven_command)
+
+    ic_parser = subparsers.add_parser(
+        "generate-ic-combinational",
+        help="Generate a locked 74HC combinational IC project with optional R/C/L passives",
+    )
+    ic_parser.add_argument("circuit")
+    ic_parser.add_argument("--outdir", required=True)
+    ic_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
+    ic_parser.set_defaults(function=generate_ic_combinational_command)
 
     layout_parser = subparsers.add_parser(
         "plan-layout",

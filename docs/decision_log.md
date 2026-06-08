@@ -446,8 +446,12 @@ Evidence:
 - `IC_HC04_ALL7_V1_TEMP_2026_06_08` is static-clean and active-tests-clean. It
   covers single NOT, all-six NOT, logic constants, NOT with RCL load, and the
   final all-seven-family circuit.
-- Manual Proteus testing is pending before HC04 is promoted into the main
-  combinational IC route.
+- User testing reported the full HC04/all-seven pack worked.
+- `src/proteusgen/ic_combinational.py` promotes the accepted donor-derived
+  route into the main CLI as `generate-ic-combinational`.
+- The production smoke regenerated the accepted all-seven circuit and direct
+  15-input AND/OR gate JSON through the main CLI with zero static issues; the
+  AND/OR object and CDB hashes match the earlier accepted expression packs.
 
 ## Inactive / removed
 
