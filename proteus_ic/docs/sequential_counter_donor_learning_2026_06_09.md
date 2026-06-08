@@ -110,6 +110,52 @@ python -m pytest tests -q => 90 passed, 78 subtests passed
 
 Manual Proteus testing is still pending.
 
+## V2 Manual Result And V3 Retry
+
+User manual Proteus result for V2:
+
+```text
+T06_MIXED_74HC192_74HC193_UPDOWN_CHAIN     failed, Proteus crashed before open
+T07_MIXED_4017_4020_74HC4024_DIVIDER_CHAIN failed, Proteus crashed before open
+T08_MIXED_74HC161_74HC192_4017_4020_CHAIN  failed, Proteus crashed before open
+```
+
+The single-family V2 controls were not changed. The crash boundary is the
+heterogeneous mixed-family assembly path, which spliced unit records out of
+4-package donors and generated a combined mixed CDB/device section.
+
+V3 retry script:
+
+```text
+python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v3_mixed_retry_temp.py
+```
+
+V3 output:
+
+```text
+experiments/ic_sequential_counters_v3_mixed_retry_temp_2026_06_09
+experiments/IC_SEQUENTIAL_COUNTERS_V3_MIXED_RETRY_TEMP_2026_06_09.zip
+```
+
+V3 changes only the mixed sequential-counter experiment:
+
+- the final generated IC package is always sourced from donor slot 4, preserving
+  donor-native final-object record shape;
+- T00 is a same-family 74HC193 unit-slice control;
+- T01 is a two-family 4017/4020 final-slot control;
+- T06, T07, and T08 are direct retries of the failed V2 mixed cases.
+
+Automated result:
+
+```text
+0 static validation issues
+python -m pytest tests -q => 95 passed, 78 subtests passed
+```
+
+Manual Proteus testing is still pending for V3. Do not promote heterogeneous
+mixed sequential-counter generation until these V3 retry files open and simulate
+where applicable.
+
 ## V2 Additional Pin Facts
 
 `74HC192` visible pins:

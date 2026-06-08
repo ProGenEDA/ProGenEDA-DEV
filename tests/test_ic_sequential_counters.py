@@ -11,6 +11,13 @@ from proteusgen.resistor_v9 import _extract_object_chunk
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v1_temp.py"
 SCRIPT_V2 = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
+SCRIPT_V3 = (
+    ROOT
+    / "tools"
+    / "proteus_generation"
+    / "2026-06-09"
+    / "generate_ic_sequential_counters_v3_mixed_retry_temp.py"
+)
 
 
 def load_seq_module():
@@ -25,6 +32,16 @@ def load_seq_module():
 
 def load_seq_v2_module():
     spec = importlib.util.spec_from_file_location("ic_sequential_counters_v2_temp", SCRIPT_V2)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_seq_v3_module():
+    spec = importlib.util.spec_from_file_location("ic_sequential_counters_v3_mixed_retry_temp", SCRIPT_V3)
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -116,3 +133,21 @@ def test_counter_v2_builds_mixed_cdb_for_cross_family_case() -> None:
     assert cdb.count(b"4020") >= 2
     for ref in (b"U1", b"U2", b"U3", b"U4"):
         assert cdb.count(ref) >= 2
+
+
+def test_counter_v3_mixed_retry_uses_final_donor_slot_for_last_package() -> None:
+    seq = load_seq_v3_module()
+    assert seq.source_slots_for_component_count(1) == [3]
+    assert seq.source_slots_for_component_count(2) == [0, 3]
+    assert seq.source_slots_for_component_count(3) == [0, 1, 3]
+    assert seq.source_slots_for_component_count(4) == [0, 1, 2, 3]
+
+
+def test_counter_v3_patch_unit_records_source_slot_in_plan() -> None:
+    seq = load_seq_v3_module()
+    family = next(item for item in seq.seq.FAMILIES if item.key == "4017")
+    unit, plan = seq.patch_unit_final_aware(family, source_slot=3, ref="U1", label_prefix="A")
+    assert unit.count(b"$TERBIDIR") == 14
+    assert unit.count(b"$TERINPUT") == 0
+    assert unit.count(b"$TEROUTPUT") == 0
+    assert {item["source_slot"] for item in plan} == {4}
