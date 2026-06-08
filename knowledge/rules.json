@@ -1717,8 +1717,8 @@
     {
       "id": "R095",
       "title": "Remaining quad combinational IC donors are staged for acceptance",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.8,
+      "status": "accepted_manual_proteus_test",
+      "confidence": 0.91,
       "applies_to": [
         "Proteus 8.13",
         "74HC00",
@@ -1729,10 +1729,31 @@
       ],
       "evidence": [
         "IC_REMAINING_COMBINATIONAL_V1_STATIC_20260608",
+        "IC_REMAINING_COMBINATIONAL_V1_USER_ACCEPTANCE_20260608",
         "proteus_ic/donors/analysis_remaining_combinational_v1.json",
         "tools/proteus_generation/2026-06-08/generate_ic_remaining_combinational_v1_temp.py"
       ],
-      "rule": "The remaining combinational donor corpus is imported and statically analyzed. The first V1 test pack uses E001 transplants and label-only mutation, not expression synthesis. 74HC00 uses a terminal-first gate record family similar to HC08. 74HC02, 74HC86, and 74HC266 use component-first gate records similar to HC32. The 74HC266 donor is treated as the XNOR candidate but must preserve its observed Proteus 74XOR2 function marker until manual testing proves the exact semantics."
+      "rule": "The remaining combinational donor corpus is imported, statically analyzed, and manually accepted. The first V1 test pack used E001 transplants and label-only mutation, not expression synthesis. 74HC00 uses a terminal-first gate record family similar to HC08. 74HC02, 74HC86, and 74HC266 use component-first gate records similar to HC32. The 74HC266 donor is treated as the XNOR candidate but must preserve its observed Proteus 74XOR2 function marker until a generated semantic XNOR test proves the exact behavior."
+    },
+    {
+      "id": "R096",
+      "title": "Remaining combinational generated logic starts with compact one-package tests",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC00",
+        "74HC02",
+        "74HC86",
+        "74HC266",
+        "generated combinational logic"
+      ],
+      "evidence": [
+        "IC_REMAINING_GENERATED_LOGIC_V1_STATIC_20260608",
+        "IC_REMAINING_COMBINATIONAL_V1_USER_ACCEPTANCE_20260608",
+        "tools/proteus_generation/2026-06-08/generate_ic_remaining_generated_logic_v1_temp.py"
+      ],
+      "rule": "After donor acceptance, the first generated-object pack for 74HC00, 74HC02, 74HC86, and 74HC266 must stay compact: one package and three generated gate subparts per family. It tests NAND3, NOR3, XOR4, and a 74HC266 XNOR-chain diagnostic using accepted all-four donor gate slices. Preserve the observed 74HC266 74XOR2 function marker until Proteus behavior confirms the semantic mapping. Larger multi-package expression synthesis should wait for this generated pack to pass manual Proteus testing."
     }
   ]
 }

@@ -1,0 +1,78 @@
+{
+  "device": "74HC00",
+  "function_marker": "74NAND2",
+  "record_shape": "terminal_first",
+  "description": "Generated three-input NAND: Y0 = NAND(X1, X2, X3).",
+  "gate_count": 3,
+  "package_count": 1,
+  "steps": [
+    {
+      "gate_letter": "A",
+      "left": "X1",
+      "right": "X2",
+      "output": "N1",
+      "semantic_note": "N1 = NAND(X1, X2)"
+    },
+    {
+      "gate_letter": "B",
+      "left": "N1",
+      "right": "N1",
+      "output": "A1",
+      "semantic_note": "A1 = AND(X1, X2) by NAND self-inversion"
+    },
+    {
+      "gate_letter": "C",
+      "left": "A1",
+      "right": "X3",
+      "output": "Y0",
+      "semantic_note": "Y0 = NAND(X1 AND X2, X3)"
+    }
+  ],
+  "gate_topology": [
+    {
+      "object_id": 1,
+      "package_ref": "U1",
+      "subpart_ref": "U1:A",
+      "gate_letter": "A",
+      "left_net": "X1",
+      "right_net": "X2",
+      "output_net": "N1",
+      "semantic_note": "N1 = NAND(X1, X2)",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      }
+    },
+    {
+      "object_id": 2,
+      "package_ref": "U1",
+      "subpart_ref": "U1:B",
+      "gate_letter": "B",
+      "left_net": "N1",
+      "right_net": "N1",
+      "output_net": "A1",
+      "semantic_note": "A1 = AND(X1, X2) by NAND self-inversion",
+      "physical_pins": {
+        "left": "4",
+        "right": "5",
+        "output": "6"
+      }
+    },
+    {
+      "object_id": 3,
+      "package_ref": "U1",
+      "subpart_ref": "U1:C",
+      "gate_letter": "C",
+      "left_net": "A1",
+      "right_net": "X3",
+      "output_net": "Y0",
+      "semantic_note": "Y0 = NAND(X1 AND X2, X3)",
+      "physical_pins": {
+        "left": "9",
+        "right": "10",
+        "output": "8"
+      }
+    }
+  ]
+}

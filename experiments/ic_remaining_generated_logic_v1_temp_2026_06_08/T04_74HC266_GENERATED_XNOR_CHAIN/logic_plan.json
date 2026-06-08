@@ -1,0 +1,78 @@
+{
+  "device": "74HC266",
+  "function_marker": "74XOR2",
+  "record_shape": "component_first",
+  "description": "Generated 74HC266 XNOR-chain diagnostic preserving observed 74XOR2 function marker.",
+  "gate_count": 3,
+  "package_count": 1,
+  "steps": [
+    {
+      "gate_letter": "A",
+      "left": "X1",
+      "right": "X2",
+      "output": "E1",
+      "semantic_note": "E1 = donated 74HC266 gate output for X1/X2"
+    },
+    {
+      "gate_letter": "B",
+      "left": "X3",
+      "right": "X4",
+      "output": "E2",
+      "semantic_note": "E2 = donated 74HC266 gate output for X3/X4"
+    },
+    {
+      "gate_letter": "C",
+      "left": "E1",
+      "right": "E2",
+      "output": "Y0",
+      "semantic_note": "Y0 = donated 74HC266 gate output for E1/E2"
+    }
+  ],
+  "gate_topology": [
+    {
+      "object_id": 1,
+      "package_ref": "U1",
+      "subpart_ref": "U1:A",
+      "gate_letter": "A",
+      "left_net": "X1",
+      "right_net": "X2",
+      "output_net": "E1",
+      "semantic_note": "E1 = donated 74HC266 gate output for X1/X2",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      }
+    },
+    {
+      "object_id": 2,
+      "package_ref": "U1",
+      "subpart_ref": "U1:B",
+      "gate_letter": "B",
+      "left_net": "X3",
+      "right_net": "X4",
+      "output_net": "E2",
+      "semantic_note": "E2 = donated 74HC266 gate output for X3/X4",
+      "physical_pins": {
+        "left": "4",
+        "right": "5",
+        "output": "6"
+      }
+    },
+    {
+      "object_id": 3,
+      "package_ref": "U1",
+      "subpart_ref": "U1:C",
+      "gate_letter": "C",
+      "left_net": "E1",
+      "right_net": "E2",
+      "output_net": "Y0",
+      "semantic_note": "Y0 = donated 74HC266 gate output for E1/E2",
+      "physical_pins": {
+        "left": "9",
+        "right": "10",
+        "output": "8"
+      }
+    }
+  ]
+}

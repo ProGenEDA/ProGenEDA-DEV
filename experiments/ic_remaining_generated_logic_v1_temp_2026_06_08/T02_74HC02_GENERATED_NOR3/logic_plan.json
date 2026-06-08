@@ -1,0 +1,78 @@
+{
+  "device": "74HC02",
+  "function_marker": "74NOR2",
+  "record_shape": "component_first",
+  "description": "Generated three-input NOR: Y0 = NOR(X1, X2, X3).",
+  "gate_count": 3,
+  "package_count": 1,
+  "steps": [
+    {
+      "gate_letter": "A",
+      "left": "X1",
+      "right": "X2",
+      "output": "N1",
+      "semantic_note": "N1 = NOR(X1, X2)"
+    },
+    {
+      "gate_letter": "B",
+      "left": "N1",
+      "right": "N1",
+      "output": "O1",
+      "semantic_note": "O1 = OR(X1, X2) by NOR self-inversion"
+    },
+    {
+      "gate_letter": "C",
+      "left": "O1",
+      "right": "X3",
+      "output": "Y0",
+      "semantic_note": "Y0 = NOR((X1 OR X2), X3)"
+    }
+  ],
+  "gate_topology": [
+    {
+      "object_id": 1,
+      "package_ref": "U1",
+      "subpart_ref": "U1:A",
+      "gate_letter": "A",
+      "left_net": "X1",
+      "right_net": "X2",
+      "output_net": "N1",
+      "semantic_note": "N1 = NOR(X1, X2)",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      }
+    },
+    {
+      "object_id": 2,
+      "package_ref": "U1",
+      "subpart_ref": "U1:B",
+      "gate_letter": "B",
+      "left_net": "N1",
+      "right_net": "N1",
+      "output_net": "O1",
+      "semantic_note": "O1 = OR(X1, X2) by NOR self-inversion",
+      "physical_pins": {
+        "left": "4",
+        "right": "5",
+        "output": "6"
+      }
+    },
+    {
+      "object_id": 3,
+      "package_ref": "U1",
+      "subpart_ref": "U1:C",
+      "gate_letter": "C",
+      "left_net": "O1",
+      "right_net": "X3",
+      "output_net": "Y0",
+      "semantic_note": "Y0 = NOR((X1 OR X2), X3)",
+      "physical_pins": {
+        "left": "9",
+        "right": "10",
+        "output": "8"
+      }
+    }
+  ]
+}
