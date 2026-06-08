@@ -47,6 +47,7 @@ python tools/proteus_generation/2026-06-08/generate_ic_final_last2_layout_ground
 python tools/proteus_generation/2026-06-08/generate_ic_final_t29_legacy_ground_v3_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_hc04_all7_v1_temp.py
 python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v1_temp.py
+python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v2_temp.py
 ```
 
 Status:
@@ -99,6 +100,12 @@ Status:
   locked combinational route, every visible sequential counter pin uses
   donor-native `$TERBIDIR` terminals. Pin 14 is a real counter signal in this
   donor set, not hidden supply.
+- `IC_SEQUENTIAL_COUNTERS_V2_TEMP_2026_06_09` is static-clean and pending user
+  Proteus testing. It extends the same sequential-only method to `74HC192`,
+  `74HC193`, `4017`, `4020`, and `74HC4024`, then adds three mixed-family
+  cascade experiments. The `74HC192` donor has an ambiguous duplicate `PIN9`
+  label, so V2 treats signal names as authoritative for that family until a
+  corrected donor confirms the pin map.
 - The production route is now:
 
 ```text

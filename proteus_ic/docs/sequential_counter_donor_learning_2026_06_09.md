@@ -1,7 +1,7 @@
 # Sequential Counter Donor Learning - 2026-06-09
 
-This note covers the first sequential/counter-only donor batch. It does not
-change the locked combinational IC route.
+This note covers the first two sequential/counter-only donor batches. It does
+not change the locked combinational IC route.
 
 ## Scope
 
@@ -11,6 +11,11 @@ Current families:
 - `74HC160`
 - `74HC161`
 - `74HC163`
+- `74HC192`
+- `74HC193`
+- `4017`
+- `4020`
+- `74HC4024`
 
 Skipped for now:
 
@@ -101,6 +106,134 @@ Static result:
 ```text
 0 static validation issues
 python -m pytest tests -q => 90 passed, 78 subtests passed
+```
+
+Manual Proteus testing is still pending.
+
+## V2 Additional Pin Facts
+
+`74HC192` visible pins:
+
+```text
+Q0 PIN3
+Q1 PIN2
+Q2 PIN6
+Q3 PIN7
+TCU PIN12
+TCD PIN13
+D0 PIN15
+D1 PIN1
+D2 PIN10
+D3 PIN9
+UP PIN9
+DN PIN4
+PL PIN11
+MR PIN14
+```
+
+The `74HC192` donor labels both `D3` and `UP` as `PIN9`. V2 records pin 9 as
+ambiguous and keeps signal-name aliases (`D3`, `UP`) authoritative until a
+corrected donor confirms the pin number.
+
+`74HC193` visible pins:
+
+```text
+Q0 PIN3
+Q1 PIN2
+Q2 PIN6
+Q3 PIN7
+TCD PIN13
+TCU PIN12
+D0 PIN15
+D1 PIN1
+D2 PIN10
+D3 PIN9
+UP PIN5
+DN PIN4
+PL PIN11
+MR PIN14
+```
+
+`4017` visible pins:
+
+```text
+Q0 PIN3
+Q1 PIN2
+Q2 PIN4
+Q3 PIN7
+Q4 PIN10
+Q5 PIN1
+Q6 PIN5
+Q7 PIN6
+Q8 PIN9
+Q9 PIN11
+CO PIN12
+CLK PIN14
+E PIN13
+MR PIN15
+```
+
+`4020` visible pins:
+
+```text
+Q0 PIN9
+Q3 PIN7
+Q4 PIN5
+Q5 PIN4
+Q6 PIN6
+Q7 PIN13
+Q8 PIN12
+Q9 PIN14
+Q10 PIN15
+Q11 PIN1
+Q12 PIN2
+Q13 PIN3
+CLK PIN10
+MR PIN11
+```
+
+`74HC4024` visible pins:
+
+```text
+Q1 PIN12
+Q2 PIN11
+Q3 PIN9
+Q4 PIN6
+Q5 PIN5
+Q6 PIN4
+Q7 PIN3
+CLK PIN1
+MR PIN2
+```
+
+## Generated V2 Pack
+
+Script:
+
+```text
+python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v2_temp.py
+```
+
+Output:
+
+```text
+experiments/ic_sequential_counters_v2_temp_2026_06_09
+experiments/IC_SEQUENTIAL_COUNTERS_V2_TEMP_2026_06_09.zip
+```
+
+The pack contains 57 cases:
+
+- the same six donor-learning controls for each of nine families;
+- three mixed-family cascade experiments:
+  - `74HC192 -> 74HC193`
+  - `4017 -> 4020 -> 74HC4024`
+  - `74HC161 -> 74HC192 -> 4017 -> 4020`
+
+Static result:
+
+```text
+0 static validation issues
+python -m pytest tests -q => 93 passed, 78 subtests passed
 ```
 
 Manual Proteus testing is still pending.
