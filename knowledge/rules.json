@@ -1696,8 +1696,8 @@
     {
       "id": "R094",
       "title": "Mixed IC and passive circuits preserve IC terminal direction",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "accepted_manual_proteus_test",
+      "confidence": 0.92,
       "applies_to": [
         "Proteus 8.13",
         "74HC08",
@@ -1709,9 +1709,10 @@
       "evidence": [
         "IC_AND_OR_RCL_V2_USER_PARTIAL_20260608",
         "IC_AND_OR_RCL_V3_DIRECTIONAL_IC_STATIC_20260608",
+        "IC_AND_OR_RCL_V3_DIRECTIONAL_IC_USER_ACCEPTANCE_20260608",
         "tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v3_directional_ic_temp.py"
       ],
-      "rule": "For mixed IC/passive circuits, keep IC signal pins directional: IC inputs are $TERINPUT and IC outputs are $TEROUTPUT. R/C/L and other passive endpoints use the accepted $TERBIDIR method. Same-name $TERINPUT, $TEROUTPUT, and $TERBIDIR labels are expected to connect in Proteus. Use the working manual donor device-section path for this mixed 74HC08/74HC32/RCL shape pending manual Proteus acceptance."
+      "rule": "For mixed IC/passive circuits, keep IC signal pins directional: IC inputs are $TERINPUT and IC outputs are $TEROUTPUT. R/C/L and other passive endpoints use the accepted $TERBIDIR method. Same-name $TERINPUT, $TEROUTPUT, and $TERBIDIR labels connect in Proteus. Use the working manual donor device-section path for mixed 74HC08/74HC32/RCL shapes. The corrected V3 diagnostic with 30 IC input terminals, 15 IC output terminals, and 6 bidirectional passive terminals passed manual Proteus testing."
     }
   ]
 }

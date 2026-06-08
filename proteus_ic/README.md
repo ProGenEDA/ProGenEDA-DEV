@@ -53,15 +53,17 @@ Status:
   a generated 15-gate mixed circuit using the donor-style all-bidirectional
   visible terminal family. User testing showed this works, but it is diagnostic
   only because IC pins must not be bidirectional.
-- `IC_AND_OR_RCL_V3_DIRECTIONAL_IC_TEMP_2026_06_08` is the corrected mixed
+- `IC_AND_OR_RCL_V3_DIRECTIONAL_IC_TEMP_2026_06_08` passed user Proteus
+  testing and is the accepted mixed
   IC/passive test: IC signal pins are `$TERINPUT` / `$TEROUTPUT`; passive
   endpoints remain `$TERBIDIR`; same-name terminal labels connect across those
   terminal families.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test V3 in order: exact donor repack, donor DSN/CDB on
-  E001, then generated 15-gate directional-IC mixed AND/OR/RCL.
+- Current next step: collect donors for `74HC00`, `74HC02`, `74HC86`, and an
+  available XNOR family. The requested donor shapes are listed in
+  `docs/next_quad_gate_donor_requests.md`.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.
