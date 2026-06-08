@@ -404,6 +404,25 @@ Evidence:
   the requested 15-input AND expression as fourteen `74HC08` gates across four
   packages.
 
+## D029: Test compact mixed-IC layout and passive G0 as bidirectional
+
+Decision: keep IC pins directional, but test passive ground references as
+same-name bidirectional terminals. For mixed IC/passive cases, `$TERGROUND`
+should not be required when the ground node is just a passive endpoint; the IC
+side can still use `$TERINPUT(G0)` if a logic input must be tied low.
+
+Evidence:
+
+- The user reported the final 30 combinational IC acceptance pack worked, then
+  requested a compacting pass for small IC/passive circuits and bidirectional
+  ground handling.
+- `IC_FINAL_LAST2_LAYOUT_GROUND_V2_TEMP_2026_06_08` regenerates only T29 and
+  T30 from the final pack.
+- Static validation is clean. Both generated cases have zero `$TERGROUND`
+  markers, preserve `$TERINPUT`/`$TEROUTPUT` for IC pins, and keep R/C/L
+  endpoints as `$TERBIDIR`.
+- Active tests pass with `python -m pytest tests -q`.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.
