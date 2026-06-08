@@ -1,0 +1,48 @@
+{
+  "case_id": "T15_XOR_FROM_NAND",
+  "title": "XOR from 4 NAND Gates",
+  "logical_expression": "Y = nand(nand(A,nand(A,B)), nand(B,nand(A,B)))",
+  "description": "Classic four-NAND XOR equivalent.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc00",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "N1",
+      "note": ""
+    },
+    {
+      "family": "74hc00",
+      "gate": "B",
+      "left": "A0",
+      "right": "N1",
+      "output": "N2",
+      "note": ""
+    },
+    {
+      "family": "74hc00",
+      "gate": "C",
+      "left": "B0",
+      "right": "N1",
+      "output": "N3",
+      "note": ""
+    },
+    {
+      "family": "74hc00",
+      "gate": "D",
+      "left": "N2",
+      "right": "N3",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

@@ -38,6 +38,7 @@ python tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v2_manual_dono
 python tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v3_directional_ic_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_remaining_combinational_v1_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_remaining_generated_logic_v1_temp.py
+python tools/proteus_generation/2026-06-08/generate_ic_final_30_combinational_v1_temp.py
 ```
 
 Status:
@@ -70,11 +71,15 @@ Status:
   user Proteus testing. It is the first generated-object logic pack after the
   remaining combinational donor acceptance: compact NAND, NOR, XOR, and
   74HC266 XNOR-candidate chains generated from accepted all-four donor slices.
+- `IC_FINAL_30_COMBINATIONAL_V1_TEMP_2026_06_08` is static-clean and pending
+  user Proteus testing. It covers the 30 final combinational circuits supplied
+  by the user across `74HC08`, `74HC32`, `74HC00`, `74HC02`, `74HC86`, and
+  `74HC266`, including mixed-gate logic and R/C/L integration cases.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test `IC_REMAINING_GENERATED_LOGIC_V1_TEMP_2026_06_08` in
-  order, then scale expression synthesis for the generated families that pass.
+- Current next step: test `IC_FINAL_30_COMBINATIONAL_V1_TEMP_2026_06_08` in
+  order. If it passes, lock the combinational IC method into the main generator.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

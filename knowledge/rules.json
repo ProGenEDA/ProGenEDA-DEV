@@ -1754,6 +1754,28 @@
         "tools/proteus_generation/2026-06-08/generate_ic_remaining_generated_logic_v1_temp.py"
       ],
       "rule": "After donor acceptance, the first generated-object pack for 74HC00, 74HC02, 74HC86, and 74HC266 must stay compact: one package and three generated gate subparts per family. It tests NAND3, NOR3, XOR4, and a 74HC266 XNOR-chain diagnostic using accepted all-four donor gate slices. Preserve the observed 74HC266 74XOR2 function marker until Proteus behavior confirms the semantic mapping. Larger multi-package expression synthesis should wait for this generated pack to pass manual Proteus testing."
+    },
+    {
+      "id": "R097",
+      "title": "Final combinational IC acceptance pack uses six accepted gate families",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC08",
+        "74HC32",
+        "74HC00",
+        "74HC02",
+        "74HC86",
+        "74HC266",
+        "R/C/L passive integration"
+      ],
+      "evidence": [
+        "IC_FINAL_30_COMBINATIONAL_V1_STATIC_20260608",
+        "tools/proteus_generation/2026-06-08/generate_ic_final_30_combinational_v1_temp.py",
+        "experiments/ic_final_30_combinational_v1_temp_2026_06_08/summary_manifest.json"
+      ],
+      "rule": "The final combinational IC V1 acceptance pack maps the user's 30 circuit blueprints onto accepted donor-derived gate slices for 74HC08 AND, 74HC32 OR, 74HC00 NAND, 74HC02 NOR, 74HC86 XOR, and 74HC266 XNOR-candidate gates. IC package supply instructions for pin 14 and pin 7 are treated as user-input metadata only; no explicit IC supply pins are emitted. IC signal pins remain $TERINPUT/$TEROUTPUT, while R/C/L endpoints use the accepted $TERBIDIR method with special V0/G0 terminals when passive branches need them. The prompt's 74HC7266 name is normalized to 74HC266. Circuit 30 is included as an AND-output plus relay/snubber interface only because no MOSFET donor has been accepted."
     }
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "case_id": "T21_BINARY_TO_GRAY2",
+  "title": "2-Bit Binary to Gray Converter",
+  "logical_expression": "G1 = B1; G0 = B1 xor B0",
+  "description": "G1 is direct pass-through on net B1; G0 comes from XOR.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc86",
+      "gate": "A",
+      "left": "B1",
+      "right": "B0",
+      "output": "G0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [
+    {
+      "output": "G1",
+      "net": "B1",
+      "note": "Direct pass-through output uses the B1 net label."
+    }
+  ],
+  "warning": ""
+}

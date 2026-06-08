@@ -1,0 +1,63 @@
+{
+  "case_id": "T27_FILTERED_MUX_RC",
+  "title": "Glitch-Filtered Multiplexer Switch",
+  "logical_expression": "Y = (D0 . not(Sf)) + (D1 . Sf)",
+  "description": "RC filters select node SF before the MUX logic. Requested 10uF is normalized to donor-safe 1uF visible text.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc00",
+      "gate": "A",
+      "left": "SF",
+      "right": "SF",
+      "output": "NS",
+      "note": ""
+    },
+    {
+      "family": "74hc08",
+      "gate": "A",
+      "left": "D1",
+      "right": "SF",
+      "output": "P1",
+      "note": ""
+    },
+    {
+      "family": "74hc08",
+      "gate": "B",
+      "left": "D0",
+      "right": "NS",
+      "output": "P0",
+      "note": ""
+    },
+    {
+      "family": "74hc32",
+      "gate": "A",
+      "left": "P1",
+      "right": "P0",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [
+    {
+      "ref": "R1",
+      "kind": "R",
+      "value": "10k",
+      "left": "S0",
+      "right": "SF"
+    },
+    {
+      "ref": "C1",
+      "kind": "C",
+      "value": "1uF",
+      "left": "SF",
+      "right": "G0"
+    }
+  ],
+  "direct_outputs": [],
+  "warning": ""
+}

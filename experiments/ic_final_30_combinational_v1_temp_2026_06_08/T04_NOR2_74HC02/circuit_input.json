@@ -1,0 +1,24 @@
+{
+  "case_id": "T04_NOR2_74HC02",
+  "title": "Pure 2-Input Logical NOR",
+  "logical_expression": "Y = not(A + B)",
+  "description": "74HC02 U1:A input A0/B0, output Y0. User DIP pins 2/3 feed inputs and pin 1 is output.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc02",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

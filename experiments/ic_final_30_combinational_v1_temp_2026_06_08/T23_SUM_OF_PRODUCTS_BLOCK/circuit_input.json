@@ -1,0 +1,40 @@
+{
+  "case_id": "T23_SUM_OF_PRODUCTS_BLOCK",
+  "title": "Sum of Products Sub-Block",
+  "logical_expression": "Y = (A + B) . (C + D)",
+  "description": "Two OR terms feed one AND gate.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc32",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "S1",
+      "note": ""
+    },
+    {
+      "family": "74hc32",
+      "gate": "B",
+      "left": "C0",
+      "right": "D0",
+      "output": "S2",
+      "note": ""
+    },
+    {
+      "family": "74hc08",
+      "gate": "A",
+      "left": "S1",
+      "right": "S2",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

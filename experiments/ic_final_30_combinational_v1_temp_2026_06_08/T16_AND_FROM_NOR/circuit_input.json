@@ -1,0 +1,40 @@
+{
+  "case_id": "T16_AND_FROM_NOR",
+  "title": "AND from 3 NOR Gates",
+  "logical_expression": "Y = not(not(A+A) + not(B+B))",
+  "description": "Two NOR self-input inverters feed a third NOR.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc02",
+      "gate": "A",
+      "left": "A0",
+      "right": "A0",
+      "output": "NA",
+      "note": ""
+    },
+    {
+      "family": "74hc02",
+      "gate": "B",
+      "left": "B0",
+      "right": "B0",
+      "output": "NB",
+      "note": ""
+    },
+    {
+      "family": "74hc02",
+      "gate": "C",
+      "left": "NA",
+      "right": "NB",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

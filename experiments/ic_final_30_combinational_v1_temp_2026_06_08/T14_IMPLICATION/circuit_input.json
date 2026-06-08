@@ -1,0 +1,32 @@
+{
+  "case_id": "T14_IMPLICATION",
+  "title": "Implication Gate",
+  "logical_expression": "Y = not(A) + B",
+  "description": "NAND self-input inverts A, then ORs with B.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc00",
+      "gate": "A",
+      "left": "A0",
+      "right": "A0",
+      "output": "NA",
+      "note": ""
+    },
+    {
+      "family": "74hc32",
+      "gate": "A",
+      "left": "NA",
+      "right": "B0",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

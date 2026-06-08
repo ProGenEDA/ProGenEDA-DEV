@@ -1,0 +1,24 @@
+{
+  "case_id": "T05_XOR2_74HC86",
+  "title": "Pure 2-Input Logical XOR",
+  "logical_expression": "Y = A xor B",
+  "description": "74HC86 U1:A input A0/B0, output Y0.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc86",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

@@ -1,0 +1,32 @@
+{
+  "case_id": "T20_ODD_PARITY3",
+  "title": "3-Bit Odd Parity Generator",
+  "logical_expression": "Y = not((A xor B) xor C)",
+  "description": "XOR output feeds 74HC266 XNOR candidate with C.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc86",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "P1",
+      "note": ""
+    },
+    {
+      "family": "74hc266",
+      "gate": "A",
+      "left": "P1",
+      "right": "C0",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

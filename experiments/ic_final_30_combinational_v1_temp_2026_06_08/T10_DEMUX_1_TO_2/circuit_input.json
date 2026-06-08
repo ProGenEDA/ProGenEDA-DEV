@@ -1,0 +1,40 @@
+{
+  "case_id": "T10_DEMUX_1_TO_2",
+  "title": "1-to-2 Demultiplexer",
+  "logical_expression": "Y0 = D . not(S); Y1 = D . S",
+  "description": "Shared data input feeds two AND gates; NAND self-input creates not(S).",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc00",
+      "gate": "A",
+      "left": "S0",
+      "right": "S0",
+      "output": "NS",
+      "note": ""
+    },
+    {
+      "family": "74hc08",
+      "gate": "A",
+      "left": "D0",
+      "right": "S0",
+      "output": "Y1",
+      "note": ""
+    },
+    {
+      "family": "74hc08",
+      "gate": "B",
+      "left": "D0",
+      "right": "NS",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

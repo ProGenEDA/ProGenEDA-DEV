@@ -1,0 +1,32 @@
+{
+  "case_id": "T18_SR_LATCH_NOR",
+  "title": "SR Latch / Memory Cell",
+  "logical_expression": "Q = not(R + Qbar); Qbar = not(S + Q)",
+  "description": "Two cross-coupled NOR gates.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc02",
+      "gate": "A",
+      "left": "R0",
+      "right": "QB",
+      "output": "Q0",
+      "note": ""
+    },
+    {
+      "family": "74hc02",
+      "gate": "B",
+      "left": "S0",
+      "right": "Q0",
+      "output": "QB",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

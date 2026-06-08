@@ -1,0 +1,39 @@
+{
+  "case_id": "T28_XOR_LC_FILTER",
+  "title": "Phase Difference Detector with LC Smoothing",
+  "logical_expression": "Vanalog = filter(A xor B)",
+  "description": "XOR output feeds L then C to ground. Requested 10mH/100n are normalized to donor-safe 5mH/1uF visible text.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc86",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [
+    {
+      "ref": "L1",
+      "kind": "L",
+      "value": "5mH",
+      "left": "Y0",
+      "right": "AN"
+    },
+    {
+      "ref": "C1",
+      "kind": "C",
+      "value": "1uF",
+      "left": "AN",
+      "right": "G0"
+    }
+  ],
+  "direct_outputs": [],
+  "warning": ""
+}

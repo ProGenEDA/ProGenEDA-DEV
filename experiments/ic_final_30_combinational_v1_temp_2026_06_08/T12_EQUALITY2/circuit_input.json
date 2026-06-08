@@ -1,0 +1,40 @@
+{
+  "case_id": "T12_EQUALITY2",
+  "title": "2-Bit Equality Comparator",
+  "logical_expression": "Y = XNOR(A0,B0) . XNOR(A1,B1)",
+  "description": "Two 74HC266 XNOR candidate gates feed one AND gate.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc266",
+      "gate": "A",
+      "left": "A0",
+      "right": "B0",
+      "output": "E0",
+      "note": ""
+    },
+    {
+      "family": "74hc266",
+      "gate": "B",
+      "left": "A1",
+      "right": "B1",
+      "output": "E1",
+      "note": ""
+    },
+    {
+      "family": "74hc08",
+      "gate": "A",
+      "left": "E0",
+      "right": "E1",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}
