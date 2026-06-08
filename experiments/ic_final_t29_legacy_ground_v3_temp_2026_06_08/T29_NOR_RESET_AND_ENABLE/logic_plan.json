@@ -1,0 +1,131 @@
+{
+  "package_rows": [
+    {
+      "family": "74hc02",
+      "device": "74HC02",
+      "package_ref": "U1",
+      "package_number": 1
+    },
+    {
+      "family": "74hc08",
+      "device": "74HC08",
+      "package_ref": "U2",
+      "package_number": 2
+    }
+  ],
+  "ic_topology": [
+    {
+      "object_id": 1,
+      "family": "74hc02",
+      "role": "NOR2",
+      "device": "74HC02",
+      "package_ref": "U1",
+      "subpart_ref": "U1:A",
+      "gate_letter": "A",
+      "left_net": "TN",
+      "right_net": "TN",
+      "output_net": "NR",
+      "physical_pins": {
+        "left": "2",
+        "right": "3",
+        "output": "1"
+      },
+      "ids": {
+        "in1": "00020000",
+        "in2": "00020099",
+        "out": "00020133"
+      },
+      "note": ""
+    },
+    {
+      "object_id": 2,
+      "chip_alias": "IC2",
+      "package_ref": "U2",
+      "subpart_ref": "U2:A",
+      "gate_letter": "A",
+      "left_net": "NR",
+      "right_net": "DA",
+      "output_net": "Y0",
+      "physical_pins": {
+        "left": "1",
+        "right": "2",
+        "output": "3"
+      },
+      "suffixes": {
+        "in1": "05f6",
+        "in2": "0628",
+        "out": "065a"
+      },
+      "family": "74hc08",
+      "role": "AND2",
+      "device": "74HC08",
+      "note": ""
+    }
+  ],
+  "passive_topology": [
+    {
+      "idx": 3,
+      "unit": 1,
+      "kind": "RESISTOR",
+      "ref": "R1",
+      "value": "10k",
+      "left": "V0",
+      "right": "TN",
+      "in_suffix": "0d30",
+      "out_suffix": "0d62",
+      "x": 8890000,
+      "y": 3556000
+    },
+    {
+      "idx": 4,
+      "unit": 2,
+      "kind": "CAPACITOR",
+      "ref": "C1",
+      "value": "1uF",
+      "left": "TN",
+      "right": "G0",
+      "in_suffix": "1002",
+      "out_suffix": "0fd0",
+      "x": 8890000,
+      "y": 2540000
+    }
+  ],
+  "passive_terminal_replacements": [
+    {
+      "kind": "output",
+      "label": "V0",
+      "angle_tenths": 0,
+      "suffix": 1420,
+      "old_start": 1,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "V0",
+      "angle_tenths": 1800,
+      "suffix": 3376,
+      "old_start": 256,
+      "old_size": 103,
+      "new_size": 103
+    },
+    {
+      "kind": "output",
+      "label": "TN",
+      "angle_tenths": 0,
+      "suffix": 3426,
+      "old_start": 359,
+      "old_size": 104,
+      "new_size": 103
+    },
+    {
+      "kind": "input",
+      "label": "TN",
+      "angle_tenths": 1800,
+      "suffix": 4098,
+      "old_start": 1014,
+      "old_size": 103,
+      "new_size": 103
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "case_id": "T29_NOR_RESET_AND_ENABLE",
+  "title": "NOR Power-On Reset driving AND Enable",
+  "logical_expression": "Y = Data . not(PowerOn + PowerOn)",
+  "description": "V0 charges timing node through R/C; NOR output enables data through AND.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Passive G0 uses the previous donor $TERGROUND method.",
+    "layout_policy": "Compact T29 V3: IC package spacing is 3,810,000 and nearby passive columns start at x=8,890,000."
+  },
+  "gates": [
+    {
+      "family": "74hc02",
+      "gate": "A",
+      "left": "TN",
+      "right": "TN",
+      "output": "NR",
+      "note": ""
+    },
+    {
+      "family": "74hc08",
+      "gate": "A",
+      "left": "NR",
+      "right": "DA",
+      "output": "Y0",
+      "note": ""
+    }
+  ],
+  "passives": [
+    {
+      "ref": "R1",
+      "kind": "R",
+      "value": "10k",
+      "left": "V0",
+      "right": "TN"
+    },
+    {
+      "ref": "C1",
+      "kind": "C",
+      "value": "1uF",
+      "left": "TN",
+      "right": "G0"
+    }
+  ],
+  "direct_outputs": [],
+  "warning": ""
+}

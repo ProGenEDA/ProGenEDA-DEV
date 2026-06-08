@@ -10,8 +10,9 @@ Current rules:
 - IC supply is hidden unless a donor proves otherwise.
 - IC pins use ordinary `$TERINPUT` and `$TEROUTPUT` terminal records.
 - Non-IC endpoints in mixed IC circuits follow the main generator policy:
-  passive endpoints use donor-derived `$TERBIDIR`. The current last-two
-  refinement tests passive `G0` as `$TERBIDIR` instead of `$TERGROUND`.
+  passive endpoints use donor-derived `$TERBIDIR`, but passive `G0` must keep
+  the previously accepted donor `$TERGROUND` method after the V2
+  bidirectional-G0 experiment failed for T29.
 - Power and ground terminals are used only as logic HIGH/LOW node ties or
   passive supply/reference nodes, not package supply pins.
 
@@ -40,6 +41,7 @@ python tools/proteus_generation/2026-06-08/generate_ic_remaining_combinational_v
 python tools/proteus_generation/2026-06-08/generate_ic_remaining_generated_logic_v1_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_final_30_combinational_v1_temp.py
 python tools/proteus_generation/2026-06-08/generate_ic_final_last2_layout_ground_v2_temp.py
+python tools/proteus_generation/2026-06-08/generate_ic_final_t29_legacy_ground_v3_temp.py
 ```
 
 Status:
@@ -76,16 +78,18 @@ Status:
   It covers the 30 final combinational circuits supplied by the user across
   `74HC08`, `74HC32`, `74HC00`, `74HC02`, `74HC86`, and `74HC266`, including
   mixed-gate logic and R/C/L integration cases.
-- `IC_FINAL_LAST2_LAYOUT_GROUND_V2_TEMP_2026_06_08` is static-clean and pending
-  user Proteus testing. It regenerates only the final two IC/passive cases with
-  more compact small-circuit placement and passive `G0` converted to
-  `$TERBIDIR` while IC pins remain `$TERINPUT`/`$TEROUTPUT`.
+- `IC_FINAL_LAST2_LAYOUT_GROUND_V2_TEMP_2026_06_08` partially failed user
+  Proteus testing. T30 worked, but T29 failed after passive `G0` was converted
+  to `$TERBIDIR`; do not promote bidirectional passive `G0`.
+- `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08` is static-clean and pending
+  user Proteus testing. It regenerates T29 with compact small-circuit placement
+  while restoring passive `G0` to the previous donor `$TERGROUND` method.
 - The accepted baseline covers exact donor repack, E001 transplant, label-only
   mutation, two-package HC08 control, power/ground logic constants, diagnostic
   RCL-load transplant, and HC32 all-four cross-family controls.
-- Current next step: test `IC_FINAL_LAST2_LAYOUT_GROUND_V2_TEMP_2026_06_08`.
-  If those two pass, lock the combinational IC method plus the compact
-  passive-G0 refinement into the main generator.
+- Current next step: test `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08`.
+  If it passes, lock compact placement while keeping passive `G0` on the
+  previous donor `$TERGROUND` method.
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.

@@ -404,23 +404,28 @@ Evidence:
   the requested 15-input AND expression as fourteen `74HC08` gates across four
   packages.
 
-## D029: Test compact mixed-IC layout and passive G0 as bidirectional
+## D029: Keep compact mixed-IC layout, reject passive G0 as bidirectional
 
-Decision: keep IC pins directional, but test passive ground references as
-same-name bidirectional terminals. For mixed IC/passive cases, `$TERGROUND`
-should not be required when the ground node is just a passive endpoint; the IC
-side can still use `$TERINPUT(G0)` if a logic input must be tied low.
+Decision: keep IC pins directional and keep passive G0 on the previous donor
+`$TERGROUND` method. The passive-G0-as-`$TERBIDIR` experiment failed for T29,
+so it must not be promoted. The compact placement change remains under test
+with legacy ground restored.
 
 Evidence:
 
 - The user reported the final 30 combinational IC acceptance pack worked, then
   requested a compacting pass for small IC/passive circuits and bidirectional
   ground handling.
-- `IC_FINAL_LAST2_LAYOUT_GROUND_V2_TEMP_2026_06_08` regenerates only T29 and
-  T30 from the final pack.
-- Static validation is clean. Both generated cases have zero `$TERGROUND`
-  markers, preserve `$TERINPUT`/`$TEROUTPUT` for IC pins, and keep R/C/L
-  endpoints as `$TERBIDIR`.
+- `IC_FINAL_LAST2_LAYOUT_GROUND_V2_TEMP_2026_06_08` regenerated T29 and T30
+  with passive G0 converted to `$TERBIDIR`.
+- User testing reported T29 failed and T30 worked. T30 did not exercise a
+  passive G0 endpoint, so this rejects the passive-G0 conversion, not the
+  compact placement.
+- `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08` restores `$TERGROUND(G0)`
+  while keeping the compact small-circuit placement.
+- Static validation is clean for the V3 T29 retest. It preserves
+  `$TERINPUT`/`$TEROUTPUT` for IC pins, keeps ordinary R/C/L endpoints as
+  `$TERBIDIR`, and emits one `$TERGROUND` record for passive G0.
 - Active tests pass with `python -m pytest tests -q`.
 
 ## Inactive / removed

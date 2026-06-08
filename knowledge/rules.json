@@ -1781,8 +1781,8 @@
     {
       "id": "R098",
       "title": "Final IC last-two refinement tests compact layout and bidirectional passive G0",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.82,
+      "status": "rejected_for_passive_g0",
+      "confidence": 0.9,
       "applies_to": [
         "Proteus 8.13",
         "combinational ICs",
@@ -1792,10 +1792,31 @@
       ],
       "evidence": [
         "IC_FINAL_LAST2_LAYOUT_GROUND_V2_STATIC_20260608",
+        "IC_FINAL_LAST2_LAYOUT_GROUND_V2_USER_PARTIAL_20260608",
         "tools/proteus_generation/2026-06-08/generate_ic_final_last2_layout_ground_v2_temp.py",
         "experiments/ic_final_last2_layout_ground_v2_temp_2026_06_08/summary_manifest.json"
       ],
-      "rule": "The targeted V2 final-last-two pack keeps IC signal pins directional and converts passive G0 endpoints from donor $TERGROUND records into same-name $TERBIDIR records. It also compacts small mixed IC/passive layouts by reducing package spacing to 3,810,000 internal units and moving the nearby passive column to x=8,890,000. Static validation is clean and active tests pass, but manual Proteus open/simulation acceptance is still required before promoting this refinement into the main combinational IC generator."
+      "rule": "The targeted V2 final-last-two pack kept IC signal pins directional and converted passive G0 endpoints from donor $TERGROUND records into same-name $TERBIDIR records. User testing reported that T29 failed while T30 worked; T30 did not exercise a passive G0 endpoint. Do not promote passive G0 as $TERBIDIR for mixed IC/passive T29-style circuits. The compact layout portion remains reusable only after retesting with the previous donor $TERGROUND method."
+    },
+    {
+      "id": "R099",
+      "title": "Compact T29 retest restores donor ground method",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": [
+        "Proteus 8.13",
+        "combinational ICs",
+        "mixed IC/passive circuits",
+        "passive G0 ground",
+        "compact IC layout"
+      ],
+      "evidence": [
+        "IC_FINAL_LAST2_LAYOUT_GROUND_V2_USER_PARTIAL_20260608",
+        "IC_FINAL_T29_LEGACY_GROUND_V3_STATIC_20260608",
+        "tools/proteus_generation/2026-06-08/generate_ic_final_t29_legacy_ground_v3_temp.py",
+        "experiments/ic_final_t29_legacy_ground_v3_temp_2026_06_08/summary_manifest.json"
+      ],
+      "rule": "The corrected V3 T29 retest keeps compact small-circuit placement but restores passive G0 to the previous donor $TERGROUND method. IC signal pins remain $TERINPUT/$TEROUTPUT and ordinary R/C/L endpoints remain $TERBIDIR. Static validation is clean and active tests pass; manual Proteus acceptance is required before locking this as the final T29 refinement."
     }
   ]
 }
