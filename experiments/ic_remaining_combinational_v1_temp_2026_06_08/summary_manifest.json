@@ -1,0 +1,6095 @@
+{
+  "batch": "IC_REMAINING_COMBINATIONAL_V1_TEMP_2026_06_08",
+  "purpose": "Donor reconstruction, E001 transplant, and label-only mutation diagnostics for 74HC00, 74HC02, 74HC86, and 74HC266.",
+  "promotion_status": "temporary_pending_user_proteus_testing",
+  "families": {
+    "74hc00": {
+      "device": "74HC00",
+      "role": "NAND2"
+    },
+    "74hc02": {
+      "device": "74HC02",
+      "role": "NOR2"
+    },
+    "74hc86": {
+      "device": "74HC86",
+      "role": "XOR2"
+    },
+    "74hc266": {
+      "device": "74HC266",
+      "role": "XNOR2 donor uses 74XOR2.MDF markers in Proteus"
+    }
+  },
+  "user_test_order": [
+    "T00_COMBINED_ALL4_E001",
+    "T01_COMBINED_2X_ALL4_E001",
+    "T02_COMBINED_ALL4_RLC_E001",
+    "T03_COMBINED_2X_ALL4_RLC_E001",
+    "T10_74HC00_ALL4_E001",
+    "T11_74HC00_ALL4_LABEL_ONLY",
+    "T12_74HC00_TWO_PACKAGES_E001",
+    "T13_74HC00_LOGIC_CONSTANTS_PG",
+    "T14_74HC00_RCL_LOAD",
+    "T15_74HC02_ALL4_E001",
+    "T16_74HC02_ALL4_LABEL_ONLY",
+    "T17_74HC02_TWO_PACKAGES_E001",
+    "T18_74HC02_LOGIC_CONSTANTS_PG",
+    "T19_74HC02_RCL_LOAD",
+    "T20_74HC86_ALL4_E001",
+    "T21_74HC86_ALL4_LABEL_ONLY",
+    "T22_74HC86_TWO_PACKAGES_E001",
+    "T23_74HC86_LOGIC_CONSTANTS_PG",
+    "T24_74HC86_RCL_LOAD",
+    "T25_74HC266_ALL4_E001",
+    "T26_74HC266_ALL4_LABEL_ONLY",
+    "T27_74HC266_TWO_PACKAGES_E001",
+    "T28_74HC266_LOGIC_CONSTANTS_PG",
+    "T29_74HC266_RCL_LOAD"
+  ],
+  "cases": [
+    {
+      "case_id": "T00_COMBINED_ALL4_E001",
+      "description": "All four new families, one package each, transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "combined",
+      "logic_role": "all families all4",
+      "donor_key": "combined_all4",
+      "donor_path": "proteus_ic\\donors\\combined\\ALLL_ICS_ALL4.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 70465,
+        "second_isis": 90757,
+        "second_object_data": 90792,
+        "object_data_pointer": 90805
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 12,
+        "74NAND2": 4,
+        "74HC02": 12,
+        "74NOR2": 4,
+        "74HC86": 12,
+        "74XOR2": 8,
+        "74HC266": 12,
+        "$TERINPUT": 48,
+        "$TEROUTPUT": 24,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 72,
+        "COMPONENT ID": 24,
+        "COMPONENT VALUE": 24,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 2,
+        "74NAND2": 1,
+        "74HC02": 2,
+        "74NOR2": 1,
+        "74HC86": 2,
+        "74XOR2": 2,
+        "74HC266": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3769,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 3922,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 4075,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 4611,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4764,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4917,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 5453,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 5606,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 5759,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 6295,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 6448,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 6601,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 7141,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 7294,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 7447,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 7987,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 8140,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 8293,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 8833,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 8986,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 9139,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 9679,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 9832,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 9985,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 10522,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 10675,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 10828,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 11365,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 11518,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 11671,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 12208,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 12361,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 12514,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 13051,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 13204,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 13357,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 13894,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 14047,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 14200,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 14737,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 14890,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 15043,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 15580,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 15733,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 15886,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 16423,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 16576,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 16729,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 17267,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 17420,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 17573,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 18111,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 18264,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 18417,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 18955,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 19108,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 19261,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 19799,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 19952,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 20105,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "48fd2a25d4f7f1472fb1dde7f18742c9876aab065f42b8a571e5095a150f2eae",
+        "ROOT.DSN": "52268c58f4f4fee778d81c25910aba29453a06a854115f11c763bc0cf17e6732",
+        "ROOT.CDB": "0f5b4070efd260f1666e6f2665b371c82fac2bfd3905c7d5250e3e72cdfee0e1",
+        "object_chunk": "46dd953248de964e78e3f06d64f03805393d6d21955ceb7c09133d8af55b0890"
+      }
+    },
+    {
+      "case_id": "T01_COMBINED_2X_ALL4_E001",
+      "description": "All four new families, two packages each, transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "combined",
+      "logic_role": "all families all4 two package",
+      "donor_key": "combined_2x_all4",
+      "donor_path": "proteus_ic\\donors\\combined\\2X_ALLL_ICS_ALL4.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 70465,
+        "second_isis": 111013,
+        "second_object_data": 111048,
+        "object_data_pointer": 111061
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 24,
+        "74NAND2": 8,
+        "74HC02": 24,
+        "74NOR2": 8,
+        "74HC86": 24,
+        "74XOR2": 16,
+        "74HC266": 24,
+        "$TERINPUT": 96,
+        "$TEROUTPUT": 48,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 144,
+        "COMPONENT ID": 48,
+        "COMPONENT VALUE": 48,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 4,
+        "74NAND2": 2,
+        "74HC02": 4,
+        "74NOR2": 2,
+        "74HC86": 4,
+        "74XOR2": 4,
+        "74HC266": 4,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3769,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 3922,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 4075,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 4611,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4764,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4917,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 5453,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 5606,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 5759,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 6295,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 6448,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 6601,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 7141,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 7294,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 7447,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 7987,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 8140,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 8293,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 8833,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 8986,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 9139,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 9679,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 9832,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 9985,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 10522,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 10675,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 10828,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 11365,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 11518,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 11671,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 12208,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 12361,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 12514,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 13051,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 13204,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 13357,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 13894,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 14047,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 14200,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 14737,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 14890,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 15043,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 15580,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 15733,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 15886,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 16423,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 16576,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 16729,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 17267,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 17420,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 17573,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 18111,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 18264,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 18417,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 18955,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 19108,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 19261,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 19799,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 19952,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 20105,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 20642,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 20795,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 20948,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 21485,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 21638,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 21791,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 22328,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 22481,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 22634,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 23171,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 23324,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 23477,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 24013,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 24166,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 24319,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 24855,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 25008,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 25161,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 25697,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 25850,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 26003,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 26539,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 26692,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 26845,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 27385,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 27538,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 27691,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 28231,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 28384,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 28537,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 29077,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 29230,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 29383,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 29923,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 30076,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 30229,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 30767,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 30920,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 31073,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 31611,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 31764,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 31917,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 32455,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 32608,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 32761,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 33299,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 33452,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 33605,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 34143,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 34296,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 34449,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 34987,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 35140,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 35293,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 35831,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 35984,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 36137,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 36675,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 36828,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 36981,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 37520,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 37673,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 37826,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 38365,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 38518,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 38671,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 39210,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 39363,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 39516,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 40055,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 40208,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 40361,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "9f6bdc6ffde62a8628bae98ca84beb90a53a260944a57bef4467362bd3e0c98b",
+        "ROOT.DSN": "8ea3ce2fd12a3caf0f382800a3e778cd192070320a4e660e0e8fefc87e1c86be",
+        "ROOT.CDB": "989baad90aaa01d784216bdbd0987471b7ad578d566897d5ca3c47192d149d35",
+        "object_chunk": "4f0618520d96d6ec1dad24e424a45e37ff87ed99780d535cbdbd37eb18c64689"
+      }
+    },
+    {
+      "case_id": "T02_COMBINED_ALL4_RLC_E001",
+      "description": "All four new families plus RCL load, transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "combined",
+      "logic_role": "all families all4 with RCL",
+      "donor_key": "combined_all4_rlc",
+      "donor_path": "proteus_ic\\donors\\combined\\ALLL_ICS_ALL4_RLC.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 72997,
+        "second_isis": 95801,
+        "second_object_data": 95836,
+        "object_data_pointer": 95849
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 12,
+        "74NAND2": 4,
+        "74HC02": 12,
+        "74NOR2": 4,
+        "74HC86": 12,
+        "74XOR2": 8,
+        "74HC266": 12,
+        "$TERINPUT": 48,
+        "$TEROUTPUT": 24,
+        "$TERBIDIR": 8,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 80,
+        "COMPONENT ID": 27,
+        "COMPONENT VALUE": 27,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 2,
+        "74NAND2": 1,
+        "74HC02": 2,
+        "74NOR2": 1,
+        "74HC86": 2,
+        "74XOR2": 2,
+        "74HC266": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3769,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 3922,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 4075,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 4611,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4764,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4917,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 5453,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 5606,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 5759,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 6295,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 6448,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 6601,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 7141,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 7294,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 7447,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 7987,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 8140,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 8293,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 8833,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 8986,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 9139,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 9679,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 9832,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 9985,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 10522,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 10675,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 10828,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 11365,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 11518,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 11671,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 12208,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 12361,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 12514,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 13051,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 13204,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 13357,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 13894,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 14047,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 14200,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 14737,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 14890,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 15043,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 15580,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 15733,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 15886,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 16423,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 16576,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 16729,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 17267,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 17420,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 17573,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 18111,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 18264,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 18417,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 18955,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 19108,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 19261,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 19799,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 19952,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 20105,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 20259,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 20513,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 20768,
+          "marker": "$TERBIDIR",
+          "label": "Y0"
+        },
+        {
+          "offset": 20871,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 21421,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 21524,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 22092,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 22195,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        }
+      ],
+      "output_hashes": {
+        "project": "c8c44d326fcf62c6d6455e8835b6ea15de8d262681ff43bcea72c9235cc36c17",
+        "ROOT.DSN": "34e04fb1a16a6243a7e3f02052ed0bf7cb3158a3433f0bba621c3017eeed803b",
+        "ROOT.CDB": "ab453058a6a9e8dd85dc101aecb0591c9f959ca45eafa8309d5b470b1c6701d3",
+        "object_chunk": "bb2bcf03712c62bf698cdea807191b2d960d9439b21e3a32b7844ca0e514de08"
+      }
+    },
+    {
+      "case_id": "T03_COMBINED_2X_ALL4_RLC_E001",
+      "description": "All four new families with two-package scale and RCL load, transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "combined",
+      "logic_role": "all families all4 with RCL two package",
+      "donor_key": "combined_2x_all4_rlc",
+      "donor_path": "proteus_ic\\donors\\combined\\2X_ALLL_ICS_ALL4_RLC.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 72997,
+        "second_isis": 116057,
+        "second_object_data": 116092,
+        "object_data_pointer": 116105
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 24,
+        "74NAND2": 8,
+        "74HC02": 24,
+        "74NOR2": 8,
+        "74HC86": 24,
+        "74XOR2": 16,
+        "74HC266": 24,
+        "$TERINPUT": 96,
+        "$TEROUTPUT": 48,
+        "$TERBIDIR": 8,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 152,
+        "COMPONENT ID": 51,
+        "COMPONENT VALUE": 51,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 4,
+        "74NAND2": 2,
+        "74HC02": 4,
+        "74NOR2": 2,
+        "74HC86": 4,
+        "74XOR2": 4,
+        "74HC266": 4,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3769,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 3922,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 4075,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 4611,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4764,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4917,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 5453,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 5606,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 5759,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 6295,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 6448,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 6601,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 7141,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 7294,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 7447,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 7987,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 8140,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 8293,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 8833,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 8986,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 9139,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 9679,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 9832,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 9985,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 10522,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 10675,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 10828,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 11365,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 11518,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 11671,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 12208,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 12361,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 12514,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 13051,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 13204,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 13357,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 13894,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 14047,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 14200,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 14737,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 14890,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 15043,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 15580,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 15733,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 15886,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 16423,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 16576,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 16729,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 17267,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 17420,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 17573,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 18111,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 18264,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 18417,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 18955,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 19108,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 19261,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 19799,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 19952,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 20105,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 20642,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 20795,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 20948,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 21485,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 21638,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 21791,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 22328,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 22481,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 22634,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 23171,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 23324,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 23477,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 24013,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 24166,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 24319,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 24855,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 25008,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 25161,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 25697,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 25850,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 26003,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 26539,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 26692,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 26845,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 27385,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 27538,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 27691,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 28231,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 28384,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 28537,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 29077,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 29230,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 29383,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 29923,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 30076,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 30229,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 30767,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 30920,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 31073,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 31611,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 31764,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 31917,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 32455,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 32608,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 32761,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 33299,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 33452,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 33605,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 34143,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 34296,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 34449,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 34987,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 35140,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 35293,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 35831,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 35984,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 36137,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 36675,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 36828,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 36981,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 37520,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 37673,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 37826,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 38365,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 38518,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 38671,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 39210,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 39363,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 39516,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 40055,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 40208,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 40361,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 40515,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 40769,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 41024,
+          "marker": "$TERBIDIR",
+          "label": "Y0"
+        },
+        {
+          "offset": 41127,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 41677,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 41780,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 42348,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 42451,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        }
+      ],
+      "output_hashes": {
+        "project": "66438bca850388b4b289b7b4937607d82745a02bf57fbf7d13d260aba8c5522e",
+        "ROOT.DSN": "ac5fa9a799d82dffe2ad05375876c88a969c4e3a6ebcf2c74801aabc292194af",
+        "ROOT.CDB": "85d6a4c8a78b73723fcb8493cc62f2d5ffde38f18c2d45c70c179b3d3f31291c",
+        "object_chunk": "5a4b8c89d9b11fe3540b82b869a1d7d5bcb6a8f2e767e29d95c0457c349332b5"
+      }
+    },
+    {
+      "case_id": "T10_74HC00_ALL4_E001",
+      "description": "NAND2 all-four donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc00",
+      "logic_role": "NAND2",
+      "donor_key": "74hc00_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc00\\IC_74HC00_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65068,
+        "second_isis": 68492,
+        "second_object_data": 68527,
+        "object_data_pointer": 68540
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 12,
+        "74NAND2": 4,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 2,
+        "74NAND2": 1,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 118,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 221,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 859,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 962,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1065,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 1703,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 1806,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 1909,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2547,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 2650,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 2753,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "9215dcd9e2fb2e6a5be11c46c0c7cbb649506ea5b228cf95b10198ffb94c95c6",
+        "ROOT.DSN": "fba35a494a8b85553ef0a3619a91c6aaf220eff53fe181e71e41573392d5ecd9",
+        "ROOT.CDB": "a1e354183e60fa327908db093e81ffd19eac2bc30d12399fdc9ea974cf9256ac",
+        "object_chunk": "4b67ecd3a543e43bbed32e1a405cae486f204c4ff9d87e3b765d0624f1b15830"
+      }
+    },
+    {
+      "case_id": "T11_74HC00_ALL4_LABEL_ONLY",
+      "description": "NAND2 all-four donor with same-size terminal label mutation.",
+      "method": "e001_transplant_label_only",
+      "family": "74hc00",
+      "logic_role": "NAND2",
+      "donor_key": "74hc00_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc00\\IC_74HC00_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 15,
+          "old": "A0",
+          "new": "C0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 118,
+          "old": "B0",
+          "new": "D0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 859,
+          "old": "A1",
+          "new": "C1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 962,
+          "old": "B1",
+          "new": "D1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1703,
+          "old": "A2",
+          "new": "C2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1806,
+          "old": "B2",
+          "new": "D2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2547,
+          "old": "A3",
+          "new": "C3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2650,
+          "old": "B3",
+          "new": "D3"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 221,
+          "old": "Y0",
+          "new": "Z0"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1065,
+          "old": "Y1",
+          "new": "Z1"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1909,
+          "old": "Y2",
+          "new": "Z2"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 2753,
+          "old": "Y3",
+          "new": "Z3"
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65068,
+        "second_isis": 68492,
+        "second_object_data": 68527,
+        "object_data_pointer": 68540
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 12,
+        "74NAND2": 4,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 2,
+        "74NAND2": 1,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERINPUT",
+          "label": "C0"
+        },
+        {
+          "offset": 118,
+          "marker": "$TERINPUT",
+          "label": "D0"
+        },
+        {
+          "offset": 221,
+          "marker": "$TEROUTPUT",
+          "label": "Z0"
+        },
+        {
+          "offset": 859,
+          "marker": "$TERINPUT",
+          "label": "C1"
+        },
+        {
+          "offset": 962,
+          "marker": "$TERINPUT",
+          "label": "D1"
+        },
+        {
+          "offset": 1065,
+          "marker": "$TEROUTPUT",
+          "label": "Z1"
+        },
+        {
+          "offset": 1703,
+          "marker": "$TERINPUT",
+          "label": "C2"
+        },
+        {
+          "offset": 1806,
+          "marker": "$TERINPUT",
+          "label": "D2"
+        },
+        {
+          "offset": 1909,
+          "marker": "$TEROUTPUT",
+          "label": "Z2"
+        },
+        {
+          "offset": 2547,
+          "marker": "$TERINPUT",
+          "label": "C3"
+        },
+        {
+          "offset": 2650,
+          "marker": "$TERINPUT",
+          "label": "D3"
+        },
+        {
+          "offset": 2753,
+          "marker": "$TEROUTPUT",
+          "label": "Z3"
+        }
+      ],
+      "output_hashes": {
+        "project": "85ba950bb51344337d3a5e3d98d53a8f4221fc9fd5e9611c63bd1bf2c0d14b1a",
+        "ROOT.DSN": "7f61b212763b47d811b968348fcfef5a291d7cf6c7ff074e60c791a4f378e2e6",
+        "ROOT.CDB": "a1e354183e60fa327908db093e81ffd19eac2bc30d12399fdc9ea974cf9256ac",
+        "object_chunk": "0df81bce2070aa3932233ed6a3f83869ab15855cf77c39d92d51dcb398b1aeaf"
+      }
+    },
+    {
+      "case_id": "T12_74HC00_TWO_PACKAGES_E001",
+      "description": "NAND2 two-package donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc00",
+      "logic_role": "NAND2",
+      "donor_key": "74hc00_m03_two_packages_io",
+      "donor_path": "proteus_ic\\donors\\74hc00\\IC_74HC00_M03_TWO_PACKAGES_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65068,
+        "second_isis": 69336,
+        "second_object_data": 69371,
+        "object_data_pointer": 69384
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 15,
+        "74NAND2": 5,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 10,
+        "$TEROUTPUT": 5,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 15,
+        "COMPONENT ID": 5,
+        "COMPONENT VALUE": 5,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 4,
+        "74NAND2": 2,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 118,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 221,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 859,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 962,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1065,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 1703,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 1806,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 1909,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2547,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 2650,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 2753,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3391,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 3494,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 3597,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        }
+      ],
+      "output_hashes": {
+        "project": "80fea8e48c3b76a46ff086a12737f3501ddc90f5eb907b5cbb251103148cce6a",
+        "ROOT.DSN": "616b89fbb88fef3901125f95fbf7ddc9d8bb57fa78542b0e2251a766a6a67e8f",
+        "ROOT.CDB": "95e31456f573477731b0aa26ba60f9019f6d02ff8058e4c1c7d32eec6ca51446",
+        "object_chunk": "ad77e33d04693e4065e87f69550f1fe292d6c66f1bb6dfb3c04786ddeed1af93"
+      }
+    },
+    {
+      "case_id": "T13_74HC00_LOGIC_CONSTANTS_PG",
+      "description": "NAND2 logic-constant power/ground donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc00",
+      "logic_role": "NAND2",
+      "donor_key": "74hc00_m04_logic_constants_pg",
+      "donor_path": "proteus_ic\\donors\\74hc00\\IC_74HC00_M04_LOGIC_CONSTANTS_PG.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65068,
+        "second_isis": 69001,
+        "second_object_data": 69036,
+        "object_data_pointer": 69049
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 12,
+        "74NAND2": 4,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 2,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 2,
+        "74NAND2": 1,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 118,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 221,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 859,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 962,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1065,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 1703,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1806,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1909,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2547,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2650,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2753,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3391,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 3645,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        }
+      ],
+      "output_hashes": {
+        "project": "ca2c13ccc558f48ebf6c9a07944a8a57ab8a217409d4e09c56efbd4d2c15b313",
+        "ROOT.DSN": "b3ffe4fbec8d0502ecf351cd2c55303c541c9cb64c1b32fa1d3263badedf9674",
+        "ROOT.CDB": "a1e354183e60fa327908db093e81ffd19eac2bc30d12399fdc9ea974cf9256ac",
+        "object_chunk": "083a1370ce138343848d08b91f94566d43d0bc78bf1d043a65e7b80fc185283d"
+      }
+    },
+    {
+      "case_id": "T14_74HC00_RCL_LOAD",
+      "description": "NAND2 RCL load donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc00",
+      "logic_role": "NAND2",
+      "donor_key": "74hc00_m05_rcl_load",
+      "donor_path": "proteus_ic\\donors\\74hc00\\IC_74HC00_M05_RCL_LOAD.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67600,
+        "second_isis": 73536,
+        "second_object_data": 73571,
+        "object_data_pointer": 73584
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 12,
+        "74NAND2": 4,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 8,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 20,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 2,
+        "74NAND2": 1,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 118,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 221,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 859,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 962,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1065,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 1703,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1806,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1909,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2547,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2650,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2753,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3391,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 3645,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 3900,
+          "marker": "$TERBIDIR",
+          "label": "Y0"
+        },
+        {
+          "offset": 4003,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 4553,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 4656,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 5224,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 5327,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        }
+      ],
+      "output_hashes": {
+        "project": "6b04b0563ecc551eac06a94d8b148242724730aed646b190e933b6dd00f1a607",
+        "ROOT.DSN": "75498100622c3e92c64c1de4ae2b9b1fdd5400edeac7d13817e8ec0df572d829",
+        "ROOT.CDB": "f14de3fefc1d43498f9dc4303e84298b17971975cd5ea14bd186eb6b690f7318",
+        "object_chunk": "b346b00fd95e6a4f06999978e8793e9324c14098b7f4629601c47ac54ed85fe9"
+      }
+    },
+    {
+      "case_id": "T15_74HC02_ALL4_E001",
+      "description": "NOR2 all-four donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc02",
+      "logic_role": "NOR2",
+      "donor_key": "74hc02_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc02\\IC_74HC02_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65224,
+        "second_isis": 68644,
+        "second_object_data": 68679,
+        "object_data_pointer": 68692
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 12,
+        "74NOR2": 4,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 2,
+        "74NOR2": 1,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "578b7debf6b5365be504814d9d553b1d75f4d1f2e16d4c93bc749ca04393dbe2",
+        "ROOT.DSN": "483c768a1594503065e71c90db2aa91793fc2f6105de01d3ae6d04d264ed6ba5",
+        "ROOT.CDB": "4ab203e8edddd561905375073dc09567021cdf490fe393bc7750b8255ccfb3a5",
+        "object_chunk": "e34c318576e2acac2f5a941beb0526f67f3f925311021fa3a6b198c39483f9d6"
+      }
+    },
+    {
+      "case_id": "T16_74HC02_ALL4_LABEL_ONLY",
+      "description": "NOR2 all-four donor with same-size terminal label mutation.",
+      "method": "e001_transplant_label_only",
+      "family": "74hc02",
+      "logic_role": "NOR2",
+      "donor_key": "74hc02_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc02\\IC_74HC02_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 398,
+          "old": "A0",
+          "new": "C0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 551,
+          "old": "B0",
+          "new": "D0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1241,
+          "old": "A1",
+          "new": "C1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1394,
+          "old": "B1",
+          "new": "D1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2084,
+          "old": "A2",
+          "new": "C2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2237,
+          "old": "B2",
+          "new": "D2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2927,
+          "old": "A3",
+          "new": "C3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 3080,
+          "old": "B3",
+          "new": "D3"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 704,
+          "old": "Y0",
+          "new": "Z0"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1547,
+          "old": "Y1",
+          "new": "Z1"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 2390,
+          "old": "Y2",
+          "new": "Z2"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 3233,
+          "old": "Y3",
+          "new": "Z3"
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65224,
+        "second_isis": 68644,
+        "second_object_data": 68679,
+        "object_data_pointer": 68692
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 12,
+        "74NOR2": 4,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 2,
+        "74NOR2": 1,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "C0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "D0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Z0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "C1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "D1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Z1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "C2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "D2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Z2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "C3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "D3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Z3"
+        }
+      ],
+      "output_hashes": {
+        "project": "b9b729f6b481b5978c18ad1ca9e8f514198e75349384efee686ee2bfa2387b4f",
+        "ROOT.DSN": "7a5350c784ed8d48b67bb7fa3c275e2e91e8b82820b79bf7905912210ed4d159",
+        "ROOT.CDB": "4ab203e8edddd561905375073dc09567021cdf490fe393bc7750b8255ccfb3a5",
+        "object_chunk": "fca2977e8f0682be445e3b9639fa3de303bab2fa095a020561288c04b20351cb"
+      }
+    },
+    {
+      "case_id": "T17_74HC02_TWO_PACKAGES_E001",
+      "description": "NOR2 two-package donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc02",
+      "logic_role": "NOR2",
+      "donor_key": "74hc02_m03_two_packages_io",
+      "donor_path": "proteus_ic\\donors\\74hc02\\IC_74HC02_M03_TWO_PACKAGES_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65224,
+        "second_isis": 72016,
+        "second_object_data": 72051,
+        "object_data_pointer": 72064
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 24,
+        "74NOR2": 8,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 16,
+        "$TEROUTPUT": 8,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 24,
+        "COMPONENT ID": 8,
+        "COMPONENT VALUE": 8,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 4,
+        "74NOR2": 2,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3770,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 3923,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 4076,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 4613,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4766,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4919,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 5456,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 5609,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 5762,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 6299,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 6452,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 6605,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "bdb4875859c9241e56af014aa9afeee0020732acf82e1535f508e0832d3716bc",
+        "ROOT.DSN": "cabd8eef33ef2fa138da03134e8bed11454b7e19c2bce1c6f548e6382155151c",
+        "ROOT.CDB": "580d27d7363bc7d7cb16e92c481aa20cd86276f58c35aafb06c30e0bd265b2e8",
+        "object_chunk": "72a3a954ca999ae4be7aaf29c0645ea3b9b5a74636a11fad6652dd7315f45d09"
+      }
+    },
+    {
+      "case_id": "T18_74HC02_LOGIC_CONSTANTS_PG",
+      "description": "NOR2 logic-constant power/ground donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc02",
+      "logic_role": "NOR2",
+      "donor_key": "74hc02_m04_logic_constants_pg",
+      "donor_path": "proteus_ic\\donors\\74hc02\\IC_74HC02_M04_LOGIC_CONSTANTS_PG.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65224,
+        "second_isis": 69153,
+        "second_object_data": 69188,
+        "object_data_pointer": 69201
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 12,
+        "74NOR2": 4,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 2,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 2,
+        "74NOR2": 1,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3387,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 3641,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        }
+      ],
+      "output_hashes": {
+        "project": "90ebb62a727c1544774a65956debcf8463e06f261d260ba5042e1ae2135bec2d",
+        "ROOT.DSN": "22a4bda710230f52d1a0da511f38b08ed5c3419ffdb2e2f37b8945e0cc836a29",
+        "ROOT.CDB": "122823b507f1bc75944c364f8a8b3493e3742097e4910a457836e712c8555702",
+        "object_chunk": "53dd982c6bf10a2264a14a19b94b3470ff227ea58ded3c0655994cde33f110cc"
+      }
+    },
+    {
+      "case_id": "T19_74HC02_RCL_LOAD",
+      "description": "NOR2 RCL load donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc02",
+      "logic_role": "NOR2",
+      "donor_key": "74hc02_m05_rcl_load",
+      "donor_path": "proteus_ic\\donors\\74hc02\\IC_74HC02_M05_RCL_LOAD.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67756,
+        "second_isis": 73688,
+        "second_object_data": 73723,
+        "object_data_pointer": 73736
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 12,
+        "74NOR2": 4,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 8,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 20,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 2,
+        "74NOR2": 1,
+        "74HC86": 0,
+        "74XOR2": 0,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 3387,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 3641,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 3896,
+          "marker": "$TERBIDIR",
+          "label": "Y0"
+        },
+        {
+          "offset": 3999,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 4549,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 4652,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 5220,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 5323,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        }
+      ],
+      "output_hashes": {
+        "project": "467f7286eef7840b3e5838c83310c012e1875a1b7fdb2443945abcc8ca0d7c63",
+        "ROOT.DSN": "6b40fb53f0fe760ec1ba6e1657c559df09df57b442182967487d27fb4220e1d1",
+        "ROOT.CDB": "4ca8bf6875be628004d069319dc117fc8128e4c6118138bb7360d39606838b4b",
+        "object_chunk": "a320a6a9ff1deb698ed3d144e4e566bdb7d5f0fb234ce41d119f294fde2b4132"
+      }
+    },
+    {
+      "case_id": "T20_74HC86_ALL4_E001",
+      "description": "XOR2 all-four donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc86",
+      "logic_role": "XOR2",
+      "donor_key": "74hc86_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc86\\IC_74HC86_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65389,
+        "second_isis": 68809,
+        "second_object_data": 68844,
+        "object_data_pointer": 68857
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 12,
+        "74XOR2": 4,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 2,
+        "74XOR2": 1,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "b4560c2a04901ed45c805243cd541cc147cf795c22d49be13ad87f01c8bd5abb",
+        "ROOT.DSN": "456031329890bd04fb57c6b0fcf5054bf8779b5873d8538752bfa3462b8ea1e4",
+        "ROOT.CDB": "ad79b05b9f2d461bad3a9ed3370ac79ac14e391a94cd91a76202351138bdd73f",
+        "object_chunk": "26ec952f140143225673c1d0d76ef45cc93d347bcfee6a245bb85b88a748cf91"
+      }
+    },
+    {
+      "case_id": "T21_74HC86_ALL4_LABEL_ONLY",
+      "description": "XOR2 all-four donor with same-size terminal label mutation.",
+      "method": "e001_transplant_label_only",
+      "family": "74hc86",
+      "logic_role": "XOR2",
+      "donor_key": "74hc86_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc86\\IC_74HC86_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 398,
+          "old": "A0",
+          "new": "C0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 551,
+          "old": "B0",
+          "new": "D0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1241,
+          "old": "A1",
+          "new": "C1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1394,
+          "old": "B1",
+          "new": "D1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2084,
+          "old": "A2",
+          "new": "C2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2237,
+          "old": "B2",
+          "new": "D2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2927,
+          "old": "A3",
+          "new": "C3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 3080,
+          "old": "B3",
+          "new": "D3"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 704,
+          "old": "Y0",
+          "new": "Z0"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1547,
+          "old": "Y1",
+          "new": "Z1"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 2390,
+          "old": "Y2",
+          "new": "Z2"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 3233,
+          "old": "Y3",
+          "new": "Z3"
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65389,
+        "second_isis": 68809,
+        "second_object_data": 68844,
+        "object_data_pointer": 68857
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 12,
+        "74XOR2": 4,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 2,
+        "74XOR2": 1,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 398,
+          "marker": "$TERINPUT",
+          "label": "C0"
+        },
+        {
+          "offset": 551,
+          "marker": "$TERINPUT",
+          "label": "D0"
+        },
+        {
+          "offset": 704,
+          "marker": "$TEROUTPUT",
+          "label": "Z0"
+        },
+        {
+          "offset": 1241,
+          "marker": "$TERINPUT",
+          "label": "C1"
+        },
+        {
+          "offset": 1394,
+          "marker": "$TERINPUT",
+          "label": "D1"
+        },
+        {
+          "offset": 1547,
+          "marker": "$TEROUTPUT",
+          "label": "Z1"
+        },
+        {
+          "offset": 2084,
+          "marker": "$TERINPUT",
+          "label": "C2"
+        },
+        {
+          "offset": 2237,
+          "marker": "$TERINPUT",
+          "label": "D2"
+        },
+        {
+          "offset": 2390,
+          "marker": "$TEROUTPUT",
+          "label": "Z2"
+        },
+        {
+          "offset": 2927,
+          "marker": "$TERINPUT",
+          "label": "C3"
+        },
+        {
+          "offset": 3080,
+          "marker": "$TERINPUT",
+          "label": "D3"
+        },
+        {
+          "offset": 3233,
+          "marker": "$TEROUTPUT",
+          "label": "Z3"
+        }
+      ],
+      "output_hashes": {
+        "project": "85d4de87c38355c2b227073697a6ccb6652f33c6ec752454a568b6bfb43acaec",
+        "ROOT.DSN": "d4391ce4a807b30231f96d12ad84df37d18f0f87d10b9cdc2b45d81c7ce7ab9e",
+        "ROOT.CDB": "ad79b05b9f2d461bad3a9ed3370ac79ac14e391a94cd91a76202351138bdd73f",
+        "object_chunk": "99a1951651f172949a5224de9e6f95d88b656ed9cb58ee325d8b858e6a4ae6aa"
+      }
+    },
+    {
+      "case_id": "T22_74HC86_TWO_PACKAGES_E001",
+      "description": "XOR2 two-package donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc86",
+      "logic_role": "XOR2",
+      "donor_key": "74hc86_m03_two_packages_io",
+      "donor_path": "proteus_ic\\donors\\74hc86\\IC_74HC86_M03_TWO_PACKAGES_IO.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65389,
+        "second_isis": 72690,
+        "second_object_data": 72725,
+        "object_data_pointer": 72738
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 24,
+        "74XOR2": 8,
+        "74HC266": 0,
+        "$TERINPUT": 16,
+        "$TEROUTPUT": 8,
+        "$TERBIDIR": 2,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 26,
+        "COMPONENT ID": 8,
+        "COMPONENT VALUE": 8,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 4,
+        "74XOR2": 2,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 269,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 907,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1060,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1213,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1750,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1903,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2056,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2593,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2746,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 2899,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 3436,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3589,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3742,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 4279,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4432,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4585,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 5122,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 5275,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 5428,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 5965,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 6118,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 6271,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 6808,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 6961,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 7114,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "b43b5ceffb6d0a81f3adbca3173f09304c41287096562cf92d444b04894b5d2b",
+        "ROOT.DSN": "e30a10c8e32e0f7505692ff54059494772a04fc9da279e8c93b2b6b5ef903faf",
+        "ROOT.CDB": "55da21d263592d91613f2ce3d38686f3096617d9302cfef280e7bc8b24d49fc5",
+        "object_chunk": "78626a3af815476f32675ab1506e9056fbac1a2bcfb8a555836e0e7154fab93c"
+      }
+    },
+    {
+      "case_id": "T23_74HC86_LOGIC_CONSTANTS_PG",
+      "description": "XOR2 logic-constant power/ground donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc86",
+      "logic_role": "XOR2",
+      "donor_key": "74hc86_m04_logic_constants_pg",
+      "donor_path": "proteus_ic\\donors\\74hc86\\IC_74HC86_M04_LOGIC_CONSTANTS_PG.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65389,
+        "second_isis": 69318,
+        "second_object_data": 69353,
+        "object_data_pointer": 69366
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 12,
+        "74XOR2": 4,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 2,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 2,
+        "74XOR2": 1,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 269,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 907,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1060,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1213,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1750,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1903,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2056,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2593,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2746,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 2899,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 3436,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3589,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3742,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "2da277f6bced242468aafe562ca002e9864a9fee93b49a5ceba948ac4c21d79e",
+        "ROOT.DSN": "93e10a5f6ddcf7ce78843315a26c4158d66ae9ba6fbd00842d9e1945e2830581",
+        "ROOT.CDB": "fb668e424ba7191046d5a5173b502d524b930497fc30cc7763530ba504d5df13",
+        "object_chunk": "af1770207061b5648537f49bc37519eef654e9a988c0ebd5a01feca370c7c7f9"
+      }
+    },
+    {
+      "case_id": "T24_74HC86_RCL_LOAD",
+      "description": "XOR2 RCL load donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc86",
+      "logic_role": "XOR2",
+      "donor_key": "74hc86_m05_rcl_load",
+      "donor_path": "proteus_ic\\donors\\74hc86\\IC_74HC86_M05_RCL_LOAD.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67921,
+        "second_isis": 73853,
+        "second_object_data": 73888,
+        "object_data_pointer": 73901
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 12,
+        "74XOR2": 4,
+        "74HC266": 0,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 8,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 20,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 2,
+        "74XOR2": 1,
+        "74HC266": 0,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 269,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 524,
+          "marker": "$TERBIDIR",
+          "label": "Y0"
+        },
+        {
+          "offset": 627,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 1177,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 1280,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 1848,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 1951,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 2910,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 3063,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 3216,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 3753,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 3906,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4059,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 4596,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4749,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4902,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 5439,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 5592,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 5745,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "f8749007d774ed71d393bc634ccf138c6d77f1201e3cbd49b3a02003d017aa8e",
+        "ROOT.DSN": "67d86442a8464bb2e21a2e55217d22d5e8e412b44e3f7fa168e90a1934990179",
+        "ROOT.CDB": "f1772b0776e31f9a562a95355a44c0663ae03bb75041653c2d14525baa70be83",
+        "object_chunk": "df7e4df98ea57a958c222f41f2b5ee022c81fcba61d8557cedc08b7f4ef5186c"
+      }
+    },
+    {
+      "case_id": "T25_74HC266_ALL4_E001",
+      "description": "XNOR2 donor uses 74XOR2.MDF markers in Proteus all-four donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc266",
+      "logic_role": "XNOR2 donor uses 74XOR2.MDF markers in Proteus",
+      "donor_key": "74hc266_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc266\\IC_74HC266_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65359,
+        "second_isis": 68791,
+        "second_object_data": 68826,
+        "object_data_pointer": 68839
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 4,
+        "74HC266": 12,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 1,
+        "74HC266": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 401,
+          "marker": "$TERINPUT",
+          "label": "A0"
+        },
+        {
+          "offset": 554,
+          "marker": "$TERINPUT",
+          "label": "B0"
+        },
+        {
+          "offset": 707,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1247,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 1400,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1553,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2093,
+          "marker": "$TERINPUT",
+          "label": "A2"
+        },
+        {
+          "offset": 2246,
+          "marker": "$TERINPUT",
+          "label": "B2"
+        },
+        {
+          "offset": 2399,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 2939,
+          "marker": "$TERINPUT",
+          "label": "A3"
+        },
+        {
+          "offset": 3092,
+          "marker": "$TERINPUT",
+          "label": "B3"
+        },
+        {
+          "offset": 3245,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "ce101930f13e9e59d11e98ad354e8745b35c8d66d6d1677b6b4f8203bd03e9f0",
+        "ROOT.DSN": "cd84643b697ca65dab686d70bff911e27fbf4f34d09a16fa0ca56e5f41d98132",
+        "ROOT.CDB": "151bd358ba9c1283fd8200aad348a22f605593fecdd5b3add62877b97aaca38b",
+        "object_chunk": "1f423fdd2af322e1d2a7c8db6ddb7ba81ab2f3b1e386c71a77ba4ddcbd2da28b"
+      }
+    },
+    {
+      "case_id": "T26_74HC266_ALL4_LABEL_ONLY",
+      "description": "XNOR2 donor uses 74XOR2.MDF markers in Proteus all-four donor with same-size terminal label mutation.",
+      "method": "e001_transplant_label_only",
+      "family": "74hc266",
+      "logic_role": "XNOR2 donor uses 74XOR2.MDF markers in Proteus",
+      "donor_key": "74hc266_m02_all4_io",
+      "donor_path": "proteus_ic\\donors\\74hc266\\IC_74HC266_M02_ALL4_IO.pdsprj",
+      "allow_bidir": false,
+      "mutation_events": [
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 401,
+          "old": "A0",
+          "new": "C0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 554,
+          "old": "B0",
+          "new": "D0"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1247,
+          "old": "A1",
+          "new": "C1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 1400,
+          "old": "B1",
+          "new": "D1"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2093,
+          "old": "A2",
+          "new": "C2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2246,
+          "old": "B2",
+          "new": "D2"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 2939,
+          "old": "A3",
+          "new": "C3"
+        },
+        {
+          "terminal_marker": "$TERINPUT",
+          "offset": 3092,
+          "old": "B3",
+          "new": "D3"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 707,
+          "old": "Y0",
+          "new": "Z0"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 1553,
+          "old": "Y1",
+          "new": "Z1"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 2399,
+          "old": "Y2",
+          "new": "Z2"
+        },
+        {
+          "terminal_marker": "$TEROUTPUT",
+          "offset": 3245,
+          "old": "Y3",
+          "new": "Z3"
+        }
+      ],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65359,
+        "second_isis": 68791,
+        "second_object_data": 68826,
+        "object_data_pointer": 68839
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 4,
+        "74HC266": 12,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 12,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 1,
+        "74HC266": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 401,
+          "marker": "$TERINPUT",
+          "label": "C0"
+        },
+        {
+          "offset": 554,
+          "marker": "$TERINPUT",
+          "label": "D0"
+        },
+        {
+          "offset": 707,
+          "marker": "$TEROUTPUT",
+          "label": "Z0"
+        },
+        {
+          "offset": 1247,
+          "marker": "$TERINPUT",
+          "label": "C1"
+        },
+        {
+          "offset": 1400,
+          "marker": "$TERINPUT",
+          "label": "D1"
+        },
+        {
+          "offset": 1553,
+          "marker": "$TEROUTPUT",
+          "label": "Z1"
+        },
+        {
+          "offset": 2093,
+          "marker": "$TERINPUT",
+          "label": "C2"
+        },
+        {
+          "offset": 2246,
+          "marker": "$TERINPUT",
+          "label": "D2"
+        },
+        {
+          "offset": 2399,
+          "marker": "$TEROUTPUT",
+          "label": "Z2"
+        },
+        {
+          "offset": 2939,
+          "marker": "$TERINPUT",
+          "label": "C3"
+        },
+        {
+          "offset": 3092,
+          "marker": "$TERINPUT",
+          "label": "D3"
+        },
+        {
+          "offset": 3245,
+          "marker": "$TEROUTPUT",
+          "label": "Z3"
+        }
+      ],
+      "output_hashes": {
+        "project": "a7ae6907c03439d1ae035d74da6b3180dd8a06ead5ab16f512ec8849194bd481",
+        "ROOT.DSN": "a3201fee3c39ae2b5e63b3a69b565831571e8de60508cb0fb1ed02afd0be404a",
+        "ROOT.CDB": "151bd358ba9c1283fd8200aad348a22f605593fecdd5b3add62877b97aaca38b",
+        "object_chunk": "581f28cd57677546348b758d563b5f2b3380ac624cf30b24655cc3c254904d27"
+      }
+    },
+    {
+      "case_id": "T27_74HC266_TWO_PACKAGES_E001",
+      "description": "XNOR2 donor uses 74XOR2.MDF markers in Proteus two-package donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc266",
+      "logic_role": "XNOR2 donor uses 74XOR2.MDF markers in Proteus",
+      "donor_key": "74hc266_m03_two_packages_io",
+      "donor_path": "proteus_ic\\donors\\74hc266\\IC_74HC266_M03_TWO_PACKAGES_IO.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65359,
+        "second_isis": 72684,
+        "second_object_data": 72719,
+        "object_data_pointer": 72732
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 8,
+        "74HC266": 24,
+        "$TERINPUT": 16,
+        "$TEROUTPUT": 8,
+        "$TERBIDIR": 2,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 26,
+        "COMPONENT ID": 8,
+        "COMPONENT VALUE": 8,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 2,
+        "74HC266": 4,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 269,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 910,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1063,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1216,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1756,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1909,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2062,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2602,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2755,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 2908,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 3448,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3601,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3754,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        },
+        {
+          "offset": 4294,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4447,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4600,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 5140,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 5293,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 5446,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 5986,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 6139,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 6292,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 6832,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 6985,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 7138,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "33c0c50b4630e976ff5d0c772b027e441de9c23989d2f48e73db81d631c10960",
+        "ROOT.DSN": "4200a2639ef91ce3fce0b2cd87b262f1326737422cc44fd04ccb55c571607c18",
+        "ROOT.CDB": "fb6f6fd51fafe1f0cb49f92e909197b723acd681a6493cfb19237aec42961b15",
+        "object_chunk": "1c01f0262ebc2f5ff6bcc57b5a51fd1045fbac162f97f2701d6cafb8c223151b"
+      }
+    },
+    {
+      "case_id": "T28_74HC266_LOGIC_CONSTANTS_PG",
+      "description": "XNOR2 donor uses 74XOR2.MDF markers in Proteus logic-constant power/ground donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc266",
+      "logic_role": "XNOR2 donor uses 74XOR2.MDF markers in Proteus",
+      "donor_key": "74hc266_m04_logic_constants_pg",
+      "donor_path": "proteus_ic\\donors\\74hc266\\IC_74HC266_M04_LOGIC_CONSTANTS_PG.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 65359,
+        "second_isis": 69300,
+        "second_object_data": 69335,
+        "object_data_pointer": 69348
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 4,
+        "74HC266": 12,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 2,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 14,
+        "COMPONENT ID": 4,
+        "COMPONENT VALUE": 4,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 1,
+        "74HC266": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 0,
+        "CAPACITOR": 0,
+        "CAP10": 0,
+        "REALIND": 0,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 269,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 910,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1063,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1216,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 1756,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 1909,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2062,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 2602,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 2755,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 2908,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 3448,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3601,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 3754,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "a4484ffb8ccda0c5b7851b5590a8be6c3c10e92bc58aaaa6345417520ce67eef",
+        "ROOT.DSN": "7bb19a80bae9bbdb197099a0870b9551f1643cce82edacccd6c1564f3543fd9d",
+        "ROOT.CDB": "151bd358ba9c1283fd8200aad348a22f605593fecdd5b3add62877b97aaca38b",
+        "object_chunk": "5bd4f44e99feeea945b6a913b83a90be3d5864056bcbf58e8a9cc2169a51af70"
+      }
+    },
+    {
+      "case_id": "T29_74HC266_RCL_LOAD",
+      "description": "XNOR2 donor uses 74XOR2.MDF markers in Proteus RCL load donor transplanted into E001.",
+      "method": "e001_transplant",
+      "family": "74hc266",
+      "logic_role": "XNOR2 donor uses 74XOR2.MDF markers in Proteus",
+      "donor_key": "74hc266_m05_rcl_load",
+      "donor_path": "proteus_ic\\donors\\74hc266\\IC_74HC266_M05_RCL_LOAD.pdsprj",
+      "allow_bidir": true,
+      "mutation_events": [],
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67891,
+        "second_isis": 73835,
+        "second_object_data": 73870,
+        "object_data_pointer": 73883
+      },
+      "static_validation_issues": [],
+      "marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 4,
+        "74HC266": 12,
+        "$TERINPUT": 8,
+        "$TEROUTPUT": 4,
+        "$TERBIDIR": 8,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 20,
+        "COMPONENT ID": 7,
+        "COMPONENT VALUE": 7,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "CAP10": 1,
+        "REALIND": 3,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "cdb_marker_counts": {
+        "74HC00": 0,
+        "74NAND2": 0,
+        "74HC02": 0,
+        "74NOR2": 0,
+        "74HC86": 0,
+        "74XOR2": 1,
+        "74HC266": 2,
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 0,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 0,
+        "COMPONENT ID": 0,
+        "COMPONENT VALUE": 0,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "CAP10": 2,
+        "REALIND": 2,
+        "VSOURCE": 0,
+        "CSOURCE": 0,
+        "VSINE": 0,
+        "LOGICSTATE": 0,
+        "LOGICPROBE": 0
+      },
+      "terminal_events": [
+        {
+          "offset": 15,
+          "marker": "$TERBIDIR",
+          "label": "A1"
+        },
+        {
+          "offset": 269,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 524,
+          "marker": "$TERBIDIR",
+          "label": "Y0"
+        },
+        {
+          "offset": 627,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 1177,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 1280,
+          "marker": "$TERBIDIR",
+          "label": "P1"
+        },
+        {
+          "offset": 1848,
+          "marker": "$TERBIDIR",
+          "label": "P2"
+        },
+        {
+          "offset": 1951,
+          "marker": "$TERBIDIR",
+          "label": "B1"
+        },
+        {
+          "offset": 2913,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 3066,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 3219,
+          "marker": "$TEROUTPUT",
+          "label": "Y0"
+        },
+        {
+          "offset": 3759,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 3912,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4065,
+          "marker": "$TEROUTPUT",
+          "label": "Y1"
+        },
+        {
+          "offset": 4605,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 4758,
+          "marker": "$TERINPUT",
+          "label": "B1"
+        },
+        {
+          "offset": 4911,
+          "marker": "$TEROUTPUT",
+          "label": "Y2"
+        },
+        {
+          "offset": 5451,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 5604,
+          "marker": "$TERINPUT",
+          "label": "A1"
+        },
+        {
+          "offset": 5757,
+          "marker": "$TEROUTPUT",
+          "label": "Y3"
+        }
+      ],
+      "output_hashes": {
+        "project": "dc63c43df55e4b445e00950e93771fc48b0d55ad63dd8f58fe9b8b37d2bb6686",
+        "ROOT.DSN": "3dff0c6d977f59821c2103df136e65900a26f7caa4297ab942295b6160759d6a",
+        "ROOT.CDB": "b11096cf733fef47372c27e3d108de260f608975f88e4c1bd3bf207080fbbf8a",
+        "object_chunk": "8da9df40019a1ad1945a597e1f73067cc78c483e475d8925bee6c3e8c8c77187"
+      }
+    }
+  ],
+  "archive_sha256": "8c574f9dbc0a8a6ea679897f5336dfe7183d4e590c811bf7b8fde39539d3d373"
+}
