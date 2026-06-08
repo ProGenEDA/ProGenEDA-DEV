@@ -25,6 +25,13 @@ SCRIPT_V4 = (
     / "2026-06-09"
     / "generate_ic_sequential_counters_v4_whole_donor_retry_temp.py"
 )
+SCRIPT_BATCH3 = (
+    ROOT
+    / "tools"
+    / "proteus_generation"
+    / "2026-06-09"
+    / "generate_ic_sequential_batch3_solo_temp.py"
+)
 
 
 def load_seq_module():
@@ -59,6 +66,16 @@ def load_seq_v3_module():
 
 def load_seq_v4_module():
     spec = importlib.util.spec_from_file_location("ic_sequential_counters_v4_whole_donor_retry_temp", SCRIPT_V4)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_seq_batch3_module():
+    spec = importlib.util.spec_from_file_location("ic_sequential_batch3_solo_temp", SCRIPT_BATCH3)
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -187,3 +204,33 @@ def test_counter_v4_same_length_device_patch_preserves_terminal_count() -> None:
     assert patched.count(b"$TERBIDIR") == chunk.count(b"$TERBIDIR")
     assert patched.count(b"74HC192") == chunk.count(b"74HC192") // 2
     assert patched.count(b"74HC193") == chunk.count(b"74HC192") // 2
+
+
+def test_sequential_batch3_donors_preserve_bidir_policy() -> None:
+    seq = load_seq_batch3_module()
+    expected_counts = {
+        "74hc4040": 14,
+        "74hc4060": 14,
+        "4518": 7,
+        "74hc4520": 7,
+        "74hc74": 12,
+        "74hc76": 14,
+        "74hc174": 14,
+        "74hc273": 18,
+        "4027": 14,
+    }
+    assert {family.key for family in seq.FAMILIES} == set(expected_counts)
+    for family in seq.FAMILIES:
+        chunk = _extract_object_chunk(read_internal_file(family.donor("single"), "ROOT.DSN"))
+        assert chunk.count(b"$TERBIDIR") == expected_counts[family.key]
+        assert chunk.count(b"$TERINPUT") == 0
+        assert chunk.count(b"$TEROUTPUT") == 0
+        assert chunk.count(family.proteus_device.encode("ascii")) > 0
+
+
+def test_sequential_batch3_4027_is_two_package_only_for_rlc() -> None:
+    seq = load_seq_batch3_module()
+    family = next(item for item in seq.FAMILIES if item.key == "4027")
+    assert family.four is None
+    assert family.rlc_kind == "two"
+    assert family.donor("rlc").name == "2_4027withRLC.pdsprj"

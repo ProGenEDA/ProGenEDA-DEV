@@ -106,6 +106,18 @@ Status:
   cascade experiments. The `74HC192` donor has an ambiguous duplicate `PIN9`
   label, so V2 treats signal names as authoritative for that family until a
   corrected donor confirms the pin map.
+- `IC_SEQUENTIAL_COUNTERS_V3_MIXED_RETRY_TEMP_2026_06_09` failed user testing;
+  even the same-family unit-slice control failed. Do not use unit slicing for
+  sequential-counter ICs.
+- `IC_SEQUENTIAL_COUNTERS_V4_WHOLE_DONOR_RETRY_TEMP_2026_06_09` partially
+  failed user testing. Mixed identity-mutation cases T01, T02, and T03 gave
+  ISIS errors. Wait for a real manual mixed sequential donor before trying
+  cross-family sequential projects again.
+- `IC_SEQUENTIAL_BATCH3_SOLO_TEMP_2026_06_09` is static-clean and pending user
+  Proteus testing. It imports solo donors for `74HC4040`, `74HC4060`, `4518`,
+  `74HC4520`, `74HC74`, `74HC76`, `74HC174`, `74HC273`, and `4027`. This pack
+  contains only per-family exact repack, E001 transplant, label mutation, 2x/4x
+  controls where supplied, and RLC donor transplants.
 - The production route is now:
 
 ```text

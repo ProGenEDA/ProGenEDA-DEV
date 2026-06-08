@@ -209,6 +209,18 @@ python -m pytest tests -q => 97 passed, 78 subtests passed
 
 Manual Proteus testing is pending for V4.
 
+User manual Proteus result for V4:
+
+```text
+T01_RETRY_74HC192_74HC193_WHOLE_DONOR                         ISIS error
+T02_RETRY_4017_4020_WHOLE_DONOR                               ISIS error
+T03_RETRY_74HC161_74HC192_74HC193_74HC163_WHOLE_DONOR          ISIS error
+```
+
+Treat synthetic mixed sequential generation as rejected for now. Future mixed
+sequential support should wait for a real manual mixed donor supplied by the
+user. Solo donor-derived sequential packs remain valid to test.
+
 ## V2 Additional Pin Facts
 
 `74HC192` visible pins:
