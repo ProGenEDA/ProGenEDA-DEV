@@ -1669,13 +1669,13 @@
         "IC_AND_OR_RCL_V1_USER_FAILURE_20260608",
         "tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v1_temp.py"
       ],
-      "rule": "The first mixed AND/OR/RCL diagnostic intentionally emitted exactly fifteen IC gate subparts, not a fourteen-gate pure reduction tree. It used eight 74HC08 AND2 gates to create A1..A8, seven 74HC32 OR2 gates to reduce those nodes to Y0, then routed Y0 through a resistor, capacitor, and inductor branch to G0. Although static validation was clean, user Proteus testing reported an ISIS.dll violation. Do not promote this V1 method: mixing ordinary IC input/output terminals with bidirectional passive endpoints and a merged device section is rejected for this shape."
+      "rule": "The first mixed AND/OR/RCL diagnostic intentionally emitted exactly fifteen IC gate subparts, not a fourteen-gate pure reduction tree. It used eight 74HC08 AND2 gates to create A1..A8, seven 74HC32 OR2 gates to reduce those nodes to Y0, then routed Y0 through a resistor, capacitor, and inductor branch to G0. Although static validation was clean, user Proteus testing reported an ISIS.dll violation. Do not promote this V1 method. The later donor tests indicate the old merged device section was unsafe for this mixed shape; do not treat same-name input/output/bidirectional labels as the rejected part without separate evidence."
     },
     {
       "id": "R093",
-      "title": "Mixed 74HC08, 74HC32, and RCL should test donor-style bidirectional signal terminals",
-      "status": "static_generated_pending_user_test",
-      "confidence": 0.78,
+      "title": "All-bidirectional IC signal terminals are diagnostic only",
+      "status": "diagnostic_passed_but_terminal_policy_rejected",
+      "confidence": 0.9,
       "applies_to": [
         "Proteus 8.13",
         "74HC08",
@@ -1687,10 +1687,31 @@
       "evidence": [
         "IC_AND_OR_RCL_V1_USER_FAILURE_20260608",
         "IC_AND_OR_RCL_V2_MANUAL_DONOR_STATIC_20260608",
+        "IC_AND_OR_RCL_V2_USER_PARTIAL_20260608",
         "C:/Users/tahab/Downloads/ddddddddzzzzzzzzzz.pdsprj",
         "tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v2_manual_donor_temp.py"
       ],
-      "rule": "The user-supplied mixed manual donor uses bidirectional terminals for all visible signal and passive connection points, plus special power/ground records, and places passive/terminal/wire records before bare IC component bodies. The V2 diagnostic therefore tests a generated 15-gate mixed circuit using the V1 topology, the manual donor device section, and conversion of every ordinary IC signal terminal to $TERBIDIR before packing. This is only a temporary hypothesis until manual Proteus open/simulation testing passes."
+      "rule": "The user-supplied mixed manual donor uses bidirectional terminals for all visible signal and passive connection points, plus special power/ground records, and places passive/terminal/wire records before bare IC component bodies. The V2 generated diagnostic using the manual donor device section and all-bidirectional visible terminals opened successfully in Proteus, proving the donor/device-section path is useful. However, it is not production policy: IC signal pins must preserve electrical direction with $TERINPUT for inputs and $TEROUTPUT for outputs, because an IC input pin must not be represented as an output-capable bidirectional terminal."
+    },
+    {
+      "id": "R094",
+      "title": "Mixed IC and passive circuits preserve IC terminal direction",
+      "status": "static_generated_pending_user_test",
+      "confidence": 0.82,
+      "applies_to": [
+        "Proteus 8.13",
+        "74HC08",
+        "74HC32",
+        "mixed AND/OR logic",
+        "R/C/L passive load",
+        "terminal family interoperability"
+      ],
+      "evidence": [
+        "IC_AND_OR_RCL_V2_USER_PARTIAL_20260608",
+        "IC_AND_OR_RCL_V3_DIRECTIONAL_IC_STATIC_20260608",
+        "tools/proteus_generation/2026-06-08/generate_ic_and_or_rcl_v3_directional_ic_temp.py"
+      ],
+      "rule": "For mixed IC/passive circuits, keep IC signal pins directional: IC inputs are $TERINPUT and IC outputs are $TEROUTPUT. R/C/L and other passive endpoints use the accepted $TERBIDIR method. Same-name $TERINPUT, $TEROUTPUT, and $TERBIDIR labels are expected to connect in Proteus. Use the working manual donor device-section path for this mixed 74HC08/74HC32/RCL shape pending manual Proteus acceptance."
     }
   ]
 }

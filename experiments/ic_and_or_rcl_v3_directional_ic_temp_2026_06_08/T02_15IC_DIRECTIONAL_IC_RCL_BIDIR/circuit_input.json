@@ -1,0 +1,19 @@
+{
+  "mode": "mixed_ic_logic_and_or_rcl_v3_directional_ic_method",
+  "ic_gate_count": 15,
+  "logic": "Eight 74HC08 AND2 gates produce A1..A8; seven 74HC32 OR2 gates reduce them to Y0.",
+  "rlc_load": [
+    "R1 Y0-P1",
+    "C1 P1-P2",
+    "L1 P2-G0"
+  ],
+  "terminal_policy": {
+    "ic_input_pins": "$TERINPUT",
+    "ic_output_pins": "$TEROUTPUT",
+    "passive_endpoints": "$TERBIDIR",
+    "named_net_connection": "same labels connect across $TERINPUT, $TEROUTPUT, and $TERBIDIR records",
+    "power_bridge": "$TERPOWER to $TERBIDIR V0",
+    "ground": "$TERGROUND G0",
+    "ic_supply": "hidden; no explicit pin 14 or pin 7 supply wiring"
+  }
+}
