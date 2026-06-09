@@ -2057,6 +2057,19 @@
         "proteus_ic/docs/mixed_ic_cross_donor_cdb_v1_correct_rows_2026_06_09.md"
       ],
       "created": "2026-06-09"
+    },
+    {
+      "id": "R110",
+      "title": "Do not reduce ROOT.CDB skeletons for cross-donor ICs",
+      "status": "accepted_from_user_proteus_boundary_test",
+      "rule": "For cross-donor sequential/misc IC CDB experiments, do not emit a reduced CDB count with only visible/generated rows. Preserve a complete donor CDB skeleton until full-skeleton replacement testing proves a smaller safe model.",
+      "rationale": "CDB V1 used parser-built row boundaries, property-row overlap adaptation, and both original and renumbered ordinals, but user testing reported only the full-CDB controls T00 and T06 worked. Every reduced generated-CDB case crashed before opening.",
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_USER_BOUNDARY_20260610",
+        "proteus_ic/docs/mixed_ic_cross_donor_cdb_v1_correct_rows_2026_06_09.md",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
+      ],
+      "created": "2026-06-10"
     }
   ]
 }

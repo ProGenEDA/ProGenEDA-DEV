@@ -49,5 +49,20 @@ Cases:
 
 ## Current Status
 
-Static generation completed. All generated CDB outputs parse back through the
-new parser. Manual Proteus open/render testing is pending.
+User Proteus testing reported:
+
+```text
+Worked: T00, T06
+Crashed before open: T01, T02, T03, T04, T05, T07, T08, T09, T10, T11
+```
+
+Interpretation:
+
+- byte-correct reduced CDB rows are still not enough;
+- row ordinal renumbering did not fix the reduced-CDB crash path;
+- the only working cases kept a complete donor CDB skeleton copied whole.
+
+The next probe is
+`MIXED_IC_CROSS_DONOR_CDB_V2_FULL_SKELETON_TEMP_2026_06_10`, which keeps a
+complete donor CDB skeleton and only replaces selected rows inside that full
+skeleton.

@@ -157,9 +157,13 @@ Status:
   open. The failed generated cases used invalid CDB row slicing, so do not
   treat that result as proof that CDB synthesis is impossible.
 - `MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09` is pending user
-  Proteus testing. It uses the decoded CDB parser/builder, adapts the
-  property-row overlap/trailer rule, and tests generated rows with and without
-  row ordinal normalization.
+  accepted as a boundary test. User testing reported only T00 and T06 worked;
+  all reduced generated-CDB cases crashed before opening. This shows the CDB
+  parser/builder row boundaries are not sufficient if the full donor CDB
+  skeleton/count is reduced.
+- `MIXED_IC_CROSS_DONOR_CDB_V2_FULL_SKELETON_TEMP_2026_06_10` is pending user
+  Proteus testing. It keeps a complete donor CDB skeleton and replaces only
+  selected rows inside that skeleton.
 - The production route is now:
 
 ```text

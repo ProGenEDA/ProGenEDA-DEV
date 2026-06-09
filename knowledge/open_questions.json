@@ -1063,7 +1063,7 @@
     {
       "id": "Q096",
       "question": "Do corrected parser-built CDB rows work for cross-donor IC mixes in MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09, and does Proteus prefer original donor ordinals or renumbered emitted ordinals?",
-      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_cdb_v1_correct_rows",
+      "status": "answered_reduced_cdb_crashes_even_with_correct_row_boundaries",
       "needed_for": [
         "cross_donor_ic_generation",
         "mixed_sequential_ic_generation",
@@ -1079,7 +1079,27 @@
         "experiments/MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09.zip",
         "proteus_ic/docs/mixed_ic_cross_donor_cdb_v1_correct_rows_2026_06_09.md"
       ],
-      "notes": "Test T00-T11 in order. T00/T06 are full-CDB controls. T01-T03 and T07-T09 preserve donor row ordinals. T04-T05 and T10-T11 renumber internal CDB ordinals to emitted row order."
+      "notes": "Test T00-T11 in order. T00/T06 are full-CDB controls. T01-T03 and T07-T09 preserve donor row ordinals. T04-T05 and T10-T11 renumber internal CDB ordinals to emitted row order.",
+      "answer": "User Proteus testing reported only T00 and T06 worked. Every reduced generated-CDB case crashed before opening, including both original-donor-ordinal and renumbered-ordinal variants. Correct row boundaries and property-row trailer adaptation are necessary but not sufficient when the full donor CDB skeleton/count is reduced."
+    },
+    {
+      "id": "Q097",
+      "question": "Does full-skeleton CDB generation work for cross-donor IC mixes when the complete donor CDB row universe is preserved and only selected matching rows are replaced?",
+      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_cdb_v2_full_skeleton",
+      "needed_for": [
+        "cross_donor_ic_generation",
+        "mixed_sequential_ic_generation",
+        "misc_logic_ic_integration",
+        "large_mixed_ic_generation",
+        "cdb_composition_rules",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py",
+        "experiments/MIXED_IC_CROSS_DONOR_CDB_V2_FULL_SKELETON_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_cdb_v2_full_skeleton_2026_06_10.md"
+      ],
+      "notes": "Test T00-T10 in order. T00/T04/T06/T07 are full-CDB controls. T01-T03 replace U4-U6 inside the full misc CDB skeleton. T05 replaces U2-U3 inside the full counter skeleton. T08-T10 replace U4 inside the full counter skeleton."
     }
   ]
 }

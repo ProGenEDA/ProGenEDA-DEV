@@ -279,3 +279,31 @@ def test_cross_donor_cdb_v1_uses_correct_row_parser_variants() -> None:
     assert parsed.count == 5
     assert [row.ref for row in parsed.pin_rows] == ["U2", "U3", "U4", "U5", "U6"]
     assert [item["emitted_ordinal"] for item in row_plan] == [1, 2, 3, 4, 5]
+
+
+def test_cross_donor_cdb_v2_uses_full_skeleton_replacement() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_cdb_v2_full_skeleton_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    cdb_v2 = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = cdb_v2
+    spec.loader.exec_module(cdb_v2)
+
+    assert len(cdb_v2.CASES) == 11
+    assert cdb_v2.CASES[0].replacement_sources == ()
+    assert cdb_v2.CASES[1].replacement_sources == cdb_v2.T02_REPLACE_MISC_SKELETON
+    assert cdb_v2.CASES[2].replace_pins is False
+    assert cdb_v2.CASES[3].replace_properties is False
+
+    cdb, row_plan = cdb_v2.build_full_skeleton_cdb(
+        "misc_logic_analog",
+        cdb_v2.T02_REPLACE_MISC_SKELETON,
+        replace_pins=True,
+        replace_properties=True,
+    )
+    parsed = cdb_v2.parse_cdb(cdb)
+    assert parsed.count == cdb_v2.cdb_v1.parsed_cdb("misc_logic_analog").count
+    assert [row.ref for row in parsed.property_rows][9:12] == ["U4", "U5", "U6"]
+    assert [item["ref"] for item in row_plan] == ["U4", "U5", "U6"]
+    assert b"4017" in cdb and b"74HC4024" in cdb
