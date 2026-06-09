@@ -147,10 +147,14 @@ Status:
   but failed user Proteus testing with the same pattern as V1/V2. This showed
   that the previous fixes did not touch the real failing surface.
 - `MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09` is static-clean except
-  for one intentionally unsafe metadata case, and is pending user Proteus
-  testing. It steps back to same-donor controls, sparse-vs-contiguous CDB rows,
-  first-header donor swaps, and filtered-vs-full device metadata for the two
-  clean failing shapes.
+  for one intentionally unsafe metadata case. User testing reported T00, T01,
+  and T02 worked correctly, while T03 onward crashed before opening. This
+  proves same-donor region extraction is safe, and that the first cross-donor
+  working case requires full donor device sections.
+- `MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_TEMP_2026_06_09` is
+  pending user Proteus testing. It keeps full multi-donor device sections in
+  every cross-donor case and varies only CDB/header choices to isolate why V1
+  T02 worked but generated-row CDB cases crashed.
 - The production route is now:
 
 ```text

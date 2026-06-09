@@ -1021,7 +1021,7 @@
     {
       "id": "Q094",
       "question": "Which exact section change first breaks cross-donor mixed IC generation in MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09: same-donor region extraction, sparse CDB rows, first-header donor bytes, filtered device definitions, or full multi donor device sections?",
-      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_isolation_v1",
+      "status": "answered_partial_first_failure_identified_cdb_still_open",
       "needed_for": [
         "cross_donor_ic_generation",
         "mixed_sequential_ic_generation",
@@ -1033,9 +1033,30 @@
       "evidence": [
         "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_isolation_v1_temp.py",
         "experiments/MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_isolation_v1_2026_06_09.md",
+        "MIXED_IC_CROSS_DONOR_ISOLATION_V1_USER_BOUNDARY_20260609",
         "proteus_ic/docs/mixed_ic_cross_donor_isolation_v1_2026_06_09.md"
       ],
-      "notes": "Test in order and report the first failing case. T00/T01 are same-donor controls; T04-T09 isolate the clean T02/T04 failure shapes."
+      "notes": "Test in order and report the first failing case. T00/T01 are same-donor controls; T04-T09 isolate the clean T02/T04 failure shapes.",
+      "answer": "User Proteus testing showed T00/T01/T02 worked, while T03 onward crashed before opening. This identifies missing/filtered foreign device metadata as unsafe: T02 worked with full multi-donor device sections, T03 crashed without the foreign section, and later filtered-device cases crashed. CDB/header policy remains unresolved because T02 worked with full misc donor CDB even though it did not correctly describe the foreign divider ICs."
+    },
+    {
+      "id": "Q095",
+      "question": "In MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_TEMP_2026_06_09, which CDB/header policy opens when full multi-donor device sections are preserved for all cross-donor IC mixes?",
+      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_isolation_v2_full_device_cdb",
+      "needed_for": [
+        "cross_donor_ic_generation",
+        "mixed_sequential_ic_generation",
+        "misc_logic_ic_integration",
+        "large_mixed_ic_generation",
+        "cdb_composition_rules"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py",
+        "experiments/MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_TEMP_2026_06_09.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_isolation_v2_full_device_cdb_2026_06_09.md"
+      ],
+      "notes": "Test T00-T11 in order. T00 repeats the V1 T02 working condition; T01/T02 isolate generated sparse/contiguous CDB rows; T07-T11 repeat the test for the 7447 plus sync-counter shape."
     }
   ]
 }

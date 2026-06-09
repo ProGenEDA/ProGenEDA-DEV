@@ -2029,6 +2029,19 @@
         "tests/test_mixed_ic_analog_donors.py::test_cross_donor_isolation_audits_previous_u50_ref_mismatch"
       ],
       "created": "2026-06-09"
+    },
+    {
+      "id": "R108",
+      "title": "Cross-donor mixed ICs require full donor device sections, not filtered per-device metadata",
+      "status": "accepted_from_user_proteus_boundary_test",
+      "rule": "For cross-donor mixed IC experiments using the sequential/misc IC families, preserve the complete device section from every donor family involved. Do not use filtered per-device definitions for this route until a Proteus-authored mixed donor proves a smaller safe model.",
+      "rationale": "Isolation V1 user testing showed T02 worked when full multi-donor device sections were present. T03 crashed when foreign device metadata was absent, and T04 onward crashed with filtered device definitions or generated CDB/device combinations.",
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_ISOLATION_V1_USER_BOUNDARY_20260609",
+        "proteus_ic/docs/mixed_ic_cross_donor_isolation_v1_2026_06_09.md",
+        "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py"
+      ],
+      "created": "2026-06-09"
     }
   ]
 }

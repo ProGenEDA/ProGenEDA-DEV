@@ -235,3 +235,21 @@ def test_cross_donor_isolation_contiguous_cdb_plan_keeps_t02_refs_covered() -> N
     )
     assert isolation.refs_in(cdb) == ["U1", "U2", "U3", "U4", "U5", "U6", "U7"]
     assert next(item for item in row_plan if item["ref"] == "U4")["donor_key"] == "seq_counters_all"
+
+
+def test_cross_donor_isolation_v2_keeps_full_multi_device_metadata() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_isolation_v2_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    isolation_v2 = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = isolation_v2
+    spec.loader.exec_module(isolation_v2)
+
+    assert len(isolation_v2.CASES) == 12
+    assert all(item.device_mode == "full_multi" for item in isolation_v2.CASES)
+    assert isolation_v2.CASES[0].case_id == "T00_T02_SHAPE_FULL_MISC_CDB_HEADER_MISC"
+    assert isolation_v2.CASES[0].cdb_mode == "full_header_donor"
+    assert isolation_v2.CASES[1].cdb_mode == "row_sources"
+    assert isolation_v2.CASES[4].case_id == "T04_T02_SHAPE_CONTIGUOUS_CDB_HEADER_SEQ"
+    assert isolation_v2.CASES[11].case_id == "T11_T04_SHAPE_CONTIGUOUS_CDB_HEADER_SEQ"

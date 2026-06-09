@@ -89,3 +89,24 @@ Expected interpretation:
 
 Do not generate more large cross-donor circuits until this isolation ladder
 shows the first failing step.
+
+## User Proteus Result
+
+User testing reported:
+
+```text
+T00: worked correctly
+T01: worked correctly
+T02: worked correctly
+T03 through T09: crashed Proteus before opening
+```
+
+Interpretation:
+
+- same-donor region extraction is safe for these fragments;
+- cross-donor visible objects can open when all involved donor device sections
+  are preserved whole;
+- missing foreign device metadata crashes at T03;
+- filtered per-device metadata is not enough for these mixed ICs;
+- CDB remains suspicious because T02 opened with full misc donor CDB, while the
+  later generated-row CDB cases crashed.
