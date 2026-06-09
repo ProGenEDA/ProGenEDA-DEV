@@ -139,9 +139,15 @@ Status:
   and T06 gave LXLCORE.dll errors, and T02-T05 crashed on open. Do not reuse its
   unpatched device-section concatenation method.
 - `MIXED_IC_CROSS_DONOR_V2_METADATA_TEMP_2026_06_09` is static-clean and
-  pending user Proteus testing. It keeps the same visible IC-region combinations
-  as V1, but patches every concatenated donor device-section tail pointer and
-  sorts CDB rows by numeric `U` reference.
+  failed user Proteus testing with the same pattern as V1: T01/T06 gave
+  LXLCORE.dll errors and T02-T05 crashed on open. Do not use whole donor
+  device-section concatenation for cross-donor IC mixtures, even with patched
+  section footers and sorted CDB rows.
+- `MIXED_IC_CROSS_DONOR_V3_FILTERED_DEVICE_TEMP_2026_06_09` is static-clean
+  and pending user Proteus testing. It keeps the same visible IC-region
+  combinations as V1/V2, but extracts only required per-device definitions,
+  excludes unrelated analog/passive definition tails, and emits one generated
+  device-section footer.
 - The production route is now:
 
 ```text

@@ -168,3 +168,26 @@ def test_cross_donor_v2_patches_every_device_section_tail_pointer() -> None:
         item["new_tail_pointer"] == pointers["object_data_pointer"]
         for item in pointers["device_sections"]
     )
+
+
+def test_cross_donor_v3_filtered_device_definitions_drop_analog_tail() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v3_filtered_device_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_v3_filtered_device_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    cross_v3 = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = cross_v3
+    spec.loader.exec_module(cross_v3)
+
+    misc_defs = cross_v3.device_definitions_for("misc_logic_analog")
+    counter_defs = cross_v3.device_definitions_for("seq_counters_all")
+    assert b"CAP-ELEC" not in misc_defs["7447"]
+    assert b"LM741" not in misc_defs["7447"]
+    assert b"CAP-ELEC" not in counter_defs["7490"]
+    assert b"RESISTOR" not in counter_defs["7490"]
+
+    section, plan = cross_v3.build_filtered_device_section(cross_v3.v1.CASES[0])
+    assert section.endswith(b"\x00\x00\x00\x00")
+    assert any(item["device"] == "7447" for item in plan)
+    assert b"CAP-ELEC" not in section
+    assert b"LM741" not in section

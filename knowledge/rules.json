@@ -1997,6 +1997,25 @@
         "proteus_ic/docs/mixed_ic_cross_donor_v1_2026_06_09.md"
       ],
       "rule": "Do not concatenate complete donor device sections without patching every embedded object-data tail pointer. V1 cross-donor cases used clean whole IC regions and union CDB rows, but T01/T06 produced LXLCORE.dll errors and T02-T05 crashed Proteus before opening. The likely rejected part is the metadata merge: each extracted donor device section ends with an object-data pointer, and V1 patched only the final concatenated section tail via the old single-section builder. Cross-donor retry must patch every section tail pointer and keep CDB rows ordered by numeric U reference before any further conclusions about visible region mixing are drawn."
+    },
+    {
+      "id": "R106",
+      "title": "Cross-donor whole device-section merge remains unsafe after pointer patching",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 0.89,
+      "applies_to": [
+        "Proteus 8.13",
+        "cross-donor mixed IC generation",
+        "device-section merging",
+        "sequential/misc IC region composition"
+      ],
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_V2_METADATA_STATIC_20260609",
+        "MIXED_IC_CROSS_DONOR_V2_METADATA_USER_FAILURE_20260609",
+        "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_v2_metadata_temp.py",
+        "proteus_ic/docs/mixed_ic_cross_donor_v2_metadata_2026_06_09.md"
+      ],
+      "rule": "Do not merge cross-donor IC metadata by concatenating whole donor device sections, even if every section tail pointer is patched and CDB rows are sorted by numeric U reference. V2 reproduced the V1 failure pattern: T01/T06 gave LXLCORE.dll errors and T02-T05 crashed while opening. Device-section analysis shows donor sections are sequences of length-prefixed per-device definitions followed by one final pointer footer. Whole-section merges leave unwanted duplicate/trailing definitions and section-level structure in the merged metadata. The next safe probe must extract only required per-device definitions, omit donor section footers, and emit exactly one generated footer."
     }
   ]
 }

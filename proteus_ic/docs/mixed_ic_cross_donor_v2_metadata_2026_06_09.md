@@ -24,6 +24,20 @@ metadata handling:
   generated object-data pointer;
 - selected `ROOT.CDB` rows are sorted by numeric `U` reference before emission.
 
+## User Proteus Result
+
+User testing reported the same failure shape as V1:
+
+```text
+T01 and T06: LXLCORE.dll error
+T02 through T05: Proteus crashed while trying to open
+```
+
+This rejects whole donor device-section concatenation even when footer pointers
+are patched and `ROOT.CDB` rows are sorted. The next probe must preserve the
+same visible IC-region method but filter the device section down to only the
+required per-device definitions, then emit exactly one generated footer.
+
 ## Generated Pack
 
 Script:
@@ -50,7 +64,5 @@ archive_sha256: 0cbfb0cfb34878d1bd8a21d930f43e3e7be760007062c34cb6dcbbcbaa10ed7d
 
 ## Boundary
 
-If V2 still crashes, stop cross-donor metadata synthesis and ask for a real
-manual donor containing at least one counter/divider IC and one misc logic IC in
-the same project. That donor is needed to learn Proteus-authored merged device
-section behavior.
+V2 is rejected. Do not use whole donor device-section concatenation for
+cross-donor IC mixtures.
