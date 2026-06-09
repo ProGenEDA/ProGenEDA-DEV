@@ -34,6 +34,12 @@ python -m pytest tests -q => 108 passed, 78 subtests passed
 archive_sha256: 9495acef30a9f6e6fceb5e9ff3c4671b6c71d63e63b11f0b1df608c68bdfbb04
 ```
 
+Manual Proteus result:
+
+```text
+User reported all 14 generated projects worked.
+```
+
 ## Region Findings
 
 - The analog/RCL prefix is balanced only as a whole bundle in the mixed donors.
@@ -42,12 +48,15 @@ archive_sha256: 9495acef30a9f6e6fceb5e9ff3c4671b6c71d63e63b11f0b1df608c68bdfbb04
 - `4017`, `4020`, and `74HC4024` are individually balanced in the divider donor.
 - The later counter/divider regions in the all-counter donor are individually
   balanced after the `74HC193`/`74HC192` pair.
-- `74HC595`, `74HC165`, `74HC157`, `74HC283`, and `74HC85` are individually
-  balanced in the misc logic/analog donor.
+- `74HC595`, `74HC165`, `7447`, `74HC157`, `74HC283`, and `74HC85` are
+  individually balanced in the misc logic/analog donor. The original subset V1
+  script grouped `7447` with the following `74HC157` region because `7447` was
+  not yet in its marker list; user testing still passed. Future cross-donor work
+  uses an expanded marker list and splits `7447` separately.
 
 ## Test Boundary
 
-This V1 pack still keeps the donor `ROOT.CDB` and device section whole. If it
-passes Proteus testing, the next step is a V2 cleanup probe that removes or
-rebuilds unused CDB/device metadata after region removal. Do not jump straight
-to arbitrary mixed synthesis.
+This V1 pack still keeps the donor `ROOT.CDB` and device section whole. Since it
+passed Proteus testing, the next step is a cross-donor probe using only
+non-colliding IC regions, followed by a cleanup probe that removes or rebuilds
+unused CDB/device metadata. Do not jump straight to arbitrary mixed synthesis.

@@ -131,10 +131,15 @@ Status:
   `LM741`, and `CAP-ELEC`. The pack only proves complete donor
   repack/transplant/topology-preserving label mutation; it does not re-enable
   failed unit slicing or mixed identity mutation.
-- `MIXED_IC_ANALOG_SUBSET_V1_TEMP_2026_06_09` is static-clean and pending user
-  Proteus testing. It removes only complete balanced object regions while
-  preserving the full donor `ROOT.CDB` and device section. The analog/RCL prefix
-  and the `74HC193`/`74HC192` pair are treated as indivisible balanced bundles.
+- `MIXED_IC_ANALOG_SUBSET_V1_TEMP_2026_06_09` passed user Proteus testing. It
+  removes only complete balanced object regions while preserving the full donor
+  `ROOT.CDB` and device section. The analog/RCL prefix and the
+  `74HC193`/`74HC192` pair are treated as indivisible balanced bundles.
+- `MIXED_IC_CROSS_DONOR_V1_TEMP_2026_06_09` is static-clean and pending user
+  Proteus testing. It combines complete IC regions from different accepted mixed
+  donors only when their existing `U` references do not collide, builds union
+  CDB rows, and excludes analog/passive regions for this first cross-donor
+  probe.
 - The production route is now:
 
 ```text

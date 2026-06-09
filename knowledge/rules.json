@@ -1938,6 +1938,46 @@
         "experiments/mixed_ic_analog_batch1_temp_2026_06_09/summary.json"
       ],
       "rule": "The six real mixed IC/analog donor projects can be exact-repacked, transplanted into E001 with the donor ROOT.CDB and device section, and topology-preserving relabeled while retaining donor-native $TERBIDIR visible endpoints. This accepted evidence covers complete donor chunks only. It does not authorize arbitrary unit slicing, same-length identity mutation, or subset removal; those remain separate experiments. Initial region analysis shows the analog/RCL prefix must be treated as one balanced bundle, and 74HC193 plus 74HC192 must be kept together because their individual terminal/WIRE counts are not balanced."
+    },
+    {
+      "id": "R104",
+      "title": "Mixed IC/analog subset removal preserves complete balanced regions",
+      "status": "accepted_manual_proteus_test",
+      "confidence": 0.88,
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed sequential IC donors",
+        "mixed analog/RCL donors",
+        "complete object-region removal",
+        "74HC192",
+        "74HC193",
+        "4017",
+        "4020",
+        "74HC4024",
+        "74HC4520",
+        "4518",
+        "74HC4060",
+        "74HC4040",
+        "7490",
+        "74HC160",
+        "74HC161",
+        "74HC163",
+        "74HC157",
+        "74HC283",
+        "74HC165",
+        "74HC595",
+        "74HC85",
+        "7447",
+        "LM741/NPN/PNP/CAP-ELEC/RCL analog prefix"
+      ],
+      "evidence": [
+        "MIXED_IC_ANALOG_SUBSET_V1_STATIC_20260609",
+        "MIXED_IC_ANALOG_SUBSET_V1_USER_ACCEPTANCE_20260609",
+        "tools/proteus_generation/2026-06-09/generate_mixed_ic_analog_subset_v1_temp.py",
+        "proteus_ic/docs/mixed_ic_analog_subset_v1_2026_06_09.md",
+        "experiments/mixed_ic_analog_subset_v1_temp_2026_06_09/summary.json"
+      ],
+      "rule": "Complete contiguous object-region removal works for the accepted real mixed donor corpus when the full donor ROOT.CDB and donor device section are preserved. Keep the analog/RCL prefix as one balanced bundle, and keep the 74HC193 plus 74HC192 pair together unless a later donor proves independent safe rows. Individually balanced regions such as 4017, 4020, 74HC4024, later counter/divider ICs, 74HC595, 74HC165, 74HC157, 74HC283, and 74HC85 may be retained or removed as complete regions. This does not yet prove cross-donor merging or metadata cleanup."
     }
   ]
 }

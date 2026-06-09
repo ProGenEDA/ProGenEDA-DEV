@@ -112,3 +112,27 @@ def test_subset_region_discovery_finds_expected_counter_regions() -> None:
     assert subset_chunk[-1] == 0xFF
     assert {item["marker"] for item in kept} == {"74HC160", "74HC161", "74HC163"}
     assert any(item["marker"] == "LM741" for item in removed)
+
+
+def test_cross_donor_region_discovery_splits_7447_from_74hc157() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v1_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_v1_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    cross = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = cross
+    spec.loader.exec_module(cross)
+
+    donor = cross.donor_by_key("misc_logic_analog")
+    chunk = _extract_object_chunk(read_internal_file(donor.path, "ROOT.DSN"))
+    regions = cross.discover_regions(chunk)
+    markers = [region.marker for region in regions]
+    assert "7447" in markers
+    assert "74HC157" in markers
+    assert markers.index("7447") < markers.index("74HC157")
+
+    cdb, row_plan = cross.build_cross_cdb(cross.CASES[3].selections)
+    refs = [item["ref"] for item in row_plan]
+    assert refs == ["U4", "U12", "U13", "U14"]
+    for ref in refs:
+        assert cdb.count(ref.encode("ascii")) == 2
