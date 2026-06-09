@@ -126,11 +126,15 @@ Status:
   every generated solo/control project. It imports whole-donor controls for `NE555`, `NPN`, `PNP`,
   `LM741`, and `ELEC-CAP`; the electrolytic capacitor donor uses Proteus marker
   `CAP-ELEC` and blank donor terminal labels.
-- `MIXED_IC_ANALOG_BATCH1_TEMP_2026_06_09` is static-clean and pending user
-  Proteus testing. It imports real mixed donors that combine sequential ICs,
-  R/C/L, `NPN`, `PNP`, `LM741`, and `CAP-ELEC`. The pack only tests complete
-  donor repack/transplant/topology-preserving label mutation; it does not
-  re-enable failed unit slicing or mixed identity mutation.
+- `MIXED_IC_ANALOG_BATCH1_TEMP_2026_06_09` passed user Proteus testing. It
+  imports real mixed donors that combine sequential ICs, R/C/L, `NPN`, `PNP`,
+  `LM741`, and `CAP-ELEC`. The pack only proves complete donor
+  repack/transplant/topology-preserving label mutation; it does not re-enable
+  failed unit slicing or mixed identity mutation.
+- `MIXED_IC_ANALOG_SUBSET_V1_TEMP_2026_06_09` is static-clean and pending user
+  Proteus testing. It removes only complete balanced object regions while
+  preserving the full donor `ROOT.CDB` and device section. The analog/RCL prefix
+  and the `74HC193`/`74HC192` pair are treated as indivisible balanced bundles.
 - The production route is now:
 
 ```text

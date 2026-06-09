@@ -67,3 +67,48 @@ def test_large_mixed_donor_covers_counter_analog_scope() -> None:
         assert markers[marker] > 0
     assert inventory["terminal_count"] == 180
     assert inventory["wire_count"] == 180
+
+
+def test_subset_region_discovery_finds_expected_counter_regions() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_analog_subset_v1_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_analog_subset_v1_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    subset = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = subset
+    spec.loader.exec_module(subset)
+
+    donor = next(item for item in subset.mixed.DONORS if item.key == "seq_counters_all")
+    chunk = _extract_object_chunk(read_internal_file(donor.path, "ROOT.DSN"))
+    regions = subset.discover_regions(chunk)
+    assert [region.marker for region in regions] == [
+        "LM741",
+        "CAPACITOR",
+        "PNP",
+        "NPN",
+        "REALIND",
+        "RESISTOR",
+        "CAP-ELEC",
+        "74HC193",
+        "74HC192",
+        "4017",
+        "4020",
+        "74HC4024",
+        "74HC4520",
+        "4518",
+        "74HC4060",
+        "74HC4040",
+        "7490",
+        "74HC160",
+        "74HC161",
+        "74HC163",
+    ]
+    subset_chunk, kept, removed = subset.build_subset_chunk(
+        chunk,
+        regions,
+        ("74HC160", "74HC161", "74HC163"),
+    )
+    assert subset_chunk[0] == 0
+    assert subset_chunk[-1] == 0xFF
+    assert {item["marker"] for item in kept} == {"74HC160", "74HC161", "74HC163"}
+    assert any(item["marker"] == "LM741" for item in removed)

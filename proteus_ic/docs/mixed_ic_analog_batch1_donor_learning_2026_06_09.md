@@ -67,10 +67,19 @@ python -m pytest tests -q => 107 passed, 78 subtests passed
 archive_sha256: e3e744cd6c9941ac7d2ae184b247d8d679c7b55245ae082e9fcd5fb24e6a32c6
 ```
 
+Manual Proteus result:
+
+```text
+User reported all 18 generated projects worked.
+```
+
 ## Boundary
 
-This batch does not yet prove arbitrary mixed synthesis by unit slicing,
-same-length identity mutation, or subset removal. Those methods already failed
-for sequential counters. The next safe step after this pack passes Proteus
-testing is to test donor-subset removal or explicit user-provided mixed donor
-templates, not to return to synthetic per-unit splicing.
+This batch proves only complete real-donor repack, E001 transplant, and
+topology-preserving relabeling. It does not prove arbitrary mixed synthesis by
+unit slicing, same-length identity mutation, or subset removal. Those methods
+already failed for sequential counters.
+
+The next safe step is `MIXED_IC_ANALOG_SUBSET_V1_TEMP_2026_06_09`, which removes
+only complete balanced object regions while preserving the full donor `ROOT.CDB`
+and donor device section.

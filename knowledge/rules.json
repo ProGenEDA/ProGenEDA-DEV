@@ -1896,6 +1896,48 @@
         "proteus_ic/docs/analog_misc_batch1_donor_learning_2026_06_09.md"
       ],
       "rule": "For the accepted analog/misc solo donor pack, preserve whole donor chunks and donor-native $TERBIDIR endpoints. The accepted scope is exact repack, E001 transplant, label mutation, same-family scale controls where donors exist, and whole RLC donor transplants. ELEC-CAP uses the Proteus marker CAP-ELEC and its original donor terminal labels are blank, so generated labels must be patched from that observed shape. Do not promote mixed-family analog synthesis from this evidence alone."
+    },
+    {
+      "id": "R103",
+      "title": "Real mixed IC/analog donors support whole-chunk relabeling",
+      "status": "accepted_manual_proteus_test",
+      "confidence": 0.9,
+      "applies_to": [
+        "Proteus 8.13",
+        "mixed sequential IC donors",
+        "mixed analog/RCL donors",
+        "74HC192",
+        "74HC193",
+        "4017",
+        "4020",
+        "74HC4024",
+        "74HC4520",
+        "4518",
+        "74HC4060",
+        "74HC4040",
+        "7490",
+        "74HC160",
+        "74HC161",
+        "74HC163",
+        "74HC157",
+        "74HC283",
+        "74HC165",
+        "74HC595",
+        "74HC85",
+        "LM741",
+        "NPN",
+        "PNP",
+        "CAP-ELEC",
+        "R/C/L mixed donors"
+      ],
+      "evidence": [
+        "MIXED_IC_ANALOG_BATCH1_STATIC_20260609",
+        "MIXED_IC_ANALOG_BATCH1_USER_ACCEPTANCE_20260609",
+        "tools/proteus_generation/2026-06-09/generate_mixed_ic_analog_batch1_temp.py",
+        "proteus_ic/docs/mixed_ic_analog_batch1_donor_learning_2026_06_09.md",
+        "experiments/mixed_ic_analog_batch1_temp_2026_06_09/summary.json"
+      ],
+      "rule": "The six real mixed IC/analog donor projects can be exact-repacked, transplanted into E001 with the donor ROOT.CDB and device section, and topology-preserving relabeled while retaining donor-native $TERBIDIR visible endpoints. This accepted evidence covers complete donor chunks only. It does not authorize arbitrary unit slicing, same-length identity mutation, or subset removal; those remain separate experiments. Initial region analysis shows the analog/RCL prefix must be treated as one balanced bundle, and 74HC193 plus 74HC192 must be kept together because their individual terminal/WIRE counts are not balanced."
     }
   ]
 }
