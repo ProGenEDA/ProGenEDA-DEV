@@ -1085,7 +1085,7 @@
     {
       "id": "Q097",
       "question": "Does full-skeleton CDB generation work for cross-donor IC mixes when the complete donor CDB row universe is preserved and only selected matching rows are replaced?",
-      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_cdb_v2_full_skeleton",
+      "status": "answered_full_skeleton_works_except_specific_t05_shift_register_swap",
       "needed_for": [
         "cross_donor_ic_generation",
         "mixed_sequential_ic_generation",
@@ -1099,7 +1099,27 @@
         "experiments/MIXED_IC_CROSS_DONOR_CDB_V2_FULL_SKELETON_TEMP_2026_06_10.zip",
         "proteus_ic/docs/mixed_ic_cross_donor_cdb_v2_full_skeleton_2026_06_10.md"
       ],
-      "notes": "Test T00-T10 in order. T00/T04/T06/T07 are full-CDB controls. T01-T03 replace U4-U6 inside the full misc CDB skeleton. T05 replaces U2-U3 inside the full counter skeleton. T08-T10 replace U4 inside the full counter skeleton."
+      "notes": "Test T00-T10 in order. T00/T04/T06/T07 are full-CDB controls. T01-T03 replace U4-U6 inside the full misc CDB skeleton. T05 replaces U2-U3 inside the full counter skeleton. T08-T10 replace U4 inside the full counter skeleton.",
+      "answer": "User Proteus testing reported all CDB V2 cases worked except T05. T05 did not crash; it opened far enough to report a DLL error. This accepts full donor CDB skeleton preservation and selected row replacement generally, but leaves the specific counter-skeleton U2/U3 shift-register replacement path unresolved."
+    },
+    {
+      "id": "Q098",
+      "question": "Which part of CDB V2 T05 causes the DLL error: replacing U2, replacing U3, property rows, pin rows, or the combination?",
+      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_cdb_v3_t05_isolation",
+      "needed_for": [
+        "cross_donor_ic_generation",
+        "mixed_sequential_ic_generation",
+        "misc_logic_ic_integration",
+        "large_mixed_ic_generation",
+        "cdb_composition_rules",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_cdb_v3_t05_isolation_temp.py",
+        "experiments/MIXED_IC_CROSS_DONOR_CDB_V3_T05_ISOLATION_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_cdb_v3_t05_isolation_2026_06_10.md"
+      ],
+      "notes": "Test T00-T10 in order. T03 reproduces the failing V2 T05. T01/T02 split U2 versus U3. T04-T09 split property rows versus pin rows."
     }
   ]
 }

@@ -46,4 +46,21 @@ Cases:
 
 ## Current Status
 
-Static generation completed. Manual Proteus open/render testing is pending.
+User Proteus testing reported:
+
+```text
+Worked: T00, T01, T02, T03, T04, T06, T07, T08, T09, T10
+DLL error without crash: T05
+```
+
+Interpretation:
+
+- full donor CDB skeleton preservation is accepted for this route;
+- replacing selected rows inside the full skeleton can work;
+- the only failing case is the specific full counter skeleton replacement of
+  both `U2` and `U3` with the misc shift-register rows;
+- because `U3` in the counter skeleton is originally an `LM741` row, the next
+  probe isolates `U2` versus `U3`, and pin rows versus property rows.
+
+The next probe is
+`MIXED_IC_CROSS_DONOR_CDB_V3_T05_ISOLATION_TEMP_2026_06_10`.

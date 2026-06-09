@@ -307,3 +307,32 @@ def test_cross_donor_cdb_v2_uses_full_skeleton_replacement() -> None:
     assert [row.ref for row in parsed.property_rows][9:12] == ["U4", "U5", "U6"]
     assert [item["ref"] for item in row_plan] == ["U4", "U5", "U6"]
     assert b"4017" in cdb and b"74HC4024" in cdb
+
+
+def test_cross_donor_cdb_v3_isolates_t05_replacements() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v3_t05_isolation_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_cdb_v3_t05_isolation_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    cdb_v3 = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = cdb_v3
+    spec.loader.exec_module(cdb_v3)
+
+    assert len(cdb_v3.CASES) == 11
+    assert cdb_v3.CASES[0].replacement_sources == ()
+    assert cdb_v3.CASES[1].replacement_sources == cdb_v3.U2
+    assert cdb_v3.CASES[2].replacement_sources == cdb_v3.U3
+    assert cdb_v3.CASES[3].replacement_sources == cdb_v3.U2_U3
+    assert cdb_v3.CASES[4].replace_pins is False
+    assert cdb_v3.CASES[5].replace_properties is False
+
+    cdb, row_plan = cdb_v3.cdb_v2.build_full_skeleton_cdb(
+        "seq_counters_all",
+        cdb_v3.U2,
+        replace_pins=True,
+        replace_properties=True,
+    )
+    parsed = cdb_v3.parse_cdb(cdb)
+    assert parsed.count == cdb_v3.cdb_v1.parsed_cdb("seq_counters_all").count
+    assert [item["ref"] for item in row_plan] == ["U2"]
+    assert b"74HC595" in cdb
