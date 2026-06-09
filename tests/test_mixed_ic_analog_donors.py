@@ -136,3 +136,35 @@ def test_cross_donor_region_discovery_splits_7447_from_74hc157() -> None:
     assert refs == ["U4", "U12", "U13", "U14"]
     for ref in refs:
         assert cdb.count(ref.encode("ascii")) == 2
+
+
+def test_cross_donor_v2_patches_every_device_section_tail_pointer() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_v2_metadata_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    cross_v2 = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = cross_v2
+    spec.loader.exec_module(cross_v2)
+
+    case = cross_v2.v1.CASES[1]
+    fragments = []
+    for selection in case.selections:
+        selected, _metadata = cross_v2.v1.selected_fragments(selection)
+        fragments.extend(selected)
+    object_chunk = b"\x00" + b"".join(fragments) + b"\xff"
+    sections = cross_v2.device_sections_for(case.selections)
+    registry = cross_v2.seq.FixtureRegistry.load()
+    base = registry.get("e001_empty")
+    first_donor = cross_v2.v1.donor_by_key(case.selections[0].donor_key)
+    _dsn, pointers = cross_v2.build_dsn_with_multi_device_sections(
+        read_internal_file(base.path, "ROOT.DSN"),
+        read_internal_file(first_donor.path, "ROOT.DSN"),
+        object_chunk,
+        sections,
+    )
+    assert len(pointers["device_sections"]) == 2
+    assert all(
+        item["new_tail_pointer"] == pointers["object_data_pointer"]
+        for item in pointers["device_sections"]
+    )

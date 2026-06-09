@@ -49,6 +49,14 @@ python -m pytest tests -q => 109 passed, 78 subtests passed
 archive_sha256: 5b255e371e67460b0e132e3b38f577c88b5c07fe24a2eff6ae0c8e1e3b717403
 ```
 
+Manual Proteus result:
+
+```text
+Rejected.
+T01 and T06 gave LXLCORE.dll errors.
+T02 through T05 crashed Proteus while trying to open.
+```
+
 ## Case Intent
 
 - Mix `74HC595`, `74HC165`, `7447`, `74HC157`, `74HC283`, and `74HC85` with
@@ -60,6 +68,11 @@ archive_sha256: 5b255e371e67460b0e132e3b38f577c88b5c07fe24a2eff6ae0c8e1e3b717403
 
 ## Test Boundary
 
-This is not production synthesis yet. If V1 passes Proteus testing, the next
-step is a ref-collision probe that rewrites selected `U` references in a
-controlled same-length way, then a device-section/CDB cleanup probe.
+This is not production synthesis. V1 is rejected as a metadata-merge failure.
+Do not reuse its device-section concatenation method.
+
+The likely issue is that every extracted donor device section ends with an
+object-data pointer, while V1 patched only the final concatenated section tail
+through the old single-section builder. V2 retries the same visible object
+regions while patching every section tail pointer and sorting `ROOT.CDB` rows
+by numeric `U` reference.

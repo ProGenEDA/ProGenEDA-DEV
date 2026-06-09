@@ -135,11 +135,13 @@ Status:
   removes only complete balanced object regions while preserving the full donor
   `ROOT.CDB` and device section. The analog/RCL prefix and the
   `74HC193`/`74HC192` pair are treated as indivisible balanced bundles.
-- `MIXED_IC_CROSS_DONOR_V1_TEMP_2026_06_09` is static-clean and pending user
-  Proteus testing. It combines complete IC regions from different accepted mixed
-  donors only when their existing `U` references do not collide, builds union
-  CDB rows, and excludes analog/passive regions for this first cross-donor
-  probe.
+- `MIXED_IC_CROSS_DONOR_V1_TEMP_2026_06_09` failed user Proteus testing: T01
+  and T06 gave LXLCORE.dll errors, and T02-T05 crashed on open. Do not reuse its
+  unpatched device-section concatenation method.
+- `MIXED_IC_CROSS_DONOR_V2_METADATA_TEMP_2026_06_09` is static-clean and
+  pending user Proteus testing. It keeps the same visible IC-region combinations
+  as V1, but patches every concatenated donor device-section tail pointer and
+  sorts CDB rows by numeric `U` reference.
 - The production route is now:
 
 ```text
