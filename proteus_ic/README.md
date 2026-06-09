@@ -122,6 +122,10 @@ Status:
   Proteus testing. It imports the final supplied donor pack for `74HC85`,
   `74HC283`, `74HC157`, `74HC47`, `74HC165`, and `74HC595`. The user-facing
   `74HC47` donor uses Proteus marker `7447`.
+- `ANALOG_MISC_BATCH1_SOLO_TEMP_2026_06_09` is static-clean and pending user
+  Proteus testing. It imports whole-donor controls for `NE555`, `NPN`, `PNP`,
+  `LM741`, and `ELEC-CAP`; the electrolytic capacitor donor uses Proteus marker
+  `CAP-ELEC` and blank donor terminal labels.
 - The production route is now:
 
 ```text
