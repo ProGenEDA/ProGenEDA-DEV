@@ -1121,6 +1121,25 @@
       ],
       "notes": "Test T00-T10 in order. T03 reproduces the failing V2 T05. T01/T02 split U2 versus U3. T04-T09 split property rows versus pin rows.",
       "answer": "User Proteus testing reported all V3 T05 isolation cases worked. Therefore U2 replacement, U3 replacement, U2+U3 replacement, property-only replacement, and pin-only replacement are all accepted when generated through the focused full-skeleton CDB route. The earlier V2 T05 DLL error is not a blocking rule for mixing."
+    },
+    {
+      "id": "Q099",
+      "question": "Do MIXED_IC_CROSS_DONOR_ACCEPTED_V1_TEMP_2026_06_10 practical mixed sequential/misc IC projects open/render/simulate when generated with full donor device sections and full CDB skeleton row replacement?",
+      "status": "awaiting_user_proteus_test",
+      "needed_for": [
+        "cross_donor_ic_generation",
+        "mixed_sequential_ic_generation",
+        "large_mixed_ic_generation",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v1_temp.py",
+        "experiments/MIXED_IC_CROSS_DONOR_ACCEPTED_V1_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_accepted_v1_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py"
+      ],
+      "notes": "Test T01-T08 in order. T01/T02 are accepted control shapes; T03-T06 are practical expansion cases; T07/T08 are same-donor controls. The misc 74HC157 region is intentionally excluded because its visible region uses U50 while its package CDB row is U5.",
+      "answer": ""
     }
   ]
 }

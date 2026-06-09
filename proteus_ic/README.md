@@ -48,6 +48,7 @@ python tools/proteus_generation/2026-06-08/generate_ic_final_t29_legacy_ground_v
 python tools/proteus_generation/2026-06-08/generate_ic_hc04_all7_v1_temp.py
 python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v1_temp.py
 python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v2_temp.py
+python tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v1_temp.py
 ```
 
 Status:
@@ -168,6 +169,12 @@ Status:
   User testing reported every T05 isolation case worked. The active CDB mixing
   policy is now full donor device sections plus a complete donor `ROOT.CDB`
   skeleton with parser-built row replacement inside that skeleton.
+- `MIXED_IC_CROSS_DONOR_ACCEPTED_V1_TEMP_2026_06_10` is static-clean and
+  pending user Proteus testing. It applies the accepted full-device/full-CDB
+  skeleton row-replacement policy to practical mixed sequential/misc IC
+  combinations. It intentionally excludes the misc `74HC157` region because
+  that donor region carries visible `U50` references while the ordinary CDB
+  package row is `U5`.
 - The production route is now:
 
 ```text
