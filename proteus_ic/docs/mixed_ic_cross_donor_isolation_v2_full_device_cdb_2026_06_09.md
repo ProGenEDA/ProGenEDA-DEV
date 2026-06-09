@@ -73,3 +73,27 @@ Expected interpretation:
 Do not use filtered per-device definitions for these cross-donor mixed ICs.
 Preserve full donor device sections until a Proteus-authored mixed donor proves
 a smaller metadata model.
+
+## User Proteus Result
+
+User testing reported:
+
+```text
+Worked: T00, T03, T05, T06, T07, T10
+Crashed before open: T01, T02, T04, T08, T09, T11
+```
+
+Interpretation:
+
+- all complete donor CDB cases worked;
+- all generated/stitched CDB cases from this pack crashed;
+- first-header donor can be either donor as long as the CDB is copied whole
+  from that same donor;
+- the old CDB row slicer is rejected, because it split rows at ASCII reference
+  markers and did not preserve the real binary row boundaries;
+- this result is not final proof that generated CDB is impossible.
+
+The next probe is
+`MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09`, which uses the
+decoded CDB parser/builder and tests generated rows with and without row
+ordinal normalization.

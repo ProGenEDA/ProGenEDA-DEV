@@ -1043,7 +1043,7 @@
     {
       "id": "Q095",
       "question": "In MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_TEMP_2026_06_09, which CDB/header policy opens when full multi-donor device sections are preserved for all cross-donor IC mixes?",
-      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_isolation_v2_full_device_cdb",
+      "status": "answered_complete_donor_cdb_only_worked_generated_cdb_crashed",
       "needed_for": [
         "cross_donor_ic_generation",
         "mixed_sequential_ic_generation",
@@ -1054,9 +1054,32 @@
       "evidence": [
         "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py",
         "experiments/MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_TEMP_2026_06_09.zip",
+        "MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_USER_BOUNDARY_20260609",
         "proteus_ic/docs/mixed_ic_cross_donor_isolation_v2_full_device_cdb_2026_06_09.md"
       ],
-      "notes": "Test T00-T11 in order. T00 repeats the V1 T02 working condition; T01/T02 isolate generated sparse/contiguous CDB rows; T07-T11 repeat the test for the 7447 plus sync-counter shape."
+      "notes": "Test T00-T11 in order. T00 repeats the V1 T02 working condition; T01/T02 isolate generated sparse/contiguous CDB rows; T07-T11 repeat the test for the 7447 plus sync-counter shape.",
+      "answer": "User Proteus testing of Isolation V2 showed complete donor CDB cases worked: T00, T03, T05, T06, T07, and T10. Every generated/stitched CDB case from the old slicer crashed before open: T01, T02, T04, T08, T09, and T11. This rejects the old ASCII-based CDB row slicer, but not parser-based CDB synthesis."
+    },
+    {
+      "id": "Q096",
+      "question": "Do corrected parser-built CDB rows work for cross-donor IC mixes in MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09, and does Proteus prefer original donor ordinals or renumbered emitted ordinals?",
+      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_cdb_v1_correct_rows",
+      "needed_for": [
+        "cross_donor_ic_generation",
+        "mixed_sequential_ic_generation",
+        "misc_logic_ic_integration",
+        "large_mixed_ic_generation",
+        "cdb_composition_rules",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "src/proteusgen/cdb.py",
+        "tests/test_cdb_parser.py",
+        "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_cdb_v1_correct_rows_temp.py",
+        "experiments/MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_cdb_v1_correct_rows_2026_06_09.md"
+      ],
+      "notes": "Test T00-T11 in order. T00/T06 are full-CDB controls. T01-T03 and T07-T09 preserve donor row ordinals. T04-T05 and T10-T11 renumber internal CDB ordinals to emitted row order."
     }
   ]
 }

@@ -253,3 +253,29 @@ def test_cross_donor_isolation_v2_keeps_full_multi_device_metadata() -> None:
     assert isolation_v2.CASES[1].cdb_mode == "row_sources"
     assert isolation_v2.CASES[4].case_id == "T04_T02_SHAPE_CONTIGUOUS_CDB_HEADER_SEQ"
     assert isolation_v2.CASES[11].case_id == "T11_T04_SHAPE_CONTIGUOUS_CDB_HEADER_SEQ"
+
+
+def test_cross_donor_cdb_v1_uses_correct_row_parser_variants() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_cdb_v1_correct_rows_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_cdb_v1_correct_rows_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    cdb_v1 = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = cdb_v1
+    spec.loader.exec_module(cdb_v1)
+
+    assert len(cdb_v1.CASES) == 12
+    assert cdb_v1.CASES[0].cdb_mode == "full_header_donor"
+    assert cdb_v1.CASES[1].cdb_mode == "correct_rows"
+    assert cdb_v1.CASES[1].renumber_rows is False
+    assert cdb_v1.CASES[4].renumber_rows is True
+
+    cdb, row_plan = cdb_v1.build_correct_cdb(
+        "misc_logic_analog",
+        cdb_v1.iso.T02_SPARSE,
+        renumber_rows=True,
+    )
+    parsed = cdb_v1.parse_cdb(cdb)
+    assert parsed.count == 5
+    assert [row.ref for row in parsed.pin_rows] == ["U2", "U3", "U4", "U5", "U6"]
+    assert [item["emitted_ordinal"] for item in row_plan] == [1, 2, 3, 4, 5]

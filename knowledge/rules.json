@@ -2042,6 +2042,21 @@
         "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py"
       ],
       "created": "2026-06-09"
+    },
+    {
+      "id": "R109",
+      "title": "Do not ASCII-slice ROOT.CDB rows",
+      "status": "accepted_from_user_proteus_boundary_test_and_static_decode",
+      "rule": "For CDB synthesis, parse binary row boundaries and rebuild through src/proteusgen/cdb.py. Do not split ROOT.CDB rows at ASCII U-reference markers or concatenate rows without adapting property-row overlap/trailer bytes.",
+      "rationale": "Isolation V2 user testing showed every old generated/stitched CDB case crashed before opening. The later byte-level decoder proved those rows had been sliced at invalid boundaries and missed the property-row overlap rule.",
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_USER_BOUNDARY_20260609",
+        "proteus_ic/docs/mixed_ic_cross_donor_isolation_v2_full_device_cdb_2026_06_09.md",
+        "src/proteusgen/cdb.py",
+        "tests/test_cdb_parser.py",
+        "proteus_ic/docs/mixed_ic_cross_donor_cdb_v1_correct_rows_2026_06_09.md"
+      ],
+      "created": "2026-06-09"
     }
   ]
 }

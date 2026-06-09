@@ -152,9 +152,14 @@ Status:
   proves same-donor region extraction is safe, and that the first cross-donor
   working case requires full donor device sections.
 - `MIXED_IC_CROSS_DONOR_ISOLATION_V2_FULL_DEVICE_CDB_TEMP_2026_06_09` is
-  pending user Proteus testing. It keeps full multi-donor device sections in
-  every cross-donor case and varies only CDB/header choices to isolate why V1
-  T02 worked but generated-row CDB cases crashed.
+  accepted as a boundary test. User testing reported T00, T03, T05, T06, T07,
+  and T10 worked, while all old generated/stitched CDB cases crashed before
+  open. The failed generated cases used invalid CDB row slicing, so do not
+  treat that result as proof that CDB synthesis is impossible.
+- `MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09` is pending user
+  Proteus testing. It uses the decoded CDB parser/builder, adapts the
+  property-row overlap/trailer rule, and tests generated rows with and without
+  row ordinal normalization.
 - The production route is now:
 
 ```text
