@@ -2074,12 +2074,14 @@
     {
       "id": "R111",
       "title": "Use full CDB skeleton replacement for cross-donor ICs",
-      "status": "accepted_with_known_exception_pending_t05_isolation",
-      "rule": "For cross-donor sequential/misc IC mixtures, preserve full donor device sections and a complete donor ROOT.CDB skeleton. Parser-built row replacement inside that full skeleton is allowed for tested-safe directions. Avoid the counter-skeleton U2/U3 shift-register replacement path until T05 isolation identifies the DLL error cause.",
-      "rationale": "CDB V2 user testing reported every full-skeleton case worked except T05. This validates the full-skeleton strategy while keeping one unresolved exception for the counter skeleton replacing U2/U3 with 74HC595/74HC165 rows.",
+      "status": "accepted_from_user_proteus_boundary_test",
+      "rule": "For cross-donor sequential/misc IC mixtures, preserve full donor device sections and a complete donor ROOT.CDB skeleton. Use the parser-built CDB row replacement path inside that full skeleton; do not reduce the CDB skeleton/count.",
+      "rationale": "CDB V2 user testing showed full-skeleton replacement worked for all cases except a non-crashing T05 DLL error. The focused CDB V3 T05 isolation then reported all cases worked, including U2, U3, U2+U3, property-only, and pin-only replacements.",
       "evidence": [
         "MIXED_IC_CROSS_DONOR_CDB_V2_FULL_SKELETON_USER_BOUNDARY_20260610",
+        "MIXED_IC_CROSS_DONOR_CDB_V3_T05_ISOLATION_USER_ACCEPTANCE_20260610",
         "proteus_ic/docs/mixed_ic_cross_donor_cdb_v2_full_skeleton_2026_06_10.md",
+        "proteus_ic/docs/mixed_ic_cross_donor_cdb_v3_t05_isolation_2026_06_10.md",
         "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_cdb_v3_t05_isolation_temp.py"
       ],
       "created": "2026-06-10"

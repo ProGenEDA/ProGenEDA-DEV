@@ -156,14 +156,18 @@ Status:
   and T10 worked, while all old generated/stitched CDB cases crashed before
   open. The failed generated cases used invalid CDB row slicing, so do not
   treat that result as proof that CDB synthesis is impossible.
-- `MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09` is pending user
-  accepted as a boundary test. User testing reported only T00 and T06 worked;
+- `MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09` is accepted as a
+  boundary test. User testing reported only T00 and T06 worked;
   all reduced generated-CDB cases crashed before opening. This shows the CDB
   parser/builder row boundaries are not sufficient if the full donor CDB
   skeleton/count is reduced.
-- `MIXED_IC_CROSS_DONOR_CDB_V2_FULL_SKELETON_TEMP_2026_06_10` is pending user
-  Proteus testing. It keeps a complete donor CDB skeleton and replaces only
-  selected rows inside that skeleton.
+- `MIXED_IC_CROSS_DONOR_CDB_V2_FULL_SKELETON_TEMP_2026_06_10` is accepted with
+  one resolved follow-up: user testing reported every case worked except T05,
+  which gave a DLL error without crashing.
+- `MIXED_IC_CROSS_DONOR_CDB_V3_T05_ISOLATION_TEMP_2026_06_10` is accepted.
+  User testing reported every T05 isolation case worked. The active CDB mixing
+  policy is now full donor device sections plus a complete donor `ROOT.CDB`
+  skeleton with parser-built row replacement inside that skeleton.
 - The production route is now:
 
 ```text

@@ -45,4 +45,16 @@ Cases:
 
 ## Current Status
 
-Static generation completed. Manual Proteus open/render testing is pending.
+User Proteus testing reported all cases worked:
+
+```text
+Worked: T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10
+```
+
+Interpretation:
+
+- the earlier V2 `T05` DLL error was not reproducible when isolated;
+- replacing `U2`, `U3`, or `U2+U3` inside the full counter CDB skeleton works;
+- splitting the same replacements by property rows versus pin rows also works;
+- full donor CDB skeleton preservation plus parser-built row replacement is
+  accepted for cross-donor IC mixing.
