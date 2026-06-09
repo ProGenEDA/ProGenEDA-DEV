@@ -113,17 +113,17 @@ Status:
   failed user testing. Mixed identity-mutation cases T01, T02, and T03 gave
   ISIS errors. Wait for a real manual mixed sequential donor before trying
   cross-family sequential projects again.
-- `IC_SEQUENTIAL_BATCH3_SOLO_TEMP_2026_06_09` is static-clean and pending user
-  Proteus testing. It imports solo donors for `74HC4040`, `74HC4060`, `4518`,
+- `IC_SEQUENTIAL_BATCH3_SOLO_TEMP_2026_06_09` passed user Proteus testing for
+  every generated solo/control project. It imports solo donors for `74HC4040`, `74HC4060`, `4518`,
   `74HC4520`, `74HC74`, `74HC76`, `74HC174`, `74HC273`, and `4027`. This pack
   contains only per-family exact repack, E001 transplant, label mutation, 2x/4x
   controls where supplied, and RLC donor transplants.
-- `IC_SEQUENTIAL_BATCH4_SOLO_TEMP_2026_06_09` is static-clean and pending user
-  Proteus testing. It imports the final supplied donor pack for `74HC85`,
+- `IC_SEQUENTIAL_BATCH4_SOLO_TEMP_2026_06_09` passed user Proteus testing for
+  every generated solo/control project. It imports the final supplied donor pack for `74HC85`,
   `74HC283`, `74HC157`, `74HC47`, `74HC165`, and `74HC595`. The user-facing
   `74HC47` donor uses Proteus marker `7447`.
-- `ANALOG_MISC_BATCH1_SOLO_TEMP_2026_06_09` is static-clean and pending user
-  Proteus testing. It imports whole-donor controls for `NE555`, `NPN`, `PNP`,
+- `ANALOG_MISC_BATCH1_SOLO_TEMP_2026_06_09` passed user Proteus testing for
+  every generated solo/control project. It imports whole-donor controls for `NE555`, `NPN`, `PNP`,
   `LM741`, and `ELEC-CAP`; the electrolytic capacitor donor uses Proteus marker
   `CAP-ELEC` and blank donor terminal labels.
 - The production route is now:

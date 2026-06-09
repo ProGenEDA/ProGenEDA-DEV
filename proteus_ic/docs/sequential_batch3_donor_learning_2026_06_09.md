@@ -108,4 +108,13 @@ Automated result:
 python -m pytest tests -q => 99 passed, 78 subtests passed
 ```
 
-Manual Proteus testing is pending. Test the generated projects family by family.
+Manual Proteus result:
+
+```text
+User reported every circuit in experiments/ic_sequential_batch3_solo_temp_2026_06_09 works.
+```
+
+Treat this as acceptance for the solo donor-derived controls in this folder:
+exact repack, E001 transplant, label mutation, 2x/4x controls where supplied,
+and RLC donor transplants. It does not change the rejected mixed sequential
+rules above.

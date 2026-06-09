@@ -93,5 +93,12 @@ Automated result:
 python -m pytest tests -q => 104 passed, 78 subtests passed
 ```
 
-Manual Proteus testing is pending. Test exact repacks first, then E001
-transplants, then label mutations and scale/RLC cases.
+Manual Proteus result:
+
+```text
+User reported every circuit in experiments/analog_misc_batch1_solo_temp_2026_06_09 works.
+```
+
+Treat this as acceptance for the solo donor-derived controls in this folder:
+exact repack, E001 transplant, label mutation, scale controls, and whole RLC
+donor transplants. This does not yet promote mixed-family analog synthesis.

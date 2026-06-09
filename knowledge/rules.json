@@ -1841,6 +1841,61 @@
         "experiments/ic_hc04_all7_v1_temp_2026_06_08/summary_manifest.json"
       ],
       "rule": "The HC04 donor shows hex inverter subparts U1:A through U1:F using the 74INV.MDF model. Each subpart has one signal input and one signal output; user DIP pin 14/VCC and pin 7/GND are hidden-supply metadata and must not be emitted as explicit IC package pins. The HC04 donor's visible input terminal labels are one character, so HC04 generation uses a dedicated resizable terminal-label patch plus HC04-specific suffix and coordinate handling. User testing confirmed the HC04/all-seven pack works. Production IC generation now accepts the locked gate/passive JSON route, keeps IC signal pins as $TERINPUT/$TEROUTPUT, keeps ordinary passive endpoints as $TERBIDIR, and keeps passive G0 on the donor $TERGROUND method."
+    },
+    {
+      "id": "R101",
+      "title": "Sequential IC solo donor packs use bidirectional visible pins",
+      "status": "accepted_manual_proteus_test_for_solo_packs",
+      "confidence": 0.9,
+      "applies_to": [
+        "Proteus 8.13",
+        "sequential IC solo donor controls",
+        "74HC4040",
+        "74HC4060",
+        "4518",
+        "74HC4520",
+        "74HC74",
+        "74HC76",
+        "74HC174",
+        "74HC273",
+        "4027",
+        "74HC85",
+        "74HC283",
+        "74HC157",
+        "74HC47",
+        "74HC165",
+        "74HC595"
+      ],
+      "evidence": [
+        "IC_SEQUENTIAL_BATCH3_SOLO_STATIC_20260609",
+        "IC_SEQUENTIAL_BATCH3_SOLO_USER_ACCEPTANCE_20260609",
+        "IC_SEQUENTIAL_BATCH4_SOLO_STATIC_20260609",
+        "IC_SEQUENTIAL_BATCH4_SOLO_USER_ACCEPTANCE_20260609",
+        "proteus_ic/docs/sequential_batch3_donor_learning_2026_06_09.md",
+        "proteus_ic/docs/sequential_batch4_final_donor_learning_2026_06_09.md"
+      ],
+      "rule": "For the accepted sequential IC solo donor packs, preserve donor-native $TERBIDIR records for all visible IC pins. The accepted scope is exact repack, E001 transplant, label mutation, same-family 2x/4x controls where donors exist, and RLC donor transplants in the generated folders. Do not apply this policy to locked combinational ICs, whose pins remain directional. Do not infer that mixed sequential IC synthesis works; unit slicing and same-length identity mutation were rejected earlier. The user-facing 74HC47 donor uses Proteus marker 7447, and the supplied 74HC174 donors remain distinct from the still-missing 74HC175."
+    },
+    {
+      "id": "R102",
+      "title": "Analog and misc solo donor pack preserves whole donor chunks",
+      "status": "accepted_manual_proteus_test_for_solo_pack",
+      "confidence": 0.9,
+      "applies_to": [
+        "Proteus 8.13",
+        "NE555",
+        "NPN",
+        "PNP",
+        "LM741",
+        "ELEC-CAP",
+        "analog/misc solo donor controls"
+      ],
+      "evidence": [
+        "ANALOG_MISC_BATCH1_SOLO_STATIC_20260609",
+        "ANALOG_MISC_BATCH1_SOLO_USER_ACCEPTANCE_20260609",
+        "proteus_ic/docs/analog_misc_batch1_donor_learning_2026_06_09.md"
+      ],
+      "rule": "For the accepted analog/misc solo donor pack, preserve whole donor chunks and donor-native $TERBIDIR endpoints. The accepted scope is exact repack, E001 transplant, label mutation, same-family scale controls where donors exist, and whole RLC donor transplants. ELEC-CAP uses the Proteus marker CAP-ELEC and its original donor terminal labels are blank, so generated labels must be patched from that observed shape. Do not promote mixed-family analog synthesis from this evidence alone."
     }
   ]
 }
