@@ -118,6 +118,10 @@ Status:
   `74HC4520`, `74HC74`, `74HC76`, `74HC174`, `74HC273`, and `4027`. This pack
   contains only per-family exact repack, E001 transplant, label mutation, 2x/4x
   controls where supplied, and RLC donor transplants.
+- `IC_SEQUENTIAL_BATCH4_SOLO_TEMP_2026_06_09` is static-clean and pending user
+  Proteus testing. It imports the final supplied donor pack for `74HC85`,
+  `74HC283`, `74HC157`, `74HC47`, `74HC165`, and `74HC595`. The user-facing
+  `74HC47` donor uses Proteus marker `7447`.
 - The production route is now:
 
 ```text
