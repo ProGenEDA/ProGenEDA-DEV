@@ -191,3 +191,47 @@ def test_cross_donor_v3_filtered_device_definitions_drop_analog_tail() -> None:
     assert any(item["device"] == "7447" for item in plan)
     assert b"CAP-ELEC" not in section
     assert b"LM741" not in section
+
+
+def test_cross_donor_isolation_audits_previous_u50_ref_mismatch() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_isolation_v1_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    isolation = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = isolation
+    spec.loader.exec_module(isolation)
+
+    previous_large_case = isolation.v1.CASES[0]
+    object_chunk, _region_plan = isolation.object_chunk_for(previous_large_case.selections)
+    cdb, _row_plan = isolation.v2.build_cross_cdb_sorted(previous_large_case.selections)
+    object_refs = set(isolation.refs_in(object_chunk))
+    cdb_refs = set(isolation.refs_in(cdb))
+    assert "U50" in object_refs
+    assert "U5" in cdb_refs
+    assert not object_refs.issubset(cdb_refs)
+
+
+def test_cross_donor_isolation_contiguous_cdb_plan_keeps_t02_refs_covered() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_isolation_v1_temp_for_cdb", script)
+    assert spec is not None
+    assert spec.loader is not None
+    isolation = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = isolation
+    spec.loader.exec_module(isolation)
+
+    cdb, row_plan = isolation.build_cdb_from_sources(
+        "misc_logic_analog",
+        (
+            ("misc_logic_analog", "U1"),
+            ("misc_logic_analog", "U2"),
+            ("misc_logic_analog", "U3"),
+            ("seq_counters_all", "U4"),
+            ("seq_counters_all", "U5"),
+            ("seq_counters_all", "U6"),
+            ("misc_logic_analog", "U7"),
+        ),
+    )
+    assert isolation.refs_in(cdb) == ["U1", "U2", "U3", "U4", "U5", "U6", "U7"]
+    assert next(item for item in row_plan if item["ref"] == "U4")["donor_key"] == "seq_counters_all"

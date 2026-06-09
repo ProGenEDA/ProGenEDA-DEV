@@ -2016,6 +2016,19 @@
         "proteus_ic/docs/mixed_ic_cross_donor_v2_metadata_2026_06_09.md"
       ],
       "rule": "Do not merge cross-donor IC metadata by concatenating whole donor device sections, even if every section tail pointer is patched and CDB rows are sorted by numeric U reference. V2 reproduced the V1 failure pattern: T01/T06 gave LXLCORE.dll errors and T02-T05 crashed while opening. Device-section analysis shows donor sections are sequences of length-prefixed per-device definitions followed by one final pointer footer. Whole-section merges leave unwanted duplicate/trailing definitions and section-level structure in the merged metadata. The next safe probe must extract only required per-device definitions, omit donor section footers, and emit exactly one generated footer."
+    },
+    {
+      "id": "R107",
+      "title": "Cross-donor static validation must verify visible object refs are covered by ROOT.CDB refs",
+      "status": "accepted_static_rule",
+      "rule": "For generated cross-donor IC projects, extract every visible U-reference from the ROOT.DSN object chunk and verify it is present in ROOT.CDB before manual Proteus testing. The previous V1/V2/V3 checks missed 74HC157 fragments whose object chunk contained U50 while the selected CDB row was U5.",
+      "rationale": "User testing showed identical V1/V2/V3 failures. A later byte audit found T01/T03/T05/T06 were invalid before Proteus because object refs were not a subset of CDB refs.",
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_ISOLATION_V1_STATIC_20260609",
+        "experiments/mixed_ic_cross_donor_isolation_v1_temp_2026_06_09/previous_v1_v2_v3_ref_audit.json",
+        "tests/test_mixed_ic_analog_donors.py::test_cross_donor_isolation_audits_previous_u50_ref_mismatch"
+      ],
+      "created": "2026-06-09"
     }
   ]
 }

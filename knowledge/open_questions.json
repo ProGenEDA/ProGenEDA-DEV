@@ -1004,14 +1004,38 @@
       "id": "Q093",
       "priority": "high",
       "question": "Do MIXED_IC_CROSS_DONOR_V3_FILTERED_DEVICE_TEMP_2026_06_09 cross-donor whole-IC-region combinations open/render/simulate after extracting only needed per-device definitions, excluding analog/passive definition tails, and emitting one final device-section footer?",
-      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_v3_filtered_device",
+      "status": "answered_rejected_same_failure_pattern_user_reported",
       "needed_for": [
         "large_mixed_ic_generation",
         "cross_donor_ic_generation",
         "mixed_sequential_ic_generation",
         "misc_logic_ic_integration",
         "device_definition_filtering_rules"
+      ],
+      "answer": "Rejected by user Proteus testing: V3 reproduced the same pattern as V1/V2, with T01/T06 giving LXLCORE.dll errors and remaining cases crashing on open. Byte checks showed V1/V2/V3 T04 shared identical object chunks and ROOT.CDB, so the device-section filtering was not the active failing surface.",
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_V3_FILTERED_DEVICE_USER_FAILURE_20260609",
+        "proteus_ic/docs/mixed_ic_cross_donor_isolation_v1_2026_06_09.md"
       ]
+    },
+    {
+      "id": "Q094",
+      "question": "Which exact section change first breaks cross-donor mixed IC generation in MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09: same-donor region extraction, sparse CDB rows, first-header donor bytes, filtered device definitions, or full multi donor device sections?",
+      "status": "awaiting_user_proteus_test_mixed_ic_cross_donor_isolation_v1",
+      "needed_for": [
+        "cross_donor_ic_generation",
+        "mixed_sequential_ic_generation",
+        "misc_logic_ic_integration",
+        "large_mixed_ic_generation",
+        "cdb_composition_rules",
+        "device_section_composition_rules"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-09/generate_mixed_ic_cross_donor_isolation_v1_temp.py",
+        "experiments/MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_isolation_v1_2026_06_09.md"
+      ],
+      "notes": "Test in order and report the first failing case. T00/T01 are same-donor controls; T04-T09 isolate the clean T02/T04 failure shapes."
     }
   ]
 }

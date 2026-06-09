@@ -144,10 +144,13 @@ Status:
   device-section concatenation for cross-donor IC mixtures, even with patched
   section footers and sorted CDB rows.
 - `MIXED_IC_CROSS_DONOR_V3_FILTERED_DEVICE_TEMP_2026_06_09` is static-clean
-  and pending user Proteus testing. It keeps the same visible IC-region
-  combinations as V1/V2, but extracts only required per-device definitions,
-  excludes unrelated analog/passive definition tails, and emits one generated
-  device-section footer.
+  but failed user Proteus testing with the same pattern as V1/V2. This showed
+  that the previous fixes did not touch the real failing surface.
+- `MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09` is static-clean except
+  for one intentionally unsafe metadata case, and is pending user Proteus
+  testing. It steps back to same-donor controls, sparse-vs-contiguous CDB rows,
+  first-header donor swaps, and filtered-vs-full device metadata for the two
+  clean failing shapes.
 - The production route is now:
 
 ```text
