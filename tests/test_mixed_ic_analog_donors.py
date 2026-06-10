@@ -445,6 +445,31 @@ def test_mixed_ic_focused_v3_moves_text_and_covers_analog_controls() -> None:
     assert any("4060" in case.case_id for case in focused.WHOLE_DONOR_CASES)
 
 
+def test_mixed_ic_focused_v5_keeps_4060_donor_native() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v5_donor_native_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_focused_v5_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    focused = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = focused
+    spec.loader.exec_module(focused)
+
+    assert len(focused.CASES) == 6
+    assert focused.cdb_4060_voltage_refs(read_internal_file(focused.DONOR_4060_RLC, "ROOT.CDB")) == []
+
+    replacements = focused.replacements_4060_q3_to_existing_rlc(focused.DONOR_4060_RLC)
+    assert replacements[0] == "L0"
+    assert replacements[58] == "L0"
+    for index in (56, 57, 59, 60, 61, 62, 63):
+        assert index not in replacements
+
+    ne555_replacements = focused.replacements_ne555_q_to_existing_rlc(focused.DONOR_NE555_RLC)
+    assert ne555_replacements[0] == "NQ0"
+    assert ne555_replacements[18] == "NQ0"
+    for index in (17, 19, 20, 21, 22, 23):
+        assert index not in ne555_replacements
+
+
 def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
     script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v4_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v4_temp", script)

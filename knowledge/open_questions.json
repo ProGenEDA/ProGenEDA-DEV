@@ -1185,7 +1185,7 @@
     {
       "id": "Q102",
       "question": "Does MIXED_IC_FOCUSED_V4_TEMP_2026_06_10 restore T01/T02 with no-layout accepted baselines and fix 74HC4060 simulation by patching DSN/CDB model metadata?",
-      "status": "awaiting_user_proteus_test",
+      "status": "answered_partial_restore_4060_voltage_patch_rejected",
       "needed_for": [
         "mixed_sequential_ic_generation",
         "analog_component_generation",
@@ -1199,7 +1199,27 @@
         "proteus_ic/docs/mixed_ic_focused_v4_2026_06_10.md",
         "tests/test_mixed_ic_analog_donors.py"
       ],
-      "notes": "Test T01-T09. T01/T02 are no-layout baselines. T03/T04/T08 cover RLC, NPN, PNP, LM741, and CAP-ELEC. T05/T06 test 74HC4060 MODFILE=4060.MDF versus MODFILE=4060. T07 tests 74HC4060 inside the real mixed analog/RLC prefix with MODFILE=4060.MDF. T09 is a NE555/RLC label-mutation control.",
+      "notes": "User Proteus testing reported T05/T06/T07 failed with similar netlist linker errors. Screenshot showed VALUE+VOLTAGE not found in the parameter mapping table, plus TDOSC/TDC/TDMR warnings. The remaining V4 cases worked/opened.",
+      "answer": "V4 partially restored the focused pack by backing out V3 coordinate scanning, but the 74HC4060 VOLTAGE/MODFILE instance patch is rejected. Do not add VOLTAGE=4.5V to 74HC4060 CDB/DSN instance properties."
+    },
+    {
+      "id": "Q103",
+      "question": "Does MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10 make 74HC4060 simulate by preserving donor-native metadata while applying label/topology edits inside the donor project?",
+      "status": "awaiting_user_proteus_test",
+      "needed_for": [
+        "mixed_sequential_ic_generation",
+        "analog_component_generation",
+        "large_mixed_ic_generation",
+        "ne555_generation",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v5_donor_native_temp.py",
+        "experiments/MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_focused_v5_donor_native_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py"
+      ],
+      "notes": "Test T01-T06. T01 is an exact 4x 4060+RLC donor-native repack. T02 uniquely relabels only 4060 pin terminals. T03 ties U1 Q3 to the existing RLC input by same-name bidirectional label L0 while preserving the donor RLC/ground labels. T04 is the large mixed counter/RLC/NPN/PNP/LM741/CAP-ELEC donor with topology-preserving labels. T05 is analog-only RLC/NPN/PNP/LM741/CAP-ELEC. T06 ties NE555 Q to the existing RLC input.",
       "answer": ""
     }
   ]

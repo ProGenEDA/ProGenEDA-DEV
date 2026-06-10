@@ -185,11 +185,16 @@ Status:
   layout route. User testing showed T01/T02 did not work, while the remaining
   cases opened; T05/T06 failed simulation with `74HC4060` no-model errors. The
   broad coordinate scan can corrupt non-coordinate fields and must not be used.
-- `MIXED_IC_FOCUSED_V4_TEMP_2026_06_10` is static-clean and pending user
-  Proteus testing. It removes V3's coordinate scan, repeats T01/T02 as
-  accepted no-layout baselines, keeps RLC/NPN/PNP/LM741/CAP-ELEC sample
-  coverage, patches `74HC4060` model metadata in both DSN and CDB, and keeps a
-  mutated NE555/RLC control.
+- `MIXED_IC_FOCUSED_V4_TEMP_2026_06_10` is partially accepted but its
+  `74HC4060` model patch is rejected. User testing reported T05/T06/T07 failed
+  with `VALUE+VOLTAGE` netlist linker errors after the patch added
+  `VOLTAGE=4.5V`. Do not add `VOLTAGE=4.5V` to `74HC4060` instance metadata.
+  The non-4060 V4 cases worked/opened.
+- `MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10` is static-clean and
+  pending user Proteus testing. It keeps 74HC4060 donor-native, avoids E001
+  transplant for 4060, avoids MODFILE/VOLTAGE instance patches, and tests
+  structured terminal-label edits including U1 Q3 driving the existing RLC load
+  by same-name bidirectional label.
 - The production route is now:
 
 ```text

@@ -128,3 +128,19 @@ Use the results as follows:
   metadata and the passing `MODFILE` spelling becomes the rule.
 - If both `T05` and `T06` still report no model, `74HC4060` should remain
   visual/open-only until a Proteus-authored model-backed donor is supplied.
+
+## User Result
+
+User Proteus testing reported:
+
+- T05, T06, and T07 failed.
+- The error was a netlist linker failure where `VALUE+VOLTAGE` could not map
+  `74HC4060+4.5V`.
+- The remaining V4 cases worked/opened.
+
+Conclusion:
+
+- The V4 74HC4060 patch is rejected.
+- Do not add `VOLTAGE=4.5V` to 74HC4060 instance metadata.
+- Continue with the V5 donor-native route instead of patching MODFILE/VOLTAGE
+  into 4060 rows.

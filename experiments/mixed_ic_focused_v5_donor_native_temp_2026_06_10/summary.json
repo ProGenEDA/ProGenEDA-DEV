@@ -1,0 +1,5128 @@
+{
+  "batch": "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10",
+  "purpose": "Follow-up after V4 T05-T07 74HC4060 linker failures. Keep 4060 donor-native metadata and test label/topology edits without E001 transplant.",
+  "status": "temporary_pending_user_proteus_testing",
+  "v4_user_result": "T01-T04/T08/T09 opened; T05-T07 failed with VALUE+VOLTAGE linker errors.",
+  "rules_under_test": [
+    "Do not add VOLTAGE=4.5V to 74HC4060 instance metadata.",
+    "For 74HC4060, preserve the donor-native DSN/device metadata until a safer transplant rule is proven.",
+    "Use same-name bidirectional terminals to connect IC outputs to existing RLC loads."
+  ],
+  "case_count": 6,
+  "cases": [
+    {
+      "case_id": "T01_4060_RLC_EXACT_DONOR_NATIVE",
+      "description": "Exact 4x 74HC4060+RLC donor-native repack; verifies whether the donor itself simulates.",
+      "method": "deterministic_exact_donor_repack_no_e001_transplant",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\sequential_ics_batch3\\4_74HC4060withRLC.pdsprj",
+      "required_markers": [
+        "74HC4060",
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND"
+      ],
+      "terminal_policy": "sequential/misc IC and analog visible pins use donor-native bidirectional terminals",
+      "model_policy": "74HC4060 keeps donor-native metadata; V4 VOLTAGE/MODFILE instance patch is intentionally absent",
+      "section_pointers": {},
+      "label_plan": [],
+      "mutations": [],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v5_donor_native_temp_2026_06_10\\T01_4060_RLC_EXACT_DONOR_NATIVE\\T01_4060_RLC_EXACT_DONOR_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "74HC4060": 12,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "$TERBIDIR": 64,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 64
+      },
+      "cdb_marker_counts": {
+        "74HC4060": 8,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2
+      },
+      "metadata_counts": {
+        "dsn_modfile": 14,
+        "dsn_voltage": 1,
+        "cdb_modfile": 1,
+        "cdb_voltage": 0,
+        "cdb_4060_voltage_45": 0,
+        "cdb_4060_voltage_refs": []
+      },
+      "object_chunk_size": 13130,
+      "terminal_count": 64,
+      "wire_count": 64,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "7e9f2b020aeac601c1bbb2bb277e86f8da8958aa5222e5100f4e3492554a0771",
+        "ROOT.DSN": "fc733e7e63f5815d04b65b9a4bf82e12932de8832eb6286dab4b2177757703eb",
+        "ROOT.CDB": "c0f72c3ea7e976e36792ab700448cd16195594ecf9675837f7bac2508cfc9784",
+        "object_chunk": "c0ca4537ceb2851680083625c548fd354f6b727f4203a30a769d4d552866ba4a"
+      }
+    },
+    {
+      "case_id": "T02_4060_RLC_UNIQUE_PIN_LABELS_NATIVE",
+      "description": "Donor-native 4060+RLC project with 4060 pin terminals uniquely relabelled; no E001 transplant.",
+      "method": "donor_native_device_section_rebuild_with_object_chunk_label_edits",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\sequential_ics_batch3\\4_74HC4060withRLC.pdsprj",
+      "required_markers": [
+        "74HC4060",
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND"
+      ],
+      "terminal_policy": "sequential/misc IC and analog visible pins use donor-native bidirectional terminals",
+      "model_policy": "74HC4060 keeps donor-native metadata; V4 VOLTAGE/MODFILE instance patch is intentionally absent",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67857,
+        "second_isis": 80865,
+        "second_object_data": 80900,
+        "object_data_pointer": 80913
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "Q3 PIN 7",
+          "new_label": "U1Q37",
+          "angle_tenths": 0,
+          "suffix": "1146"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U1Q45",
+          "angle_tenths": 0,
+          "suffix": "1178"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U1Q54",
+          "angle_tenths": 0,
+          "suffix": "11aa"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U1Q66",
+          "angle_tenths": 0,
+          "suffix": "11dc"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U1Q714",
+          "angle_tenths": 0,
+          "suffix": "120e"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U1Q813",
+          "angle_tenths": 0,
+          "suffix": "1240"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U1Q915",
+          "angle_tenths": 0,
+          "suffix": "1272"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U1Q111",
+          "angle_tenths": 0,
+          "suffix": "12a4"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U1Q122",
+          "angle_tenths": 0,
+          "suffix": "12d6"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U1Q133",
+          "angle_tenths": 0,
+          "suffix": "1308"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "RS PIN 11",
+          "new_label": "U1RS11",
+          "angle_tenths": 1800,
+          "suffix": "10e2"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "RTC PIN 10",
+          "new_label": "U1RTC10",
+          "angle_tenths": 1800,
+          "suffix": "136c"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "CTC PIN 9",
+          "new_label": "U1CTC9",
+          "angle_tenths": 1800,
+          "suffix": "133a"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "MR PIN 12",
+          "new_label": "U1MR12",
+          "angle_tenths": 1800,
+          "suffix": "1114"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "Q3 PIN 7",
+          "new_label": "U2Q37",
+          "angle_tenths": 0,
+          "suffix": "1ba4"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U2Q45",
+          "angle_tenths": 0,
+          "suffix": "1bd6"
+        },
+        {
+          "terminal_index": 16,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U2Q54",
+          "angle_tenths": 0,
+          "suffix": "1c08"
+        },
+        {
+          "terminal_index": 17,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U2Q66",
+          "angle_tenths": 0,
+          "suffix": "1c3a"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U2Q714",
+          "angle_tenths": 0,
+          "suffix": "1c6c"
+        },
+        {
+          "terminal_index": 19,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U2Q813",
+          "angle_tenths": 0,
+          "suffix": "1c9e"
+        },
+        {
+          "terminal_index": 20,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U2Q915",
+          "angle_tenths": 0,
+          "suffix": "1cd0"
+        },
+        {
+          "terminal_index": 21,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U2Q111",
+          "angle_tenths": 0,
+          "suffix": "1d02"
+        },
+        {
+          "terminal_index": 22,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U2Q122",
+          "angle_tenths": 0,
+          "suffix": "1d34"
+        },
+        {
+          "terminal_index": 23,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U2Q133",
+          "angle_tenths": 0,
+          "suffix": "1d66"
+        },
+        {
+          "terminal_index": 24,
+          "old_label": "RS PIN 11",
+          "new_label": "U2RS11",
+          "angle_tenths": 1800,
+          "suffix": "1b40"
+        },
+        {
+          "terminal_index": 25,
+          "old_label": "RTC PIN 10",
+          "new_label": "U2RTC10",
+          "angle_tenths": 1800,
+          "suffix": "1dca"
+        },
+        {
+          "terminal_index": 26,
+          "old_label": "CTC PIN 9",
+          "new_label": "U2CTC9",
+          "angle_tenths": 1800,
+          "suffix": "1d98"
+        },
+        {
+          "terminal_index": 27,
+          "old_label": "MR PIN 12",
+          "new_label": "U2MR12",
+          "angle_tenths": 1800,
+          "suffix": "1b72"
+        },
+        {
+          "terminal_index": 28,
+          "old_label": "Q3 PIN 7",
+          "new_label": "U3Q37",
+          "angle_tenths": 0,
+          "suffix": "2602"
+        },
+        {
+          "terminal_index": 29,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U3Q45",
+          "angle_tenths": 0,
+          "suffix": "2634"
+        },
+        {
+          "terminal_index": 30,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U3Q54",
+          "angle_tenths": 0,
+          "suffix": "2666"
+        },
+        {
+          "terminal_index": 31,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U3Q66",
+          "angle_tenths": 0,
+          "suffix": "2698"
+        },
+        {
+          "terminal_index": 32,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U3Q714",
+          "angle_tenths": 0,
+          "suffix": "26ca"
+        },
+        {
+          "terminal_index": 33,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U3Q813",
+          "angle_tenths": 0,
+          "suffix": "26fc"
+        },
+        {
+          "terminal_index": 34,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U3Q915",
+          "angle_tenths": 0,
+          "suffix": "272e"
+        },
+        {
+          "terminal_index": 35,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U3Q111",
+          "angle_tenths": 0,
+          "suffix": "2760"
+        },
+        {
+          "terminal_index": 36,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U3Q122",
+          "angle_tenths": 0,
+          "suffix": "2792"
+        },
+        {
+          "terminal_index": 37,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U3Q133",
+          "angle_tenths": 0,
+          "suffix": "27c4"
+        },
+        {
+          "terminal_index": 38,
+          "old_label": "RS PIN 11",
+          "new_label": "U3RS11",
+          "angle_tenths": 1800,
+          "suffix": "259e"
+        },
+        {
+          "terminal_index": 39,
+          "old_label": "RTC PIN 10",
+          "new_label": "U3RTC10",
+          "angle_tenths": 1800,
+          "suffix": "2828"
+        },
+        {
+          "terminal_index": 40,
+          "old_label": "CTC PIN 9",
+          "new_label": "U3CTC9",
+          "angle_tenths": 1800,
+          "suffix": "27f6"
+        },
+        {
+          "terminal_index": 41,
+          "old_label": "MR PIN 12",
+          "new_label": "U3MR12",
+          "angle_tenths": 1800,
+          "suffix": "25d0"
+        },
+        {
+          "terminal_index": 42,
+          "old_label": "Q3 PIN 7",
+          "new_label": "U4Q37",
+          "angle_tenths": 0,
+          "suffix": "3060"
+        },
+        {
+          "terminal_index": 43,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U4Q45",
+          "angle_tenths": 0,
+          "suffix": "3092"
+        },
+        {
+          "terminal_index": 44,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U4Q54",
+          "angle_tenths": 0,
+          "suffix": "30c4"
+        },
+        {
+          "terminal_index": 45,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U4Q66",
+          "angle_tenths": 0,
+          "suffix": "30f6"
+        },
+        {
+          "terminal_index": 46,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U4Q714",
+          "angle_tenths": 0,
+          "suffix": "3128"
+        },
+        {
+          "terminal_index": 47,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U4Q813",
+          "angle_tenths": 0,
+          "suffix": "315a"
+        },
+        {
+          "terminal_index": 48,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U4Q915",
+          "angle_tenths": 0,
+          "suffix": "318c"
+        },
+        {
+          "terminal_index": 49,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U4Q111",
+          "angle_tenths": 0,
+          "suffix": "31be"
+        },
+        {
+          "terminal_index": 50,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U4Q122",
+          "angle_tenths": 0,
+          "suffix": "31f0"
+        },
+        {
+          "terminal_index": 51,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U4Q133",
+          "angle_tenths": 0,
+          "suffix": "3222"
+        },
+        {
+          "terminal_index": 52,
+          "old_label": "RS PIN 11",
+          "new_label": "U4RS11",
+          "angle_tenths": 1800,
+          "suffix": "2ffc"
+        },
+        {
+          "terminal_index": 53,
+          "old_label": "RTC PIN 10",
+          "new_label": "U4RTC10",
+          "angle_tenths": 1800,
+          "suffix": "3286"
+        },
+        {
+          "terminal_index": 54,
+          "old_label": "CTC PIN 9",
+          "new_label": "U4CTC9",
+          "angle_tenths": 1800,
+          "suffix": "3254"
+        },
+        {
+          "terminal_index": 55,
+          "old_label": "MR PIN 12",
+          "new_label": "U4MR12",
+          "angle_tenths": 1800,
+          "suffix": "302e"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "Q3 PIN 7",
+          "new": "U1Q37",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 1,
+          "old": "Q4 PIN 5",
+          "new": "U1Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 2,
+          "old": "Q5 PIN 4",
+          "new": "U1Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 3,
+          "old": "Q6 PIN 6",
+          "new": "U1Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 4,
+          "old": "Q7 PIN 14",
+          "new": "U1Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 5,
+          "old": "Q8 PIN 13",
+          "new": "U1Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 6,
+          "old": "Q9 PIN 15",
+          "new": "U1Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 7,
+          "old": "Q11 PIN 1",
+          "new": "U1Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 8,
+          "old": "Q12 PIN 2",
+          "new": "U1Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 9,
+          "old": "Q13 PIN 3",
+          "new": "U1Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 10,
+          "old": "RS PIN 11",
+          "new": "U1RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 11,
+          "old": "RTC PIN 10",
+          "new": "U1RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 12,
+          "old": "CTC PIN 9",
+          "new": "U1CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 13,
+          "old": "MR PIN 12",
+          "new": "U1MR12",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 14,
+          "old": "Q3 PIN 7",
+          "new": "U2Q37",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 15,
+          "old": "Q4 PIN 5",
+          "new": "U2Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 16,
+          "old": "Q5 PIN 4",
+          "new": "U2Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 17,
+          "old": "Q6 PIN 6",
+          "new": "U2Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 18,
+          "old": "Q7 PIN 14",
+          "new": "U2Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 19,
+          "old": "Q8 PIN 13",
+          "new": "U2Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 20,
+          "old": "Q9 PIN 15",
+          "new": "U2Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 21,
+          "old": "Q11 PIN 1",
+          "new": "U2Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 22,
+          "old": "Q12 PIN 2",
+          "new": "U2Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 23,
+          "old": "Q13 PIN 3",
+          "new": "U2Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 24,
+          "old": "RS PIN 11",
+          "new": "U2RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 25,
+          "old": "RTC PIN 10",
+          "new": "U2RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 26,
+          "old": "CTC PIN 9",
+          "new": "U2CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 27,
+          "old": "MR PIN 12",
+          "new": "U2MR12",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 28,
+          "old": "Q3 PIN 7",
+          "new": "U3Q37",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 29,
+          "old": "Q4 PIN 5",
+          "new": "U3Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 30,
+          "old": "Q5 PIN 4",
+          "new": "U3Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 31,
+          "old": "Q6 PIN 6",
+          "new": "U3Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 32,
+          "old": "Q7 PIN 14",
+          "new": "U3Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 33,
+          "old": "Q8 PIN 13",
+          "new": "U3Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 34,
+          "old": "Q9 PIN 15",
+          "new": "U3Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 35,
+          "old": "Q11 PIN 1",
+          "new": "U3Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 36,
+          "old": "Q12 PIN 2",
+          "new": "U3Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 37,
+          "old": "Q13 PIN 3",
+          "new": "U3Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 38,
+          "old": "RS PIN 11",
+          "new": "U3RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 39,
+          "old": "RTC PIN 10",
+          "new": "U3RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 40,
+          "old": "CTC PIN 9",
+          "new": "U3CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 41,
+          "old": "MR PIN 12",
+          "new": "U3MR12",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 42,
+          "old": "Q3 PIN 7",
+          "new": "U4Q37",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 43,
+          "old": "Q4 PIN 5",
+          "new": "U4Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 44,
+          "old": "Q5 PIN 4",
+          "new": "U4Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 45,
+          "old": "Q6 PIN 6",
+          "new": "U4Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 46,
+          "old": "Q7 PIN 14",
+          "new": "U4Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 47,
+          "old": "Q8 PIN 13",
+          "new": "U4Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 48,
+          "old": "Q9 PIN 15",
+          "new": "U4Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 49,
+          "old": "Q11 PIN 1",
+          "new": "U4Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 50,
+          "old": "Q12 PIN 2",
+          "new": "U4Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 51,
+          "old": "Q13 PIN 3",
+          "new": "U4Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 52,
+          "old": "RS PIN 11",
+          "new": "U4RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 53,
+          "old": "RTC PIN 10",
+          "new": "U4RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 54,
+          "old": "CTC PIN 9",
+          "new": "U4CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 55,
+          "old": "MR PIN 12",
+          "new": "U4MR12",
+          "old_size": 110,
+          "new_size": 107
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v5_donor_native_temp_2026_06_10\\T02_4060_RLC_UNIQUE_PIN_LABELS_NATIVE\\T02_4060_RLC_UNIQUE_PIN_LABELS_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "74HC4060": 12,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "$TERBIDIR": 64,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 64
+      },
+      "cdb_marker_counts": {
+        "74HC4060": 8,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2
+      },
+      "metadata_counts": {
+        "dsn_modfile": 14,
+        "dsn_voltage": 1,
+        "cdb_modfile": 1,
+        "cdb_voltage": 0,
+        "cdb_4060_voltage_45": 0,
+        "cdb_4060_voltage_refs": []
+      },
+      "object_chunk_size": 12962,
+      "terminal_count": 64,
+      "wire_count": 64,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "99177e7a94b8322eb9a3a03bf229757538876e63c7a4ac57447560136ac7e75e",
+        "ROOT.DSN": "ac2ecca1af86609adc5c02f7d8ddc5aa331adc5cd584e244a0a191341cf32fe1",
+        "ROOT.CDB": "c0f72c3ea7e976e36792ab700448cd16195594ecf9675837f7bac2508cfc9784",
+        "object_chunk": "b5d0e73f2c7d8ee011463981e500cadd252f9f66bbff35166b813be6b43dfefc"
+      }
+    },
+    {
+      "case_id": "T03_4060_Q3_DRIVES_RLC_LOAD_NATIVE",
+      "description": "Donor-native 4060 edit: U1 Q3 terminal and existing RLC input share L0, so the output drives the R-C-L chain to the donor ground net.",
+      "method": "donor_native_device_section_rebuild_with_object_chunk_label_edits",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\sequential_ics_batch3\\4_74HC4060withRLC.pdsprj",
+      "required_markers": [
+        "74HC4060",
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND"
+      ],
+      "terminal_policy": "sequential/misc IC and analog visible pins use donor-native bidirectional terminals",
+      "model_policy": "74HC4060 keeps donor-native metadata; V4 VOLTAGE/MODFILE instance patch is intentionally absent",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67857,
+        "second_isis": 80862,
+        "second_object_data": 80897,
+        "object_data_pointer": 80910
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "Q3 PIN 7",
+          "new_label": "L0",
+          "angle_tenths": 0,
+          "suffix": "1146"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U1Q45",
+          "angle_tenths": 0,
+          "suffix": "1178"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U1Q54",
+          "angle_tenths": 0,
+          "suffix": "11aa"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U1Q66",
+          "angle_tenths": 0,
+          "suffix": "11dc"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U1Q714",
+          "angle_tenths": 0,
+          "suffix": "120e"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U1Q813",
+          "angle_tenths": 0,
+          "suffix": "1240"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U1Q915",
+          "angle_tenths": 0,
+          "suffix": "1272"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U1Q111",
+          "angle_tenths": 0,
+          "suffix": "12a4"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U1Q122",
+          "angle_tenths": 0,
+          "suffix": "12d6"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U1Q133",
+          "angle_tenths": 0,
+          "suffix": "1308"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "RS PIN 11",
+          "new_label": "U1RS11",
+          "angle_tenths": 1800,
+          "suffix": "10e2"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "RTC PIN 10",
+          "new_label": "U1RTC10",
+          "angle_tenths": 1800,
+          "suffix": "136c"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "CTC PIN 9",
+          "new_label": "U1CTC9",
+          "angle_tenths": 1800,
+          "suffix": "133a"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "MR PIN 12",
+          "new_label": "U1MR12",
+          "angle_tenths": 1800,
+          "suffix": "1114"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "Q3 PIN 7",
+          "new_label": "U2Q37",
+          "angle_tenths": 0,
+          "suffix": "1ba4"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U2Q45",
+          "angle_tenths": 0,
+          "suffix": "1bd6"
+        },
+        {
+          "terminal_index": 16,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U2Q54",
+          "angle_tenths": 0,
+          "suffix": "1c08"
+        },
+        {
+          "terminal_index": 17,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U2Q66",
+          "angle_tenths": 0,
+          "suffix": "1c3a"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U2Q714",
+          "angle_tenths": 0,
+          "suffix": "1c6c"
+        },
+        {
+          "terminal_index": 19,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U2Q813",
+          "angle_tenths": 0,
+          "suffix": "1c9e"
+        },
+        {
+          "terminal_index": 20,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U2Q915",
+          "angle_tenths": 0,
+          "suffix": "1cd0"
+        },
+        {
+          "terminal_index": 21,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U2Q111",
+          "angle_tenths": 0,
+          "suffix": "1d02"
+        },
+        {
+          "terminal_index": 22,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U2Q122",
+          "angle_tenths": 0,
+          "suffix": "1d34"
+        },
+        {
+          "terminal_index": 23,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U2Q133",
+          "angle_tenths": 0,
+          "suffix": "1d66"
+        },
+        {
+          "terminal_index": 24,
+          "old_label": "RS PIN 11",
+          "new_label": "U2RS11",
+          "angle_tenths": 1800,
+          "suffix": "1b40"
+        },
+        {
+          "terminal_index": 25,
+          "old_label": "RTC PIN 10",
+          "new_label": "U2RTC10",
+          "angle_tenths": 1800,
+          "suffix": "1dca"
+        },
+        {
+          "terminal_index": 26,
+          "old_label": "CTC PIN 9",
+          "new_label": "U2CTC9",
+          "angle_tenths": 1800,
+          "suffix": "1d98"
+        },
+        {
+          "terminal_index": 27,
+          "old_label": "MR PIN 12",
+          "new_label": "U2MR12",
+          "angle_tenths": 1800,
+          "suffix": "1b72"
+        },
+        {
+          "terminal_index": 28,
+          "old_label": "Q3 PIN 7",
+          "new_label": "U3Q37",
+          "angle_tenths": 0,
+          "suffix": "2602"
+        },
+        {
+          "terminal_index": 29,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U3Q45",
+          "angle_tenths": 0,
+          "suffix": "2634"
+        },
+        {
+          "terminal_index": 30,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U3Q54",
+          "angle_tenths": 0,
+          "suffix": "2666"
+        },
+        {
+          "terminal_index": 31,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U3Q66",
+          "angle_tenths": 0,
+          "suffix": "2698"
+        },
+        {
+          "terminal_index": 32,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U3Q714",
+          "angle_tenths": 0,
+          "suffix": "26ca"
+        },
+        {
+          "terminal_index": 33,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U3Q813",
+          "angle_tenths": 0,
+          "suffix": "26fc"
+        },
+        {
+          "terminal_index": 34,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U3Q915",
+          "angle_tenths": 0,
+          "suffix": "272e"
+        },
+        {
+          "terminal_index": 35,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U3Q111",
+          "angle_tenths": 0,
+          "suffix": "2760"
+        },
+        {
+          "terminal_index": 36,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U3Q122",
+          "angle_tenths": 0,
+          "suffix": "2792"
+        },
+        {
+          "terminal_index": 37,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U3Q133",
+          "angle_tenths": 0,
+          "suffix": "27c4"
+        },
+        {
+          "terminal_index": 38,
+          "old_label": "RS PIN 11",
+          "new_label": "U3RS11",
+          "angle_tenths": 1800,
+          "suffix": "259e"
+        },
+        {
+          "terminal_index": 39,
+          "old_label": "RTC PIN 10",
+          "new_label": "U3RTC10",
+          "angle_tenths": 1800,
+          "suffix": "2828"
+        },
+        {
+          "terminal_index": 40,
+          "old_label": "CTC PIN 9",
+          "new_label": "U3CTC9",
+          "angle_tenths": 1800,
+          "suffix": "27f6"
+        },
+        {
+          "terminal_index": 41,
+          "old_label": "MR PIN 12",
+          "new_label": "U3MR12",
+          "angle_tenths": 1800,
+          "suffix": "25d0"
+        },
+        {
+          "terminal_index": 42,
+          "old_label": "Q3 PIN 7",
+          "new_label": "U4Q37",
+          "angle_tenths": 0,
+          "suffix": "3060"
+        },
+        {
+          "terminal_index": 43,
+          "old_label": "Q4 PIN 5",
+          "new_label": "U4Q45",
+          "angle_tenths": 0,
+          "suffix": "3092"
+        },
+        {
+          "terminal_index": 44,
+          "old_label": "Q5 PIN 4",
+          "new_label": "U4Q54",
+          "angle_tenths": 0,
+          "suffix": "30c4"
+        },
+        {
+          "terminal_index": 45,
+          "old_label": "Q6 PIN 6",
+          "new_label": "U4Q66",
+          "angle_tenths": 0,
+          "suffix": "30f6"
+        },
+        {
+          "terminal_index": 46,
+          "old_label": "Q7 PIN 14",
+          "new_label": "U4Q714",
+          "angle_tenths": 0,
+          "suffix": "3128"
+        },
+        {
+          "terminal_index": 47,
+          "old_label": "Q8 PIN 13",
+          "new_label": "U4Q813",
+          "angle_tenths": 0,
+          "suffix": "315a"
+        },
+        {
+          "terminal_index": 48,
+          "old_label": "Q9 PIN 15",
+          "new_label": "U4Q915",
+          "angle_tenths": 0,
+          "suffix": "318c"
+        },
+        {
+          "terminal_index": 49,
+          "old_label": "Q11 PIN 1",
+          "new_label": "U4Q111",
+          "angle_tenths": 0,
+          "suffix": "31be"
+        },
+        {
+          "terminal_index": 50,
+          "old_label": "Q12 PIN 2",
+          "new_label": "U4Q122",
+          "angle_tenths": 0,
+          "suffix": "31f0"
+        },
+        {
+          "terminal_index": 51,
+          "old_label": "Q13 PIN 3",
+          "new_label": "U4Q133",
+          "angle_tenths": 0,
+          "suffix": "3222"
+        },
+        {
+          "terminal_index": 52,
+          "old_label": "RS PIN 11",
+          "new_label": "U4RS11",
+          "angle_tenths": 1800,
+          "suffix": "2ffc"
+        },
+        {
+          "terminal_index": 53,
+          "old_label": "RTC PIN 10",
+          "new_label": "U4RTC10",
+          "angle_tenths": 1800,
+          "suffix": "3286"
+        },
+        {
+          "terminal_index": 54,
+          "old_label": "CTC PIN 9",
+          "new_label": "U4CTC9",
+          "angle_tenths": 1800,
+          "suffix": "3254"
+        },
+        {
+          "terminal_index": 55,
+          "old_label": "MR PIN 12",
+          "new_label": "U4MR12",
+          "angle_tenths": 1800,
+          "suffix": "302e"
+        },
+        {
+          "terminal_index": 58,
+          "old_label": "Y0",
+          "new_label": "L0",
+          "angle_tenths": 1800,
+          "suffix": "36de"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "Q3 PIN 7",
+          "new": "L0",
+          "old_size": 109,
+          "new_size": 103
+        },
+        {
+          "index": 1,
+          "old": "Q4 PIN 5",
+          "new": "U1Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 2,
+          "old": "Q5 PIN 4",
+          "new": "U1Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 3,
+          "old": "Q6 PIN 6",
+          "new": "U1Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 4,
+          "old": "Q7 PIN 14",
+          "new": "U1Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 5,
+          "old": "Q8 PIN 13",
+          "new": "U1Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 6,
+          "old": "Q9 PIN 15",
+          "new": "U1Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 7,
+          "old": "Q11 PIN 1",
+          "new": "U1Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 8,
+          "old": "Q12 PIN 2",
+          "new": "U1Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 9,
+          "old": "Q13 PIN 3",
+          "new": "U1Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 10,
+          "old": "RS PIN 11",
+          "new": "U1RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 11,
+          "old": "RTC PIN 10",
+          "new": "U1RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 12,
+          "old": "CTC PIN 9",
+          "new": "U1CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 13,
+          "old": "MR PIN 12",
+          "new": "U1MR12",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 14,
+          "old": "Q3 PIN 7",
+          "new": "U2Q37",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 15,
+          "old": "Q4 PIN 5",
+          "new": "U2Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 16,
+          "old": "Q5 PIN 4",
+          "new": "U2Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 17,
+          "old": "Q6 PIN 6",
+          "new": "U2Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 18,
+          "old": "Q7 PIN 14",
+          "new": "U2Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 19,
+          "old": "Q8 PIN 13",
+          "new": "U2Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 20,
+          "old": "Q9 PIN 15",
+          "new": "U2Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 21,
+          "old": "Q11 PIN 1",
+          "new": "U2Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 22,
+          "old": "Q12 PIN 2",
+          "new": "U2Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 23,
+          "old": "Q13 PIN 3",
+          "new": "U2Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 24,
+          "old": "RS PIN 11",
+          "new": "U2RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 25,
+          "old": "RTC PIN 10",
+          "new": "U2RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 26,
+          "old": "CTC PIN 9",
+          "new": "U2CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 27,
+          "old": "MR PIN 12",
+          "new": "U2MR12",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 28,
+          "old": "Q3 PIN 7",
+          "new": "U3Q37",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 29,
+          "old": "Q4 PIN 5",
+          "new": "U3Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 30,
+          "old": "Q5 PIN 4",
+          "new": "U3Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 31,
+          "old": "Q6 PIN 6",
+          "new": "U3Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 32,
+          "old": "Q7 PIN 14",
+          "new": "U3Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 33,
+          "old": "Q8 PIN 13",
+          "new": "U3Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 34,
+          "old": "Q9 PIN 15",
+          "new": "U3Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 35,
+          "old": "Q11 PIN 1",
+          "new": "U3Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 36,
+          "old": "Q12 PIN 2",
+          "new": "U3Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 37,
+          "old": "Q13 PIN 3",
+          "new": "U3Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 38,
+          "old": "RS PIN 11",
+          "new": "U3RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 39,
+          "old": "RTC PIN 10",
+          "new": "U3RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 40,
+          "old": "CTC PIN 9",
+          "new": "U3CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 41,
+          "old": "MR PIN 12",
+          "new": "U3MR12",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 42,
+          "old": "Q3 PIN 7",
+          "new": "U4Q37",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 43,
+          "old": "Q4 PIN 5",
+          "new": "U4Q45",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 44,
+          "old": "Q5 PIN 4",
+          "new": "U4Q54",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 45,
+          "old": "Q6 PIN 6",
+          "new": "U4Q66",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 46,
+          "old": "Q7 PIN 14",
+          "new": "U4Q714",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 47,
+          "old": "Q8 PIN 13",
+          "new": "U4Q813",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 48,
+          "old": "Q9 PIN 15",
+          "new": "U4Q915",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 49,
+          "old": "Q11 PIN 1",
+          "new": "U4Q111",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 50,
+          "old": "Q12 PIN 2",
+          "new": "U4Q122",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 51,
+          "old": "Q13 PIN 3",
+          "new": "U4Q133",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 52,
+          "old": "RS PIN 11",
+          "new": "U4RS11",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 53,
+          "old": "RTC PIN 10",
+          "new": "U4RTC10",
+          "old_size": 111,
+          "new_size": 108
+        },
+        {
+          "index": 54,
+          "old": "CTC PIN 9",
+          "new": "U4CTC9",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 55,
+          "old": "MR PIN 12",
+          "new": "U4MR12",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 58,
+          "old": "Y0",
+          "new": "L0",
+          "old_size": 103,
+          "new_size": 103
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v5_donor_native_temp_2026_06_10\\T03_4060_Q3_DRIVES_RLC_LOAD_NATIVE\\T03_4060_Q3_DRIVES_RLC_LOAD_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "74HC4060": 12,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "$TERBIDIR": 64,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 64
+      },
+      "cdb_marker_counts": {
+        "74HC4060": 8,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2
+      },
+      "metadata_counts": {
+        "dsn_modfile": 14,
+        "dsn_voltage": 1,
+        "cdb_modfile": 1,
+        "cdb_voltage": 0,
+        "cdb_4060_voltage_45": 0,
+        "cdb_4060_voltage_refs": []
+      },
+      "object_chunk_size": 12959,
+      "terminal_count": 64,
+      "wire_count": 64,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "8dafbd99ef335cf3c4d32384586695b0d252526ee4af3aa450ec3af03b65c5d7",
+        "ROOT.DSN": "ecc6c30c11cdab899e47b7f5e136e1f787c8e8b3eca54f7422d03233b5dcf78b",
+        "ROOT.CDB": "c0f72c3ea7e976e36792ab700448cd16195594ecf9675837f7bac2508cfc9784",
+        "object_chunk": "003c139f4cb1bfe11b8d10f2d305f44aced36213af021026493949079feedc8e"
+      }
+    },
+    {
+      "case_id": "T04_MIXED_COUNTERS_ANALOG_LABEL_MUTATION_NATIVE",
+      "description": "Large mixed donor-native edit retaining counters, 4060, RLC, NPN, PNP, LM741, and CAP-ELEC with topology-preserving labels.",
+      "method": "donor_native_device_section_rebuild_with_object_chunk_label_edits",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\mixed_ic_analog_batch1\\MIX_SEQ_COUNTERS_ALL_RCL_ANALOG.pdsprj",
+      "required_markers": [
+        "74HC4060",
+        "74HC4040",
+        "74HC160",
+        "74HC161",
+        "74HC163",
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND",
+        "NPN",
+        "PNP",
+        "LM741",
+        "CAP-ELEC"
+      ],
+      "terminal_policy": "sequential/misc IC and analog visible pins use donor-native bidirectional terminals",
+      "model_policy": "74HC4060 keeps donor-native metadata; V4 VOLTAGE/MODFILE instance patch is intentionally absent",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 84102,
+        "second_isis": 120086,
+        "second_object_data": 120121,
+        "object_data_pointer": 120134
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "6",
+          "new_label": "N00",
+          "angle_tenths": 0,
+          "suffix": "50de"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "5f2d"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "5850"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "5882"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "5ac2"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "r1",
+          "new_label": "N04",
+          "angle_tenths": 0,
+          "suffix": "5ce8"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "55fe"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "5630"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "c2",
+          "new_label": "N05",
+          "angle_tenths": 0,
+          "suffix": "53ac"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "5174"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "51a6"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "7",
+          "new_label": "N06",
+          "angle_tenths": 1800,
+          "suffix": "5110"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "507a"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "2",
+          "new_label": "N08",
+          "angle_tenths": 1800,
+          "suffix": "50ac"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "4",
+          "new_label": "N09",
+          "angle_tenths": 1800,
+          "suffix": "5142"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "53de"
+        },
+        {
+          "terminal_index": 16,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "55cc"
+        },
+        {
+          "terminal_index": 17,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "581e"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "5a90"
+        },
+        {
+          "terminal_index": 19,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "5cb6"
+        },
+        {
+          "terminal_index": 20,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "5efb"
+        },
+        {
+          "terminal_index": 21,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 0,
+          "suffix": "70d9"
+        },
+        {
+          "terminal_index": 22,
+          "old_label": "",
+          "new_label": "B0M",
+          "angle_tenths": 0,
+          "suffix": "713d"
+        },
+        {
+          "terminal_index": 23,
+          "old_label": "",
+          "new_label": "B0N",
+          "angle_tenths": 0,
+          "suffix": "71a1"
+        },
+        {
+          "terminal_index": 24,
+          "old_label": "",
+          "new_label": "B0O",
+          "angle_tenths": 0,
+          "suffix": "7205"
+        },
+        {
+          "terminal_index": 25,
+          "old_label": "",
+          "new_label": "B0P",
+          "angle_tenths": 0,
+          "suffix": "7269"
+        },
+        {
+          "terminal_index": 26,
+          "old_label": "",
+          "new_label": "B0Q",
+          "angle_tenths": 0,
+          "suffix": "72cd"
+        },
+        {
+          "terminal_index": 27,
+          "old_label": "",
+          "new_label": "B0R",
+          "angle_tenths": 0,
+          "suffix": "6937"
+        },
+        {
+          "terminal_index": 28,
+          "old_label": "",
+          "new_label": "B0S",
+          "angle_tenths": 0,
+          "suffix": "699b"
+        },
+        {
+          "terminal_index": 29,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 0,
+          "suffix": "69ff"
+        },
+        {
+          "terminal_index": 30,
+          "old_label": "",
+          "new_label": "B0U",
+          "angle_tenths": 0,
+          "suffix": "6a63"
+        },
+        {
+          "terminal_index": 31,
+          "old_label": "",
+          "new_label": "B0V",
+          "angle_tenths": 0,
+          "suffix": "6ac7"
+        },
+        {
+          "terminal_index": 32,
+          "old_label": "",
+          "new_label": "B0W",
+          "angle_tenths": 0,
+          "suffix": "6b2b"
+        },
+        {
+          "terminal_index": 33,
+          "old_label": "",
+          "new_label": "B0X",
+          "angle_tenths": 1800,
+          "suffix": "6905"
+        },
+        {
+          "terminal_index": 34,
+          "old_label": "",
+          "new_label": "B0Y",
+          "angle_tenths": 1800,
+          "suffix": "6969"
+        },
+        {
+          "terminal_index": 35,
+          "old_label": "",
+          "new_label": "B0Z",
+          "angle_tenths": 1800,
+          "suffix": "69cd"
+        },
+        {
+          "terminal_index": 36,
+          "old_label": "",
+          "new_label": "B10",
+          "angle_tenths": 1800,
+          "suffix": "6a31"
+        },
+        {
+          "terminal_index": 37,
+          "old_label": "",
+          "new_label": "B11",
+          "angle_tenths": 1800,
+          "suffix": "6a95"
+        },
+        {
+          "terminal_index": 38,
+          "old_label": "",
+          "new_label": "B12",
+          "angle_tenths": 1800,
+          "suffix": "6af9"
+        },
+        {
+          "terminal_index": 39,
+          "old_label": "",
+          "new_label": "B13",
+          "angle_tenths": 1800,
+          "suffix": "6b5d"
+        },
+        {
+          "terminal_index": 40,
+          "old_label": "",
+          "new_label": "B14",
+          "angle_tenths": 1800,
+          "suffix": "6b8f"
+        },
+        {
+          "terminal_index": 41,
+          "old_label": "",
+          "new_label": "B15",
+          "angle_tenths": 1800,
+          "suffix": "70a7"
+        },
+        {
+          "terminal_index": 42,
+          "old_label": "",
+          "new_label": "B16",
+          "angle_tenths": 1800,
+          "suffix": "710b"
+        },
+        {
+          "terminal_index": 43,
+          "old_label": "",
+          "new_label": "B17",
+          "angle_tenths": 1800,
+          "suffix": "716f"
+        },
+        {
+          "terminal_index": 44,
+          "old_label": "",
+          "new_label": "B18",
+          "angle_tenths": 1800,
+          "suffix": "71d3"
+        },
+        {
+          "terminal_index": 45,
+          "old_label": "",
+          "new_label": "B19",
+          "angle_tenths": 1800,
+          "suffix": "7237"
+        },
+        {
+          "terminal_index": 46,
+          "old_label": "",
+          "new_label": "B1A",
+          "angle_tenths": 1800,
+          "suffix": "729b"
+        },
+        {
+          "terminal_index": 47,
+          "old_label": "",
+          "new_label": "B1B",
+          "angle_tenths": 1800,
+          "suffix": "72ff"
+        },
+        {
+          "terminal_index": 48,
+          "old_label": "",
+          "new_label": "B1C",
+          "angle_tenths": 1800,
+          "suffix": "7331"
+        },
+        {
+          "terminal_index": 49,
+          "old_label": "Q0 PIN 3",
+          "new_label": "N0A",
+          "angle_tenths": 0,
+          "suffix": "7bda"
+        },
+        {
+          "terminal_index": 50,
+          "old_label": "Q1 PIN 2",
+          "new_label": "N0B",
+          "angle_tenths": 0,
+          "suffix": "7c0c"
+        },
+        {
+          "terminal_index": 51,
+          "old_label": "Q2 PIN 4",
+          "new_label": "N0C",
+          "angle_tenths": 0,
+          "suffix": "7c3e"
+        },
+        {
+          "terminal_index": 52,
+          "old_label": "Q3 PIN 7",
+          "new_label": "N0D",
+          "angle_tenths": 0,
+          "suffix": "7c70"
+        },
+        {
+          "terminal_index": 53,
+          "old_label": "Q4 PIN 10",
+          "new_label": "N0E",
+          "angle_tenths": 0,
+          "suffix": "7ca2"
+        },
+        {
+          "terminal_index": 54,
+          "old_label": "Q5 PIN 1",
+          "new_label": "N0F",
+          "angle_tenths": 0,
+          "suffix": "7cd4"
+        },
+        {
+          "terminal_index": 55,
+          "old_label": "Q6 PIN 5",
+          "new_label": "N0G",
+          "angle_tenths": 0,
+          "suffix": "7d06"
+        },
+        {
+          "terminal_index": 56,
+          "old_label": "Q7 PIN 6",
+          "new_label": "N0H",
+          "angle_tenths": 0,
+          "suffix": "7d38"
+        },
+        {
+          "terminal_index": 57,
+          "old_label": "Q8 PIN 9",
+          "new_label": "N0I",
+          "angle_tenths": 0,
+          "suffix": "7d6a"
+        },
+        {
+          "terminal_index": 58,
+          "old_label": "Q9 PIN 11",
+          "new_label": "N0J",
+          "angle_tenths": 0,
+          "suffix": "7d9c"
+        },
+        {
+          "terminal_index": 59,
+          "old_label": "CO PIN 12",
+          "new_label": "N0K",
+          "angle_tenths": 0,
+          "suffix": "7ba8"
+        },
+        {
+          "terminal_index": 60,
+          "old_label": "CLK PIN 14",
+          "new_label": "N0L",
+          "angle_tenths": 1800,
+          "suffix": "7b12"
+        },
+        {
+          "terminal_index": 61,
+          "old_label": "E PIN 13",
+          "new_label": "N0M",
+          "angle_tenths": 1800,
+          "suffix": "7b44"
+        },
+        {
+          "terminal_index": 62,
+          "old_label": "MR PIN 15",
+          "new_label": "N0N",
+          "angle_tenths": 1800,
+          "suffix": "7b76"
+        },
+        {
+          "terminal_index": 63,
+          "old_label": "Q0 PIN 9",
+          "new_label": "N0O",
+          "angle_tenths": 0,
+          "suffix": "85e6"
+        },
+        {
+          "terminal_index": 64,
+          "old_label": "Q3 PIN 7",
+          "new_label": "N0D",
+          "angle_tenths": 0,
+          "suffix": "8618"
+        },
+        {
+          "terminal_index": 65,
+          "old_label": "Q4 PIN 5",
+          "new_label": "N0P",
+          "angle_tenths": 0,
+          "suffix": "864a"
+        },
+        {
+          "terminal_index": 66,
+          "old_label": "Q5 PIN 4",
+          "new_label": "N0Q",
+          "angle_tenths": 0,
+          "suffix": "867c"
+        },
+        {
+          "terminal_index": 67,
+          "old_label": "Q6 PIN 6",
+          "new_label": "N0R",
+          "angle_tenths": 0,
+          "suffix": "86ae"
+        },
+        {
+          "terminal_index": 68,
+          "old_label": "Q7 PIN 13",
+          "new_label": "N0S",
+          "angle_tenths": 0,
+          "suffix": "86e0"
+        },
+        {
+          "terminal_index": 69,
+          "old_label": "Q8 PIN 12",
+          "new_label": "N0T",
+          "angle_tenths": 0,
+          "suffix": "8712"
+        },
+        {
+          "terminal_index": 70,
+          "old_label": "Q9 PIN 14",
+          "new_label": "N0U",
+          "angle_tenths": 0,
+          "suffix": "8744"
+        },
+        {
+          "terminal_index": 71,
+          "old_label": "Q10 PIN 15",
+          "new_label": "N0V",
+          "angle_tenths": 0,
+          "suffix": "8776"
+        },
+        {
+          "terminal_index": 72,
+          "old_label": "Q11 PIN 1",
+          "new_label": "N0W",
+          "angle_tenths": 0,
+          "suffix": "87a8"
+        },
+        {
+          "terminal_index": 73,
+          "old_label": "Q12 PIN 2",
+          "new_label": "N0X",
+          "angle_tenths": 0,
+          "suffix": "87da"
+        },
+        {
+          "terminal_index": 74,
+          "old_label": "Q13 PIN 3",
+          "new_label": "N0Y",
+          "angle_tenths": 0,
+          "suffix": "880c"
+        },
+        {
+          "terminal_index": 75,
+          "old_label": "CLK PIN 10",
+          "new_label": "N0Z",
+          "angle_tenths": 1800,
+          "suffix": "8582"
+        },
+        {
+          "terminal_index": 76,
+          "old_label": "MR PIN 11",
+          "new_label": "N10",
+          "angle_tenths": 1800,
+          "suffix": "85b4"
+        },
+        {
+          "terminal_index": 77,
+          "old_label": "Q1 PIN 12",
+          "new_label": "N11",
+          "angle_tenths": 0,
+          "suffix": "8e25"
+        },
+        {
+          "terminal_index": 78,
+          "old_label": "Q2 PIN 11",
+          "new_label": "N12",
+          "angle_tenths": 0,
+          "suffix": "8e57"
+        },
+        {
+          "terminal_index": 79,
+          "old_label": "Q3 PIN 9",
+          "new_label": "N13",
+          "angle_tenths": 0,
+          "suffix": "8e89"
+        },
+        {
+          "terminal_index": 80,
+          "old_label": "Q4 PIN 6",
+          "new_label": "N14",
+          "angle_tenths": 0,
+          "suffix": "8ebb"
+        },
+        {
+          "terminal_index": 81,
+          "old_label": "Q5 PIN 5",
+          "new_label": "N15",
+          "angle_tenths": 0,
+          "suffix": "8eed"
+        },
+        {
+          "terminal_index": 82,
+          "old_label": "Q6 PIN 4",
+          "new_label": "N16",
+          "angle_tenths": 0,
+          "suffix": "8f1f"
+        },
+        {
+          "terminal_index": 83,
+          "old_label": "Q7 PIN 3",
+          "new_label": "N17",
+          "angle_tenths": 0,
+          "suffix": "8f51"
+        },
+        {
+          "terminal_index": 84,
+          "old_label": "CLK PIN 1",
+          "new_label": "N18",
+          "angle_tenths": 1800,
+          "suffix": "8dc1"
+        },
+        {
+          "terminal_index": 85,
+          "old_label": "MR PIN 2",
+          "new_label": "N19",
+          "angle_tenths": 1800,
+          "suffix": "8df3"
+        },
+        {
+          "terminal_index": 86,
+          "old_label": "Q0 PIN 3",
+          "new_label": "N0A",
+          "angle_tenths": 0,
+          "suffix": "9485"
+        },
+        {
+          "terminal_index": 87,
+          "old_label": "Q1 PIN 4",
+          "new_label": "N1A",
+          "angle_tenths": 0,
+          "suffix": "94b7"
+        },
+        {
+          "terminal_index": 88,
+          "old_label": "Q2 PIN 5",
+          "new_label": "N1B",
+          "angle_tenths": 0,
+          "suffix": "94e9"
+        },
+        {
+          "terminal_index": 89,
+          "old_label": "Q3 PIN 6",
+          "new_label": "N1C",
+          "angle_tenths": 0,
+          "suffix": "951b"
+        },
+        {
+          "terminal_index": 90,
+          "old_label": "CLK PIN 1",
+          "new_label": "N18",
+          "angle_tenths": 1800,
+          "suffix": "93ef"
+        },
+        {
+          "terminal_index": 91,
+          "old_label": "E PIN 2",
+          "new_label": "N1D",
+          "angle_tenths": 1800,
+          "suffix": "9421"
+        },
+        {
+          "terminal_index": 92,
+          "old_label": "MR PIN 7",
+          "new_label": "N1E",
+          "angle_tenths": 1800,
+          "suffix": "9453"
+        },
+        {
+          "terminal_index": 93,
+          "old_label": "Q0 PIN 3",
+          "new_label": "N0A",
+          "angle_tenths": 0,
+          "suffix": "9a6d"
+        },
+        {
+          "terminal_index": 94,
+          "old_label": "Q1 PIN 4",
+          "new_label": "N1A",
+          "angle_tenths": 0,
+          "suffix": "9a9f"
+        },
+        {
+          "terminal_index": 95,
+          "old_label": "Q2 PIN 5",
+          "new_label": "N1B",
+          "angle_tenths": 0,
+          "suffix": "9ad1"
+        },
+        {
+          "terminal_index": 96,
+          "old_label": "Q3 PIN 6",
+          "new_label": "N1C",
+          "angle_tenths": 0,
+          "suffix": "9b03"
+        },
+        {
+          "terminal_index": 97,
+          "old_label": "CLK PIN 1",
+          "new_label": "N18",
+          "angle_tenths": 1800,
+          "suffix": "99d7"
+        },
+        {
+          "terminal_index": 98,
+          "old_label": "E PIN 2",
+          "new_label": "N1D",
+          "angle_tenths": 1800,
+          "suffix": "9a09"
+        },
+        {
+          "terminal_index": 99,
+          "old_label": "MR PIN 7",
+          "new_label": "N1E",
+          "angle_tenths": 1800,
+          "suffix": "9a3b"
+        },
+        {
+          "terminal_index": 100,
+          "old_label": "Q3 PIN 7",
+          "new_label": "N0D",
+          "angle_tenths": 0,
+          "suffix": "a33b"
+        },
+        {
+          "terminal_index": 101,
+          "old_label": "Q4 PIN 5",
+          "new_label": "N0P",
+          "angle_tenths": 0,
+          "suffix": "a36d"
+        },
+        {
+          "terminal_index": 102,
+          "old_label": "Q5 PIN 4",
+          "new_label": "N0Q",
+          "angle_tenths": 0,
+          "suffix": "a39f"
+        },
+        {
+          "terminal_index": 103,
+          "old_label": "Q6 PIN 6",
+          "new_label": "N0R",
+          "angle_tenths": 0,
+          "suffix": "a3d1"
+        },
+        {
+          "terminal_index": 104,
+          "old_label": "Q7 PIN 14",
+          "new_label": "N1F",
+          "angle_tenths": 0,
+          "suffix": "a403"
+        },
+        {
+          "terminal_index": 105,
+          "old_label": "Q8 PIN 13",
+          "new_label": "N1G",
+          "angle_tenths": 0,
+          "suffix": "a435"
+        },
+        {
+          "terminal_index": 106,
+          "old_label": "Q9 PIN 15",
+          "new_label": "N1H",
+          "angle_tenths": 0,
+          "suffix": "a467"
+        },
+        {
+          "terminal_index": 107,
+          "old_label": "Q11 PIN 1",
+          "new_label": "N0W",
+          "angle_tenths": 0,
+          "suffix": "a499"
+        },
+        {
+          "terminal_index": 108,
+          "old_label": "Q12 PIN 2",
+          "new_label": "N0X",
+          "angle_tenths": 0,
+          "suffix": "a4cb"
+        },
+        {
+          "terminal_index": 109,
+          "old_label": "Q13 PIN 3",
+          "new_label": "N0Y",
+          "angle_tenths": 0,
+          "suffix": "a4fd"
+        },
+        {
+          "terminal_index": 110,
+          "old_label": "RS PIN 11",
+          "new_label": "N1I",
+          "angle_tenths": 1800,
+          "suffix": "a2d7"
+        },
+        {
+          "terminal_index": 111,
+          "old_label": "RTC PIN 10",
+          "new_label": "N1J",
+          "angle_tenths": 1800,
+          "suffix": "a561"
+        },
+        {
+          "terminal_index": 112,
+          "old_label": "CTC PIN 9",
+          "new_label": "N1K",
+          "angle_tenths": 1800,
+          "suffix": "a52f"
+        },
+        {
+          "terminal_index": 113,
+          "old_label": "MR PIN 12",
+          "new_label": "N1L",
+          "angle_tenths": 1800,
+          "suffix": "a309"
+        },
+        {
+          "terminal_index": 114,
+          "old_label": "Q0 PIN 9",
+          "new_label": "N0O",
+          "angle_tenths": 0,
+          "suffix": "adba"
+        },
+        {
+          "terminal_index": 115,
+          "old_label": "Q1 PIN 7",
+          "new_label": "N1M",
+          "angle_tenths": 0,
+          "suffix": "adec"
+        },
+        {
+          "terminal_index": 116,
+          "old_label": "Q2 PIN 6",
+          "new_label": "N1N",
+          "angle_tenths": 0,
+          "suffix": "ae1e"
+        },
+        {
+          "terminal_index": 117,
+          "old_label": "Q3 PIN 5",
+          "new_label": "N1O",
+          "angle_tenths": 0,
+          "suffix": "ae50"
+        },
+        {
+          "terminal_index": 118,
+          "old_label": "Q4 PIN 3",
+          "new_label": "N1P",
+          "angle_tenths": 0,
+          "suffix": "ae82"
+        },
+        {
+          "terminal_index": 119,
+          "old_label": "Q5 PIN 2",
+          "new_label": "N1Q",
+          "angle_tenths": 0,
+          "suffix": "aeb4"
+        },
+        {
+          "terminal_index": 120,
+          "old_label": "Q6 PIN 4",
+          "new_label": "N16",
+          "angle_tenths": 0,
+          "suffix": "aee6"
+        },
+        {
+          "terminal_index": 121,
+          "old_label": "Q7 PIN 13",
+          "new_label": "N0S",
+          "angle_tenths": 0,
+          "suffix": "af18"
+        },
+        {
+          "terminal_index": 122,
+          "old_label": "Q8 PIN 12",
+          "new_label": "N0T",
+          "angle_tenths": 0,
+          "suffix": "af4a"
+        },
+        {
+          "terminal_index": 123,
+          "old_label": "Q9 PIN 14",
+          "new_label": "N0U",
+          "angle_tenths": 0,
+          "suffix": "af7c"
+        },
+        {
+          "terminal_index": 124,
+          "old_label": "Q10 PIN 15",
+          "new_label": "N0V",
+          "angle_tenths": 0,
+          "suffix": "afae"
+        },
+        {
+          "terminal_index": 125,
+          "old_label": "Q11 PIN 1",
+          "new_label": "N0W",
+          "angle_tenths": 0,
+          "suffix": "afe0"
+        },
+        {
+          "terminal_index": 126,
+          "old_label": "CLK PIN 10",
+          "new_label": "N0Z",
+          "angle_tenths": 1800,
+          "suffix": "ad56"
+        },
+        {
+          "terminal_index": 127,
+          "old_label": "MR PIN 11",
+          "new_label": "N10",
+          "angle_tenths": 1800,
+          "suffix": "ad88"
+        },
+        {
+          "terminal_index": 128,
+          "old_label": "CKA PIN14",
+          "new_label": "N1R",
+          "angle_tenths": 1800,
+          "suffix": "b626"
+        },
+        {
+          "terminal_index": 129,
+          "old_label": "CKB PIN 1",
+          "new_label": "N1S",
+          "angle_tenths": 1800,
+          "suffix": "b68a"
+        },
+        {
+          "terminal_index": 130,
+          "old_label": "R0(1) PIN 2",
+          "new_label": "N1T",
+          "angle_tenths": 1800,
+          "suffix": "b752"
+        },
+        {
+          "terminal_index": 131,
+          "old_label": "R0(2) PIN 3",
+          "new_label": "N1U",
+          "angle_tenths": 1800,
+          "suffix": "b784"
+        },
+        {
+          "terminal_index": 132,
+          "old_label": "R9(1) PIN 6",
+          "new_label": "N1V",
+          "angle_tenths": 1800,
+          "suffix": "b7b6"
+        },
+        {
+          "terminal_index": 133,
+          "old_label": "R9(2) PIN 7",
+          "new_label": "N1W",
+          "angle_tenths": 1800,
+          "suffix": "b7e8"
+        },
+        {
+          "terminal_index": 134,
+          "old_label": "Q0 PIN 12",
+          "new_label": "N1X",
+          "angle_tenths": 0,
+          "suffix": "b658"
+        },
+        {
+          "terminal_index": 135,
+          "old_label": "Q1 PIN 9",
+          "new_label": "N1Y",
+          "angle_tenths": 0,
+          "suffix": "b6bc"
+        },
+        {
+          "terminal_index": 136,
+          "old_label": "Q2 PIN 8",
+          "new_label": "N1Z",
+          "angle_tenths": 0,
+          "suffix": "b6ee"
+        },
+        {
+          "terminal_index": 137,
+          "old_label": "Q3 PIN 11",
+          "new_label": "N20",
+          "angle_tenths": 0,
+          "suffix": "b720"
+        },
+        {
+          "terminal_index": 138,
+          "old_label": "D0 PIN 3",
+          "new_label": "N21",
+          "angle_tenths": 1800,
+          "suffix": "bfdb"
+        },
+        {
+          "terminal_index": 139,
+          "old_label": "D1 PIN 4",
+          "new_label": "N22",
+          "angle_tenths": 1800,
+          "suffix": "c03f"
+        },
+        {
+          "terminal_index": 140,
+          "old_label": "D2 PIN 5",
+          "new_label": "N23",
+          "angle_tenths": 1800,
+          "suffix": "c0a3"
+        },
+        {
+          "terminal_index": 141,
+          "old_label": "D3 PIN 6",
+          "new_label": "N24",
+          "angle_tenths": 1800,
+          "suffix": "c107"
+        },
+        {
+          "terminal_index": 142,
+          "old_label": "ENP PIN 7",
+          "new_label": "N25",
+          "angle_tenths": 1800,
+          "suffix": "c19d"
+        },
+        {
+          "terminal_index": 143,
+          "old_label": "ENT PIN 10",
+          "new_label": "N26",
+          "angle_tenths": 1800,
+          "suffix": "c1cf"
+        },
+        {
+          "terminal_index": 144,
+          "old_label": "CLK PIN 2",
+          "new_label": "N27",
+          "angle_tenths": 1800,
+          "suffix": "c201"
+        },
+        {
+          "terminal_index": 145,
+          "old_label": "PIN 9 LOAD",
+          "new_label": "N28",
+          "angle_tenths": 1800,
+          "suffix": "c233"
+        },
+        {
+          "terminal_index": 146,
+          "old_label": "MR PIN 1",
+          "new_label": "N29",
+          "angle_tenths": 1800,
+          "suffix": "c265"
+        },
+        {
+          "terminal_index": 147,
+          "old_label": "Q0 PIN 14",
+          "new_label": "N2A",
+          "angle_tenths": 0,
+          "suffix": "c00d"
+        },
+        {
+          "terminal_index": 148,
+          "old_label": "Q1 PIN 13",
+          "new_label": "N2B",
+          "angle_tenths": 0,
+          "suffix": "c071"
+        },
+        {
+          "terminal_index": 149,
+          "old_label": "Q2 PIN 12",
+          "new_label": "N2C",
+          "angle_tenths": 0,
+          "suffix": "c0d5"
+        },
+        {
+          "terminal_index": 150,
+          "old_label": "Q3 PIN 11",
+          "new_label": "N20",
+          "angle_tenths": 0,
+          "suffix": "c139"
+        },
+        {
+          "terminal_index": 151,
+          "old_label": "RCO PIN 15",
+          "new_label": "N2D",
+          "angle_tenths": 0,
+          "suffix": "c16b"
+        },
+        {
+          "terminal_index": 152,
+          "old_label": "Q0 PIN 14",
+          "new_label": "N2A",
+          "angle_tenths": 0,
+          "suffix": "ca8a"
+        },
+        {
+          "terminal_index": 153,
+          "old_label": "Q1 PIN 13",
+          "new_label": "N2B",
+          "angle_tenths": 0,
+          "suffix": "caee"
+        },
+        {
+          "terminal_index": 154,
+          "old_label": "Q2 PIN 12",
+          "new_label": "N2C",
+          "angle_tenths": 0,
+          "suffix": "cb52"
+        },
+        {
+          "terminal_index": 155,
+          "old_label": "Q3 PIN 11",
+          "new_label": "N20",
+          "angle_tenths": 0,
+          "suffix": "cbb6"
+        },
+        {
+          "terminal_index": 156,
+          "old_label": "RCO PIN 15",
+          "new_label": "N2D",
+          "angle_tenths": 0,
+          "suffix": "cbe8"
+        },
+        {
+          "terminal_index": 157,
+          "old_label": "D0 PIN 3",
+          "new_label": "N21",
+          "angle_tenths": 1800,
+          "suffix": "ca58"
+        },
+        {
+          "terminal_index": 158,
+          "old_label": "D1 PIN 4",
+          "new_label": "N22",
+          "angle_tenths": 1800,
+          "suffix": "cabc"
+        },
+        {
+          "terminal_index": 159,
+          "old_label": "D2 PIN 5",
+          "new_label": "N23",
+          "angle_tenths": 1800,
+          "suffix": "cb20"
+        },
+        {
+          "terminal_index": 160,
+          "old_label": "D3 PIN 6",
+          "new_label": "N24",
+          "angle_tenths": 1800,
+          "suffix": "cb84"
+        },
+        {
+          "terminal_index": 161,
+          "old_label": "ENP PIN 7",
+          "new_label": "N25",
+          "angle_tenths": 1800,
+          "suffix": "cc1a"
+        },
+        {
+          "terminal_index": 162,
+          "old_label": "ENT PIN 10",
+          "new_label": "N26",
+          "angle_tenths": 1800,
+          "suffix": "cc4c"
+        },
+        {
+          "terminal_index": 163,
+          "old_label": "CLK PIN 2",
+          "new_label": "N27",
+          "angle_tenths": 1800,
+          "suffix": "cc7e"
+        },
+        {
+          "terminal_index": 164,
+          "old_label": "LOAD PIN 9",
+          "new_label": "N2E",
+          "angle_tenths": 1800,
+          "suffix": "ccb0"
+        },
+        {
+          "terminal_index": 165,
+          "old_label": "MR PIN 1",
+          "new_label": "N29",
+          "angle_tenths": 1800,
+          "suffix": "cce2"
+        },
+        {
+          "terminal_index": 166,
+          "old_label": "Q0 PIN 14",
+          "new_label": "N2A",
+          "angle_tenths": 0,
+          "suffix": "d507"
+        },
+        {
+          "terminal_index": 167,
+          "old_label": "Q1 PIN 13",
+          "new_label": "N2B",
+          "angle_tenths": 0,
+          "suffix": "d56b"
+        },
+        {
+          "terminal_index": 168,
+          "old_label": "Q2 PIN 12",
+          "new_label": "N2C",
+          "angle_tenths": 0,
+          "suffix": "d5cf"
+        },
+        {
+          "terminal_index": 169,
+          "old_label": "Q3 PIN 11",
+          "new_label": "N20",
+          "angle_tenths": 0,
+          "suffix": "d633"
+        },
+        {
+          "terminal_index": 170,
+          "old_label": "RCO PIN 15",
+          "new_label": "N2D",
+          "angle_tenths": 0,
+          "suffix": "d665"
+        },
+        {
+          "terminal_index": 171,
+          "old_label": "D0 PIN 3",
+          "new_label": "N21",
+          "angle_tenths": 1800,
+          "suffix": "d4d5"
+        },
+        {
+          "terminal_index": 172,
+          "old_label": "D1 PIN 4",
+          "new_label": "N22",
+          "angle_tenths": 1800,
+          "suffix": "d539"
+        },
+        {
+          "terminal_index": 173,
+          "old_label": "D2 PIN 5",
+          "new_label": "N23",
+          "angle_tenths": 1800,
+          "suffix": "d59d"
+        },
+        {
+          "terminal_index": 174,
+          "old_label": "D3 PIN 6",
+          "new_label": "N24",
+          "angle_tenths": 1800,
+          "suffix": "d601"
+        },
+        {
+          "terminal_index": 175,
+          "old_label": "ENP PIN 7",
+          "new_label": "N25",
+          "angle_tenths": 1800,
+          "suffix": "d697"
+        },
+        {
+          "terminal_index": 176,
+          "old_label": "ENT PIN 10",
+          "new_label": "N26",
+          "angle_tenths": 1800,
+          "suffix": "d6c9"
+        },
+        {
+          "terminal_index": 177,
+          "old_label": "CLK PIN 2",
+          "new_label": "N27",
+          "angle_tenths": 1800,
+          "suffix": "d6fb"
+        },
+        {
+          "terminal_index": 178,
+          "old_label": "LOAD PIN 9",
+          "new_label": "N2E",
+          "angle_tenths": 1800,
+          "suffix": "d72d"
+        },
+        {
+          "terminal_index": 179,
+          "old_label": "MR PIN 1",
+          "new_label": "N29",
+          "angle_tenths": 1800,
+          "suffix": "d75f"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "6",
+          "new": "N00",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 1,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 2,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 3,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 4,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 5,
+          "old": "r1",
+          "new": "N04",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 6,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 7,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 8,
+          "old": "c2",
+          "new": "N05",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 9,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 10,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 11,
+          "old": "7",
+          "new": "N06",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 12,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 13,
+          "old": "2",
+          "new": "N08",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 14,
+          "old": "4",
+          "new": "N09",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 15,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 16,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 17,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 18,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 19,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 20,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 21,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 22,
+          "old": "",
+          "new": "B0M",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 23,
+          "old": "",
+          "new": "B0N",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 24,
+          "old": "",
+          "new": "B0O",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 25,
+          "old": "",
+          "new": "B0P",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 26,
+          "old": "",
+          "new": "B0Q",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 27,
+          "old": "",
+          "new": "B0R",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 28,
+          "old": "",
+          "new": "B0S",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 29,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 30,
+          "old": "",
+          "new": "B0U",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 31,
+          "old": "",
+          "new": "B0V",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 32,
+          "old": "",
+          "new": "B0W",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 33,
+          "old": "",
+          "new": "B0X",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 34,
+          "old": "",
+          "new": "B0Y",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 35,
+          "old": "",
+          "new": "B0Z",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 36,
+          "old": "",
+          "new": "B10",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 37,
+          "old": "",
+          "new": "B11",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 38,
+          "old": "",
+          "new": "B12",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 39,
+          "old": "",
+          "new": "B13",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 40,
+          "old": "",
+          "new": "B14",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 41,
+          "old": "",
+          "new": "B15",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 42,
+          "old": "",
+          "new": "B16",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 43,
+          "old": "",
+          "new": "B17",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 44,
+          "old": "",
+          "new": "B18",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 45,
+          "old": "",
+          "new": "B19",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 46,
+          "old": "",
+          "new": "B1A",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 47,
+          "old": "",
+          "new": "B1B",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 48,
+          "old": "",
+          "new": "B1C",
+          "old_size": 101,
+          "new_size": 104
+        },
+        {
+          "index": 49,
+          "old": "Q0 PIN 3",
+          "new": "N0A",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 50,
+          "old": "Q1 PIN 2",
+          "new": "N0B",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 51,
+          "old": "Q2 PIN 4",
+          "new": "N0C",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 52,
+          "old": "Q3 PIN 7",
+          "new": "N0D",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 53,
+          "old": "Q4 PIN 10",
+          "new": "N0E",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 54,
+          "old": "Q5 PIN 1",
+          "new": "N0F",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 55,
+          "old": "Q6 PIN 5",
+          "new": "N0G",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 56,
+          "old": "Q7 PIN 6",
+          "new": "N0H",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 57,
+          "old": "Q8 PIN 9",
+          "new": "N0I",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 58,
+          "old": "Q9 PIN 11",
+          "new": "N0J",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 59,
+          "old": "CO PIN 12",
+          "new": "N0K",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 60,
+          "old": "CLK PIN 14",
+          "new": "N0L",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 61,
+          "old": "E PIN 13",
+          "new": "N0M",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 62,
+          "old": "MR PIN 15",
+          "new": "N0N",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 63,
+          "old": "Q0 PIN 9",
+          "new": "N0O",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 64,
+          "old": "Q3 PIN 7",
+          "new": "N0D",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 65,
+          "old": "Q4 PIN 5",
+          "new": "N0P",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 66,
+          "old": "Q5 PIN 4",
+          "new": "N0Q",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 67,
+          "old": "Q6 PIN 6",
+          "new": "N0R",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 68,
+          "old": "Q7 PIN 13",
+          "new": "N0S",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 69,
+          "old": "Q8 PIN 12",
+          "new": "N0T",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 70,
+          "old": "Q9 PIN 14",
+          "new": "N0U",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 71,
+          "old": "Q10 PIN 15",
+          "new": "N0V",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 72,
+          "old": "Q11 PIN 1",
+          "new": "N0W",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 73,
+          "old": "Q12 PIN 2",
+          "new": "N0X",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 74,
+          "old": "Q13 PIN 3",
+          "new": "N0Y",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 75,
+          "old": "CLK PIN 10",
+          "new": "N0Z",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 76,
+          "old": "MR PIN 11",
+          "new": "N10",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 77,
+          "old": "Q1 PIN 12",
+          "new": "N11",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 78,
+          "old": "Q2 PIN 11",
+          "new": "N12",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 79,
+          "old": "Q3 PIN 9",
+          "new": "N13",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 80,
+          "old": "Q4 PIN 6",
+          "new": "N14",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 81,
+          "old": "Q5 PIN 5",
+          "new": "N15",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 82,
+          "old": "Q6 PIN 4",
+          "new": "N16",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 83,
+          "old": "Q7 PIN 3",
+          "new": "N17",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 84,
+          "old": "CLK PIN 1",
+          "new": "N18",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 85,
+          "old": "MR PIN 2",
+          "new": "N19",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 86,
+          "old": "Q0 PIN 3",
+          "new": "N0A",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 87,
+          "old": "Q1 PIN 4",
+          "new": "N1A",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 88,
+          "old": "Q2 PIN 5",
+          "new": "N1B",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 89,
+          "old": "Q3 PIN 6",
+          "new": "N1C",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 90,
+          "old": "CLK PIN 1",
+          "new": "N18",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 91,
+          "old": "E PIN 2",
+          "new": "N1D",
+          "old_size": 108,
+          "new_size": 104
+        },
+        {
+          "index": 92,
+          "old": "MR PIN 7",
+          "new": "N1E",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 93,
+          "old": "Q0 PIN 3",
+          "new": "N0A",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 94,
+          "old": "Q1 PIN 4",
+          "new": "N1A",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 95,
+          "old": "Q2 PIN 5",
+          "new": "N1B",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 96,
+          "old": "Q3 PIN 6",
+          "new": "N1C",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 97,
+          "old": "CLK PIN 1",
+          "new": "N18",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 98,
+          "old": "E PIN 2",
+          "new": "N1D",
+          "old_size": 108,
+          "new_size": 104
+        },
+        {
+          "index": 99,
+          "old": "MR PIN 7",
+          "new": "N1E",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 100,
+          "old": "Q3 PIN 7",
+          "new": "N0D",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 101,
+          "old": "Q4 PIN 5",
+          "new": "N0P",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 102,
+          "old": "Q5 PIN 4",
+          "new": "N0Q",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 103,
+          "old": "Q6 PIN 6",
+          "new": "N0R",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 104,
+          "old": "Q7 PIN 14",
+          "new": "N1F",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 105,
+          "old": "Q8 PIN 13",
+          "new": "N1G",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 106,
+          "old": "Q9 PIN 15",
+          "new": "N1H",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 107,
+          "old": "Q11 PIN 1",
+          "new": "N0W",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 108,
+          "old": "Q12 PIN 2",
+          "new": "N0X",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 109,
+          "old": "Q13 PIN 3",
+          "new": "N0Y",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 110,
+          "old": "RS PIN 11",
+          "new": "N1I",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 111,
+          "old": "RTC PIN 10",
+          "new": "N1J",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 112,
+          "old": "CTC PIN 9",
+          "new": "N1K",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 113,
+          "old": "MR PIN 12",
+          "new": "N1L",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 114,
+          "old": "Q0 PIN 9",
+          "new": "N0O",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 115,
+          "old": "Q1 PIN 7",
+          "new": "N1M",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 116,
+          "old": "Q2 PIN 6",
+          "new": "N1N",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 117,
+          "old": "Q3 PIN 5",
+          "new": "N1O",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 118,
+          "old": "Q4 PIN 3",
+          "new": "N1P",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 119,
+          "old": "Q5 PIN 2",
+          "new": "N1Q",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 120,
+          "old": "Q6 PIN 4",
+          "new": "N16",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 121,
+          "old": "Q7 PIN 13",
+          "new": "N0S",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 122,
+          "old": "Q8 PIN 12",
+          "new": "N0T",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 123,
+          "old": "Q9 PIN 14",
+          "new": "N0U",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 124,
+          "old": "Q10 PIN 15",
+          "new": "N0V",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 125,
+          "old": "Q11 PIN 1",
+          "new": "N0W",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 126,
+          "old": "CLK PIN 10",
+          "new": "N0Z",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 127,
+          "old": "MR PIN 11",
+          "new": "N10",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 128,
+          "old": "CKA PIN14",
+          "new": "N1R",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 129,
+          "old": "CKB PIN 1",
+          "new": "N1S",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 130,
+          "old": "R0(1) PIN 2",
+          "new": "N1T",
+          "old_size": 112,
+          "new_size": 104
+        },
+        {
+          "index": 131,
+          "old": "R0(2) PIN 3",
+          "new": "N1U",
+          "old_size": 112,
+          "new_size": 104
+        },
+        {
+          "index": 132,
+          "old": "R9(1) PIN 6",
+          "new": "N1V",
+          "old_size": 112,
+          "new_size": 104
+        },
+        {
+          "index": 133,
+          "old": "R9(2) PIN 7",
+          "new": "N1W",
+          "old_size": 112,
+          "new_size": 104
+        },
+        {
+          "index": 134,
+          "old": "Q0 PIN 12",
+          "new": "N1X",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 135,
+          "old": "Q1 PIN 9",
+          "new": "N1Y",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 136,
+          "old": "Q2 PIN 8",
+          "new": "N1Z",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 137,
+          "old": "Q3 PIN 11",
+          "new": "N20",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 138,
+          "old": "D0 PIN 3",
+          "new": "N21",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 139,
+          "old": "D1 PIN 4",
+          "new": "N22",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 140,
+          "old": "D2 PIN 5",
+          "new": "N23",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 141,
+          "old": "D3 PIN 6",
+          "new": "N24",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 142,
+          "old": "ENP PIN 7",
+          "new": "N25",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 143,
+          "old": "ENT PIN 10",
+          "new": "N26",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 144,
+          "old": "CLK PIN 2",
+          "new": "N27",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 145,
+          "old": "PIN 9 LOAD",
+          "new": "N28",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 146,
+          "old": "MR PIN 1",
+          "new": "N29",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 147,
+          "old": "Q0 PIN 14",
+          "new": "N2A",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 148,
+          "old": "Q1 PIN 13",
+          "new": "N2B",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 149,
+          "old": "Q2 PIN 12",
+          "new": "N2C",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 150,
+          "old": "Q3 PIN 11",
+          "new": "N20",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 151,
+          "old": "RCO PIN 15",
+          "new": "N2D",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 152,
+          "old": "Q0 PIN 14",
+          "new": "N2A",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 153,
+          "old": "Q1 PIN 13",
+          "new": "N2B",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 154,
+          "old": "Q2 PIN 12",
+          "new": "N2C",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 155,
+          "old": "Q3 PIN 11",
+          "new": "N20",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 156,
+          "old": "RCO PIN 15",
+          "new": "N2D",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 157,
+          "old": "D0 PIN 3",
+          "new": "N21",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 158,
+          "old": "D1 PIN 4",
+          "new": "N22",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 159,
+          "old": "D2 PIN 5",
+          "new": "N23",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 160,
+          "old": "D3 PIN 6",
+          "new": "N24",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 161,
+          "old": "ENP PIN 7",
+          "new": "N25",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 162,
+          "old": "ENT PIN 10",
+          "new": "N26",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 163,
+          "old": "CLK PIN 2",
+          "new": "N27",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 164,
+          "old": "LOAD PIN 9",
+          "new": "N2E",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 165,
+          "old": "MR PIN 1",
+          "new": "N29",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 166,
+          "old": "Q0 PIN 14",
+          "new": "N2A",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 167,
+          "old": "Q1 PIN 13",
+          "new": "N2B",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 168,
+          "old": "Q2 PIN 12",
+          "new": "N2C",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 169,
+          "old": "Q3 PIN 11",
+          "new": "N20",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 170,
+          "old": "RCO PIN 15",
+          "new": "N2D",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 171,
+          "old": "D0 PIN 3",
+          "new": "N21",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 172,
+          "old": "D1 PIN 4",
+          "new": "N22",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 173,
+          "old": "D2 PIN 5",
+          "new": "N23",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 174,
+          "old": "D3 PIN 6",
+          "new": "N24",
+          "old_size": 109,
+          "new_size": 104
+        },
+        {
+          "index": 175,
+          "old": "ENP PIN 7",
+          "new": "N25",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 176,
+          "old": "ENT PIN 10",
+          "new": "N26",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 177,
+          "old": "CLK PIN 2",
+          "new": "N27",
+          "old_size": 110,
+          "new_size": 104
+        },
+        {
+          "index": 178,
+          "old": "LOAD PIN 9",
+          "new": "N2E",
+          "old_size": 111,
+          "new_size": 104
+        },
+        {
+          "index": 179,
+          "old": "MR PIN 1",
+          "new": "N29",
+          "old_size": 109,
+          "new_size": 104
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v5_donor_native_temp_2026_06_10\\T04_MIXED_COUNTERS_ANALOG_LABEL_MUTATION_NATIVE\\T04_MIXED_COUNTERS_ANALOG_LABEL_MUTATION_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "7490": 3,
+        "74HC160": 3,
+        "74HC161": 3,
+        "74HC163": 3,
+        "74HC192": 3,
+        "74HC193": 3,
+        "4017": 4,
+        "4020": 4,
+        "4024": 4,
+        "74HC4024": 3,
+        "74HC4040": 3,
+        "74HC4060": 3,
+        "4518": 4,
+        "74HC4520": 3,
+        "NPN": 3,
+        "PNP": 3,
+        "LM741": 4,
+        "CAP-ELEC": 2,
+        "RESISTOR": 2,
+        "CAPACITOR": 2,
+        "REALIND": 3,
+        "$TERBIDIR": 180,
+        "WIRE": 180
+      },
+      "cdb_marker_counts": {
+        "7490": 2,
+        "74HC160": 2,
+        "74HC161": 2,
+        "74HC163": 2,
+        "74HC192": 2,
+        "74HC193": 2,
+        "4017": 3,
+        "4020": 3,
+        "4024": 3,
+        "74HC4024": 2,
+        "74HC4040": 2,
+        "74HC4060": 2,
+        "4518": 3,
+        "74HC4520": 2,
+        "NPN": 2,
+        "PNP": 2,
+        "LM741": 3,
+        "CAP-ELEC": 1,
+        "RESISTOR": 1,
+        "CAPACITOR": 2,
+        "REALIND": 2
+      },
+      "metadata_counts": {
+        "dsn_modfile": 48,
+        "dsn_voltage": 18,
+        "cdb_modfile": 12,
+        "cdb_voltage": 5,
+        "cdb_4060_voltage_45": 2,
+        "cdb_4060_voltage_refs": []
+      },
+      "object_chunk_size": 35938,
+      "terminal_count": 180,
+      "wire_count": 180,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "4745b13224e3b996a3a2427f9a1c633f216e8f1e472219bbbfe957f36fddc69b",
+        "ROOT.DSN": "35b459b452115b9b16a8e7d2e51f008d4380a96656644b19a84e9c3234b8acbf",
+        "ROOT.CDB": "afc752e6d1fd6d471da8cf1cc9d665532a4fb3c82ea77d7b96013cae5fa7624e",
+        "object_chunk": "866692c9656931c91babcd8dbf4a00489488046ccc20ce8874531e376edd7346"
+      }
+    },
+    {
+      "case_id": "T05_ANALOG_ONLY_RLC_BJT_OPAMP_ECAP_NATIVE",
+      "description": "Analog/basic donor-native edit covering RLC, NPN, PNP, LM741, and electrolytic capacitor.",
+      "method": "donor_native_device_section_rebuild_with_object_chunk_label_edits",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\mixed_ic_analog_batch1\\MIX_RCL_ANALOG_ONLY.pdsprj",
+      "required_markers": [
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND",
+        "NPN",
+        "PNP",
+        "LM741",
+        "CAP-ELEC"
+      ],
+      "terminal_policy": "sequential/misc IC and analog visible pins use donor-native bidirectional terminals",
+      "model_policy": "74HC4060 keeps donor-native metadata; V4 VOLTAGE/MODFILE instance patch is intentionally absent",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 70316,
+        "second_isis": 76197,
+        "second_object_data": 76232,
+        "object_data_pointer": 76245
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "6",
+          "new_label": "N00",
+          "angle_tenths": 0,
+          "suffix": "1b04"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "2953"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "2276"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "22a8"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "24e8"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "r1",
+          "new_label": "N04",
+          "angle_tenths": 0,
+          "suffix": "270e"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "2024"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "2056"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "c2",
+          "new_label": "N05",
+          "angle_tenths": 0,
+          "suffix": "1dd2"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "1b9a"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "1bcc"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "7",
+          "new_label": "N06",
+          "angle_tenths": 1800,
+          "suffix": "1b36"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1aa0"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "2",
+          "new_label": "N08",
+          "angle_tenths": 1800,
+          "suffix": "1ad2"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "4",
+          "new_label": "N09",
+          "angle_tenths": 1800,
+          "suffix": "1b68"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1e04"
+        },
+        {
+          "terminal_index": 16,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1ff2"
+        },
+        {
+          "terminal_index": 17,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "2244"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "24b6"
+        },
+        {
+          "terminal_index": 19,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "26dc"
+        },
+        {
+          "terminal_index": 20,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "2921"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "6",
+          "new": "N00",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 1,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 2,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 3,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 4,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 5,
+          "old": "r1",
+          "new": "N04",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 6,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 7,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 8,
+          "old": "c2",
+          "new": "N05",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 9,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 10,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 11,
+          "old": "7",
+          "new": "N06",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 12,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 13,
+          "old": "2",
+          "new": "N08",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 14,
+          "old": "4",
+          "new": "N09",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 15,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 16,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 17,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 18,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 19,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 20,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v5_donor_native_temp_2026_06_10\\T05_ANALOG_ONLY_RLC_BJT_OPAMP_ECAP_NATIVE\\T05_ANALOG_ONLY_RLC_BJT_OPAMP_ECAP_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "NPN": 3,
+        "PNP": 3,
+        "LM741": 4,
+        "CAP-ELEC": 2,
+        "RESISTOR": 2,
+        "CAPACITOR": 2,
+        "REALIND": 3,
+        "$TERBIDIR": 21,
+        "WIRE": 21
+      },
+      "cdb_marker_counts": {
+        "NPN": 2,
+        "PNP": 2,
+        "LM741": 3,
+        "CAP-ELEC": 1,
+        "RESISTOR": 1,
+        "CAPACITOR": 2,
+        "REALIND": 2
+      },
+      "metadata_counts": {
+        "dsn_modfile": 13,
+        "dsn_voltage": 0,
+        "cdb_modfile": 1,
+        "cdb_voltage": 0,
+        "cdb_4060_voltage_45": 0,
+        "cdb_4060_voltage_refs": []
+      },
+      "object_chunk_size": 5835,
+      "terminal_count": 21,
+      "wire_count": 21,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "3eaf086c64862f3a4ea15595c80f326e870ed934a79f47e5b3d11d568468a23a",
+        "ROOT.DSN": "322355e59e4704f74985b8d7a2fcd808bcea8c8ef0741ea48cde841faf095713",
+        "ROOT.CDB": "870db664a2673447f884b76ee413040594bc1becf63952386b4f825d0a46468a",
+        "object_chunk": "6e8a2457ba78c51a61690a1df4777fa533349a5a62142fdcd8197add4da43fb2"
+      }
+    },
+    {
+      "case_id": "T06_NE555_Q_DRIVES_RLC_LOAD_NATIVE",
+      "description": "NE555 donor-native edit: the first Q output shares NQ0 with the existing RLC input terminal.",
+      "method": "donor_native_device_section_rebuild_with_object_chunk_label_edits",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\analog_misc_batch1\\2_NE555WITHRLC.pdsprj",
+      "required_markers": [
+        "NE555",
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND"
+      ],
+      "terminal_policy": "sequential/misc IC and analog visible pins use donor-native bidirectional terminals",
+      "model_policy": "74HC4060 keeps donor-native metadata; V4 VOLTAGE/MODFILE instance patch is intentionally absent",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67460,
+        "second_isis": 73330,
+        "second_object_data": 73365,
+        "object_data_pointer": 73378
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "Q PIN 3",
+          "new_label": "NQ0",
+          "angle_tenths": 0,
+          "suffix": "0d16"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "DC PIN 7",
+          "new_label": "U1DC7",
+          "angle_tenths": 0,
+          "suffix": "0ce4"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "TH PIN 6",
+          "new_label": "U1TH6",
+          "angle_tenths": 0,
+          "suffix": "0dde"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "GND PIN 1",
+          "new_label": "U1GND1",
+          "angle_tenths": 1800,
+          "suffix": "0d48"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "VCC PIN 8",
+          "new_label": "U1VCC8",
+          "angle_tenths": 1800,
+          "suffix": "0d7a"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "R PIN 4",
+          "new_label": "U1R4",
+          "angle_tenths": 1800,
+          "suffix": "0cb2"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "CV PIN 5",
+          "new_label": "U1CV5",
+          "angle_tenths": 1800,
+          "suffix": "0e10"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "TR PIN 2",
+          "new_label": "U1TR2",
+          "angle_tenths": 1800,
+          "suffix": "0dac"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "Q PIN 3",
+          "new_label": "U2Q3",
+          "angle_tenths": 0,
+          "suffix": "13a5"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "DC PIN 7",
+          "new_label": "U2DC7",
+          "angle_tenths": 0,
+          "suffix": "1373"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "TH PIN 6",
+          "new_label": "U2TH6",
+          "angle_tenths": 0,
+          "suffix": "146d"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "GND PIN 1",
+          "new_label": "U2GND1",
+          "angle_tenths": 1800,
+          "suffix": "13d7"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "VCC PIN 8",
+          "new_label": "U2VCC8",
+          "angle_tenths": 1800,
+          "suffix": "1409"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "R PIN 4",
+          "new_label": "U2R4",
+          "angle_tenths": 1800,
+          "suffix": "1341"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "CV PIN 5",
+          "new_label": "U2CV5",
+          "angle_tenths": 1800,
+          "suffix": "149f"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "TR PIN 2",
+          "new_label": "U2TR2",
+          "angle_tenths": 1800,
+          "suffix": "143b"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "Y0",
+          "new_label": "NQ0",
+          "angle_tenths": 1800,
+          "suffix": "18f7"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "Q PIN 3",
+          "new": "NQ0",
+          "old_size": 108,
+          "new_size": 104
+        },
+        {
+          "index": 1,
+          "old": "DC PIN 7",
+          "new": "U1DC7",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 2,
+          "old": "TH PIN 6",
+          "new": "U1TH6",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 3,
+          "old": "GND PIN 1",
+          "new": "U1GND1",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 4,
+          "old": "VCC PIN 8",
+          "new": "U1VCC8",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 5,
+          "old": "R PIN 4",
+          "new": "U1R4",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 6,
+          "old": "CV PIN 5",
+          "new": "U1CV5",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 7,
+          "old": "TR PIN 2",
+          "new": "U1TR2",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 8,
+          "old": "Q PIN 3",
+          "new": "U2Q3",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 9,
+          "old": "DC PIN 7",
+          "new": "U2DC7",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 10,
+          "old": "TH PIN 6",
+          "new": "U2TH6",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 11,
+          "old": "GND PIN 1",
+          "new": "U2GND1",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 12,
+          "old": "VCC PIN 8",
+          "new": "U2VCC8",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 13,
+          "old": "R PIN 4",
+          "new": "U2R4",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 14,
+          "old": "CV PIN 5",
+          "new": "U2CV5",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 15,
+          "old": "TR PIN 2",
+          "new": "U2TR2",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 18,
+          "old": "Y0",
+          "new": "NQ0",
+          "old_size": 103,
+          "new_size": 104
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v5_donor_native_temp_2026_06_10\\T06_NE555_Q_DRIVES_RLC_LOAD_NATIVE\\T06_NE555_Q_DRIVES_RLC_LOAD_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "NE555": 6,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "$TERBIDIR": 24,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 24
+      },
+      "cdb_marker_counts": {
+        "NE555": 4,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2
+      },
+      "metadata_counts": {
+        "dsn_modfile": 17,
+        "dsn_voltage": 0,
+        "cdb_modfile": 3,
+        "cdb_voltage": 0,
+        "cdb_4060_voltage_45": 0,
+        "cdb_4060_voltage_refs": []
+      },
+      "object_chunk_size": 5824,
+      "terminal_count": 24,
+      "wire_count": 24,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "22b542703cfc16e2016d17fd1eef4d44b2175815ec10f69d2efcf21f9d101c8f",
+        "ROOT.DSN": "a71756d7aa64359b1e2ae637d331187cdc6605492ee15d5e9022ca6417f4cb55",
+        "ROOT.CDB": "86fd98398ec9face703e722af50c9d9a180f6f9d6ad8234624aced70e6c5131d",
+        "object_chunk": "4024c28875f01682a2d5ae9f1cee2a20419386479284193a5dd3465e7f1c5cbb"
+      }
+    }
+  ],
+  "static_issue_cases": {},
+  "archive": "experiments\\MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10.zip",
+  "archive_sha256": "6d9ba75e28e9164890c26997c858f22a68f2540714a4fd20f3ef8b95860e0e96"
+}

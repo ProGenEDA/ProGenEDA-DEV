@@ -2133,15 +2133,31 @@
     {
       "id": "R115",
       "title": "74HC4060 no-model errors require DSN and CDB model-property testing",
-      "status": "pending_user_proteus_test",
-      "rule": "For 74HC4060 simulation failures that report no model specified, test DSN component-property text and ROOT.CDB property-row patches for MODFILE and VOLTAGE before marking the component unsupported. Generate both MODFILE=4060.MDF and MODFILE=4060 variants because nearby accepted families use both filename styles.",
-      "rationale": "Byte comparison showed 74HC4060 property rows only had ITFMOD and PACKAGE, while neighboring 74HC4040/74HC4024 rows also carried MODFILE and VOLTAGE. V4 explicitly patches both DSN object properties and CDB property rows to isolate whether this fixes simulation.",
+      "status": "rejected_by_user_proteus_test",
+      "rule": "Do not add VOLTAGE=4.5V to 74HC4060 instance metadata. The V4 DSN/CDB property patch that combined MODFILE and VOLTAGE caused netlist linker VALUE+VOLTAGE mapping errors.",
+      "rationale": "User testing of V4 reported T05/T06/T07 failed. Screenshots showed VALUE+VOLTAGE not found in the parameter mapping table for 74HC4060+4.5V, so the patch created a different failure instead of solving the no-model boundary.",
       "evidence": [
         "MIXED_IC_FOCUSED_V3_USER_REJECTION_20260610",
         "MIXED_IC_FOCUSED_V4_STATIC_20260610",
+        "MIXED_IC_FOCUSED_V4_USER_PARTIAL_4060_REJECTION_20260610",
         "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v4_temp.py",
         "proteus_ic/docs/mixed_ic_focused_v4_2026_06_10.md",
         "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan"
+      ],
+      "created": "2026-06-10"
+    },
+    {
+      "id": "R116",
+      "title": "Keep 74HC4060 donor-native until model binding is proven",
+      "status": "pending_user_proteus_test",
+      "rule": "For 74HC4060 follow-up tests, preserve the original donor project/device metadata and apply only record-structured terminal label edits inside that donor-native DSN. Do not transplant 74HC4060 into E001 and do not patch its CDB rows with VOLTAGE unless a Proteus-authored donor proves the exact property form.",
+      "rationale": "The working donor evidence has 74HC4060 CDB rows with ITFMOD and PACKAGE only, while V3 E001-style transplant hit no-model simulation errors and V4 VOLTAGE patch hit VALUE+VOLTAGE linker errors. V5 tests exact donor-native rebuilds and same-name bidirectional output-to-RLC edits.",
+      "evidence": [
+        "MIXED_IC_FOCUSED_V4_USER_PARTIAL_4060_REJECTION_20260610",
+        "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_STATIC_20260610",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v5_donor_native_temp.py",
+        "proteus_ic/docs/mixed_ic_focused_v5_donor_native_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v5_keeps_4060_donor_native"
       ],
       "created": "2026-06-10"
     }
