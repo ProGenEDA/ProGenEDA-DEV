@@ -2240,19 +2240,64 @@
     {
       "id": "R121",
       "title": "IC pairwise V1 uses a 34-source IC-only exact-rezip matrix",
-      "status": "temporary_static_clean_pending_user_proteus_test",
+      "status": "rejected_after_user_pairwise_test",
       "confidence": 0.82,
       "applies_to": [
         "IC pairwise mixing",
         "Proteus 8.13",
         "temporary diagnostics"
       ],
-      "rule": "For IC_PAIRWISE_34_V1, build unordered pairs from exactly 34 IC-only source cases. Exclude old rejected T018 and T020, exclude RLC-containing T037, and exclude refreshed 4520 T038-T041 until exact-rezip testing passes. Use only same-length package-ref remaps and a CDB splitter that supports subpart pin rows sharing package property rows.",
+      "rule": "Do not promote IC_PAIRWISE_34_V1. User testing found repeatable duplicate part reference failures across early combinational/sequential pairings, no-model failures involving 7447/74HC47 pairings, and refreshed 4060 coordinate artifacts. Use V2 or later for pairwise retesting.",
       "evidence": [
         "IC_PAIRWISE_34_V1_STATIC_20260610",
+        "User pasted V1 pairwise results on 2026-06-10",
+        "Duplicate part reference: U2:A [U1:A]",
+        "No model specified for U2",
+        "S32/S33/S34 refreshed 4060 long-wire coordinate artifacts",
         "tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v1_temp.py",
         "experiments/IC_PAIRWISE_34_V1_TEMP_2026_06_10.zip",
         "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v1_uses_clean_source_matrix_and_generic_cdb_splitter"
+      ],
+      "created": "2026-06-10"
+    },
+    {
+      "id": "R122",
+      "title": "Mixed IC pair CDB rows must be composed by package property refs",
+      "status": "temporary_static_clean_pending_user_proteus_test",
+      "confidence": 0.88,
+      "applies_to": [
+        "IC pairwise mixing",
+        "ROOT.CDB",
+        "Proteus 8.13"
+      ],
+      "rule": "When composing pairwise or mixed IC donors, parse pin rows first and derive ordered unique package refs for property rows. Do not locate property rows with loose U-ref regex starts. Subpart rows such as U1:A..U1:D share one package property row U1. When a donor-final property row is emitted before another donor property row, trim the donor-final row by four bytes so the next property row boundary stays valid.",
+      "evidence": [
+        "User V1 reports: duplicate part reference U2:A [U1:A] and duplicate X000000.. refs",
+        "tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v2_temp.py",
+        "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text",
+        "P001_S01_S02 V2 focused check: pin refs U1:A/U2:A and property refs U1/U2",
+        "experiments/IC_PAIRWISE_34_V2_TEMP_2026_06_10.zip"
+      ],
+      "created": "2026-06-10"
+    },
+    {
+      "id": "R123",
+      "title": "Refreshed 4060 pairwise movement needs short body marker and component text coordinates",
+      "status": "temporary_static_clean_pending_user_proteus_test",
+      "confidence": 0.87,
+      "applies_to": [
+        "74HC4060",
+        "IC pairwise layout",
+        "ROOT.DSN",
+        "Proteus 8.13"
+      ],
+      "rule": "For refreshed 74HC4060 donors, the visible body marker can be the short string 4060 instead of 74HC4060. Include the short body marker in coordinate extraction, and move COMPONENT ID, COMPONENT VALUE, and SUBCKT NAME text records with the translated donor chunk. Do not use broad coordinate scanning.",
+      "evidence": [
+        "User V1 reports: S32/S33/S34 simulated but terminals were far from pins with long weird wires",
+        "tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v2_temp.py",
+        "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text",
+        "P033_S01_S34 V2 focused check: 4 body coordinate pairs and 12 component text coordinate pairs translated",
+        "experiments/IC_PAIRWISE_34_V2_TEMP_2026_06_10.zip"
       ],
       "created": "2026-06-10"
     }

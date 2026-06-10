@@ -555,6 +555,47 @@ def test_ic_pairwise_34_v1_uses_clean_source_matrix_and_generic_cdb_splitter() -
     assert [ref for ref, _row in parsed.property_rows] == ["U1"]
 
 
+def test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text(tmp_path: Path) -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_34_v2_temp.py"
+    spec = importlib.util.spec_from_file_location("ic_pairwise_34_v2_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    pairwise = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = pairwise
+    spec.loader.exec_module(pairwise)
+
+    assert len(pairwise.SOURCES) == 34
+    assert len(pairwise.CASES) == 561
+
+    pairwise.OUT_ROOT = tmp_path / "pairwise_v2"
+    pairwise.OUT_ROOT.mkdir()
+    first_case = pairwise.CASES[0]
+    manifest = pairwise.write_case(first_case)
+    output = pairwise.OUT_ROOT / first_case.case_id / f"{first_case.case_id}.pdsprj"
+    parsed = pairwise.split_cdb_generic(read_internal_file(output, "ROOT.CDB"))
+    assert manifest["static_validation_issues"] == []
+    assert parsed.count == 2
+    assert [ref for ref, _row in parsed.pin_rows] == ["U1:A", "U2:A"]
+    assert [ref for ref, _row, _last in parsed.property_rows] == ["U1", "U2"]
+
+    source_4060_4x = next(
+        source for source in pairwise.SOURCES if source.case_id == "T036_74HC4060_REFRESH_4X_EXACT_REZIP"
+    )
+    chunk_4060 = _extract_object_chunk(read_internal_file(source_4060_4x.donor, "ROOT.DSN"))
+    assert len(pairwise._coord_pairs_for_bodies(chunk_4060)) >= 4
+    assert len(pairwise._coord_pairs_for_component_text_records(chunk_4060)) >= 8
+
+    source_hc00 = next(source for source in pairwise.SOURCES if source.short_id == "S01")
+    right_chunk = _extract_object_chunk(read_internal_file(source_4060_4x.donor, "ROOT.DSN"))
+    right_chunk, _labels = pairwise.patch_second_terminal_labels(right_chunk)
+    translated, plan = pairwise.translate_chunk(right_chunk, pairwise.SECOND_DONOR_DX, pairwise.SECOND_DONOR_DY)
+    assert translated != right_chunk
+    assert plan["body_pair_count"] >= 4
+    assert plan["component_text_pair_count"] >= 8
+    assert b"4060" in translated
+    assert source_hc00.short_id == "S01"
+
+
 def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
     script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v4_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v4_temp", script)

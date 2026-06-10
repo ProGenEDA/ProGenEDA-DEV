@@ -56,6 +56,7 @@ python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v5_donor_na
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v6_no4060_temp.py
 python tools/proteus_generation/2026-06-10/generate_ic_exact_rezip_all_families_temp.py
 python tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v1_temp.py
+python tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v2_temp.py
 ```
 
 Status:
@@ -98,6 +99,14 @@ Status:
 - `IC_FINAL_T29_LEGACY_GROUND_V3_TEMP_2026_06_08` passed user Proteus testing.
   It locks compact small-circuit placement only when passive `G0` stays on the
   previous donor `$TERGROUND` method.
+- `IC_PAIRWISE_34_V1_TEMP_2026_06_10` is rejected as a promotion candidate
+  after user testing. It exposed repeatable duplicate part reference failures,
+  `7447`/`74HC47` no-model failures in pairings, and refreshed 4060 long-wire
+  coordinate artifacts.
+- `IC_PAIRWISE_34_V2_TEMP_2026_06_10` is static-clean and pending full user
+  Proteus testing. It keeps the same 34-source matrix and 561 unordered pairs,
+  but fixes package-level CDB property row composition and moves refreshed 4060
+  body/text coordinates with terminals.
 - `IC_HC04_ALL7_V1_TEMP_2026_06_08` passed user Proteus testing. It imports
   `74HC04`, generates one NOT gate, all six inverter subparts, logic-constant
   NOT gates, a NOT/RCL load, and the final all-seven combinational family

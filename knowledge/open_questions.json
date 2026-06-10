@@ -1272,7 +1272,7 @@
       "id": "Q106",
       "priority": "high",
       "question": "Which IC_PAIRWISE_34_V1 pairwise IC-mixing cases open and simulate in Proteus?",
-      "status": "awaiting_user_proteus_test_pairwise_34_v1",
+      "status": "answered_rejected_v1_retest_v2",
       "needed_for": [
         "mixed_ic_generation",
         "pairwise_ic_support_matrix",
@@ -1281,9 +1281,30 @@
       "evidence": [
         "IC_PAIRWISE_34_V1_STATIC_20260610",
         "experiments/IC_PAIRWISE_34_V1_TEMP_2026_06_10.zip",
-        "proteus_ic/docs/ic_pairwise_34_v1_2026_06_10.md"
+        "proteus_ic/docs/ic_pairwise_34_v1_2026_06_10.md",
+        "User pasted V1 pairwise results on 2026-06-10",
+        "proteus_ic/docs/ic_pairwise_34_v2_2026_06_10.md"
       ],
-      "notes": "The pack contains 561 unordered pair diagnostics from 34 IC-only source cases. Test early pairs first, then pairs involving S32-S34 refreshed 4060 sources. Refreshed 4520 is intentionally excluded until T038-T041 exact rezips pass."
+      "notes": "User testing found repeatable V1 failures: duplicate part references across early subpart/package pairings, no-model errors involving 7447/74HC47 pairings, and refreshed 4060 visual coordinate artifacts.",
+      "answer": "V1 is not suitable for promotion. Regenerated all 561 pairs as IC_PAIRWISE_34_V2 with corrected CDB property-row composition and refreshed 4060 body/text coordinate translation."
+    },
+    {
+      "id": "Q107",
+      "priority": "high",
+      "question": "Which IC_PAIRWISE_34_V2 pairwise IC-mixing cases open and simulate in Proteus?",
+      "status": "awaiting_user_proteus_test_pairwise_34_v2",
+      "needed_for": [
+        "mixed_ic_generation",
+        "pairwise_ic_support_matrix",
+        "future_large_ic_composition"
+      ],
+      "evidence": [
+        "IC_PAIRWISE_34_V2_STATIC_20260610",
+        "experiments/IC_PAIRWISE_34_V2_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/ic_pairwise_34_v2_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text"
+      ],
+      "notes": "V2 contains the same 34 IC-only sources and all 561 unordered pairs. Prioritize V1 failure clusters for S01, S02, S03, S04, S05, S06, S08, S21, S22, all S27 no-model pairings, and all S32-S34 refreshed 4060 placement pairings."
     }
   ]
 }

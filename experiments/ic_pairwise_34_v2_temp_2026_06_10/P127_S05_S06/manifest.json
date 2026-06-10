@@ -1,0 +1,157 @@
+{
+  "case_id": "P127_S05_S06",
+  "description": "Pairwise IC diagnostic: 74HC32 with 74HC86.",
+  "method": "pairwise_v2_exact_source_concat_correct_cdb_boundaries_text_body_translation",
+  "status": "temporary_pending_user_proteus_testing",
+  "left": {
+    "source_index": 5,
+    "short_id": "S05",
+    "case_id": "T005_74HC32_OR_EXACT_REZIP",
+    "family": "74HC32",
+    "donor": "proteus_ic\\donors\\74hc32\\IC_HC32_M02_ALL4_IO.pdsprj",
+    "proteus_marker": "74HC32",
+    "notes": "The supplied M01 file contains HC08 metadata, so the exact family rezip uses the correct M02 all-four OR donor."
+  },
+  "right": {
+    "source_index": 6,
+    "short_id": "S06",
+    "case_id": "T006_74HC86_XOR_EXACT_REZIP",
+    "family": "74HC86",
+    "donor": "proteus_ic\\donors\\74hc86\\IC_74HC86_M01_ONE_GATE_IO.pdsprj",
+    "proteus_marker": "74HC86",
+    "notes": ""
+  },
+  "ref_map_right": {
+    "U1": "U2"
+  },
+  "terminal_label_plan_right": [
+    {
+      "terminal_marker": "$TERINPUT",
+      "offset": 398,
+      "old": "A0",
+      "new": "N0"
+    },
+    {
+      "terminal_marker": "$TERINPUT",
+      "offset": 551,
+      "old": "B0",
+      "new": "N1"
+    },
+    {
+      "terminal_marker": "$TEROUTPUT",
+      "offset": 704,
+      "old": "Y0",
+      "new": "N2"
+    }
+  ],
+  "translation_plan_right": {
+    "dx": 7620000,
+    "dy": 0,
+    "coordinate_pair_count": 16,
+    "terminal_pair_count": 6,
+    "wire_pair_count": 6,
+    "body_pair_count": 1,
+    "component_text_pair_count": 3
+  },
+  "cdb_plan": {
+    "left_pin_refs": [
+      "U1:A",
+      "U1:B",
+      "U1:C",
+      "U1:D"
+    ],
+    "right_pin_refs_after_map": [
+      "U2:A"
+    ],
+    "left_property_refs": [
+      "U1"
+    ],
+    "right_property_refs_after_map": [
+      "U2"
+    ],
+    "combined_pin_refs": [
+      "U1:A",
+      "U1:B",
+      "U1:C",
+      "U1:D",
+      "U2:A"
+    ],
+    "combined_property_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_count": 5
+  },
+  "device_section_count": 2,
+  "device_sections": [
+    {
+      "donor_key": "T005_74HC32_OR_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc32\\IC_HC32_M02_ALL4_IO.pdsprj",
+      "size": 1051,
+      "old_tail_pointer": 68682
+    },
+    {
+      "donor_key": "T006_74HC86_XOR_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc86\\IC_74HC86_M01_ONE_GATE_IO.pdsprj",
+      "size": 1222,
+      "old_tail_pointer": 66328
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 66440,
+    "second_isis": 70699,
+    "second_object_data": 70734,
+    "object_data_pointer": 70747,
+    "device_sections": [
+      {
+        "donor_key": "T005_74HC32_OR_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc32\\IC_HC32_M02_ALL4_IO.pdsprj",
+        "start": 64167,
+        "size": 1051,
+        "old_tail_pointer": 68682,
+        "new_tail_pointer": 70747
+      },
+      {
+        "donor_key": "T006_74HC86_XOR_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc86\\IC_74HC86_M01_ONE_GATE_IO.pdsprj",
+        "start": 65218,
+        "size": 1222,
+        "old_tail_pointer": 66328,
+        "new_tail_pointer": 70747
+      }
+    ]
+  },
+  "object_refs": [
+    "U1",
+    "U2"
+  ],
+  "cdb_refs": [
+    "U1",
+    "U2"
+  ],
+  "marker_counts": {
+    "74HC32": 12,
+    "74HC86": 3
+  },
+  "cdb_marker_counts": {
+    "74HC32": 2,
+    "74HC86": 2
+  },
+  "terminal_counts": {
+    "$TERINPUT": 10,
+    "$TEROUTPUT": 5,
+    "$TERBIDIR": 0,
+    "WIRE": 15
+  },
+  "object_chunk_size": 4213,
+  "device_section_size": 2273,
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "6086756ac58b674f428184ffe14e316cf26d85aa32a3fe6b944301c70c50e60c",
+    "ROOT.DSN": "366a3579f5b226f4840a803a6762cc21dd8814e6cd488a141388667026ee2e67",
+    "ROOT.CDB": "11992fc3dc994050f6f9294f9960316609d3ee0ede72358cb4857001e346718b",
+    "object_chunk": "4022acb21f921b792f79ebcff95248991cf4e0f7f7b6390ad4ece71906a65473",
+    "device_section": "4e0da69e4c4955ad04577dcb69cee882876942dd515af167fa9cddf3e52d138c"
+  }
+}
