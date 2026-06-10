@@ -443,3 +443,48 @@ def test_mixed_ic_focused_v3_moves_text_and_covers_analog_controls() -> None:
 
     assert any("4060" in case.case_id for case in focused.ANALOG_CASES)
     assert any("4060" in case.case_id for case in focused.WHOLE_DONOR_CASES)
+
+
+def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v4_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_focused_v4_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    focused = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = focused
+    spec.loader.exec_module(focused)
+
+    assert len(focused.CROSS_BASELINE_CASES) == 2
+    assert len(focused.ANALOG_CASES) == 4
+    assert len(focused.WHOLE_DONOR_CASES) == 3
+    assert not hasattr(focused, "_text_and_body_coord_pairs")
+
+    donor = ROOT / "proteus_ic" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj"
+    donor_cdb = read_internal_file(donor, "ROOT.CDB")
+    patched_cdb, cdb_plan = focused._patch_4060_cdb(donor_cdb, modfile="4060.MDF")
+    assert [item["ref"] for item in cdb_plan] == ["U1", "U2", "U3", "U4"]
+    parsed = focused.parse_cdb(patched_cdb)
+    for row in parsed.property_rows:
+        if row.ref in {"U1", "U2", "U3", "U4"}:
+            assert b"74HC4060" in row.data
+            assert b"{MODFILE=4060.MDF}" in row.data
+            assert b"{VOLTAGE=4.5V}" in row.data
+
+    donor_chunk = _extract_object_chunk(read_internal_file(donor, "ROOT.DSN"))
+    patched_chunk, dsn_plan = focused._patch_4060_dsn_chunk(donor_chunk, modfile="4060.MDF")
+    assert dsn_plan["patched_dsn_property_records"] == 4
+    assert patched_chunk.count(b"{MODFILE=4060.MDF}") == 4
+    assert patched_chunk.count(b"{VOLTAGE=4.5V}") == 4
+    assert patched_chunk.count(focused.OLD_4060_PROPS) == 0
+
+    analog_case = next(case for case in focused.ANALOG_CASES if case.case_id.startswith("T08_"))
+    donor_obj = focused.subset_v1.donor_by_key(analog_case.donor_key)
+    original_chunk = focused.seq._extract_object_chunk(read_internal_file(donor_obj.path, "ROOT.DSN"))
+    regions = focused.subset_v1.discover_regions(original_chunk)
+    subset_chunk, _kept, _removed = focused.subset_v1.build_subset_chunk(
+        original_chunk,
+        regions,
+        analog_case.keep_markers,
+    )
+    for marker in (b"RESISTOR", b"CAPACITOR", b"REALIND", b"NPN", b"PNP", b"LM741", b"CAP-ELEC"):
+        assert marker in subset_chunk

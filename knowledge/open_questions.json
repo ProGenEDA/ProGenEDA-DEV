@@ -1164,7 +1164,7 @@
     {
       "id": "Q101",
       "question": "Does MIXED_IC_FOCUSED_V3_TEMP_2026_06_10 fix V2's floating text artifacts and provide useful small analog/RLC/4060/NE555 evidence?",
-      "status": "awaiting_user_proteus_test",
+      "status": "answered_rejected_coordinate_scan_useful_subset_evidence",
       "needed_for": [
         "ic_layout_beautifier",
         "mixed_sequential_ic_generation",
@@ -1179,7 +1179,27 @@
         "proteus_ic/docs/mixed_ic_focused_v3_2026_06_10.md",
         "tests/test_mixed_ic_analog_donors.py"
       ],
-      "notes": "Test T01-T07. T01/T02 retest the corrected text-aligned IC region translation. T03/T04 use accepted real mixed analog donors and include RLC, NPN, PNP, LM741, and CAP-ELEC. T05/T06 keep visible 74HC4060 in solo-RLC and mixed analog/RLC contexts. T07 is a NE555/RLC control.",
+      "notes": "User Proteus testing reported T01/T02 did not work. T03/T04/T07 opened, and only T05/T06 had simulation errors. T05/T06 failed in partition analysis with no model specified for visible 74HC4060 refs.",
+      "answer": "V3 is not accepted as a mixed sequential IC layout method. The coordinate-scan translation used for T01/T02 is rejected because it can touch non-coordinate binary fields. The useful evidence from V3 is that complete real mixed analog/RLC subsets still open, and that 74HC4060 needs model-metadata investigation rather than removal."
+    },
+    {
+      "id": "Q102",
+      "question": "Does MIXED_IC_FOCUSED_V4_TEMP_2026_06_10 restore T01/T02 with no-layout accepted baselines and fix 74HC4060 simulation by patching DSN/CDB model metadata?",
+      "status": "awaiting_user_proteus_test",
+      "needed_for": [
+        "mixed_sequential_ic_generation",
+        "analog_component_generation",
+        "large_mixed_ic_generation",
+        "ne555_generation",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v4_temp.py",
+        "experiments/MIXED_IC_FOCUSED_V4_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_focused_v4_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py"
+      ],
+      "notes": "Test T01-T09. T01/T02 are no-layout baselines. T03/T04/T08 cover RLC, NPN, PNP, LM741, and CAP-ELEC. T05/T06 test 74HC4060 MODFILE=4060.MDF versus MODFILE=4060. T07 tests 74HC4060 inside the real mixed analog/RLC prefix with MODFILE=4060.MDF. T09 is a NE555/RLC label-mutation control.",
       "answer": ""
     }
   ]

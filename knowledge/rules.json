@@ -2115,6 +2115,35 @@
         "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v3_moves_text_and_covers_analog_controls"
       ],
       "created": "2026-06-10"
+    },
+    {
+      "id": "R114",
+      "title": "Do not use heuristic coordinate scanning for mixed sequential IC layout",
+      "status": "rejected_by_user_proteus_test",
+      "rule": "Do not translate mixed sequential IC regions by scanning every integer pair that looks like an x/y coordinate. Only patch coordinate fields that are known from record structure, or keep accepted no-layout whole-region placement until a precise parser is available.",
+      "rationale": "MIXED_IC_FOCUSED_V3_TEMP_2026_06_10 used a broad coordinate scan after V2 artifacts. User testing reported T01/T02 did not work, so V4 removes this scan and returns T01/T02 to accepted no-layout baselines.",
+      "evidence": [
+        "MIXED_IC_FOCUSED_V3_USER_REJECTION_20260610",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v4_temp.py",
+        "proteus_ic/docs/mixed_ic_focused_v4_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan"
+      ],
+      "created": "2026-06-10"
+    },
+    {
+      "id": "R115",
+      "title": "74HC4060 no-model errors require DSN and CDB model-property testing",
+      "status": "pending_user_proteus_test",
+      "rule": "For 74HC4060 simulation failures that report no model specified, test DSN component-property text and ROOT.CDB property-row patches for MODFILE and VOLTAGE before marking the component unsupported. Generate both MODFILE=4060.MDF and MODFILE=4060 variants because nearby accepted families use both filename styles.",
+      "rationale": "Byte comparison showed 74HC4060 property rows only had ITFMOD and PACKAGE, while neighboring 74HC4040/74HC4024 rows also carried MODFILE and VOLTAGE. V4 explicitly patches both DSN object properties and CDB property rows to isolate whether this fixes simulation.",
+      "evidence": [
+        "MIXED_IC_FOCUSED_V3_USER_REJECTION_20260610",
+        "MIXED_IC_FOCUSED_V4_STATIC_20260610",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v4_temp.py",
+        "proteus_ic/docs/mixed_ic_focused_v4_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan"
+      ],
+      "created": "2026-06-10"
     }
   ]
 }

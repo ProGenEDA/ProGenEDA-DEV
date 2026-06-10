@@ -181,10 +181,15 @@ Status:
   because V2 moved terminal symbols and IC bodies without moving terminal-label
   coordinates and component text coordinates. T03 and T05 also failed
   simulation. Do not use V2 broad layout output as a generator baseline.
-- `MIXED_IC_FOCUSED_V3_TEMP_2026_06_10` is static-clean and pending user
-  Proteus testing. It is intentionally small: two corrected text-aligned IC
-  layout retries, two accepted mixed analog/RLC subsets covering NPN/PNP/LM741
-  and CAP-ELEC, two visible `74HC4060` diagnostics, and one NE555/RLC control.
+- `MIXED_IC_FOCUSED_V3_TEMP_2026_06_10` is rejected as a mixed sequential IC
+  layout route. User testing showed T01/T02 did not work, while the remaining
+  cases opened; T05/T06 failed simulation with `74HC4060` no-model errors. The
+  broad coordinate scan can corrupt non-coordinate fields and must not be used.
+- `MIXED_IC_FOCUSED_V4_TEMP_2026_06_10` is static-clean and pending user
+  Proteus testing. It removes V3's coordinate scan, repeats T01/T02 as
+  accepted no-layout baselines, keeps RLC/NPN/PNP/LM741/CAP-ELEC sample
+  coverage, patches `74HC4060` model metadata in both DSN and CDB, and keeps a
+  mutated NE555/RLC control.
 - The production route is now:
 
 ```text
