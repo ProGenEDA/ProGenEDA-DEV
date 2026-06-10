@@ -51,6 +51,9 @@ python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v2_te
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v1_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v3_temp.py
+python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v4_temp.py
+python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v5_donor_native_temp.py
+python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v6_no4060_temp.py
 ```
 
 Status:
@@ -190,11 +193,18 @@ Status:
   with `VALUE+VOLTAGE` netlist linker errors after the patch added
   `VOLTAGE=4.5V`. Do not add `VOLTAGE=4.5V` to `74HC4060` instance metadata.
   The non-4060 V4 cases worked/opened.
-- `MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10` is static-clean and
-  pending user Proteus testing. It keeps 74HC4060 donor-native, avoids E001
-  transplant for 4060, avoids MODFILE/VOLTAGE instance patches, and tests
-  structured terminal-label edits including U1 Q3 driving the existing RLC load
-  by same-name bidirectional label.
+- `MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10` is accepted only for its
+  non-4060 paths. User testing reported T05 analog/basic RLC/BJT/LM741/CAP-ELEC
+  and T06 NE555-to-RLC worked properly. T01-T03 failed with no model specified
+  for exact donor-native `74HC4060` refs, and T04 failed with no model
+  specified for `U7:A` and `U9`. Because the exact donor-native 4060 repack
+  failed, do not include `74HC4060` in simulation-oriented packs for this
+  Proteus install; keep it open/render-only until a model-backed donor is
+  supplied.
+- `MIXED_IC_FOCUSED_V6_NO4060_TEMP_2026_06_10` is static-clean and pending
+  user Proteus testing. It intentionally excludes `74HC4060`, repeats the two
+  accepted V5 routes as baselines, then tests one LM741-output-to-RLC-node edit
+  and one second-NE555-Q-to-RLC edit.
 - The production route is now:
 
 ```text

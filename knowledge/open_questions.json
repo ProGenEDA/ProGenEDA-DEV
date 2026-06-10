@@ -1205,7 +1205,7 @@
     {
       "id": "Q103",
       "question": "Does MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10 make 74HC4060 simulate by preserving donor-native metadata while applying label/topology edits inside the donor project?",
-      "status": "awaiting_user_proteus_test",
+      "status": "answered_4060_rejected_analog_ne555_accepted",
       "needed_for": [
         "mixed_sequential_ic_generation",
         "analog_component_generation",
@@ -1217,10 +1217,32 @@
         "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v5_donor_native_temp.py",
         "experiments/MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10.zip",
         "proteus_ic/docs/mixed_ic_focused_v5_donor_native_2026_06_10.md",
-        "tests/test_mixed_ic_analog_donors.py"
+        "tests/test_mixed_ic_analog_donors.py",
+        "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_USER_RESULT_20260610"
       ],
-      "notes": "Test T01-T06. T01 is an exact 4x 4060+RLC donor-native repack. T02 uniquely relabels only 4060 pin terminals. T03 ties U1 Q3 to the existing RLC input by same-name bidirectional label L0 while preserving the donor RLC/ground labels. T04 is the large mixed counter/RLC/NPN/PNP/LM741/CAP-ELEC donor with topology-preserving labels. T05 is analog-only RLC/NPN/PNP/LM741/CAP-ELEC. T06 ties NE555 Q to the existing RLC input.",
-      "answer": ""
+      "notes": "User reported T05 and T06 worked properly. T01-T03 failed with no model specified for U1-U4, and T04 failed with no model specified for U7:A and U9. Exact donor-native T01 failing makes 74HC4060 simulation support unavailable in the current route.",
+      "answer": "No for 74HC4060 simulation. Donor-native preservation did not make 4060 simulate: even the exact donor-native 4x 4060+RLC repack failed with no model specified. Yes for the analog/basic and NE555 routes: T05 and T06 worked properly."
+    },
+    {
+      "id": "Q104",
+      "priority": "high",
+      "question": "What is the smallest next mixed IC/analog pack that advances from V5 without including 74HC4060 or other no-model refs?",
+      "status": "awaiting_user_proteus_test_v6_no4060",
+      "needed_for": [
+        "analog_component_generation",
+        "ne555_generation",
+        "mixed_sequential_ic_generation",
+        "large_mixed_ic_generation"
+      ],
+      "evidence": [
+        "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_USER_RESULT_20260610",
+        "V5 T04 object/CDB audit: U7:A=74HC4520, U9=74HC4060",
+        "MIXED_IC_FOCUSED_V6_NO4060_STATIC_20260610",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v6_no4060_temp.py",
+        "experiments/MIXED_IC_FOCUSED_V6_NO4060_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_focused_v6_no4060_2026_06_10.md"
+      ],
+      "notes": "V6 generated as the smallest next pack from accepted T05/T06-style donor-native edits. It avoids 74HC4060, repeats analog/NE555 baselines, tests LM741-output-to-RLC AO0, and tests second-NE555-Q-to-RLC NQ2. V5 T04 no-model ref U9 maps to 74HC4060 and U7:A maps to 74HC4520, so isolate 74HC4520 separately before using that large mixed counter donor in a simulation pack."
     }
   ]
 }

@@ -1,0 +1,1362 @@
+{
+  "batch": "MIXED_IC_FOCUSED_V6_NO4060_TEMP_2026_06_10",
+  "purpose": "Advance only the V5 accepted analog/basic and NE555 routes. 74HC4060 is intentionally absent because exact donor-native V5 T01 failed simulation with no model specified.",
+  "status": "temporary_pending_user_proteus_testing",
+  "v5_user_result": "T05 and T06 worked properly; all 4060-containing cases failed with no-model partition errors.",
+  "case_count": 4,
+  "cases": [
+    {
+      "case_id": "T01_ANALOG_ONLY_ACCEPTED_LABELS_NATIVE",
+      "description": "Accepted V5 analog/basic donor-native topology-preserving label mutation baseline.",
+      "method": "donor_native_no4060_focused_label_edit",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\mixed_ic_analog_batch1\\MIX_RCL_ANALOG_ONLY.pdsprj",
+      "required_markers": [
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND",
+        "NPN",
+        "PNP",
+        "LM741",
+        "CAP-ELEC"
+      ],
+      "forbidden_markers": [
+        "74HC4060"
+      ],
+      "terminal_policy": "analog/basic and NE555 visible pins/endpoints use donor-native $TERBIDIR records",
+      "model_policy": "74HC4060 is intentionally absent after V5 exact donor-native no-model failures",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 70316,
+        "second_isis": 76197,
+        "second_object_data": 76232,
+        "object_data_pointer": 76245
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "6",
+          "new_label": "N00",
+          "angle_tenths": 0,
+          "suffix": "1b04"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "2953"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "2276"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "22a8"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "24e8"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "r1",
+          "new_label": "N04",
+          "angle_tenths": 0,
+          "suffix": "270e"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "2024"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "2056"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "c2",
+          "new_label": "N05",
+          "angle_tenths": 0,
+          "suffix": "1dd2"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "1b9a"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "1bcc"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "7",
+          "new_label": "N06",
+          "angle_tenths": 1800,
+          "suffix": "1b36"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1aa0"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "2",
+          "new_label": "N08",
+          "angle_tenths": 1800,
+          "suffix": "1ad2"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "4",
+          "new_label": "N09",
+          "angle_tenths": 1800,
+          "suffix": "1b68"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1e04"
+        },
+        {
+          "terminal_index": 16,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1ff2"
+        },
+        {
+          "terminal_index": 17,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "2244"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "24b6"
+        },
+        {
+          "terminal_index": 19,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "26dc"
+        },
+        {
+          "terminal_index": 20,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "2921"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "6",
+          "new": "N00",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 1,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 2,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 3,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 4,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 5,
+          "old": "r1",
+          "new": "N04",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 6,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 7,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 8,
+          "old": "c2",
+          "new": "N05",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 9,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 10,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 11,
+          "old": "7",
+          "new": "N06",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 12,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 13,
+          "old": "2",
+          "new": "N08",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 14,
+          "old": "4",
+          "new": "N09",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 15,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 16,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 17,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 18,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 19,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 20,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v6_no4060_temp_2026_06_10\\T01_ANALOG_ONLY_ACCEPTED_LABELS_NATIVE\\T01_ANALOG_ONLY_ACCEPTED_LABELS_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "NPN": 3,
+        "PNP": 3,
+        "LM741": 4,
+        "CAP-ELEC": 2,
+        "RESISTOR": 2,
+        "CAPACITOR": 2,
+        "REALIND": 3,
+        "$TERBIDIR": 21,
+        "WIRE": 21
+      },
+      "cdb_marker_counts": {
+        "NPN": 2,
+        "PNP": 2,
+        "LM741": 3,
+        "CAP-ELEC": 1,
+        "RESISTOR": 1,
+        "CAPACITOR": 2,
+        "REALIND": 2
+      },
+      "object_chunk_size": 5835,
+      "terminal_count": 21,
+      "wire_count": 21,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "3eaf086c64862f3a4ea15595c80f326e870ed934a79f47e5b3d11d568468a23a",
+        "ROOT.DSN": "322355e59e4704f74985b8d7a2fcd808bcea8c8ef0741ea48cde841faf095713",
+        "ROOT.CDB": "870db664a2673447f884b76ee413040594bc1becf63952386b4f825d0a46468a",
+        "object_chunk": "6e8a2457ba78c51a61690a1df4777fa533349a5a62142fdcd8197add4da43fb2"
+      }
+    },
+    {
+      "case_id": "T02_ANALOG_LM741_OUTPUT_TO_RLC_NODE_NATIVE",
+      "description": "Real analog edit: LM741 output-side terminal and RLC/resistor node share AO0.",
+      "method": "donor_native_no4060_focused_label_edit",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\mixed_ic_analog_batch1\\MIX_RCL_ANALOG_ONLY.pdsprj",
+      "required_markers": [
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND",
+        "NPN",
+        "PNP",
+        "LM741",
+        "CAP-ELEC"
+      ],
+      "forbidden_markers": [
+        "74HC4060"
+      ],
+      "terminal_policy": "analog/basic and NE555 visible pins/endpoints use donor-native $TERBIDIR records",
+      "model_policy": "74HC4060 is intentionally absent after V5 exact donor-native no-model failures",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 70316,
+        "second_isis": 76197,
+        "second_object_data": 76232,
+        "object_data_pointer": 76245
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "6",
+          "new_label": "AO0",
+          "angle_tenths": 0,
+          "suffix": "1b04"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "2953"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "2276"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "22a8"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "c1",
+          "new_label": "N01",
+          "angle_tenths": 0,
+          "suffix": "24e8"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "r1",
+          "new_label": "AO0",
+          "angle_tenths": 0,
+          "suffix": "270e"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "2024"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "2056"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "c2",
+          "new_label": "N05",
+          "angle_tenths": 0,
+          "suffix": "1dd2"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "1",
+          "new_label": "N02",
+          "angle_tenths": 0,
+          "suffix": "1b9a"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "5",
+          "new_label": "N03",
+          "angle_tenths": 0,
+          "suffix": "1bcc"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "7",
+          "new_label": "N06",
+          "angle_tenths": 1800,
+          "suffix": "1b36"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1aa0"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "2",
+          "new_label": "N08",
+          "angle_tenths": 1800,
+          "suffix": "1ad2"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "4",
+          "new_label": "N09",
+          "angle_tenths": 1800,
+          "suffix": "1b68"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1e04"
+        },
+        {
+          "terminal_index": 16,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "1ff2"
+        },
+        {
+          "terminal_index": 17,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "2244"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "24b6"
+        },
+        {
+          "terminal_index": 19,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "26dc"
+        },
+        {
+          "terminal_index": 20,
+          "old_label": "n1",
+          "new_label": "N07",
+          "angle_tenths": 1800,
+          "suffix": "2921"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "6",
+          "new": "AO0",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 1,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 2,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 3,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 4,
+          "old": "c1",
+          "new": "N01",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 5,
+          "old": "r1",
+          "new": "AO0",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 6,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 7,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 8,
+          "old": "c2",
+          "new": "N05",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 9,
+          "old": "1",
+          "new": "N02",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 10,
+          "old": "5",
+          "new": "N03",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 11,
+          "old": "7",
+          "new": "N06",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 12,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 13,
+          "old": "2",
+          "new": "N08",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 14,
+          "old": "4",
+          "new": "N09",
+          "old_size": 102,
+          "new_size": 104
+        },
+        {
+          "index": 15,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 16,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 17,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 18,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 19,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        },
+        {
+          "index": 20,
+          "old": "n1",
+          "new": "N07",
+          "old_size": 103,
+          "new_size": 104
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v6_no4060_temp_2026_06_10\\T02_ANALOG_LM741_OUTPUT_TO_RLC_NODE_NATIVE\\T02_ANALOG_LM741_OUTPUT_TO_RLC_NODE_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "NPN": 3,
+        "PNP": 3,
+        "LM741": 4,
+        "CAP-ELEC": 2,
+        "RESISTOR": 2,
+        "CAPACITOR": 2,
+        "REALIND": 3,
+        "$TERBIDIR": 21,
+        "WIRE": 21
+      },
+      "cdb_marker_counts": {
+        "NPN": 2,
+        "PNP": 2,
+        "LM741": 3,
+        "CAP-ELEC": 1,
+        "RESISTOR": 1,
+        "CAPACITOR": 2,
+        "REALIND": 2
+      },
+      "object_chunk_size": 5835,
+      "terminal_count": 21,
+      "wire_count": 21,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "2301ff182040ea232395eaa267a0153f109c0927ee44553fe0cca8f470e87c01",
+        "ROOT.DSN": "68d5c3d1965b9568c2d25f2a33e0adea878cbbe932d27d471a7014ac6c5ee8de",
+        "ROOT.CDB": "870db664a2673447f884b76ee413040594bc1becf63952386b4f825d0a46468a",
+        "object_chunk": "08d78f9d2de6d18c21ab29427947aeec4a6c80b2c442210d2f7187ed2f1e8632"
+      }
+    },
+    {
+      "case_id": "T03_NE555_U1_Q_DRIVES_RLC_NATIVE",
+      "description": "Accepted V5 NE555 edit: first NE555 Q output drives the existing RLC input.",
+      "method": "donor_native_no4060_focused_label_edit",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\analog_misc_batch1\\2_NE555WITHRLC.pdsprj",
+      "required_markers": [
+        "NE555",
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND"
+      ],
+      "forbidden_markers": [
+        "74HC4060"
+      ],
+      "terminal_policy": "analog/basic and NE555 visible pins/endpoints use donor-native $TERBIDIR records",
+      "model_policy": "74HC4060 is intentionally absent after V5 exact donor-native no-model failures",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67460,
+        "second_isis": 73330,
+        "second_object_data": 73365,
+        "object_data_pointer": 73378
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "Q PIN 3",
+          "new_label": "NQ0",
+          "angle_tenths": 0,
+          "suffix": "0d16"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "DC PIN 7",
+          "new_label": "U1DC7",
+          "angle_tenths": 0,
+          "suffix": "0ce4"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "TH PIN 6",
+          "new_label": "U1TH6",
+          "angle_tenths": 0,
+          "suffix": "0dde"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "GND PIN 1",
+          "new_label": "U1GND1",
+          "angle_tenths": 1800,
+          "suffix": "0d48"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "VCC PIN 8",
+          "new_label": "U1VCC8",
+          "angle_tenths": 1800,
+          "suffix": "0d7a"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "R PIN 4",
+          "new_label": "U1R4",
+          "angle_tenths": 1800,
+          "suffix": "0cb2"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "CV PIN 5",
+          "new_label": "U1CV5",
+          "angle_tenths": 1800,
+          "suffix": "0e10"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "TR PIN 2",
+          "new_label": "U1TR2",
+          "angle_tenths": 1800,
+          "suffix": "0dac"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "Q PIN 3",
+          "new_label": "U2Q3",
+          "angle_tenths": 0,
+          "suffix": "13a5"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "DC PIN 7",
+          "new_label": "U2DC7",
+          "angle_tenths": 0,
+          "suffix": "1373"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "TH PIN 6",
+          "new_label": "U2TH6",
+          "angle_tenths": 0,
+          "suffix": "146d"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "GND PIN 1",
+          "new_label": "U2GND1",
+          "angle_tenths": 1800,
+          "suffix": "13d7"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "VCC PIN 8",
+          "new_label": "U2VCC8",
+          "angle_tenths": 1800,
+          "suffix": "1409"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "R PIN 4",
+          "new_label": "U2R4",
+          "angle_tenths": 1800,
+          "suffix": "1341"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "CV PIN 5",
+          "new_label": "U2CV5",
+          "angle_tenths": 1800,
+          "suffix": "149f"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "TR PIN 2",
+          "new_label": "U2TR2",
+          "angle_tenths": 1800,
+          "suffix": "143b"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "Y0",
+          "new_label": "NQ0",
+          "angle_tenths": 1800,
+          "suffix": "18f7"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "Q PIN 3",
+          "new": "NQ0",
+          "old_size": 108,
+          "new_size": 104
+        },
+        {
+          "index": 1,
+          "old": "DC PIN 7",
+          "new": "U1DC7",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 2,
+          "old": "TH PIN 6",
+          "new": "U1TH6",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 3,
+          "old": "GND PIN 1",
+          "new": "U1GND1",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 4,
+          "old": "VCC PIN 8",
+          "new": "U1VCC8",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 5,
+          "old": "R PIN 4",
+          "new": "U1R4",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 6,
+          "old": "CV PIN 5",
+          "new": "U1CV5",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 7,
+          "old": "TR PIN 2",
+          "new": "U1TR2",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 8,
+          "old": "Q PIN 3",
+          "new": "U2Q3",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 9,
+          "old": "DC PIN 7",
+          "new": "U2DC7",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 10,
+          "old": "TH PIN 6",
+          "new": "U2TH6",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 11,
+          "old": "GND PIN 1",
+          "new": "U2GND1",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 12,
+          "old": "VCC PIN 8",
+          "new": "U2VCC8",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 13,
+          "old": "R PIN 4",
+          "new": "U2R4",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 14,
+          "old": "CV PIN 5",
+          "new": "U2CV5",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 15,
+          "old": "TR PIN 2",
+          "new": "U2TR2",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 18,
+          "old": "Y0",
+          "new": "NQ0",
+          "old_size": 103,
+          "new_size": 104
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v6_no4060_temp_2026_06_10\\T03_NE555_U1_Q_DRIVES_RLC_NATIVE\\T03_NE555_U1_Q_DRIVES_RLC_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "NE555": 6,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "$TERBIDIR": 24,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 24
+      },
+      "cdb_marker_counts": {
+        "NE555": 4,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2
+      },
+      "object_chunk_size": 5824,
+      "terminal_count": 24,
+      "wire_count": 24,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "22b542703cfc16e2016d17fd1eef4d44b2175815ec10f69d2efcf21f9d101c8f",
+        "ROOT.DSN": "a71756d7aa64359b1e2ae637d331187cdc6605492ee15d5e9022ca6417f4cb55",
+        "ROOT.CDB": "86fd98398ec9face703e722af50c9d9a180f6f9d6ad8234624aced70e6c5131d",
+        "object_chunk": "4024c28875f01682a2d5ae9f1cee2a20419386479284193a5dd3465e7f1c5cbb"
+      }
+    },
+    {
+      "case_id": "T04_NE555_U2_Q_DRIVES_RLC_NATIVE",
+      "description": "Second-unit NE555 edit: U2 Q output drives the existing RLC input.",
+      "method": "donor_native_no4060_focused_label_edit",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\analog_misc_batch1\\2_NE555WITHRLC.pdsprj",
+      "required_markers": [
+        "NE555",
+        "RESISTOR",
+        "CAPACITOR",
+        "REALIND"
+      ],
+      "forbidden_markers": [
+        "74HC4060"
+      ],
+      "terminal_policy": "analog/basic and NE555 visible pins/endpoints use donor-native $TERBIDIR records",
+      "model_policy": "74HC4060 is intentionally absent after V5 exact donor-native no-model failures",
+      "section_pointers": {
+        "insert": 64167,
+        "first_isis": 67460,
+        "second_isis": 73330,
+        "second_object_data": 73365,
+        "object_data_pointer": 73378
+      },
+      "label_plan": [
+        {
+          "terminal_index": 0,
+          "old_label": "Q PIN 3",
+          "new_label": "U1Q3",
+          "angle_tenths": 0,
+          "suffix": "0d16"
+        },
+        {
+          "terminal_index": 1,
+          "old_label": "DC PIN 7",
+          "new_label": "U1DC7",
+          "angle_tenths": 0,
+          "suffix": "0ce4"
+        },
+        {
+          "terminal_index": 2,
+          "old_label": "TH PIN 6",
+          "new_label": "U1TH6",
+          "angle_tenths": 0,
+          "suffix": "0dde"
+        },
+        {
+          "terminal_index": 3,
+          "old_label": "GND PIN 1",
+          "new_label": "U1GND1",
+          "angle_tenths": 1800,
+          "suffix": "0d48"
+        },
+        {
+          "terminal_index": 4,
+          "old_label": "VCC PIN 8",
+          "new_label": "U1VCC8",
+          "angle_tenths": 1800,
+          "suffix": "0d7a"
+        },
+        {
+          "terminal_index": 5,
+          "old_label": "R PIN 4",
+          "new_label": "U1R4",
+          "angle_tenths": 1800,
+          "suffix": "0cb2"
+        },
+        {
+          "terminal_index": 6,
+          "old_label": "CV PIN 5",
+          "new_label": "U1CV5",
+          "angle_tenths": 1800,
+          "suffix": "0e10"
+        },
+        {
+          "terminal_index": 7,
+          "old_label": "TR PIN 2",
+          "new_label": "U1TR2",
+          "angle_tenths": 1800,
+          "suffix": "0dac"
+        },
+        {
+          "terminal_index": 8,
+          "old_label": "Q PIN 3",
+          "new_label": "NQ2",
+          "angle_tenths": 0,
+          "suffix": "13a5"
+        },
+        {
+          "terminal_index": 9,
+          "old_label": "DC PIN 7",
+          "new_label": "U2DC7",
+          "angle_tenths": 0,
+          "suffix": "1373"
+        },
+        {
+          "terminal_index": 10,
+          "old_label": "TH PIN 6",
+          "new_label": "U2TH6",
+          "angle_tenths": 0,
+          "suffix": "146d"
+        },
+        {
+          "terminal_index": 11,
+          "old_label": "GND PIN 1",
+          "new_label": "U2GND1",
+          "angle_tenths": 1800,
+          "suffix": "13d7"
+        },
+        {
+          "terminal_index": 12,
+          "old_label": "VCC PIN 8",
+          "new_label": "U2VCC8",
+          "angle_tenths": 1800,
+          "suffix": "1409"
+        },
+        {
+          "terminal_index": 13,
+          "old_label": "R PIN 4",
+          "new_label": "U2R4",
+          "angle_tenths": 1800,
+          "suffix": "1341"
+        },
+        {
+          "terminal_index": 14,
+          "old_label": "CV PIN 5",
+          "new_label": "U2CV5",
+          "angle_tenths": 1800,
+          "suffix": "149f"
+        },
+        {
+          "terminal_index": 15,
+          "old_label": "TR PIN 2",
+          "new_label": "U2TR2",
+          "angle_tenths": 1800,
+          "suffix": "143b"
+        },
+        {
+          "terminal_index": 18,
+          "old_label": "Y0",
+          "new_label": "NQ2",
+          "angle_tenths": 1800,
+          "suffix": "18f7"
+        }
+      ],
+      "mutations": [
+        {
+          "index": 0,
+          "old": "Q PIN 3",
+          "new": "U1Q3",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 1,
+          "old": "DC PIN 7",
+          "new": "U1DC7",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 2,
+          "old": "TH PIN 6",
+          "new": "U1TH6",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 3,
+          "old": "GND PIN 1",
+          "new": "U1GND1",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 4,
+          "old": "VCC PIN 8",
+          "new": "U1VCC8",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 5,
+          "old": "R PIN 4",
+          "new": "U1R4",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 6,
+          "old": "CV PIN 5",
+          "new": "U1CV5",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 7,
+          "old": "TR PIN 2",
+          "new": "U1TR2",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 8,
+          "old": "Q PIN 3",
+          "new": "NQ2",
+          "old_size": 108,
+          "new_size": 104
+        },
+        {
+          "index": 9,
+          "old": "DC PIN 7",
+          "new": "U2DC7",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 10,
+          "old": "TH PIN 6",
+          "new": "U2TH6",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 11,
+          "old": "GND PIN 1",
+          "new": "U2GND1",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 12,
+          "old": "VCC PIN 8",
+          "new": "U2VCC8",
+          "old_size": 110,
+          "new_size": 107
+        },
+        {
+          "index": 13,
+          "old": "R PIN 4",
+          "new": "U2R4",
+          "old_size": 108,
+          "new_size": 105
+        },
+        {
+          "index": 14,
+          "old": "CV PIN 5",
+          "new": "U2CV5",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 15,
+          "old": "TR PIN 2",
+          "new": "U2TR2",
+          "old_size": 109,
+          "new_size": 106
+        },
+        {
+          "index": 18,
+          "old": "Y0",
+          "new": "NQ2",
+          "old_size": 103,
+          "new_size": 104
+        }
+      ],
+      "container": {
+        "path": "D:\\Coding\\protuesgen\\experiments\\mixed_ic_focused_v6_no4060_temp_2026_06_10\\T04_NE555_U2_Q_DRIVES_RLC_NATIVE\\T04_NE555_U2_Q_DRIVES_RLC_NATIVE.pdsprj",
+        "names": [
+          "SCRIPTS/PWRRAILS.DAT",
+          "ROOT.CDB",
+          "ROOT.DSN",
+          "PROJECT.XML"
+        ],
+        "has_project_xml": true,
+        "has_root_dsn": true,
+        "has_root_cdb": true,
+        "has_pwrails": true
+      },
+      "marker_counts": {
+        "NE555": 6,
+        "RESISTOR": 2,
+        "CAPACITOR": 1,
+        "REALIND": 3,
+        "$TERBIDIR": 24,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 24
+      },
+      "cdb_marker_counts": {
+        "NE555": 4,
+        "RESISTOR": 1,
+        "CAPACITOR": 1,
+        "REALIND": 2
+      },
+      "object_chunk_size": 5824,
+      "terminal_count": 24,
+      "wire_count": 24,
+      "static_validation_issues": [],
+      "output_hashes": {
+        "project": "7072471601cfeb92550af290ab70e2489fad3a1dafaf4dd81c66e0190b3f5abf",
+        "ROOT.DSN": "b06a869bf937556bc6168e43051e2785a3430d1da111c2cc877a2b02aeea62ca",
+        "ROOT.CDB": "86fd98398ec9face703e722af50c9d9a180f6f9d6ad8234624aced70e6c5131d",
+        "object_chunk": "07fadaaedd96c3ed11cfff27e2747c2b7434baeacaca16bd91a73b9fc1757fcd"
+      }
+    }
+  ],
+  "static_issue_cases": {},
+  "archive": "experiments\\MIXED_IC_FOCUSED_V6_NO4060_TEMP_2026_06_10.zip",
+  "archive_sha256": "f7912ef56e68ecd21036069b8cb9b5c9638871f48239ba855920963fd4afd043"
+}

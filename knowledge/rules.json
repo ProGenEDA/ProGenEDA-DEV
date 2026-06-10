@@ -2148,18 +2148,54 @@
     },
     {
       "id": "R116",
-      "title": "Keep 74HC4060 donor-native until model binding is proven",
-      "status": "pending_user_proteus_test",
-      "rule": "For 74HC4060 follow-up tests, preserve the original donor project/device metadata and apply only record-structured terminal label edits inside that donor-native DSN. Do not transplant 74HC4060 into E001 and do not patch its CDB rows with VOLTAGE unless a Proteus-authored donor proves the exact property form.",
-      "rationale": "The working donor evidence has 74HC4060 CDB rows with ITFMOD and PACKAGE only, while V3 E001-style transplant hit no-model simulation errors and V4 VOLTAGE patch hit VALUE+VOLTAGE linker errors. V5 tests exact donor-native rebuilds and same-name bidirectional output-to-RLC edits.",
+      "title": "74HC4060 donor-native exact repack is not simulation-backed",
+      "status": "rejected_by_user_proteus_test_for_simulation_route",
+      "rule": "Do not include 74HC4060 in simulation-oriented generated packs for the current Proteus 8.13 route. The exact donor-native 4x 74HC4060+RLC repack failed with no model specified for U1-U4, so label edits, output-to-RLC same-name links, E001 transplant, MODFILE patches, and VOLTAGE patches are not accepted fixes. Keep 74HC4060 as open/render-only until the user supplies a Proteus-authored 4060 project that simulates in their install or provides the missing model/library binding.",
+      "rationale": "V3/V4 showed no-model or VALUE+VOLTAGE linker failures. V5 removed those patches and preserved donor-native metadata, but even T01 exact donor-native failed with no model specified for U1-U4. That makes the failure independent of generated topology edits.",
       "evidence": [
         "MIXED_IC_FOCUSED_V4_USER_PARTIAL_4060_REJECTION_20260610",
         "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_STATIC_20260610",
         "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v5_donor_native_temp.py",
         "proteus_ic/docs/mixed_ic_focused_v5_donor_native_2026_06_10.md",
-        "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v5_keeps_4060_donor_native"
+        "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v5_keeps_4060_donor_native",
+        "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_USER_RESULT_20260610",
+        "experiments/MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10.zip"
       ],
-      "created": "2026-06-10"
+      "created": "2026-06-10",
+      "updated": "2026-06-10"
+    },
+    {
+      "id": "R117",
+      "title": "Analog/basic mixed donor-native label edits are accepted",
+      "status": "accepted_from_user_proteus_test",
+      "confidence": 0.9,
+      "applies_to": [
+        "Proteus 8.13",
+        "RLC/NPN/PNP/LM741/CAP-ELEC donor-native route",
+        "mixed analog/basic generation"
+      ],
+      "evidence": [
+        "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_USER_RESULT_20260610",
+        "T05_ANALOG_ONLY_RLC_BJT_OPAMP_ECAP_NATIVE"
+      ],
+      "rule": "For mixed analog/basic projects containing RLC, NPN, PNP, LM741, and CAP-ELEC, preserve the donor-native project/device metadata and apply topology-preserving $TERBIDIR label edits. The accepted V5 T05 case works properly. Do not infer arbitrary cross-donor analog merging from this; use donor-native or previously accepted complete-region subset methods."
+    },
+    {
+      "id": "R118",
+      "title": "NE555 output-to-RLC same-name bidirectional link is accepted",
+      "status": "accepted_from_user_proteus_test",
+      "confidence": 0.9,
+      "applies_to": [
+        "Proteus 8.13",
+        "NE555",
+        "RLC load",
+        "bidirectional terminal topology"
+      ],
+      "evidence": [
+        "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_USER_RESULT_20260610",
+        "T06_NE555_Q_DRIVES_RLC_LOAD_NATIVE"
+      ],
+      "rule": "For NE555 with an existing RLC donor load, preserve donor-native project/device metadata and connect the NE555 Q output to the RLC input by assigning both $TERBIDIR terminals the same label. V5 T06 worked properly with Q and the RLC input sharing NQ0."
     }
   ]
 }

@@ -470,6 +470,29 @@ def test_mixed_ic_focused_v5_keeps_4060_donor_native() -> None:
         assert index not in ne555_replacements
 
 
+def test_mixed_ic_focused_v6_excludes_4060_and_extends_accepted_routes() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v6_no4060_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_focused_v6_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    focused = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = focused
+    spec.loader.exec_module(focused)
+
+    assert len(focused.CASES) == 4
+    assert all("4060" not in case.case_id for case in focused.CASES)
+    assert all("74HC4060" not in case.required_markers for case in focused.CASES)
+
+    analog_replacements = focused.analog_lm741_output_to_rlc_node_replacements()
+    assert analog_replacements[0] == "AO0"
+    assert analog_replacements[5] == "AO0"
+
+    ne555_u2_replacements = focused.ne555_u2_q_to_rlc_replacements()
+    assert ne555_u2_replacements[8] == "NQ2"
+    assert ne555_u2_replacements[18] == "NQ2"
+    assert ne555_u2_replacements[0] != "NQ2"
+
+
 def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
     script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v4_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v4_temp", script)
