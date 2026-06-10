@@ -108,10 +108,15 @@ Status:
   not continue from it. Pairs that opened still had the same simulation errors,
   cases that previously only had simulation errors started crashing, and
   refreshed 4060 coordinate-only pairs also crashed.
-- `IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10` is the current sample-first
-  repair path. It does not touch V1 working pairs. Its first case regenerates
-  failed `S01+S02` through the accepted combinational gate-slice generator
-  instead of whole-donor `U2` copy/paste. It is pending user Proteus testing.
+- `IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10` passed user Proteus testing
+  for the focused `S01+S02` repair. It does not touch V1 working pairs. Its
+  first case regenerates failed `S01+S02` through the accepted combinational
+  gate-slice generator instead of whole-donor `U2` copy/paste.
+- `IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10` expands the accepted `S01+S02`
+  repair to the V1-reported rejected pairs that include at least one accepted
+  combinational source. It emits 65 repaired cases and defers 44
+  non-combinational-only or coordinate-only cases. It is pending user Proteus
+  testing.
 - `IC_HC04_ALL7_V1_TEMP_2026_06_08` passed user Proteus testing. It imports
   `74HC04`, generates one NOT gate, all six inverter subparts, logic-constant
   NOT gates, a NOT/RCL load, and the final all-seven combinational family
@@ -237,6 +242,10 @@ Status:
   rezips pass. It uses same-length package-ref remaps, a generic CDB splitter
   for subpart pin rows, full donor device sections, and a right-side coordinate
   translation. Treat it as diagnostic, not main generator support.
+- `IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10` is the current pairwise repair
+  candidate for V1-rejected pairs involving accepted combinational ICs. It is
+  intentionally partial: it does not regenerate V1-passed pairs and does not
+  attempt non-combinational-only failures.
 - The production route is now:
 
 ```text

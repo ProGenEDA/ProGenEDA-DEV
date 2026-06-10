@@ -2308,8 +2308,8 @@
     {
       "id": "R124",
       "title": "Failed combinational IC pairs must use accepted gate-slice generation, not whole-donor U2 copying",
-      "status": "sample_static_clean_pending_user_proteus_test",
-      "confidence": 0.9,
+      "status": "sample_user_confirmed_expand_with_scope_limits",
+      "confidence": 0.95,
       "applies_to": [
         "IC pairwise mixing",
         "74HC00",
@@ -2317,7 +2317,7 @@
         "combinational ICs",
         "Proteus 8.13"
       ],
-      "rule": "For pairwise failures involving already-accepted combinational IC families, do not concatenate exact-rezip donor chunks as left donor plus moved U2 donor. Use the accepted combinational generator: fresh gate record slices, fresh object/suffix IDs, directional IC terminals, and generated CDB subpart rows with package property rows. Start with one sample such as S01+S02 before expanding to the rest of the rejected pair list.",
+      "rule": "For pairwise failures involving already-accepted combinational IC families, do not concatenate exact-rezip donor chunks as left donor plus moved U2 donor. Use the accepted combinational generator for combinational sides: fresh gate record slices, fresh object/suffix IDs, directional IC terminals, and generated CDB subpart rows with package property rows. For mixed accepted-combinational plus exact-donor pairs, keep the non-combinational donor native and add the combinational gate with a fresh package ref and object ID after the donor. Do not apply this rule to non-combinational-only or coordinate-only failures.",
       "evidence": [
         "User V1 report: S01+S02 opens but simulation fails with duplicate part reference U2:A [U1:A] and duplicate X000000.. refs",
         "src/proteusgen/ic_combinational.py",
@@ -2325,7 +2325,31 @@
         "experiments/IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10.zip",
         "tests/test_ic_pairwise_error_focused.py::test_focused_s01_s02_uses_accepted_combinational_path",
         "D:/arch/outtt/BIN/NETLIST.dll.cpp duplicate/no-model netlist error strings",
-        "D:/arch/outtt/BIN/ISIS.DLL.cpp unnamed-pin error string"
+        "D:/arch/outtt/BIN/ISIS.DLL.cpp unnamed-pin error string",
+        "User reported IC_PAIRWISE_ERROR_FOCUSED_V1 T01_S01_S02 worked on 2026-06-10",
+        "tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_fixed_v2_temp.py",
+        "experiments/IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10.zip",
+        "tests/test_ic_pairwise_error_focused.py::test_error_fixed_pack_generates_only_supported_v1_failures"
+      ],
+      "created": "2026-06-10"
+    },
+    {
+      "id": "R125",
+      "status": "static_clean_pending_user_proteus_test",
+      "confidence": 0.82,
+      "applies_to": [
+        "IC pairwise mixing",
+        "accepted combinational ICs",
+        "exact donor ICs",
+        "Proteus 8.13"
+      ],
+      "rule": "The expanded pairwise error repair pack must remain partial until Proteus testing passes. It generated only V1-rejected pairs with an accepted combinational side: 65 projects total, 15 pure accepted-combinational pairs and 50 accepted-combinational plus exact-donor pairs. It deliberately deferred 44 pairs: non-combinational-only failures and coordinate-only refreshed-4060 cases.",
+      "evidence": [
+        "User reported focused S01+S02 repair worked",
+        "experiments/IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10.zip",
+        "experiments/ic_pairwise_error_fixed_v2_temp_2026_06_10/summary.json generated_pair_count=65 deferred_pair_count=44 static_issue_count=0",
+        "proteus_ic/docs/ic_pairwise_error_fixed_v2_2026_06_10.md",
+        "tests/test_ic_pairwise_error_focused.py::test_error_fixed_pack_generates_only_supported_v1_failures"
       ],
       "created": "2026-06-10"
     }

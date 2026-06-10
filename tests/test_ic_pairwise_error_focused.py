@@ -46,3 +46,61 @@ def test_focused_s01_s02_uses_accepted_combinational_path(tmp_path: Path) -> Non
     assert [row.ref for row in parsed.property_rows] == ["U1", "U2"]
     assert cdb.count(b"74NAND2") == 1
     assert cdb.count(b"74NOR2") == 1
+
+
+def load_fixed_module():
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_error_fixed_v2_temp.py"
+    spec = importlib.util.spec_from_file_location("ic_pairwise_error_fixed_v2_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _parsed_ids_and_refs(project: Path):
+    parsed = load_fixed_module().pairwise_v1.split_cdb_generic(read_internal_file(project, "ROOT.CDB"))
+    return (
+        [ref for ref, _row in parsed.pin_rows],
+        [ref for ref, _row in parsed.property_rows],
+        [int.from_bytes(row[:4], "little") for _ref, row in parsed.pin_rows],
+    )
+
+
+def test_error_fixed_pack_generates_only_supported_v1_failures(tmp_path: Path) -> None:
+    fixed = load_fixed_module()
+    selected, deferred = fixed._supported_error_pairs()
+    assert len(selected) == 65
+    assert len(deferred) == 44
+    assert ("duplicate_part_reference", "S01", "S02") in selected
+    assert ("no_model_specified", "S01", "S27") in selected
+    assert {"failure_class": "duplicate_part_reference", "pair": ["S15", "S21"], "reason": "no accepted combinational side"} in deferred
+
+    fixed.OUT_ROOT = tmp_path
+    original_pure = fixed.PAIR_BY_SHORT[("S01", "S02")]
+    pure = fixed.write_accepted_pair_case(original_pure, "S01", "S02")
+    assert pure["static_validation_issues"] == []
+    pure_path = tmp_path / pure["case_id"] / f"{pure['case_id']}.pdsprj"
+    refs, props, ids = _parsed_ids_and_refs(pure_path)
+    assert refs == ["U1:A", "U2:A"]
+    assert props == ["U1", "U2"]
+    assert ids == [1, 2]
+
+    original_mixed = fixed.PAIR_BY_SHORT[("S01", "S08")]
+    mixed = fixed.write_mixed_case(original_mixed, "S01", "S08")
+    assert mixed["static_validation_issues"] == []
+    mixed_path = tmp_path / mixed["case_id"] / f"{mixed['case_id']}.pdsprj"
+    refs, props, ids = _parsed_ids_and_refs(mixed_path)
+    assert refs == ["U1", "U2:A"]
+    assert props == ["U1", "U2"]
+    assert ids == [1, 2]
+
+    original_7447 = fixed.PAIR_BY_SHORT[("S01", "S27")]
+    with_7447 = fixed.write_mixed_case(original_7447, "S01", "S27")
+    assert with_7447["static_validation_issues"] == []
+    with_7447_path = tmp_path / with_7447["case_id"] / f"{with_7447['case_id']}.pdsprj"
+    refs, props, ids = _parsed_ids_and_refs(with_7447_path)
+    assert refs == ["U1", "U2:A"]
+    assert props == ["U1", "U2"]
+    assert ids == [13, 14]

@@ -1312,7 +1312,7 @@
       "id": "Q108",
       "priority": "high",
       "question": "Does the focused S01+S02 sample generated through the accepted combinational path open and simulate in Proteus?",
-      "status": "awaiting_user_proteus_test_focused_sample",
+      "status": "answered_user_confirmed_working",
       "needed_for": [
         "mixed_ic_generation",
         "pairwise_ic_support_matrix",
@@ -1322,9 +1322,29 @@
         "IC_PAIRWISE_ERROR_FOCUSED_V1_STATIC_20260610",
         "experiments/IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10.zip",
         "tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_focused_v1_temp.py",
-        "tests/test_ic_pairwise_error_focused.py::test_focused_s01_s02_uses_accepted_combinational_path"
+        "tests/test_ic_pairwise_error_focused.py::test_focused_s01_s02_uses_accepted_combinational_path",
+        "User message: this worked good, now apply such fix across each of the pair that was causing issue"
       ],
-      "notes": "This pack intentionally contains only T01_S01_S02_ACCEPTED_COMBINATIONAL and a V1 failed-pair list. It should be tested before generating more failed pairs."
+      "notes": "This pack intentionally contains only T01_S01_S02_ACCEPTED_COMBINATIONAL and a V1 failed-pair list. It should be tested before generating more failed pairs.",
+      "answer": "User reported the focused S01+S02 accepted-combinational repair worked in Proteus on 2026-06-10."
+    },
+    {
+      "id": "Q109",
+      "priority": "high",
+      "question": "Do all 65 projects in IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10 open and simulate in Proteus?",
+      "status": "awaiting_user_proteus_test_expanded_error_pack",
+      "needed_for": [
+        "pairwise_ic_support_matrix",
+        "future_large_ic_composition",
+        "main_generator_promotion"
+      ],
+      "evidence": [
+        "IC_PAIRWISE_ERROR_FIXED_V2_STATIC_20260610",
+        "experiments/IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10.zip",
+        "tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_fixed_v2_temp.py",
+        "tests/test_ic_pairwise_error_focused.py::test_error_fixed_pack_generates_only_supported_v1_failures"
+      ],
+      "notes": "Pack emits 65 repaired cases and defers 44 non-combinational-only or coordinate-only cases. It is intentionally not a full 561-pair regeneration."
     }
   ]
 }
