@@ -115,8 +115,13 @@ Status:
 - `IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10` expands the accepted `S01+S02`
   repair to the V1-reported rejected pairs that include at least one accepted
   combinational source. It emits 65 repaired cases and defers 44
-  non-combinational-only or coordinate-only cases. It is pending user Proteus
-  testing.
+  non-combinational-only or coordinate-only cases. User Proteus testing on
+  2026-06-11 confirmed all 65 generated projects worked.
+- `IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11` applies that accepted
+  method to all 210 unordered pairs that include at least one accepted
+  combinational source. It also includes 21 non-combinational-only probe cases
+  using collision-only CDB ID patching. Static validation is clean; Proteus
+  testing is pending.
 - `IC_HC04_ALL7_V1_TEMP_2026_06_08` passed user Proteus testing. It imports
   `74HC04`, generates one NOT gate, all six inverter subparts, logic-constant
   NOT gates, a NOT/RCL load, and the final all-seven combinational family
@@ -242,10 +247,14 @@ Status:
   rezips pass. It uses same-length package-ref remaps, a generic CDB splitter
   for subpart pin rows, full donor device sections, and a right-side coordinate
   translation. Treat it as diagnostic, not main generator support.
-- `IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10` is the current pairwise repair
-  candidate for V1-rejected pairs involving accepted combinational ICs. It is
+- `IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10` is the accepted pairwise repair
+  path for V1-rejected pairs involving accepted combinational ICs. It is
   intentionally partial: it does not regenerate V1-passed pairs and does not
   attempt non-combinational-only failures.
+- `IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11` is the next temporary
+  test pack. Use it to verify whether the accepted combinational-side method is
+  safe for every pair containing `S01..S07`, and whether the non-combinational
+  collision-only CDB-ID probe deserves further expansion.
 - The production route is now:
 
 ```text

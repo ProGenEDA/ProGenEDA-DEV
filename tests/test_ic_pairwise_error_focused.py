@@ -59,6 +59,17 @@ def load_fixed_module():
     return module
 
 
+def load_comb_method_module():
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-11" / "generate_ic_pairwise_combinational_method_v1_temp.py"
+    spec = importlib.util.spec_from_file_location("ic_pairwise_combinational_method_v1_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def _parsed_ids_and_refs(project: Path):
     parsed = load_fixed_module().pairwise_v1.split_cdb_generic(read_internal_file(project, "ROOT.CDB"))
     return (
@@ -104,3 +115,44 @@ def test_error_fixed_pack_generates_only_supported_v1_failures(tmp_path: Path) -
     assert refs == ["U1", "U2:A"]
     assert props == ["U1", "U2"]
     assert ids == [13, 14]
+
+
+def test_combinational_method_v1_covers_all_pairs_with_a_combinational_side() -> None:
+    module = load_comb_method_module()
+    cases = module.all_pairs_with_combinational_side()
+    assert len(cases) == 210
+    assert all(module._comb_count(case.left.short_id, case.right.short_id) for case in cases)
+    assert len(module._supported_noncomb_probe_pairs()) == 21
+
+
+def test_combinational_method_v1_static_clean_representatives(tmp_path: Path) -> None:
+    module = load_comb_method_module()
+    module.OUT_ROOT = tmp_path
+    module.fixed.OUT_ROOT = tmp_path
+    by_pair = {
+        tuple(sorted((case.left.short_id, case.right.short_id), key=module._source_order)): case
+        for case in module.pairwise_v1.CASES
+    }
+
+    pure = module.write_combinational_method_case(by_pair[("S01", "S02")])
+    assert pure["static_validation_issues"] == []
+
+    mixed = module.write_combinational_method_case(by_pair[("S01", "S32")])
+    assert mixed["static_validation_issues"] == []
+
+    collision_probe = module.write_noncomb_probe_case(by_pair[("S08", "S09")])
+    assert collision_probe["static_validation_issues"] == []
+    collision_path = tmp_path / collision_probe["case_id"] / f"{collision_probe['case_id']}.pdsprj"
+    parsed = module.pairwise_v1.split_cdb_generic(read_internal_file(collision_path, "ROOT.CDB"))
+    assert [ref for ref, _row in parsed.pin_rows] == ["U1", "U2"]
+    assert [int.from_bytes(row[:4], "little") for _ref, row in parsed.pin_rows] == [1, 2]
+    assert [int.from_bytes(row[:4], "little") for _ref, row in parsed.property_rows] == [1, 2]
+    assert all(item["changed"] for item in collision_probe["cdb_plan"]["right_id_renumber_plan"])
+
+    unique_probe = module.write_noncomb_probe_case(by_pair[("S21", "S22")])
+    assert unique_probe["static_validation_issues"] == []
+    unique_path = tmp_path / unique_probe["case_id"] / f"{unique_probe['case_id']}.pdsprj"
+    parsed = module.pairwise_v1.split_cdb_generic(read_internal_file(unique_path, "ROOT.CDB"))
+    assert [int.from_bytes(row[:4], "little") for _ref, row in parsed.pin_rows] == [27, 33]
+    assert [int.from_bytes(row[:4], "little") for _ref, row in parsed.property_rows] == [17, 23]
+    assert not any(item["changed"] for item in unique_probe["cdb_plan"]["right_id_renumber_plan"])

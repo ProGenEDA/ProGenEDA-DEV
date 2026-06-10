@@ -2335,23 +2335,66 @@
     },
     {
       "id": "R125",
-      "status": "static_clean_pending_user_proteus_test",
-      "confidence": 0.82,
+      "status": "passed_user_proteus_testing",
+      "confidence": 0.95,
       "applies_to": [
         "IC pairwise mixing",
         "accepted combinational ICs",
         "exact donor ICs",
         "Proteus 8.13"
       ],
-      "rule": "The expanded pairwise error repair pack must remain partial until Proteus testing passes. It generated only V1-rejected pairs with an accepted combinational side: 65 projects total, 15 pure accepted-combinational pairs and 50 accepted-combinational plus exact-donor pairs. It deliberately deferred 44 pairs: non-combinational-only failures and coordinate-only refreshed-4060 cases.",
+      "rule": "The expanded pairwise error repair path is accepted for V1-rejected pairs that include an accepted combinational side. It generated only V1-rejected pairs with an accepted combinational side: 65 projects total, 15 pure accepted-combinational pairs and 50 accepted-combinational plus exact-donor pairs. It deliberately deferred 44 pairs: non-combinational-only failures and coordinate-only refreshed-4060 cases.",
       "evidence": [
         "User reported focused S01+S02 repair worked",
         "experiments/IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10.zip",
         "experiments/ic_pairwise_error_fixed_v2_temp_2026_06_10/summary.json generated_pair_count=65 deferred_pair_count=44 static_issue_count=0",
         "proteus_ic/docs/ic_pairwise_error_fixed_v2_2026_06_10.md",
-        "tests/test_ic_pairwise_error_focused.py::test_error_fixed_pack_generates_only_supported_v1_failures"
+        "tests/test_ic_pairwise_error_focused.py::test_error_fixed_pack_generates_only_supported_v1_failures",
+        "User reported all 65 IC_PAIRWISE_ERROR_FIXED_V2 projects worked on 2026-06-11"
       ],
       "created": "2026-06-10"
+    },
+    {
+      "id": "R126",
+      "title": "All pairwise cases with accepted combinational ICs can be generated through the combinational-side method for testing",
+      "status": "static_clean_pending_user_proteus_testing",
+      "confidence": 0.83,
+      "applies_to": [
+        "IC pairwise mixing",
+        "accepted combinational ICs",
+        "exact donor ICs",
+        "Proteus 8.13"
+      ],
+      "rule": "After IC_PAIRWISE_ERROR_FIXED_V2 passed user Proteus testing, the same method was expanded to every unordered pair containing S01..S07. Accepted combinational sides are regenerated from locked gate slices; non-combinational paired sides remain exact native donors. The 2026-06-11 pack generated 210 such cases with zero static validation issues, but user Proteus testing is still required before promotion.",
+      "evidence": [
+        "User reported all 65 IC_PAIRWISE_ERROR_FIXED_V2 projects worked on 2026-06-11",
+        "tools/proteus_generation/2026-06-11/generate_ic_pairwise_combinational_method_v1_temp.py",
+        "experiments/IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11.zip",
+        "experiments/ic_pairwise_combinational_method_v1_temp_2026_06_11/summary.json combinational_method_pair_count=210 static_issue_cases={}",
+        "tests/test_ic_pairwise_error_focused.py::test_combinational_method_v1_covers_all_pairs_with_a_combinational_side",
+        "proteus_ic/docs/ic_pairwise_combinational_method_v1_2026_06_11.md"
+      ],
+      "created": "2026-06-11"
+    },
+    {
+      "id": "R127",
+      "title": "Non-combinational pairwise donor probes should patch CDB IDs only on collision",
+      "status": "experimental_static_clean_pending_user_proteus_testing",
+      "confidence": 0.68,
+      "applies_to": [
+        "IC pairwise mixing",
+        "sequential ICs",
+        "analog IC donors",
+        "Proteus 8.13"
+      ],
+      "rule": "For non-combinational-only pair probes, preserve both exact donor chunks and patch the right donor package ref/terminal labels. Patch right-side CDB pin/property IDs only when they collide with left-side IDs; preserve native IDs when unique. This is not an accepted production rule until Proteus testing confirms the 21-probe pack.",
+      "evidence": [
+        "P211_S08_S09_NONCOMB_FRESH_CDB_IDS_PROBE changes right CDB ID 1 to 2 because of collision",
+        "P471_S21_S22_NONCOMB_FRESH_CDB_IDS_PROBE preserves right IDs 33 and 23 because they do not collide",
+        "tests/test_ic_pairwise_error_focused.py::test_combinational_method_v1_static_clean_representatives",
+        "experiments/IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11.zip"
+      ],
+      "created": "2026-06-11"
     }
   ]
 }

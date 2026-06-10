@@ -1332,7 +1332,7 @@
       "id": "Q109",
       "priority": "high",
       "question": "Do all 65 projects in IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10 open and simulate in Proteus?",
-      "status": "awaiting_user_proteus_test_expanded_error_pack",
+      "status": "answered_user_confirmed_working",
       "needed_for": [
         "pairwise_ic_support_matrix",
         "future_large_ic_composition",
@@ -1342,9 +1342,29 @@
         "IC_PAIRWISE_ERROR_FIXED_V2_STATIC_20260610",
         "experiments/IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10.zip",
         "tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_fixed_v2_temp.py",
-        "tests/test_ic_pairwise_error_focused.py::test_error_fixed_pack_generates_only_supported_v1_failures"
+        "tests/test_ic_pairwise_error_focused.py::test_error_fixed_pack_generates_only_supported_v1_failures",
+        "User message: okk all these work"
       ],
-      "notes": "Pack emits 65 repaired cases and defers 44 non-combinational-only or coordinate-only cases. It is intentionally not a full 561-pair regeneration."
+      "notes": "Pack emits 65 repaired cases and defers 44 non-combinational-only or coordinate-only cases. It is intentionally not a full 561-pair regeneration.",
+      "answer": "User reported that all projects in IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10 worked in Proteus on 2026-06-11."
+    },
+    {
+      "id": "Q110",
+      "priority": "high",
+      "question": "Do the 210 combinational-method pair projects and 21 non-combinational probe projects in IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11 open and simulate in Proteus?",
+      "status": "awaiting_user_proteus_test_pairwise_comb_method_v1",
+      "needed_for": [
+        "pairwise_ic_support_matrix",
+        "future_large_ic_composition",
+        "main_generator_promotion"
+      ],
+      "evidence": [
+        "IC_PAIRWISE_COMBINATIONAL_METHOD_V1_STATIC_20260611",
+        "experiments/IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11.zip",
+        "tools/proteus_generation/2026-06-11/generate_ic_pairwise_combinational_method_v1_temp.py",
+        "tests/test_ic_pairwise_error_focused.py::test_combinational_method_v1_static_clean_representatives"
+      ],
+      "notes": "Test the 210 combinational-method cases first. Treat the 21 non-combinational-only cases as probes, not as accepted support."
     }
   ]
 }

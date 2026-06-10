@@ -1,0 +1,100 @@
+{
+  "case_id": "P142_S05_S21_FIXED_ACCEPTED_PLUS_DONOR",
+  "original_pair_case_id": "P142_S05_S21",
+  "left": {
+    "source_index": 5,
+    "short_id": "S05",
+    "case_id": "T005_74HC32_OR_EXACT_REZIP",
+    "family": "74HC32",
+    "donor": "proteus_ic\\donors\\74hc32\\IC_HC32_M02_ALL4_IO.pdsprj",
+    "proteus_marker": "74HC32",
+    "notes": "The supplied M01 file contains HC08 metadata, so the exact family rezip uses the correct M02 all-four OR donor."
+  },
+  "right": {
+    "source_index": 21,
+    "short_id": "S21",
+    "case_id": "T023_74HC174_EXACT_REZIP",
+    "family": "74HC174",
+    "donor": "proteus_ic\\donors\\sequential_ics_batch3\\74HC174.pdsprj",
+    "proteus_marker": "74HC174",
+    "notes": "This is the supplied 74HC174 donor, not 74HC175."
+  },
+  "repair_method": "accepted_combinational_gate_slice_added_to_exact_donor_with_fresh_object_id_and_cdb_row",
+  "accepted_combinational_source": "S05",
+  "exact_donor_source": "S21",
+  "accepted_topology": {
+    "object_id": 28,
+    "chip_alias": "IC2",
+    "package_ref": "U2",
+    "subpart_ref": "U2:A",
+    "gate_letter": "A",
+    "left_net": "I1",
+    "right_net": "J1",
+    "output_net": "O1",
+    "physical_pins": {
+      "left": "1",
+      "right": "2",
+      "output": "3"
+    },
+    "pin_ids": {
+      "in1": "000159a4",
+      "in2": "00015a3d",
+      "out": "00015ad7"
+    },
+    "family": "74hc32",
+    "role": "OR2",
+    "device": "74HC32",
+    "note": ""
+  },
+  "accepted_package_row": {
+    "family": "74hc32",
+    "device": "74HC32",
+    "package_ref": "U2",
+    "package_number": 2
+  },
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 74913,
+    "second_isis": 78482,
+    "second_object_data": 78517,
+    "object_data_pointer": 78530,
+    "device_sections": [
+      {
+        "donor_key": "T023_74HC174_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\sequential_ics_batch3\\74HC174.pdsprj",
+        "start": 64167,
+        "size": 1157,
+        "old_tail_pointer": 68099,
+        "new_tail_pointer": 78530
+      },
+      {
+        "donor_key": "accepted_combinational_combined",
+        "donor": "proteus_ic\\donors\\combined\\ALLL_ICS_ALL4_RLC_HC04_20260608.pdsprj",
+        "start": 65324,
+        "size": 9589,
+        "old_tail_pointer": 98876,
+        "new_tail_pointer": 78530
+      }
+    ]
+  },
+  "marker_counts": {
+    "74HC32": 3,
+    "74HC174": 3
+  },
+  "cdb_marker_counts": {
+    "74HC32": 2,
+    "74HC174": 2
+  },
+  "terminal_counts": {
+    "$TERINPUT": 2,
+    "$TEROUTPUT": 1,
+    "$TERBIDIR": 14
+  },
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "330df2a66d1f939f8c5db05638586b6ae02abe616321a65e7e6be44710f87560",
+    "ROOT.DSN": "5afa8c0ab7316f7f717c16ccd8c596c6558b33530e1f73babcc85c9f68889469",
+    "ROOT.CDB": "16e027ec2158ddcf0b61f235d1554a0474909ff8e6d5bc205d9ea8c989073eb6",
+    "object_chunk": "13464fbfe37d942747ce0440deee6dcf43157762625797a389d80122fc06843f"
+  }
+}

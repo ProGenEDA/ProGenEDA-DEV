@@ -123,4 +123,5 @@ Archive SHA256:
 
 ## Proteus status
 
-Pending user Proteus open/simulate testing.
+Passed user Proteus open/simulate testing on 2026-06-11. The user reported
+that all 65 generated projects in this pack worked.
