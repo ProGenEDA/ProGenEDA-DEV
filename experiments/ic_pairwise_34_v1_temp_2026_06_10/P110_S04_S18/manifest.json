@@ -1,0 +1,177 @@
+{
+  "case_id": "P110_S04_S18",
+  "description": "Pairwise IC diagnostic: 74HC08 with 4518.",
+  "method": "pairwise_exact_source_concat_same_length_ref_remap_full_device_sections",
+  "status": "temporary_pending_user_proteus_testing",
+  "left": {
+    "source_index": 4,
+    "short_id": "S04",
+    "case_id": "T004_74HC08_AND_EXACT_REZIP",
+    "family": "74HC08",
+    "donor": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+    "proteus_marker": "74HC08",
+    "notes": ""
+  },
+  "right": {
+    "source_index": 18,
+    "short_id": "S18",
+    "case_id": "T019_4518_EXACT_REZIP",
+    "family": "4518",
+    "donor": "proteus_ic\\donors\\sequential_ics_batch3\\4518.pdsprj",
+    "proteus_marker": "4518",
+    "notes": ""
+  },
+  "ref_map_right": {
+    "U1": "U2"
+  },
+  "terminal_label_plan_right": [
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 15,
+      "old": "Q0 PIN 3",
+      "new": "N0000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 124,
+      "old": "Q1 PIN 4",
+      "new": "N0000001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 233,
+      "old": "Q2 PIN 5",
+      "new": "N0000002"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 342,
+      "old": "Q3 PIN 6",
+      "new": "N0000003"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 451,
+      "old": "CLK PIN 1",
+      "new": "N00000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 561,
+      "old": "E PIN 2",
+      "new": "N000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 669,
+      "old": "MR PIN 7",
+      "new": "N0000004"
+    }
+  ],
+  "translation_plan_right": {
+    "dx": 7620000,
+    "dy": 0,
+    "coordinate_pair_count": 29
+  },
+  "cdb_plan": {
+    "left_pin_refs": [
+      "U1:A",
+      "U1:B",
+      "U1:C",
+      "U1:D"
+    ],
+    "right_pin_refs_after_map": [
+      "U2:A"
+    ],
+    "left_property_refs": [
+      "U1"
+    ],
+    "right_property_refs_after_map": [
+      "U2"
+    ],
+    "combined_pin_refs": [
+      "U1:A",
+      "U1:B",
+      "U1:C",
+      "U1:D",
+      "U2:A"
+    ],
+    "combined_property_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_count": 5
+  },
+  "device_section_count": 2,
+  "device_sections": [
+    {
+      "donor_key": "T004_74HC08_AND_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+      "size": 900,
+      "old_tail_pointer": 68535
+    },
+    {
+      "donor_key": "T019_4518_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\sequential_ics_batch3\\4518.pdsprj",
+      "size": 938,
+      "old_tail_pointer": 66713
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 66005,
+    "second_isis": 70937,
+    "second_object_data": 70972,
+    "object_data_pointer": 70985,
+    "device_sections": [
+      {
+        "donor_key": "T004_74HC08_AND_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+        "start": 64167,
+        "size": 900,
+        "old_tail_pointer": 68535,
+        "new_tail_pointer": 70985
+      },
+      {
+        "donor_key": "T019_4518_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\sequential_ics_batch3\\4518.pdsprj",
+        "start": 65067,
+        "size": 938,
+        "old_tail_pointer": 66713,
+        "new_tail_pointer": 70985
+      }
+    ]
+  },
+  "object_refs": [
+    "U1",
+    "U2"
+  ],
+  "cdb_refs": [
+    "U1",
+    "U2"
+  ],
+  "marker_counts": {
+    "4518": 4,
+    "74HC08": 12
+  },
+  "cdb_marker_counts": {
+    "4518": 3,
+    "74HC08": 2
+  },
+  "terminal_counts": {
+    "$TERINPUT": 8,
+    "$TEROUTPUT": 4,
+    "$TERBIDIR": 7,
+    "WIRE": 19
+  },
+  "object_chunk_size": 4886,
+  "device_section_size": 1838,
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "8eabe30f8ab937744cf3c830afe02b7c090341e837a7011e4152425b967aa778",
+    "ROOT.DSN": "f5aa36875f5c490cffa83972d5a2f551ac27a8c08ad1d5ff40e23b6e78b2304d",
+    "ROOT.CDB": "a617d55e84f1afc3b98c1e3182b743e8691d5aac0884f1fd0d1003996d20aa75",
+    "object_chunk": "379dc870f1ffcd075a05170fb29e9629d8041bad8f4ffcf40738fc4ca9a7f39b",
+    "device_section": "696b821b7afcfe5c984c85c1d05ed3dd52a1a83c84e4e563b006043818240292"
+  }
+}

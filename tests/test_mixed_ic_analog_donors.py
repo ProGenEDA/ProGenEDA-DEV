@@ -502,19 +502,57 @@ def test_ic_exact_rezip_all_families_includes_refreshed_4060_and_no_payload_edit
     sys.modules[spec.name] = rezip
     spec.loader.exec_module(rezip)
 
-    assert len(rezip.CASES) == 37
+    assert len(rezip.CASES) == 41
     ids = {case.case_id for case in rezip.CASES}
     assert "T005_74HC32_OR_EXACT_REZIP" in ids
     assert "M02_ALL4" in str(next(case.donor for case in rezip.CASES if case.case_id == "T005_74HC32_OR_EXACT_REZIP"))
     assert "T018_74HC4060_REPO_SINGLE_EXACT_REZIP" in ids
+    legacy = next(case for case in rezip.CASES if case.case_id == "T018_74HC4060_REPO_SINGLE_EXACT_REZIP")
+    assert "legacy_bad" in str(legacy.donor)
     assert "T034_74HC4060_REFRESH_SINGLE_EXACT_REZIP" in ids
     assert "T037_74HC4060_REFRESH_4X_RLC_EXACT_REZIP" in ids
+    assert "T038_74HC4520_REFRESH_SINGLE_EXACT_REZIP" in ids
+    assert "T041_74HC4520_REFRESH_4X_RLC_EXACT_REZIP" in ids
 
     sample = next(case for case in rezip.CASES if case.case_id == "T034_74HC4060_REFRESH_SINGLE_EXACT_REZIP")
     donor_payloads = rezip._zip_payloads(sample.donor)
     assert "ROOT.DSN" in donor_payloads
     assert "ROOT.CDB" in donor_payloads
     assert b"74HC4060" in donor_payloads["ROOT.DSN"] + donor_payloads["ROOT.CDB"]
+
+
+def test_ic_pairwise_34_v1_uses_clean_source_matrix_and_generic_cdb_splitter() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_34_v1_temp.py"
+    spec = importlib.util.spec_from_file_location("ic_pairwise_34_v1_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    pairwise = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = pairwise
+    spec.loader.exec_module(pairwise)
+
+    assert len(pairwise.SOURCES) == 34
+    assert len(pairwise.CASES) == 561
+    ids = {source.case_id for source in pairwise.SOURCES}
+    assert "T018_74HC4060_REPO_SINGLE_EXACT_REZIP" not in ids
+    assert "T020_74HC4520_EXACT_REZIP" not in ids
+    assert "T037_74HC4060_REFRESH_4X_RLC_EXACT_REZIP" not in ids
+    assert "T038_74HC4520_REFRESH_SINGLE_EXACT_REZIP" not in ids
+    assert "T034_74HC4060_REFRESH_SINGLE_EXACT_REZIP" in ids
+    assert "T036_74HC4060_REFRESH_4X_EXACT_REZIP" in ids
+
+    assert pairwise.same_length_ref_map(["U1"], ["U1"]) == {"U1": "U2"}
+    assert pairwise.same_length_ref_map(["U1", "U2", "U3", "U4"], ["U1", "U2", "U3", "U4"]) == {
+        "U1": "U5",
+        "U2": "U6",
+        "U3": "U7",
+        "U4": "U8",
+    }
+
+    hc08 = next(source for source in pairwise.SOURCES if source.case_id == "T004_74HC08_AND_EXACT_REZIP")
+    parsed = pairwise.split_cdb_generic(read_internal_file(hc08.donor, "ROOT.CDB"))
+    assert parsed.count == 4
+    assert [ref for ref, _row in parsed.pin_rows] == ["U1:A", "U1:B", "U1:C", "U1:D"]
+    assert [ref for ref, _row in parsed.property_rows] == ["U1"]
 
 
 def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
@@ -531,7 +569,7 @@ def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
     assert len(focused.WHOLE_DONOR_CASES) == 3
     assert not hasattr(focused, "_text_and_body_coord_pairs")
 
-    donor = ROOT / "proteus_ic" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj"
+    donor = ROOT / "proteus_ic" / "donors" / "sequential_ics_4060_legacy_bad_20260610" / "4_74HC4060withRLC.pdsprj"
     donor_cdb = read_internal_file(donor, "ROOT.CDB")
     patched_cdb, cdb_plan = focused._patch_4060_cdb(donor_cdb, modfile="4060.MDF")
     assert [item["ref"] for item in cdb_plan] == ["U1", "U2", "U3", "U4"]

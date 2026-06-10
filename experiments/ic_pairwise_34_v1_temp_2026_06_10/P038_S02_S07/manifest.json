@@ -1,0 +1,147 @@
+{
+  "case_id": "P038_S02_S07",
+  "description": "Pairwise IC diagnostic: 74HC02 with 74HC266.",
+  "method": "pairwise_exact_source_concat_same_length_ref_remap_full_device_sections",
+  "status": "temporary_pending_user_proteus_testing",
+  "left": {
+    "source_index": 2,
+    "short_id": "S02",
+    "case_id": "T002_74HC02_NOR_EXACT_REZIP",
+    "family": "74HC02",
+    "donor": "proteus_ic\\donors\\74hc02\\IC_74HC02_M01_ONE_GATE_IO.pdsprj",
+    "proteus_marker": "74HC02",
+    "notes": ""
+  },
+  "right": {
+    "source_index": 7,
+    "short_id": "S07",
+    "case_id": "T007_74HC266_XNOR_EXACT_REZIP",
+    "family": "74HC266",
+    "donor": "proteus_ic\\donors\\74hc266\\IC_74HC266_M01_ONE_GATE_IO.pdsprj",
+    "proteus_marker": "74HC266",
+    "notes": ""
+  },
+  "ref_map_right": {
+    "U1": "U2"
+  },
+  "terminal_label_plan_right": [
+    {
+      "terminal_marker": "$TERINPUT",
+      "offset": 401,
+      "old": "A0",
+      "new": "N0"
+    },
+    {
+      "terminal_marker": "$TERINPUT",
+      "offset": 554,
+      "old": "B0",
+      "new": "N1"
+    },
+    {
+      "terminal_marker": "$TEROUTPUT",
+      "offset": 707,
+      "old": "Y0",
+      "new": "N2"
+    }
+  ],
+  "translation_plan_right": {
+    "dx": 7620000,
+    "dy": 0,
+    "coordinate_pair_count": 13
+  },
+  "cdb_plan": {
+    "left_pin_refs": [
+      "U1:A"
+    ],
+    "right_pin_refs_after_map": [
+      "U2:A"
+    ],
+    "left_property_refs": [
+      "U1"
+    ],
+    "right_property_refs_after_map": [
+      "U2"
+    ],
+    "combined_pin_refs": [
+      "U1:A",
+      "U2:A"
+    ],
+    "combined_property_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_count": 2
+  },
+  "device_section_count": 2,
+  "device_sections": [
+    {
+      "donor_key": "T002_74HC02_NOR_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc02\\IC_74HC02_M01_ONE_GATE_IO.pdsprj",
+      "size": 1057,
+      "old_tail_pointer": 66163
+    },
+    {
+      "donor_key": "T007_74HC266_XNOR_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc266\\IC_74HC266_M01_ONE_GATE_IO.pdsprj",
+      "size": 1192,
+      "old_tail_pointer": 66301
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 66416,
+    "second_isis": 68153,
+    "second_object_data": 68188,
+    "object_data_pointer": 68201,
+    "device_sections": [
+      {
+        "donor_key": "T002_74HC02_NOR_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc02\\IC_74HC02_M01_ONE_GATE_IO.pdsprj",
+        "start": 64167,
+        "size": 1057,
+        "old_tail_pointer": 66163,
+        "new_tail_pointer": 68201
+      },
+      {
+        "donor_key": "T007_74HC266_XNOR_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc266\\IC_74HC266_M01_ONE_GATE_IO.pdsprj",
+        "start": 65224,
+        "size": 1192,
+        "old_tail_pointer": 66301,
+        "new_tail_pointer": 68201
+      }
+    ]
+  },
+  "object_refs": [
+    "U1",
+    "U2"
+  ],
+  "cdb_refs": [
+    "U1",
+    "U2"
+  ],
+  "marker_counts": {
+    "74HC02": 3,
+    "74HC266": 3
+  },
+  "cdb_marker_counts": {
+    "74HC02": 2,
+    "74HC266": 2
+  },
+  "terminal_counts": {
+    "$TERINPUT": 4,
+    "$TEROUTPUT": 2,
+    "$TERBIDIR": 0,
+    "WIRE": 6
+  },
+  "object_chunk_size": 1691,
+  "device_section_size": 2249,
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "9f6062d3c0d0f5025e0f685b18265a11fc9ea5fe0ba9cf5394c9a93fefb7aeca",
+    "ROOT.DSN": "c12e6e57db200ed2d14f5b26563c1728108dd3c9e1c41f6463b997dec072db59",
+    "ROOT.CDB": "b125342d46ed5a07ae2c0846b93396b810ae58ab751a01fbca2dd83dd6fa7cc0",
+    "object_chunk": "70776283868212f32a13700026b56ea84931673ceaf3caced36a1a55df287726",
+    "device_section": "25a021501c367d9bf951e15191c6febe2062675a73402f7e949a81258bce1575"
+  }
+}

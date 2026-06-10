@@ -1,0 +1,128 @@
+{
+  "case_id": "P002_S01_S03",
+  "description": "Pairwise IC diagnostic: 74HC00 with 74HC04.",
+  "method": "pairwise_exact_source_concat_same_length_ref_remap_full_device_sections",
+  "status": "temporary_pending_user_proteus_testing",
+  "left": {
+    "source_index": 1,
+    "short_id": "S01",
+    "case_id": "T001_74HC00_NAND_EXACT_REZIP",
+    "family": "74HC00",
+    "donor": "proteus_ic\\donors\\74hc00\\IC_74HC00_M01_ONE_GATE_IO.pdsprj",
+    "proteus_marker": "74HC00",
+    "notes": ""
+  },
+  "right": {
+    "source_index": 3,
+    "short_id": "S03",
+    "case_id": "T003_74HC04_NOT_EXACT_REZIP",
+    "family": "74HC04",
+    "donor": "proteus_ic\\donors\\74hc04\\IC_74HC04_M01_ONE_GATE_IO.pdsprj",
+    "proteus_marker": "74HC04",
+    "notes": ""
+  },
+  "ref_map_right": {
+    "U1": "U2"
+  },
+  "terminal_label_plan_right": [],
+  "translation_plan_right": {
+    "dx": 7620000,
+    "dy": 0,
+    "coordinate_pair_count": 1
+  },
+  "cdb_plan": {
+    "left_pin_refs": [
+      "U1:A"
+    ],
+    "right_pin_refs_after_map": [
+      "U2:A"
+    ],
+    "left_property_refs": [
+      "U1"
+    ],
+    "right_property_refs_after_map": [
+      "U2"
+    ],
+    "combined_pin_refs": [
+      "U1:A",
+      "U2:A"
+    ],
+    "combined_property_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_count": 2
+  },
+  "device_section_count": 2,
+  "device_sections": [
+    {
+      "donor_key": "T001_74HC00_NAND_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc00\\IC_74HC00_M01_ONE_GATE_IO.pdsprj",
+      "size": 901,
+      "old_tail_pointer": 66008
+    },
+    {
+      "donor_key": "T003_74HC04_NOT_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc04\\IC_74HC04_M01_ONE_GATE_IO.pdsprj",
+      "size": 764,
+      "old_tail_pointer": 65405
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 65832,
+    "second_isis": 67102,
+    "second_object_data": 67137,
+    "object_data_pointer": 67150,
+    "device_sections": [
+      {
+        "donor_key": "T001_74HC00_NAND_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc00\\IC_74HC00_M01_ONE_GATE_IO.pdsprj",
+        "start": 64167,
+        "size": 901,
+        "old_tail_pointer": 66008,
+        "new_tail_pointer": 67150
+      },
+      {
+        "donor_key": "T003_74HC04_NOT_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc04\\IC_74HC04_M01_ONE_GATE_IO.pdsprj",
+        "start": 65068,
+        "size": 764,
+        "old_tail_pointer": 65405,
+        "new_tail_pointer": 67150
+      }
+    ]
+  },
+  "object_refs": [
+    "U1",
+    "U2"
+  ],
+  "cdb_refs": [
+    "U1",
+    "U2"
+  ],
+  "marker_counts": {
+    "74HC00": 3,
+    "74HC04": 3
+  },
+  "cdb_marker_counts": {
+    "74HC00": 2,
+    "74HC04": 2
+  },
+  "terminal_counts": {
+    "$TERINPUT": 2,
+    "$TEROUTPUT": 1,
+    "$TERBIDIR": 0,
+    "WIRE": 3
+  },
+  "object_chunk_size": 1224,
+  "device_section_size": 1665,
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "d22a6468b505dd3629448bca2385f3d93a19bcea98b84e9a3f4ee97776a7d308",
+    "ROOT.DSN": "c493739e2ac733975ccd65bc3610e5a3c5822e49fff77270f3d0bc5948111678",
+    "ROOT.CDB": "52b47a596195dfb2d0cbab460e00ea397712fdc51651ba962d5c7b974353f976",
+    "object_chunk": "94e136a7cc80f9137a93e88be32f65885cd93672160b3a87428cfd7eebe59ff8",
+    "device_section": "7d0afb9d531b2e2fe07165dccb80f0fc587198a7182708f9c07642222b784069"
+  }
+}

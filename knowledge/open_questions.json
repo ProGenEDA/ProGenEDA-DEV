@@ -1250,7 +1250,7 @@
       "id": "Q105",
       "priority": "high",
       "question": "Which exact donor-content IC family rezips open and simulate in Proteus before any further IC mutation work?",
-      "status": "awaiting_user_proteus_test_exact_rezip_all_families",
+      "status": "partially_answered_refreshed_4520_pending",
       "needed_for": [
         "ic_model_boundary",
         "sequential_ic_generation",
@@ -1258,12 +1258,32 @@
         "mixed_ic_generation"
       ],
       "evidence": [
-        "IC_EXACT_REZIP_ALL_FAMILIES_STATIC_20260610",
+        "IC_EXACT_REZIP_ALL_FAMILIES_STATIC_V2_20260610",
+        "IC_EXACT_REZIP_ALL_FAMILIES_USER_PARTIAL_20260610",
         "experiments/IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10.zip",
         "proteus_ic/docs/ic_exact_rezip_all_families_2026_06_10.md",
-        "refreshed 4060 donors copied into proteus_ic/donors/sequential_ics_4060_refresh_20260610"
+        "refreshed 4060 donors copied into proteus_ic/donors/sequential_ics_4060_refresh_20260610",
+        "refreshed 4520 donors copied into proteus_ic/donors/sequential_ics_4520_refresh_20260610"
       ],
-      "notes": "Test all 37 exact rezips. T018 old repo 74HC4060, T020 74HC4520, and refreshed 4060 cases T034-T037 are especially important because generated packs showed no-model errors for 74HC4060/U9 and 74HC4520/U7:A."
+      "notes": "User reported T018 old repo 74HC4060 did not work, T034 and onward refreshed 4060 cases worked, and old T020 74HC4520 did not work. The pack now has 41 exact rezips. Test refreshed 74HC4520 T038-T041 next before using 4520 in pairwise or generated mixes.",
+      "answer": "Partially answered. Legacy 4060 is rejected and refreshed 4060 is accepted as the active exact-rezip donor baseline. Legacy 4520 is rejected; refreshed 4520 exact rezips T038-T041 are pending."
+    },
+    {
+      "id": "Q106",
+      "priority": "high",
+      "question": "Which IC_PAIRWISE_34_V1 pairwise IC-mixing cases open and simulate in Proteus?",
+      "status": "awaiting_user_proteus_test_pairwise_34_v1",
+      "needed_for": [
+        "mixed_ic_generation",
+        "pairwise_ic_support_matrix",
+        "future_large_ic_composition"
+      ],
+      "evidence": [
+        "IC_PAIRWISE_34_V1_STATIC_20260610",
+        "experiments/IC_PAIRWISE_34_V1_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/ic_pairwise_34_v1_2026_06_10.md"
+      ],
+      "notes": "The pack contains 561 unordered pair diagnostics from 34 IC-only source cases. Test early pairs first, then pairs involving S32-S34 refreshed 4060 sources. Refreshed 4520 is intentionally excluded until T038-T041 exact rezips pass."
     }
   ]
 }

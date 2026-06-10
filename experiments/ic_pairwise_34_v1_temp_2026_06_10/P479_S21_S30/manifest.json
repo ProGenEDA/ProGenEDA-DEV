@@ -1,0 +1,177 @@
+{
+  "case_id": "P479_S21_S30",
+  "description": "Pairwise IC diagnostic: 74HC174 with NE555.",
+  "method": "pairwise_exact_source_concat_same_length_ref_remap_full_device_sections",
+  "status": "temporary_pending_user_proteus_testing",
+  "left": {
+    "source_index": 21,
+    "short_id": "S21",
+    "case_id": "T023_74HC174_EXACT_REZIP",
+    "family": "74HC174",
+    "donor": "proteus_ic\\donors\\sequential_ics_batch3\\74HC174.pdsprj",
+    "proteus_marker": "74HC174",
+    "notes": "This is the supplied 74HC174 donor, not 74HC175."
+  },
+  "right": {
+    "source_index": 30,
+    "short_id": "S30",
+    "case_id": "T032_NE555_EXACT_REZIP",
+    "family": "NE555",
+    "donor": "proteus_ic\\donors\\analog_misc_batch1\\NE555.pdsprj",
+    "proteus_marker": "NE555",
+    "notes": ""
+  },
+  "ref_map_right": {
+    "U1": "U2"
+  },
+  "terminal_label_plan_right": [
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 15,
+      "old": "Q PIN 3",
+      "new": "N000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 123,
+      "old": "DC PIN 7",
+      "new": "N0000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 232,
+      "old": "TH PIN 6",
+      "new": "N0000001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 341,
+      "old": "GND PIN 1",
+      "new": "N00000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 451,
+      "old": "VCC PIN 8",
+      "new": "N00000001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 561,
+      "old": "R PIN 4",
+      "new": "N000001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 669,
+      "old": "CV PIN 5",
+      "new": "N0000002"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 778,
+      "old": "TR PIN 2",
+      "new": "N0000003"
+    }
+  ],
+  "translation_plan_right": {
+    "dx": 7620000,
+    "dy": 0,
+    "coordinate_pair_count": 33
+  },
+  "cdb_plan": {
+    "left_pin_refs": [
+      "U1"
+    ],
+    "right_pin_refs_after_map": [
+      "U2"
+    ],
+    "left_property_refs": [
+      "U1"
+    ],
+    "right_property_refs_after_map": [
+      "U2"
+    ],
+    "combined_pin_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_property_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_count": 2
+  },
+  "device_section_count": 2,
+  "device_sections": [
+    {
+      "donor_key": "T023_74HC174_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\sequential_ics_batch3\\74HC174.pdsprj",
+      "size": 1157,
+      "old_tail_pointer": 68099
+    },
+    {
+      "donor_key": "T032_NE555_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\analog_misc_batch1\\NE555.pdsprj",
+      "size": 761,
+      "old_tail_pointer": 66703
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 66085,
+    "second_isis": 70491,
+    "second_object_data": 70526,
+    "object_data_pointer": 70539,
+    "device_sections": [
+      {
+        "donor_key": "T023_74HC174_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\sequential_ics_batch3\\74HC174.pdsprj",
+        "start": 64167,
+        "size": 1157,
+        "old_tail_pointer": 68099,
+        "new_tail_pointer": 70539
+      },
+      {
+        "donor_key": "T032_NE555_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\analog_misc_batch1\\NE555.pdsprj",
+        "start": 65324,
+        "size": 761,
+        "old_tail_pointer": 66703,
+        "new_tail_pointer": 70539
+      }
+    ]
+  },
+  "object_refs": [
+    "U1",
+    "U2"
+  ],
+  "cdb_refs": [
+    "U1",
+    "U2"
+  ],
+  "marker_counts": {
+    "74HC174": 3,
+    "NE555": 3
+  },
+  "cdb_marker_counts": {
+    "74HC174": 2,
+    "NE555": 2
+  },
+  "terminal_counts": {
+    "$TERINPUT": 0,
+    "$TEROUTPUT": 0,
+    "$TERBIDIR": 22,
+    "WIRE": 22
+  },
+  "object_chunk_size": 4360,
+  "device_section_size": 1918,
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "2885705fb5d04aa917c094abd98a201fc02a529a67467e8e406e17ba6c32c795",
+    "ROOT.DSN": "fd91a451095bcbb05da2318bf7478849c9fce98b61c27d284011098293d44a61",
+    "ROOT.CDB": "9ef52deec1cc5879a785103306fa2f5988631bf6c5802911396c5d18fcb5b24f",
+    "object_chunk": "c9b035721c3e0847cbcbcdc29301005e5f152c9901e95860d469d8d19e63b4f3",
+    "device_section": "56aa5f33263ad8a57bb28610c24b2b4621cc73b897d93f3131637e679e3b9f45"
+  }
+}

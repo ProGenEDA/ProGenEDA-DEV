@@ -1,0 +1,189 @@
+{
+  "case_id": "P184_S07_S08",
+  "description": "Pairwise IC diagnostic: 74HC266 with 74HC90/7490.",
+  "method": "pairwise_exact_source_concat_same_length_ref_remap_full_device_sections",
+  "status": "temporary_pending_user_proteus_testing",
+  "left": {
+    "source_index": 7,
+    "short_id": "S07",
+    "case_id": "T007_74HC266_XNOR_EXACT_REZIP",
+    "family": "74HC266",
+    "donor": "proteus_ic\\donors\\74hc266\\IC_74HC266_M01_ONE_GATE_IO.pdsprj",
+    "proteus_marker": "74HC266",
+    "notes": ""
+  },
+  "right": {
+    "source_index": 8,
+    "short_id": "S08",
+    "case_id": "T008_74HC90_7490_EXACT_REZIP",
+    "family": "74HC90/7490",
+    "donor": "proteus_ic\\donors\\sequential_counters\\7490.pdsprj",
+    "proteus_marker": "7490",
+    "notes": "User-facing 74HC90 uses Proteus 7490 donor."
+  },
+  "ref_map_right": {
+    "U1": "U2"
+  },
+  "terminal_label_plan_right": [
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 15,
+      "old": "CKA PIN14",
+      "new": "N00000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 125,
+      "old": "CKB PIN 1",
+      "new": "N00000001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 235,
+      "old": "R0(1) PIN 2",
+      "new": "N0000000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 347,
+      "old": "R0(2) PIN 3",
+      "new": "N0000000001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 459,
+      "old": "R9(1) PIN 6",
+      "new": "N0000000002"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 571,
+      "old": "R9(2) PIN 7",
+      "new": "N0000000003"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 683,
+      "old": "Q0 PIN 12",
+      "new": "N00000002"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 793,
+      "old": "Q1 PIN 9",
+      "new": "N0000000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 902,
+      "old": "Q2 PIN 8",
+      "new": "N0000001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 1011,
+      "old": "Q3 PIN 11",
+      "new": "N00000003"
+    }
+  ],
+  "translation_plan_right": {
+    "dx": 7620000,
+    "dy": 0,
+    "coordinate_pair_count": 41
+  },
+  "cdb_plan": {
+    "left_pin_refs": [
+      "U1:A"
+    ],
+    "right_pin_refs_after_map": [
+      "U2"
+    ],
+    "left_property_refs": [
+      "U1"
+    ],
+    "right_property_refs_after_map": [
+      "U2"
+    ],
+    "combined_pin_refs": [
+      "U1:A",
+      "U2"
+    ],
+    "combined_property_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_count": 2
+  },
+  "device_section_count": 2,
+  "device_sections": [
+    {
+      "donor_key": "T007_74HC266_XNOR_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc266\\IC_74HC266_M01_ONE_GATE_IO.pdsprj",
+      "size": 1192,
+      "old_tail_pointer": 66301
+    },
+    {
+      "donor_key": "T008_74HC90_7490_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\sequential_counters\\7490.pdsprj",
+      "size": 1147,
+      "old_tail_pointer": 67600
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 66506,
+    "second_isis": 69455,
+    "second_object_data": 69490,
+    "object_data_pointer": 69503,
+    "device_sections": [
+      {
+        "donor_key": "T007_74HC266_XNOR_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc266\\IC_74HC266_M01_ONE_GATE_IO.pdsprj",
+        "start": 64167,
+        "size": 1192,
+        "old_tail_pointer": 66301,
+        "new_tail_pointer": 69503
+      },
+      {
+        "donor_key": "T008_74HC90_7490_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\sequential_counters\\7490.pdsprj",
+        "start": 65359,
+        "size": 1147,
+        "old_tail_pointer": 67600,
+        "new_tail_pointer": 69503
+      }
+    ]
+  },
+  "object_refs": [
+    "U1",
+    "U2"
+  ],
+  "cdb_refs": [
+    "U1",
+    "U2"
+  ],
+  "marker_counts": {
+    "7490": 3,
+    "74HC266": 3
+  },
+  "cdb_marker_counts": {
+    "7490": 2,
+    "74HC266": 2
+  },
+  "terminal_counts": {
+    "$TERINPUT": 2,
+    "$TEROUTPUT": 1,
+    "$TERBIDIR": 10,
+    "WIRE": 13
+  },
+  "object_chunk_size": 2903,
+  "device_section_size": 2339,
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "c45644f1705e1ec9d4ed53b901cb9f37280eb718ffb551e91e78ac6bee793b6c",
+    "ROOT.DSN": "512ecc995038e5eb62f74f252db86a06151d2ceae6b5a60e2eeeb42ce6f07739",
+    "ROOT.CDB": "6d3f9d43c8aafaf8b899d58c0e8781f5ee36d409859ee2e8003c5b1d65a18f3f",
+    "object_chunk": "009d77900594bca91f3eee22c689e4e3c72e493a8fd7b032da14f04156edf877",
+    "device_section": "4293b88b3f4f2ef5720c34c4f61dd209664233ca6be6481ae11cea2837b24463"
+  }
+}

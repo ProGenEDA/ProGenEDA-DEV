@@ -2,7 +2,7 @@
   "batch": "IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10",
   "purpose": "Exact donor-content rezip for every currently supplied IC family; no generator mutations.",
   "status": "temporary_pending_user_proteus_testing",
-  "case_count": 37,
+  "case_count": 41,
   "cases": [
     {
       "case_id": "T001_74HC00_NAND_EXACT_REZIP",
@@ -2091,12 +2091,12 @@
     },
     {
       "case_id": "T018_74HC4060_REPO_SINGLE_EXACT_REZIP",
-      "family": "74HC4060 repo single",
+      "family": "74HC4060 legacy repo single",
       "proteus_marker": "74HC4060",
-      "notes": "Original repo donor retained for comparison against the refreshed user-supplied 4060 donors.",
+      "notes": "Legacy repo donor retained only as rejected comparison evidence; user testing said T018 did not work.",
       "method": "exact_donor_content_rezip_no_payload_mutation",
       "status": "temporary_pending_user_proteus_testing",
-      "donor": "proteus_ic\\donors\\sequential_ics_batch3\\74HC4060.pdsprj",
+      "donor": "proteus_ic\\donors\\sequential_ics_4060_legacy_bad_20260610\\74HC4060.pdsprj",
       "payload_policy": "all internal ZIP member payloads are byte-identical to donor; only outer ZIP container metadata/order is deterministic",
       "member_order": [
         "PROJECT.XML",
@@ -6618,6 +6618,1040 @@
         "donor_ROOT.CDB": "fe82f947aa28386d7a1d592c86c92814ec05a184d4426488481823960f353b14",
         "rezip_ROOT.CDB": "fe82f947aa28386d7a1d592c86c92814ec05a184d4426488481823960f353b14"
       }
+    },
+    {
+      "case_id": "T038_74HC4520_REFRESH_SINGLE_EXACT_REZIP",
+      "family": "74HC4520 refreshed single",
+      "proteus_marker": "74HC4520",
+      "notes": "Fresh user-supplied 4520 donor from Downloads on 2026-06-10; added after old T020 failed.",
+      "method": "exact_donor_content_rezip_no_payload_mutation",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\sequential_ics_4520_refresh_20260610\\74HC4520.pdsprj",
+      "payload_policy": "all internal ZIP member payloads are byte-identical to donor; only outer ZIP container metadata/order is deterministic",
+      "member_order": [
+        "PROJECT.XML",
+        "ROOT.CDB",
+        "ROOT.DSN",
+        "SCRIPTS/PWRRAILS.DAT"
+      ],
+      "payload_mismatches": [],
+      "extra_output_members": [],
+      "missing_output_members": [],
+      "marker_counts": {
+        "74HC4520": 1,
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 8,
+        "WIRE": 11
+      },
+      "terminal_counts": {
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 7,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 7
+      },
+      "bidir_terminal_events": [
+        {
+          "start": 1,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -8128000,
+          "symbol_y": 8128000,
+          "angle_tenths": 0,
+          "suffix": "03b9",
+          "active_link": 1
+        },
+        {
+          "start": 110,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -8128000,
+          "symbol_y": 7874000,
+          "angle_tenths": 0,
+          "suffix": "03eb",
+          "active_link": 1
+        },
+        {
+          "start": 219,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -8128000,
+          "symbol_y": 7620000,
+          "angle_tenths": 0,
+          "suffix": "041d",
+          "active_link": 1
+        },
+        {
+          "start": 328,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -8128000,
+          "symbol_y": 7366000,
+          "angle_tenths": 0,
+          "suffix": "044f",
+          "active_link": 1
+        },
+        {
+          "start": 437,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -11176000,
+          "symbol_y": 8128000,
+          "angle_tenths": 1800,
+          "suffix": "0323",
+          "active_link": 1
+        },
+        {
+          "start": 547,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -11176000,
+          "symbol_y": 7874000,
+          "angle_tenths": 1800,
+          "suffix": "0355",
+          "active_link": 1
+        },
+        {
+          "start": 655,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -11176000,
+          "symbol_y": 7366000,
+          "angle_tenths": 1800,
+          "suffix": "0387",
+          "active_link": 1
+        }
+      ],
+      "object_chunk_size": 1518,
+      "static_validation_issues": [],
+      "hashes": {
+        "donor_project": "cbfef34f14d4bc1ab7ea8387e802a40a495995c92c82cb4347c76018faad257c",
+        "rezip_project": "28a7422403b6239f2bcf434bcf9ad05708d3083bb744506d86070219c39113ce",
+        "donor_ROOT.DSN": "fe5b0f76663026d0785b31c3d69ea1438b02b40c074483d7ffbe1a9ab6b47e21",
+        "rezip_ROOT.DSN": "fe5b0f76663026d0785b31c3d69ea1438b02b40c074483d7ffbe1a9ab6b47e21",
+        "donor_ROOT.CDB": "3b25c6f0f9dd534ad26ad929c3583059f8bc730f2ac49cd077af1af96ad8ea3b",
+        "rezip_ROOT.CDB": "3b25c6f0f9dd534ad26ad929c3583059f8bc730f2ac49cd077af1af96ad8ea3b"
+      }
+    },
+    {
+      "case_id": "T039_74HC4520_REFRESH_2X_EXACT_REZIP",
+      "family": "74HC4520 refreshed 2x",
+      "proteus_marker": "74HC4520",
+      "notes": "Fresh user-supplied 2x 4520 donor from Downloads on 2026-06-10; pending manual Proteus test.",
+      "method": "exact_donor_content_rezip_no_payload_mutation",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\sequential_ics_4520_refresh_20260610\\2_74HC4520.pdsprj",
+      "payload_policy": "all internal ZIP member payloads are byte-identical to donor; only outer ZIP container metadata/order is deterministic",
+      "member_order": [
+        "PROJECT.XML",
+        "ROOT.CDB",
+        "ROOT.DSN",
+        "SCRIPTS/PWRRAILS.DAT"
+      ],
+      "payload_mismatches": [],
+      "extra_output_members": [],
+      "missing_output_members": [],
+      "marker_counts": {
+        "74HC4520": 2,
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 15,
+        "WIRE": 18
+      },
+      "terminal_counts": {
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 14,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 14
+      },
+      "bidir_terminal_events": [
+        {
+          "start": 1,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -8128000,
+          "symbol_y": 8128000,
+          "angle_tenths": 0,
+          "suffix": "03b9",
+          "active_link": 1
+        },
+        {
+          "start": 110,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -8128000,
+          "symbol_y": 7874000,
+          "angle_tenths": 0,
+          "suffix": "03eb",
+          "active_link": 1
+        },
+        {
+          "start": 219,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -8128000,
+          "symbol_y": 7620000,
+          "angle_tenths": 0,
+          "suffix": "041d",
+          "active_link": 1
+        },
+        {
+          "start": 328,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -8128000,
+          "symbol_y": 7366000,
+          "angle_tenths": 0,
+          "suffix": "044f",
+          "active_link": 1
+        },
+        {
+          "start": 437,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -11176000,
+          "symbol_y": 8128000,
+          "angle_tenths": 1800,
+          "suffix": "0323",
+          "active_link": 1
+        },
+        {
+          "start": 547,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -11176000,
+          "symbol_y": 7874000,
+          "angle_tenths": 1800,
+          "suffix": "0355",
+          "active_link": 1
+        },
+        {
+          "start": 655,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -11176000,
+          "symbol_y": 7366000,
+          "angle_tenths": 1800,
+          "suffix": "0387",
+          "active_link": 1
+        },
+        {
+          "start": 1517,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -2286000,
+          "symbol_y": 8128000,
+          "angle_tenths": 0,
+          "suffix": "09a5",
+          "active_link": 1
+        },
+        {
+          "start": 1626,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -2286000,
+          "symbol_y": 7874000,
+          "angle_tenths": 0,
+          "suffix": "09d7",
+          "active_link": 1
+        },
+        {
+          "start": 1735,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -2286000,
+          "symbol_y": 7620000,
+          "angle_tenths": 0,
+          "suffix": "0a09",
+          "active_link": 1
+        },
+        {
+          "start": 1844,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -2286000,
+          "symbol_y": 7366000,
+          "angle_tenths": 0,
+          "suffix": "0a3b",
+          "active_link": 1
+        },
+        {
+          "start": 1953,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -5334000,
+          "symbol_y": 8128000,
+          "angle_tenths": 1800,
+          "suffix": "090f",
+          "active_link": 1
+        },
+        {
+          "start": 2063,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -5334000,
+          "symbol_y": 7874000,
+          "angle_tenths": 1800,
+          "suffix": "0941",
+          "active_link": 1
+        },
+        {
+          "start": 2171,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -5334000,
+          "symbol_y": 7366000,
+          "angle_tenths": 1800,
+          "suffix": "0973",
+          "active_link": 1
+        }
+      ],
+      "object_chunk_size": 3034,
+      "static_validation_issues": [],
+      "hashes": {
+        "donor_project": "aa1bb9053adfc9d7db95413712643f5add3da92fd71bce97d684ce2c5cd64e79",
+        "rezip_project": "856f2b0f853cc743fc8c47345b241ef780bae241bc644a2bafd85135c2000e03",
+        "donor_ROOT.DSN": "810d36da0c0c46f23cb678fe5f9588b2cf6620e33fbd93d8c9300a51e0f14e54",
+        "rezip_ROOT.DSN": "810d36da0c0c46f23cb678fe5f9588b2cf6620e33fbd93d8c9300a51e0f14e54",
+        "donor_ROOT.CDB": "20daad2202064bfb3a42ec9a0b11adc23eb8ae1c4d431872eefc5602d305e310",
+        "rezip_ROOT.CDB": "20daad2202064bfb3a42ec9a0b11adc23eb8ae1c4d431872eefc5602d305e310"
+      }
+    },
+    {
+      "case_id": "T040_74HC4520_REFRESH_4X_EXACT_REZIP",
+      "family": "74HC4520 refreshed 4x",
+      "proteus_marker": "74HC4520",
+      "notes": "Fresh user-supplied 4x 4520 donor from Downloads on 2026-06-10; pending manual Proteus test.",
+      "method": "exact_donor_content_rezip_no_payload_mutation",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\sequential_ics_4520_refresh_20260610\\4_74HC4520.pdsprj",
+      "payload_policy": "all internal ZIP member payloads are byte-identical to donor; only outer ZIP container metadata/order is deterministic",
+      "member_order": [
+        "PROJECT.XML",
+        "ROOT.CDB",
+        "ROOT.DSN",
+        "SCRIPTS/PWRRAILS.DAT"
+      ],
+      "payload_mismatches": [],
+      "extra_output_members": [],
+      "missing_output_members": [],
+      "marker_counts": {
+        "74HC4520": 4,
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 29,
+        "WIRE": 32
+      },
+      "terminal_counts": {
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 28,
+        "$TERPOWER": 0,
+        "$TERGROUND": 0,
+        "WIRE": 28
+      },
+      "bidir_terminal_events": [
+        {
+          "start": 1,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -8128000,
+          "symbol_y": 8128000,
+          "angle_tenths": 0,
+          "suffix": "03b9",
+          "active_link": 1
+        },
+        {
+          "start": 110,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -8128000,
+          "symbol_y": 7874000,
+          "angle_tenths": 0,
+          "suffix": "03eb",
+          "active_link": 1
+        },
+        {
+          "start": 219,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -8128000,
+          "symbol_y": 7620000,
+          "angle_tenths": 0,
+          "suffix": "041d",
+          "active_link": 1
+        },
+        {
+          "start": 328,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -8128000,
+          "symbol_y": 7366000,
+          "angle_tenths": 0,
+          "suffix": "044f",
+          "active_link": 1
+        },
+        {
+          "start": 437,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -11176000,
+          "symbol_y": 8128000,
+          "angle_tenths": 1800,
+          "suffix": "0323",
+          "active_link": 1
+        },
+        {
+          "start": 547,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -11176000,
+          "symbol_y": 7874000,
+          "angle_tenths": 1800,
+          "suffix": "0355",
+          "active_link": 1
+        },
+        {
+          "start": 655,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -11176000,
+          "symbol_y": 7366000,
+          "angle_tenths": 1800,
+          "suffix": "0387",
+          "active_link": 1
+        },
+        {
+          "start": 1517,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -2286000,
+          "symbol_y": 8128000,
+          "angle_tenths": 0,
+          "suffix": "09a5",
+          "active_link": 1
+        },
+        {
+          "start": 1626,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -2286000,
+          "symbol_y": 7874000,
+          "angle_tenths": 0,
+          "suffix": "09d7",
+          "active_link": 1
+        },
+        {
+          "start": 1735,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -2286000,
+          "symbol_y": 7620000,
+          "angle_tenths": 0,
+          "suffix": "0a09",
+          "active_link": 1
+        },
+        {
+          "start": 1844,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -2286000,
+          "symbol_y": 7366000,
+          "angle_tenths": 0,
+          "suffix": "0a3b",
+          "active_link": 1
+        },
+        {
+          "start": 1953,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -5334000,
+          "symbol_y": 8128000,
+          "angle_tenths": 1800,
+          "suffix": "090f",
+          "active_link": 1
+        },
+        {
+          "start": 2063,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -5334000,
+          "symbol_y": 7874000,
+          "angle_tenths": 1800,
+          "suffix": "0941",
+          "active_link": 1
+        },
+        {
+          "start": 2171,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -5334000,
+          "symbol_y": 7366000,
+          "angle_tenths": 1800,
+          "suffix": "0973",
+          "active_link": 1
+        },
+        {
+          "start": 3033,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -8128000,
+          "symbol_y": 5842000,
+          "angle_tenths": 0,
+          "suffix": "0f91",
+          "active_link": 1
+        },
+        {
+          "start": 3142,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -8128000,
+          "symbol_y": 5588000,
+          "angle_tenths": 0,
+          "suffix": "0fc3",
+          "active_link": 1
+        },
+        {
+          "start": 3251,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -8128000,
+          "symbol_y": 5334000,
+          "angle_tenths": 0,
+          "suffix": "0ff5",
+          "active_link": 1
+        },
+        {
+          "start": 3360,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -8128000,
+          "symbol_y": 5080000,
+          "angle_tenths": 0,
+          "suffix": "1027",
+          "active_link": 1
+        },
+        {
+          "start": 3469,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -11176000,
+          "symbol_y": 5842000,
+          "angle_tenths": 1800,
+          "suffix": "0efb",
+          "active_link": 1
+        },
+        {
+          "start": 3579,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -11176000,
+          "symbol_y": 5588000,
+          "angle_tenths": 1800,
+          "suffix": "0f2d",
+          "active_link": 1
+        },
+        {
+          "start": 3687,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -11176000,
+          "symbol_y": 5080000,
+          "angle_tenths": 1800,
+          "suffix": "0f5f",
+          "active_link": 1
+        },
+        {
+          "start": 4549,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -2286000,
+          "symbol_y": 5842000,
+          "angle_tenths": 0,
+          "suffix": "157d",
+          "active_link": 1
+        },
+        {
+          "start": 4658,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -2286000,
+          "symbol_y": 5588000,
+          "angle_tenths": 0,
+          "suffix": "15af",
+          "active_link": 1
+        },
+        {
+          "start": 4767,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -2286000,
+          "symbol_y": 5334000,
+          "angle_tenths": 0,
+          "suffix": "15e1",
+          "active_link": 1
+        },
+        {
+          "start": 4876,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -2286000,
+          "symbol_y": 5080000,
+          "angle_tenths": 0,
+          "suffix": "1613",
+          "active_link": 1
+        },
+        {
+          "start": 4985,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -5334000,
+          "symbol_y": 5842000,
+          "angle_tenths": 1800,
+          "suffix": "14e7",
+          "active_link": 1
+        },
+        {
+          "start": 5095,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -5334000,
+          "symbol_y": 5588000,
+          "angle_tenths": 1800,
+          "suffix": "1519",
+          "active_link": 1
+        },
+        {
+          "start": 5203,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -5334000,
+          "symbol_y": 5080000,
+          "angle_tenths": 1800,
+          "suffix": "154b",
+          "active_link": 1
+        }
+      ],
+      "object_chunk_size": 6066,
+      "static_validation_issues": [],
+      "hashes": {
+        "donor_project": "0cafa62949ea1202e93b88fe9ea4d6f07deeff7fbc666d9d841deb8d71165998",
+        "rezip_project": "b19c9808b54098c9f0980990fc3ac7a13242ec9f7ee964ecfc888dbd5f14646d",
+        "donor_ROOT.DSN": "f482da1fde1c45ca0c04c047529d48a4625dd4dbc5bb7125ddb2ee5fe36b7154",
+        "rezip_ROOT.DSN": "f482da1fde1c45ca0c04c047529d48a4625dd4dbc5bb7125ddb2ee5fe36b7154",
+        "donor_ROOT.CDB": "a5994ae09fa748b7cc7db6a49df6a6acff58a04d38e1f73dea2e7422f1b7ba24",
+        "rezip_ROOT.CDB": "a5994ae09fa748b7cc7db6a49df6a6acff58a04d38e1f73dea2e7422f1b7ba24"
+      }
+    },
+    {
+      "case_id": "T041_74HC4520_REFRESH_4X_RLC_EXACT_REZIP",
+      "family": "74HC4520 refreshed 4x RLC",
+      "proteus_marker": "74HC4520",
+      "notes": "Fresh user-supplied 4x 4520+RLC donor from Downloads on 2026-06-10; pending manual Proteus test.",
+      "method": "exact_donor_content_rezip_no_payload_mutation",
+      "status": "temporary_pending_user_proteus_testing",
+      "donor": "proteus_ic\\donors\\sequential_ics_4520_refresh_20260610\\4_74HC4520withRLC.pdsprj",
+      "payload_policy": "all internal ZIP member payloads are byte-identical to donor; only outer ZIP container metadata/order is deterministic",
+      "member_order": [
+        "PROJECT.XML",
+        "ROOT.CDB",
+        "ROOT.DSN",
+        "SCRIPTS/PWRRAILS.DAT"
+      ],
+      "payload_mismatches": [],
+      "extra_output_members": [],
+      "missing_output_members": [],
+      "marker_counts": {
+        "74HC4520": 4,
+        "$TERINPUT": 1,
+        "$TEROUTPUT": 1,
+        "$TERBIDIR": 37,
+        "WIRE": 40
+      },
+      "terminal_counts": {
+        "$TERINPUT": 0,
+        "$TEROUTPUT": 0,
+        "$TERBIDIR": 36,
+        "$TERPOWER": 1,
+        "$TERGROUND": 1,
+        "WIRE": 36
+      },
+      "bidir_terminal_events": [
+        {
+          "start": 1,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -8128000,
+          "symbol_y": 8128000,
+          "angle_tenths": 0,
+          "suffix": "0d9d",
+          "active_link": 1
+        },
+        {
+          "start": 110,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -8128000,
+          "symbol_y": 7874000,
+          "angle_tenths": 0,
+          "suffix": "0dcf",
+          "active_link": 1
+        },
+        {
+          "start": 219,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -8128000,
+          "symbol_y": 7620000,
+          "angle_tenths": 0,
+          "suffix": "0e01",
+          "active_link": 1
+        },
+        {
+          "start": 328,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -8128000,
+          "symbol_y": 7366000,
+          "angle_tenths": 0,
+          "suffix": "0e33",
+          "active_link": 1
+        },
+        {
+          "start": 437,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -11176000,
+          "symbol_y": 8128000,
+          "angle_tenths": 1800,
+          "suffix": "0d07",
+          "active_link": 1
+        },
+        {
+          "start": 547,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -11176000,
+          "symbol_y": 7874000,
+          "angle_tenths": 1800,
+          "suffix": "0d39",
+          "active_link": 1
+        },
+        {
+          "start": 655,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -11176000,
+          "symbol_y": 7366000,
+          "angle_tenths": 1800,
+          "suffix": "0d6b",
+          "active_link": 1
+        },
+        {
+          "start": 1517,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -2286000,
+          "symbol_y": 8128000,
+          "angle_tenths": 0,
+          "suffix": "1389",
+          "active_link": 1
+        },
+        {
+          "start": 1626,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -2286000,
+          "symbol_y": 7874000,
+          "angle_tenths": 0,
+          "suffix": "13bb",
+          "active_link": 1
+        },
+        {
+          "start": 1735,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -2286000,
+          "symbol_y": 7620000,
+          "angle_tenths": 0,
+          "suffix": "13ed",
+          "active_link": 1
+        },
+        {
+          "start": 1844,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -2286000,
+          "symbol_y": 7366000,
+          "angle_tenths": 0,
+          "suffix": "141f",
+          "active_link": 1
+        },
+        {
+          "start": 1953,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -5334000,
+          "symbol_y": 8128000,
+          "angle_tenths": 1800,
+          "suffix": "12f3",
+          "active_link": 1
+        },
+        {
+          "start": 2063,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -5334000,
+          "symbol_y": 7874000,
+          "angle_tenths": 1800,
+          "suffix": "1325",
+          "active_link": 1
+        },
+        {
+          "start": 2171,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -5334000,
+          "symbol_y": 7366000,
+          "angle_tenths": 1800,
+          "suffix": "1357",
+          "active_link": 1
+        },
+        {
+          "start": 3033,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -8128000,
+          "symbol_y": 5842000,
+          "angle_tenths": 0,
+          "suffix": "1975",
+          "active_link": 1
+        },
+        {
+          "start": 3142,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -8128000,
+          "symbol_y": 5588000,
+          "angle_tenths": 0,
+          "suffix": "19a7",
+          "active_link": 1
+        },
+        {
+          "start": 3251,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -8128000,
+          "symbol_y": 5334000,
+          "angle_tenths": 0,
+          "suffix": "19d9",
+          "active_link": 1
+        },
+        {
+          "start": 3360,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -8128000,
+          "symbol_y": 5080000,
+          "angle_tenths": 0,
+          "suffix": "1a0b",
+          "active_link": 1
+        },
+        {
+          "start": 3469,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -11176000,
+          "symbol_y": 5842000,
+          "angle_tenths": 1800,
+          "suffix": "18df",
+          "active_link": 1
+        },
+        {
+          "start": 3579,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -11176000,
+          "symbol_y": 5588000,
+          "angle_tenths": 1800,
+          "suffix": "1911",
+          "active_link": 1
+        },
+        {
+          "start": 3687,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -11176000,
+          "symbol_y": 5080000,
+          "angle_tenths": 1800,
+          "suffix": "1943",
+          "active_link": 1
+        },
+        {
+          "start": 4549,
+          "size": 109,
+          "label": "Q0 PIN 3",
+          "symbol_x": -2286000,
+          "symbol_y": 5842000,
+          "angle_tenths": 0,
+          "suffix": "1f61",
+          "active_link": 1
+        },
+        {
+          "start": 4658,
+          "size": 109,
+          "label": "Q1 PIN 4",
+          "symbol_x": -2286000,
+          "symbol_y": 5588000,
+          "angle_tenths": 0,
+          "suffix": "1f93",
+          "active_link": 1
+        },
+        {
+          "start": 4767,
+          "size": 109,
+          "label": "Q2 PIN 5",
+          "symbol_x": -2286000,
+          "symbol_y": 5334000,
+          "angle_tenths": 0,
+          "suffix": "1fc5",
+          "active_link": 1
+        },
+        {
+          "start": 4876,
+          "size": 109,
+          "label": "Q3 PIN 6",
+          "symbol_x": -2286000,
+          "symbol_y": 5080000,
+          "angle_tenths": 0,
+          "suffix": "1ff7",
+          "active_link": 1
+        },
+        {
+          "start": 4985,
+          "size": 110,
+          "label": "CLK PIN 1",
+          "symbol_x": -5334000,
+          "symbol_y": 5842000,
+          "angle_tenths": 1800,
+          "suffix": "1ecb",
+          "active_link": 1
+        },
+        {
+          "start": 5095,
+          "size": 108,
+          "label": "E PIN 2",
+          "symbol_x": -5334000,
+          "symbol_y": 5588000,
+          "angle_tenths": 1800,
+          "suffix": "1efd",
+          "active_link": 1
+        },
+        {
+          "start": 5203,
+          "size": 109,
+          "label": "MR PIN 7",
+          "symbol_x": -5334000,
+          "symbol_y": 5080000,
+          "angle_tenths": 1800,
+          "suffix": "1f2f",
+          "active_link": 1
+        },
+        {
+          "start": 6065,
+          "size": 103,
+          "label": "A1",
+          "symbol_x": -10922000,
+          "symbol_y": 3048000,
+          "angle_tenths": 0,
+          "suffix": "20f5",
+          "active_link": 1
+        },
+        {
+          "start": 6319,
+          "size": 103,
+          "label": "B1",
+          "symbol_x": -11176000,
+          "symbol_y": 1270000,
+          "angle_tenths": 0,
+          "suffix": "21f4",
+          "active_link": 1
+        },
+        {
+          "start": 6574,
+          "size": 103,
+          "label": "Y0",
+          "symbol_x": -8636000,
+          "symbol_y": 3048000,
+          "angle_tenths": 1800,
+          "suffix": "244f",
+          "active_link": 1
+        },
+        {
+          "start": 6677,
+          "size": 103,
+          "label": "P1",
+          "symbol_x": -6604000,
+          "symbol_y": 3048000,
+          "angle_tenths": 0,
+          "suffix": "2481",
+          "active_link": 1
+        },
+        {
+          "start": 7227,
+          "size": 103,
+          "label": "P2",
+          "symbol_x": -7366000,
+          "symbol_y": 1270000,
+          "angle_tenths": 0,
+          "suffix": "26ee",
+          "active_link": 1
+        },
+        {
+          "start": 7330,
+          "size": 103,
+          "label": "P1",
+          "symbol_x": -8890000,
+          "symbol_y": 1270000,
+          "angle_tenths": 1800,
+          "suffix": "2720",
+          "active_link": 1
+        },
+        {
+          "start": 7898,
+          "size": 103,
+          "label": "P2",
+          "symbol_x": -9144000,
+          "symbol_y": -508000,
+          "angle_tenths": 1800,
+          "suffix": "2995",
+          "active_link": 1
+        },
+        {
+          "start": 8001,
+          "size": 103,
+          "label": "B1",
+          "symbol_x": -7112000,
+          "symbol_y": -508000,
+          "angle_tenths": 0,
+          "suffix": "29c7",
+          "active_link": 1
+        }
+      ],
+      "object_chunk_size": 8578,
+      "static_validation_issues": [],
+      "hashes": {
+        "donor_project": "391dd3a1637b2724dcdc78f5ec5c0d9e561c48522fe03db5dcf1ade36eb10ccf",
+        "rezip_project": "958ca121fb450ad64634b0f57993cf90f81abc6071042b39d8f82e3cfce5ddf9",
+        "donor_ROOT.DSN": "e6d0c5542558a1665bcc2c547c935bc0b183740ce8d26fd2db43b54c2df9b4f4",
+        "rezip_ROOT.DSN": "e6d0c5542558a1665bcc2c547c935bc0b183740ce8d26fd2db43b54c2df9b4f4",
+        "donor_ROOT.CDB": "0b6a1977ec02eddf5e0aa3a70d8a3f6c4cd6b74eb70f48abd7c5db609f041de4",
+        "rezip_ROOT.CDB": "0b6a1977ec02eddf5e0aa3a70d8a3f6c4cd6b74eb70f48abd7c5db609f041de4"
+      }
     }
   ],
   "static_issue_cases": {},
@@ -6625,5 +7659,5 @@
     "NE555 is included; 74HC175, 4013, 4063, 74HC151, 74HC153, 4051, 4511, 74HC48, 4008, and 74HC175-family donors are not present yet."
   ],
   "archive": "experiments\\IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10.zip",
-  "archive_sha256": "8febdcbd22bd90929b0748a07fed8afb40597af0e8292da0be696231dc7f7f73"
+  "archive_sha256": "a605fa9f06d6addbc7e05ac3c015982a5433207a447533d6053b74e4231b2269"
 }

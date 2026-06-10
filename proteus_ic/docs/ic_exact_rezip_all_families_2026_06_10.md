@@ -34,12 +34,12 @@ experiments/IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10.zip
 Archive SHA256:
 
 ```text
-8febdcbd22bd90929b0748a07fed8afb40597af0e8292da0be696231dc7f7f73
+a605fa9f06d6addbc7e05ac3c015982a5433207a447533d6053b74e4231b2269
 ```
 
 ## Scope
 
-The pack contains 37 exact rezip cases:
+The pack contains 41 exact rezip cases:
 
 - `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC86`, `74HC266`
 - `74HC90/7490`, `74HC160`, `74HC161`, `74HC163`, `74HC192`, `74HC193`
@@ -49,6 +49,8 @@ The pack contains 37 exact rezip cases:
 - `NE555`, `LM741`
 - refreshed user-supplied `74HC4060` single, 2x, 4x, and 4x+RLC donors from
   `proteus_ic/donors/sequential_ics_4060_refresh_20260610`
+- refreshed user-supplied `74HC4520` single, 2x, 4x, and 4x+RLC donors from
+  `proteus_ic/donors/sequential_ics_4520_refresh_20260610`
 
 Notes:
 
@@ -58,15 +60,19 @@ Notes:
 - The `74HC32` exact family rezip uses `IC_HC32_M02_ALL4_IO.pdsprj`; the
   supplied `M01` file contains `74HC08` metadata and is not a valid OR-family
   representative.
-- The original repo `74HC4060` single donor remains as `T018`; the refreshed
-  user-supplied 4060 donors are `T034` through `T037`.
+- The original repo `74HC4060` single donor remains as `T018` from
+  `sequential_ics_4060_legacy_bad_20260610` for rejected comparison evidence;
+  the refreshed user-supplied 4060 donors are `T034` through `T037`.
+- User testing reported old `T018` did not work, refreshed `T034` onward did
+  work, and old `T020` did not work. The refreshed `74HC4520` cases `T038`
+  through `T041` are now the active 4520 exact-rezip probes.
 
 ## Static Validation
 
 The generated summary reported:
 
 ```text
-case_count: 37
+case_count: 41
 static_issue_cases: {}
 ```
 
@@ -90,6 +96,10 @@ mutation is involved. This is especially important for:
 - `T035_74HC4060_REFRESH_2X_EXACT_REZIP`
 - `T036_74HC4060_REFRESH_4X_EXACT_REZIP`
 - `T037_74HC4060_REFRESH_4X_RLC_EXACT_REZIP`
+- `T038_74HC4520_REFRESH_SINGLE_EXACT_REZIP`
+- `T039_74HC4520_REFRESH_2X_EXACT_REZIP`
+- `T040_74HC4520_REFRESH_4X_EXACT_REZIP`
+- `T041_74HC4520_REFRESH_4X_RLC_EXACT_REZIP`
 
 If the refreshed 4060 cases pass while old repo 4060 fails, the repo donor was
 stale/corrupt. If both fail, the local Proteus 4060 model/library binding is the

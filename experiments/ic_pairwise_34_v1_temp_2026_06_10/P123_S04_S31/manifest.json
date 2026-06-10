@@ -1,0 +1,177 @@
+{
+  "case_id": "P123_S04_S31",
+  "description": "Pairwise IC diagnostic: 74HC08 with LM741.",
+  "method": "pairwise_exact_source_concat_same_length_ref_remap_full_device_sections",
+  "status": "temporary_pending_user_proteus_testing",
+  "left": {
+    "source_index": 4,
+    "short_id": "S04",
+    "case_id": "T004_74HC08_AND_EXACT_REZIP",
+    "family": "74HC08",
+    "donor": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+    "proteus_marker": "74HC08",
+    "notes": ""
+  },
+  "right": {
+    "source_index": 31,
+    "short_id": "S31",
+    "case_id": "T033_LM741_EXACT_REZIP",
+    "family": "LM741",
+    "donor": "proteus_ic\\donors\\analog_misc_batch1\\LM741.pdsprj",
+    "proteus_marker": "LM741",
+    "notes": ""
+  },
+  "ref_map_right": {
+    "U1": "U2"
+  },
+  "terminal_label_plan_right": [
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 15,
+      "old": "PIN 6",
+      "new": "N0000"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 121,
+      "old": "PIN 1",
+      "new": "N0001"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 227,
+      "old": "PIN 7",
+      "new": "N0002"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 333,
+      "old": "PIN 5",
+      "new": "N0003"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 439,
+      "old": "PIN 4",
+      "new": "N0004"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 545,
+      "old": "PIN 3",
+      "new": "N0005"
+    },
+    {
+      "terminal_marker": "$TERBIDIR",
+      "offset": 651,
+      "old": "PIN 2",
+      "new": "N0006"
+    }
+  ],
+  "translation_plan_right": {
+    "dx": 7620000,
+    "dy": 0,
+    "coordinate_pair_count": 29
+  },
+  "cdb_plan": {
+    "left_pin_refs": [
+      "U1:A",
+      "U1:B",
+      "U1:C",
+      "U1:D"
+    ],
+    "right_pin_refs_after_map": [
+      "U2"
+    ],
+    "left_property_refs": [
+      "U1"
+    ],
+    "right_property_refs_after_map": [
+      "U2"
+    ],
+    "combined_pin_refs": [
+      "U1:A",
+      "U1:B",
+      "U1:C",
+      "U1:D",
+      "U2"
+    ],
+    "combined_property_refs": [
+      "U1",
+      "U2"
+    ],
+    "combined_count": 5
+  },
+  "device_section_count": 2,
+  "device_sections": [
+    {
+      "donor_key": "T004_74HC08_AND_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+      "size": 900,
+      "old_tail_pointer": 68535
+    },
+    {
+      "donor_key": "T033_LM741_EXACT_REZIP",
+      "donor": "proteus_ic\\donors\\analog_misc_batch1\\LM741.pdsprj",
+      "size": 1222,
+      "old_tail_pointer": 67031
+    }
+  ],
+  "section_pointers": {
+    "insert": 64167,
+    "first_isis": 66289,
+    "second_isis": 71255,
+    "second_object_data": 71290,
+    "object_data_pointer": 71303,
+    "device_sections": [
+      {
+        "donor_key": "T004_74HC08_AND_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\74hc08\\IC_HC08_M01_ALL4_IO.pdsprj",
+        "start": 64167,
+        "size": 900,
+        "old_tail_pointer": 68535,
+        "new_tail_pointer": 71303
+      },
+      {
+        "donor_key": "T033_LM741_EXACT_REZIP",
+        "donor": "proteus_ic\\donors\\analog_misc_batch1\\LM741.pdsprj",
+        "start": 65067,
+        "size": 1222,
+        "old_tail_pointer": 67031,
+        "new_tail_pointer": 71303
+      }
+    ]
+  },
+  "object_refs": [
+    "U1",
+    "U2"
+  ],
+  "cdb_refs": [
+    "U1",
+    "U2"
+  ],
+  "marker_counts": {
+    "74HC08": 12,
+    "LM741": 4
+  },
+  "cdb_marker_counts": {
+    "74HC08": 2,
+    "LM741": 3
+  },
+  "terminal_counts": {
+    "$TERINPUT": 8,
+    "$TEROUTPUT": 4,
+    "$TERBIDIR": 7,
+    "WIRE": 19
+  },
+  "object_chunk_size": 4920,
+  "device_section_size": 2122,
+  "static_validation_issues": [],
+  "output_hashes": {
+    "project": "56181f2829da0fe8fe364f0dc95db580cada6978aa743d74c30bbbc88ba5e17e",
+    "ROOT.DSN": "f150074093abf9746c3a116e0ec3f555c7c33868e38af61d322c930126fa4410",
+    "ROOT.CDB": "00592836db566fdf307a01d4ab9f5980f8faa5942e08892df5584b2246427355",
+    "object_chunk": "2a1bf1909e560fe992339fc20d588b3cf92698d5019284998dd84a3408e714dd",
+    "device_section": "6df5231c0778b8153e5e9fe558f0b7d568fa20639e59dc654a008f6abd2dad28"
+  }
+}

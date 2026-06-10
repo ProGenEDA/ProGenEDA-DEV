@@ -72,7 +72,7 @@ CASES: tuple[ExactRezipCase, ...] = (
     ExactRezipCase("T015_4020_EXACT_REZIP", "4020", donor("sequential_counters/4020.pdsprj"), "4020"),
     ExactRezipCase("T016_74HC4024_EXACT_REZIP", "74HC4024", donor("sequential_counters/74HC4024.pdsprj"), "74HC4024"),
     ExactRezipCase("T017_74HC4040_EXACT_REZIP", "74HC4040", donor("sequential_ics_batch3/74HC4040.pdsprj"), "74HC4040"),
-    ExactRezipCase("T018_74HC4060_REPO_SINGLE_EXACT_REZIP", "74HC4060 repo single", donor("sequential_ics_batch3/74HC4060.pdsprj"), "74HC4060", "Original repo donor retained for comparison against the refreshed user-supplied 4060 donors."),
+    ExactRezipCase("T018_74HC4060_REPO_SINGLE_EXACT_REZIP", "74HC4060 legacy repo single", donor("sequential_ics_4060_legacy_bad_20260610/74HC4060.pdsprj"), "74HC4060", "Legacy repo donor retained only as rejected comparison evidence; user testing said T018 did not work."),
     ExactRezipCase("T019_4518_EXACT_REZIP", "4518", donor("sequential_ics_batch3/4518.pdsprj"), "4518"),
     ExactRezipCase("T020_74HC4520_EXACT_REZIP", "74HC4520", donor("sequential_ics_batch3/74HC4520.pdsprj"), "74HC4520"),
     ExactRezipCase("T021_74HC74_EXACT_REZIP", "74HC74", donor("sequential_ics_batch3/74HC74.pdsprj"), "74HC74"),
@@ -92,6 +92,10 @@ CASES: tuple[ExactRezipCase, ...] = (
     ExactRezipCase("T035_74HC4060_REFRESH_2X_EXACT_REZIP", "74HC4060 refreshed 2x", donor("sequential_ics_4060_refresh_20260610/2_74HC4060.pdsprj"), "74HC4060", "Fresh user-supplied 2x 4060 donor from Downloads on 2026-06-10."),
     ExactRezipCase("T036_74HC4060_REFRESH_4X_EXACT_REZIP", "74HC4060 refreshed 4x", donor("sequential_ics_4060_refresh_20260610/4_74HC4060.pdsprj"), "74HC4060", "Fresh user-supplied 4x 4060 donor from Downloads on 2026-06-10."),
     ExactRezipCase("T037_74HC4060_REFRESH_4X_RLC_EXACT_REZIP", "74HC4060 refreshed 4x RLC", donor("sequential_ics_4060_refresh_20260610/4_74HC4060withRLC.pdsprj"), "74HC4060", "Fresh user-supplied 4x 4060+RLC donor from Downloads on 2026-06-10."),
+    ExactRezipCase("T038_74HC4520_REFRESH_SINGLE_EXACT_REZIP", "74HC4520 refreshed single", donor("sequential_ics_4520_refresh_20260610/74HC4520.pdsprj"), "74HC4520", "Fresh user-supplied 4520 donor from Downloads on 2026-06-10; added after old T020 failed."),
+    ExactRezipCase("T039_74HC4520_REFRESH_2X_EXACT_REZIP", "74HC4520 refreshed 2x", donor("sequential_ics_4520_refresh_20260610/2_74HC4520.pdsprj"), "74HC4520", "Fresh user-supplied 2x 4520 donor from Downloads on 2026-06-10; pending manual Proteus test."),
+    ExactRezipCase("T040_74HC4520_REFRESH_4X_EXACT_REZIP", "74HC4520 refreshed 4x", donor("sequential_ics_4520_refresh_20260610/4_74HC4520.pdsprj"), "74HC4520", "Fresh user-supplied 4x 4520 donor from Downloads on 2026-06-10; pending manual Proteus test."),
+    ExactRezipCase("T041_74HC4520_REFRESH_4X_RLC_EXACT_REZIP", "74HC4520 refreshed 4x RLC", donor("sequential_ics_4520_refresh_20260610/4_74HC4520withRLC.pdsprj"), "74HC4520", "Fresh user-supplied 4x 4520+RLC donor from Downloads on 2026-06-10; pending manual Proteus test."),
 )
 
 
