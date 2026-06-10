@@ -370,3 +370,37 @@ def test_cross_donor_accepted_v1_uses_full_skeleton_policy_without_u50() -> None
         for marker in case.expected_markers:
             assert marker.encode("ascii") in object_chunk
             assert marker.encode("ascii") in cdb
+
+
+def test_cross_donor_accepted_v2_layout_separates_regions_and_excludes_4060() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_accepted_v2_layout_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    accepted = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = accepted
+    spec.loader.exec_module(accepted)
+
+    assert len(accepted.CASES) == 8
+    assert accepted.CASES[2].case_id == "T03_LARGE_MISC_COMPUTE_WITH_LATE_COUNTERS"
+    assert "74HC4060" not in accepted.CASES[2].expected_markers
+    assert "74HC4060" not in accepted.CASES[7].expected_markers
+
+    for case in accepted.CASES:
+        object_chunk, _region_plan, layout_plan = accepted.object_chunk_for_layout(case.selections)
+        object_refs = accepted.base_iso.refs_in(object_chunk)
+        assert "U50" not in object_refs
+        assert len(object_refs) == len(set(object_refs))
+        assert b"74HC4060" not in object_chunk
+        assert layout_plan
+        assert all(entry["refs_unchanged"] for entry in layout_plan)
+        assert all(entry["marker_count_before"] == entry["marker_count_after"] for entry in layout_plan)
+
+        x_lanes = [entry["after_bbox"]["min_x"] for entry in layout_plan if entry["translated"]]
+        assert x_lanes == sorted(x_lanes) or len(x_lanes) > accepted.IC_SLOT_COLUMNS
+
+        cdb, _row_plan, _mode = accepted.cdb_for_case(case)
+        parsed = accepted.parse_cdb(cdb)
+        expected_count = accepted.cdb_v2.cdb_v1.parsed_cdb(case.header_donor_key).count
+        assert parsed.count == expected_count
+        assert set(object_refs).issubset(set(accepted.base_iso.refs_in(cdb)))

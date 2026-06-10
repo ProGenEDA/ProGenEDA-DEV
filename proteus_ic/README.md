@@ -49,6 +49,7 @@ python tools/proteus_generation/2026-06-08/generate_ic_hc04_all7_v1_temp.py
 python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v1_temp.py
 python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v2_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v1_temp.py
+python tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py
 ```
 
 Status:
@@ -169,12 +170,16 @@ Status:
   User testing reported every T05 isolation case worked. The active CDB mixing
   policy is now full donor device sections plus a complete donor `ROOT.CDB`
   skeleton with parser-built row replacement inside that skeleton.
-- `MIXED_IC_CROSS_DONOR_ACCEPTED_V1_TEMP_2026_06_10` is static-clean and
-  pending user Proteus testing. It applies the accepted full-device/full-CDB
-  skeleton row-replacement policy to practical mixed sequential/misc IC
-  combinations. It intentionally excludes the misc `74HC157` region because
-  that donor region carries visible `U50` references while the ordinary CDB
-  package row is `U5`.
+- `MIXED_IC_CROSS_DONOR_ACCEPTED_V1_TEMP_2026_06_10` is partially accepted:
+  T01, T02, T04, T05, and T07 opened and simulated, but T03/T06 had
+  simulation-time CDB/pin errors and T03/T08 exposed a visible `74HC4060`/`U9`
+  no-model problem. Large mixed sequential/misc IC packs must not concatenate
+  raw donor coordinates without a layout separation pass.
+- `MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10` is static-clean
+  and pending user Proteus testing. It keeps the accepted full-device/full-CDB
+  skeleton row-replacement policy, translates whole visible IC regions into
+  deterministic grid slots, and excludes visible `74HC4060`/`U9` until a
+  dedicated model donor rule is proven.
 - The production route is now:
 
 ```text

@@ -1125,7 +1125,7 @@
     {
       "id": "Q099",
       "question": "Do MIXED_IC_CROSS_DONOR_ACCEPTED_V1_TEMP_2026_06_10 practical mixed sequential/misc IC projects open/render/simulate when generated with full donor device sections and full CDB skeleton row replacement?",
-      "status": "awaiting_user_proteus_test",
+      "status": "partially_answered_layout_and_4060_followup_needed",
       "needed_for": [
         "cross_donor_ic_generation",
         "mixed_sequential_ic_generation",
@@ -1138,7 +1138,27 @@
         "proteus_ic/docs/mixed_ic_cross_donor_accepted_v1_2026_06_10.md",
         "tests/test_mixed_ic_analog_donors.py"
       ],
-      "notes": "Test T01-T08 in order. T01/T02 are accepted control shapes; T03-T06 are practical expansion cases; T07/T08 are same-donor controls. The misc 74HC157 region is intentionally excluded because its visible region uses U50 while its package CDB row is U5.",
+      "notes": "User tested V1. T01, T02, T04, T05, and T07 opened and simulated. T01 and T05 were visually too close. T03 opened but did not simulate; moving U2 in Proteus and saving auto-fixed the first CDB/pin issue, then a no-model error appeared for U9. T06 opened but did not simulate with a missing CDB element record for U3. T08 opened but did not simulate with no model specified for U9. The misc 74HC157 region remains excluded because its visible region uses U50 while its package CDB row is U5.",
+      "answer": "The accepted full-skeleton CDB policy is broadly viable for practical mixed sequential/misc IC projects, but V1 is not final. Whole-region layout separation is needed before packing large mixed IC cases, and visible 74HC4060/U9 must be isolated because it produced no-model simulation errors."
+    },
+    {
+      "id": "Q100",
+      "question": "Does MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10 fix V1 close/overlap CDB-pin failures by translating complete IC regions and excluding visible 74HC4060/U9?",
+      "status": "awaiting_user_proteus_test",
+      "needed_for": [
+        "cross_donor_ic_generation",
+        "mixed_sequential_ic_generation",
+        "large_mixed_ic_generation",
+        "ic_layout_beautifier",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py",
+        "experiments/MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_cross_donor_accepted_v2_layout_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py"
+      ],
+      "notes": "Test T01-T08. T03 and T06 specifically retest the V1 CDB/pin failures after region-grid layout separation. T08 retests the late-counter control with visible 74HC4060/U9 omitted. Static generation is clean, refs and markers are preserved by the layout pass, and targeted pytest reports 18 passed.",
       "answer": ""
     }
   ]

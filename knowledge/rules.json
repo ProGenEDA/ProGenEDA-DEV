@@ -2085,6 +2085,20 @@
         "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_cdb_v3_t05_isolation_temp.py"
       ],
       "created": "2026-06-10"
+    },
+    {
+      "id": "R112",
+      "title": "Do not emit visible 74HC4060 U9 in practical mixed cross-donor packs yet",
+      "status": "accepted_safety_rule_pending_model_isolation",
+      "rule": "Exclude visible 74HC4060/U9 regions from practical cross-donor sequential/misc IC packs until a dedicated donor/model isolation proves a safe simulation record. The full donor device/CDB policy can still include untouched hidden skeleton metadata, but visible U9 object regions are not accepted for simulation packs.",
+      "rationale": "User testing of the accepted V1 practical pack produced no-model simulation errors for U9 in both T03 and T08. Other V1 cases without visible U9 simulated, so the rule is narrow to visible 74HC4060/U9 rather than the full cross-donor CDB policy.",
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_ACCEPTED_V1_USER_PARTIAL_20260610",
+        "MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_STATIC_20260610",
+        "proteus_ic/docs/mixed_ic_cross_donor_accepted_v2_layout_2026_06_10.md",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py"
+      ],
+      "created": "2026-06-10"
     }
   ]
 }
