@@ -2395,6 +2395,28 @@
         "experiments/IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11.zip"
       ],
       "created": "2026-06-11"
+    },
+    {
+      "id": "R128",
+      "title": "Sequential/non-combinational pair retries should test Proteus-created master metadata before CDB row synthesis",
+      "status": "experimental_static_clean_pending_user_proteus_testing",
+      "confidence": 0.72,
+      "applies_to": [
+        "IC pairwise mixing",
+        "sequential ICs",
+        "non-combinational IC pairs",
+        "Proteus 8.13"
+      ],
+      "rule": "The first retry for failed sequential/non-combinational pair probes should use the Proteus-created all-IC master donor metadata: selected master-native object records, complete master ROOT.CDB copied byte-identical, and complete master device section. Do not promote this as production support because the master records are bare and do not include bider terminal regions.",
+      "evidence": [
+        "proteus_ic/donors/mixed_large_20260611/alot_of_ics.pdsprj",
+        "tools/proteus_generation/2026-06-11/generate_ic_pairwise_noncomb_master_metadata_v1_temp.py",
+        "experiments/IC_PAIRWISE_NONCOMB_MASTER_METADATA_V1_TEMP_2026_06_11.zip",
+        "experiments/ic_pairwise_noncomb_master_metadata_v1_temp_2026_06_11/summary.json case_count=23 static_issue_cases={}",
+        "tests/test_ic_pairwise_error_focused.py::test_noncomb_master_metadata_v1_uses_master_records_and_cdb",
+        "proteus_ic/docs/ic_pairwise_noncomb_master_metadata_v1_2026_06_11.md"
+      ],
+      "created": "2026-06-11"
     }
   ]
 }

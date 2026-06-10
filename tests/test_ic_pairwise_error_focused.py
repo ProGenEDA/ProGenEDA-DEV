@@ -70,6 +70,17 @@ def load_comb_method_module():
     return module
 
 
+def load_noncomb_master_module():
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-11" / "generate_ic_pairwise_noncomb_master_metadata_v1_temp.py"
+    spec = importlib.util.spec_from_file_location("ic_pairwise_noncomb_master_metadata_v1_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def _parsed_ids_and_refs(project: Path):
     parsed = load_fixed_module().pairwise_v1.split_cdb_generic(read_internal_file(project, "ROOT.CDB"))
     return (
@@ -156,3 +167,27 @@ def test_combinational_method_v1_static_clean_representatives(tmp_path: Path) ->
     assert [int.from_bytes(row[:4], "little") for _ref, row in parsed.pin_rows] == [27, 33]
     assert [int.from_bytes(row[:4], "little") for _ref, row in parsed.property_rows] == [17, 23]
     assert not any(item["changed"] for item in unique_probe["cdb_plan"]["right_id_renumber_plan"])
+
+
+def test_noncomb_master_metadata_v1_uses_master_records_and_cdb(tmp_path: Path) -> None:
+    module = load_noncomb_master_module()
+    module.OUT_ROOT = tmp_path
+
+    case = next(item for item in module.CASES if item.case_id == "T01_7490_74HC160_MASTER_RECORDS")
+    out_dir = tmp_path / case.case_id
+    out_dir.mkdir()
+    output = out_dir / f"{case.case_id}.pdsprj"
+    manifest = module.build_project_from_master_records(case, output)
+
+    assert manifest["static_validation_issues"] == []
+    assert manifest["master_refs"] == {"7490": "U28", "74HC160": "U10"}
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    assert chunk.startswith(b"\x00\x00\xff")
+    assert b"\x03U28" in chunk
+    assert b"\x03U10" in chunk
+    assert chunk.count(b"7490") == 3
+    assert chunk.count(b"74HC160") == 3
+    assert chunk.count(b"$TERBIDIR") == 0
+
+    master_cdb = read_internal_file(module.MASTER_DONOR, "ROOT.CDB")
+    assert read_internal_file(output, "ROOT.CDB") == master_cdb

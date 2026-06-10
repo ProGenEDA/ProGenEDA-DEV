@@ -1,0 +1,16 @@
+Sequential-pair donor requests if the master-metadata V1 pack still fails
+
+Reason: mixed_large_20260611/alot_of_ics.pdsprj does not contain these specific family rows.
+Please create small manual projects with bidirectional pin terminals for each pair below.
+
+- S08+S30: 7490 + NE555. Master all-IC donor has 7490 but no NE555 row.
+- S21+S25: 74HC174 + 74HC283. Master all-IC donor has 74HC174 but no 74HC283 row.
+- S21+S27: 74HC174 + 7447/74HC47. Master all-IC donor has 74HC174 but no 7447 row.
+- S22+S27: 74HC273 + 7447/74HC47. Master all-IC donor has 74HC273 but no 7447 row.
+
+Preferred donor shape:
+- one project per pair
+- both ICs visible
+- bider terminals attached to every visible pin
+- no RLC needed unless the pair only opens with a passive load
+- save in Proteus 8.13 after opening once

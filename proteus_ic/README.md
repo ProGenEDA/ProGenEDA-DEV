@@ -58,6 +58,7 @@ python tools/proteus_generation/2026-06-10/generate_ic_exact_rezip_all_families_
 python tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v1_temp.py
 python tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v2_temp.py
 python tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_focused_v1_temp.py
+python tools/proteus_generation/2026-06-11/generate_ic_pairwise_noncomb_master_metadata_v1_temp.py
 ```
 
 Status:
@@ -122,6 +123,13 @@ Status:
   combinational source. It also includes 21 non-combinational-only probe cases
   using collision-only CDB ID patching. Static validation is clean; Proteus
   testing is pending.
+- `IC_PAIRWISE_NONCOMB_MASTER_METADATA_V1_TEMP_2026_06_11` is a focused retry
+  for failed sequential/non-combinational pair probes. It uses selected
+  component records from the Proteus-created `alot_of_ics` master donor while
+  copying the complete master `ROOT.CDB` and device section unchanged. This is
+  a metadata/opening diagnostic only because the master donor records are bare
+  and do not include bider terminal regions. Static validation is clean;
+  Proteus testing is pending.
 - `IC_HC04_ALL7_V1_TEMP_2026_06_08` passed user Proteus testing. It imports
   `74HC04`, generates one NOT gate, all six inverter subparts, logic-constant
   NOT gates, a NOT/RCL load, and the final all-seven combinational family

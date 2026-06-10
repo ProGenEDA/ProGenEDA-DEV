@@ -1365,6 +1365,25 @@
         "tests/test_ic_pairwise_error_focused.py::test_combinational_method_v1_static_clean_representatives"
       ],
       "notes": "Test the 210 combinational-method cases first. Treat the 21 non-combinational-only cases as probes, not as accepted support."
+    },
+    {
+      "id": "Q111",
+      "priority": "high",
+      "question": "Do the 23 cases in IC_PAIRWISE_NONCOMB_MASTER_METADATA_V1_TEMP_2026_06_11 open in Proteus, especially the selected sequential/non-combinational pair records built from the all-IC master donor metadata?",
+      "status": "awaiting_user_proteus_test_noncomb_master_metadata_v1",
+      "needed_for": [
+        "sequential_pairwise_ic_support",
+        "future_large_ic_composition",
+        "terminal_attachment_followup"
+      ],
+      "evidence": [
+        "experiments/IC_PAIRWISE_NONCOMB_MASTER_METADATA_V1_TEMP_2026_06_11.zip",
+        "proteus_ic/donors/mixed_large_20260611/alot_of_ics.pdsprj",
+        "tools/proteus_generation/2026-06-11/generate_ic_pairwise_noncomb_master_metadata_v1_temp.py",
+        "tests/test_ic_pairwise_error_focused.py::test_noncomb_master_metadata_v1_uses_master_records_and_cdb",
+        "proteus_ic/docs/ic_pairwise_noncomb_master_metadata_v1_2026_06_11.md"
+      ],
+      "notes": "This pack intentionally uses bare master-native component records with no bider terminals. If it opens, the next experiment should add bider terminal regions while preserving the complete master ROOT.CDB/device-section rule. If it fails, use DONOR_REQUESTS_IF_V1_FAILS.txt for missing pair donors and reassess the master metadata assumption."
     }
   ]
 }
