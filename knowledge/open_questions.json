@@ -1292,7 +1292,7 @@
       "id": "Q107",
       "priority": "high",
       "question": "Which IC_PAIRWISE_34_V2 pairwise IC-mixing cases open and simulate in Proteus?",
-      "status": "awaiting_user_proteus_test_pairwise_34_v2",
+      "status": "answered_rejected_v2",
       "needed_for": [
         "mixed_ic_generation",
         "pairwise_ic_support_matrix",
@@ -1302,9 +1302,29 @@
         "IC_PAIRWISE_34_V2_STATIC_20260610",
         "experiments/IC_PAIRWISE_34_V2_TEMP_2026_06_10.zip",
         "proteus_ic/docs/ic_pairwise_34_v2_2026_06_10.md",
-        "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text"
+        "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text",
+        "User rejected V2 on 2026-06-10"
       ],
-      "notes": "V2 contains the same 34 IC-only sources and all 561 unordered pairs. Prioritize V1 failure clusters for S01, S02, S03, S04, S05, S06, S08, S21, S22, all S27 no-model pairings, and all S32-S34 refreshed 4060 placement pairings."
+      "notes": "User reported V2 did not fix the opening/simulation failures: pairs that opened gave the same errors, pairs that previously had simulation errors now crashed, and S32/S33/S34 also crashed despite only needing a coordinate fix.",
+      "answer": "Do not continue from V2. Separate the V1 rejected pairs from the V1 working pairs, and fix one failed sample at a time."
+    },
+    {
+      "id": "Q108",
+      "priority": "high",
+      "question": "Does the focused S01+S02 sample generated through the accepted combinational path open and simulate in Proteus?",
+      "status": "awaiting_user_proteus_test_focused_sample",
+      "needed_for": [
+        "mixed_ic_generation",
+        "pairwise_ic_support_matrix",
+        "future_large_ic_composition"
+      ],
+      "evidence": [
+        "IC_PAIRWISE_ERROR_FOCUSED_V1_STATIC_20260610",
+        "experiments/IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10.zip",
+        "tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_focused_v1_temp.py",
+        "tests/test_ic_pairwise_error_focused.py::test_focused_s01_s02_uses_accepted_combinational_path"
+      ],
+      "notes": "This pack intentionally contains only T01_S01_S02_ACCEPTED_COMBINATIONAL and a V1 failed-pair list. It should be tested before generating more failed pairs."
     }
   ]
 }

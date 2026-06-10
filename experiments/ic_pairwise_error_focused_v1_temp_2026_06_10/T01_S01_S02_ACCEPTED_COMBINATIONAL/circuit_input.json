@@ -1,0 +1,34 @@
+{
+  "case_id": "T01_S01_S02_ACCEPTED_COMBINATIONAL",
+  "title": "S01 74HC00 NAND plus S02 74HC02 NOR using accepted combinational path",
+  "logical_expression": "Y1 = nand(A1, B1); Y2 = nor(A2, B2)",
+  "description": "Focused replacement for failed pairwise P001_S01_S02. Uses fresh accepted gate records and generated CDB rows instead of whole-donor U2 chunk copying.",
+  "normalizations": {
+    "74HC7266": "74HC266",
+    "hidden_supply": "Ignore user pin 14/VCC/+5V and pin 7/GND/0V for every 74HCxx package.",
+    "terminal_policy": "IC signal pins use $TERINPUT/$TEROUTPUT. R/C/L endpoints use $TERBIDIR. Power/ground terminals only appear when passive branches need V0/G0."
+  },
+  "gates": [
+    {
+      "family": "74hc00",
+      "gate": "A",
+      "left": "A1",
+      "right": "B1",
+      "output": "Y1",
+      "note": "",
+      "package": ""
+    },
+    {
+      "family": "74hc02",
+      "gate": "A",
+      "left": "A2",
+      "right": "B2",
+      "output": "Y2",
+      "note": "",
+      "package": ""
+    }
+  ],
+  "passives": [],
+  "direct_outputs": [],
+  "warning": ""
+}

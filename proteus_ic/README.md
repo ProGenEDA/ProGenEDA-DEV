@@ -57,6 +57,7 @@ python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v6_no4060_t
 python tools/proteus_generation/2026-06-10/generate_ic_exact_rezip_all_families_temp.py
 python tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v1_temp.py
 python tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v2_temp.py
+python tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_focused_v1_temp.py
 ```
 
 Status:
@@ -103,10 +104,14 @@ Status:
   after user testing. It exposed repeatable duplicate part reference failures,
   `7447`/`74HC47` no-model failures in pairings, and refreshed 4060 long-wire
   coordinate artifacts.
-- `IC_PAIRWISE_34_V2_TEMP_2026_06_10` is static-clean and pending full user
-  Proteus testing. It keeps the same 34-source matrix and 561 unordered pairs,
-  but fixes package-level CDB property row composition and moves refreshed 4060
-  body/text coordinates with terminals.
+- `IC_PAIRWISE_34_V2_TEMP_2026_06_10` is rejected by user Proteus testing; do
+  not continue from it. Pairs that opened still had the same simulation errors,
+  cases that previously only had simulation errors started crashing, and
+  refreshed 4060 coordinate-only pairs also crashed.
+- `IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10` is the current sample-first
+  repair path. It does not touch V1 working pairs. Its first case regenerates
+  failed `S01+S02` through the accepted combinational gate-slice generator
+  instead of whole-donor `U2` copy/paste. It is pending user Proteus testing.
 - `IC_HC04_ALL7_V1_TEMP_2026_06_08` passed user Proteus testing. It imports
   `74HC04`, generates one NOT gate, all six inverter subparts, logic-constant
   NOT gates, a NOT/RCL load, and the final all-seven combinational family

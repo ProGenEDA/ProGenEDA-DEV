@@ -2263,18 +2263,21 @@
     {
       "id": "R122",
       "title": "Mixed IC pair CDB rows must be composed by package property refs",
-      "status": "temporary_static_clean_pending_user_proteus_test",
+      "status": "insufficient_by_itself_v2_rejected",
       "confidence": 0.88,
       "applies_to": [
         "IC pairwise mixing",
         "ROOT.CDB",
         "Proteus 8.13"
       ],
-      "rule": "When composing pairwise or mixed IC donors, parse pin rows first and derive ordered unique package refs for property rows. Do not locate property rows with loose U-ref regex starts. Subpart rows such as U1:A..U1:D share one package property row U1. When a donor-final property row is emitted before another donor property row, trim the donor-final row by four bytes so the next property row boundary stays valid.",
+      "rule": "CDB property-row parsing/composition is necessary but not sufficient for pairwise IC support. Do not use IC_PAIRWISE_34_V2 as a promotion path. User testing reported that V2 repeated the old simulation errors for cases that opened and caused crashes in cases that previously only had simulation or coordinate issues. For combinational failed pairs, regenerate through the accepted combinational gate-slice writer instead of whole-donor U2 copying.",
       "evidence": [
         "User V1 reports: duplicate part reference U2:A [U1:A] and duplicate X000000.. refs",
         "tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v2_temp.py",
+        "User rejected IC_PAIRWISE_34_V2 on 2026-06-10",
+        "tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_focused_v1_temp.py",
         "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text",
+        "tests/test_ic_pairwise_error_focused.py::test_focused_s01_s02_uses_accepted_combinational_path",
         "P001_S01_S02 V2 focused check: pin refs U1:A/U2:A and property refs U1/U2",
         "experiments/IC_PAIRWISE_34_V2_TEMP_2026_06_10.zip"
       ],
@@ -2283,7 +2286,7 @@
     {
       "id": "R123",
       "title": "Refreshed 4060 pairwise movement needs short body marker and component text coordinates",
-      "status": "temporary_static_clean_pending_user_proteus_test",
+      "status": "implementation_rejected_revisit_as_coordinate_only_patch",
       "confidence": 0.87,
       "applies_to": [
         "74HC4060",
@@ -2291,13 +2294,38 @@
         "ROOT.DSN",
         "Proteus 8.13"
       ],
-      "rule": "For refreshed 74HC4060 donors, the visible body marker can be the short string 4060 instead of 74HC4060. Include the short body marker in coordinate extraction, and move COMPONENT ID, COMPONENT VALUE, and SUBCKT NAME text records with the translated donor chunk. Do not use broad coordinate scanning.",
+      "rule": "For refreshed 74HC4060 donors, do not use the V2 full pairwise regeneration path. User testing reported S32/S33/S34 crashed in V2 even though V1 only needed a coordinate cleanup. Revisit 4060 only as a minimal coordinate-only patch over the V1 artifact that already opened/simulated, and do not change CDB/device composition for those pairs.",
       "evidence": [
         "User V1 reports: S32/S33/S34 simulated but terminals were far from pins with long weird wires",
+        "User V2 reports: S32/S33/S34 now crashed after the V2 regeneration",
         "tools/proteus_generation/2026-06-10/generate_ic_pairwise_34_v2_temp.py",
         "tests/test_mixed_ic_analog_donors.py::test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text",
         "P033_S01_S34 V2 focused check: 4 body coordinate pairs and 12 component text coordinate pairs translated",
         "experiments/IC_PAIRWISE_34_V2_TEMP_2026_06_10.zip"
+      ],
+      "created": "2026-06-10"
+    },
+    {
+      "id": "R124",
+      "title": "Failed combinational IC pairs must use accepted gate-slice generation, not whole-donor U2 copying",
+      "status": "sample_static_clean_pending_user_proteus_test",
+      "confidence": 0.9,
+      "applies_to": [
+        "IC pairwise mixing",
+        "74HC00",
+        "74HC02",
+        "combinational ICs",
+        "Proteus 8.13"
+      ],
+      "rule": "For pairwise failures involving already-accepted combinational IC families, do not concatenate exact-rezip donor chunks as left donor plus moved U2 donor. Use the accepted combinational generator: fresh gate record slices, fresh object/suffix IDs, directional IC terminals, and generated CDB subpart rows with package property rows. Start with one sample such as S01+S02 before expanding to the rest of the rejected pair list.",
+      "evidence": [
+        "User V1 report: S01+S02 opens but simulation fails with duplicate part reference U2:A [U1:A] and duplicate X000000.. refs",
+        "src/proteusgen/ic_combinational.py",
+        "tools/proteus_generation/2026-06-10/generate_ic_pairwise_error_focused_v1_temp.py",
+        "experiments/IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10.zip",
+        "tests/test_ic_pairwise_error_focused.py::test_focused_s01_s02_uses_accepted_combinational_path",
+        "D:/arch/outtt/BIN/NETLIST.dll.cpp duplicate/no-model netlist error strings",
+        "D:/arch/outtt/BIN/ISIS.DLL.cpp unnamed-pin error string"
       ],
       "created": "2026-06-10"
     }
