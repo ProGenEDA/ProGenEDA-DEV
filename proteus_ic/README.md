@@ -50,6 +50,7 @@ python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v1_te
 python tools/proteus_generation/2026-06-09/generate_ic_sequential_counters_v2_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v1_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py
+python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v3_temp.py
 ```
 
 Status:
@@ -175,11 +176,15 @@ Status:
   simulation-time CDB/pin errors and T03/T08 exposed a visible `74HC4060`/`U9`
   no-model problem. Large mixed sequential/misc IC packs must not concatenate
   raw donor coordinates without a layout separation pass.
-- `MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10` is static-clean
-  and pending user Proteus testing. It keeps the accepted full-device/full-CDB
-  skeleton row-replacement policy, translates whole visible IC regions into
-  deterministic grid slots, and excludes visible `74HC4060`/`U9` until a
-  dedicated model donor rule is proven.
+- `MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10` is rejected as a
+  layout method. User testing showed every case had floating text artifacts
+  because V2 moved terminal symbols and IC bodies without moving terminal-label
+  coordinates and component text coordinates. T03 and T05 also failed
+  simulation. Do not use V2 broad layout output as a generator baseline.
+- `MIXED_IC_FOCUSED_V3_TEMP_2026_06_10` is static-clean and pending user
+  Proteus testing. It is intentionally small: two corrected text-aligned IC
+  layout retries, two accepted mixed analog/RLC subsets covering NPN/PNP/LM741
+  and CAP-ELEC, two visible `74HC4060` diagnostics, and one NE555/RLC control.
 - The production route is now:
 
 ```text

@@ -404,3 +404,42 @@ def test_cross_donor_accepted_v2_layout_separates_regions_and_excludes_4060() ->
         expected_count = accepted.cdb_v2.cdb_v1.parsed_cdb(case.header_donor_key).count
         assert parsed.count == expected_count
         assert set(object_refs).issubset(set(accepted.base_iso.refs_in(cdb)))
+
+
+def test_mixed_ic_focused_v3_moves_text_and_covers_analog_controls() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v3_temp.py"
+    spec = importlib.util.spec_from_file_location("mixed_ic_focused_v3_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    focused = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = focused
+    spec.loader.exec_module(focused)
+
+    assert len(focused.LAYOUT_CASES) == 2
+    assert len(focused.ANALOG_CASES) == 3
+    assert len(focused.WHOLE_DONOR_CASES) == 2
+
+    object_chunk, _region_plan, layout_plan = focused.object_chunk_for_text_aligned_layout(
+        focused.LAYOUT_CASES[0].selections
+    )
+    assert object_chunk.count(b"$TERBIDIR") == object_chunk.count(b"WIRE")
+    assert all(entry["refs_unchanged"] for entry in layout_plan)
+    assert all(entry["marker_count_before"] == entry["marker_count_after"] for entry in layout_plan)
+    assert any("terminal_label:A000" in entry["coordinate_reason_counts"] for entry in layout_plan)
+    assert all(entry["coordinate_reason_counts"]["component_text_or_body"] >= 1 for entry in layout_plan)
+
+    analog_case = focused.ANALOG_CASES[0]
+    donor = focused.subset_v1.donor_by_key(analog_case.donor_key)
+    donor_dsn = focused.seq.read_internal_file(donor.path, "ROOT.DSN")
+    original_chunk = focused.seq._extract_object_chunk(donor_dsn)
+    regions = focused.subset_v1.discover_regions(original_chunk)
+    subset_chunk, _kept, _removed = focused.subset_v1.build_subset_chunk(
+        original_chunk,
+        regions,
+        analog_case.keep_markers,
+    )
+    for marker in (b"RESISTOR", b"CAPACITOR", b"REALIND", b"NPN", b"PNP", b"LM741", b"CAP-ELEC"):
+        assert marker in subset_chunk
+
+    assert any("4060" in case.case_id for case in focused.ANALOG_CASES)
+    assert any("4060" in case.case_id for case in focused.WHOLE_DONOR_CASES)

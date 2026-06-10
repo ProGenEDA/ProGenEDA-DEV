@@ -1144,7 +1144,7 @@
     {
       "id": "Q100",
       "question": "Does MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10 fix V1 close/overlap CDB-pin failures by translating complete IC regions and excluding visible 74HC4060/U9?",
-      "status": "awaiting_user_proteus_test",
+      "status": "answered_rejected_layout_method",
       "needed_for": [
         "cross_donor_ic_generation",
         "mixed_sequential_ic_generation",
@@ -1158,7 +1158,28 @@
         "proteus_ic/docs/mixed_ic_cross_donor_accepted_v2_layout_2026_06_10.md",
         "tests/test_mixed_ic_analog_donors.py"
       ],
-      "notes": "Test T01-T08. T03 and T06 specifically retest the V1 CDB/pin failures after region-grid layout separation. T08 retests the late-counter control with visible 74HC4060/U9 omitted. Static generation is clean, refs and markers are preserved by the layout pass, and targeted pytest reports 18 passed.",
+      "notes": "User Proteus testing reported: T01/T02/T04/T06/T07/T08 opened and simulated but all had visible artifacts; T03 opened but did not simulate and had artifacts; T05 opened with artifacts and did not simulate. The screenshots show floating terminal labels and component ID/value text from moved IC regions.",
+      "answer": "No. V2 is rejected as a layout method. It moved IC bodies, WIRE endpoints, and terminal symbols but failed to move $TERBIDIR terminal-label coordinates and component text/value/subckt coordinate fields. Broad IC mixing must pause until the complete-region translation moves all of those fields together. Removing visible 74HC4060 was also the wrong direction; use focused 4060 diagnostics instead."
+    },
+    {
+      "id": "Q101",
+      "question": "Does MIXED_IC_FOCUSED_V3_TEMP_2026_06_10 fix V2's floating text artifacts and provide useful small analog/RLC/4060/NE555 evidence?",
+      "status": "awaiting_user_proteus_test",
+      "needed_for": [
+        "ic_layout_beautifier",
+        "mixed_sequential_ic_generation",
+        "analog_component_generation",
+        "large_mixed_ic_generation",
+        "ne555_generation",
+        "production_ic_metadata_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v3_temp.py",
+        "experiments/MIXED_IC_FOCUSED_V3_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/mixed_ic_focused_v3_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py"
+      ],
+      "notes": "Test T01-T07. T01/T02 retest the corrected text-aligned IC region translation. T03/T04 use accepted real mixed analog donors and include RLC, NPN, PNP, LM741, and CAP-ELEC. T05/T06 keep visible 74HC4060 in solo-RLC and mixed analog/RLC contexts. T07 is a NE555/RLC control.",
       "answer": ""
     }
   ]

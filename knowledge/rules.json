@@ -2088,15 +2088,31 @@
     },
     {
       "id": "R112",
-      "title": "Do not emit visible 74HC4060 U9 in practical mixed cross-donor packs yet",
+      "title": "Do not silently remove visible 74HC4060 U9 from mixed IC work",
       "status": "accepted_safety_rule_pending_model_isolation",
-      "rule": "Exclude visible 74HC4060/U9 regions from practical cross-donor sequential/misc IC packs until a dedicated donor/model isolation proves a safe simulation record. The full donor device/CDB policy can still include untouched hidden skeleton metadata, but visible U9 object regions are not accepted for simulation packs.",
-      "rationale": "User testing of the accepted V1 practical pack produced no-model simulation errors for U9 in both T03 and T08. Other V1 cases without visible U9 simulated, so the rule is narrow to visible 74HC4060/U9 rather than the full cross-donor CDB policy.",
+      "rule": "Do not silently drop visible 74HC4060/U9 from practical mixed sequential/misc IC work. If a broad generated pack cannot yet make visible 74HC4060 simulate, stop and generate focused 74HC4060 diagnostics with accepted solo/RLC and mixed analog/RLC donor contexts. Only mark 74HC4060 unsupported for a route after those focused controls prove the failing boundary.",
+      "rationale": "User testing of the accepted V1 practical pack produced no-model simulation errors for U9 in both T03 and T08. V2 then removed visible 74HC4060, but the user rejected that direction because the generator must learn how to support the component rather than hiding it.",
       "evidence": [
         "MIXED_IC_CROSS_DONOR_ACCEPTED_V1_USER_PARTIAL_20260610",
+        "MIXED_IC_CROSS_DONOR_ACCEPTED_V2_USER_REJECTION_20260610",
         "MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_STATIC_20260610",
-        "proteus_ic/docs/mixed_ic_cross_donor_accepted_v2_layout_2026_06_10.md",
-        "tools/proteus_generation/2026-06-10/generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py"
+        "MIXED_IC_FOCUSED_V3_STATIC_20260610",
+        "proteus_ic/docs/mixed_ic_focused_v3_2026_06_10.md",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v3_temp.py"
+      ],
+      "created": "2026-06-10"
+    },
+    {
+      "id": "R113",
+      "title": "IC region translation must move terminal labels and component text",
+      "status": "accepted_from_user_visual_failure",
+      "rule": "When translating a complete donor-derived IC region, move $TERBIDIR terminal symbol coordinates, $TERBIDIR terminal-label coordinates, WIRE endpoints, component ID/value/subckt/properties text coordinates, and the IC body anchor together. Do not translate only the body and pin symbols.",
+      "rationale": "V2 moved IC bodies and terminal symbols but left terminal labels and component text at old donor coordinates, producing visible floating artifacts in every generated case even when simulation passed.",
+      "evidence": [
+        "MIXED_IC_CROSS_DONOR_ACCEPTED_V2_USER_REJECTION_20260610",
+        "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v3_temp.py",
+        "proteus_ic/docs/mixed_ic_focused_v3_2026_06_10.md",
+        "tests/test_mixed_ic_analog_donors.py::test_mixed_ic_focused_v3_moves_text_and_covers_analog_controls"
       ],
       "created": "2026-06-10"
     }
