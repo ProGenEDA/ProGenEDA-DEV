@@ -493,6 +493,30 @@ def test_mixed_ic_focused_v6_excludes_4060_and_extends_accepted_routes() -> None
     assert ne555_u2_replacements[0] != "NQ2"
 
 
+def test_ic_exact_rezip_all_families_includes_refreshed_4060_and_no_payload_edits() -> None:
+    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_exact_rezip_all_families_temp.py"
+    spec = importlib.util.spec_from_file_location("ic_exact_rezip_all_families_temp", script)
+    assert spec is not None
+    assert spec.loader is not None
+    rezip = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = rezip
+    spec.loader.exec_module(rezip)
+
+    assert len(rezip.CASES) == 37
+    ids = {case.case_id for case in rezip.CASES}
+    assert "T005_74HC32_OR_EXACT_REZIP" in ids
+    assert "M02_ALL4" in str(next(case.donor for case in rezip.CASES if case.case_id == "T005_74HC32_OR_EXACT_REZIP"))
+    assert "T018_74HC4060_REPO_SINGLE_EXACT_REZIP" in ids
+    assert "T034_74HC4060_REFRESH_SINGLE_EXACT_REZIP" in ids
+    assert "T037_74HC4060_REFRESH_4X_RLC_EXACT_REZIP" in ids
+
+    sample = next(case for case in rezip.CASES if case.case_id == "T034_74HC4060_REFRESH_SINGLE_EXACT_REZIP")
+    donor_payloads = rezip._zip_payloads(sample.donor)
+    assert "ROOT.DSN" in donor_payloads
+    assert "ROOT.CDB" in donor_payloads
+    assert b"74HC4060" in donor_payloads["ROOT.DSN"] + donor_payloads["ROOT.CDB"]
+
+
 def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
     script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v4_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v4_temp", script)

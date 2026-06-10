@@ -2166,8 +2166,8 @@
     },
     {
       "id": "R117",
-      "title": "Analog/basic mixed donor-native label edits are accepted",
-      "status": "accepted_from_user_proteus_test",
+      "title": "Analog/basic donor-native label edits open and simulate; topology intent still requires Proteus-visible validation",
+      "status": "accepted_for_open_simulate_only_topology_intent_unproven",
       "confidence": 0.9,
       "applies_to": [
         "Proteus 8.13",
@@ -2176,14 +2176,16 @@
       ],
       "evidence": [
         "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_USER_RESULT_20260610",
-        "T05_ANALOG_ONLY_RLC_BJT_OPAMP_ECAP_NATIVE"
+        "T05_ANALOG_ONLY_RLC_BJT_OPAMP_ECAP_NATIVE",
+        "MIXED_IC_FOCUSED_V6_NO4060_USER_RESULT_20260610"
       ],
-      "rule": "For mixed analog/basic projects containing RLC, NPN, PNP, LM741, and CAP-ELEC, preserve the donor-native project/device metadata and apply topology-preserving $TERBIDIR label edits. The accepted V5 T05 case works properly. Do not infer arbitrary cross-donor analog merging from this; use donor-native or previously accepted complete-region subset methods."
+      "rule": "Mixed analog/basic donor-native projects containing RLC, NPN, PNP, LM741, and CAP-ELEC can open and simulate when donor-native metadata is preserved and terminal labels are edited. However, V6 showed that a generated same-name topology edit may still not match the intended visible/electrical terminal naming in Proteus, so do not claim functional topology correctness from terminal_plan alone.",
+      "updated": "2026-06-10"
     },
     {
       "id": "R118",
-      "title": "NE555 output-to-RLC same-name bidirectional link is accepted",
-      "status": "accepted_from_user_proteus_test",
+      "title": "NE555 donor-native label edits open and simulate; output-to-load intent still requires Proteus-visible validation",
+      "status": "accepted_for_open_simulate_only_topology_intent_unproven",
       "confidence": 0.9,
       "applies_to": [
         "Proteus 8.13",
@@ -2193,9 +2195,28 @@
       ],
       "evidence": [
         "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_USER_RESULT_20260610",
-        "T06_NE555_Q_DRIVES_RLC_LOAD_NATIVE"
+        "T06_NE555_Q_DRIVES_RLC_LOAD_NATIVE",
+        "MIXED_IC_FOCUSED_V6_NO4060_USER_RESULT_20260610"
       ],
-      "rule": "For NE555 with an existing RLC donor load, preserve donor-native project/device metadata and connect the NE555 Q output to the RLC input by assigning both $TERBIDIR terminals the same label. V5 T06 worked properly with Q and the RLC input sharing NQ0."
+      "rule": "NE555 donor-native projects with an existing RLC donor load can open and simulate when donor-native metadata is preserved and terminal labels are edited. V6 showed that same-name output-to-load edits are not accepted from generated terminal_plan evidence alone; verify the actual Proteus-visible terminal names/electrical grouping before promoting NE555 functional topology generation.",
+      "updated": "2026-06-10"
+    },
+    {
+      "id": "R119",
+      "title": "Exact donor-content rezip is the next IC model boundary test",
+      "status": "pending_user_proteus_test",
+      "confidence": 0.86,
+      "applies_to": [
+        "Proteus 8.13",
+        "IC donor validation",
+        "sequential/misc/analog IC generation"
+      ],
+      "evidence": [
+        "MIXED_IC_FOCUSED_V6_NO4060_USER_RESULT_20260610",
+        "IC_EXACT_REZIP_ALL_FAMILIES_STATIC_20260610",
+        "tools/proteus_generation/2026-06-10/generate_ic_exact_rezip_all_families_temp.py"
+      ],
+      "rule": "Before further IC topology mutation, test exact donor-content rezips for every currently supplied IC family. Exact rezip outputs must preserve every internal ZIP member payload byte-for-byte. A failure in this pack is a donor/model/Proteus-install boundary, not a generator mutation bug."
     }
   ]
 }

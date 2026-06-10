@@ -54,6 +54,7 @@ python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v3_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v4_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v5_donor_native_temp.py
 python tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v6_no4060_temp.py
+python tools/proteus_generation/2026-06-10/generate_ic_exact_rezip_all_families_temp.py
 ```
 
 Status:
@@ -205,6 +206,14 @@ Status:
   user Proteus testing. It intentionally excludes `74HC4060`, repeats the two
   accepted V5 routes as baselines, then tests one LM741-output-to-RLC-node edit
   and one second-NE555-Q-to-RLC edit.
+- `IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10` is static-clean and pending
+  user Proteus testing. It contains 37 exact donor-content rezips across all
+  currently supplied IC families. It performs no label/topology/coordinate/CDB
+  mutation. Use it to identify donor/model/install failures before any more
+  generated topology work. The HC32 exact family case uses the correct all-four
+  HC32 donor because the supplied HC32 M01 file contains HC08 metadata. It also
+  includes the refreshed user-supplied 4060 donors as T034-T037 so they can be
+  compared against the older repo 4060 donor at T018.
 - The production route is now:
 
 ```text

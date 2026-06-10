@@ -1227,7 +1227,7 @@
       "id": "Q104",
       "priority": "high",
       "question": "What is the smallest next mixed IC/analog pack that advances from V5 without including 74HC4060 or other no-model refs?",
-      "status": "awaiting_user_proteus_test_v6_no4060",
+      "status": "answered_open_simulate_only_topology_intent_failed",
       "needed_for": [
         "analog_component_generation",
         "ne555_generation",
@@ -1240,9 +1240,30 @@
         "MIXED_IC_FOCUSED_V6_NO4060_STATIC_20260610",
         "tools/proteus_generation/2026-06-10/generate_mixed_ic_focused_v6_no4060_temp.py",
         "experiments/MIXED_IC_FOCUSED_V6_NO4060_TEMP_2026_06_10.zip",
-        "proteus_ic/docs/mixed_ic_focused_v6_no4060_2026_06_10.md"
+        "proteus_ic/docs/mixed_ic_focused_v6_no4060_2026_06_10.md",
+        "MIXED_IC_FOCUSED_V6_NO4060_USER_RESULT_20260610"
       ],
-      "notes": "V6 generated as the smallest next pack from accepted T05/T06-style donor-native edits. It avoids 74HC4060, repeats analog/NE555 baselines, tests LM741-output-to-RLC AO0, and tests second-NE555-Q-to-RLC NQ2. V5 T04 no-model ref U9 maps to 74HC4060 and U7:A maps to 74HC4520, so isolate 74HC4520 separately before using that large mixed counter donor in a simulation pack."
+      "notes": "V6 generated as the smallest next pack from accepted T05/T06-style donor-native edits. It avoids 74HC4060, repeats analog/NE555 baselines, tests LM741-output-to-RLC AO0, and tests second-NE555-Q-to-RLC NQ2. V5 T04 no-model ref U9 maps to 74HC4060 and U7:A maps to 74HC4520, so isolate 74HC4520 separately before using that large mixed counter donor in a simulation pack.",
+      "answer": "V6 was the smallest no-4060 follow-up and all cases opened/simulated, but the user rejected the functional intent because terminal names were not same as the case names implied. Do not expand this topology mutation route until terminal-name semantics are verified in Proteus."
+    },
+    {
+      "id": "Q105",
+      "priority": "high",
+      "question": "Which exact donor-content IC family rezips open and simulate in Proteus before any further IC mutation work?",
+      "status": "awaiting_user_proteus_test_exact_rezip_all_families",
+      "needed_for": [
+        "ic_model_boundary",
+        "sequential_ic_generation",
+        "analog_ic_generation",
+        "mixed_ic_generation"
+      ],
+      "evidence": [
+        "IC_EXACT_REZIP_ALL_FAMILIES_STATIC_20260610",
+        "experiments/IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10.zip",
+        "proteus_ic/docs/ic_exact_rezip_all_families_2026_06_10.md",
+        "refreshed 4060 donors copied into proteus_ic/donors/sequential_ics_4060_refresh_20260610"
+      ],
+      "notes": "Test all 37 exact rezips. T018 old repo 74HC4060, T020 74HC4520, and refreshed 4060 cases T034-T037 are especially important because generated packs showed no-model errors for 74HC4060/U9 and 74HC4520/U7:A."
     }
   ]
 }
