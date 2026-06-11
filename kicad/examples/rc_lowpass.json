@@ -1,0 +1,24 @@
+{
+  "project_name": "rc_lowpass_kicad_visual",
+  "components": [
+    {"ref": "V1", "kind": "VSIN", "value": "VSIN", "spice_model": "SIN(0 1 1k)", "at": [30, 45], "pins": {"1": "IN", "2": "GND"}},
+    {"ref": "R1", "kind": "R", "value": "1k", "at": [55, 35], "rotation": 90, "pins": {"1": "IN", "2": "OUT"}},
+    {"ref": "C1", "kind": "C", "value": "1u", "at": [75, 48], "pins": {"1": "OUT", "2": "GND"}},
+    {"ref": "#PWR01", "kind": "GND", "value": "GND", "at": [30, 55], "pins": {"1": "GND"}},
+    {"ref": "#PWR02", "kind": "GND", "value": "GND", "at": [75, 60], "pins": {"1": "GND"}}
+  ],
+  "wires": [
+    {"points": [[30, 40], [30, 35], [51, 35]]},
+    {"points": [[59, 35], [75, 35], [75, 44]]},
+    {"points": [[75, 52], [75, 60]]},
+    {"points": [[30, 50], [30, 55]]}
+  ],
+  "labels": [
+    {"text": "IN", "at": [37, 35]},
+    {"text": "OUT", "at": [76, 35]}
+  ],
+  "spice_directives": [
+    {"text": ".tran 1u 5m\n.save all", "at": [25, 75]}
+  ],
+  "notes": ["Visual RC circuit with transient directive"]
+}
