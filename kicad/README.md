@@ -28,6 +28,41 @@ optional local symbols if portability requires them
 
 The user should be able to open the generated project in KiCad and see an editable visual schematic with placed components, wires, labels, values, references, and simulation directives where needed.
 
+## Current implementation status
+
+Started persistent Python backend:
+
+```text
+kicad/generator/kicad_visual_generator.py
+```
+
+Current CLI examples:
+
+```bash
+python kicad/generator/kicad_visual_generator.py --example diode_iv --out out/diode_iv
+python kicad/generator/kicad_visual_generator.py --example rc_lowpass --out out/rc_lowpass
+python kicad/generator/kicad_visual_generator.py --input kicad/examples/ee215_diode_iv.json --out out/diode_iv_from_json
+```
+
+Current generated package shape:
+
+```text
+<project>.kicad_pro
+<project>.kicad_sch
+<project>.cir
+manifest.json
+README_OPEN_FIRST.txt
+```
+
+The `.cir` file is a debug artifact. The main deliverable remains the editable visual KiCad project.
+
+## Current examples
+
+```text
+kicad/examples/ee215_diode_iv.json
+kicad/examples/rc_lowpass.json
+```
+
 ## Key finding
 
 KiCad is a much better generation target than Proteus for this kind of product because modern KiCad project and schematic files are text-based, documented, and open-source. This means the KiCad backend should not follow the Proteus binary-patching approach.
@@ -81,7 +116,7 @@ manifest.json
 README_OPEN_FIRST.txt
 ```
 
-### Not required in Phase 1 unless PCB output is added
+### Not required unless PCB output is added
 
 ```text
 *.kicad_pcb
@@ -115,6 +150,7 @@ eeschema/sim/simulator_frame.cpp
 eeschema/sim/spice_circuit_model.h
 qa/tests/spice/test_netlist_exporter_spice.h
 qa/tests/spice/test_ngspice_helpers.cpp
+qa/data/eeschema/spice_netlists/directives/directives.kicad_sch
 
 # PCB file support, later phase only
 pcbnew/pcb_io/kicad_sexpr/pcb_io_kicad_sexpr_parser.cpp
@@ -123,11 +159,11 @@ pcbnew/pcb_io/kicad_sexpr/pcb_io_kicad_sexpr.h
 qa/tests/pcbnew/pcb_io/kicad_sexpr/test_kicad_sexpr.cpp
 ```
 
-## Phase 1 component target
+## Component target
 
-Start smaller than Proteus capacitor debugging. Use only stock schematic symbols and no PCB footprints at first.
+Do not artificially limit the final product scope. The staged build order is only for making the generator reliable.
 
-Supported Phase 1 components:
+Current generator starts with:
 
 ```text
 Device:R
@@ -136,26 +172,53 @@ Device:L
 Device:D
 Device:LED
 power:GND
-power:VCC / power symbols where useful
-voltage source / current source SPICE symbols where supported
+Simulation_SPICE:VDC
+Simulation_SPICE:VSIN
+Simulation_SPICE:VPULSE
 basic labels and wires
+schematic text simulation directives
 ```
 
-Phase 1 circuit classes:
+Next expansion:
 
 ```text
-single resistor/capacitor/inductor test
-6R topology clone from Proteus history
-21R topology clone from Proteus history
-RC low-pass
-RLC passive networks
-simple diode DC sweep circuit
-half-wave rectifier skeleton
+Zener diode
+BJT NPN/PNP
+MOSFET NMOS/PMOS
+controlled sources
+current source
+bridge rectifier layouts
+BJT bias and amplifier templates
+MOSFET bias and common-source templates
+```
+
+## EE-215 simulation target list
+
+The uploaded lab manual list maps the KiCad generator targets to:
+
+```text
+Diode Characteristics
+Series and Parallel Diode Circuits
+Half Wave and Full Wave Rectification
+Clipping Circuits
+Clamping Circuits
+Light Emitting and Zener Diode
+BJT characteristics
+BJT fixed and voltage-divider bias
+BJT feedback bias
+BJT bias design
+Common emitter amplifier
+Common base and emitter follower amplifier
+Common emitter amplifier design
+MOSFET characteristics
+MOSFET DC biasing
+MOSFET common source amplifier
+Switching application of diode
 ```
 
 ## Simulation target
 
-KiCad supports SPICE netlist export and an embedded simulator using ngspice. Simulation directives can be placed in schematic text lines beginning with periods, such as:
+KiCad supports SPICE/netlist-style simulation through ngspice. KiCad schematic directives can be placed as schematic text, such as:
 
 ```text
 .op
@@ -173,7 +236,7 @@ For this backend, simulation output should be a secondary validation artifact, w
 
 Generate `.kicad_pro` and `.kicad_sch` directly as text S-expressions using a strict internal CircuitIR.
 
-This is the preferred route.
+This is the preferred route and is now started in `kicad/generator/kicad_visual_generator.py`.
 
 ### Route B: KiCad-authoritative roundtrip
 
