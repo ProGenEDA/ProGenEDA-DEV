@@ -2,45 +2,68 @@
 
 This folder contains the persistent Python generator code for the KiCad backend.
 
-## V5 direction
+## Current locked milestone
 
-V5 replaces the earlier guess-based writer with a source-driven writer. The writer mirrors the KiCad schematic save path at a narrow subset level:
+V6 is the first source-driven KiCad generator milestone that the user opened successfully in KiCad:
+
+```text
+syntax opens
+embedded symbols render
+pin-endpoint autorouting connects wires correctly
+```
+
+The correct writer order is still:
 
 ```text
 header -> uuid -> paper -> lib_symbols -> schematic items -> sheet_instances
 ```
 
-The first verified embedded-symbol set is intentionally small:
+## V7 component catalog
+
+V7 adds a broad component catalog in:
 
 ```text
-Simulation_SPICE:VDC
-Simulation_SPICE:VSIN
-Device:R
-Device:L
-power:GND
+kicad/generator/kicad_backend/component_catalog.py
 ```
 
-These symbol-cache blocks were extracted from KiCad upstream QA data, not handwritten. More symbols must be added only after we have a verified saved block from KiCad source fixtures, symbol libraries, or manual donor projects.
-
-## Current V5 artifact
-
-The current generated test ZIP is:
+The catalog currently contains 60 component kinds. It separates components into two tiers:
 
 ```text
-KICAD_GENERATED_OUTPUTS_V5_SOURCE_DRIVEN.zip
+verified_embedded
+cataloged_needs_symbol_cache
 ```
 
-It includes:
+### Verified embedded / portable now
+
+These have verified embedded symbol-cache blocks from KiCad source fixtures and have already been used in working V5/V6 generated projects:
 
 ```text
-vdc_resistor_op/
-vsin_rl_tran/
-SOURCE_CODE_SNAPSHOT/
+GND
+R
+L
+VDC
+VSIN
 ```
 
-The `SOURCE_CODE_SNAPSHOT/` folder contains the modular V5 Python backend. Promote it into this repo folder after the V5 files are confirmed to parse and render in KiCad.
+### Cataloged but not yet fully portable
 
-## Run examples after promotion
+These have metadata now: KiCad lib id, aliases, pin list, approximate pin-local connection model, SPICE class where relevant, and default value.
+
+```text
+C, CP, C_POL, R_POT, FERRITE, FUSE, PTC, MOV, TVS,
+D, DIODE, LED, ZENER, SCHOTTKY, BRIDGE,
+VPULSE, VAC, IDC, ISIN, IPULSE,
+NPN, PNP, NMOS, PMOS, JFET_N, JFET_P,
+OPAMP, LM741, LM358, LM393, NE555, L7805, LM317,
+74HC00, 74HC04, 74HC08, 74HC32, 74HC86, 74HC74,
+74HC76, 74HC90, 74HC157, 74HC192, 4511, 4017,
+CONN_2, CONN_3, CONN_4, CONN_6, CONN_8, TESTPOINT,
++5V, +3V3, VCC, GNDA
+```
+
+These must not be called fully verified until their symbol-cache blocks and pin endpoints are extracted from real KiCad donor files and tested.
+
+## Run examples
 
 ```bash
 python kicad/generator/kicad_visual_generator.py --example vdc_resistor_op --out out/vdc_resistor_op
@@ -63,3 +86,11 @@ README_OPEN_FIRST.txt
 ```
 
 The `.cir` file is not the product. The product is the editable visual KiCad project.
+
+## Master plan
+
+The all-component roadmap is tracked here:
+
+```text
+kicad/planning/COMPONENT_MASTER_PLAN.md
+```
