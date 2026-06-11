@@ -22,7 +22,7 @@ def safe_name(s: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", s.strip()) or "kicad_generated"
 
 def q(s: Any) -> str:
-    return '"' + str(s).replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return '"' + str(s).replace("\\", "\\\\").replace("\n", "\\n").replace('"', '\\"') + '"'
 
 def num(x: float) -> str:
     x = float(x)
@@ -132,8 +132,13 @@ def symbol(c: Component, project: str) -> str:
 
 
 def wire(w: Wire, project: str, i: int) -> str:
-    pts = " ".join(f"(xy {num(x)} {num(y)})" for x,y in w.points)
-    return f"  (wire (pts {pts})\n    (stroke (width 0) (type default))\n    (uuid {uid(f'{project}:wire:{i}:{w.points}')})\n  )\n"
+    # KiCad wire objects are line segments. Multi-point CircuitIR wires must be emitted
+    # as consecutive two-point wire objects or KiCad 10 reports a schematic parse error.
+    segments=[]
+    for j,(a,b) in enumerate(zip(w.points, w.points[1:]),1):
+        pts=f"(xy {num(a[0])} {num(a[1])}) (xy {num(b[0])} {num(b[1])})"
+        segments.append(f"  (wire (pts {pts})\n    (stroke (width 0) (type default))\n    (uuid {uid(f'{project}:wire:{i}:{j}:{a}:{b}')})\n  )\n")
+    return "".join(segments)
 
 def label(l: Label, project: str, i: int) -> str:
     x,y=l.at
@@ -183,9 +188,9 @@ def write_project(ir: CircuitIR, out_dir: Path) -> dict[str, Any]:
 
 def example(name: str) -> CircuitIR:
     if name == "diode_iv":
-        return CircuitIR.from_dict({"project_name":"ee215_diode_iv_kicad_visual","components":[{"ref":"V1","kind":"VDC","value":"0","at":[30,40],"pins":{"1":"VIN","2":"GND"}},{"ref":"R1","kind":"R","value":"1k","at":[50,40],"rotation":90,"pins":{"1":"VIN","2":"N1"}},{"ref":"D1","kind":"D","value":"1N4001","at":[70,40],"pins":{"1":"N1","2":"GND"}},{"ref":"#PWR01","kind":"GND","value":"GND","at":[30,55],"pins":{"1":"GND"}},{"ref":"#PWR02","kind":"GND","value":"GND","at":[70,55],"pins":{"1":"GND"}}],"wires":[{"points":[[30,35],[30,30],[50,30],[50,36]]},{"points":[[50,44],[70,40]]},{"points":[[30,45],[30,55]]},{"points":[[70,40],[70,55]]}],"labels":[{"text":"VIN","at":[40,30]},{"text":"VD","at":[72,39]}],"spice_directives":[{"text":".dc V1 0 10 0.1\n.save all","at":[25,75]}],"notes":["EE-215 diode characteristics target"]})
+        return CircuitIR.from_dict({"project_name":"OPEN_THIS_PROJECT__diode_iv__PROJECT_FILE","components":[{"ref":"V1","kind":"VDC","value":"0","at":[30,40],"pins":{"1":"VIN","2":"GND"}},{"ref":"R1","kind":"R","value":"1k","at":[50,40],"rotation":90,"pins":{"1":"VIN","2":"N1"}},{"ref":"D1","kind":"D","value":"1N4001","at":[70,40],"pins":{"1":"N1","2":"GND"}},{"ref":"#PWR01","kind":"GND","value":"GND","at":[30,55],"pins":{"1":"GND"}},{"ref":"#PWR02","kind":"GND","value":"GND","at":[70,55],"pins":{"1":"GND"}}],"wires":[{"points":[[30,35],[30,30],[50,30],[50,36]]},{"points":[[50,44],[70,40]]},{"points":[[30,45],[30,55]]},{"points":[[70,40],[70,55]]}],"labels":[{"text":"VIN","at":[40,30]},{"text":"VD","at":[72,39]}],"spice_directives":[{"text":".dc V1 0 10 0.1\n.save all","at":[25,75]}],"notes":["EE-215 diode characteristics target"]})
     if name == "rc_lowpass":
-        return CircuitIR.from_dict({"project_name":"rc_lowpass_kicad_visual","components":[{"ref":"V1","kind":"VSIN","value":"VSIN","spice_model":"SIN(0 1 1k)","at":[30,45],"pins":{"1":"IN","2":"GND"}},{"ref":"R1","kind":"R","value":"1k","at":[55,35],"rotation":90,"pins":{"1":"IN","2":"OUT"}},{"ref":"C1","kind":"C","value":"1u","at":[75,48],"pins":{"1":"OUT","2":"GND"}},{"ref":"#PWR01","kind":"GND","value":"GND","at":[30,55],"pins":{"1":"GND"}},{"ref":"#PWR02","kind":"GND","value":"GND","at":[75,60],"pins":{"1":"GND"}}],"wires":[{"points":[[30,40],[30,35],[51,35]]},{"points":[[59,35],[75,35],[75,44]]},{"points":[[75,52],[75,60]]},{"points":[[30,50],[30,55]]}],"labels":[{"text":"IN","at":[37,35]},{"text":"OUT","at":[76,35]}],"spice_directives":[{"text":".tran 1u 5m\n.ac dec 100 10 1Meg\n.save all","at":[25,75]}],"notes":["Visual RC circuit with transient and AC directives"]})
+        return CircuitIR.from_dict({"project_name":"OPEN_THIS_PROJECT__rc_lowpass__PROJECT_FILE","components":[{"ref":"V1","kind":"VSIN","value":"VSIN","spice_model":"SIN(0 1 1k)","at":[30,45],"pins":{"1":"IN","2":"GND"}},{"ref":"R1","kind":"R","value":"1k","at":[55,35],"rotation":90,"pins":{"1":"IN","2":"OUT"}},{"ref":"C1","kind":"C","value":"1u","at":[75,48],"pins":{"1":"OUT","2":"GND"}},{"ref":"#PWR01","kind":"GND","value":"GND","at":[30,55],"pins":{"1":"GND"}},{"ref":"#PWR02","kind":"GND","value":"GND","at":[75,60],"pins":{"1":"GND"}}],"wires":[{"points":[[30,40],[30,35],[51,35]]},{"points":[[59,35],[75,35],[75,44]]},{"points":[[75,52],[75,60]]},{"points":[[30,50],[30,55]]}],"labels":[{"text":"IN","at":[37,35]},{"text":"OUT","at":[76,35]}],"spice_directives":[{"text":".tran 1u 5m\n.save all","at":[25,75]}],"notes":["Visual RC circuit with transient directive"]})
     raise ValueError("examples: diode_iv, rc_lowpass")
 
 
