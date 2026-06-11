@@ -1,5 +1,48 @@
 # KiCad Tools
 
+## download_kicad_github_assets.py
+
+Auto-discovers/downloads KiCad files and repositories from the KiCad GitHub organization.
+
+This is the tool for the user's intended meaning of auto-downloader:
+
+```text
+look around GitHub for KiCad repos/files and download what the generator needs
+```
+
+Docs:
+
+```text
+kicad/tools/KICAD_GITHUB_DOWNLOADER.md
+```
+
+Quick commands:
+
+```bash
+python kicad/tools/download_kicad_github_assets.py --mode inventory
+python kicad/tools/download_kicad_github_assets.py --mode needed-archives
+python kicad/tools/download_kicad_github_assets.py --mode file-inventory --preset generator
+python kicad/tools/download_kicad_github_assets.py --mode targeted-files
+```
+
+For a huge full GitHub-org archive pull:
+
+```bash
+python kicad/tools/download_kicad_github_assets.py --mode all-org-archives --confirm-large
+```
+
+Default output folder:
+
+```text
+external/kicad_github/<UTC_RUN_ID>/
+```
+
+Use a GitHub token for bigger scans:
+
+```powershell
+$env:GITHUB_TOKEN="ghp_xxx"
+```
+
 ## fix_project_symbols.py
 
 Fixes generated KiCad projects that open with red question-mark boxes because stock libraries are not resolved.
