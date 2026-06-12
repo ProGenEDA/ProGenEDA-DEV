@@ -1,0 +1,1 @@
+/mnt/data/kicad_v10_local_pack/kicad/generator/kicad_json_to_project.py
