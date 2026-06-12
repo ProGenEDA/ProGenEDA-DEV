@@ -1,0 +1,69 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v0.3",
+  "purpose": "Strict JSON contract for AI/PDF-to-KiCad visual project generation.",
+  "generator_entrypoint": "kicad/generator/kicad_json_to_project.py",
+  "required_top_level_keys": ["schema_version", "project", "components", "nets"],
+  "project_object": {
+    "name": "slug_safe_project_name",
+    "title": "human readable circuit title",
+    "description": "short purpose",
+    "analysis": ["SPICE/KiCad simulator directives as text, e.g. .op, .tran 1u 5m, .dc V1 0 10 0.1"]
+  },
+  "component_object": {
+    "id": "Unique reference like R1, U1, C1, V1, G1",
+    "kind": "one of component_kinds",
+    "value": "display/simulation value, e.g. 1k, 100n, 74HC74",
+    "at": "optional [x,y] in mm; omitted means auto-place",
+    "rotation": "optional degrees: 0, 90, 180, 270",
+    "pins": "map pin numbers to net names, e.g. {\"1\":\"VIN\",\"2\":\"GND\"}",
+    "notes": "optional behavior/model note"
+  },
+  "net_rules": [
+    "Use GND for global ground.",
+    "Use meaningful net names: VIN, CLK, RESET, Q0, LOAD_CLK, etc.",
+    "Every useful electrical pin must map to a net.",
+    "Do not generate disconnected component-zoo sheets for functional PDF circuits.",
+    "Every generated project must save input.json beside the KiCad output."
+  ],
+  "kicad_rules": [
+    "The user opens the .kicad_pro file only; KiCad still requires a .kicad_sch beside it.",
+    "Every wire object must have exactly two xy points.",
+    "Multiline directives must be escaped as \\n inside the S-expression string.",
+    "Unsupported exact stock symbols may use project-local Progen generic symbols until source mining promotes exact KiCad stock symbols."
+  ],
+  "component_kinds": [
+    "GND", "VDC", "VSIN", "VPULSE", "VAC", "IDC", "ISIN", "IPULSE",
+    "R", "C", "CP", "L", "R_POT", "FERRITE", "FUSE", "PTC", "MOV", "TVS",
+    "D", "LED", "ZENER", "SCHOTTKY", "BRIDGE",
+    "NPN", "PNP", "NMOS", "PMOS", "JFET_N", "JFET_P",
+    "OPAMP", "LM741", "LM358", "LM393", "NE555", "L7805", "LM317",
+    "AND", "OR", "NOT", "NAND", "NOR", "XOR", "XNOR",
+    "74HC00", "74HC04", "74HC08", "74HC32", "74HC86", "74HC74", "74HC76", "74HC90",
+    "74HC151", "74HC153", "74HC157", "74HC161", "74HC163", "74HC165", "74HC174", "74HC175", "74HC192", "74HC193", "74HC273", "74HC283", "74HC595",
+    "74HC47", "74HC48", "74HC85", "4511", "7490", "4017", "4020", "4024", "4040", "4060", "4008", "4051", "4063", "4093", "4518", "4520",
+    "CONN_2", "CONN_3", "CONN_4", "SW_PUSH", "SW_DIP", "TESTPOINT"
+  ],
+  "examples": [
+    {
+      "schema_version": "progen-kicad-circuit-ir/v0.3",
+      "project": {"name": "vdc_resistor_op", "title": "VDC resistor OP", "description": "5V source feeding a 1k resistor to ground", "analysis": [".op", ".save all"]},
+      "components": [
+        {"id": "V1", "kind": "VDC", "value": "5", "pins": {"1": "VIN", "2": "GND"}},
+        {"id": "R1", "kind": "R", "value": "1k", "pins": {"1": "VIN", "2": "GND"}},
+        {"id": "G1", "kind": "GND", "value": "GND", "pins": {"1": "GND"}}
+      ],
+      "nets": {"VIN": "source positive", "GND": "ground"}
+    },
+    {
+      "schema_version": "progen-kicad-circuit-ir/v0.3",
+      "project": {"name": "rc_lowpass_tran", "title": "RC low-pass transient", "description": "Sine source through resistor into capacitor", "analysis": [".tran 1u 5m", ".save all"]},
+      "components": [
+        {"id": "V1", "kind": "VSIN", "value": "SIN(0 1 1k)", "pins": {"1": "IN", "2": "GND"}},
+        {"id": "R1", "kind": "R", "value": "1k", "pins": {"1": "IN", "2": "OUT"}},
+        {"id": "C1", "kind": "C", "value": "1u", "pins": {"1": "OUT", "2": "GND"}},
+        {"id": "G1", "kind": "GND", "value": "GND", "pins": {"1": "GND"}}
+      ],
+      "nets": {"IN": "input", "OUT": "filtered output", "GND": "ground"}
+    }
+  ]
+}
