@@ -183,3 +183,56 @@ The generator should automatically add initialization helpers for generated sequ
 - tie-offs for unused/floating inputs
 - validation that every gate input has a driver or intentional constant
 ```
+
+## 7. Reset only in D path does not initialize NAND slave latch
+
+Observed:
+
+```text
+The D equations used NR = not RS and D = M and NR, but the cross-coupled NAND outputs could still begin yellow/unknown.
+```
+
+Cause:
+
+```text
+Masking D to zero is not the same as asynchronously clearing the NAND latch. It only makes D become 0. The actual A/N output latch still needs a clock transfer or a direct reset path.
+```
+
+Circuit fix:
+
+```text
+For each flip-flop, feed reset into the slave latch path. Use active-high RS and NR = not RS.
+
+Old slave stage:
+Sx = not (Lx and CK)
+Tx = not (Ux and CK)
+Ax = not (Sx and Nx)
+Nx = not (Tx and Ax)
+
+Reset-safe slave stage:
+Qx = Lx and CK
+Sx = not (Qx and NR)
+Rx = not (Ux and CK)
+Tx = Rx and NR
+Ax = not (Sx and Nx)
+Nx = not (Tx and Ax)
+```
+
+Behavior:
+
+```text
+When RS = 1, NR = 0:
+Sx = 1
+Tx = 0
+Nx = 1
+Ax = 0
+
+When RS = 0, NR = 1:
+The circuit behaves like the normal master-slave NAND D flip-flop.
+```
+
+Prompt rule:
+
+```text
+Do not permanently connect RS to G0 while testing reset behavior. RS must be driven high at startup to clear the latch, then driven low for normal counting.
+```
