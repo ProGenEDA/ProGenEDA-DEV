@@ -22,24 +22,28 @@ The post-placement stages are recorded in the sidecar manifest at
 - Value mutation is planned only; binary DSN/CDB value patching is not enabled.
 - Wiring planning emits logical net intent only; Proteus wire records are not
   synthesized yet.
-- Beautifier coordinate mutation defaults to `hidden_coordinate_mode: none`.
-- Focused coordinate tests may explicitly set `hidden_coordinate_mode` to
-  `linked_relative` or `linked_absolute`.
-- The current V3 hidden-coordinate experiment uses a `1,500,000,000`
-  coordinate-unit displacement for linked hidden dummy and D20 movement.
+- Control dummy coordinate mutation defaults to `hidden_coordinate_mode: none`.
+- The rejected V3 runaway coordinate experiment used a `1,500,000,000`
+  displacement; do not reintroduce that as a default.
+- The current V4 beautifier experiment moves D20 display bridge infrastructure
+  by a small `350,000` relative coordinate offset when explicitly requested.
+- When `layout.strategy` is `beautify`, non-control visible packets are
+  translated by the shared packet-grid beautifier and recorded under
+  `layout_plan.actual_binary_placements`.
 
 ## Hidden Controls
 
 `SWITCH` and `POT-HG` requests select one extra donor packet. The first packet is
 marked as a hidden dummy control in the manifest. The beautifier owns long-term
-dummy hiding. The placer must not add terminals or wires for these controls.
+dummy hiding, but current V4 tests do not send these controls to runaway
+coordinates. The placer must not add terminals or wires for these controls.
 
 ## Display Bridge
 
 When seven-segment display packets require the donor bridge record, the D20
 bridge is selected as infrastructure and is not counted as a user-requested
-diode. Any future D20 coordinate hiding must stay behind explicit beautifier
-tests until Proteus acceptance.
+diode. V4 moves D20 only by the explicit `display_small_relative` policy, which
+uses a `350,000` coordinate-unit offset rather than a far hidden zone.
 
 ## Testing Notes
 

@@ -185,7 +185,7 @@ def test_component_placement_generator_can_hide_dummy_controls(tmp_path: Path) -
     assert all(group.start == -1_000_000_000 for group in result.hidden_groups)
 
 
-def test_component_placement_hidden_mode_reports_far_zone(tmp_path: Path) -> None:
+def test_component_placement_hidden_mode_reports_small_safe_zone(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
             "components": {"SWITCH": 1, "POT-HG": 1},
@@ -197,7 +197,7 @@ def test_component_placement_hidden_mode_reports_far_zone(tmp_path: Path) -> Non
 
     assert result.valid
     zone = result.layout_plan["hidden_dummy_zone"]["origin"]
-    assert zone == {"x": 1_500_000_000, "y": 1_500_000_000}
+    assert zone == {"x": 350_000, "y": 350_000}
     assert result.hidden_dummy_controls["binary_coordinate_mutation"]["applied"] is True
 
 
@@ -273,7 +273,7 @@ def test_component_placement_display_bridge_hiding_is_explicit(tmp_path: Path) -
         {
             "components": {"7segcomanode": 1},
             "hide_display_bridge": True,
-            "hidden_coordinate_mode": "linked_relative",
+            "display_bridge_coordinate_mode": "display_small_relative",
         },
         tmp_path / "display_bridge_hidden.pdsprj",
     )
@@ -283,7 +283,7 @@ def test_component_placement_display_bridge_hiding_is_explicit(tmp_path: Path) -
     baseline_d20 = next(group for group in baseline.selected_groups if group.key == "D20")
     hidden_d20 = next(group for group in hidden.selected_groups if group.key == "D20")
     assert baseline_d20.data != hidden_d20.data
-    assert "D20 display bridge hidden" in hidden.cdb_policy
+    assert "D20 display bridge moved" in hidden.cdb_policy
 
 
 def test_component_placement_generator_uses_clean_source_packets(tmp_path: Path) -> None:

@@ -3393,6 +3393,23 @@
         "experiments/BEAUTIFIER_COORDINATE_STAGE_V3_LARGE_RULES_TEMP_2026_06_22.zip"
       ],
       "date": "2026-06-22"
+    },
+    {
+      "id": "R_COMPONENT_PLACER_BEAUTIFIER_V4",
+      "title": "Component placer V4 beautifier uses visible packet-grid translation",
+      "status": "experimental_pending_user_proteus",
+      "confidence": 0.78,
+      "applies_to": [
+        "component_placer",
+        "beautifier",
+        "Proteus 8.13 donor-packet route"
+      ],
+      "evidence": [
+        "BEAUTIFIER_COORDINATE_STAGE_V4_VISIBLE_LAYOUT_STATIC_20260622",
+        "tests/test_component_placer.py 29 passed",
+        "direct smoke generation visible_translated_count=3"
+      ],
+      "rule": "Do not use the rejected 1.5B runaway coordinate policy for SWITCH/POT-HG dummies. For V4, D20 display bridge infrastructure may be moved by display_small_relative (+350,000 coordinate units). When layout.strategy is beautify, non-control visible donor packets are translated through the shared packet-grid coordinate scanner and the actual byte mutations are recorded in layout_plan.actual_binary_placements."
     }
   ]
 }

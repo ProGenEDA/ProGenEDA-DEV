@@ -37,7 +37,12 @@ from .component_pipeline import (
     manifest_path_for_output,
     pipeline_errors,
 )
-from .component_beautifier import DEFAULT_HIDDEN_COORDINATE_MODE, HIDDEN_PACKET_START, hide_packet
+from .component_beautifier import (
+    DEFAULT_HIDDEN_COORDINATE_MODE,
+    HIDDEN_PACKET_START,
+    hide_packet,
+    translate_packet_to_slot,
+)
 from .templates import FixtureRegistry, repository_root
 
 TRUSTED_DONOR_MANIFEST_PATH = Path("proteus_ic/registry/trusted_donor_manifest.json")
@@ -1211,6 +1216,75 @@ def _payload_bool(value: Any) -> bool:
     return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _raw_layout_payload(payload: Any) -> dict[str, Any]:
+    if isinstance(payload, dict) and isinstance(payload.get("layout"), dict):
+        return dict(payload["layout"])
+    return {}
+
+
+def _binary_beautifier_enabled(payload: Any) -> bool:
+    raw_layout = _raw_layout_payload(payload)
+    if str(raw_layout.get("strategy", "")).lower() != "beautify":
+        return False
+    if raw_layout.get("binary_coordinate_mutation") is not None:
+        return _payload_bool(raw_layout.get("binary_coordinate_mutation"))
+    if isinstance(payload, dict) and payload.get("binary_coordinate_mutation") is not None:
+        return _payload_bool(payload.get("binary_coordinate_mutation"))
+    return True
+
+
+def _apply_binary_beautifier(
+    payload: Any,
+    groups: tuple[RawComponentGroup, ...],
+    hidden_groups: tuple[RawComponentGroup, ...],
+    *,
+    start_slot: int = 0,
+) -> tuple[tuple[RawComponentGroup, ...], list[dict[str, Any]], int]:
+    if not _binary_beautifier_enabled(payload):
+        return groups, [], start_slot
+
+    hidden_ids = {id(group) for group in hidden_groups}
+    translated: list[RawComponentGroup] = []
+    layout_entries: list[dict[str, Any]] = []
+    slot = start_slot
+    for group in groups:
+        if id(group) in hidden_ids:
+            translated.append(group)
+            layout_entries.append(
+                {
+                    "key": group.key,
+                    "family": group.family,
+                    "translated": False,
+                    "reason": "hidden dummy control kept in accepted donor packet position",
+                }
+            )
+            continue
+        if group.family in CONTROL_PREFIX_FAMILIES:
+            translated.append(group)
+            layout_entries.append(
+                {
+                    "key": group.key,
+                    "family": group.family,
+                    "translated": False,
+                    "reason": "fragile control packet skipped by visible grid beautifier",
+                }
+            )
+            continue
+        data, entry = translate_packet_to_slot(group.data, slot=slot, key=group.key, family=group.family)
+        known_refs_unchanged = all(
+            group.data.count(ref.encode("ascii")) == data.count(ref.encode("ascii"))
+            for ref in group.refs
+        )
+        entry["known_refs_unchanged"] = known_refs_unchanged
+        entry["refs_unchanged"] = known_refs_unchanged
+        if not known_refs_unchanged:
+            raise ValueError(f"Beautifier changed references for {group.key}; refusing to emit corrupted packet.")
+        translated.append(_replace_group_data(group, data))
+        layout_entries.append(entry)
+        slot += 1
+    return tuple(translated), layout_entries, slot
+
+
 def _select_raw_groups(
     groups_by_family: dict[str, list[RawComponentGroup]],
     cdb_refs: set[str],
@@ -1492,12 +1566,20 @@ def generate_component_placement_project(
             for family, offset in payload["component_offsets"].items()
         }
     hidden_coordinate_mode = DEFAULT_HIDDEN_COORDINATE_MODE
+    display_bridge_coordinate_mode = "display_small_relative"
     if isinstance(payload, dict):
         raw_layout = payload.get("layout") if isinstance(payload.get("layout"), dict) else {}
         hidden_coordinate_mode = str(
             payload.get("hidden_coordinate_mode")
             or raw_layout.get("hidden_coordinate_mode")
             or DEFAULT_HIDDEN_COORDINATE_MODE
+        ).lower()
+        display_bridge_coordinate_mode = str(
+            payload.get("display_bridge_coordinate_mode")
+            or payload.get("d20_coordinate_mode")
+            or raw_layout.get("display_bridge_coordinate_mode")
+            or raw_layout.get("d20_coordinate_mode")
+            or "display_small_relative"
         ).lower()
         hide_display_bridge = _payload_bool(
             payload.get("hide_display_bridge")
@@ -1541,6 +1623,7 @@ def generate_component_placement_project(
     )
     selected_with_terminals = selected
     prefix = _chunk_prefix_for_request(request, donor_chunk)
+    actual_layout_entries: list[dict[str, Any]] = []
     display_groups: tuple[RawComponentGroup, ...] = ()
     display_notes: tuple[str, ...] = ()
     display_bridge: RawComponentGroup | None = None
@@ -1558,13 +1641,25 @@ def generate_component_placement_project(
         if hide_display_bridge:
             display_bridge = _replace_group_data(
                 display_bridge,
-                hide_packet("DISPLAY_BRIDGE", display_bridge.data, mode=hidden_coordinate_mode),
+                hide_packet("DISPLAY_BRIDGE", display_bridge.data, mode=display_bridge_coordinate_mode),
                 start=HIDDEN_PACKET_START + 1,
             )
             display_notes = (
                 *display_notes,
-                f"D20 display bridge hidden by beautifier mode {hidden_coordinate_mode}",
+                f"D20 display bridge moved by beautifier mode {display_bridge_coordinate_mode}",
             )
+        selected_with_terminals, selected_layout_entries, next_slot = _apply_binary_beautifier(
+            payload,
+            selected_with_terminals,
+            hidden,
+        )
+        display_groups, display_layout_entries, _next_slot = _apply_binary_beautifier(
+            payload,
+            display_groups,
+            (),
+            start_slot=next_slot,
+        )
+        actual_layout_entries = [*selected_layout_entries, *display_layout_entries]
         object_chunk = _object_chunk_from_groups_and_display(
             selected_with_terminals,
             display_bridge=display_bridge,
@@ -1573,6 +1668,11 @@ def generate_component_placement_project(
         )
     else:
         selected_with_terminals = _prefer_safe_non_display_finalizer(selected_with_terminals)
+        selected_with_terminals, actual_layout_entries, _next_slot = _apply_binary_beautifier(
+            payload,
+            selected_with_terminals,
+            hidden,
+        )
         object_chunk = _object_chunk_from_groups(selected_with_terminals, prefix=prefix)
     if full_cdb:
         cdb = donor_cdb
@@ -1589,7 +1689,7 @@ def generate_component_placement_project(
         errors.append(ValidationIssue("E_OUTPUT_CHUNK_MISMATCH", "Final ROOT.DSN object chunk differs from requested chunk."))
     reported_selected = selected_with_terminals
     if display_bridge is not None:
-        reported_selected = (*selected, display_bridge, *display_groups)
+        reported_selected = (*selected_with_terminals, display_bridge, *display_groups)
     pipeline_metadata = build_component_pipeline_metadata(
         payload=payload,
         request=request,
@@ -1599,6 +1699,25 @@ def generate_component_placement_project(
         normalize_family=normalize_component,
         hidden_coordinate_mode=hidden_coordinate_mode,
     )
+    if actual_layout_entries:
+        translated_count = sum(1 for entry in actual_layout_entries if entry.get("translated"))
+        hidden_applied = bool(pipeline_metadata["layout_plan"]["binary_coordinate_mutation"].get("applied"))
+        pipeline_metadata["layout_plan"]["binary_coordinate_mutation"].update(
+            {
+                "applied": hidden_applied or translated_count > 0,
+                "visible_applied": translated_count > 0,
+                "visible_translated_count": translated_count,
+                "visible_entry_count": len(actual_layout_entries),
+            }
+        )
+        pipeline_metadata["layout_plan"]["actual_binary_placements"] = actual_layout_entries
+        pipeline_metadata["layout_plan"]["adjustments"].append(
+            {
+                "type": "packet_grid_translation",
+                "translated_count": translated_count,
+                "skipped_count": len(actual_layout_entries) - translated_count,
+            }
+        )
     for issue in pipeline_errors(pipeline_metadata):
         errors.append(
             ValidationIssue(

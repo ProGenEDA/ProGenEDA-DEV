@@ -8,12 +8,28 @@ inside focused tests until user acceptance.
 
 from __future__ import annotations
 
-HIDDEN_COORD_DX = 1_500_000_000
-HIDDEN_COORD_DY = 1_500_000_000
-HIDDEN_ABSOLUTE_X = 1_500_000_000
-HIDDEN_ABSOLUTE_Y = 1_500_000_000
+from collections import Counter
+import re
+from typing import Any
+
+from .ic_native import bidir_events
+
+HIDDEN_COORD_DX = 350_000
+HIDDEN_COORD_DY = 350_000
+HIDDEN_ABSOLUTE_X = 350_000
+HIDDEN_ABSOLUTE_Y = 350_000
 HIDDEN_PACKET_START = -1_000_000_000
 DEFAULT_HIDDEN_COORDINATE_MODE = "none"
+D20_SMALL_COORD_DX = 350_000
+D20_SMALL_COORD_DY = 350_000
+
+VISIBLE_LAYOUT_ORIGIN_X = -6_350_000
+VISIBLE_LAYOUT_ORIGIN_Y = -5_080_000
+VISIBLE_LAYOUT_SLOT_X = 3_810_000
+VISIBLE_LAYOUT_SLOT_Y = 2_540_000
+VISIBLE_LAYOUT_COLUMNS = 10
+SCAN_COORD_LIMIT = 30_000_000
+MIN_COORD_ABS = 50_000
 
 LINKED_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
     "SWITCH": ((2, 6), (68, 72), (143, 147), (208, 212), (359, 363)),
@@ -23,7 +39,11 @@ LINKED_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
 
 RELATIVE_MODES = {"relative", "linked_relative", "runaway_relative"}
 ABSOLUTE_MODES = {"absolute", "linked_absolute", "runaway_absolute"}
+DISPLAY_SMALL_RELATIVE_MODES = {"display_small_relative", "d20_small_relative"}
 NOOP_MODES = {"", "none", "off", "metadata_only", "disabled"}
+REF_RE = re.compile(
+    rb"(?:U\d+(?::[A-Z])?|R\d+|C\d+|L\d+|Q\d+|D\d+|V\d+|I\d+|BR\d+|FU\d+|RV\d+|TR\d+)"
+)
 
 
 def _s32_at(data: bytes | bytearray, offset: int) -> int:
@@ -73,6 +93,14 @@ def move_packet_coordinates(
     _validate_pair_bounds(data, family, pairs)
     out = bytearray(data)
 
+    if normalized in DISPLAY_SMALL_RELATIVE_MODES:
+        if family != "DISPLAY_BRIDGE":
+            raise ValueError(f"{mode!r} is only proven for DISPLAY_BRIDGE packets.")
+        for x_offset, y_offset in pairs:
+            _put_s32_at(out, x_offset, _s32_at(out, x_offset) + D20_SMALL_COORD_DX)
+            _put_s32_at(out, y_offset, _s32_at(out, y_offset) + D20_SMALL_COORD_DY)
+        return bytes(out)
+
     if normalized in RELATIVE_MODES:
         for x_offset, y_offset in pairs:
             _put_s32_at(out, x_offset, _s32_at(out, x_offset) + dx)
@@ -87,7 +115,7 @@ def move_packet_coordinates(
 
     raise ValueError(
         f"Unsupported hidden coordinate mode {mode!r}; "
-        f"expected one of {sorted(NOOP_MODES | RELATIVE_MODES | ABSOLUTE_MODES)}."
+        f"expected one of {sorted(NOOP_MODES | RELATIVE_MODES | ABSOLUTE_MODES | DISPLAY_SMALL_RELATIVE_MODES)}."
     )
 
 
@@ -98,3 +126,169 @@ def hide_packet(
     mode: str = DEFAULT_HIDDEN_COORDINATE_MODE,
 ) -> bytes:
     return move_packet_coordinates(family, data, mode=mode)
+
+
+def _coord_ok(value: int) -> bool:
+    return -SCAN_COORD_LIMIT <= value <= SCAN_COORD_LIMIT and value % 100 == 0
+
+
+def _bidir_terminal_records(fragment: bytes) -> list[tuple[int, int, dict[str, Any]]]:
+    records: list[tuple[int, int, dict[str, Any]]] = []
+    try:
+        events = bidir_events(b"\x00" + fragment + b"\xff")
+    except ValueError:
+        return records
+    for event in events:
+        start = int(event.start) - 1
+        size = int(event.size)
+        if start >= 0 and start + size <= len(fragment):
+            records.append((start, start + size, event.as_dict()))
+    return records
+
+
+def _terminal_coord_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+    pairs: list[tuple[int, int, str]] = []
+    for start, _end, event in _bidir_terminal_records(fragment):
+        label_len = fragment[start + 30]
+        label_x = start + 31 + label_len
+        label_y = label_x + 4
+        label = str(event.get("label", ""))
+        pairs.append((start + 1, start + 5, f"terminal_symbol:{label}"))
+        if label_y + 4 <= len(fragment):
+            pairs.append((label_x, label_y, f"terminal_label:{label}"))
+    return pairs
+
+
+def _wire_coord_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+    pairs: list[tuple[int, int, str]] = []
+    pos = 0
+    while True:
+        marker = fragment.find(b"WIRE", pos)
+        if marker < 0:
+            return pairs
+        coord = marker + 9
+        if coord + 16 <= len(fragment):
+            pairs.append((coord, coord + 4, "wire_start"))
+            pairs.append((coord + 8, coord + 12, "wire_end"))
+        pos = marker + 1
+
+
+def _masked_ranges(fragment: bytes) -> list[tuple[int, int]]:
+    ranges: list[tuple[int, int]] = []
+    ranges.extend((start, end) for start, end, _event in _bidir_terminal_records(fragment))
+    pos = 0
+    while True:
+        marker = fragment.find(b"WIRE", pos)
+        if marker < 0:
+            break
+        ranges.append((marker + 9, marker + 25))
+        pos = marker + 1
+    return ranges
+
+
+def _is_masked(offset: int, ranges: list[tuple[int, int]]) -> bool:
+    return any(start <= offset < end or start < offset + 8 <= end for start, end in ranges)
+
+
+def _text_and_body_coord_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+    pairs: list[tuple[int, int, str]] = []
+    ranges = _masked_ranges(fragment)
+    offset = 0
+    while offset <= len(fragment) - 8:
+        if _is_masked(offset, ranges):
+            offset += 1
+            continue
+        x_value = _s32_at(fragment, offset)
+        y_value = _s32_at(fragment, offset + 4)
+        if (
+            _coord_ok(x_value)
+            and _coord_ok(y_value)
+            and not (x_value == 0 and y_value == 0)
+            and (abs(x_value) >= MIN_COORD_ABS or abs(y_value) >= MIN_COORD_ABS)
+        ):
+            pairs.append((offset, offset + 4, "component_text_or_body"))
+            offset += 8
+            continue
+        offset += 1
+    return pairs
+
+
+def layout_coordinate_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+    pairs = _terminal_coord_pairs(fragment) + _wire_coord_pairs(fragment) + _text_and_body_coord_pairs(fragment)
+    seen: set[tuple[int, int]] = set()
+    ordered: list[tuple[int, int, str]] = []
+    for x_offset, y_offset, reason in pairs:
+        key = (x_offset, y_offset)
+        if key in seen:
+            continue
+        seen.add(key)
+        ordered.append((x_offset, y_offset, reason))
+    return ordered
+
+
+def coordinate_bbox(fragment: bytes, pairs: list[tuple[int, int, str]]) -> dict[str, int]:
+    xs = [_s32_at(fragment, x_offset) for x_offset, _y_offset, _reason in pairs]
+    ys = [_s32_at(fragment, y_offset) for _x_offset, y_offset, _reason in pairs]
+    return {
+        "min_x": min(xs),
+        "min_y": min(ys),
+        "max_x": max(xs),
+        "max_y": max(ys),
+        "width": max(xs) - min(xs),
+        "height": max(ys) - min(ys),
+    }
+
+
+def refs_in_packet(data: bytes) -> tuple[str, ...]:
+    return tuple(sorted(set(match.group().decode("ascii") for match in REF_RE.finditer(data))))
+
+
+def translate_packet_to_slot(
+    data: bytes,
+    *,
+    slot: int,
+    key: str,
+    family: str,
+    columns: int = VISIBLE_LAYOUT_COLUMNS,
+    origin_x: int = VISIBLE_LAYOUT_ORIGIN_X,
+    origin_y: int = VISIBLE_LAYOUT_ORIGIN_Y,
+    slot_x: int = VISIBLE_LAYOUT_SLOT_X,
+    slot_y: int = VISIBLE_LAYOUT_SLOT_Y,
+) -> tuple[bytes, dict[str, Any]]:
+    pairs = layout_coordinate_pairs(data)
+    if not pairs:
+        return data, {
+            "key": key,
+            "family": family,
+            "slot": slot,
+            "translated": False,
+            "reason": "no layout coordinate pairs found",
+        }
+
+    before = coordinate_bbox(data, pairs)
+    col = slot % columns
+    row = slot // columns
+    dx = origin_x + col * slot_x - before["min_x"]
+    dy = origin_y + row * slot_y - before["min_y"]
+    out = bytearray(data)
+    for x_offset, y_offset, _reason in pairs:
+        _put_s32_at(out, x_offset, _s32_at(out, x_offset) + dx)
+        _put_s32_at(out, y_offset, _s32_at(out, y_offset) + dy)
+    translated = bytes(out)
+    reason_counts = Counter(reason for _x_offset, _y_offset, reason in pairs)
+    marker = family.encode("ascii", errors="ignore")
+    return translated, {
+        "key": key,
+        "family": family,
+        "slot": slot,
+        "translated": translated != data,
+        "dx": dx,
+        "dy": dy,
+        "coordinate_pair_count": len(pairs),
+        "coordinate_reason_counts": dict(sorted(reason_counts.items())),
+        "before_bbox": before,
+        "after_bbox": coordinate_bbox(translated, pairs),
+        "refs_unchanged": refs_in_packet(data) == refs_in_packet(translated),
+        "marker_count_before": data.count(marker) if marker else 0,
+        "marker_count_after": translated.count(marker) if marker else 0,
+    }
