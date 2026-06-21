@@ -25,6 +25,8 @@ The post-placement stages are recorded in the sidecar manifest at
 - Beautifier coordinate mutation defaults to `hidden_coordinate_mode: none`.
 - Focused coordinate tests may explicitly set `hidden_coordinate_mode` to
   `linked_relative` or `linked_absolute`.
+- The current V3 hidden-coordinate experiment uses a `1,500,000,000`
+  coordinate-unit displacement for linked hidden dummy and D20 movement.
 
 ## Hidden Controls
 

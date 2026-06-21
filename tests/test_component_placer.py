@@ -185,6 +185,22 @@ def test_component_placement_generator_can_hide_dummy_controls(tmp_path: Path) -
     assert all(group.start == -1_000_000_000 for group in result.hidden_groups)
 
 
+def test_component_placement_hidden_mode_reports_far_zone(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"SWITCH": 1, "POT-HG": 1},
+            "control_strategy": "hidden_dummy_control",
+            "hidden_coordinate_mode": "linked_relative",
+        },
+        tmp_path / "hidden_dummy_far_zone.pdsprj",
+    )
+
+    assert result.valid
+    zone = result.layout_plan["hidden_dummy_zone"]["origin"]
+    assert zone == {"x": 1_500_000_000, "y": 1_500_000_000}
+    assert result.hidden_dummy_controls["binary_coordinate_mutation"]["applied"] is True
+
+
 def test_component_placement_generator_uses_clean_switch_packets(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {

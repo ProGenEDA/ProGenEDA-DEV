@@ -3381,6 +3381,18 @@
         "docs/component_placer_pipeline.md Iteration Rule"
       ],
       "date": "2026-06-22"
+    },
+    {
+      "id": "R_COMPONENT_PLACER_HIDDEN_DISTANCE_V3_UNDER_TEST_20260622",
+      "status": "static_verified_pending_user_proteus",
+      "scope": "component_placer_beautifier",
+      "rule": "V2 hidden coordinate movement opened/simulated but was visually not far enough away. V3 explicit hidden movement should use a 1,500,000,000 coordinate-unit linked_relative displacement for SWITCH, POT-HG, and optional D20 hiding while default placement remains `hidden_coordinate_mode: none`.",
+      "evidence": [
+        "User report 2026-06-22: all V2 cases worked, but hidden controls/D20 were not far enough away.",
+        "src/proteusgen/component_beautifier.py HIDDEN_COORD_DX/HIDDEN_COORD_DY",
+        "experiments/BEAUTIFIER_COORDINATE_STAGE_V3_LARGE_RULES_TEMP_2026_06_22.zip"
+      ],
+      "date": "2026-06-22"
     }
   ]
 }
