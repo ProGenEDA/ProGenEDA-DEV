@@ -281,3 +281,723 @@ python -m proteusgen generate-ic-combinational circuit.json --outdir out --layou
 - User DIP14 input normalization is documented in
   `docs/74hc08_user_input_rules.md` and machine-readable examples live in
   `docs/74hc08_user_input_examples.json`.
+
+## Native IC/display route implementation (2026-06-11)
+
+The first conservative production entry point for sequential/native ICs,
+analog ICs, transistors, electrolytic capacitors, and 7-segment displays now
+exists:
+
+```text
+python -m proteusgen generate-ic-native circuit.json --outdir out
+```
+
+Schema:
+
+```text
+schemas/ic_native_circuit_ir_v0_1.schema.json
+```
+
+Registry:
+
+```text
+proteus_ic/registry/native_components.json
+```
+
+Implemented behavior:
+
+- exact donor rezip controls;
+- complete single/two/four same-family donor insertion into E001;
+- known manual pair donor insertion into E001;
+- donor-native `$TERBIDIR` label mutation when a donor has terminal anchors;
+- explicit connection requests are blocked when the selected donor has no
+  terminal anchors;
+- complete donor `ROOT.CDB` and device sections are preserved.
+
+Current native registry coverage includes:
+
+```text
+7490/74HC90, 74HC160, 74HC161, 74HC163, 74HC192, 74HC193,
+4017, 4020, 74HC4024, 74HC4040, refreshed 74HC4060,
+4518, refreshed 74HC4520,
+74HC74, 74HC76, 74HC174, 74HC273, 4027,
+74HC85, 74HC283, 74HC157, 74HC47/7447, 74HC165, 74HC595,
+NE555, LM741, NPN, PNP, CAP-ELEC,
+7SEG_COM_ANODE / 7SEG-COM-AN-BLUE
+```
+
+Deferred/limited families remain listed in the registry: `74HC151`, `74HC153`,
+`4051`, `74HC48`, `4008`, `4013`, `74HC175`, `4063`, and `4511`. These need
+clean solo or pair donors before exact support is enabled.
+
+Static tests:
+
+```text
+python -m pytest tests/test_ic_native.py -q
+```
+
+This passed locally on 2026-06-11. The route is still pending Proteus
+open/simulation testing before promotion to main user-facing support.
+
+First generated pack:
+
+```text
+experiments/IC_NATIVE_V1_TEMP_2026_06_11.zip
+```
+
+It contains 11 static-clean cases:
+
+```text
+T00 7447 + 7SEG exact control
+T01 74HC160 single bider-label generation
+T02 4017 single bider-label generation
+T03 refreshed 74HC4060 single render control
+T04 refreshed 74HC4520 single render control
+T05 7SEG common-anode single bider generation
+T06 NE555 single bider generation
+T07 LM741 single bider generation
+T08 manual 7490 + 4017 pair control
+T09 analog misc mixed exact donor control
+T10 CAP-ELEC single bider generation
+```
+
+Second generated validation pack:
+
+```text
+experiments/IC_NATIVE_VALIDATION_V2_TEMP_2026_06_12.zip
+```
+
+It is registry-driven and static-clean:
+
+```text
+119 exact donor controls
+39 exact manual pair donor controls
+30 generated single-native E001 transplants
+39 generated manual pair E001 transplants
+3 negative controls blocked as expected
+```
+
+One donor-evidence warning is preserved in the summary:
+
+```text
+P010_7490_74HC160_PAIR_NATIVE:
+  Registry marker 74HC160 is absent from the selected pair donor object/CDB records.
+```
+
+That warning does not mean the project file is structurally dirty; it means the
+manual pair donor should be visually checked before relying on that exact pair
+as proof of 74HC160 coexistence.
+
+User partial testing on 2026-06-12 reported that `P010` works. The same report
+flagged 74HC4060/74HC4520-like pairs as possible `U2 model not specified`
+failures, so those remain model-metadata follow-up items until the full per-case
+Proteus pass is available.
+
+Four-plus component probe:
+
+```text
+experiments/IC_NATIVE_QUAD_MIX_V1_TEMP_2026_06_12.zip
+```
+
+This pack has 18 static-clean cases:
+
+```text
+6 timing/counter/sync/flip-flop complete donor-native mix cases
+2 analog/RLC/native mix cases
+2 display-driver 7447 + 7SEG common-anode cases
+8 4060/4520-adjacent pair-isolation cases
+```
+
+Each donor is emitted twice: exact rezip and complete donor packet inserted into
+E001. The pack preserves donor labels and does not mutate terminals because the
+large mixed donors mostly have no `$TERBIDIR` terminal anchors.
+
+User testing on 2026-06-12 reported:
+
+```text
+Q000-Q009 worked and simulated.
+Q010 onward did not work and is left aside for now.
+```
+
+Because the first accepted mixed cases still lacked bider terminals in several
+large donors, the next temporary pack is terminal-bearing and connection-aware:
+
+```text
+experiments/IC_NATIVE_BIDER_PAIRS_V1_TEMP_2026_06_12.zip
+```
+
+It is static-clean and contains:
+
+```text
+241 generated missing native IC pairs
+35 manual pair combinations rebuilt from single bider donors
+4 four-component bider mix cases
+```
+
+This pack excludes `74HC4060` and `74HC4520` after the Q010-onward rejection.
+Every generated pair uses complete single-donor packets with `$TERBIDIR` pin
+anchors and at least one shared same-name bider net between the two components.
+Generated terminal labels avoid `U` followed by digits so byte-level package-ref
+checks do not misread terminal labels as component references.
+
+User simulation testing then exposed a V1 CDB identity issue in:
+
+```text
+M000_TIMING_CHAIN_NE555_7490_4017_4020
+```
+
+Proteus reported duplicate part references such as `U2 [U1]`,
+`U3 [U1]`, and duplicate `X000000...` rows. Byte inspection showed the visible
+refs were already unique, but the hidden `ROOT.CDB` row IDs were not:
+
+```text
+pin primary IDs:   [1, 1, 1, 13]
+pin secondary IDs: [1, 1, 1, 13]
+property IDs:      [1, 1, 1, 13]
+```
+
+The replacement temporary pack is:
+
+```text
+experiments/IC_NATIVE_BIDER_PAIRS_V2_CDB_IDFIX_TEMP_2026_06_12.zip
+```
+
+It keeps the same 280-case scope as V1 but adds a strict binary CDB identity
+repair pass. It only patches known little-endian row ID fields when duplicates
+are detected. For the failing `M000` case, IDs now become:
+
+```text
+pin primary IDs:   [1, 2, 3, 4]
+pin secondary IDs: [1, 2, 3, 4]
+property IDs:      [1, 2, 3, 4]
+```
+
+Static generation result:
+
+```text
+280 generated cases
+0 blocked cases
+0 static validation issue cases
+archive sha256 bddaf74e92747eccbc83d0f0974b9d16867d99ac44ae89191a1bc04c5bd73447
+```
+
+Focused local regression:
+
+```text
+python -m pytest tests/test_ic_native.py tests/test_ic_pairwise_error_focused.py tests/test_mixed_ic_analog_donors.py -q
+34 passed
+```
+
+This pack is still pending user Proteus open/simulation testing. If Proteus
+still reports `No power supply specified for net Q...`, that is a separate
+digital power-rail policy issue, not the duplicate CDB ID bug.
+
+User testing then reported that the entire V2 CDB-ID-fix pack crashed before
+opening. That rejects the broad native bider-pair/mix route for now, even though
+the files were static-clean. The active method is back to one IC at a time,
+matching the earlier successful passive/component workflow.
+
+First focused IC pack:
+
+```text
+experiments/IC_7490_FOCUSED_V1_TEMP_2026_06_12.zip
+```
+
+Scope:
+
+```text
+7490 / 74HC90 only
+14 cases
+0 blocked cases
+0 static validation issue cases
+archive sha256 8859be6776fe4be83d38f750b5c3321e42e1937f71ba4be2b72a5e6a846cadc2
+```
+
+This pack deliberately avoids all cross-donor synthesis. Test order:
+
+```text
+T00 exact single donor rezip
+T01 single donor inserted into E001 with no label mutation
+T02 single generated bider labels
+T03 single explicit pin labels
+T04 exact 2x donor rezip
+T05 2x donor inserted into E001 with no label mutation
+T06 2x generated bider labels
+T07 2x Q0-to-CKA same-name bider chain
+T08 exact 4x donor rezip
+T09 4x donor inserted into E001 with no label mutation
+T10 4x generated bider labels
+T11 4x Q0-to-CKA same-name bider chain
+T12 exact 4x + RLC donor rezip
+T13 4x + RLC donor inserted into E001 with no label mutation
+```
+
+The result should tell us exactly which operation is safe before moving to the
+next IC family.
+
+User testing on 2026-06-12 reported all 14 focused 7490 cases worked. This
+accepts the focused same-family path for `7490` / `74HC90`:
+
+```text
+exact same-family donors
+E001 whole-donor transplant
+$TERBIDIR label mutation
+2x and 4x same-family donor chains
+4x 7490 + RLC donor controls
+```
+
+The next pack uses that acceptance to test real counter circuits without broad
+cross-donor synthesis:
+
+```text
+experiments/IC_7490_REAL_CIRCUITS_V1_TEMP_2026_06_12.zip
+```
+
+Scope:
+
+```text
+8 realistic 7490 circuits
+base donor: SQU/4_7490withRLC.pdsprj
+0 blocked cases
+0 static validation issue cases
+archive sha256 aab54c74e425da9450385f0ecdf7fd9a8eed74f501c36bd6e8579f4840626249
+```
+
+Cases:
+
+```text
+T01_MOD10_OUTPUT_RLC_FILTER
+T02_DIVIDE_BY_100_CASCADE_WITH_RLC_LOAD
+T03_FOUR_DECADE_RIPPLE_CHAIN
+T04_RC_POWER_ON_RESET_BUS
+T05_CLOCK_INPUT_CONDITIONER
+T06_MOD6_COUNTER_WITH_FILTERED_RESET
+T07_BCD_TAPS_WITH_SHARED_RESET_AND_LOAD
+T08_DUAL_RATE_OUTPUT_MONITOR
+```
+
+IC beautifier policy in this pack:
+
+```text
+preserve complete Proteus donor coordinates
+use compact ASCII net labels
+prefer same-name labels for readable electrical connectivity
+emit ic_layout_plan.json with bounds, max label length, and same-name net counts
+avoid arbitrary standalone wires and cross-donor component placement
+```
+
+For example, the four-decade ripple chain has `max_label_length=4` and repeated
+same-name nets such as `C1D`, `C2D`, `C3D`, `AOUT`, and `G0`, keeping the IC
+view substantially cleaner than long generated pin names.
+
+User testing on 2026-06-12 reported the 8-case pack worked, but the user
+rejected it as an inadequate final acceptance test because it did not exercise
+the 7490 with the full already-locked component set. Do not treat a one
+resistor / one capacitor / one inductor adjacent load as sufficient new-IC
+coverage.
+
+The corrected stronger integration pack is:
+
+```text
+experiments/IC_7490_FULL_INTEGRATION_V1_TEMP_2026_06_12.zip
+```
+
+Scope:
+
+```text
+5 stronger 7490 integration circuits
+four native 7490 counters per case
+five accepted combinational gate slices per case
+8 to 11 R/C/L passive components per case
+all accepted combinational families covered across the pack:
+74HC00, 74HC02, 74HC04, 74HC08, 74HC32, 74HC86, 74HC266
+0 static validation issue cases
+archive sha256 fd48eef80df1171c8fa836884043154f52d7799df23ac6d9bdceb39f764052ae
+```
+
+Cases:
+
+```text
+T01_7490_BCD_DECODE_RESET_FILTER_BANK
+T02_7490_DIGITAL_WINDOW_WITH_XNOR_NOR_LOADS
+T03_7490_MOD60_PULSE_STRETCHER
+T04_7490_DEBOUNCED_CLOCK_AND_ALARM_DECODE
+T05_7490_CASCADE_WITH_MULTI_FAMILY_STATUS_BUS
+```
+
+This pack uses native 4x7490 donor records plus fresh accepted combinational
+gate slices and generated R/C/L records. It is a temporary experiment until the
+user confirms Proteus open/render/simulation results.
+
+User testing on 2026-06-12 rejected this stronger integration pack: all cases
+crashed before opening. The failure is attributed to synthetic cross-donor
+composition, not to the concept of testing 7490 with gates and passives. Do not
+use `generate_ic_7490_full_integration_v1_temp.py` as the next base.
+
+The replacement candidate uses the new user-created all-in-one donor corpus:
+
+```text
+proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal
+```
+
+Inventory:
+
+```text
+143 .pdsprj donors
+proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal_inventory.json
+```
+
+Current 7490 golden-donor pack:
+
+```text
+experiments/IC_7490_GOLDEN_DONOR_V1_TEMP_2026_06_12.zip
+```
+
+Scope:
+
+```text
+5 mixed 7490 circuits
+base donor: 7490/2_7490_withallcombunationaland21RLC.pdsprj
+two native 7490 ICs
+all six binary combinational families already present in the donor
+donor 21RLC network already present in the donor
+0 blocked cases
+0 static validation issue cases
+archive sha256 34f531a5e80af16b28520891590396f9c43525fced9252f22068382fcf76df0f
+```
+
+Cases:
+
+```text
+T01_7490_MOD6_DECODE_FULL_GATE_RLC
+T02_DUAL_7490_BCD_COMPARE_RLC_LOADS
+T03_RLC_CONDITIONED_CLOCK_AND_GATED_COUNTER
+T04_WINDOWED_RESET_AND_PARALLEL_RLC_TAPS
+T05_CASCADED_7490_LOGIC_STATE_DECODER
+```
+
+Generation rule:
+
+```text
+single Proteus-created all-in-one donor only
+no IC/passive/CDB/device-section synthesis
+no component deletion
+mutate 7490 $TERBIDIR labels through the accepted native helper
+mutate existing $TERINPUT/$TEROUTPUT labels in place, keeping two-character labels
+preserve donor ROOT.CDB and device metadata
+```
+
+This is now the active 7490 integration candidate pending user Proteus testing.
+
+User testing on 2026-06-12 reported the V1 golden-donor pack works, but the
+user rejected it as too close to the donor because it only changed bider and
+terminal labels.
+
+The next structural candidate is:
+
+```text
+experiments/IC_7490_STRUCTURAL_V2_TEMP_2026_06_12.zip
+```
+
+Scope:
+
+```text
+10 structural 7490 mixed circuits
+base donors:
+  7490/2_7490_withallcombunationaland21RLC.pdsprj
+  7490/6_7490_withallcombunationaland21RLC.pdsprj
+0 blocked cases
+0 static validation issue cases
+archive sha256 2826512a04c43ab2e13393cd225044329b022345b702d6a09fa736b3f9386bb7
+```
+
+Cases:
+
+```text
+T01_SINGLE_7490_MOD6_AND_RLC_RESET
+T02_SINGLE_7490_THREE_FAMILY_CLOCK_FILTER
+T03_DUAL_7490_COMPARE_NO_NAND_NOR
+T04_DUAL_7490_WINDOW_RESET_NO_XOR_XNOR
+T05_DUAL_7490_AND_NAND_ONLY_RLC
+T06_SIX_7490_LONG_RIPPLE_FULL_GATES
+T07_SIX_7490_TRIMMED_LOGIC_BANK
+T08_SIX_7490_TWO_BANK_DECODER
+T09_TWO_7490_STATE_MACHINE_REDUCED_GATES
+T10_SIX_7490_SPARSE_COUNTER_MIX
+```
+
+Generation rule:
+
+```text
+single Proteus-created all-in-one donor family only
+no cross-donor CDB/device/object synthesis
+remove only complete counter packages or complete four-gate family banks
+compute removal spans before length-changing bider label rebuilds
+patch remaining bider labels by post-removal order
+preserve donor ROOT.CDB, device metadata, project members, and object terminator
+```
+
+This is pending user Proteus open/render/simulation testing. If it fails, debug
+the first failing case before applying complete-packet removal to another IC.
+
+## Component placer gate (2026-06-15)
+
+The body-only component placer experiment from the 16x sequential/native mega
+donor is rejected. User testing reported that all 140 generated projects failed,
+so the next native IC phase must not generate more files from that method.
+
+Use the planner/validator first:
+
+```text
+python -m proteusgen plan-component-placement request.json
+```
+
+The trusted donor manifest is:
+
+```text
+proteus_ic/registry/trusted_donor_manifest.json
+```
+
+Current policy:
+
+```text
+no cloning
+no synthetic IC records
+no synthetic terminal/wire generation
+no body-only packet extraction
+no copying full donor ROOT.CDB after deletion
+```
+
+The planner selects the closest removal-only donor using exact package counts.
+Small requests should prefer IC-wise donors from `native_components.json`; large
+requests may use the 2026-06-15 mega donor only when its verified true package
+counts satisfy the request. The mega donor has 64 packages per listed target
+family, not 16.
+
+Before any future `.pdsprj` emission, the deletion plan must specify:
+
+```text
+kept package refs
+deleted package refs
+ROOT.CDB pin/property rows to keep/delete
+device metadata pruning policy
+duplicate-ref/model/orphan validators
+beautifier move-linkage validation
+```
+
+Regression coverage:
+
+```text
+python -m pytest tests/test_component_placer.py -q
+```
+
+V2 generated pack:
+
+```text
+experiments/COMPONENT_PLACER_SEQ_16X_V2_PRUNED_CDB_TEMP_2026_06_15.zip
+```
+
+This pack contains the requested 140 no-terminal component-placer projects:
+1/3/5/15/23 same-family packages for each target family, plus every unordered
+three-package pair in both 2+1 directions. It keeps V1's body-only output
+surface but fixes the rejected metadata rule by rebuilding `ROOT.CDB` from only
+kept package pin/property rows. The 16x mega donor CDB property table is not
+ordered by pin-table package order; parse it directly. Non-final property rows
+overlap the next row by four bytes, so a pruned final row needs a four-byte zero
+terminator.
+
+User Proteus testing rejected V2: none of the cases worked. The follow-up V3
+pack is:
+
+```text
+experiments/COMPONENT_PLACER_SEQ_16X_V3_FULL_PACKETS_TEMP_2026_06_15.zip
+```
+
+V3 preserves complete donor-native packet boundaries instead of stripping
+terminal/wire records. For a native IC, the linked bider terminal block and wire
+records are part of the valid component packet. The observed stream shape is
+`00 + complete packet records + FF`; V2's body-only `00 00 FF...` shape is
+rejected.
+
+User Proteus testing also rejected V3. Complete packet boundaries are necessary
+but are not enough when taken from the broad repeated mega donor. The current
+7490-specific recovery pack is:
+
+```text
+experiments/IC_7490_REMOVAL_LADDER_V1_TEMP_2026_06_16.zip
+```
+
+Generator script:
+
+```text
+tools/proteus_generation/2026-06-16/generate_7490_removal_ladder_v1_temp.py
+```
+
+This pack uses only the 7490-specific mixed host donor:
+
+```text
+proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/6_7490_withallcombunationaland21RLC.pdsprj
+```
+
+It includes exact donor controls and a deletion ladder:
+
+```text
+T00_7490_ONLY_6X
+T01_7490_ONLY_5X
+T02_7490_ONLY_4X
+T03_7490_ONLY_3X
+T04_7490_ONLY_2X
+T05_7490_ONLY_1X
+T06_7490_ONLY_0X
+```
+
+The method keeps the host donor DSN/device-section model, removes only complete
+7490 packet spans, and rebuilds `ROOT.CDB` to the kept package refs. It does
+not rename, move, clone, or synthesize IC bytes. Treat this as pending until
+the ladder opens in Proteus.
+
+User testing rejected the ladder: all exact `C` controls opened, while every
+`T` deletion case crashed. The follow-up diagnostic pack is:
+
+```text
+experiments/IC_7490_DELETION_DIAGNOSTICS_V1_TEMP_2026_06_16.zip
+```
+
+It must be used before more 7490 deletion attempts. Test `D00-D02` first to
+separate exact copy/repack/unchanged `build_dsn`, then continue through
+`D03-D19` to isolate CDB pruning, object deletion, host-device mismatch, and
+same-family tail deletion.
+
+Diagnostic result: user reported `D03`, `D05`, `D08`, `D14`, `D16`, and `D18`
+failed. These are the CDB-pruned/zero-CDB cases. The full-CDB variants were not
+reported failed, so 7490 deletion must preserve the full donor `ROOT.CDB` for
+now.
+
+Current full-CDB follow-up pack:
+
+```text
+experiments/IC_7490_REMOVAL_LADDER_V2_FULL_CDB_TEMP_2026_06_16.zip
+```
+
+User testing confirmed that all V2 full-CDB 7490 ladder cases worked. For the
+current native deletion/component-placer route, preserve full donor `ROOT.CDB`
+and remove only complete `ROOT.DSN` packet spans.
+
+The master-sheet follow-up pack is:
+
+```text
+experiments/COMPONENT_PLACER_SEQ_16X_V4_FULL_MASTER_CDB_TEMP_2026_06_16.zip
+```
+
+Generator:
+
+```text
+tools/proteus_generation/2026-06-16/generate_component_placer_seq_16x_v4_full_master_cdb_temp.py
+```
+
+This pack uses the 16x sequential IC master donor, keeps selected complete IC
+packets in original byte order, and preserves full master `ROOT.CDB`. It contains
+140 generated cases: 50 same-family count cases and 90 three-package pair cases.
+
+User testing confirmed the V4 master pack opened, simulated, and worked, with
+one exception: `74HC160` cases accidentally included intervening combinational
+and RLC records. The cause was packet-end detection using the next sequential
+package instead of the next object boundary.
+
+Focused bare-placement follow-up:
+
+```text
+experiments/74HC160_BARE_MIXED_V1_TEMP_2026_06_16.zip
+```
+
+Generator:
+
+```text
+tools/proteus_generation/2026-06-16/generate_74hc160_bare_mixed_v1_temp.py
+```
+
+This pack emits generated cases with no terminal records and no wire records.
+It keeps only component body records for `74HC160`, selected combinational IC
+packages, and R/C/L passives while preserving full master `ROOT.CDB`.
+
+User testing rejected that first bare pack because every generated sheet opened
+empty. Do not use terminalized-master body records as no-terminal placement
+records. Proteus-created no-terminal donors have a distinct object stream:
+
+```text
+00 00 + body records + FF
+```
+
+The current diagnostic pack is:
+
+```text
+experiments/BARE_VISIBILITY_DIAGNOSTIC_V1_TEMP_2026_06_16.zip
+```
+
+Generator:
+
+```text
+tools/proteus_generation/2026-06-16/generate_bare_visibility_diagnostic_v1_temp.py
+```
+
+Controls `D00-D08` compare exact no-terminal donors, rebuilt no-terminal donor
+chunks, the rejected B00 output with one added prefix byte, and no-terminal
+records inside the terminalized master container. Candidate cases `D09-D15` use
+only Proteus-created no-terminal donor records and preserve full donor
+`ROOT.CDB`. Test those before promoting any bare component-placer method.
+
+Follow-up user feedback and V5 testing corrected the next rule: resistor records
+are not required as an anchor. The failed no-resistor outputs were caused by
+using a raw middle record as the last record in the object stream.
+
+Accepted final-record diagnostic:
+
+```text
+experiments/BARE_VISIBILITY_FINAL_RECORD_V5_TEMP_2026_06_16.zip
+```
+
+Current mega-donor separation pack:
+
+```text
+experiments/MEGA_BARE_SEPARATION_V1_TEMP_2026_06_16.zip
+```
+
+Generator:
+
+```text
+tools/proteus_generation/2026-06-16/generate_mega_bare_separation_v1_temp.py
+```
+
+This pack uses the 20260616 all-supported-component semimega donors. It selects
+complete no-terminal groups, preserves full donor `ROOT.CDB`, and if a selected
+middle group becomes the final object, trims one trailing `00` before appending
+the final `FF`. It includes no-resistor cases so that resistor removal is tested
+directly instead of being treated as forbidden.
+
+## Promoted Mega Donors
+
+The current main mega donor copies are:
+
+```text
+proteus_ic/donors/main_mega_20260618
+```
+
+They are copied from the 20260616 manual corpus, not moved, so the raw evidence
+folder remains intact. The removal-only component placer reads trusted counts
+from:
+
+```text
+proteus_ic/registry/trusted_donor_manifest.json
+```
+
+Display-specific support notes are tracked separately because display rows are
+not normal package records:
+
+```text
+proteus_ic/registry/mega_component_support_20260618.json
+```
+
+Confirmed current display/4027 rule: the V11 D20-bridged pack worked for all
+tested cases. Keep the original 375-byte `D20` diode packet immediately before
+mega display rows when generating accepted display or 4027+display output. Do
+not remove D20 until the explicit D20-removal diagnostic passes.

@@ -1384,6 +1384,349 @@
         "proteus_ic/docs/ic_pairwise_noncomb_master_metadata_v1_2026_06_11.md"
       ],
       "notes": "This pack intentionally uses bare master-native component records with no bider terminals. If it opens, the next experiment should add bider terminal regions while preserving the complete master ROOT.CDB/device-section rule. If it fails, use DONOR_REQUESTS_IF_V1_FAILS.txt for missing pair donors and reassess the master metadata assumption."
+    },
+    {
+      "id": "Q112",
+      "priority": "high",
+      "question": "Do the new generate-ic-native outputs open and simulate in Proteus for single native parts, 7SEG common-anode, refreshed 4060/4520 donors, and known manual pair controls?",
+      "status": "partially_answered_user_reports_p010_worked_4060_4520_like_pairs_need_model_followup",
+      "needed_for": [
+        "native_ic_route_promotion",
+        "7seg_display_support",
+        "sequential_ic_support",
+        "analog_misc_support"
+      ],
+      "evidence": [
+        "src/proteusgen/ic_native.py",
+        "proteus_ic/registry/native_components.json",
+        "tests/test_ic_native.py",
+        "python -m pytest tests/test_ic_native.py -q passed on 2026-06-11",
+        "experiments/native_donor_probe_20260611.json",
+        "experiments/IC_NATIVE_V1_TEMP_2026_06_11.zip",
+        "experiments/ic_native_v1_temp_2026_06_11/summary.json case_count=11 static_issue_cases={}",
+        "experiments/IC_NATIVE_VALIDATION_V2_TEMP_2026_06_12.zip",
+        "experiments/ic_native_validation_v2_temp_2026_06_12/summary.json case_count=230 static_issue_cases={} unexpected_blocks=[] unexpected_successes=[]",
+        "tools/proteus_generation/2026-06-12/generate_ic_native_validation_v2_temp.py",
+        "User partial Proteus report on 2026-06-12: P010 works; pairs like 74HC4060/74HC4520 can give U2 model not specified and need individual checking"
+      ],
+      "notes": "Initial production code is intentionally conservative. It supports exact donor rezips, same-family single/two/four/eight donor insertions, explicit label mutation only when a donor has $TERBIDIR anchors, known manual pair donor controls, and blocked negative controls. It does not synthesize arbitrary cross-donor native pair CDB rows. V2 generated 230 static-clean cases. P010_7490_74HC160_PAIR_NATIVE has now been user-reported working despite the donor-evidence marker warning. 74HC4060/74HC4520-like no-model reports remain model-metadata follow-up items, not a reason to stop broader static mix exploration."
+    },
+    {
+      "id": "Q113",
+      "priority": "high",
+      "question": "Do IC_NATIVE_QUAD_MIX_V1 four-plus component donor-native mixes open and simulate in Proteus when treated as the next step after pair testing?",
+      "status": "partially_answered_q000_to_q009_worked_q010_onward_rejected",
+      "needed_for": [
+        "native_ic_route_promotion",
+        "four_plus_native_mix_support",
+        "large_mixed_native_component_support",
+        "model_metadata_followup"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-12/generate_ic_native_quad_mix_v1_temp.py",
+        "experiments/IC_NATIVE_QUAD_MIX_V1_TEMP_2026_06_12.zip",
+        "experiments/ic_native_quad_mix_v1_temp_2026_06_12/summary.json case_count=18 static_issue_cases={} blocked_cases=[]",
+        "archive_sha256=186437c26ebfd5176b25915bc2587dcd52a05f0c317c2783fb5c560702689ed4",
+        "User Proteus report on 2026-06-12: none after Q010 worked; Q000-Q009 worked and simulated; leave rejected 4060/4520-adjacent cases."
+      ],
+      "notes": "Pack uses exact donor rezip plus complete donor-packet E001 insertion for timing/counter/divider, sync counter, flip-flop/register, analog/RLC, display-driver, and 4060/4520-adjacent pair-isolation donors. Q000-Q009 are accepted as open/simulate evidence, but the bare/no-bider style is not user-facing enough. Q010 onward 4060/4520-adjacent cases are rejected for now and should not be expanded."
+    },
+    {
+      "id": "Q114",
+      "priority": "high",
+      "question": "Do IC_NATIVE_BIDER_PAIRS_V2_CDB_IDFIX generated missing native IC pairs and four-component bider mixes open and simulate in Proteus after binary CDB duplicate-ID repair?",
+      "status": "answered_no_v2_crashed_before_open_rejected_for_now",
+      "needed_for": [
+        "native_ic_pair_generation",
+        "sequential_ic_route_promotion",
+        "four_component_native_mix_support",
+        "same_name_bider_connection_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-12/generate_ic_native_bider_pairs_v1_temp.py",
+        "experiments/IC_NATIVE_BIDER_PAIRS_V1_TEMP_2026_06_12.zip",
+        "experiments/ic_native_bider_pairs_v1_temp_2026_06_12/summary.json case_count=280 static_issue_cases={} blocked_cases=[]",
+        "archive_sha256=aa1916b89a66a7ec84e539ac771372c56e72bcce2fa74ada8e3159cccae8d87b",
+        "User screenshot for M000 in V1 showed duplicate part references U2 [U1], U3 [U1], duplicate X000000 rows, and missing power-rail messages.",
+        "V1 M000 ROOT.CDB pin/property IDs were duplicated: pin primary [1,1,1,13], pin secondary [1,1,1,13], property [1,1,1,13].",
+        "tools/proteus_generation/2026-06-12/generate_ic_native_bider_pairs_v2_cdb_idfix_temp.py",
+        "experiments/IC_NATIVE_BIDER_PAIRS_V2_CDB_IDFIX_TEMP_2026_06_12.zip",
+        "experiments/ic_native_bider_pairs_v2_cdb_idfix_temp_2026_06_12/summary.json case_count=280 static_issue_cases={} blocked_cases=[]",
+        "archive_sha256=bddaf74e92747eccbc83d0f0974b9d16867d99ac44ae89191a1bc04c5bd73447",
+        "python -m pytest tests/test_ic_native.py tests/test_ic_pairwise_error_focused.py tests/test_mixed_ic_analog_donors.py -q => 34 passed"
+      ],
+      "notes": "V1 is superseded because repeated single-donor CDB object IDs caused Proteus duplicate-reference simulation errors in at least M000. V2 repaired duplicate CDB IDs statically, but the user reported the whole V2 pack crashed before opening. This means hidden metadata coupling was disturbed or the broad cross-donor approach remains unsafe. Do not continue broad pair/mix generation from this route. Return to one-IC-at-a-time focused packs using only one Proteus-made same-family donor per experiment."
+    },
+    {
+      "id": "Q115",
+      "priority": "high",
+      "question": "Which exact operation is safe for the first one-IC focused native route using 7490/74HC90 donors: exact rezip, E001 transplant, terminal label mutation, 2x/4x same-family donors, and simple same-name bider chains?",
+      "status": "answered_yes_all_7490_focused_v1_cases_worked",
+      "needed_for": [
+        "7490_native_support",
+        "one_ic_at_a_time_native_method",
+        "sequential_ic_route_promotion"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-12/generate_ic_7490_focused_v1_temp.py",
+        "experiments/IC_7490_FOCUSED_V1_TEMP_2026_06_12.zip",
+        "experiments/ic_7490_focused_v1_temp_2026_06_12/summary.json case_count=14 static_issue_cases={} blocked_cases=[]",
+        "archive_sha256=8859be6776fe4be83d38f750b5c3321e42e1937f71ba4be2b72a5e6a846cadc2",
+        "python -m pytest tests/test_ic_native.py -q => 7 passed",
+        "User Proteus report on 2026-06-12: they all work."
+      ],
+      "notes": "This focused pack avoids all cross-donor synthesis. It uses only Proteus-created 7490 donors: exact single/2x/4x/4x-RLC controls, whole-donor E001 transplants with no label mutation, generated bider-label mutation, explicit pin-label mutation, and same-family Q0-to-CKA chain labels. User acceptance establishes this same-family 7490 donor-native path as the base for the next 7490+locked-component tests."
+    },
+    {
+      "id": "Q116",
+      "priority": "high",
+      "question": "Do realistic 7490 circuits using the same-family 4x7490+RLC donor, compact same-name bider labels, and passive reset/filter/load networks open and simulate in Proteus?",
+      "status": "answered_yes_but_rejected_as_insufficient_mixed_component_coverage",
+      "needed_for": [
+        "7490_native_support",
+        "native_ic_beautifier_policy",
+        "sequential_ic_route_promotion",
+        "locked_passive_combination_support"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-12/generate_ic_7490_real_circuits_v1_temp.py",
+        "experiments/IC_7490_REAL_CIRCUITS_V1_TEMP_2026_06_12.zip",
+        "experiments/ic_7490_real_circuits_v1_temp_2026_06_12/summary.json case_count=8 static_issue_cases={} blocked_cases=[]",
+        "archive_sha256=aab54c74e425da9450385f0ecdf7fd9a8eed74f501c36bd6e8579f4840626249",
+        "python -m pytest tests/test_ic_native.py -q => 8 passed"
+      ],
+      "notes": "This pack contains counter-style cases and the user reported all cases work. However, the user rejected the pack as an inadequate final acceptance test because it still only used the minimal same-family RLC donor load and did not test the new 7490 IC against already locked combinational ICs and richer passive networks. Use Q117 as the real acceptance test."
+    },
+    {
+      "id": "Q117",
+      "priority": "high",
+      "question": "Do stronger 7490 integration circuits combining four native 7490 counters, accepted combinational IC families, and 8-11 R/C/L passives per case open and simulate in Proteus?",
+      "status": "answered_no_user_report_all_crashed_before_open",
+      "needed_for": [
+        "7490_native_support",
+        "sequential_ic_route_promotion",
+        "new_ic_acceptance_standard",
+        "native_plus_combinational_integration",
+        "ic_beautifier_policy"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-12/generate_ic_7490_full_integration_v1_temp.py",
+        "experiments/IC_7490_FULL_INTEGRATION_V1_TEMP_2026_06_12.zip",
+        "experiments/ic_7490_full_integration_v1_temp_2026_06_12/summary.json case_count=5 static_issue_cases={}",
+        "archive_sha256=fd48eef80df1171c8fa836884043154f52d7799df23ac6d9bdceb39f764052ae",
+        "coverage: 74hc00, 74hc02, 74hc04, 74hc08, 74hc32, 74hc86, 74hc266 across pack",
+        "passive count range: 8 to 11 R/C/L parts per case",
+        "python -m pytest tests/test_ic_native.py tests/test_ic_pairwise_error_focused.py tests/test_mixed_ic_analog_donors.py -q => 36 passed",
+        "User Proteus report on 2026-06-12: none of IC_7490_FULL_INTEGRATION_V1 worked; all crashed."
+      ],
+      "notes": "This pack deliberately tests 7490 against already locked components: accepted directional combinational gate slices and generated multi-component R/C/L networks. It uses native 4x7490 donor bytes plus fresh accepted combinational/passive records and therefore must pass Proteus open/render/simulation before locking this integration route. Rejected: this cross-donor generated pack crashed before opening and must not be used for final 7490 integration."
+    },
+    {
+      "id": "Q118",
+      "priority": "high",
+      "question": "Do 7490 mixed circuits generated from the Proteus-created all-in-one golden donor open and simulate in Proteus?",
+      "status": "answered_yes_but_rejected_as_label_only_mutation",
+      "needed_for": [
+        "7490_native_support",
+        "native_plus_combinational_integration",
+        "new_ic_acceptance_standard",
+        "golden_donor_method"
+      ],
+      "evidence": [
+        "User supplied C:/Users/tahab/Downloads/ICcombinationfinal golden donor corpus on 2026-06-12.",
+        "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/2_7490_withallcombunationaland21RLC.pdsprj",
+        "tools/proteus_generation/2026-06-12/generate_ic_7490_golden_donor_v1_temp.py",
+        "experiments/IC_7490_GOLDEN_DONOR_V1_TEMP_2026_06_12.zip",
+        "archive_sha256=34f531a5e80af16b28520891590396f9c43525fced9252f22068382fcf76df0f",
+        "static generation: 5 cases, blocked=[], static_issue_cases={}",
+        "User Proteus report on 2026-06-12: they all work.",
+        "User rejected V1 scope because it only changed bider/terminal names and did not structurally change the donor."
+      ],
+      "notes": "The single all-in-one donor path is proven safer than cross-donor synthesis. However, V1 only mutated labels, so it is not enough for final 7490 support. Use Q119 and IC_7490_STRUCTURAL_V2 as the next test."
+    },
+    {
+      "id": "Q119",
+      "priority": "high",
+      "question": "Do 7490 structural variants generated from one Proteus-created all-in-one donor, using complete packet removal and 6x donor extension, open and simulate in Proteus?",
+      "status": "awaiting_user_proteus_test_ic_7490_structural_v2",
+      "needed_for": [
+        "7490_native_support",
+        "native_plus_combinational_integration",
+        "complete_packet_removal_method",
+        "sequential_ic_route_promotion"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-12/generate_ic_7490_structural_v2_temp.py",
+        "experiments/IC_7490_STRUCTURAL_V2_TEMP_2026_06_12.zip",
+        "experiments/ic_7490_structural_v2_temp_2026_06_12/summary.json generated_case_count=10 blocked=[] static_issue_cases={}",
+        "archive_sha256=2826512a04c43ab2e13393cd225044329b022345b702d6a09fa736b3f9386bb7",
+        "cases include removed counter packages, removed gate-family packets, six-counter extension, and trimmed four-counter variants"
+      ],
+      "notes": "This is the active 7490 structural candidate. It avoids cross-donor synthesis and goes beyond label mutation by deleting only complete packets from the same donor family. If it fails, inspect the first failing case before applying the method to another IC."
+    },
+    {
+      "id": "Q120",
+      "priority": "high",
+      "question": "Does the standard generate-ic-native composed clone route open and simulate for the 18x 7490 AND-cascade stress circuit with R0 resistor feeds and R9 capacitor/inductor returns?",
+      "status": "awaiting_user_proteus_test_ic_native_composed_7490_18_chain_v1",
+      "needed_for": [
+        "7490_native_support",
+        "native_clone_composition",
+        "native_plus_combinational_integration",
+        "large_counter_chain_generation"
+      ],
+      "evidence": [
+        "src/proteusgen/ic_native.py now contains composed native clone generation, CDB ID renumbering, global bider suffix renumbering, optional locked combinational gates, and optional locked R/C/L passives.",
+        "experiments/IC_NATIVE_COMPOSED_7490_18_CHAIN_V1_TEMP_2026_06_13.zip",
+        "experiments/ic_native_composed_7490_18_chain_v1_temp_2026_06_13/T01_18X_7490_AND_CASCADE_R0_R9_RCL/manifest.json static_validation_issues=[]",
+        "counts: 18 native 7490 components, 34 74HC08 AND gates, 36 passives, 88 CDB rows",
+        "CDB duplicate IDs after renumbering: none",
+        "Global bidirectional terminal suffix duplicates after renumbering: none"
+      ],
+      "notes": "This replaces the rejected one-off script approach. The circuit is emitted through the normal generate-ic-native command path using cloned native donor packets plus locked generated combinational/RCL records. Promote only after Proteus open/render/simulation succeeds."
+    },
+    {
+      "id": "Q121",
+      "priority": "medium",
+      "question": "Can high-count red common-cathode 7-segment displays be accepted from repeated 4x red donor records, or is a high-count red mega donor required?",
+      "status": "answered_no_donor_repeat_rejected",
+      "needed_for": [
+        "bare_component_placer",
+        "7seg_common_cathode_red_support",
+        "display_packet_rules"
+      ],
+      "evidence": [
+        "User reported on 2026-06-18 that V6 CCH cases had only one red common-cathode display because the rest came from blue mega cathode records.",
+        "Static inspection confirms the 20260616 mega donor cathode records use 7SEG-COM-CAT-BLUE markers.",
+        "tools/proteus_generation/2026-06-16/generate_bare_display_4027_focus_v7_temp.py emits CCR_01/03/05/15/23 as red-only diagnostics from the standalone 4x red donor repeat path.",
+        "V7 also emits CCB_01/03/05/15/23 as blue-only mega cathode final-row diagnostics to isolate bad-object-record behavior from display color.",
+        "User reported on 2026-06-18 that CCR 5/15/23 visibly had only four displays and instructed to stop manipulating standalone donors."
+      ],
+      "notes": "Standalone donor repetition is rejected. Work only from mega display records unless the user supplies a high-count red common-cathode mega-style donor."
+    },
+    {
+      "id": "Q122",
+      "priority": "high",
+      "question": "Which mega-only display finalization rule works for high-count anode and cathode no-terminal placement?",
+      "status": "partially_answered_v8_rejected_final_byte_replacement_v9_pending",
+      "needed_for": [
+        "bare_component_placer",
+        "7seg_common_anode_support",
+        "7seg_common_cathode_blue_support",
+        "display_packet_rules"
+      ],
+      "evidence": [
+        "User reported on 2026-06-18 that V7 ANF_21/22/23 and ANP_23 failed with DLL errors.",
+        "User reported on 2026-06-18 that V7 ANP_15 and all CCB cases gave bad-object-record warnings.",
+        "Byte inventory found mega anode rows in 20-row blocks: 397-byte normal rows and 399-byte block-final rows at indexes 19, 39, 59...; the true donor-final row is index 599 and ends in FF.",
+        "tools/proteus_generation/2026-06-18/generate_bare_display_mega_focus_v8_temp.py",
+        "experiments/BARE_DISPLAY_MEGA_FOCUS_V8_TEMP_2026_06_18.zip",
+        "User reported on 2026-06-18 that all V8 replace-final-byte cases failed and all remaining V8 cases worked."
+      ],
+      "notes": "Answered for anode trim/skip and rejected for cathode final-byte replacement. V9 removes final-byte replacement and tests cathode plus true-anode-final sentinel for 1/3/5/15/23 plus display/4027 pair cases."
+    },
+    {
+      "id": "Q123",
+      "priority": "high",
+      "question": "Do the V9 mega-only display sentinel and display/4027 pair cases open and simulate without bad-object-record or DLL errors?",
+      "status": "partially_answered_k_pairs_rejected_display_only_pending",
+      "needed_for": [
+        "bare_component_placer",
+        "7seg_common_anode_support",
+        "7seg_common_cathode_blue_support",
+        "4027_pair_support",
+        "display_packet_rules"
+      ],
+      "evidence": [
+        "tools/proteus_generation/2026-06-18/generate_bare_display_mega_acceptance_v9_temp.py",
+        "experiments/BARE_DISPLAY_MEGA_ACCEPTANCE_V9_TEMP_2026_06_18.zip",
+        "V9 generated 31 static-clean cases: AN9 singles, CC9 cathode+anode-sentinel singles, cathode+anode display pairs, direct 4027 controls, 4027+anode pairs, 4027+cathode pairs, and one K23+CC23+AN23 stress case.",
+        "Static marker validation confirmed no terminal/wire markers and requested display/4027 marker counts.",
+        "User reported on 2026-06-18 that all K pair cases failed."
+      ],
+      "notes": "The V9 raw generic-4027-plus-display concatenation path is rejected. The user did not reject the display-only cases in this report, so keep display-only validation separate. Follow-up is Q124 with focused 4027/display boundary diagnostics."
+    },
+    {
+      "id": "Q124",
+      "priority": "high",
+      "question": "Which ROOT.DSN object-stream boundary allows a no-terminal 4027 packet and mega display rows to coexist without crash, DLL errors, or bad-object-record warnings?",
+      "status": "partially_answered_d20_bridge_candidate",
+      "needed_for": [
+        "bare_component_placer",
+        "4027_display_pair_support",
+        "7seg_common_anode_support",
+        "7seg_common_cathode_blue_support",
+        "display_packet_rules"
+      ],
+      "evidence": [
+        "R151 accepts direct 4027 placement with original refs and full mega ROOT.CDB.",
+        "R153 accepts current mega anode trim-rule display placement.",
+        "R154 rejects cathode final-byte replacement and keeps cathode rows as middle rows with a true final anode sentinel candidate.",
+        "R155 rejects direct concatenation of complete 4027 group data followed immediately by display rows.",
+        "Byte inspection of the V9 first failing style showed 16 zero bytes before the display row start, while the original donor boundary after the first 4027 group goes to another generic component marker.",
+        "tools/proteus_generation/2026-06-18/generate_bare_display_4027_boundary_v10_temp.py",
+        "User reported on 2026-06-18 that only T08 and T09 worked. Both preserve the original D20 diode packet immediately before a common-anode display row."
+      ],
+      "notes": "D20 is a visible bridge candidate, not yet a pure display composition rule. V11 scales D20+display and 4027+D20+display for anode, cathode sentinel, and display-pair cases."
+    },
+    {
+      "id": "Q125",
+      "priority": "high",
+      "question": "Does the V10-confirmed D20 pre-display bridge scale to 1/3/5/15/23 display counts, cathode sentinel cases, and 4027/display pairs?",
+      "status": "answered_user_confirmed_all_v11_cases_worked",
+      "needed_for": [
+        "bare_component_placer",
+        "4027_display_pair_support",
+        "7seg_common_anode_support",
+        "7seg_common_cathode_blue_support",
+        "display_packet_rules"
+      ],
+      "evidence": [
+        "R156 records T08/T09 as the only V10 working cases.",
+        "tools/proteus_generation/2026-06-18/generate_bare_display_4027_bridge_v11_temp.py",
+        "experiments/BARE_DISPLAY_4027_BRIDGE_V11_TEMP_2026_06_18.zip",
+        "V11 generated 26 static-clean cases with a visible D20 bridge before display rows.",
+        "User reported on 2026-06-18 that all V11 cases worked."
+      ],
+      "notes": "Answered for the visible D20 bridge. The practical short-term route is D20-bridged display composition. Follow-up Q126 tests whether D20 can be removed, minimized, or only kept/hidden."
+    },
+    {
+      "id": "Q126",
+      "priority": "high",
+      "question": "Can the visible D20 bridge packet be removed or minimized after generating an accepted display/4027 circuit?",
+      "status": "awaiting_user_proteus_test_bare_display_d20_removal_v12",
+      "needed_for": [
+        "bare_component_placer",
+        "clean_display_output",
+        "4027_display_pair_support",
+        "display_packet_rules"
+      ],
+      "evidence": [
+        "R157 accepts the visible D20 bridge across the V11 scaling pack.",
+        "The V9 direct 4027/display boundary failed without D20.",
+        "User requested an explicit attempt at removing D20 after circuit generation.",
+        "tools/proteus_generation/2026-06-18/generate_bare_display_d20_removal_v12_temp.py",
+        "experiments/BARE_DISPLAY_D20_REMOVAL_V12_TEMP_2026_06_18.zip"
+      ],
+      "notes": "V12 should compare adjusted D20 deletion, stale-pointer postbuild deletion, and minimal subrecord variants against D20-preserved controls."
+    },
+    {
+      "id": "Q127",
+      "priority": "high",
+      "question": "Can the raw mega component placement stress packs safely include bidirectional power and ground terminals?",
+      "status": "planned_waiting_for_large_user_stress_circuits",
+      "needed_for": [
+        "bare_component_placer",
+        "component_placement_stress_tests",
+        "power_ground_terminals",
+        "future_routing_layer"
+      ],
+      "evidence": [
+        "User asked on 2026-06-18 to include power and ground terminals in upcoming large stress tests.",
+        "Previous locked passive/source routes proved bidirectional terminal packets can connect by matching labels.",
+        "The raw mega placement route currently focuses on no-terminal component bodies."
+      ],
+      "notes": "Implementation plan: keep donor-native raw component placement unchanged, then append donor-proven $TERBIDIR terminal packets for power/ground as a separate terminal layer. Use fixed labels such as V0 and G0 unless the input specifies other names. Place terminal packets near the first component/source/rail they serve, using same-label connectivity rather than freehand wire synthesis. Do not add arbitrary standalone wires in this stress-test phase."
     }
   ]
 }

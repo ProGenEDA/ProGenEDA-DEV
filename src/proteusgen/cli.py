@@ -10,11 +10,13 @@ from typing import Any
 
 from .circuit_ir import load_json, parse_circuit_ir
 from .comparison import compare_projects
+from .component_placer import ComponentPlacerBlocked, generate_component_placement_project, plan_component_placement
 from .generator import GenerationBlocked, generate_project
 from .ic_combinational import (
     IcCombinationalGenerationBlocked,
     generate_ic_combinational_project_from_payload,
 )
+from .ic_native import IcNativeGenerationBlocked, generate_ic_native_project_from_payload
 from .inspectors import find_all
 from .layout import LayoutError, plan_payload
 from .mixed_passive import MixedPassiveGenerationBlocked, generate_mixed_passive_project_from_payload
@@ -157,6 +159,57 @@ def generate_ic_combinational_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def generate_ic_native_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_ic_native_project_from_payload(
+            payload,
+            args.outdir,
+            layout_strategy=args.layout_strategy,
+        )
+    except IcNativeGenerationBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    _print(result.as_dict())
+    return 0
+
+
+def plan_component_placement_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        plan = plan_component_placement(payload, verify_file_counts=args.verify_file_counts)
+    except ComponentPlacerBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    rendered = json.dumps(plan, indent=2, sort_keys=True) + "\n"
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+    print(rendered, end="")
+    return 0
+
+
+def generate_component_placement_command(args: argparse.Namespace) -> int:
+    payload = load_json(args.circuit)
+    try:
+        result = generate_component_placement_project(
+            payload,
+            args.output,
+            control_strategy=args.control_strategy,
+            donor_path=args.donor,
+            full_cdb=not args.prune_cdb,
+        )
+    except ComponentPlacerBlocked as exc:
+        _print(exc.report.as_dict())
+        return 2
+    except ValueError as exc:
+        _print({"valid": False, "errors": [{"code": "E_COMPONENT_PLACEMENT_GENERATION", "message": str(exc), "severity": "error"}], "warnings": []})
+        return 2
+    _print(result.as_dict())
+    return 0 if result.valid else 2
+
+
 def plan_layout_command(args: argparse.Namespace) -> int:
     payload = load_json(args.circuit)
     try:
@@ -171,6 +224,57 @@ def plan_layout_command(args: argparse.Namespace) -> int:
         output.write_text(rendered, encoding="utf-8")
     print(rendered, end="")
     return 0
+
+
+def generate_kicad_command(args: argparse.Namespace) -> int:
+    from kicad.generator.kicad_json_to_project import write_project_from_json
+
+    payload = load_json(args.circuit)
+    result = write_project_from_json(payload, Path(args.outdir), clean=not args.no_clean)
+    _print(result)
+    return 0 if result.get("static_checks", {}).get("ok") else 2
+
+
+def plan_kicad_layout_command(args: argparse.Namespace) -> int:
+    from kicad.generator.kicad_json_to_project import plan_layout
+
+    payload = load_json(args.circuit)
+    plan = plan_layout(payload).as_dict()
+    rendered = json.dumps(plan, indent=2, sort_keys=True) + "\n"
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+    print(rendered, end="")
+    return 0
+
+
+def kicad_source_reference_command(_: argparse.Namespace) -> int:
+    from kicad.source_pack.source_reference import load_reference
+
+    _print(load_reference().as_dict())
+    return 0
+
+
+def generate_kicad_target_pack_command(args: argparse.Namespace) -> int:
+    from kicad.automation.generate_target_pack import generate
+
+    result = generate(Path(args.outdir), clean=not args.no_clean)
+    _print(result)
+    return 0 if result.get("failure_count") == 0 else 2
+
+
+def quality_kicad_command(args: argparse.Namespace) -> int:
+    from kicad.automation.quality_check import run_quality_check
+
+    result = run_quality_check(
+        Path(args.target),
+        output=Path(args.output) if args.output else None,
+        kicad_cli=args.kicad_cli,
+        run_erc_check=not args.skip_erc,
+    )
+    _print(result)
+    return 0 if result.get("failure_count") == 0 else 2
 
 
 def compare_command(args: argparse.Namespace) -> int:
@@ -252,6 +356,43 @@ def build_parser() -> argparse.ArgumentParser:
     ic_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
     ic_parser.set_defaults(function=generate_ic_combinational_command)
 
+    native_ic_parser = subparsers.add_parser(
+        "generate-ic-native",
+        help="Generate donor-native sequential/analog/display IC projects from complete manual packets",
+    )
+    native_ic_parser.add_argument("circuit")
+    native_ic_parser.add_argument("--outdir", required=True)
+    native_ic_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
+    native_ic_parser.set_defaults(function=generate_ic_native_command)
+
+    component_placement_parser = subparsers.add_parser(
+        "plan-component-placement",
+        help="Select a trusted removal-only donor and emit deletion/CDB cleanup plan without generating a project",
+    )
+    component_placement_parser.add_argument("circuit")
+    component_placement_parser.add_argument("--output", help="Optional JSON output path")
+    component_placement_parser.add_argument(
+        "--verify-file-counts",
+        action="store_true",
+        help="Inspect selected donor files and compare true packet counts against the trusted manifest.",
+    )
+    component_placement_parser.set_defaults(function=plan_component_placement_command)
+
+    generate_component_placement_parser = subparsers.add_parser(
+        "generate-component-placement",
+        help="Generate a removal-only raw component placement project from trusted donor packets",
+    )
+    generate_component_placement_parser.add_argument("circuit")
+    generate_component_placement_parser.add_argument("--output", required=True)
+    generate_component_placement_parser.add_argument(
+        "--control-strategy",
+        choices=("accepted", "hidden_dummy_control", "hidden_dummy_switch", "switch_precedence"),
+        help="Control-family policy for SWITCH/POT-HG experiments; legacy switch_precedence/hidden_dummy_switch alias to hidden_dummy_control",
+    )
+    generate_component_placement_parser.add_argument("--donor", help="Optional explicit donor .pdsprj path")
+    generate_component_placement_parser.add_argument("--prune-cdb", action="store_true", help="Rebuild ROOT.CDB to selected package refs instead of using full donor CDB")
+    generate_component_placement_parser.set_defaults(function=generate_component_placement_command)
+
     layout_parser = subparsers.add_parser(
         "plan-layout",
         help="Preview deterministic component/source coordinates without generating a Proteus project",
@@ -260,6 +401,47 @@ def build_parser() -> argparse.ArgumentParser:
     layout_parser.add_argument("--layout-strategy", choices=("beautify", "manual", "legacy"))
     layout_parser.add_argument("--output", help="Optional JSON output path")
     layout_parser.set_defaults(function=plan_layout_command)
+
+    kicad_parser = subparsers.add_parser(
+        "generate-kicad",
+        help="Generate a self-contained KiCad project from Progen KiCad CircuitIR JSON",
+    )
+    kicad_parser.add_argument("circuit")
+    kicad_parser.add_argument("--outdir", required=True)
+    kicad_parser.add_argument("--no-clean", action="store_true", help="Do not clear the output directory before writing")
+    kicad_parser.set_defaults(function=generate_kicad_command)
+
+    kicad_layout_parser = subparsers.add_parser(
+        "plan-kicad-layout",
+        help="Preview KiCad component placement and orthogonal wire plan without writing project files",
+    )
+    kicad_layout_parser.add_argument("circuit")
+    kicad_layout_parser.add_argument("--output", help="Optional JSON output path")
+    kicad_layout_parser.set_defaults(function=plan_kicad_layout_command)
+
+    source_ref_parser = subparsers.add_parser(
+        "kicad-source-reference",
+        help="Inspect the bundled KiCad source files used by KiCad generation",
+    )
+    source_ref_parser.set_defaults(function=kicad_source_reference_command)
+
+    kicad_target_pack_parser = subparsers.add_parser(
+        "generate-kicad-target-pack",
+        help="Generate the offline C01-C55 KiCad target-pack projects",
+    )
+    kicad_target_pack_parser.add_argument("--outdir", required=True)
+    kicad_target_pack_parser.add_argument("--no-clean", action="store_true", help="Do not clear the output directory before writing")
+    kicad_target_pack_parser.set_defaults(function=generate_kicad_target_pack_command)
+
+    kicad_quality_parser = subparsers.add_parser(
+        "quality-kicad",
+        help="Run static and optional kicad-cli ERC checks on generated KiCad projects",
+    )
+    kicad_quality_parser.add_argument("target", help="Project folder, run folder, or .kicad_sch file")
+    kicad_quality_parser.add_argument("--output", help="Optional JSON report path")
+    kicad_quality_parser.add_argument("--kicad-cli", help="Explicit kicad-cli executable path")
+    kicad_quality_parser.add_argument("--skip-erc", action="store_true", help="Only run static Progen checks")
+    kicad_quality_parser.set_defaults(function=quality_kicad_command)
 
     compare_parser = subparsers.add_parser("compare", help="Compare generated and resaved/oracle projects")
     compare_parser.add_argument("generated")
@@ -284,3 +466,7 @@ def main(argv: list[str] | None = None) -> int:
     except (FileNotFoundError, KeyError, ValueError) as exc:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)
         return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -46,6 +46,45 @@ Early strategy:
 
 Initial emitted output domain: exact clean single-sheet template recipes. The first composition milestone is the structured AND reference circuit after D05-based validation.
 
+### Component placer pipeline
+
+The removal-only component placer now runs through the deterministic pipeline
+used by the next native component route:
+
+1. User input/CircuitIR validation.
+2. Component placer.
+3. Component packet validator.
+4. Value changer.
+5. Wiring planner.
+6. Beautifier.
+7. Final binary emission.
+
+The current component placer keeps the accepted donor-packet emission path. It
+does not synthesize terminals, wires, or cloned components. `SWITCH` and
+`POT-HG` still request one extra donor packet, hide that dummy packet using the
+accepted large relative offset, and record it in the manifest as
+`hidden_dummy_controls`.
+
+Each generated component-placement project writes a sidecar manifest:
+
+```text
+<output>.pdsprj.manifest.json
+```
+
+The manifest includes:
+
+- `validation_reports`
+- `value_plan`
+- `wiring_plan`
+- `layout_plan`
+- `hidden_dummy_controls`
+
+The value changer currently parses and validates supported value requests for
+`RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`, `VSOURCE`, `CSOURCE`,
+`VSINE`, and `VPULSE`. Binary DSN/CDB mutation is intentionally guarded until
+family-specific patch rules are proven. The wiring planner emits net intent only
+and never emits Proteus wire records.
+
 ## 4. Feedback / knowledge layer
 
 Human/Proteus test results are recorded using `schemas/test_result.schema.json` and appended to `knowledge/test_results.jsonl`.

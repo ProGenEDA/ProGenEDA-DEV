@@ -3608,3 +3608,456 @@ fixtures/pdsprj/bidirectional_dcv_source_donor.pdsprj
 The accepted topology-aware beautifier remains in the emission path. Its
 production component grid uses 3,175,000 horizontal units and 2,032,000
 vertical units, while source stacks retain 5,080,000 vertical separation.
+
+## Native IC/display packet route (2026-06-11)
+
+Native/sequential ICs and non-passive miscellaneous parts are now handled by a
+separate experimental route:
+
+```text
+python -m proteusgen generate-ic-native circuit.json --outdir out
+```
+
+This route is not the locked combinational generator. It is restricted to
+complete donor-native packets from
+`proteus_ic/donors/manual_downloads_20260611` and the registry in
+`proteus_ic/registry/native_components.json`.
+
+Current native packet rules:
+
+- keep the complete donor `ROOT.DSN` object packet;
+- keep the complete donor `ROOT.CDB`;
+- keep the complete donor device section and patch only section pointers when
+  inserting into E001;
+- visible native IC pins use donor-native `$TERBIDIR` records when those anchors
+  exist;
+- explicit pin/net label mutation is blocked if the selected donor has no
+  `$TERBIDIR` anchors;
+- do not slice IC bodies, remove half components, or synthesize reduced CDB
+  skeletons for native pairs.
+
+Diagnostic string search in `D:\arch\outtt\BIN` confirms that the common
+Proteus errors seen during native IC experiments map to CDB/model/pin metadata:
+duplicate part references and missing CDB/model/parameter rows are emitted from
+`NETLIST.dll.cpp`, unnamed pins from `ISIS.DLL.cpp`, and netlist/partition
+simulation failure headings from `VSMDEBUG.dll.cpp`. These files are read-only
+diagnostic evidence and must not be modified.
+
+## Component placer reset after Camber analysis (2026-06-15)
+
+The 140-case `COMPONENT_PLACER_SEQ_16X_V1_TEMP_2026_06_15` pack is rejected.
+User testing reported that all cases failed. The failure mode matches the
+Camber analysis: body-only component extraction stripped or separated required
+metadata while the project still carried full donor `ROOT.CDB` and device
+metadata. Do not use that generator as a base for further `.pdsprj` output.
+
+The replacement route is a planner/validator gate, not a generator:
+
+```text
+python -m proteusgen plan-component-placement request.json
+```
+
+Implemented files:
+
+```text
+src/proteusgen/component_placer.py
+proteus_ic/registry/trusted_donor_manifest.json
+knowledge/validator_history_rules.json
+tests/test_component_placer.py
+```
+
+Rules:
+
+- component placement is removal-only until proven otherwise;
+- no cloning, no synthetic IC records, and no full render from E001;
+- select only a trusted donor with enough true package counts;
+- prefer IC-wise donors for small requests and the mega donor only when smaller
+  donors cannot satisfy the count;
+- if no trusted donor has enough real packages, fail
+  `E_DONOR_MISSING_REMOVAL_ONLY`;
+- deletion plans must explicitly keep/delete package refs and rebuild
+  `ROOT.CDB` from kept pin/property rows only;
+- validators must catch missing model evidence, duplicate refs/IDs, orphan CDB
+  rows, stale moved text, and reserved-name misuse before any Proteus output.
+
+The 2026-06-15 mega donor name contains `16x`, but its verified package count is
+64 for each listed target family because it repeats a 4-each donor 16 times.
+Counts must come from the trusted manifest plus packet inspection, never from
+filename assumptions or raw string-occurrence counts.
+
+The V2 component-placer experiment writes actual `.pdsprj` outputs again, but
+only after pruning `ROOT.CDB` to the kept packages. The 2026-06-15 mega donor
+has 1552 CDB pin rows, 1072 CDB property rows, an 18-byte bridge between the
+sections, and 20-byte property-row headers. The property table order is
+independent from the pin-table package order, so parsers must follow property
+rows directly rather than forcing pin-row order. Property rows also overlap by
+four bytes: a non-final row length includes the first dword of the next row.
+When pruning makes a formerly middle row final, append a four-byte zero
+terminator so the row's stored length is complete.
+
+User Proteus testing rejected V2 despite clean CDB pruning. The byte-level
+reason is that native IC component packets are not only the component body
+record. A working 7490 donor has the shape:
+
+```text
+00 + bider terminal block + component body + linked wires + FF
+```
+
+and multi-subpart packages repeat terminal/body/wire blocks inside the package.
+The V2 body-only one-7490 case emitted only a 475-byte object chunk with no
+terminal/wire records, while a Proteus-created one-7490 donor has about 2057
+bytes with 10 bider terminals and 10 wire records. The V3 component-placer
+experiment therefore preserves complete donor-native packet boundaries and uses
+the object stream wrapper `00 + records + FF`.
+
+User Proteus testing later rejected the V3 broad-mega pack as well. The current
+7490 recovery experiment therefore narrows the scope further:
+
+```text
+host donor: proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/6_7490_withallcombunationaland21RLC.pdsprj
+script: tools/proteus_generation/2026-06-16/generate_7490_removal_ladder_v1_temp.py
+archive: experiments/IC_7490_REMOVAL_LADDER_V1_TEMP_2026_06_16.zip
+```
+
+Observed 7490-specific facts:
+
+- the host donor is byte-stable under `build_dsn(donor, donor, original_chunk)`;
+- each valid 7490 package has 10 `$TERBIDIR` records, one component body, and
+  10 `WIRE` records;
+- early host packages use 2055-byte packet spans; late packages can be 2056
+  bytes because package labels such as `U10`/`U11`/`U12` change record length;
+- the late 7490 packages can appear in DSN with encoded hints such as `U90` or
+  `U100`, while the matching CDB package refs are `U9` and `U10`;
+- do not normalize or rewrite those hints during deletion-only experiments.
+
+The 7490 deletion ladder now creates 6x, 5x, 4x, 3x, 2x, 1x, and 0x cases by
+concatenating only complete 7490 packet spans from the 7490-specific host donor
+and pruning `ROOT.CDB` to the exact kept package refs. It does not rename,
+translate, clone, or synthesize any IC bytes.
+
+User Proteus testing rejected that ladder: all exact controls opened, but every
+deletion case crashed before opening. This means native IC object deletion is
+still not proven, even for a same-family host donor. The next diagnostic pack is:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_7490_deletion_diagnostics_v1_temp.py
+archive: experiments/IC_7490_DELETION_DIAGNOSTICS_V1_TEMP_2026_06_16.zip
+```
+
+It separates unchanged repack, unchanged `build_dsn`, CDB-only pruning,
+DSN-only object deletion, exact-2x metadata reuse, and same-family tail deletion
+from 4x/2x/1x donors.
+
+User diagnostic results identified the failing operation: `D03`, `D05`, `D08`,
+`D14`, `D16`, and `D18` failed. Those are all `ROOT.CDB`-pruned or zero-CDB
+variants. The full-CDB counterparts were not reported failed. For 7490/native
+deletion experiments, preserve full donor `ROOT.CDB` even when `ROOT.DSN`
+contains fewer visible components.
+
+Current follow-up pack:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_7490_removal_ladder_v2_full_cdb_temp.py
+archive: experiments/IC_7490_REMOVAL_LADDER_V2_FULL_CDB_TEMP_2026_06_16.zip
+```
+
+User testing confirmed all V2 full-CDB 7490 ladder cases worked. The active
+rule for this native deletion path is therefore:
+
+```text
+delete complete ROOT.DSN native packets only
+preserve the full donor ROOT.CDB byte-for-byte
+do not treat orphan CDB rows as static errors
+```
+
+The 16x sequential IC master-sheet follow-up applies the same full-CDB rule:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_component_placer_seq_16x_v4_full_master_cdb_temp.py
+archive: experiments/COMPONENT_PLACER_SEQ_16X_V4_FULL_MASTER_CDB_TEMP_2026_06_16.zip
+```
+
+It generated 140 static-clean cases: 1/3/5/15/23 same-family package selections
+for ten sequential IC families, plus every three-package two-family pair in both
+2+1 directions. All selected packets are kept in original master-sheet byte
+order and `ROOT.CDB` is preserved whole.
+
+User testing confirmed the V4 master-sheet pack opened, simulated, and worked,
+except for `74HC160`: those cases contained intervening combinational/RLC
+objects. The bug was not the full-CDB rule; it was the packet-end detector. It
+ended a `74HC160` packet at the next sequential-family packet rather than at the
+next object boundary.
+
+Focused follow-up:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_74hc160_bare_mixed_v1_temp.py
+archive: experiments/74HC160_BARE_MIXED_V1_TEMP_2026_06_16.zip
+```
+
+This pack tests the new bare-placement plan directly: generated object chunks
+contain component body records only, no `$TER*` records, and no `WIRE` records.
+Full master `ROOT.CDB` is preserved byte-for-byte.
+
+User testing rejected that pack: all bare generated sheets opened empty, with no
+visible components. The rejected pack copied body records from a terminalized
+master donor and wrapped them as:
+
+```text
+00 + selected_records + FF
+```
+
+Manual Proteus-created no-terminal donors use a different envelope:
+
+```text
+00 00 + selected_records + FF
+```
+
+and their body records come from projects created without external terminals or
+wire records. Treat these as a separate byte family from terminalized donor
+packets. The follow-up diagnostic pack is:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_bare_visibility_diagnostic_v1_temp.py
+archive: experiments/BARE_VISIBILITY_DIAGNOSTIC_V1_TEMP_2026_06_16.zip
+```
+
+It includes exact/rebuilt no-terminal donor controls and subset candidates from
+`PAIR_74HC160_74HC161.pdsprj`, `alot_of_ics.pdsprj`, and
+`4_alot_of_ics.pdsprj`. Candidate cases `D09-D15` use the observed no-terminal
+envelope and preserve full donor `ROOT.CDB`.
+
+User testing later showed that the apparent no-resistor failure pattern was not
+a resistor requirement. The failure was caused by making a middle-of-donor
+component record final by simply appending `FF`.
+
+The accepted V5 diagnostic pack proved that final-form component records work:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_bare_visibility_final_record_v5_temp.py
+archive: experiments/BARE_VISIBILITY_FINAL_RECORD_V5_TEMP_2026_06_16.zip
+```
+
+The active no-terminal separation hypothesis is:
+
+```text
+00 00 + selected complete no-terminal component groups + finalized last group + FF
+```
+
+For the 20260616 mega donors, non-final groups have one trailing `00` byte that
+is not present when that group becomes the last object before `FF`. The current
+test generator therefore trims one trailing `00` from a selected middle group
+when it becomes final, while preserving full donor `ROOT.CDB`.
+
+Current mega-donor separation pack:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_mega_bare_separation_v1_temp.py
+archive: experiments/MEGA_BARE_SEPARATION_V1_TEMP_2026_06_16.zip
+```
+
+It uses the user-provided all-supported-component semimega donors, includes
+source and no-source cases, and explicitly includes no-resistor selections to
+verify that resistor removal is possible with correct final-record handling.
+
+### Display and 4027 no-terminal exceptions
+
+Focused display/4027 diagnostics show these are component-specific exceptions
+to the otherwise working no-terminal separation method:
+
+- 7-segment display records are not generic `00 00 + records + FF` component
+  groups. They begin with the display record signature `00 08 FF 00` and must be
+  split at the next object start of any component family.
+- The current mega donor contains common-cathode blue display records. It cannot
+  produce an all-red common-cathode set by selecting mega cathode records. Red
+  common-cathode records currently come only from the standalone red 1x/4x
+  donors unless a high-count red mega donor is supplied.
+- The V6 `CCF` cathode method, which appended `FF` to mega cathode rows, opened
+  and simulated but produced a bad-object-record warning. Do not treat it as an
+  accepted output method.
+- The V6 hybrid `CCH` method mixed mega blue cathode rows with one standalone red
+  final row, so only one display was red. Do not use it for all-red output.
+- 4027 no-terminal packet renumbering is rejected. The V6 `K*C` cases that
+  rewrote complete mega packets to `U1..Un` and regenerated standalone-style CDB
+  rows crashed on open. Current 4027 candidates preserve original donor refs and
+  the full donor `ROOT.CDB`.
+
+Current focused follow-up:
+
+```text
+script: tools/proteus_generation/2026-06-16/generate_bare_display_4027_focus_v7_temp.py
+archive: experiments/BARE_DISPLAY_4027_FOCUS_V7_TEMP_2026_06_16.zip
+```
+
+V7 user testing accepted the direct 4027 original-ref/full-mega-CDB cases for
+1, 3, 5, 15, and 23 packages. That method is the current accepted 4027
+no-terminal placement rule.
+
+The display cases remain component-specific. V7 showed:
+
+- `ANF_21X`, `ANF_22X`, `ANF_23X`, and `ANP_23X` failed with DLL errors.
+- `ANP_15X` and all `CCB_*` cathode cases gave bad-object-record warnings.
+- `CCR_*` donor-repeat cases above four displays visibly contained only four
+  displays, so standalone donor repetition is rejected for display scaling.
+
+Byte inventory of the mega donor shows the anode rows are organized in 20-row
+blocks:
+
+```text
+normal mega anode row: 397 bytes
+block-final rows 19,39,59...: 399 bytes
+true donor-final row 599: 399 bytes and ends in FF
+```
+
+The current display-only diagnostic is therefore:
+
+```text
+script: tools/proteus_generation/2026-06-18/generate_bare_display_mega_focus_v8_temp.py
+archive: experiments/BARE_DISPLAY_MEGA_FOCUS_V8_TEMP_2026_06_18.zip
+```
+
+It uses only mega donor display records. It tests anode block-final conversion
+by trimming the 399-byte middle block-final row to 397 bytes, anode block-final
+skipping, and cathode final-byte replacement instead of appending `FF`.
+
+V8 user testing established the split clearly:
+
+- All cathode `REPLACE_FINAL_BYTE` cases failed.
+- Every remaining V8 case worked, including the anode trim/skip cases and the
+  23-cathode plus true-donor-final-anode sentinel case.
+
+The current acceptance candidate is:
+
+```text
+script: tools/proteus_generation/2026-06-18/generate_bare_display_mega_acceptance_v9_temp.py
+archive: experiments/BARE_DISPLAY_MEGA_ACCEPTANCE_V9_TEMP_2026_06_18.zip
+```
+
+V9 removes the cathode final-byte replacement path entirely. It emits:
+
+- common-anode singles for counts 1, 3, 5, 15, and 23 using the accepted trim
+  rule,
+- common-cathode blue singles for counts 1, 3, 5, 15, and 23 terminated by the
+  true donor-final anode sentinel,
+- common-cathode plus common-anode display pairs,
+- direct 4027 controls using original mega refs and full mega `ROOT.CDB`,
+- 4027 plus anode display pairs,
+- 4027 plus cathode display pairs,
+- one 23x 4027 plus 23x cathode plus 23x anode stress case.
+
+Static validation for V9 shows no terminal/wire markers and correct marker
+counts. Proteus validation is pending user test.
+
+User feedback on V9 rejected the 4027/display pair path specifically: all
+`K` pair cases failed. The accepted direct 4027-only rule and the current
+display-only rules remain separate. Do not concatenate the generic 4027 object
+stream directly with display rows until a focused boundary diagnostic proves the
+required `ROOT.DSN` object-stream boundary. The next diagnostic should test only
+small `K01+AN01` and `K01+CC01` variants plus original-mega subrange controls.
+
+Focused boundary diagnostic:
+
+```text
+script: tools/proteus_generation/2026-06-18/generate_bare_display_4027_boundary_v10_temp.py
+archive: experiments/BARE_DISPLAY_4027_BOUNDARY_V10_TEMP_2026_06_18.zip
+```
+
+V10 contains accepted controls, exact rejected V9 baselines, separator variants,
+display-before-generic order, original pre-display bridge variants, a full
+original display-block variant, and an original K01-through-final-anode subrange.
+It is static-clean and awaits Proteus testing.
+
+User testing of V10 reported that only `T08` and `T09` worked. Both working
+cases preserve the original 375-byte `D20` diode packet immediately before the
+display row:
+
+```text
+T08: D20 + one common-anode display row
+T09: one 4027 package + D20 + one common-anode display row
+```
+
+All other tested boundary styles are rejected for now. The D20 packet is a
+visible diode object, so this is not a pure final display-pair rule; it is a
+working bridge candidate that needs count and cathode validation.
+
+Current bridge scaling diagnostic:
+
+```text
+script: tools/proteus_generation/2026-06-18/generate_bare_display_4027_bridge_v11_temp.py
+archive: experiments/BARE_DISPLAY_4027_BRIDGE_V11_TEMP_2026_06_18.zip
+```
+
+V11 emits D20-bridged anode, cathode-sentinel, 4027+anode, 4027+cathode, display
+pair, and stress cases for the 1/3/5/15/23 count set where applicable.
+
+User testing accepted V11: all D20-bridged cases worked. The current accepted
+display/4027 no-terminal method is therefore:
+
+```text
+00 00 + selected generic component groups + original D20 packet + display rows
+```
+
+where `D20` is the original 375-byte diode packet immediately before the display
+block in the mega donor:
+
+```text
+ref: D20
+marker: DIODE
+sha256: bf68d8fec7bb6de2653cc929dbee2863f704a536d193d9c32369f0ab20098abb
+```
+
+This remains visually imperfect because D20 is visible. The next diagnostic
+must test whether D20 can be removed, minimized, or only hidden. Do not assume
+raw 4027/display concatenation is safe; V9 rejected that boundary.
+
+D20-removal diagnostic:
+
+```text
+script: tools/proteus_generation/2026-06-18/generate_bare_display_d20_removal_v12_temp.py
+archive: experiments/BARE_DISPLAY_D20_REMOVAL_V12_TEMP_2026_06_18.zip
+```
+
+V12 contains D20-preserved controls, clean D20 deletion with rebuilt pointers,
+postbuild byte deletion with stale pointers, partial D20 subrecord variants,
+and same-length D20 text blanking. It is static-clean, but no D20 removal rule
+is accepted until Proteus testing confirms one of the non-control cases.
+
+## Promoted Mega Donors 2026-06-18
+
+The current main donor copies live at:
+
+```text
+proteus_ic/donors/main_mega_20260618
+```
+
+They were copied from the manual corpus rather than moved. The trusted manifest
+uses exact byte-inspected package counts for normal `U/R/C/L/D/Q/V/I` records:
+
+```text
+proteus_ic/registry/trusted_donor_manifest.json
+```
+
+Human-readable support notes, including display special cases, are in:
+
+```text
+proteus_ic/registry/mega_component_support_20260618.json
+```
+
+Supported normal package families from the promoted mega donors are:
+
+```text
+RESISTOR, CAP, CAP-ELEC, REALIND, DIODE, NPN, PNP
+LM741, NE555
+VSOURCE, CSOURCE, VSINE
+4027, 4511, 7447, 7490
+74HC00, 74HC02, 74HC04, 74HC08, 74HC32, 74HC74, 74HC76,
+74HC85, 74HC86, 74HC151, 74HC157, 74HC160, 74HC174,
+74HC192, 74HC266, 74HC283
+```
+
+Display support is special-case, not normal packet-count support:
+
+```text
+7SEG-COM-AN-BLUE / 7SEGCOMA
+7SEG-COM-CAT-BLUE / 7SEGCOMK
+```

@@ -64,6 +64,15 @@ def package_ref(ref: str) -> str:
     return ref.split(":", 1)[0]
 
 
+def _ordered_unique_package_refs(pin_rows: Iterable[CdbPinRow]) -> tuple[str, ...]:
+    refs: list[str] = []
+    for row in pin_rows:
+        ref = package_ref(row.ref)
+        if ref not in refs:
+            refs.append(ref)
+    return tuple(refs)
+
+
 def _parse_property_rows(
     data: bytes,
     start: int,
@@ -129,7 +138,7 @@ def parse_cdb(data: bytes) -> CdbFile:
             raise ValueError("Unexpected end of CDB while reading pin row.")
         pin_rows.append(CdbPinRow(ref=ref, data=data[start:pos]))
 
-    expected_refs = tuple(package_ref(row.ref) for row in pin_rows)
+    expected_refs = _ordered_unique_package_refs(pin_rows)
     first_property_start = None
     property_rows: list[CdbPropertyRow] | None = None
     property_end = None

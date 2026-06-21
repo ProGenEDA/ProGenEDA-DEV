@@ -15,4 +15,8 @@ test = ["pytest>=8.0"]
 proteusgen = "proteusgen.cli:main"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src", "."]
+include = ["proteusgen*", "kicad*"]
+
+[tool.setuptools.package-data]
+kicad = ["source_pack/downloaded_zip/*.zip", "rules/*.json", "examples/json/*.json", "targets/*.md"]
