@@ -44,3 +44,11 @@ tests until Proteus acceptance.
 Every generated test pack should include a short human-readable description of
 what the user is looking at and what should be checked in Proteus. This is now a
 standing rule after the coordinate changer test feedback on 2026-06-21.
+
+## Iteration Rule
+
+Do not restart test generators from scratch after each failure. Keep the current
+`.py` behavior under test as the baseline, copy it before changes, update the
+copied behavior, and only promote/lock it after user Proteus acceptance. This
+keeps the failure history traceable and prevents reintroducing already-fixed
+packet handling bugs.

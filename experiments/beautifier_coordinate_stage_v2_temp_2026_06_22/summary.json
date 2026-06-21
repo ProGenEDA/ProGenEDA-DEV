@@ -1,0 +1,125 @@
+{
+  "archive": "experiments\\BEAUTIFIER_COORDINATE_STAGE_V2_TEMP_2026_06_22.zip",
+  "archive_sha256": "afd923f0e1b36724fdab37daa75fdb58f49a3f8395c4d681f408f0932dad64cb",
+  "case_count": 8,
+  "cases": [
+    {
+      "case": "B00_CONTROL_METADATA_ONLY",
+      "errors": [],
+      "hidden_coordinate_mode": "none",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\00_B00_CONTROL_METADATA_ONLY\\B00_CONTROL_METADATA_ONLY.pdsprj.manifest.json",
+      "note": "Baseline control case. It should open/simulate. The manifest should mark one extra SWITCH and one extra POT-HG as hidden dummy controls, but this case does not move their binary coordinates.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\00_B00_CONTROL_METADATA_ONLY\\B00_CONTROL_METADATA_ONLY.pdsprj",
+      "request": {
+        "POT-HG": 1,
+        "SWITCH": 1
+      },
+      "valid": true
+    },
+    {
+      "case": "B01_SWITCH_DUMMY_LINKED_RELATIVE",
+      "errors": [],
+      "hidden_coordinate_mode": "linked_relative",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\01_B01_SWITCH_DUMMY_LINKED_RELATIVE\\B01_SWITCH_DUMMY_LINKED_RELATIVE.pdsprj.manifest.json",
+      "note": "SWITCH-only hiding check. One requested switch should remain usable/visible; the extra dummy switch should be moved away by the beautifier coordinate stage.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\01_B01_SWITCH_DUMMY_LINKED_RELATIVE\\B01_SWITCH_DUMMY_LINKED_RELATIVE.pdsprj",
+      "request": {
+        "SWITCH": 1
+      },
+      "valid": true
+    },
+    {
+      "case": "B02_POTHG_DUMMY_LINKED_RELATIVE",
+      "errors": [],
+      "hidden_coordinate_mode": "linked_relative",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\02_B02_POTHG_DUMMY_LINKED_RELATIVE\\B02_POTHG_DUMMY_LINKED_RELATIVE.pdsprj.manifest.json",
+      "note": "POT-HG-only hiding check. One requested potentiometer should remain usable/visible; the extra dummy POT-HG should be moved away by the beautifier coordinate stage.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\02_B02_POTHG_DUMMY_LINKED_RELATIVE\\B02_POTHG_DUMMY_LINKED_RELATIVE.pdsprj",
+      "request": {
+        "POT-HG": 1
+      },
+      "valid": true
+    },
+    {
+      "case": "B03_SWITCH_AND_POTHG_DUMMIES_LINKED_RELATIVE",
+      "errors": [],
+      "hidden_coordinate_mode": "linked_relative",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\03_B03_SWITCH_AND_POTHG_DUMMIES_LINKED_RELATIVE\\B03_SWITCH_AND_POTHG_DUMMIES_LINKED_RELATIVE.pdsprj.manifest.json",
+      "note": "Combined control hiding check. Both requested controls should remain visible/usable, while the first extra SWITCH and first extra POT-HG are moved away.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\03_B03_SWITCH_AND_POTHG_DUMMIES_LINKED_RELATIVE\\B03_SWITCH_AND_POTHG_DUMMIES_LINKED_RELATIVE.pdsprj",
+      "request": {
+        "POT-HG": 1,
+        "SWITCH": 1
+      },
+      "valid": true
+    },
+    {
+      "case": "B04_DISPLAY_D20_VISIBLE_CONTROL",
+      "errors": [],
+      "hidden_coordinate_mode": "none",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\04_B04_DISPLAY_D20_VISIBLE_CONTROL\\B04_DISPLAY_D20_VISIBLE_CONTROL.pdsprj.manifest.json",
+      "note": "Display bridge control. This intentionally keeps the D20 bridge visible. You should see one user-requested diode plus the D20 display bridge infrastructure, and one anode plus one cathode 7-segment display.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\04_B04_DISPLAY_D20_VISIBLE_CONTROL\\B04_DISPLAY_D20_VISIBLE_CONTROL.pdsprj",
+      "request": {
+        "7SEG-COM-AN-BLUE": 1,
+        "7SEG-COM-CAT-BLUE": 1,
+        "DIODE": 1
+      },
+      "valid": true
+    },
+    {
+      "case": "B05_DISPLAY_D20_HIDDEN_LINKED_RELATIVE",
+      "errors": [],
+      "hidden_coordinate_mode": "linked_relative",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\05_B05_DISPLAY_D20_HIDDEN_LINKED_RELATIVE\\B05_DISPLAY_D20_HIDDEN_LINKED_RELATIVE.pdsprj.manifest.json",
+      "note": "D20 hiding check. The requested diode and both displays should remain visible. The D20 bridge should be moved away by the beautifier coordinate stage.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\05_B05_DISPLAY_D20_HIDDEN_LINKED_RELATIVE\\B05_DISPLAY_D20_HIDDEN_LINKED_RELATIVE.pdsprj",
+      "request": {
+        "7SEG-COM-AN-BLUE": 1,
+        "7SEG-COM-CAT-BLUE": 1,
+        "DIODE": 1
+      },
+      "valid": true
+    },
+    {
+      "case": "B06_CONTROLS_AND_DISPLAY_HIDDEN_LINKED_RELATIVE",
+      "errors": [],
+      "hidden_coordinate_mode": "linked_relative",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\06_B06_CONTROLS_AND_DISPLAY_HIDDEN_LINKED_RELATIVE\\B06_CONTROLS_AND_DISPLAY_HIDDEN_LINKED_RELATIVE.pdsprj.manifest.json",
+      "note": "Full hidden-infrastructure check. The requested SWITCH, POT-HG, diode, and displays should remain visible. The extra SWITCH/POT-HG and D20 bridge should be moved away.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\06_B06_CONTROLS_AND_DISPLAY_HIDDEN_LINKED_RELATIVE\\B06_CONTROLS_AND_DISPLAY_HIDDEN_LINKED_RELATIVE.pdsprj",
+      "request": {
+        "7SEG-COM-AN-BLUE": 1,
+        "7SEG-COM-CAT-BLUE": 1,
+        "DIODE": 1,
+        "POT-HG": 1,
+        "SWITCH": 1
+      },
+      "valid": true
+    },
+    {
+      "case": "B07_WIRING_PLAN_LAYOUT_ONLY_NO_BINARY_MOVE",
+      "errors": [],
+      "hidden_coordinate_mode": "none",
+      "manifest": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\07_B07_WIRING_PLAN_LAYOUT_ONLY_NO_BINARY_MOVE\\B07_WIRING_PLAN_LAYOUT_ONLY_NO_BINARY_MOVE.pdsprj.manifest.json",
+      "note": "Layout-plan-only case. This does not move binary coordinates. Check the manifest wiring_plan and layout_plan: same-net groups should list A/Y1/LOAD and the beautifier should produce deterministic placements.",
+      "output": "experiments\\beautifier_coordinate_stage_v2_temp_2026_06_22\\07_B07_WIRING_PLAN_LAYOUT_ONLY_NO_BINARY_MOVE\\B07_WIRING_PLAN_LAYOUT_ONLY_NO_BINARY_MOVE.pdsprj",
+      "request": {
+        "74HC00": 1,
+        "74HC08": 1,
+        "CAP": 2,
+        "LED-RED": 2,
+        "RESISTOR": 3
+      },
+      "valid": true
+    }
+  ],
+  "policy": {
+    "coordinate_mutation_default": "none",
+    "coordinate_mutation_test_mode": "linked_relative only",
+    "full_cdb": true,
+    "pruned_cdb_cases": "omitted because the previous CDB-slice coordinate test was rejected",
+    "uses_actual_generator": "src.proteusgen.component_placer.generate_component_placement_project"
+  },
+  "test_id": "BEAUTIFIER_COORDINATE_STAGE_V2_STATIC_20260622"
+}

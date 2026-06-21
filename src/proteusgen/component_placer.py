@@ -1201,6 +1201,16 @@ def _hidden_dummy_group(
     return _replace_group_data(group, data, start=HIDDEN_PACKET_START)
 
 
+def _payload_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _select_raw_groups(
     groups_by_family: dict[str, list[RawComponentGroup]],
     cdb_refs: set[str],
@@ -1489,6 +1499,13 @@ def generate_component_placement_project(
             or raw_layout.get("hidden_coordinate_mode")
             or DEFAULT_HIDDEN_COORDINATE_MODE
         ).lower()
+        hide_display_bridge = _payload_bool(
+            payload.get("hide_display_bridge")
+            if payload.get("hide_display_bridge") is not None
+            else raw_layout.get("hide_display_bridge")
+        )
+    else:
+        hide_display_bridge = False
 
     output_path = Path(output)
     if output_path.suffix.lower() != ".pdsprj":
@@ -1538,6 +1555,16 @@ def generate_component_placement_project(
             display_chunk_source = _extract_object_chunk(read_internal_file(display_donor, "ROOT.DSN"))
             display_groups, display_notes = _display_rows_for_request(_display_records_from_chunk(display_chunk_source), display_request)
             display_bridge = _load_d20_display_bridge(display_chunk_source)
+        if hide_display_bridge:
+            display_bridge = _replace_group_data(
+                display_bridge,
+                hide_packet("DISPLAY_BRIDGE", display_bridge.data, mode=hidden_coordinate_mode),
+                start=HIDDEN_PACKET_START + 1,
+            )
+            display_notes = (
+                *display_notes,
+                f"D20 display bridge hidden by beautifier mode {hidden_coordinate_mode}",
+            )
         object_chunk = _object_chunk_from_groups_and_display(
             selected_with_terminals,
             display_bridge=display_bridge,

@@ -248,6 +248,28 @@ def test_component_placement_generator_uses_d20_display_bridge(tmp_path: Path) -
     assert not any(marker in chunk for marker in (b"$TERBIDIR", b"$TERINPUT", b"$TEROUTPUT"))
 
 
+def test_component_placement_display_bridge_hiding_is_explicit(tmp_path: Path) -> None:
+    baseline = generate_component_placement_project(
+        {"components": {"7segcomanode": 1}},
+        tmp_path / "display_bridge_default.pdsprj",
+    )
+    hidden = generate_component_placement_project(
+        {
+            "components": {"7segcomanode": 1},
+            "hide_display_bridge": True,
+            "hidden_coordinate_mode": "linked_relative",
+        },
+        tmp_path / "display_bridge_hidden.pdsprj",
+    )
+
+    assert baseline.valid
+    assert hidden.valid
+    baseline_d20 = next(group for group in baseline.selected_groups if group.key == "D20")
+    hidden_d20 = next(group for group in hidden.selected_groups if group.key == "D20")
+    assert baseline_d20.data != hidden_d20.data
+    assert "D20 display bridge hidden" in hidden.cdb_policy
+
+
 def test_component_placement_generator_uses_clean_source_packets(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {

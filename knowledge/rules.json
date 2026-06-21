@@ -3370,6 +3370,17 @@
         "docs/component_placer_pipeline.md"
       ],
       "date": "2026-06-21"
+    },
+    {
+      "id": "R_COMPONENT_PLACER_ITERATE_EXISTING_PY_20260622",
+      "status": "accepted_process_rule",
+      "scope": "component_placer_beautifier",
+      "rule": "When testing component placer or beautifier behavior, do not create a fresh generator script for every attempt. Keep the current `.py` behavior under test, copy it before changing, update the copied behavior, and lock/promote only after user Proteus acceptance. New scripts are allowed only to establish a first baseline; later attempts must evolve that baseline so fixes and failures remain traceable.",
+      "evidence": [
+        "User instruction 2026-06-22: always update the py behavior, keep a copy, update that, lock it after it passes, and do not make one from scratch each time.",
+        "docs/component_placer_pipeline.md Iteration Rule"
+      ],
+      "date": "2026-06-22"
     }
   ]
 }

@@ -1,0 +1,49 @@
+{
+  "components": {
+    "74HC00": 1,
+    "74HC08": 1,
+    "CAP": 2,
+    "LED-RED": 2,
+    "RESISTOR": 3
+  },
+  "connections": [
+    {
+      "endpoints": [
+        {
+          "component": "U1:A",
+          "pin": "A"
+        },
+        {
+          "component": "U2:A",
+          "pin": "A"
+        }
+      ],
+      "net": "A"
+    },
+    {
+      "from": {
+        "component": "U1:A",
+        "pin": "Y"
+      },
+      "net": "Y1",
+      "to": {
+        "component": "R1",
+        "pin": "1"
+      }
+    },
+    {
+      "from": {
+        "component": "R1",
+        "pin": "2"
+      },
+      "net": "LOAD",
+      "to": {
+        "component": "LED1",
+        "pin": "A"
+      }
+    }
+  ],
+  "layout": {
+    "strategy": "beautify"
+  }
+}
