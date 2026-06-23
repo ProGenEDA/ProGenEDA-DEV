@@ -37,6 +37,14 @@ LINKED_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
     "DISPLAY_BRIDGE": ((5, 9), (76, 80), (150, 154), (215, 219), (343, 347)),
 }
 
+FAMILY_LAYOUT_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
+    "RESISTOR": ((12, 16), (22, 26), (91, 95), (168, 172), (254, 258)),
+    "CAP": ((12, 16), (22, 26), (91, 95), (163, 167), (277, 281)),
+    "REALIND": ((12, 16), (22, 26), (91, 95), (167, 171), (281, 285)),
+    "CAP-ELEC": ((13, 17), (23, 27), (92, 96), (169, 173), (234, 238)),
+    "DIODE": ((12, 16), (22, 26), (93, 97), (167, 171), (232, 236)),
+}
+
 RELATIVE_MODES = {"relative", "linked_relative", "runaway_relative"}
 ABSOLUTE_MODES = {"absolute", "linked_absolute", "runaway_absolute"}
 DISPLAY_SMALL_RELATIVE_MODES = {"display_small_relative", "d20_small_relative"}
@@ -213,7 +221,19 @@ def _text_and_body_coord_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
     return pairs
 
 
-def layout_coordinate_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+def _family_layout_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
+    pairs = FAMILY_LAYOUT_COORDINATE_PLANS.get(family)
+    if not pairs:
+        return []
+    _validate_pair_bounds(fragment, family, pairs)
+    return [(x_offset, y_offset, f"family_plan:{family}") for x_offset, y_offset in pairs]
+
+
+def layout_coordinate_pairs(fragment: bytes, family: str | None = None) -> list[tuple[int, int, str]]:
+    if family:
+        planned = _family_layout_coordinate_pairs(fragment, family)
+        if planned:
+            return planned
     pairs = _terminal_coord_pairs(fragment) + _wire_coord_pairs(fragment) + _text_and_body_coord_pairs(fragment)
     seen: set[tuple[int, int]] = set()
     ordered: list[tuple[int, int, str]] = []
@@ -255,7 +275,7 @@ def translate_packet_to_slot(
     slot_x: int = VISIBLE_LAYOUT_SLOT_X,
     slot_y: int = VISIBLE_LAYOUT_SLOT_Y,
 ) -> tuple[bytes, dict[str, Any]]:
-    pairs = layout_coordinate_pairs(data)
+    pairs = layout_coordinate_pairs(data, family)
     if not pairs:
         return data, {
             "key": key,
