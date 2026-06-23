@@ -51,6 +51,12 @@ Every generated test pack should include a short human-readable description of
 what the user is looking at and what should be checked in Proteus. This is now a
 standing rule after the coordinate changer test feedback on 2026-06-21.
 
+Each experiment folder must also contain a Markdown record. The record should
+start with the test purpose, generation command/input, output file list, and
+expected Proteus inspection. After user feedback, update the same file with
+pass/fail results, exact Proteus errors, visual issues, observations, and the
+next correction.
+
 ## Iteration Rule
 
 Do not restart test generators from scratch after each failure. Keep the current
@@ -58,3 +64,7 @@ Do not restart test generators from scratch after each failure. Keep the current
 copied behavior, and only promote/lock it after user Proteus acceptance. This
 keeps the failure history traceable and prevents reintroducing already-fixed
 packet handling bugs.
+
+Beautifier work is family-specific. Reuse the shared arrangement algorithm, but
+learn coordinate mutation per component/family and record the proven coordinate
+fields before applying the method broadly.

@@ -63,12 +63,25 @@ The planner prompt in `prompts/planner_prompt.md` is responsible for turning nat
 
 ## Current generator target
 
-The CLI and CircuitIR contract exist. Enable output conservatively:
+The active Proteus route has moved away from synthesizing circuits from empty
+projects. The production direction is now removal-only donor mutation:
 
-- Production generation is restricted to whole clean templates with explicit recipes until composed-object transformations are validated.
-- The first composed-output acceptance case is one quad `74HC08` package with two resistor rails and labelled input terminals, specified in `examples/and_reference_pending_d05.json`.
-- Do not enable the AND acceptance case until the clean Proteus 8.13 D05 oracle has been supplied and a generated project passes open/save comparison.
-- Use terminal/net-label topology where safe, but do not assume labelled terminals replace visible wire/junction records required by the reference circuit.
+- Start from a trusted donor or mega donor that already contains the needed
+  components.
+- Remove unneeded complete component packets and linked metadata.
+- Do not clone, synthesize, or freehand component records in the production
+  component placer.
+- The component placer only places/selects components. It must not add
+  terminals or wires.
+- After placement the pipeline is: component packet validation, value changer,
+  wiring-intent planner, beautifier, final binary emission.
+- Value changing, terminal generation, and wiring are separate stages. Do not
+  mix those responsibilities into the component placer.
+
+The current active engineering focus is the component-packet beautifier. It is
+strictly a coordinate/layout stage. Because coordinate fields vary by component
+family, improve it family-by-family inside the shared implementation rather
+than assuming one byte-edit method works for every component.
 
 ## Development style
 
@@ -77,3 +90,11 @@ The CLI and CircuitIR contract exist. Enable output conservatively:
 - Keep uncertain items in `knowledge/open_questions.json`.
 - Update `docs/proteus_file_model.md` when evidence changes.
 - Avoid speculative generator logic unless marked experimental.
+- Every experiment must have or update a Markdown note explaining the purpose,
+  generated files, what the user should inspect in Proteus, user feedback, and
+  Codex observations/root cause.
+- When the user reports results, update the experiment Markdown before moving
+  to the next variant.
+- Keep iteration history traceable: do not replace the tested `.py` behavior
+  from scratch; copy/update the current baseline, then promote only after user
+  acceptance.
