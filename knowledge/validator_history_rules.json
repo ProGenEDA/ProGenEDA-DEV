@@ -1,0 +1,61 @@
+{
+  "schema": "progen-validator-history-rules/v0.1",
+  "rules": [
+    {
+      "rule_id": "DSEL_REMOVAL_ONLY_001",
+      "stage": "donor_selector_validator",
+      "check": "Selected donor must already contain every requested component type and quantity. No cloning is allowed.",
+      "failure_category": "E_DONOR_MISSING_REMOVAL_ONLY",
+      "implementation_hint": "Use exact trusted donor manifest counts and verified component packets, not file names or string evidence."
+    },
+    {
+      "rule_id": "DELPLAN_001",
+      "stage": "deletion_plan_validator",
+      "check": "Delete component body plus linked ref/model/name/value text, wires, terminals, junctions, CDB rows, and device metadata for every deleted component.",
+      "failure_category": "E_DELETE_ORPHAN_RECORD_RISK",
+      "implementation_hint": "Require a component linkage map before deletion mutation is allowed."
+    },
+    {
+      "rule_id": "PVAL_MODEL_001",
+      "stage": "placement_validator",
+      "check": "Every kept component must retain a non-empty valid Proteus model/device field.",
+      "failure_category": "E_COMPONENT_MODEL_MISSING",
+      "implementation_hint": "Catch Proteus 'No model specified for ...' failures before output."
+    },
+    {
+      "rule_id": "PVAL_REF_001",
+      "stage": "placement_validator",
+      "check": "Component references and CDB internal IDs must be unique after deletion/mutation.",
+      "failure_category": "E_COMPONENT_REF_DUPLICATE",
+      "implementation_hint": "Catch duplicate part reference and duplicate CDB ID failures before output."
+    },
+    {
+      "rule_id": "PVAL_EXTRA_001",
+      "stage": "placement_validator",
+      "check": "After deletion no unsupported donor extras may remain.",
+      "failure_category": "E_COMPONENT_EXTRA",
+      "implementation_hint": "Compare kept inventory with the normalized component request."
+    },
+    {
+      "rule_id": "BVAL_MOVE_001",
+      "stage": "beautifier_validator",
+      "check": "When a component body moves, its reference/model/name/value text and pin anchors must move by the same delta.",
+      "failure_category": "E_BEAUTIFIER_TEXT_NOT_MOVED",
+      "implementation_hint": "Compare relative offsets before and after beautification."
+    },
+    {
+      "rule_id": "PVAL_RESERVED_001",
+      "stage": "all_validators",
+      "check": "Reserved names V0/G0/VCC/GND/+5V/0 may only be supply/ground, never internal refs or output nets.",
+      "failure_category": "E_RESERVED_NET_MISUSE",
+      "implementation_hint": "Apply to component refs, terminal labels, wire labels, and generated net names."
+    },
+    {
+      "rule_id": "HIST_001",
+      "stage": "all_validators",
+      "check": "Every accepted fixed bug must become a validator_history_rules.json entry plus a regression test.",
+      "failure_category": "E_HISTORY_RULE_MISSING",
+      "implementation_hint": "Treat user-reported Proteus failures as permanent regression evidence."
+    }
+  ]
+}
