@@ -16,6 +16,7 @@ if str(ROOT / "src") not in sys.path:
 from proteusgen.component_beautifier import _s32_at, layout_coordinate_pairs
 from proteusgen.component_placer import (
     MAIN_MEGA_NO_SOURCE_DONOR,
+    NEW_COMPONENT_MEGA_DONOR,
     _extract_object_chunk,
     _generation_markers,
     _inspect_donor_counts_for_selection,
@@ -25,10 +26,50 @@ from proteusgen.component_placer import (
 )
 
 
-SUPPORTED_FAMILIES = ("RESISTOR", "CAP", "REALIND", "CAP-ELEC", "DIODE")
+SUPPORTED_FAMILIES = (
+    "RESISTOR",
+    "CAP",
+    "REALIND",
+    "CAP-ELEC",
+    "DIODE",
+    "1N4007",
+    "1N4148",
+    "1N4733A",
+    "1N6000B",
+    "40EPS08",
+    "BZX55C5V1",
+    "BZX79C5V1",
+    "BZY88C",
+    "NPN",
+    "PNP",
+    "2N3904",
+    "2N4401",
+    "2N7000",
+    "BS170",
+    "NMOSFET",
+    "FUSE",
+    "LED-RED",
+)
 DEFAULT_COUNTS = (1, 3, 5)
 KNOWN_ACCEPTED_LIMITS = {"RESISTOR": 91}
 VARIANT_RE = re.compile(r"[^a-z0-9_]+")
+NEW_COMPONENT_DONOR_FAMILIES = {
+    "1N4007",
+    "1N4148",
+    "1N4733A",
+    "1N6000B",
+    "40EPS08",
+    "BZX55C5V1",
+    "BZX79C5V1",
+    "BZY88C",
+    "2N3904",
+    "2N4401",
+    "2N7000",
+    "BS170",
+    "NMOSFET",
+    "FUSE",
+    "LED-RED",
+}
 
 
 def sha256(path: Path) -> str:
@@ -40,7 +81,13 @@ def sha256(path: Path) -> str:
 
 
 def slug_family(family: str) -> str:
-    return family.lower().replace("-", "_")
+    return VARIANT_RE.sub("_", family.lower().replace("-", "_")).strip("_")
+
+
+def donor_for_family(family: str) -> Path:
+    if family in NEW_COMPONENT_DONOR_FAMILIES:
+        return NEW_COMPONENT_MEGA_DONOR
+    return MAIN_MEGA_NO_SOURCE_DONOR
 
 
 def slug_variant(variant: str | None) -> str:
@@ -53,44 +100,51 @@ def slug_variant(variant: str | None) -> str:
 
 
 def case_prefix(family: str) -> str:
-    return {
+    prefixes = {
         "RESISTOR": "R",
         "CAP": "C",
         "CAP-ELEC": "CE",
         "REALIND": "L",
         "DIODE": "D",
-    }[family]
+        "NPN": "Q",
+        "PNP": "QP",
+        "FUSE": "FU",
+        "LED-RED": "LED",
+    }
+    if family in prefixes:
+        return prefixes[family]
+    compact = re.sub(r"[^A-Z0-9]+", "", family.upper())
+    return compact[:6] or "X"
 
 
-def build_byte_probe() -> dict[str, Any]:
-    chunk = _extract_object_chunk(read_internal_file(ROOT / MAIN_MEGA_NO_SOURCE_DONOR, "ROOT.DSN"))
+def build_byte_probe(family: str, donor_path: Path) -> dict[str, Any]:
+    chunk = _extract_object_chunk(read_internal_file(ROOT / donor_path, "ROOT.DSN"))
     groups = _raw_groups_from_chunk(chunk, _generation_markers())
     probe: dict[str, Any] = {
-        "donor": str(MAIN_MEGA_NO_SOURCE_DONOR),
+        "donor": str(donor_path),
         "purpose": (
             "Reusable passive-family coordinate probe. Records parsed coordinate fields "
             "used by beautifier visible-packet translation."
         ),
         "rejected_v1_fixed_offsets": ["12/16", "22/26", "91/95", "168/172", "254/258"],
     }
-    for family in SUPPORTED_FAMILIES:
-        group = groups[family][0]
-        pairs = []
-        for x_offset, y_offset, reason in layout_coordinate_pairs(group.data, family):
-            pairs.append(
-                {
-                    "x_offset": x_offset,
-                    "y_offset": y_offset,
-                    "x_value": _s32_at(group.data, x_offset),
-                    "y_value": _s32_at(group.data, y_offset),
-                    "reason": reason,
-                }
-            )
-        probe[family] = {
-            "first_group_key": group.key,
-            "packet_size": len(group.data),
-            "parsed_coordinate_pairs": pairs,
-        }
+    group = groups[family][0]
+    pairs = []
+    for x_offset, y_offset, reason in layout_coordinate_pairs(group.data, family):
+        pairs.append(
+            {
+                "x_offset": x_offset,
+                "y_offset": y_offset,
+                "x_value": _s32_at(group.data, x_offset),
+                "y_value": _s32_at(group.data, y_offset),
+                "reason": reason,
+            }
+        )
+    probe[family] = {
+        "first_group_key": group.key,
+        "packet_size": len(group.data),
+        "parsed_coordinate_pairs": pairs,
+    }
     return probe
 
 
@@ -142,6 +196,7 @@ def write_root_readme(
     variant: str,
     records: list[dict[str, Any]],
     byte_probe: dict[str, Any],
+    donor_path: Path,
     donor_inventory_count: int,
     accepted_limit: int | None,
 ) -> None:
@@ -157,7 +212,7 @@ def write_root_readme(
         "## Family",
         "",
         f"- Family under test: `{family}`",
-        f"- Donor: `{MAIN_MEGA_NO_SOURCE_DONOR}`",
+        f"- Donor: `{donor_path}`",
         f"- Donor inventory count: `{donor_inventory_count}`",
     ]
     if variant:
@@ -242,7 +297,8 @@ def generate_family_probe(
     if family not in SUPPORTED_FAMILIES:
         raise ValueError(f"Unsupported family {family!r}; expected one of {', '.join(SUPPORTED_FAMILIES)}")
 
-    donor_counts = _inspect_donor_counts_for_selection(ROOT / MAIN_MEGA_NO_SOURCE_DONOR, _generation_markers())
+    donor_path = donor_for_family(family)
+    donor_counts = _inspect_donor_counts_for_selection(ROOT / donor_path, _generation_markers())
     donor_inventory_count = int(donor_counts.get(family, 0))
     max_requested = max((1, *counts, accepted_limit or 1))
     if donor_inventory_count < max_requested:
@@ -264,7 +320,7 @@ def generate_family_probe(
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    byte_probe = build_byte_probe()
+    byte_probe = build_byte_probe(family, donor_path)
     (out_dir / "byte_probe.json").write_text(json.dumps(byte_probe, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     cases = build_cases(family, counts)
@@ -296,7 +352,7 @@ def generate_family_probe(
         result = generate_component_placement_project(
             payload,
             output_path,
-            donor_path=MAIN_MEGA_NO_SOURCE_DONOR,
+            donor_path=donor_path,
             full_cdb=True,
         )
         write_case_note(case_dir, case, output_path, result.manifest_path)
@@ -327,7 +383,7 @@ def generate_family_probe(
         "byte_probe": "byte_probe.json",
         "policy": {
             "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
-            "explicit_donor": str(MAIN_MEGA_NO_SOURCE_DONOR),
+            "explicit_donor": str(donor_path),
             "full_cdb": True,
             "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "reuses_parsed_coordinate_method": True,
@@ -340,6 +396,7 @@ def generate_family_probe(
         variant=variant_slug,
         records=records,
         byte_probe=byte_probe,
+        donor_path=donor_path,
         donor_inventory_count=donor_inventory_count,
         accepted_limit=accepted_limit,
     )

@@ -180,3 +180,43 @@ generated without overwriting accepted packs. Generated:
 Manual Proteus testing for the 100-CAP stress case is pending. If it passes,
 continue through the same reusable script for `REALIND`, `CAP-ELEC`, and
 `DIODE`, one family at a time.
+
+## 2026-06-24 Component Family Base135 Beautifier Batch
+
+User reported the CAP 100 stress direction is promising and asked to try the
+same 1/3/5 pattern on diode/inductor/electrolytic/NPN/FUSE-style families.
+
+Important implementation update:
+
+- Keep using the single reusable harness
+  `tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py`.
+- Do not make one-off per-family scripts.
+- The harness is now donor-aware:
+  - main no-source mega donor for `REALIND`, `CAP-ELEC`, `DIODE`, `NPN`, `PNP`
+  - new-component mega donor for named diode variants, small transistor
+    variants, `FUSE`, `LED-RED`, and `NMOSFET`
+- `src/proteusgen/component_beautifier.py` widened the parsed-coordinate path
+  to these tested families. This avoids the broad fallback coordinate scanner
+  for fragile component packets.
+
+Generated `BASE135` probe packs for:
+
+- `REALIND`, `CAP-ELEC`, `DIODE`, `NPN`, `PNP`, `FUSE`
+- `1N4007`, `1N4148`, `1N4733A`, `1N6000B`, `40EPS08`
+- `BZX55C5V1`, `BZX79C5V1`, `BZY88C`, `LED-RED`
+- `2N3904`, `2N4401`, `2N7000`, `BS170`, `NMOSFET`
+
+Batch index:
+
+- `experiments/beautifier_component_family_base135_batch_v1_temp_2026_06_24/README.md`
+
+Static validation:
+
+- compile passed
+- `tests/test_component_placer.py` -> `29 passed`
+- manifest sweep found no mismatches
+- every beautified 1x/3x/5x case reports translated counts equal to the
+  requested component count
+
+Manual Proteus testing is pending. Treat failures as family-specific until a
+mixed-family test proves otherwise.

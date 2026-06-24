@@ -51,7 +51,30 @@ REJECTED_FAMILY_LAYOUT_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] 
     "CAP-ELEC": ((13, 17), (23, 27), (92, 96), (169, 173), (234, 238)),
     "DIODE": ((12, 16), (22, 26), (93, 97), (167, 171), (232, 236)),
 }
-PARSED_PASSIVE_LAYOUT_FAMILIES = {"RESISTOR", "CAP", "REALIND", "CAP-ELEC", "DIODE"}
+PARSED_PASSIVE_LAYOUT_FAMILIES = {
+    "RESISTOR",
+    "CAP",
+    "REALIND",
+    "CAP-ELEC",
+    "DIODE",
+    "1N4007",
+    "1N4148",
+    "1N4733A",
+    "1N6000B",
+    "40EPS08",
+    "BZX55C5V1",
+    "BZX79C5V1",
+    "BZY88C",
+    "NPN",
+    "PNP",
+    "2N3904",
+    "2N4401",
+    "2N7000",
+    "BS170",
+    "NMOSFET",
+    "FUSE",
+    "LED-RED",
+}
 
 RELATIVE_MODES = {"relative", "linked_relative", "runaway_relative"}
 ABSOLUTE_MODES = {"absolute", "linked_absolute", "runaway_absolute"}
