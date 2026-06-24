@@ -142,6 +142,28 @@ Static validation:
   -> `29 passed`
 - manifest reports `visible_entry_count: 91` and `visible_translated_count: 91`
 
-Manual Proteus testing is pending. If R04 opens without `LXLCORE.dll` and the
-labels/values stay attached to their resistor bodies, move to the next family:
-`CAP`.
+User reported R04 worked perfectly. Treat `RESISTOR` coordinate movement as
+accepted through the R91 ceiling. Keep `690` recorded only as donor inventory,
+not an accepted safe limit.
+
+## 2026-06-24 Reusable Passive Family Probe Harness
+
+Created `tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py`.
+Use this single script for the passive-family beautifier probes instead of
+creating a new script for every component. It accepts:
+
+- `--family` for `RESISTOR`, `CAP`, `REALIND`, `CAP-ELEC`, or `DIODE`
+- `--counts`, defaulting to `1,3,5`
+- `--accepted-limit` for proven stress ceilings
+
+Generated the next family probe:
+
+- `BEAUTIFIER_CAP_COORDINATE_PROBE_V1_TEMP_2026_06_24`
+- Cases: `C00` baseline, then `C01`/`C02`/`C03` for 1/3/5 parsed-coordinate CAP movement
+- Donor inventory count for `CAP`: `600`
+- Static validation: compile passed; `tests/test_component_placer.py` -> `29 passed`
+- CAP manifests report translated counts matching requested counts for 1/3/5
+
+Manual Proteus testing for CAP is pending. If CAP passes, continue through the
+same reusable script for `REALIND`, `CAP-ELEC`, and `DIODE`, one family at a
+time.

@@ -28,7 +28,7 @@ It is not treated as the safe generation limit because earlier large-rule testin
 
 ## User Results
 
-Pending.
+Accepted. User reported the R91 beautified resistor stress case worked perfectly.
 
 ## What Success Means
 
