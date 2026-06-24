@@ -220,3 +220,51 @@ Static validation:
 
 Manual Proteus testing is pending. Treat failures as family-specific until a
 mixed-family test proves otherwise.
+
+User reported the BASE135 component-family packs worked properly. The folder
+`experiments/beautifier_component_family_base135_batch_v1_temp_2026_06_24`
+was only an index and therefore appeared empty of projects; the actual test
+projects were in the sibling per-family folders/zips. Treat the 20 BASE135
+families as accepted for 1/3/5 parsed-coordinate beautifier movement.
+
+## 2026-06-24 Mixed BASE135 Family Stress Pack
+
+User asked for combined circuits containing all just-tested BASE135 families:
+3 each, 15 each, and 25 each, reducing only if a donor limitation is hit.
+
+Implementation update:
+
+- Extended the reusable harness with `--mixed-base135`.
+- This is still the same actual generation route:
+  `proteusgen.component_placer.generate_component_placement_project`.
+- It uses the new-component mega donor:
+  `proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`.
+- No count caps were needed for the requested 3/15/25 cases.
+
+Generated pack:
+
+- Folder:
+  `experiments/beautifier_mixed_base135_allfamilies_3_15_25_v1_temp_2026_06_24`
+- Archive:
+  `experiments/BEAUTIFIER_MIXED_BASE135_ALLFAMILIES_3_15_25_V1_TEMP_2026_06_24.zip`
+- SHA256:
+  `2753fd8dc4e0739888b0c7c39a2a38641c8fc65bc38fb8e2f52b6cedaaccb621`
+
+Cases:
+
+- `MIX03X_ALL_BASE135`: 20 families, 3 each, total 60 components
+- `MIX15X_ALL_BASE135`: 20 families, 15 each, total 300 components
+- `MIX25X_ALL_BASE135`: 20 families, 25 each, total 500 components
+
+Static validation:
+
+- compile passed
+- manifest sweep: all 3 cases valid
+- placements/translations matched exactly:
+  - 60/60 for 3x
+  - 300/300 for 15x
+  - 500/500 for 25x
+
+Manual Proteus testing is pending. If a mixed case fails while the individual
+family packs worked, treat it as a cross-family/CDB coexistence issue first,
+not as proof that the family coordinate plan is bad.

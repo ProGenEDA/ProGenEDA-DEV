@@ -53,6 +53,28 @@ SUPPORTED_FAMILIES = (
 DEFAULT_COUNTS = (1, 3, 5)
 KNOWN_ACCEPTED_LIMITS = {"RESISTOR": 91}
 VARIANT_RE = re.compile(r"[^a-z0-9_]+")
+MIXED_BASE135_FAMILIES = (
+    "REALIND",
+    "CAP-ELEC",
+    "DIODE",
+    "NPN",
+    "PNP",
+    "FUSE",
+    "1N4007",
+    "1N4148",
+    "1N4733A",
+    "1N6000B",
+    "40EPS08",
+    "BZX55C5V1",
+    "BZX79C5V1",
+    "BZY88C",
+    "LED-RED",
+    "2N3904",
+    "2N4401",
+    "2N7000",
+    "BS170",
+    "NMOSFET",
+)
 NEW_COMPONENT_DONOR_FAMILIES = {
     "1N4007",
     "1N4148",
@@ -418,13 +440,219 @@ def generate_family_probe(
     }
 
 
+def write_mixed_case_note(case_dir: Path, case: dict[str, Any], output_path: Path, manifest_path: Path | None) -> None:
+    payload = {
+        "schema": "component-placement/v0.1",
+        "components": case["components"],
+        "layout": case["layout"],
+    }
+    lines = [
+        f"# {case['name']}",
+        "",
+        "## Purpose",
+        "",
+        case["purpose"],
+        "This case uses the normal component placer plus the shared parsed-coordinate beautifier.",
+        "",
+        "## Input",
+        "",
+        "```json",
+        json.dumps(payload, indent=2, sort_keys=True),
+        "```",
+        "",
+        "## Output",
+        "",
+        f"- Project: `{output_path.name}`",
+        f"- Manifest: `{manifest_path.name if manifest_path else output_path.name + '.manifest.json'}`",
+        "",
+        "## What To Check In Proteus",
+        "",
+        case["what_to_check"],
+        "",
+        "## User Result",
+        "",
+        "Pending.",
+        "",
+        "## Codex Observation",
+        "",
+        "Pending user Proteus result.",
+        "",
+    ]
+    (case_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def generate_mixed_base135_batch(counts: tuple[int, ...], *, variant: str | None = None) -> dict[str, Any]:
+    donor_path = NEW_COMPONENT_MEGA_DONOR
+    donor_counts = _inspect_donor_counts_for_selection(ROOT / donor_path, _generation_markers())
+    variant_slug = slug_variant(variant)
+    variant_part = f"_{variant_slug}" if variant_slug else ""
+    archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
+    out_dir = ROOT / "experiments" / f"beautifier_mixed_base135{variant_part}_v1_temp_2026_06_24"
+    archive = ROOT / "experiments" / (
+        f"BEAUTIFIER_MIXED_BASE135{archive_variant_part}_V1_TEMP_2026_06_24.zip"
+    )
+    if out_dir.exists():
+        shutil.rmtree(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    inventory = {family: int(donor_counts.get(family, 0)) for family in MIXED_BASE135_FAMILIES}
+    missing = [family for family, available in inventory.items() if available <= 0]
+    if missing:
+        raise RuntimeError(f"Selected mixed donor is missing required families: {', '.join(missing)}")
+
+    records: list[dict[str, Any]] = []
+    for index, requested_count in enumerate(counts, start=1):
+        effective_components: dict[str, int] = {}
+        caps: dict[str, dict[str, int]] = {}
+        for family in MIXED_BASE135_FAMILIES:
+            available = inventory[family]
+            effective_count = min(requested_count, available)
+            effective_components[family] = effective_count
+            if effective_count != requested_count:
+                caps[family] = {"requested": requested_count, "used": effective_count, "available": available}
+
+        case = {
+            "name": f"MIX{requested_count:02d}X_ALL_BASE135",
+            "components": effective_components,
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+            "purpose": (
+                f"Mixed-family stress case requesting {requested_count} of every component family "
+                "accepted in the 2026-06-24 base135 beautifier tests."
+            ),
+            "what_to_check": (
+                f"All listed families should appear together, arranged by the beautifier grid. "
+                f"Requested count per family: {requested_count}. "
+                "Check for open crashes, DLL errors, bad object records, and detached labels/values."
+            ),
+        }
+        case_dir = out_dir / f"{index:02d}_MIX_{requested_count:02d}X"
+        case_dir.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "schema": "component-placement/v0.1",
+            "components": case["components"],
+            "layout": case["layout"],
+        }
+        (case_dir / "payload.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        output_path = case_dir / f"{case['name']}.pdsprj"
+        result = generate_component_placement_project(
+            payload,
+            output_path,
+            donor_path=donor_path,
+            full_cdb=True,
+        )
+        write_mixed_case_note(case_dir, case, output_path, result.manifest_path)
+        total_components = sum(effective_components.values())
+        records.append(
+            {
+                "case": case["name"],
+                "case_folder": case_dir.name,
+                "requested_each": requested_count,
+                "components": effective_components,
+                "caps": caps,
+                "total_components": total_components,
+                "layout": case["layout"],
+                "output": str(output_path.relative_to(ROOT)),
+                "output_name": output_path.name,
+                "manifest": str(result.manifest_path.relative_to(ROOT)),
+                "valid": result.valid,
+                "errors": [issue.as_dict() for issue in result.errors],
+                "what_to_check": case["what_to_check"],
+            }
+        )
+
+    lines = [
+        "# Beautifier Mixed Component Family Counts",
+        "",
+        "Generated on 2026-06-24.",
+        "",
+        "This pack combines every family that passed the 2026-06-24 base135 component-family tests.",
+        "It uses the actual component placer plus the shared parsed-coordinate beautifier path.",
+        "",
+        "## Donor",
+        "",
+        f"- `{donor_path}`",
+        "",
+        "## Families",
+        "",
+    ]
+    for family in MIXED_BASE135_FAMILIES:
+        lines.append(f"- `{family}`: donor inventory `{inventory[family]}`")
+    lines.extend(["", "## Cases", ""])
+    for record in records:
+        cap_note = ""
+        if record["caps"]:
+            cap_note = f" capped: `{json.dumps(record['caps'], sort_keys=True)}`"
+        lines.append(
+            f"- `{record['case_folder']}/{record['output_name']}`: "
+            f"{record['requested_each']} each, total `{record['total_components']}`.{cap_note}"
+        )
+    lines.extend(
+        [
+            "",
+            "## User Results",
+            "",
+            "Pending.",
+            "",
+            "## Codex Observation",
+            "",
+            "Static generation and manifest validation pending in this run.",
+            "",
+        ]
+    )
+    (out_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+    summary = {
+        "test_id": f"BEAUTIFIER_COMPONENT_FAMILY_MIXED_COUNTS{archive_variant_part}_V1_TEMP_2026_06_24",
+        "variant": variant_slug,
+        "donor": str(donor_path),
+        "families": list(MIXED_BASE135_FAMILIES),
+        "inventory": inventory,
+        "counts": list(counts),
+        "records": records,
+        "policy": {
+            "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
+            "explicit_donor": str(donor_path),
+            "full_cdb": True,
+            "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "reuses_parsed_coordinate_method": True,
+        },
+    }
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if archive.exists():
+        archive.unlink()
+    shutil.make_archive(str(archive.with_suffix("")), "zip", out_dir)
+    summary["archive"] = str(archive.relative_to(ROOT))
+    summary["archive_sha256"] = sha256(archive)
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {
+        "out_dir": str(out_dir),
+        "archive": str(archive),
+        "archive_sha256": summary["archive_sha256"],
+        "case_count": len(records),
+        "families": list(MIXED_BASE135_FAMILIES),
+        "counts": list(counts),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate reusable passive-family beautifier coordinate probes.")
-    parser.add_argument("--family", required=True, choices=SUPPORTED_FAMILIES)
+    parser.add_argument("--family", choices=SUPPORTED_FAMILIES)
+    parser.add_argument(
+        "--mixed-base135",
+        action="store_true",
+        help="Generate mixed 2026-06-24 accepted base135 families in one project per count.",
+    )
     parser.add_argument("--counts", default=",".join(str(count) for count in DEFAULT_COUNTS))
     parser.add_argument("--accepted-limit", type=int, default=None)
     parser.add_argument("--variant", default="", help="Optional output-name suffix, e.g. stress100.")
     args = parser.parse_args()
+
+    if args.mixed_base135:
+        result = generate_mixed_base135_batch(parse_counts(args.counts), variant=args.variant)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
+
+    if not args.family:
+        parser.error("--family is required unless --mixed-base135 is used")
 
     accepted_limit = args.accepted_limit
     if accepted_limit is None and args.family in KNOWN_ACCEPTED_LIMITS:
