@@ -9,9 +9,9 @@ This pack starts the new family-by-family beautifier workflow. It tests only pas
 - `src/proteusgen/component_beautifier.py`
 - `src/proteusgen/component_placer.py` via `generate_component_placement_project`
 
-## New Coordinate Policy Under Test
+## Coordinate Policy That Was Tested
 
-The beautifier now uses explicit coordinate-offset plans for:
+The V1 beautifier used explicit fixed coordinate-offset plans for:
 
 - `RESISTOR`
 - `CAP`
@@ -19,7 +19,12 @@ The beautifier now uses explicit coordinate-offset plans for:
 - `CAP-ELEC`
 - `DIODE`
 
-Other families still use the previous generic coordinate scanner until their family-specific plans are learned.
+This fixed-offset policy is now rejected. User Proteus testing reported every
+case in this pack failed with `LXLCORE.dll`.
+
+Follow-up byte inspection showed those fixed offsets touched small
+font/body constants such as `3276800`, `381000`, `203200`, and `254000`, not
+the real mega-donor coordinate fields.
 
 ## Test Files
 
@@ -32,8 +37,26 @@ Other families still use the previous generic coordinate scanner until their fam
 
 ## User Results
 
-Pending.
+Failed. User reported all six files gave `LXLCORE.dll`.
+
+## Codex Observation
+
+The fixed passive-family offset table is unsafe and must not be reused. For the
+first `RESISTOR` packet in the main mega donor, real coordinate fields are
+length-prefixed text/body-marker coordinates:
+
+- `4/8`: reference text `R1`
+- `73/77`: value text `10k`
+- `150/154`: model/name text `RESISTOR`
+- `236/240`: property text `{PRIMITIVE=ANALOGUE}`
+- `313/317`: symbol body marker `RESISTOR`
+
+Equivalent parsed fields were found for `CAP`, `REALIND`, `CAP-ELEC`, and
+`DIODE`. The next experiment must use parsed coordinate fields only and start
+with resistor-only probes before widening back to other passive families.
 
 ## Next Step
 
-After user confirmation, update each case README and either lock this passive-family coordinate method or record the failing family-specific offset.
+Generate a narrow resistor-only parsed-coordinate probe using the real
+`generate_component_placement_project` path. Do not regenerate this V1 archive
+as if it were pending; it is a rejected experiment.

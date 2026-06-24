@@ -31,8 +31,10 @@ Open the project first. If it opens, inspect visual placement. If applicable, ru
 
 ## User Result
 
-Pending.
+Failed. User reported this V1 passive-family coordinate test gave `LXLCORE.dll`.
 
 ## Codex Observation
 
-Pending user Proteus result.
+Rejected method. The fixed offset plan touched non-coordinate constants inside
+the donor packet instead of parsed diode coordinate fields. Follow-up must use
+parsed length-prefixed text/body-marker coordinates only.

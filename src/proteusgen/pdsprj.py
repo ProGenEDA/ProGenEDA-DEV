@@ -13,6 +13,7 @@ were repeatedly validated during the research conversation:
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, ZipInfo
 
@@ -38,6 +39,15 @@ REQUIRED_INTERNAL_FILES = (
 DETERMINISTIC_ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 
 
+def _zip_path(path: str | Path) -> str:
+    """Return a path string ZipFile can open on Windows long paths."""
+
+    raw = str(Path(path))
+    if os.name == "nt" and len(raw) >= 248 and not raw.startswith("\\\\?\\"):
+        return "\\\\?\\" + raw
+    return raw
+
+
 def _write_deterministic(zf: ZipFile, name: str, data: bytes, compression: int) -> None:
     """Write an archive member without host-time metadata."""
 
@@ -51,7 +61,7 @@ def inspect_pdsprj(path: str | Path) -> PdsprjInfo:
     """Return internal file listing and required-file flags."""
 
     p = Path(path)
-    with ZipFile(p, "r") as zf:
+    with ZipFile(_zip_path(p), "r") as zf:
         names = zf.namelist()
     names_set = set(names)
     return PdsprjInfo(
@@ -69,7 +79,7 @@ def extract_pdsprj(path: str | Path, out_dir: str | Path) -> None:
 
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    with ZipFile(path, "r") as zf:
+    with ZipFile(_zip_path(path), "r") as zf:
         zf.extractall(out)
 
 
@@ -89,7 +99,7 @@ def repack_pdsprj(
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    with ZipFile(out, "w") as zf:
+    with ZipFile(_zip_path(out), "w") as zf:
         for file_path in sorted(p for p in src.rglob("*") if p.is_file()):
             arcname = file_path.relative_to(src).as_posix()
             _write_deterministic(zf, arcname, file_path.read_bytes(), compression)
@@ -98,7 +108,7 @@ def repack_pdsprj(
 def read_internal_file(path: str | Path, internal_name: str) -> bytes:
     """Read one internal file from a `.pdsprj`."""
 
-    with ZipFile(path, "r") as zf:
+    with ZipFile(_zip_path(path), "r") as zf:
         return zf.read(internal_name)
 
 
@@ -115,7 +125,7 @@ def write_project_from_parts(
     while preserving ROOT.DSN, PROJECT.XML, and scripts from a template.
     """
 
-    with ZipFile(template_project, "r") as zin:
+    with ZipFile(_zip_path(template_project), "r") as zin:
         names = zin.namelist()
         original = {name: zin.read(name) for name in names}
 
@@ -123,7 +133,7 @@ def write_project_from_parts(
 
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    with ZipFile(out, "w") as zout:
+    with ZipFile(_zip_path(out), "w") as zout:
         for name in names:
             if name in merged:
                 _write_deterministic(zout, name, merged[name], compression)

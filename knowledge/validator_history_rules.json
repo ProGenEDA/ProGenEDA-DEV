@@ -44,6 +44,13 @@
       "implementation_hint": "Compare relative offsets before and after beautification."
     },
     {
+      "rule_id": "BVAL_COORD_002",
+      "stage": "beautifier_validator",
+      "check": "Passive-family coordinate mutation must use parsed length-prefixed text and marker-body coordinate fields. Rejected fixed offset tables from BEAUTIFIER_FAMILY_PASSIVES_V1_TEMP_2026_06_23 must not be used.",
+      "failure_category": "E_BEAUTIFIER_UNPROVEN_COORDINATE_OFFSET",
+      "implementation_hint": "Reject passive coordinate plans that touch small font/body constants instead of plausible Proteus coordinate pairs."
+    },
+    {
       "rule_id": "PVAL_RESERVED_001",
       "stage": "all_validators",
       "check": "Reserved names V0/G0/VCC/GND/+5V/0 may only be supply/ground, never internal refs or output nets.",

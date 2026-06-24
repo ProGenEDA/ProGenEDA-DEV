@@ -68,3 +68,13 @@ packet handling bugs.
 Beautifier work is family-specific. Reuse the shared arrangement algorithm, but
 learn coordinate mutation per component/family and record the proven coordinate
 fields before applying the method broadly.
+
+## Rejected Passive Coordinate Attempt
+
+`BEAUTIFIER_FAMILY_PASSIVES_V1_TEMP_2026_06_23` is rejected. User reported all
+six passive-family cases failed with `LXLCORE.dll`.
+
+Cause found by byte inspection: the fixed passive offset table moved packet
+constants, not component coordinates. For main-mega passive packets, coordinate
+mutation must parse length-prefixed text coordinate pairs and marker-body
+coordinate pairs. Do not reintroduce the rejected fixed offsets as a fallback.

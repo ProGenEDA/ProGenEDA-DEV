@@ -30,6 +30,8 @@ VISIBLE_LAYOUT_SLOT_Y = 2_540_000
 VISIBLE_LAYOUT_COLUMNS = 10
 SCAN_COORD_LIMIT = 30_000_000
 MIN_COORD_ABS = 50_000
+SAFE_PACKET_COORD_LIMIT = 700_000_000
+SAFE_PACKET_MIN_COORD_ABS = 1_000_000
 
 LINKED_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
     "SWITCH": ((2, 6), (68, 72), (143, 147), (208, 212), (359, 363)),
@@ -37,13 +39,19 @@ LINKED_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
     "DISPLAY_BRIDGE": ((5, 9), (76, 80), (150, 154), (215, 219), (343, 347)),
 }
 
-FAMILY_LAYOUT_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
+# Rejected by user Proteus testing on 2026-06-23:
+# BEAUTIFIER_FAMILY_PASSIVES_V1_TEMP_2026_06_23 moved these fixed offsets and
+# every case failed with LXLCORE.dll. Byte inspection showed the offsets were
+# font/body constants, not the real mega-donor coordinate fields. Keep this
+# table only as negative evidence so the same mistake is not repeated.
+REJECTED_FAMILY_LAYOUT_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
     "RESISTOR": ((12, 16), (22, 26), (91, 95), (168, 172), (254, 258)),
     "CAP": ((12, 16), (22, 26), (91, 95), (163, 167), (277, 281)),
     "REALIND": ((12, 16), (22, 26), (91, 95), (167, 171), (281, 285)),
     "CAP-ELEC": ((13, 17), (23, 27), (92, 96), (169, 173), (234, 238)),
     "DIODE": ((12, 16), (22, 26), (93, 97), (167, 171), (232, 236)),
 }
+PARSED_PASSIVE_LAYOUT_FAMILIES = {"RESISTOR", "CAP", "REALIND", "CAP-ELEC", "DIODE"}
 
 RELATIVE_MODES = {"relative", "linked_relative", "runaway_relative"}
 ABSOLUTE_MODES = {"absolute", "linked_absolute", "runaway_absolute"}
@@ -140,6 +148,22 @@ def _coord_ok(value: int) -> bool:
     return -SCAN_COORD_LIMIT <= value <= SCAN_COORD_LIMIT and value % 100 == 0
 
 
+def _packet_coord_ok(value: int) -> bool:
+    return -SAFE_PACKET_COORD_LIMIT <= value <= SAFE_PACKET_COORD_LIMIT and value % 10 == 0
+
+
+def _packet_coord_pair_ok(x_value: int, y_value: int) -> bool:
+    return (
+        _packet_coord_ok(x_value)
+        and _packet_coord_ok(y_value)
+        and (abs(x_value) >= SAFE_PACKET_MIN_COORD_ABS or abs(y_value) >= SAFE_PACKET_MIN_COORD_ABS)
+    )
+
+
+def _is_ascii_payload(data: bytes) -> bool:
+    return bool(data) and all(byte in (9, 10, 13) or 32 <= byte < 127 for byte in data)
+
+
 def _bidir_terminal_records(fragment: bytes) -> list[tuple[int, int, dict[str, Any]]]:
     records: list[tuple[int, int, dict[str, Any]]] = []
     try:
@@ -221,17 +245,71 @@ def _text_and_body_coord_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
     return pairs
 
 
-def _family_layout_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
-    pairs = FAMILY_LAYOUT_COORDINATE_PLANS.get(family)
-    if not pairs:
+def _length_prefixed_text_coordinate_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+    pairs: list[tuple[int, int, str]] = []
+    offset = 0
+    while offset < len(fragment) - 10:
+        if fragment[offset] != 0xFF:
+            offset += 1
+            continue
+        text_length = fragment[offset + 1]
+        text_start = offset + 2
+        text_end = text_start + text_length
+        x_offset = text_end
+        y_offset = x_offset + 4
+        if y_offset + 4 > len(fragment):
+            offset += 1
+            continue
+        text = fragment[text_start:text_end]
+        if _is_ascii_payload(text):
+            x_value = _s32_at(fragment, x_offset)
+            y_value = _s32_at(fragment, y_offset)
+            if _packet_coord_pair_ok(x_value, y_value):
+                label = text.decode("ascii", "ignore").strip().replace("\n", "\\n")
+                pairs.append((x_offset, y_offset, f"length_prefixed_text:{label[:32]}"))
+        offset += 1
+    return pairs
+
+
+def _marker_body_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
+    marker = family.encode("ascii", errors="ignore")
+    if not marker:
         return []
-    _validate_pair_bounds(fragment, family, pairs)
-    return [(x_offset, y_offset, f"family_plan:{family}") for x_offset, y_offset in pairs]
+    pairs: list[tuple[int, int, str]] = []
+    offset = 0
+    while True:
+        marker_offset = fragment.find(marker, offset)
+        if marker_offset < 0:
+            return pairs
+        x_offset = marker_offset + len(marker)
+        y_offset = x_offset + 4
+        if y_offset + 4 <= len(fragment):
+            x_value = _s32_at(fragment, x_offset)
+            y_value = _s32_at(fragment, y_offset)
+            if _packet_coord_pair_ok(x_value, y_value):
+                pairs.append((x_offset, y_offset, f"marker_body:{family}"))
+        offset = marker_offset + 1
+
+
+def _parsed_family_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
+    pairs = _length_prefixed_text_coordinate_pairs(fragment) + _marker_body_coordinate_pairs(fragment, family)
+    seen: set[tuple[int, int]] = set()
+    ordered: list[tuple[int, int, str]] = []
+    for x_offset, y_offset, reason in pairs:
+        key = (x_offset, y_offset)
+        if key in seen:
+            continue
+        seen.add(key)
+        ordered.append((x_offset, y_offset, reason))
+    return ordered
 
 
 def layout_coordinate_pairs(fragment: bytes, family: str | None = None) -> list[tuple[int, int, str]]:
     if family:
-        planned = _family_layout_coordinate_pairs(fragment, family)
+        if family in PARSED_PASSIVE_LAYOUT_FAMILIES:
+            planned = _parsed_family_coordinate_pairs(fragment, family)
+            return planned
+        planned: list[tuple[int, int, str]] = []
         if planned:
             return planned
     pairs = _terminal_coord_pairs(fragment) + _wire_coord_pairs(fragment) + _text_and_body_coord_pairs(fragment)

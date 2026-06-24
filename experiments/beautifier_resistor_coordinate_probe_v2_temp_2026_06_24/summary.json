@@ -1,0 +1,84 @@
+{
+  "archive": "experiments\\BEAUTIFIER_RESISTOR_COORDINATE_PROBE_V2_TEMP_2026_06_24.zip",
+  "archive_sha256": "22794b9146786f3384e91fe9f12ac9c1dd3983f736060b6bfb319c401d3de40c",
+  "byte_probe": "byte_probe.json",
+  "case_count": 4,
+  "policy": {
+    "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
+    "explicit_donor": "proteus_ic\\donors\\main_mega_20260618\\Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj",
+    "focus": "resistor-only parsed coordinate fields",
+    "full_cdb": true,
+    "rejected_previous_pack": "BEAUTIFIER_FAMILY_PASSIVES_V1_TEMP_2026_06_23"
+  },
+  "records": [
+    {
+      "case": "R00_RESISTOR_1X_BASELINE_NO_BEAUTIFY",
+      "case_folder": "00_R00_RESISTOR_1X_BASELINE_NO_BEAUTIFY",
+      "components": {
+        "RESISTOR": 1
+      },
+      "errors": [],
+      "layout": {
+        "binary_coordinate_mutation": false,
+        "strategy": "legacy"
+      },
+      "manifest": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\00_R00_RESISTOR_1X_BASELINE_NO_BEAUTIFY\\R00_RESISTOR_1X_BASELINE_NO_BEAUTIFY.pdsprj.manifest.json",
+      "output": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\00_R00_RESISTOR_1X_BASELINE_NO_BEAUTIFY\\R00_RESISTOR_1X_BASELINE_NO_BEAUTIFY.pdsprj",
+      "output_name": "R00_RESISTOR_1X_BASELINE_NO_BEAUTIFY.pdsprj",
+      "valid": true,
+      "what_to_check": "Baseline control. One resistor should open in the original donor-selected position. This proves the placer/donor path is still sound before coordinate mutation."
+    },
+    {
+      "case": "R01_RESISTOR_1X_PARSED_COORDS",
+      "case_folder": "01_R01_RESISTOR_1X_PARSED_COORDS",
+      "components": {
+        "RESISTOR": 1
+      },
+      "errors": [],
+      "layout": {
+        "binary_coordinate_mutation": true,
+        "strategy": "beautify"
+      },
+      "manifest": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\01_R01_RESISTOR_1X_PARSED_COORDS\\R01_RESISTOR_1X_PARSED_COORDS.pdsprj.manifest.json",
+      "output": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\01_R01_RESISTOR_1X_PARSED_COORDS\\R01_RESISTOR_1X_PARSED_COORDS.pdsprj",
+      "output_name": "R01_RESISTOR_1X_PARSED_COORDS.pdsprj",
+      "valid": true,
+      "what_to_check": "One resistor should move to the beautifier grid. Ref text, value text, model text, property text, and symbol body should stay together. No LXLCORE.dll."
+    },
+    {
+      "case": "R02_RESISTOR_3X_PARSED_COORDS",
+      "case_folder": "02_R02_RESISTOR_3X_PARSED_COORDS",
+      "components": {
+        "RESISTOR": 3
+      },
+      "errors": [],
+      "layout": {
+        "binary_coordinate_mutation": true,
+        "strategy": "beautify"
+      },
+      "manifest": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\02_R02_RESISTOR_3X_PARSED_COORDS\\R02_RESISTOR_3X_PARSED_COORDS.pdsprj.manifest.json",
+      "output": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\02_R02_RESISTOR_3X_PARSED_COORDS\\R02_RESISTOR_3X_PARSED_COORDS.pdsprj",
+      "output_name": "R02_RESISTOR_3X_PARSED_COORDS.pdsprj",
+      "valid": true,
+      "what_to_check": "Three resistors should be separated on one row. This checks repeated parsed-coordinate movement without touching the old fixed offsets."
+    },
+    {
+      "case": "R03_RESISTOR_5X_PARSED_COORDS",
+      "case_folder": "03_R03_RESISTOR_5X_PARSED_COORDS",
+      "components": {
+        "RESISTOR": 5
+      },
+      "errors": [],
+      "layout": {
+        "binary_coordinate_mutation": true,
+        "strategy": "beautify"
+      },
+      "manifest": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\03_R03_RESISTOR_5X_PARSED_COORDS\\R03_RESISTOR_5X_PARSED_COORDS.pdsprj.manifest.json",
+      "output": "experiments\\beautifier_resistor_coordinate_probe_v2_temp_2026_06_24\\03_R03_RESISTOR_5X_PARSED_COORDS\\R03_RESISTOR_5X_PARSED_COORDS.pdsprj",
+      "output_name": "R03_RESISTOR_5X_PARSED_COORDS.pdsprj",
+      "valid": true,
+      "what_to_check": "Five resistors should be separated on the grid, with all visible labels still attached to their matching resistor bodies."
+    }
+  ],
+  "test_id": "BEAUTIFIER_RESISTOR_COORDINATE_PROBE_V2_TEMP_2026_06_24"
+}
