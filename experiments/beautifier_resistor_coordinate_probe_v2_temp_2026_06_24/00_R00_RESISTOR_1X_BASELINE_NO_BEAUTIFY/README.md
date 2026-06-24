@@ -31,8 +31,8 @@ Baseline control. One resistor should open in the original donor-selected positi
 
 ## User Result
 
-Pending.
+Accepted. User reported this baseline works.
 
 ## Codex Observation
 
-Pending user Proteus result.
+Baseline donor-selected resistor path is sound.

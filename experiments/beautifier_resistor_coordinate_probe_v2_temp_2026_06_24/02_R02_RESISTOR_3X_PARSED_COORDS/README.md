@@ -31,8 +31,8 @@ Three resistors should be separated on one row. This checks repeated parsed-coor
 
 ## User Result
 
-Pending.
+Accepted. User reported this parsed-coordinate resistor case works.
 
 ## Codex Observation
 
-Pending user Proteus result.
+Parsed coordinate fields worked for three resistors.

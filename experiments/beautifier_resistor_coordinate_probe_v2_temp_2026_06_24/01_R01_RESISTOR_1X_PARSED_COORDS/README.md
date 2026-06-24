@@ -31,8 +31,8 @@ One resistor should move to the beautifier grid. Ref text, value text, model tex
 
 ## User Result
 
-Pending.
+Accepted. User reported this parsed-coordinate resistor case works.
 
 ## Codex Observation
 
-Pending user Proteus result.
+Parsed coordinate fields worked for one resistor.

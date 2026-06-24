@@ -119,3 +119,29 @@ to inspect. Static validation passed:
 During this run, Python failed to open two semimega donor paths because their
 full path length is at the Windows 260-character boundary. `src/proteusgen/pdsprj.py`
 now applies the Windows `\\?\` prefix for long paths before calling `ZipFile`.
+
+User later reported all V2 resistor coordinate cases worked. Treat the parsed
+resistor coordinate movement as accepted for small resistor-only cases.
+
+## 2026-06-24 Resistor Probe V3 R91 Accepted Limit
+
+The user corrected an important limit mistake: the main mega donor contains
+`690` raw `RESISTOR` packets, but earlier accepted large-rule testing recorded
+`R91` as the practical accepted resistor-heavy ceiling. Do not call `690` the
+safe max limit unless a future Proteus test explicitly proves it.
+
+Generated `BEAUTIFIER_RESISTOR_MAX_PROBE_V3_TEMP_2026_06_24` by evolving the
+V2 script. The single case is:
+
+- `R04_RESISTOR_91X_ACCEPTED_MAX_PARSED_COORDS`
+
+Static validation:
+
+- script compile passed
+- `$env:PYTHONPATH='src'; python -m pytest tests\test_component_placer.py -q`
+  -> `29 passed`
+- manifest reports `visible_entry_count: 91` and `visible_translated_count: 91`
+
+Manual Proteus testing is pending. If R04 opens without `LXLCORE.dll` and the
+labels/values stay attached to their resistor bodies, move to the next family:
+`CAP`.

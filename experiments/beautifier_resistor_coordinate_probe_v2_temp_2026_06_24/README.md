@@ -27,9 +27,10 @@ Byte inspection showed V1 moved packet constants, not true coordinates.
 
 ## User Results
 
-Pending.
+Accepted. User reported all R00-R03 cases work.
 
 ## Next Step
 
-If R00 opens and R01-R03 also open without `LXLCORE.dll`, widen to CAP/REALIND/CAP-ELEC/DIODE one family at a time.
-If any parsed-coordinate resistor case fails, stop and inspect the emitted packet diff before trying another family.
+Generate one donor-max resistor beautifier case using the same parsed-coordinate
+method. If that opens, mark `RESISTOR` beautifier coordinate movement accepted
+for the current main mega donor and move to the next passive component family.
