@@ -1,4 +1,4 @@
-# C02_CAP_3X_PARSED_COORDS
+# C01_CAP_100X_PARSED_COORDS
 
 ## Purpose
 
@@ -10,7 +10,7 @@ This case goes through `generate_component_placement_project`; it is not a helpe
 ```json
 {
   "components": {
-    "CAP": 3
+    "CAP": 100
   },
   "layout": {
     "binary_coordinate_mutation": true,
@@ -22,17 +22,17 @@ This case goes through `generate_component_placement_project`; it is not a helpe
 
 ## Output
 
-- Project: `C02_CAP_3X_PARSED_COORDS.pdsprj`
-- Manifest: `C02_CAP_3X_PARSED_COORDS.pdsprj.manifest.json`
+- Project: `C01_CAP_100X_PARSED_COORDS.pdsprj`
+- Manifest: `C01_CAP_100X_PARSED_COORDS.pdsprj.manifest.json`
 
 ## What To Check In Proteus
 
-3 `CAP` components should move onto the beautifier grid. Check for DLL errors, bad object records, and detached labels/values.
+100 `CAP` components should move onto the beautifier grid. Check for DLL errors, bad object records, and detached labels/values.
 
 ## User Result
 
-Accepted. User reported this CAP parsed-coordinate case works.
+Pending.
 
 ## Codex Observation
 
-Parsed coordinate fields worked for three CAP components.
+Pending user Proteus result.

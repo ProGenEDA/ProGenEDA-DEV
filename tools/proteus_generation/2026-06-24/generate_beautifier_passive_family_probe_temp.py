@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -27,6 +28,7 @@ from proteusgen.component_placer import (
 SUPPORTED_FAMILIES = ("RESISTOR", "CAP", "REALIND", "CAP-ELEC", "DIODE")
 DEFAULT_COUNTS = (1, 3, 5)
 KNOWN_ACCEPTED_LIMITS = {"RESISTOR": 91}
+VARIANT_RE = re.compile(r"[^a-z0-9_]+")
 
 
 def sha256(path: Path) -> str:
@@ -39,6 +41,15 @@ def sha256(path: Path) -> str:
 
 def slug_family(family: str) -> str:
     return family.lower().replace("-", "_")
+
+
+def slug_variant(variant: str | None) -> str:
+    if not variant:
+        return ""
+    slug = VARIANT_RE.sub("_", variant.lower()).strip("_")
+    if not slug:
+        raise ValueError("variant must contain at least one letter or digit")
+    return slug
 
 
 def case_prefix(family: str) -> str:
@@ -128,6 +139,7 @@ def write_root_readme(
     out_dir: Path,
     *,
     family: str,
+    variant: str,
     records: list[dict[str, Any]],
     byte_probe: dict[str, Any],
     donor_inventory_count: int,
@@ -148,6 +160,8 @@ def write_root_readme(
         f"- Donor: `{MAIN_MEGA_NO_SOURCE_DONOR}`",
         f"- Donor inventory count: `{donor_inventory_count}`",
     ]
+    if variant:
+        lines.append(f"- Probe variant: `{variant}`")
     if accepted_limit is not None:
         lines.append(f"- Accepted test limit used here: `{accepted_limit}`")
     lines.extend(["", "## Parsed Coordinates Under Test", ""])
@@ -218,7 +232,13 @@ def build_cases(family: str, counts: tuple[int, ...]) -> list[dict[str, Any]]:
     return cases
 
 
-def generate_family_probe(family: str, counts: tuple[int, ...], *, accepted_limit: int | None = None) -> dict[str, Any]:
+def generate_family_probe(
+    family: str,
+    counts: tuple[int, ...],
+    *,
+    accepted_limit: int | None = None,
+    variant: str | None = None,
+) -> dict[str, Any]:
     if family not in SUPPORTED_FAMILIES:
         raise ValueError(f"Unsupported family {family!r}; expected one of {', '.join(SUPPORTED_FAMILIES)}")
 
@@ -231,8 +251,15 @@ def generate_family_probe(family: str, counts: tuple[int, ...], *, accepted_limi
         )
 
     slug = slug_family(family)
-    out_dir = ROOT / "experiments" / f"beautifier_{slug}_coordinate_probe_v1_temp_2026_06_24"
-    archive = ROOT / "experiments" / f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE_V1_TEMP_2026_06_24.zip"
+    variant_slug = slug_variant(variant)
+    variant_part = f"_{variant_slug}" if variant_slug else ""
+    archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
+    out_dir = ROOT / "experiments" / f"beautifier_{slug}_coordinate_probe{variant_part}_v1_temp_2026_06_24"
+    archive = (
+        ROOT
+        / "experiments"
+        / f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE{archive_variant_part}_V1_TEMP_2026_06_24.zip"
+    )
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -289,8 +316,9 @@ def generate_family_probe(family: str, counts: tuple[int, ...], *, accepted_limi
         )
 
     summary = {
-        "test_id": f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE_V1_TEMP_2026_06_24",
+        "test_id": f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE{archive_variant_part}_V1_TEMP_2026_06_24",
         "family": family,
+        "variant": variant_slug,
         "case_count": len(records),
         "counts": list(counts),
         "accepted_limit": accepted_limit,
@@ -309,6 +337,7 @@ def generate_family_probe(family: str, counts: tuple[int, ...], *, accepted_limi
     write_root_readme(
         out_dir,
         family=family,
+        variant=variant_slug,
         records=records,
         byte_probe=byte_probe,
         donor_inventory_count=donor_inventory_count,
@@ -322,6 +351,7 @@ def generate_family_probe(family: str, counts: tuple[int, ...], *, accepted_limi
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {
         "family": family,
+        "variant": variant_slug,
         "out_dir": str(out_dir),
         "archive": str(archive),
         "archive_sha256": summary["archive_sha256"],
@@ -336,13 +366,19 @@ def main() -> None:
     parser.add_argument("--family", required=True, choices=SUPPORTED_FAMILIES)
     parser.add_argument("--counts", default=",".join(str(count) for count in DEFAULT_COUNTS))
     parser.add_argument("--accepted-limit", type=int, default=None)
+    parser.add_argument("--variant", default="", help="Optional output-name suffix, e.g. stress100.")
     args = parser.parse_args()
 
     accepted_limit = args.accepted_limit
     if accepted_limit is None and args.family in KNOWN_ACCEPTED_LIMITS:
         accepted_limit = KNOWN_ACCEPTED_LIMITS[args.family]
 
-    result = generate_family_probe(args.family, parse_counts(args.counts), accepted_limit=accepted_limit)
+    result = generate_family_probe(
+        args.family,
+        parse_counts(args.counts),
+        accepted_limit=accepted_limit,
+        variant=args.variant,
+    )
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

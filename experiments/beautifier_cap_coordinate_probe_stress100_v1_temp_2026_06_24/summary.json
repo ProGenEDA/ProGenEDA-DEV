@@ -1,0 +1,57 @@
+{
+  "accepted_limit": null,
+  "archive": "experiments\\BEAUTIFIER_CAP_COORDINATE_PROBE_STRESS100_V1_TEMP_2026_06_24.zip",
+  "archive_sha256": "10c3661f4ef3210147da2b91d7e52c228786b5b77fd9e5952a2b2e775acdd933",
+  "byte_probe": "byte_probe.json",
+  "case_count": 2,
+  "counts": [
+    100
+  ],
+  "donor_inventory_count": 600,
+  "family": "CAP",
+  "policy": {
+    "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
+    "explicit_donor": "proteus_ic\\donors\\main_mega_20260618\\Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj",
+    "full_cdb": true,
+    "reuses_parsed_coordinate_method": true,
+    "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py"
+  },
+  "records": [
+    {
+      "case": "C00_CAP_1X_BASELINE_NO_BEAUTIFY",
+      "case_folder": "00_C00_CAP_1X_BASELINE_NO_BEAUTIFY",
+      "components": {
+        "CAP": 1
+      },
+      "errors": [],
+      "layout": {
+        "binary_coordinate_mutation": false,
+        "strategy": "legacy"
+      },
+      "manifest": "experiments\\beautifier_cap_coordinate_probe_stress100_v1_temp_2026_06_24\\00_C00_CAP_1X_BASELINE_NO_BEAUTIFY\\C00_CAP_1X_BASELINE_NO_BEAUTIFY.pdsprj.manifest.json",
+      "output": "experiments\\beautifier_cap_coordinate_probe_stress100_v1_temp_2026_06_24\\00_C00_CAP_1X_BASELINE_NO_BEAUTIFY\\C00_CAP_1X_BASELINE_NO_BEAUTIFY.pdsprj",
+      "output_name": "C00_CAP_1X_BASELINE_NO_BEAUTIFY.pdsprj",
+      "valid": true,
+      "what_to_check": "Baseline control. One `CAP` should open in the original donor-selected position."
+    },
+    {
+      "case": "C01_CAP_100X_PARSED_COORDS",
+      "case_folder": "01_C01_CAP_100X_PARSED_COORDS",
+      "components": {
+        "CAP": 100
+      },
+      "errors": [],
+      "layout": {
+        "binary_coordinate_mutation": true,
+        "strategy": "beautify"
+      },
+      "manifest": "experiments\\beautifier_cap_coordinate_probe_stress100_v1_temp_2026_06_24\\01_C01_CAP_100X_PARSED_COORDS\\C01_CAP_100X_PARSED_COORDS.pdsprj.manifest.json",
+      "output": "experiments\\beautifier_cap_coordinate_probe_stress100_v1_temp_2026_06_24\\01_C01_CAP_100X_PARSED_COORDS\\C01_CAP_100X_PARSED_COORDS.pdsprj",
+      "output_name": "C01_CAP_100X_PARSED_COORDS.pdsprj",
+      "valid": true,
+      "what_to_check": "100 `CAP` components should move onto the beautifier grid. Check for DLL errors, bad object records, and detached labels/values."
+    }
+  ],
+  "test_id": "BEAUTIFIER_CAP_COORDINATE_PROBE_STRESS100_V1_TEMP_2026_06_24",
+  "variant": "stress100"
+}

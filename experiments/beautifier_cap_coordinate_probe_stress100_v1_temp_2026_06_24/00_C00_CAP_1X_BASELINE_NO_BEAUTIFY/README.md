@@ -31,8 +31,8 @@ Baseline control. One `CAP` should open in the original donor-selected position.
 
 ## User Result
 
-Accepted. User reported this CAP baseline works.
+Pending.
 
 ## Codex Observation
 
-Baseline donor-selected CAP path is sound.
+Pending user Proteus result.

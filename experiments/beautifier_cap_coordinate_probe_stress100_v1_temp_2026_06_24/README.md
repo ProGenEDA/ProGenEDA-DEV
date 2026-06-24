@@ -10,6 +10,7 @@ It keeps the accepted parsed-coordinate method and avoids creating one-off scrip
 - Family under test: `CAP`
 - Donor: `proteus_ic\donors\main_mega_20260618\Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj`
 - Donor inventory count: `600`
+- Probe variant: `stress100`
 
 ## Parsed Coordinates Under Test
 
@@ -22,13 +23,11 @@ It keeps the accepted parsed-coordinate method and avoids creating one-off scrip
 ## Test Files
 
 - `00_C00_CAP_1X_BASELINE_NO_BEAUTIFY/C00_CAP_1X_BASELINE_NO_BEAUTIFY.pdsprj`: Baseline control. One `CAP` should open in the original donor-selected position.
-- `01_C01_CAP_1X_PARSED_COORDS/C01_CAP_1X_PARSED_COORDS.pdsprj`: 1 `CAP` components should move onto the beautifier grid. Check for DLL errors, bad object records, and detached labels/values.
-- `02_C02_CAP_3X_PARSED_COORDS/C02_CAP_3X_PARSED_COORDS.pdsprj`: 3 `CAP` components should move onto the beautifier grid. Check for DLL errors, bad object records, and detached labels/values.
-- `03_C03_CAP_5X_PARSED_COORDS/C03_CAP_5X_PARSED_COORDS.pdsprj`: 5 `CAP` components should move onto the beautifier grid. Check for DLL errors, bad object records, and detached labels/values.
+- `01_C01_CAP_100X_PARSED_COORDS/C01_CAP_100X_PARSED_COORDS.pdsprj`: 100 `CAP` components should move onto the beautifier grid. Check for DLL errors, bad object records, and detached labels/values.
 
 ## User Results
 
-Accepted. User reported the CAP baseline and 1/3/5 parsed-coordinate cases work.
+Pending.
 
 ## What Success Means
 

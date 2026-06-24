@@ -31,8 +31,8 @@ This case goes through `generate_component_placement_project`; it is not a helpe
 
 ## User Result
 
-Pending.
+Accepted. User reported this CAP parsed-coordinate case works.
 
 ## Codex Observation
 
-Pending user Proteus result.
+Parsed coordinate fields worked for one CAP.

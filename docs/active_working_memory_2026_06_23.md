@@ -164,6 +164,19 @@ Generated the next family probe:
 - Static validation: compile passed; `tests/test_component_placer.py` -> `29 passed`
 - CAP manifests report translated counts matching requested counts for 1/3/5
 
-Manual Proteus testing for CAP is pending. If CAP passes, continue through the
-same reusable script for `REALIND`, `CAP-ELEC`, and `DIODE`, one family at a
-time.
+User reported the CAP baseline and 1/3/5 parsed-coordinate cases worked. Treat
+CAP coordinate movement as accepted for the small CAP probe cases.
+
+Extended the same reusable harness with `--variant` so stress packs can be
+generated without overwriting accepted packs. Generated:
+
+- `BEAUTIFIER_CAP_COORDINATE_PROBE_STRESS100_V1_TEMP_2026_06_24`
+- Cases: `C00` baseline and `C01_CAP_100X_PARSED_COORDS`
+- Donor inventory count for `CAP`: `600`
+- Manifest reports `visible_entry_count: 100` and `visible_translated_count: 100`
+- Archive SHA256: `10c3661f4ef3210147da2b91d7e52c228786b5b77fd9e5952a2b2e775acdd933`
+- Static validation: compile passed; `tests/test_component_placer.py` -> `29 passed`
+
+Manual Proteus testing for the 100-CAP stress case is pending. If it passes,
+continue through the same reusable script for `REALIND`, `CAP-ELEC`, and
+`DIODE`, one family at a time.
