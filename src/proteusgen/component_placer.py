@@ -39,8 +39,13 @@ from .component_pipeline import (
 )
 from .component_beautifier import (
     DEFAULT_HIDDEN_COORDINATE_MODE,
+    D20_ABSOLUTE_X,
+    D20_ABSOLUTE_Y,
+    D20_SMALL_COORD_DX,
+    D20_SMALL_COORD_DY,
     HIDDEN_PACKET_START,
     hide_packet,
+    translate_packet_by_delta,
     translate_packet_to_slot,
 )
 from .templates import FixtureRegistry, repository_root
@@ -913,46 +918,69 @@ def _display_rows_for_request(records: dict[str, list[bytes]], request: dict[str
     if cathode_count and len(cathode_rows) < cathode_count:
         raise ValueError(f"Need {cathode_count} common-cathode display rows, found {len(cathode_rows)}.")
 
-    selected: list[bytes] = []
-    refs: list[str] = []
+    selected: list[RawComponentGroup] = []
+    sequence = 0
+
+    def append_row(*, key: str, family: str, ref: str, row: bytes) -> None:
+        nonlocal sequence
+        sequence += 1
+        selected.append(
+            RawComponentGroup(
+                key=key,
+                family=family,
+                start=sequence,
+                end=sequence + len(row),
+                refs=(ref,),
+                data=row,
+                source_is_final=row.endswith(b"\xff"),
+            )
+        )
+
     if cathode_count:
-        selected.extend(cathode_rows[:cathode_count])
-        refs.extend(f"CC{index + 1}" for index in range(cathode_count))
-        notes.append("common-cathode displays use mega cathode middle rows")
+        for index, row in enumerate(cathode_rows[:cathode_count], start=1):
+            append_row(
+                key=f"DISPLAY_CC_{index:03d}",
+                family="7SEG-COM-CAT-BLUE",
+                ref=f"CC{index}",
+                row=row,
+            )
+        notes.append("common-cathode displays use individually placeable mega cathode middle rows")
 
     if anode_count:
         for index in range(anode_count - 1):
             row = anode_rows[index]
-            selected.append(_anode_block_final_as_middle(row) if len(row) == 399 and not row.endswith(b"\xff") else row)
-            refs.append(f"AN{index + 1}")
-        selected.append(final_anode)
-        refs.append(f"AN{anode_count}:TRUE_FINAL")
-        notes.append("common-anode displays use the accepted trim rule plus true donor-final anode row")
+            append_row(
+                key=f"DISPLAY_AN_{index + 1:03d}",
+                family="7SEG-COM-AN-BLUE",
+                ref=f"AN{index + 1}",
+                row=_anode_block_final_as_middle(row) if len(row) == 399 and not row.endswith(b"\xff") else row,
+            )
+        append_row(
+            key=f"DISPLAY_AN_{anode_count:03d}_TRUE_FINAL",
+            family="7SEG-COM-AN-BLUE",
+            ref=f"AN{anode_count}:TRUE_FINAL",
+            row=final_anode,
+        )
+        notes.append(
+            "common-anode red displays use individually placeable rows plus the true donor-final anode row"
+        )
     elif cathode_count:
-        selected.append(final_anode)
-        refs.append("ANODE_SENTINEL")
-        notes.append("common-cathode-only displays terminate with the true donor-final anode sentinel")
+        append_row(
+            key="DISPLAY_ANODE_SENTINEL",
+            family="7SEG-COM-AN-BLUE",
+            ref="ANODE_SENTINEL",
+            row=final_anode,
+        )
+        notes.append(
+            "common-cathode-only displays retain the true donor-final red-anode sentinel as hidden infrastructure"
+        )
 
     if not selected:
         return (), ()
-    data = b"".join(selected)
+    data = b"".join(group.data for group in selected)
     if not data.endswith(b"\xff"):
         raise ValueError("Display block did not end with a final FF row.")
-    family = "7SEG-COM-MIXED" if anode_count and cathode_count else ("7SEG-COM-AN-BLUE" if anode_count else "7SEG-COM-CAT-BLUE")
-    return (
-        (
-            RawComponentGroup(
-                key="DISPLAY_BLOCK",
-                family=family,
-                start=0,
-                end=len(data),
-                refs=tuple(refs),
-                data=data,
-                source_is_final=True,
-            ),
-        ),
-        tuple(notes),
-    )
+    return tuple(selected), tuple(notes)
 
 
 def _load_d20_display_bridge(chunk: bytes) -> RawComponentGroup:
@@ -1315,17 +1343,14 @@ def _select_raw_groups(
     hidden: list[RawComponentGroup] = []
     for family, count in request.items():
         family_offset = int((component_offsets or {}).get(family, 0))
-        if family == "SWITCH" and control_strategy == "hidden_dummy_control":
-            source = _select_switch_groups(
-                groups_by_family,
-                count + 1,
-                offset=switch_offset if switch_offset is not None else family_offset,
+        if family == "SWITCH":
+            selected.extend(
+                _select_switch_groups(
+                    groups_by_family,
+                    count,
+                    offset=switch_offset if switch_offset is not None else family_offset,
+                )
             )
-            dummy = _hidden_dummy_group(source[0], hidden_coordinate_mode=hidden_coordinate_mode)
-            hidden.append(dummy)
-            selected.extend((dummy, *source[1:]))
-        elif family == "SWITCH":
-            selected.extend(_select_switch_groups(groups_by_family, count, offset=family_offset))
         elif family == "FUSE":
             fuse_groups = [
                 group
@@ -1337,21 +1362,17 @@ def _select_raw_groups(
             if len(fuse_groups) < count:
                 raise ValueError(f"Need {count} strict 338-byte FUSE groups.")
         elif family == "POT-HG":
-            source = _select_cdb_backed(
-                groups_by_family,
-                cdb_refs,
-                family,
-                count + 1,
-                offset=family_offset,
-                lengths={431, 432},
-                tail=b"\x08",
+            selected.extend(
+                _select_cdb_backed(
+                    groups_by_family,
+                    cdb_refs,
+                    family,
+                    count,
+                    offset=family_offset,
+                    lengths={431, 432},
+                    tail=b"\x08",
+                )
             )
-            if control_strategy == "hidden_dummy_control":
-                dummy = _hidden_dummy_group(source[0], hidden_coordinate_mode=hidden_coordinate_mode)
-                hidden.append(dummy)
-                selected.extend((dummy, *source[1:]))
-            else:
-                selected.extend(source[:count])
         elif family == "PNP":
             selected.extend(_select_cdb_backed(groups_by_family, cdb_refs, family, count, offset=family_offset, min_length=342, tail=b"\x00"))
         elif family in SOURCE_CLEAN_MIN_LENGTHS:
@@ -1562,10 +1583,8 @@ def generate_component_placement_project(
     )
     if strategy not in CONTROL_STRATEGIES:
         raise ValueError(f"Unsupported control_strategy {strategy!r}; expected one of {CONTROL_STRATEGIES}.")
-    if strategy in {"switch_precedence", "hidden_dummy_switch"} or (
-        strategy == "accepted" and set(request) & CONTROL_PREFIX_FAMILIES
-    ):
-        strategy = "hidden_dummy_control"
+    if strategy in {"switch_precedence", "hidden_dummy_switch", "hidden_dummy_control"}:
+        strategy = "accepted"
     switch_offset = None
     if isinstance(payload, dict) and payload.get("switch_offset") is not None:
         switch_offset = int(payload["switch_offset"])
@@ -1576,7 +1595,7 @@ def generate_component_placement_project(
             for family, offset in payload["component_offsets"].items()
         }
     hidden_coordinate_mode = DEFAULT_HIDDEN_COORDINATE_MODE
-    display_bridge_coordinate_mode = "display_small_relative"
+    display_bridge_coordinate_mode = "display_absolute_100k"
     if isinstance(payload, dict):
         raw_layout = payload.get("layout") if isinstance(payload.get("layout"), dict) else {}
         hidden_coordinate_mode = str(
@@ -1589,7 +1608,7 @@ def generate_component_placement_project(
             or payload.get("d20_coordinate_mode")
             or raw_layout.get("display_bridge_coordinate_mode")
             or raw_layout.get("d20_coordinate_mode")
-            or "display_small_relative"
+            or "display_absolute_100k"
         ).lower()
         hide_display_bridge = _payload_bool(
             payload.get("hide_display_bridge")
@@ -1631,6 +1650,8 @@ def generate_component_placement_project(
         excluded_keys=excluded_keys,
         hidden_coordinate_mode=hidden_coordinate_mode,
     )
+    if not hidden:
+        hidden_coordinate_mode = DEFAULT_HIDDEN_COORDINATE_MODE
     selected_with_terminals = selected
     prefix = _chunk_prefix_for_request(request, donor_chunk)
     actual_layout_entries: list[dict[str, Any]] = []
@@ -1648,28 +1669,91 @@ def generate_component_placement_project(
             display_chunk_source = _extract_object_chunk(read_internal_file(display_donor, "ROOT.DSN"))
             display_groups, display_notes = _display_rows_for_request(_display_records_from_chunk(display_chunk_source), display_request)
             display_bridge = _load_d20_display_bridge(display_chunk_source)
+        display_infrastructure_entries: list[dict[str, Any]] = []
         if hide_display_bridge:
+            if display_bridge_coordinate_mode not in {
+                "display_absolute_100k",
+                "display_small_relative",
+                "d20_small_relative",
+            }:
+                raise ValueError(
+                    f"Unsupported display bridge coordinate mode {display_bridge_coordinate_mode!r}."
+                )
+            moved_bridge, bridge_entry = translate_packet_to_slot(
+                display_bridge.data,
+                slot=0,
+                key=display_bridge.key,
+                family="DIODE",
+                origin_x=D20_ABSOLUTE_X,
+                origin_y=D20_ABSOLUTE_Y,
+            )
+            bridge_entry["role"] = "display_infrastructure"
+            bridge_entry["coordinate_mode"] = "absolute_bbox_origin"
+            display_infrastructure_entries.append(bridge_entry)
             display_bridge = _replace_group_data(
                 display_bridge,
-                hide_packet("DISPLAY_BRIDGE", display_bridge.data, mode=display_bridge_coordinate_mode),
+                moved_bridge,
                 start=HIDDEN_PACKET_START + 1,
             )
             display_notes = (
                 *display_notes,
-                f"D20 display bridge moved by beautifier mode {display_bridge_coordinate_mode}",
+                (
+                    "D20 display bridge moved through parsed diode coordinates to "
+                    f"bbox origin {D20_ABSOLUTE_X}/{D20_ABSOLUTE_Y}"
+                ),
             )
         selected_with_terminals, selected_layout_entries, next_slot = _apply_binary_beautifier(
             payload,
             selected_with_terminals,
             hidden,
         )
-        display_groups, display_layout_entries, _next_slot = _apply_binary_beautifier(
+        display_sentinel = next(
+            (group for group in display_groups if group.key == "DISPLAY_ANODE_SENTINEL"),
+            None,
+        )
+        visible_display_groups = tuple(
+            group for group in display_groups if group.key != "DISPLAY_ANODE_SENTINEL"
+        )
+        visible_display_groups, display_layout_entries, _next_slot = _apply_binary_beautifier(
             payload,
-            display_groups,
+            visible_display_groups,
             (),
             start_slot=next_slot,
         )
-        actual_layout_entries = [*selected_layout_entries, *display_layout_entries]
+        if display_sentinel is not None:
+            if hide_display_bridge:
+                moved_sentinel, sentinel_entry = translate_packet_by_delta(
+                    display_sentinel.data,
+                    key=display_sentinel.key,
+                    family="7SEG-COM-AN-BLUE",
+                    dx=D20_SMALL_COORD_DX,
+                    dy=D20_SMALL_COORD_DY,
+                )
+                sentinel_entry["role"] = "display_infrastructure"
+                display_infrastructure_entries.append(sentinel_entry)
+                display_sentinel = _replace_group_data(
+                    display_sentinel,
+                    moved_sentinel,
+                    start=HIDDEN_PACKET_START + 2,
+                )
+            else:
+                display_infrastructure_entries.append(
+                    {
+                        "key": display_sentinel.key,
+                        "family": display_sentinel.family,
+                        "translated": False,
+                        "role": "display_infrastructure",
+                        "reason": "D20-static isolation case keeps the required final-row sentinel unchanged",
+                    }
+                )
+            display_groups = (*visible_display_groups, display_sentinel)
+        else:
+            display_groups = visible_display_groups
+        actual_layout_entries = [
+            *selected_layout_entries,
+            *display_layout_entries,
+            *display_infrastructure_entries,
+        ]
         object_chunk = _object_chunk_from_groups_and_display(
             selected_with_terminals,
             display_bridge=display_bridge,

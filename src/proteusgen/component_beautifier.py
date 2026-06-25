@@ -22,6 +22,8 @@ HIDDEN_PACKET_START = -1_000_000_000
 DEFAULT_HIDDEN_COORDINATE_MODE = "none"
 D20_SMALL_COORD_DX = 350_000
 D20_SMALL_COORD_DY = 350_000
+D20_ABSOLUTE_X = 100_000
+D20_ABSOLUTE_Y = 100_000
 
 VISIBLE_LAYOUT_ORIGIN_X = -6_350_000
 VISIBLE_LAYOUT_ORIGIN_Y = -5_080_000
@@ -345,7 +347,20 @@ def _parsed_family_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[
 
 
 def _display_coordinate_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
-    pairs = _length_prefixed_text_coordinate_pairs(fragment)
+    pairs: list[tuple[int, int, str]] = []
+    # Display rows are anonymous records. These two coordinate pairs hold the
+    # row anchor and Proteus-generated component-ID text (for example D103).
+    # Leaving them behind moves the symbol but strands its generated name.
+    for x_offset, y_offset, reason in (
+        (4, 8, "display_row_anchor"),
+        (70, 74, "display_component_id"),
+    ):
+        if y_offset + 4 <= len(fragment):
+            x_value = _s32_at(fragment, x_offset)
+            y_value = _s32_at(fragment, y_offset)
+            if _packet_coord_pair_ok(x_value, y_value):
+                pairs.append((x_offset, y_offset, reason))
+    pairs.extend(_length_prefixed_text_coordinate_pairs(fragment))
     for marker in DISPLAY_LAYOUT_MARKERS:
         pairs.extend(_marker_body_coordinate_pairs(fragment, marker))
     return _dedupe_coordinate_pairs(pairs)
@@ -452,4 +467,44 @@ def translate_packet_to_slot(
         "refs_unchanged": refs_in_packet(data) == refs_in_packet(translated),
         "marker_count_before": data.count(marker) if marker else 0,
         "marker_count_after": translated.count(marker) if marker else 0,
+    }
+
+
+def translate_packet_by_delta(
+    data: bytes,
+    *,
+    key: str,
+    family: str,
+    dx: int,
+    dy: int,
+) -> tuple[bytes, dict[str, Any]]:
+    """Move every parsed coordinate field in one complete packet by a delta."""
+
+    pairs = layout_coordinate_pairs(data, family)
+    if not pairs:
+        return data, {
+            "key": key,
+            "family": family,
+            "translated": False,
+            "reason": "no layout coordinate pairs found",
+        }
+
+    before = coordinate_bbox(data, pairs)
+    out = bytearray(data)
+    for x_offset, y_offset, _reason in pairs:
+        _put_s32_at(out, x_offset, _s32_at(out, x_offset) + dx)
+        _put_s32_at(out, y_offset, _s32_at(out, y_offset) + dy)
+    translated = bytes(out)
+    reason_counts = Counter(reason for _x_offset, _y_offset, reason in pairs)
+    return translated, {
+        "key": key,
+        "family": family,
+        "translated": translated != data,
+        "dx": dx,
+        "dy": dy,
+        "coordinate_pair_count": len(pairs),
+        "coordinate_reason_counts": dict(sorted(reason_counts.items())),
+        "before_bbox": before,
+        "after_bbox": coordinate_bbox(translated, pairs),
+        "refs_unchanged": refs_in_packet(data) == refs_in_packet(translated),
     }

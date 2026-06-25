@@ -410,7 +410,7 @@ def _mutation_layout(family: str, *, hide_display_bridge: bool = True) -> dict[s
         layout.update(
             {
                 "hide_display_bridge": hide_display_bridge,
-                "display_bridge_coordinate_mode": "display_small_relative",
+                "display_bridge_coordinate_mode": "display_absolute_100k",
             }
         )
     return layout
@@ -444,7 +444,11 @@ def build_cases(family: str, counts: tuple[int, ...]) -> list[dict[str, Any]]:
         case_number = index + (1 if family in DISPLAY_FAMILIES else 0)
         special_note = ""
         if family in DISPLAY_FAMILIES:
-            special_note = " D20 should move separately and must not count as a requested diode."
+            special_note = (
+                " Proteus-generated Dxxx names should stay attached to their displays. "
+                "D20 should be in the 100000/100000 infrastructure region and must not "
+                "count as a requested diode."
+            )
         elif family in CONTROL_DUMMY_FAMILIES:
             special_note = (
                 " The requested visible controls should move as complete linked packets; "
@@ -806,15 +810,21 @@ def _effective_count_for_family(family: str, requested_count: int, available: in
     return effective, None
 
 
-def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None = None) -> dict[str, Any]:
+def generate_mixed_non_ic_batch(
+    counts: tuple[int, ...],
+    *,
+    variant: str | None = None,
+    run_date: str = "2026-06-24",
+) -> dict[str, Any]:
     donor_path = NEW_COMPONENT_MEGA_DONOR
     donor_counts = _inspect_donor_counts_for_selection(ROOT / donor_path, _generation_markers())
     variant_slug = slug_variant(variant)
+    run_date_slug = run_date.replace("-", "_")
     variant_part = f"_{variant_slug}" if variant_slug else ""
     archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
-    out_dir = ROOT / "experiments" / f"beautifier_mixed_non_ic{variant_part}_v1_temp_2026_06_24"
+    out_dir = ROOT / "experiments" / f"beautifier_mixed_non_ic{variant_part}_v1_temp_{run_date_slug}"
     archive = ROOT / "experiments" / (
-        f"BEAUTIFIER_MIXED_NON_IC{archive_variant_part}_V1_TEMP_2026_06_24.zip"
+        f"BEAUTIFIER_MIXED_NON_IC{archive_variant_part}_V1_TEMP_{run_date_slug}.zip"
     )
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -839,8 +849,7 @@ def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None 
             "strategy": "beautify",
             "binary_coordinate_mutation": True,
             "hide_display_bridge": True,
-            "display_bridge_coordinate_mode": "display_small_relative",
-            "hidden_coordinate_mode": "linked_relative",
+            "display_bridge_coordinate_mode": "display_absolute_100k",
         }
         case = {
             "name": f"NIC{requested_count:02d}X_ALL_NON_IC",
@@ -852,8 +861,8 @@ def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None 
             ),
             "what_to_check": (
                 f"Requested count per family: {requested_count}. Displays should appear without counting "
-                "the internal D20 bridge as a user diode. SWITCH and POT-HG should each have the requested "
-                "visible count, with the internal dummy control moved by the layout/beautifier stage. "
+                "the internal D20 bridge as a user diode. SWITCH and POT-HG should each have exactly the "
+                "requested count, with no extra dummy packet. "
                 "Check for open crashes, DLL errors, bad object records, missing controls, and detached labels."
             ),
         }
@@ -895,7 +904,7 @@ def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None 
     lines = [
         "# Beautifier Mixed Non-IC Counts",
         "",
-        "Generated on 2026-06-24.",
+        f"Generated on {run_date}.",
         "",
         "This pack combines all current non-IC component-placer families from the new-component mega donor.",
         "It includes sources, displays, controls, transformer/bridge/regulator/opamp, and the accepted passive/discrete families.",
@@ -908,17 +917,14 @@ def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None 
         "",
         "- `7SEG-COM-AN-BLUE` and `7SEG-COM-CAT-BLUE` automatically carry the internal `D20` display bridge.",
         "- `D20` is not included in the requested `DIODE` count.",
-        "- `hide_display_bridge=true` moves the `D20` bridge by the display-small relative beautifier mode.",
-        "- `SWITCH` and `POT-HG` request one extra internal dummy packet; the dummy does not count as a user component.",
-        "- `hidden_coordinate_mode=linked_relative` is used for the internal control dummy packets.",
+        "- `hide_display_bridge=true` moves the `D20` bridge to a parsed-coordinate bbox origin near `100000/100000`.",
+        "- `SWITCH` and `POT-HG` use the exact requested count with no extra dummy packet.",
         "",
         "## Families",
         "",
     ]
     for family in MIXED_NON_IC_FAMILIES:
         extra = ""
-        if family in CONTROL_DUMMY_FAMILIES:
-            extra = " (needs one extra dummy packet internally)"
         lines.append(f"- `{family}`: donor inventory `{inventory[family]}`{extra}")
     lines.extend(["", "## Cases", ""])
     for record in records:
@@ -944,7 +950,7 @@ def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None 
     )
     (out_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
     summary = {
-        "test_id": f"BEAUTIFIER_MIXED_NON_IC{archive_variant_part}_V1_TEMP_2026_06_24",
+        "test_id": f"BEAUTIFIER_MIXED_NON_IC{archive_variant_part}_V1_TEMP_{run_date_slug}",
         "variant": variant_slug,
         "donor": str(donor_path),
         "families": list(MIXED_NON_IC_FAMILIES),
@@ -957,8 +963,8 @@ def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None 
             "full_cdb": True,
             "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "hide_display_bridge": True,
-            "display_bridge_coordinate_mode": "display_small_relative",
-            "hidden_control_dummy_mode": "linked_relative",
+            "display_bridge_coordinate_mode": "display_absolute_100k",
+            "control_count_policy": "exact_requested_count_no_dummy",
         },
     }
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -1104,7 +1110,11 @@ def main() -> None:
         print(json.dumps(result, indent=2, sort_keys=True))
         return
     if args.mixed_non_ic:
-        result = generate_mixed_non_ic_batch(parse_counts(args.counts), variant=args.variant)
+        result = generate_mixed_non_ic_batch(
+            parse_counts(args.counts),
+            variant=args.variant,
+            run_date=args.run_date,
+        )
         print(json.dumps(result, indent=2, sort_keys=True))
         return
     if args.remaining_non_ic_solo:

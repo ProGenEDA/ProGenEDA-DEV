@@ -402,3 +402,78 @@ Static validation:
 Manual Proteus testing is pending. Test one family ZIP at a time and report
 the first failing case. Do not regenerate a combined pack until all twelve
 families are classified.
+
+## 2026-06-25 Display Solo Pack User Results And Root Cause
+
+User Proteus testing classified both V1 display packs as structurally opening
+but visually incorrect:
+
+- The common-anode donor symbol is red despite the legacy internal family name
+  `7SEG-COM-AN-BLUE`.
+- In 3x/15x/25x common-anode cases, only one display reached the beautifier
+  grid; the other rows retained their large donor-relative spacing.
+- Common-cathode cases moved the required red-anode final-row sentinel instead
+  of the requested blue cathode rows.
+- D20 did not visibly move in either display family.
+
+Byte-level root cause:
+
+- `_display_rows_for_request` concatenated all requested display rows into one
+  `DISPLAY_BLOCK`.
+- The beautifier translated that aggregate once, preserving the enormous
+  spacing between donor rows. The aggregate minimum coordinate came from the
+  true-final anode row, so cathode-only output placed the red sentinel while
+  leaving cathodes far away.
+- D20 used obsolete fixed offsets for `DISPLAY_BRIDGE`. Its actual display-mega
+  coordinate fields are the four parsed diode pairs at `5/9`, `76/80`,
+  `150/154`, and `343/347`.
+
+Required V2 correction:
+
+- Keep every requested display row as an independent complete packet for
+  coordinate placement.
+- Preserve display-row byte order and the true donor-final anode terminator.
+- Treat the cathode-only red-anode sentinel as infrastructure, never as a
+  requested/visible grid component.
+- Move D20 and the cathode sentinel using parsed family coordinates, not the
+  rejected fixed-offset table.
+
+V2 user result:
+
+- Per-row placement succeeded for both display families at 1x/3x/15x/25x.
+- The common-anode donor is red. The `AN-BLUE` token is a historical internal
+  family name, not the actual symbol color.
+- D20 remained visible because a relative `+350000` move is tiny compared with
+  its donor coordinates near 128 million.
+- Common-cathode blue rows left Proteus-generated component-ID labels
+  (`D103`, `D104`, and similar) at donor positions.
+
+V3 correction:
+
+- Display rows now include five proven coordinate pairs:
+  - anonymous row anchor `4/8`
+  - generated component-ID text `70/74`
+  - visible value text
+  - model/property text
+  - symbol body marker
+- D20 is translated through its four parsed diode coordinate pairs so its
+  bounding-box origin becomes `100000/100000`.
+- `SWITCH` and `POT-HG` now select exactly the requested count. No extra dummy
+  packet is generated and no dummy is moved away.
+- Legacy control-strategy names normalize to exact-count `accepted` behavior.
+
+V3 artifacts:
+
+- `experiments/BEAUTIFIER_7SEG_COM_AN_BLUE_COORDINATE_PROBE_DISPLAY_NAMES_D20_V3_V1_TEMP_2026_06_25.zip`
+- `experiments/BEAUTIFIER_7SEG_COM_CAT_BLUE_COORDINATE_PROBE_DISPLAY_NAMES_D20_V3_V1_TEMP_2026_06_25.zip`
+- `experiments/BEAUTIFIER_MIXED_NON_IC_ALL_IN_ONE_EXACT_CONTROLS_DISPLAY_V3_V1_TEMP_2026_06_25.zip`
+
+Static validation:
+
+- `tests/test_component_placer.py`: 30 passed
+- every V3 requested display row has its own unique layout slot
+- every V3 display row moves all five proven coordinate pairs
+- D20 has four parsed coordinate pairs and an after-bbox minimum of
+  `100000/100000`
+- all-in-one pack requests 34 non-IC families, has exactly one `SWITCH` and
+  one `POT-HG`, and has zero hidden controls

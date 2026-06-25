@@ -22,28 +22,29 @@ The post-placement stages are recorded in the sidecar manifest at
 - Value mutation is planned only; binary DSN/CDB value patching is not enabled.
 - Wiring planning emits logical net intent only; Proteus wire records are not
   synthesized yet.
-- Control dummy coordinate mutation defaults to `hidden_coordinate_mode: none`.
+- `SWITCH` and `POT-HG` use the exact requested count. No dummy packet is
+  generated or hidden.
 - The rejected V3 runaway coordinate experiment used a `1,500,000,000`
   displacement; do not reintroduce that as a default.
-- The current V4 beautifier experiment moves D20 display bridge infrastructure
-  by a small `350,000` relative coordinate offset when explicitly requested.
+- D20 display infrastructure is translated through its parsed diode coordinate
+  fields so its bounding-box origin is near `100000/100000`.
 - When `layout.strategy` is `beautify`, non-control visible packets are
   translated by the shared packet-grid beautifier and recorded under
   `layout_plan.actual_binary_placements`.
 
-## Hidden Controls
+## Controls
 
-`SWITCH` and `POT-HG` requests select one extra donor packet. The first packet is
-marked as a hidden dummy control in the manifest. The beautifier owns long-term
-dummy hiding, but current V4 tests do not send these controls to runaway
-coordinates. The placer must not add terminals or wires for these controls.
+`SWITCH` and `POT-HG` requests select exactly the requested number of donor
+packets. Legacy dummy strategy names remain accepted as compatibility aliases,
+but normalize to exact-count placement. The placer does not add terminals or
+wires for these controls.
 
 ## Display Bridge
 
 When seven-segment display packets require the donor bridge record, the D20
 bridge is selected as infrastructure and is not counted as a user-requested
-diode. V4 moves D20 only by the explicit `display_small_relative` policy, which
-uses a `350,000` coordinate-unit offset rather than a far hidden zone.
+diode. The current policy preserves D20 packet geometry while translating its
+parsed coordinate bounding box to the `100000/100000` infrastructure region.
 
 ## Testing Notes
 

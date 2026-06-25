@@ -22,6 +22,7 @@ from proteusgen.component_placer import (
     validate_move_linkage,
     validate_project_placement,
 )
+from proteusgen.component_beautifier import layout_coordinate_pairs
 from proteusgen.cdb import package_ref
 from proteusgen.pdsprj import read_internal_file
 from proteusgen.resistor_v9 import _extract_object_chunk
@@ -161,13 +162,15 @@ def test_component_placement_generator_uses_real_cli_backend(tmp_path: Path) -> 
 
     assert result.valid
     assert result.output.exists()
-    assert result.control_strategy == "hidden_dummy_control"
+    assert result.control_strategy == "accepted"
     assert result.object_chunk_head.startswith("0008")
     assert result.request == {"FUSE": 1, "POT-HG": 1, "SWITCH": 1}
-    assert [group.family for group in result.hidden_groups] == ["POT-HG", "SWITCH"]
+    assert result.hidden_groups == ()
+    assert len([group for group in result.selected_groups if group.family == "SWITCH"]) == 1
+    assert len([group for group in result.selected_groups if group.family == "POT-HG"]) == 1
 
 
-def test_component_placement_generator_can_hide_dummy_controls(tmp_path: Path) -> None:
+def test_component_placement_legacy_dummy_strategy_uses_exact_control_counts(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
             "components": {"SWITCH": 1, "POT-HG": 1},
@@ -178,14 +181,12 @@ def test_component_placement_generator_can_hide_dummy_controls(tmp_path: Path) -
 
     assert result.valid
     assert result.output.exists()
-    assert result.control_strategy == "hidden_dummy_control"
-    assert len(result.hidden_groups) == 2
-    assert len(result.selected_groups) == 4
-    assert {group.family for group in result.hidden_groups} == {"SWITCH", "POT-HG"}
-    assert all(group.start == -1_000_000_000 for group in result.hidden_groups)
+    assert result.control_strategy == "accepted"
+    assert result.hidden_groups == ()
+    assert len(result.selected_groups) == 2
 
 
-def test_component_placement_hidden_mode_reports_small_safe_zone(tmp_path: Path) -> None:
+def test_component_placement_ignores_hidden_mode_without_dummy_controls(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
             "components": {"SWITCH": 1, "POT-HG": 1},
@@ -196,9 +197,9 @@ def test_component_placement_hidden_mode_reports_small_safe_zone(tmp_path: Path)
     )
 
     assert result.valid
-    zone = result.layout_plan["hidden_dummy_zone"]["origin"]
-    assert zone == {"x": 350_000, "y": 350_000}
-    assert result.hidden_dummy_controls["binary_coordinate_mutation"]["applied"] is True
+    assert result.hidden_groups == ()
+    assert result.layout_plan["hidden_dummy_zone"]["groups"] == []
+    assert result.hidden_dummy_controls["binary_coordinate_mutation"]["applied"] is False
 
 
 def test_component_placement_generator_uses_clean_switch_packets(tmp_path: Path) -> None:
@@ -211,7 +212,7 @@ def test_component_placement_generator_uses_clean_switch_packets(tmp_path: Path)
     )
 
     switch_groups = [group for group in result.selected_groups if group.family == "SWITCH"]
-    assert len(switch_groups) == 57
+    assert len(switch_groups) == 56
     assert {len(group.data) for group in switch_groups} == {393}
     assert "ANON629645" not in {group.key for group in switch_groups}
 
@@ -256,7 +257,8 @@ def test_component_placement_generator_uses_d20_display_bridge(tmp_path: Path) -
     assert result.output.exists()
     assert result.request == {"4027": 1, "7SEG-COM-AN-BLUE": 1, "7SEG-COM-CAT-BLUE": 1}
     assert any(group.key == "D20" for group in result.selected_groups)
-    assert any(group.key == "DISPLAY_BLOCK" for group in result.selected_groups)
+    assert any(group.key.startswith("DISPLAY_AN_") for group in result.selected_groups)
+    assert any(group.key.startswith("DISPLAY_CC_") for group in result.selected_groups)
     chunk = _extract_object_chunk(read_internal_file(result.output, "ROOT.DSN"))
     assert b"D20" in chunk
     assert b"7SEGCOMA" in chunk
@@ -283,7 +285,81 @@ def test_component_placement_display_bridge_hiding_is_explicit(tmp_path: Path) -
     baseline_d20 = next(group for group in baseline.selected_groups if group.key == "D20")
     hidden_d20 = next(group for group in hidden.selected_groups if group.key == "D20")
     assert baseline_d20.data != hidden_d20.data
+    baseline_pairs = layout_coordinate_pairs(baseline_d20.data, "DIODE")
+    for baseline_x, baseline_y, _reason in baseline_pairs:
+        baseline_x_value = int.from_bytes(baseline_d20.data[baseline_x : baseline_x + 4], "little", signed=True)
+        baseline_y_value = int.from_bytes(baseline_d20.data[baseline_y : baseline_y + 4], "little", signed=True)
+        hidden_x_value = int.from_bytes(hidden_d20.data[baseline_x : baseline_x + 4], "little", signed=True)
+        hidden_y_value = int.from_bytes(hidden_d20.data[baseline_y : baseline_y + 4], "little", signed=True)
+        assert hidden_x_value != baseline_x_value
+        assert hidden_y_value != baseline_y_value
+    d20_entry = next(
+        entry
+        for entry in hidden.layout_plan["actual_binary_placements"]
+        if entry["key"] == "D20"
+    )
+    moved_bbox = d20_entry["after_bbox"]
+    assert moved_bbox["min_x"] == 100_000
+    assert moved_bbox["min_y"] == 100_000
     assert "D20 display bridge moved" in hidden.cdb_policy
+
+
+def test_component_placement_beautifies_each_display_row_separately(tmp_path: Path) -> None:
+    anode = generate_component_placement_project(
+        {
+            "components": {"7segcomanode": 3},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "hide_display_bridge": True,
+                "display_bridge_coordinate_mode": "display_small_relative",
+            },
+        },
+        tmp_path / "anode_rows.pdsprj",
+    )
+    cathode = generate_component_placement_project(
+        {
+            "components": {"7segcomk": 3},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "hide_display_bridge": True,
+                "display_bridge_coordinate_mode": "display_small_relative",
+            },
+        },
+        tmp_path / "cathode_rows.pdsprj",
+    )
+
+    assert anode.valid
+    assert cathode.valid
+    anode_rows = [group for group in anode.selected_groups if group.key.startswith("DISPLAY_AN_")]
+    cathode_rows = [group for group in cathode.selected_groups if group.key.startswith("DISPLAY_CC_")]
+    assert len(anode_rows) == 3
+    assert len(cathode_rows) == 3
+    assert any(group.key == "DISPLAY_ANODE_SENTINEL" for group in cathode.selected_groups)
+
+    anode_entries = [
+        entry
+        for entry in anode.layout_plan["actual_binary_placements"]
+        if entry["key"].startswith("DISPLAY_AN_")
+    ]
+    cathode_entries = [
+        entry
+        for entry in cathode.layout_plan["actual_binary_placements"]
+        if entry["key"].startswith("DISPLAY_CC_")
+    ]
+    assert len(anode_entries) == 3
+    assert len(cathode_entries) == 3
+    assert all(entry["translated"] for entry in (*anode_entries, *cathode_entries))
+    assert len({entry["slot"] for entry in anode_entries}) == 3
+    assert len({entry["slot"] for entry in cathode_entries}) == 3
+    sentinel_entry = next(
+        entry
+        for entry in cathode.layout_plan["actual_binary_placements"]
+        if entry["key"] == "DISPLAY_ANODE_SENTINEL"
+    )
+    assert sentinel_entry["role"] == "display_infrastructure"
+    assert "slot" not in sentinel_entry
 
 
 def test_component_placement_generator_uses_clean_source_packets(tmp_path: Path) -> None:
@@ -315,7 +391,7 @@ def test_component_placement_generator_accepts_payload_donor_path(tmp_path: Path
 
     assert result.valid
     assert result.donor == donor
-    assert result.control_strategy == "hidden_dummy_control"
+    assert result.control_strategy == "accepted"
     assert result.request["FUSE"] == 1
 
 
@@ -451,7 +527,7 @@ def test_component_placement_manifest_records_next_pipeline_stages(tmp_path: Pat
     assert manifest["wiring_plan"]["wire_record_emission"]["applied"] is False
     assert manifest["layout_plan"]["strategy"] == "beautify"
     assert manifest["hidden_dummy_controls"]["long_term_owner"] == "beautifier"
-    assert len(manifest["hidden_dummy_controls"]["controls"]) == 2
+    assert manifest["hidden_dummy_controls"]["controls"] == []
     assert manifest["validation_reports"]["component_packet_validator"]["valid"] is True
 
 
