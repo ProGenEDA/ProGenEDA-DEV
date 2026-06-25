@@ -17,10 +17,14 @@ from proteusgen.component_beautifier import _s32_at, layout_coordinate_pairs
 from proteusgen.component_placer import (
     MAIN_MEGA_NO_SOURCE_DONOR,
     NEW_COMPONENT_MEGA_DONOR,
+    _display_records_from_chunk,
+    _display_rows_for_request,
+    _cdb_package_set,
     _extract_object_chunk,
     _generation_markers,
     _inspect_donor_counts_for_selection,
     _raw_groups_from_chunk,
+    _select_raw_groups,
     generate_component_placement_project,
     read_internal_file,
 )
@@ -49,6 +53,18 @@ SUPPORTED_FAMILIES = (
     "NMOSFET",
     "FUSE",
     "LED-RED",
+    "BRIDGE",
+    "TRAN-2P2S",
+    "LM317T",
+    "OPAMP",
+    "VSOURCE",
+    "CSOURCE",
+    "VSINE",
+    "VPULSE",
+    "7SEG-COM-AN-BLUE",
+    "7SEG-COM-CAT-BLUE",
+    "SWITCH",
+    "POT-HG",
 )
 DEFAULT_COUNTS = (1, 3, 5)
 KNOWN_ACCEPTED_LIMITS = {"RESISTOR": 91}
@@ -75,6 +91,58 @@ MIXED_BASE135_FAMILIES = (
     "BS170",
     "NMOSFET",
 )
+MIXED_NON_IC_FAMILIES = (
+    "RESISTOR",
+    "CAP",
+    "REALIND",
+    "CAP-ELEC",
+    "DIODE",
+    "1N4007",
+    "1N4148",
+    "1N4733A",
+    "1N6000B",
+    "40EPS08",
+    "BZX55C5V1",
+    "BZX79C5V1",
+    "BZY88C",
+    "NPN",
+    "PNP",
+    "2N3904",
+    "2N4401",
+    "2N7000",
+    "BS170",
+    "NMOSFET",
+    "FUSE",
+    "LED-RED",
+    "BRIDGE",
+    "TRAN-2P2S",
+    "LM317T",
+    "OPAMP",
+    "VSOURCE",
+    "CSOURCE",
+    "VSINE",
+    "VPULSE",
+    "7SEG-COM-AN-BLUE",
+    "7SEG-COM-CAT-BLUE",
+    "SWITCH",
+    "POT-HG",
+)
+CONTROL_DUMMY_FAMILIES = {"SWITCH", "POT-HG"}
+DISPLAY_FAMILIES = {"7SEG-COM-AN-BLUE", "7SEG-COM-CAT-BLUE"}
+REMAINING_NON_IC_SOLO_FAMILIES = (
+    "BRIDGE",
+    "TRAN-2P2S",
+    "LM317T",
+    "OPAMP",
+    "VSOURCE",
+    "CSOURCE",
+    "VSINE",
+    "VPULSE",
+    "7SEG-COM-AN-BLUE",
+    "7SEG-COM-CAT-BLUE",
+    "SWITCH",
+    "POT-HG",
+)
 NEW_COMPONENT_DONOR_FAMILIES = {
     "1N4007",
     "1N4148",
@@ -91,6 +159,18 @@ NEW_COMPONENT_DONOR_FAMILIES = {
     "NMOSFET",
     "FUSE",
     "LED-RED",
+    "BRIDGE",
+    "TRAN-2P2S",
+    "LM317T",
+    "OPAMP",
+    "VSOURCE",
+    "CSOURCE",
+    "VSINE",
+    "VPULSE",
+    "7SEG-COM-AN-BLUE",
+    "7SEG-COM-CAT-BLUE",
+    "SWITCH",
+    "POT-HG",
 }
 
 
@@ -132,6 +212,18 @@ def case_prefix(family: str) -> str:
         "PNP": "QP",
         "FUSE": "FU",
         "LED-RED": "LED",
+        "BRIDGE": "BR",
+        "TRAN-2P2S": "TR",
+        "LM317T": "LM",
+        "OPAMP": "OA",
+        "VSOURCE": "VS",
+        "CSOURCE": "CS",
+        "VSINE": "AC",
+        "VPULSE": "VP",
+        "7SEG-COM-AN-BLUE": "AN",
+        "7SEG-COM-CAT-BLUE": "CC",
+        "SWITCH": "SW",
+        "POT-HG": "RV",
     }
     if family in prefixes:
         return prefixes[family]
@@ -140,17 +232,36 @@ def case_prefix(family: str) -> str:
 
 
 def build_byte_probe(family: str, donor_path: Path) -> dict[str, Any]:
-    chunk = _extract_object_chunk(read_internal_file(ROOT / donor_path, "ROOT.DSN"))
-    groups = _raw_groups_from_chunk(chunk, _generation_markers())
+    coordinate_donor = MAIN_MEGA_NO_SOURCE_DONOR if family in DISPLAY_FAMILIES else donor_path
+    chunk = _extract_object_chunk(read_internal_file(ROOT / coordinate_donor, "ROOT.DSN"))
     probe: dict[str, Any] = {
         "donor": str(donor_path),
+        "coordinate_authority": str(coordinate_donor),
         "purpose": (
-            "Reusable passive-family coordinate probe. Records parsed coordinate fields "
+            "Reusable family coordinate probe. Records parsed coordinate fields "
             "used by beautifier visible-packet translation."
         ),
         "rejected_v1_fixed_offsets": ["12/16", "22/26", "91/95", "168/172", "254/258"],
     }
-    group = groups[family][0]
+    if family in DISPLAY_FAMILIES:
+        display_groups, display_notes = _display_rows_for_request(
+            _display_records_from_chunk(chunk),
+            {family: 1},
+        )
+        group = display_groups[0]
+        probe["display_notes"] = list(display_notes)
+    else:
+        groups = _raw_groups_from_chunk(chunk, _generation_markers())
+        cdb_refs = _cdb_package_set(read_internal_file(ROOT / coordinate_donor, "ROOT.CDB"))
+        selected, hidden = _select_raw_groups(
+            groups,
+            cdb_refs,
+            {family: 1},
+            control_strategy="hidden_dummy_control",
+            hidden_coordinate_mode="none",
+        )
+        hidden_ids = {id(item) for item in hidden}
+        group = next(item for item in selected if id(item) not in hidden_ids)
     pairs = []
     for x_offset, y_offset, reason in layout_coordinate_pairs(group.data, family):
         pairs.append(
@@ -221,12 +332,13 @@ def write_root_readme(
     donor_path: Path,
     donor_inventory_count: int,
     accepted_limit: int | None,
+    run_date: str,
 ) -> None:
     pairs = byte_probe[family]["parsed_coordinate_pairs"]
     lines = [
         f"# Beautifier {family} Coordinate Probe",
         "",
-        "Generated on 2026-06-24.",
+        f"Generated on {run_date}.",
         "",
         "This pack uses the reusable passive-family beautifier probe harness.",
         "It keeps the accepted parsed-coordinate method and avoids creating one-off scripts per component.",
@@ -282,27 +394,72 @@ def parse_counts(raw: str) -> tuple[int, ...]:
     return tuple(counts)
 
 
+def _mutation_layout(family: str, *, hide_display_bridge: bool = True) -> dict[str, Any]:
+    layout: dict[str, Any] = {
+        "strategy": "beautify",
+        "binary_coordinate_mutation": True,
+    }
+    if family in CONTROL_DUMMY_FAMILIES:
+        layout.update(
+            {
+                "move_visible_controls": True,
+                "hidden_coordinate_mode": "none",
+            }
+        )
+    if family in DISPLAY_FAMILIES:
+        layout.update(
+            {
+                "hide_display_bridge": hide_display_bridge,
+                "display_bridge_coordinate_mode": "display_small_relative",
+            }
+        )
+    return layout
+
+
 def build_cases(family: str, counts: tuple[int, ...]) -> list[dict[str, Any]]:
     prefix = case_prefix(family)
     cases: list[dict[str, Any]] = [
         {
-            "name": f"{prefix}00_{family}_1X_BASELINE_NO_BEAUTIFY",
+            "name": f"{prefix}00_1X_BASELINE",
             "components": {family: 1},
             "layout": {"strategy": "legacy", "binary_coordinate_mutation": False},
             "purpose": f"Baseline donor-selected `{family}` placement before coordinate mutation.",
             "what_to_check": f"Baseline control. One `{family}` should open in the original donor-selected position.",
         }
     ]
-    for index, count in enumerate(counts, start=1):
+    if family in DISPLAY_FAMILIES:
         cases.append(
             {
-                "name": f"{prefix}{index:02d}_{family}_{count}X_PARSED_COORDS",
+                "name": f"{prefix}01_1X_MOVE_D20_STATIC",
+                "components": {family: 1},
+                "layout": _mutation_layout(family, hide_display_bridge=False),
+                "purpose": f"Isolate `{family}` row-coordinate mutation while leaving D20 unchanged.",
+                "what_to_check": (
+                    f"One `{family}` should move onto the grid and remain intact. "
+                    "D20 should stay in its donor position. This separates display movement from D20 movement."
+                ),
+            }
+        )
+    for index, count in enumerate(counts, start=1):
+        case_number = index + (1 if family in DISPLAY_FAMILIES else 0)
+        special_note = ""
+        if family in DISPLAY_FAMILIES:
+            special_note = " D20 should move separately and must not count as a requested diode."
+        elif family in CONTROL_DUMMY_FAMILIES:
+            special_note = (
+                " The requested visible controls should move as complete linked packets; "
+                "the extra dummy control remains excluded from the user count."
+            )
+        cases.append(
+            {
+                "name": f"{prefix}{case_number:02d}_{count}X_COORDS",
                 "components": {family: count},
-                "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+                "layout": _mutation_layout(family),
                 "purpose": f"Focused `{family}` parsed-coordinate beautifier probe.",
                 "what_to_check": (
                     f"{count} `{family}` components should move onto the beautifier grid. "
-                    "Check for DLL errors, bad object records, and detached labels/values."
+                    "Check for DLL errors, bad object records, detached labels/values, or damaged controls."
+                    + special_note
                 ),
             }
         )
@@ -315,6 +472,7 @@ def generate_family_probe(
     *,
     accepted_limit: int | None = None,
     variant: str | None = None,
+    run_date: str = "2026-06-24",
 ) -> dict[str, Any]:
     if family not in SUPPORTED_FAMILIES:
         raise ValueError(f"Unsupported family {family!r}; expected one of {', '.join(SUPPORTED_FAMILIES)}")
@@ -330,13 +488,14 @@ def generate_family_probe(
 
     slug = slug_family(family)
     variant_slug = slug_variant(variant)
+    run_date_slug = run_date.replace("-", "_")
     variant_part = f"_{variant_slug}" if variant_slug else ""
     archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
-    out_dir = ROOT / "experiments" / f"beautifier_{slug}_coordinate_probe{variant_part}_v1_temp_2026_06_24"
+    out_dir = ROOT / "experiments" / f"beautifier_{slug}_coordinate_probe{variant_part}_v1_temp_{run_date_slug}"
     archive = (
         ROOT
         / "experiments"
-        / f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE{archive_variant_part}_V1_TEMP_2026_06_24.zip"
+        / f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE{archive_variant_part}_V1_TEMP_{run_date_slug}.zip"
     )
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -349,9 +508,9 @@ def generate_family_probe(
     if accepted_limit is not None and accepted_limit not in counts:
         cases.append(
             {
-                "name": f"{case_prefix(family)}{len(cases):02d}_{family}_{accepted_limit}X_ACCEPTED_LIMIT_PARSED_COORDS",
+                "name": f"{case_prefix(family)}{len(cases):02d}_{accepted_limit}X_LIMIT_COORDS",
                 "components": {family: accepted_limit},
-                "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+                "layout": _mutation_layout(family),
                 "purpose": f"Accepted-limit `{family}` parsed-coordinate beautifier probe.",
                 "what_to_check": (
                     f"{accepted_limit} `{family}` components should open on the beautifier grid. "
@@ -394,7 +553,7 @@ def generate_family_probe(
         )
 
     summary = {
-        "test_id": f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE{archive_variant_part}_V1_TEMP_2026_06_24",
+        "test_id": f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE{archive_variant_part}_V1_TEMP_{run_date_slug}",
         "family": family,
         "variant": variant_slug,
         "case_count": len(records),
@@ -421,6 +580,7 @@ def generate_family_probe(
         donor_path=donor_path,
         donor_inventory_count=donor_inventory_count,
         accepted_limit=accepted_limit,
+        run_date=run_date,
     )
     if archive.exists():
         archive.unlink()
@@ -633,6 +793,288 @@ def generate_mixed_base135_batch(counts: tuple[int, ...], *, variant: str | None
     }
 
 
+def _effective_count_for_family(family: str, requested_count: int, available: int) -> tuple[int, dict[str, int] | None]:
+    usable = available
+    if family in CONTROL_DUMMY_FAMILIES:
+        usable = max(0, available - 1)
+    if family == "BRIDGE" and requested_count > 7:
+        # The accepted BRIDGE selector skips the early fragile bridge packets for larger counts.
+        usable = max(0, available - 14)
+    effective = min(requested_count, usable)
+    if effective != requested_count:
+        return effective, {"requested": requested_count, "used": effective, "available": available, "usable": usable}
+    return effective, None
+
+
+def generate_mixed_non_ic_batch(counts: tuple[int, ...], *, variant: str | None = None) -> dict[str, Any]:
+    donor_path = NEW_COMPONENT_MEGA_DONOR
+    donor_counts = _inspect_donor_counts_for_selection(ROOT / donor_path, _generation_markers())
+    variant_slug = slug_variant(variant)
+    variant_part = f"_{variant_slug}" if variant_slug else ""
+    archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
+    out_dir = ROOT / "experiments" / f"beautifier_mixed_non_ic{variant_part}_v1_temp_2026_06_24"
+    archive = ROOT / "experiments" / (
+        f"BEAUTIFIER_MIXED_NON_IC{archive_variant_part}_V1_TEMP_2026_06_24.zip"
+    )
+    if out_dir.exists():
+        shutil.rmtree(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    inventory = {family: int(donor_counts.get(family, 0)) for family in MIXED_NON_IC_FAMILIES}
+    missing = [family for family, available in inventory.items() if available <= 0]
+    if missing:
+        raise RuntimeError(f"Selected non-IC donor is missing required families: {', '.join(missing)}")
+
+    records: list[dict[str, Any]] = []
+    for index, requested_count in enumerate(counts, start=1):
+        effective_components: dict[str, int] = {}
+        caps: dict[str, dict[str, int]] = {}
+        for family in MIXED_NON_IC_FAMILIES:
+            effective_count, cap = _effective_count_for_family(family, requested_count, inventory[family])
+            effective_components[family] = effective_count
+            if cap:
+                caps[family] = cap
+
+        layout = {
+            "strategy": "beautify",
+            "binary_coordinate_mutation": True,
+            "hide_display_bridge": True,
+            "display_bridge_coordinate_mode": "display_small_relative",
+            "hidden_coordinate_mode": "linked_relative",
+        }
+        case = {
+            "name": f"NIC{requested_count:02d}X_ALL_NON_IC",
+            "components": effective_components,
+            "layout": layout,
+            "purpose": (
+                f"Non-IC stress case requesting {requested_count} of every non-IC component family "
+                "currently exercised by the component placer."
+            ),
+            "what_to_check": (
+                f"Requested count per family: {requested_count}. Displays should appear without counting "
+                "the internal D20 bridge as a user diode. SWITCH and POT-HG should each have the requested "
+                "visible count, with the internal dummy control moved by the layout/beautifier stage. "
+                "Check for open crashes, DLL errors, bad object records, missing controls, and detached labels."
+            ),
+        }
+        case_dir = out_dir / f"{index:02d}_NIC_{requested_count:02d}X"
+        case_dir.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "schema": "component-placement/v0.1",
+            "components": case["components"],
+            "layout": case["layout"],
+        }
+        (case_dir / "payload.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        output_path = case_dir / f"{case['name']}.pdsprj"
+        result = generate_component_placement_project(
+            payload,
+            output_path,
+            donor_path=donor_path,
+            full_cdb=True,
+        )
+        write_mixed_case_note(case_dir, case, output_path, result.manifest_path)
+        total_user_components = sum(effective_components.values())
+        records.append(
+            {
+                "case": case["name"],
+                "case_folder": case_dir.name,
+                "requested_each": requested_count,
+                "components": effective_components,
+                "caps": caps,
+                "total_user_components": total_user_components,
+                "layout": case["layout"],
+                "output": str(output_path.relative_to(ROOT)),
+                "output_name": output_path.name,
+                "manifest": str(result.manifest_path.relative_to(ROOT)),
+                "valid": result.valid,
+                "errors": [issue.as_dict() for issue in result.errors],
+                "what_to_check": case["what_to_check"],
+            }
+        )
+
+    lines = [
+        "# Beautifier Mixed Non-IC Counts",
+        "",
+        "Generated on 2026-06-24.",
+        "",
+        "This pack combines all current non-IC component-placer families from the new-component mega donor.",
+        "It includes sources, displays, controls, transformer/bridge/regulator/opamp, and the accepted passive/discrete families.",
+        "",
+        "## Donor",
+        "",
+        f"- `{donor_path}`",
+        "",
+        "## Special Rules Under Test",
+        "",
+        "- `7SEG-COM-AN-BLUE` and `7SEG-COM-CAT-BLUE` automatically carry the internal `D20` display bridge.",
+        "- `D20` is not included in the requested `DIODE` count.",
+        "- `hide_display_bridge=true` moves the `D20` bridge by the display-small relative beautifier mode.",
+        "- `SWITCH` and `POT-HG` request one extra internal dummy packet; the dummy does not count as a user component.",
+        "- `hidden_coordinate_mode=linked_relative` is used for the internal control dummy packets.",
+        "",
+        "## Families",
+        "",
+    ]
+    for family in MIXED_NON_IC_FAMILIES:
+        extra = ""
+        if family in CONTROL_DUMMY_FAMILIES:
+            extra = " (needs one extra dummy packet internally)"
+        lines.append(f"- `{family}`: donor inventory `{inventory[family]}`{extra}")
+    lines.extend(["", "## Cases", ""])
+    for record in records:
+        cap_note = ""
+        if record["caps"]:
+            cap_note = f" capped: `{json.dumps(record['caps'], sort_keys=True)}`"
+        lines.append(
+            f"- `{record['case_folder']}/{record['output_name']}`: "
+            f"{record['requested_each']} each, user-visible total `{record['total_user_components']}`.{cap_note}"
+        )
+    lines.extend(
+        [
+            "",
+            "## User Results",
+            "",
+            "Pending.",
+            "",
+            "## Codex Observation",
+            "",
+            "Static generation and manifest validation pending in this run.",
+            "",
+        ]
+    )
+    (out_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+    summary = {
+        "test_id": f"BEAUTIFIER_MIXED_NON_IC{archive_variant_part}_V1_TEMP_2026_06_24",
+        "variant": variant_slug,
+        "donor": str(donor_path),
+        "families": list(MIXED_NON_IC_FAMILIES),
+        "inventory": inventory,
+        "counts": list(counts),
+        "records": records,
+        "policy": {
+            "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
+            "explicit_donor": str(donor_path),
+            "full_cdb": True,
+            "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "hide_display_bridge": True,
+            "display_bridge_coordinate_mode": "display_small_relative",
+            "hidden_control_dummy_mode": "linked_relative",
+        },
+    }
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if archive.exists():
+        archive.unlink()
+    shutil.make_archive(str(archive.with_suffix("")), "zip", out_dir)
+    summary["archive"] = str(archive.relative_to(ROOT))
+    summary["archive_sha256"] = sha256(archive)
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {
+        "out_dir": str(out_dir),
+        "archive": str(archive),
+        "archive_sha256": summary["archive_sha256"],
+        "case_count": len(records),
+        "families": list(MIXED_NON_IC_FAMILIES),
+        "counts": list(counts),
+    }
+
+
+def generate_remaining_non_ic_solo_batch(counts: tuple[int, ...], *, run_date: str) -> dict[str, Any]:
+    run_date_slug = run_date.replace("-", "_")
+    batch_dir = ROOT / "experiments" / f"beautifier_remaining_non_ic_solo_batch_v1_temp_{run_date_slug}"
+    batch_archive = ROOT / "experiments" / f"BEAUTIFIER_REMAINING_NON_IC_SOLO_BATCH_V1_TEMP_{run_date_slug}.zip"
+    if batch_dir.exists():
+        shutil.rmtree(batch_dir)
+    batch_dir.mkdir(parents=True, exist_ok=True)
+
+    results: list[dict[str, Any]] = []
+    for family in REMAINING_NON_IC_SOLO_FAMILIES:
+        result = generate_family_probe(
+            family,
+            counts,
+            variant="solo",
+            run_date=run_date,
+        )
+        archive = Path(result["archive"])
+        shutil.copy2(archive, batch_dir / archive.name)
+        results.append(result)
+
+    lines = [
+        "# Remaining Non-IC Solo Beautifier Batch",
+        "",
+        f"Generated on {run_date}.",
+        "",
+        "This folder is intentionally not an index-only folder. It contains all twelve family ZIP archives.",
+        "Test one family at a time. Do not combine families until these coordinate mutations pass in Proteus.",
+        "",
+        "## Root Cause Being Tested",
+        "",
+        "The rejected mixed non-IC pack allowed unproven families to use the broad coordinate scanner.",
+        "These solo packs instead use family-specific parsed or linked coordinate fields.",
+        "",
+        "## Test Order",
+        "",
+    ]
+    for index, result in enumerate(results, start=1):
+        family = result["family"]
+        extra = ""
+        if family in DISPLAY_FAMILIES:
+            extra = " Display pack also isolates display movement with D20 unchanged before moving D20 separately."
+        elif family in CONTROL_DUMMY_FAMILIES:
+            extra = " Check that every visible control remains interactive; one internal dummy is excluded from the user count."
+        lines.append(f"{index}. `{Path(result['archive']).name}` - `{family}`.{extra}")
+    lines.extend(
+        [
+            "",
+            "## Cases Inside Each Family ZIP",
+            "",
+            "- `00`: unchanged donor-position baseline",
+            "- `01`: one component with family-specific coordinate mutation",
+            "- next cases: 3, 15, and 25 components with the same mutation path",
+            "- display packs include an additional one-display D20-unchanged isolation case",
+            "",
+            "## Report",
+            "",
+            "For each family, report the first failing case and whether the failure is:",
+            "",
+            "- crash before open",
+            "- DLL error",
+            "- bad object record",
+            "- detached label/value",
+            "- wrong count",
+            "- damaged SWITCH/POT-HG controls",
+            "- incorrect D20/display placement",
+            "",
+        ]
+    )
+    (batch_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+    summary = {
+        "test_id": f"BEAUTIFIER_REMAINING_NON_IC_SOLO_BATCH_V1_TEMP_{run_date_slug}",
+        "run_date": run_date,
+        "families": list(REMAINING_NON_IC_SOLO_FAMILIES),
+        "counts": list(counts),
+        "results": results,
+        "policy": {
+            "single_reusable_harness": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "no_mixed_family_generation": True,
+            "family_specific_coordinate_parsing": True,
+        },
+    }
+    (batch_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if batch_archive.exists():
+        batch_archive.unlink()
+    shutil.make_archive(str(batch_archive.with_suffix("")), "zip", batch_dir)
+    summary["archive"] = str(batch_archive.relative_to(ROOT))
+    summary["archive_sha256"] = sha256(batch_archive)
+    (batch_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {
+        "out_dir": str(batch_dir),
+        "archive": str(batch_archive),
+        "archive_sha256": summary["archive_sha256"],
+        "families": list(REMAINING_NON_IC_SOLO_FAMILIES),
+        "counts": list(counts),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate reusable passive-family beautifier coordinate probes.")
     parser.add_argument("--family", choices=SUPPORTED_FAMILIES)
@@ -641,18 +1083,40 @@ def main() -> None:
         action="store_true",
         help="Generate mixed 2026-06-24 accepted base135 families in one project per count.",
     )
+    parser.add_argument(
+        "--mixed-non-ic",
+        action="store_true",
+        help="Generate all current non-IC component-placer families in one project per count.",
+    )
+    parser.add_argument(
+        "--remaining-non-ic-solo",
+        action="store_true",
+        help="Generate and bundle solo coordinate probes for every remaining non-IC family.",
+    )
     parser.add_argument("--counts", default=",".join(str(count) for count in DEFAULT_COUNTS))
     parser.add_argument("--accepted-limit", type=int, default=None)
     parser.add_argument("--variant", default="", help="Optional output-name suffix, e.g. stress100.")
+    parser.add_argument("--run-date", default="2026-06-24", help="Output date in YYYY-MM-DD form.")
     args = parser.parse_args()
 
     if args.mixed_base135:
         result = generate_mixed_base135_batch(parse_counts(args.counts), variant=args.variant)
         print(json.dumps(result, indent=2, sort_keys=True))
         return
+    if args.mixed_non_ic:
+        result = generate_mixed_non_ic_batch(parse_counts(args.counts), variant=args.variant)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
+    if args.remaining_non_ic_solo:
+        result = generate_remaining_non_ic_solo_batch(parse_counts(args.counts), run_date=args.run_date)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
 
     if not args.family:
-        parser.error("--family is required unless --mixed-base135 is used")
+        parser.error(
+            "--family is required unless --mixed-base135, --mixed-non-ic, "
+            "or --remaining-non-ic-solo is used"
+        )
 
     accepted_limit = args.accepted_limit
     if accepted_limit is None and args.family in KNOWN_ACCEPTED_LIMITS:
@@ -663,6 +1127,7 @@ def main() -> None:
         parse_counts(args.counts),
         accepted_limit=accepted_limit,
         variant=args.variant,
+        run_date=args.run_date,
     )
     print(json.dumps(result, indent=2, sort_keys=True))
 

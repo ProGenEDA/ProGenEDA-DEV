@@ -1233,6 +1233,15 @@ def _binary_beautifier_enabled(payload: Any) -> bool:
     return True
 
 
+def _visible_control_movement_enabled(payload: Any) -> bool:
+    raw_layout = _raw_layout_payload(payload)
+    if raw_layout.get("move_visible_controls") is not None:
+        return _payload_bool(raw_layout.get("move_visible_controls"))
+    if isinstance(payload, dict) and payload.get("move_visible_controls") is not None:
+        return _payload_bool(payload.get("move_visible_controls"))
+    return False
+
+
 def _apply_binary_beautifier(
     payload: Any,
     groups: tuple[RawComponentGroup, ...],
@@ -1244,6 +1253,7 @@ def _apply_binary_beautifier(
         return groups, [], start_slot
 
     hidden_ids = {id(group) for group in hidden_groups}
+    move_visible_controls = _visible_control_movement_enabled(payload)
     translated: list[RawComponentGroup] = []
     layout_entries: list[dict[str, Any]] = []
     slot = start_slot
@@ -1259,7 +1269,7 @@ def _apply_binary_beautifier(
                 }
             )
             continue
-        if group.family in CONTROL_PREFIX_FAMILIES:
+        if group.family in CONTROL_PREFIX_FAMILIES and not move_visible_controls:
             translated.append(group)
             layout_entries.append(
                 {

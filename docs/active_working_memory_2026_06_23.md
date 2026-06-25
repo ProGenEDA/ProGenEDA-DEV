@@ -268,3 +268,137 @@ Static validation:
 Manual Proteus testing is pending. If a mixed case fails while the individual
 family packs worked, treat it as a cross-family/CDB coexistence issue first,
 not as proof that the family coordinate plan is bad.
+
+User reported the mixed BASE135 3/15/25 pack worked. Treat cross-family
+coexistence among the 20 BASE135 passive/discrete families as accepted through
+the 25-each mixed stress case.
+
+## 2026-06-24 Mixed Non-IC Stress Pack
+
+User asked to extend testing to the remaining non-IC component placer families:
+sources, displays, `SWITCH`, `POT-HG`, and the already accepted passive/discrete
+families. The requested cases were one base case, then 3/15/25 each, reducing
+only if a donor limit was hit.
+
+Implementation update:
+
+- Extended the same reusable harness with `--mixed-non-ic`.
+- Do not create a one-off script for this path.
+- Donor:
+  `proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`.
+- Cases generated:
+  - `NIC01X_ALL_NON_IC`: 34 user-requested components
+  - `NIC03X_ALL_NON_IC`: 102 user-requested components
+  - `NIC15X_ALL_NON_IC`: 510 user-requested components
+  - `NIC25X_ALL_NON_IC`: 850 user-requested components
+- No donor caps were needed.
+
+Special rules under test:
+
+- `7SEG-COM-AN-BLUE` and `7SEG-COM-CAT-BLUE` add the internal `D20` display
+  bridge.
+- `D20` is not counted as a requested `DIODE`.
+- `hide_display_bridge=true` and `display_bridge_coordinate_mode=display_small_relative`
+  are enabled.
+- `SWITCH` and `POT-HG` request one extra internal dummy packet each; the dummy
+  does not count as a user component.
+- `hidden_coordinate_mode=linked_relative` is enabled for the internal control
+  dummy packets.
+- Visible `SWITCH` and `POT-HG` packets are still intentionally skipped by
+  grid translation because user testing showed their internal controls are
+  fragile.
+
+Generated pack:
+
+- Folder:
+  `experiments/beautifier_mixed_non_ic_all_non_ic_1_3_15_25_v1_temp_2026_06_24`
+- Archive:
+  `experiments/BEAUTIFIER_MIXED_NON_IC_ALL_NON_IC_1_3_15_25_V1_TEMP_2026_06_24.zip`
+- SHA256:
+  `a1ad27748b8b9761a2236406ab4ac927a64e69ff2b3efbb2a5e1263876a882e5`
+
+Static validation:
+
+- compile passed
+- manifest sweep: all 4 cases valid
+- every case has exactly one `D20` bridge and two hidden control dummy groups
+- no caps applied
+
+Manual Proteus testing is pending.
+
+User reported every mixed non-IC case failed. The mistake was sequencing:
+coordinate mutation for the remaining non-IC families had not been proven
+solo before combining them.
+
+Post-failure byte audit:
+
+- The already accepted passive/discrete families were not the new variable.
+- `BRIDGE`, `TRAN-2P2S`, `LM317T`, `OPAMP`, `VSOURCE`, `CSOURCE`,
+  `VSINE`, `VPULSE`, both display families, `SWITCH`, and `POT-HG`
+  were still unproven for the current component-placer beautifier.
+- Those families fell through to the broad coordinate scanner.
+- The broad scanner mostly found internal constants such as
+  `(381000, 203200)` and could miss the real reference/value/model/body
+  coordinates. Static validity therefore did not predict Proteus open safety.
+- Do not combine these families again until their solo coordinate packs pass.
+
+## 2026-06-25 Remaining Non-IC Solo Coordinate Packs
+
+The existing reusable harness was extended; no new per-family generator script
+was created:
+
+- `tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py`
+- New batch mode: `--remaining-non-ic-solo`
+
+Family-specific coordinate paths:
+
+- Parsed length-prefixed text plus marker-body coordinates:
+  `BRIDGE`, `TRAN-2P2S`, `LM317T`, `OPAMP`, `VSOURCE`, `CSOURCE`,
+  `VSINE`, `VPULSE`.
+- Display-row parser:
+  - common anode recognizes donor marker `7SEG-COM-ANODE`
+  - common cathode recognizes `7SEG-COM-CAT-BLUE`
+  - combined display blocks are translated as complete blocks
+  - D20 remains a separate packet and is tested unchanged before the accepted
+    `display_small_relative` movement is enabled.
+- Linked packet coordinates:
+  `SWITCH` and `POT-HG`.
+- POT-HG coordinate offsets are relative to the actual reference length.
+  Fixed offsets worked for `RV1` but touched reference bytes at `RV10+`;
+  the reference-preservation guard caught this before emission.
+- Production still skips visible control movement by default. Solo probes
+  enable it only with `layout.move_visible_controls=true`.
+
+Generated family packs:
+
+- `BRIDGE`, `TRAN-2P2S`, `LM317T`, `OPAMP`
+- `VSOURCE`, `CSOURCE`, `VSINE`, `VPULSE`
+- `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`
+- `SWITCH`, `POT-HG`
+
+Each family has an unchanged 1x baseline plus 1x/3x/15x/25x coordinate
+mutation cases. Display packs add a one-display mutation case with D20
+unchanged before D20 movement is tested.
+
+Batch:
+
+- Folder:
+  `experiments/beautifier_remaining_non_ic_solo_batch_v1_temp_2026_06_25`
+- Archive:
+  `experiments/BEAUTIFIER_REMAINING_NON_IC_SOLO_BATCH_V1_TEMP_2026_06_25.zip`
+- SHA256:
+  `bb7e5985022171d4604fe5b29a04ffbd5942d9ace187301cb06f77ef101e5814`
+
+Static validation:
+
+- 12 family ZIPs present inside the batch folder
+- every manifest valid
+- no translated packet used broad-scan `component_text_or_body` coordinates
+- all translated references preserved, including `RV10+`
+- D20 unchanged in baseline/D20-static display cases
+- D20 moves exactly `+350000/+350000` in D20-move cases
+- `tests/test_component_placer.py`: 29 passed
+
+Manual Proteus testing is pending. Test one family ZIP at a time and report
+the first failing case. Do not regenerate a combined pack until all twelve
+families are classified.

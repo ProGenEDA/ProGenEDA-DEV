@@ -74,7 +74,32 @@ PARSED_PASSIVE_LAYOUT_FAMILIES = {
     "NMOSFET",
     "FUSE",
     "LED-RED",
+    "BRIDGE",
+    "TRAN-2P2S",
+    "LM317T",
+    "OPAMP",
+    "VSOURCE",
+    "CSOURCE",
+    "VSINE",
+    "VPULSE",
 }
+DISPLAY_LAYOUT_FAMILIES = {
+    "7SEG-COM-AN-BLUE",
+    "7SEG-COM-CAT-BLUE",
+    "7SEG-COM-MIXED",
+}
+DISPLAY_LAYOUT_MARKERS = (
+    "7SEG-COM-ANODE",
+    "7SEG-COM-CAT-BLUE",
+)
+LINKED_VISIBLE_LAYOUT_FAMILIES = {"SWITCH", "POT-HG"}
+POT_HG_RELATIVE_COORDINATE_PAIRS = (
+    (0, 4),
+    (68, 72),
+    (143, 147),
+    (208, 212),
+    (388, 392),
+)
 
 RELATIVE_MODES = {"relative", "linked_relative", "runaway_relative"}
 ABSOLUTE_MODES = {"absolute", "linked_absolute", "runaway_absolute"}
@@ -316,6 +341,29 @@ def _marker_body_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[in
 
 def _parsed_family_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
     pairs = _length_prefixed_text_coordinate_pairs(fragment) + _marker_body_coordinate_pairs(fragment, family)
+    return _dedupe_coordinate_pairs(pairs)
+
+
+def _display_coordinate_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+    pairs = _length_prefixed_text_coordinate_pairs(fragment)
+    for marker in DISPLAY_LAYOUT_MARKERS:
+        pairs.extend(_marker_body_coordinate_pairs(fragment, marker))
+    return _dedupe_coordinate_pairs(pairs)
+
+
+def _linked_visible_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
+    if family == "POT-HG":
+        if len(fragment) < 2 or fragment[0] != 0xFF:
+            raise ValueError("POT-HG packet does not have the expected component-record header.")
+        base = 2 + fragment[1]
+        pairs = tuple((base + x_offset, base + y_offset) for x_offset, y_offset in POT_HG_RELATIVE_COORDINATE_PAIRS)
+    else:
+        pairs = coordinate_plan_for_family(family)
+    _validate_pair_bounds(fragment, family, pairs)
+    return [(x_offset, y_offset, f"linked_packet:{family}") for x_offset, y_offset in pairs]
+
+
+def _dedupe_coordinate_pairs(pairs: list[tuple[int, int, str]]) -> list[tuple[int, int, str]]:
     seen: set[tuple[int, int]] = set()
     ordered: list[tuple[int, int, str]] = []
     for x_offset, y_offset, reason in pairs:
@@ -330,21 +378,13 @@ def _parsed_family_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[
 def layout_coordinate_pairs(fragment: bytes, family: str | None = None) -> list[tuple[int, int, str]]:
     if family:
         if family in PARSED_PASSIVE_LAYOUT_FAMILIES:
-            planned = _parsed_family_coordinate_pairs(fragment, family)
-            return planned
-        planned: list[tuple[int, int, str]] = []
-        if planned:
-            return planned
+            return _parsed_family_coordinate_pairs(fragment, family)
+        if family in DISPLAY_LAYOUT_FAMILIES:
+            return _display_coordinate_pairs(fragment)
+        if family in LINKED_VISIBLE_LAYOUT_FAMILIES:
+            return _linked_visible_coordinate_pairs(fragment, family)
     pairs = _terminal_coord_pairs(fragment) + _wire_coord_pairs(fragment) + _text_and_body_coord_pairs(fragment)
-    seen: set[tuple[int, int]] = set()
-    ordered: list[tuple[int, int, str]] = []
-    for x_offset, y_offset, reason in pairs:
-        key = (x_offset, y_offset)
-        if key in seen:
-            continue
-        seen.add(key)
-        ordered.append((x_offset, y_offset, reason))
-    return ordered
+    return _dedupe_coordinate_pairs(pairs)
 
 
 def coordinate_bbox(fragment: bytes, pairs: list[tuple[int, int, str]]) -> dict[str, int]:
