@@ -1261,15 +1261,6 @@ def _binary_beautifier_enabled(payload: Any) -> bool:
     return True
 
 
-def _visible_control_movement_enabled(payload: Any) -> bool:
-    raw_layout = _raw_layout_payload(payload)
-    if raw_layout.get("move_visible_controls") is not None:
-        return _payload_bool(raw_layout.get("move_visible_controls"))
-    if isinstance(payload, dict) and payload.get("move_visible_controls") is not None:
-        return _payload_bool(payload.get("move_visible_controls"))
-    return False
-
-
 def _apply_binary_beautifier(
     payload: Any,
     groups: tuple[RawComponentGroup, ...],
@@ -1281,7 +1272,6 @@ def _apply_binary_beautifier(
         return groups, [], start_slot
 
     hidden_ids = {id(group) for group in hidden_groups}
-    move_visible_controls = _visible_control_movement_enabled(payload)
     translated: list[RawComponentGroup] = []
     layout_entries: list[dict[str, Any]] = []
     slot = start_slot
@@ -1294,17 +1284,6 @@ def _apply_binary_beautifier(
                     "family": group.family,
                     "translated": False,
                     "reason": "hidden dummy control kept in accepted donor packet position",
-                }
-            )
-            continue
-        if group.family in CONTROL_PREFIX_FAMILIES and not move_visible_controls:
-            translated.append(group)
-            layout_entries.append(
-                {
-                    "key": group.key,
-                    "family": group.family,
-                    "translated": False,
-                    "reason": "fragile control packet skipped by visible grid beautifier",
                 }
             )
             continue
@@ -1595,7 +1574,7 @@ def generate_component_placement_project(
             for family, offset in payload["component_offsets"].items()
         }
     hidden_coordinate_mode = DEFAULT_HIDDEN_COORDINATE_MODE
-    display_bridge_coordinate_mode = "display_absolute_100k"
+    display_bridge_coordinate_mode = "display_absolute_10k_negative_100k"
     if isinstance(payload, dict):
         raw_layout = payload.get("layout") if isinstance(payload.get("layout"), dict) else {}
         hidden_coordinate_mode = str(
@@ -1608,7 +1587,7 @@ def generate_component_placement_project(
             or payload.get("d20_coordinate_mode")
             or raw_layout.get("display_bridge_coordinate_mode")
             or raw_layout.get("d20_coordinate_mode")
-            or "display_absolute_100k"
+            or "display_absolute_10k_negative_100k"
         ).lower()
         hide_display_bridge = _payload_bool(
             payload.get("hide_display_bridge")
@@ -1672,6 +1651,7 @@ def generate_component_placement_project(
         display_infrastructure_entries: list[dict[str, Any]] = []
         if hide_display_bridge:
             if display_bridge_coordinate_mode not in {
+                "display_absolute_10k_negative_100k",
                 "display_absolute_100k",
                 "display_small_relative",
                 "d20_small_relative",

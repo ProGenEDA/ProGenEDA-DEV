@@ -23,12 +23,13 @@ The post-placement stages are recorded in the sidecar manifest at
 - Wiring planning emits logical net intent only; Proteus wire records are not
   synthesized yet.
 - `SWITCH` and `POT-HG` use the exact requested count. No dummy packet is
-  generated or hidden.
+  generated or hidden. Under `layout.strategy=beautify`, every requested
+  control is translated through its proven linked family coordinate plan.
 - The rejected V3 runaway coordinate experiment used a `1,500,000,000`
   displacement; do not reintroduce that as a default.
 - D20 display infrastructure is translated through its parsed diode coordinate
-  fields so its bounding-box origin is near `100000/100000`.
-- When `layout.strategy` is `beautify`, non-control visible packets are
+  fields so its bounding-box origin is `10000/-100000`.
+- When `layout.strategy` is `beautify`, visible packets, including controls, are
   translated by the shared packet-grid beautifier and recorded under
   `layout_plan.actual_binary_placements`.
 
@@ -37,14 +38,15 @@ The post-placement stages are recorded in the sidecar manifest at
 `SWITCH` and `POT-HG` requests select exactly the requested number of donor
 packets. Legacy dummy strategy names remain accepted as compatibility aliases,
 but normalize to exact-count placement. The placer does not add terminals or
-wires for these controls.
+wires for these controls. The beautifier moves the complete linked control
+packet; it does not leave controls at donor coordinates.
 
 ## Display Bridge
 
 When seven-segment display packets require the donor bridge record, the D20
 bridge is selected as infrastructure and is not counted as a user-requested
 diode. The current policy preserves D20 packet geometry while translating its
-parsed coordinate bounding box to the `100000/100000` infrastructure region.
+parsed coordinate bounding box to `10000/-100000`.
 
 ## Testing Notes
 

@@ -477,3 +477,21 @@ Static validation:
   `100000/100000`
 - all-in-one pack requests 34 non-IC families, has exactly one `SWITCH` and
   one `POT-HG`, and has zero hidden controls
+
+## 2026-06-26 Exact Controls And D20 V4 Correction
+
+User inspection of the V3 all-in-one pack confirmed that exact-count selection
+worked, but visible `SWITCH` and `POT-HG` packets remained at donor positions.
+The cause was an obsolete `move_visible_controls` opt-in guard in the shared
+beautifier. This guard is removed: under `layout.strategy=beautify`, exact-count
+controls now use their proven linked family coordinate plans like other visible
+components.
+
+The D20 target `100000/100000` appeared near `200/100` in the Proteus view and
+was not the intended location. V4 changes the parsed-coordinate bounding-box
+target to `10000/-100000`. The bridge remains required display infrastructure
+and is still excluded from the user-requested diode count.
+
+The V4 test is generated with the existing reusable
+`generate_beautifier_passive_family_probe_temp.py` harness. No component-specific
+test generator is introduced.

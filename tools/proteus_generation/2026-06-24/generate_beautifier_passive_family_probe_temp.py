@@ -399,18 +399,11 @@ def _mutation_layout(family: str, *, hide_display_bridge: bool = True) -> dict[s
         "strategy": "beautify",
         "binary_coordinate_mutation": True,
     }
-    if family in CONTROL_DUMMY_FAMILIES:
-        layout.update(
-            {
-                "move_visible_controls": True,
-                "hidden_coordinate_mode": "none",
-            }
-        )
     if family in DISPLAY_FAMILIES:
         layout.update(
             {
                 "hide_display_bridge": hide_display_bridge,
-                "display_bridge_coordinate_mode": "display_absolute_100k",
+                "display_bridge_coordinate_mode": "display_absolute_10k_negative_100k",
             }
         )
     return layout
@@ -446,13 +439,13 @@ def build_cases(family: str, counts: tuple[int, ...]) -> list[dict[str, Any]]:
         if family in DISPLAY_FAMILIES:
             special_note = (
                 " Proteus-generated Dxxx names should stay attached to their displays. "
-                "D20 should be in the 100000/100000 infrastructure region and must not "
+                "D20 should have bbox origin 10000/-100000 and must not "
                 "count as a requested diode."
             )
         elif family in CONTROL_DUMMY_FAMILIES:
             special_note = (
-                " The requested visible controls should move as complete linked packets; "
-                "the extra dummy control remains excluded from the user count."
+                " The exact requested visible controls should move as complete linked packets; "
+                "no extra dummy control should exist."
             )
         cases.append(
             {
@@ -849,7 +842,7 @@ def generate_mixed_non_ic_batch(
             "strategy": "beautify",
             "binary_coordinate_mutation": True,
             "hide_display_bridge": True,
-            "display_bridge_coordinate_mode": "display_absolute_100k",
+            "display_bridge_coordinate_mode": "display_absolute_10k_negative_100k",
         }
         case = {
             "name": f"NIC{requested_count:02d}X_ALL_NON_IC",
@@ -862,7 +855,7 @@ def generate_mixed_non_ic_batch(
             "what_to_check": (
                 f"Requested count per family: {requested_count}. Displays should appear without counting "
                 "the internal D20 bridge as a user diode. SWITCH and POT-HG should each have exactly the "
-                "requested count, with no extra dummy packet. "
+                "requested count, with no extra dummy packet, and should move onto the beautifier grid. "
                 "Check for open crashes, DLL errors, bad object records, missing controls, and detached labels."
             ),
         }
@@ -917,8 +910,8 @@ def generate_mixed_non_ic_batch(
         "",
         "- `7SEG-COM-AN-BLUE` and `7SEG-COM-CAT-BLUE` automatically carry the internal `D20` display bridge.",
         "- `D20` is not included in the requested `DIODE` count.",
-        "- `hide_display_bridge=true` moves the `D20` bridge to a parsed-coordinate bbox origin near `100000/100000`.",
-        "- `SWITCH` and `POT-HG` use the exact requested count with no extra dummy packet.",
+        "- `hide_display_bridge=true` moves the `D20` bridge to parsed-coordinate bbox origin `10000/-100000`.",
+        "- `SWITCH` and `POT-HG` use the exact requested count and are beautified like other components.",
         "",
         "## Families",
         "",
@@ -963,7 +956,7 @@ def generate_mixed_non_ic_batch(
             "full_cdb": True,
             "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "hide_display_bridge": True,
-            "display_bridge_coordinate_mode": "display_absolute_100k",
+            "display_bridge_coordinate_mode": "display_absolute_10k_negative_100k",
             "control_count_policy": "exact_requested_count_no_dummy",
         },
     }

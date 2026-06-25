@@ -186,6 +186,28 @@ def test_component_placement_legacy_dummy_strategy_uses_exact_control_counts(tmp
     assert len(result.selected_groups) == 2
 
 
+def test_component_placement_beautifies_exact_control_counts(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"SWITCH": 2, "POT-HG": 2},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "beautified_exact_controls.pdsprj",
+    )
+
+    assert result.valid
+    assert result.hidden_groups == ()
+    assert len(result.selected_groups) == 4
+    entries = [
+        entry
+        for entry in result.layout_plan["actual_binary_placements"]
+        if entry["family"] in {"SWITCH", "POT-HG"}
+    ]
+    assert len(entries) == 4
+    assert all(entry["translated"] for entry in entries)
+    assert len({entry["slot"] for entry in entries}) == 4
+
+
 def test_component_placement_ignores_hidden_mode_without_dummy_controls(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
@@ -299,8 +321,8 @@ def test_component_placement_display_bridge_hiding_is_explicit(tmp_path: Path) -
         if entry["key"] == "D20"
     )
     moved_bbox = d20_entry["after_bbox"]
-    assert moved_bbox["min_x"] == 100_000
-    assert moved_bbox["min_y"] == 100_000
+    assert moved_bbox["min_x"] == 10_000
+    assert moved_bbox["min_y"] == -100_000
     assert "D20 display bridge moved" in hidden.cdb_policy
 
 

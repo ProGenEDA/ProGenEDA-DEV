@@ -3431,6 +3431,27 @@
       ],
       "rule": "Supersede hidden-dummy control policies: SWITCH and POT-HG select exactly the requested packet count and produce no hidden dummy. Each requested seven-segment row is a separate layout packet. Move the anonymous display row anchor, generated component-ID text, value text, model text, and symbol body together. D20 remains required infrastructure but is not counted as a requested diode; move its parsed diode-coordinate bounding box to 100000/100000.",
       "date": "2026-06-25"
+    },
+    {
+      "id": "R_COMPONENT_PLACER_CONTROLS_D20_V4_20260626",
+      "title": "Exact controls are beautified and D20 uses the corrected target",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.92,
+      "applies_to": [
+        "component_placer",
+        "beautifier",
+        "SWITCH",
+        "POT-HG",
+        "7SEG-COM-AN-BLUE",
+        "7SEG-COM-CAT-BLUE"
+      ],
+      "evidence": [
+        "User report 2026-06-26: exact control counts were correct, but SWITCH/POT-HG were not beautified and D20 appeared near 200/100.",
+        "tests/test_component_placer.py 31 passed",
+        "BEAUTIFIER_MIXED_NON_IC_ALL_IN_ONE_CONTROLS_BEAUTIFIED_D20_V4_V1_TEMP_2026_06_26"
+      ],
+      "rule": "SWITCH and POT-HG select exactly the requested count with no dummy packet and are always translated by the normal beautifier when layout.strategy is beautify. Remove the obsolete move_visible_controls opt-in guard. D20 remains required display infrastructure, is excluded from the requested DIODE count, and is translated through all four parsed diode coordinate pairs to bounding-box origin 10000/-100000.",
+      "date": "2026-06-26"
     }
   ]
 }
