@@ -97,3 +97,20 @@ lane continuity.
 
 The post-V3 compacting revision reduces only component column and lane spacing.
 It retains the accepted `5080000` multi-source clearance and all overlap checks.
+
+## Removal-only component placer
+
+The newer mega-donor component placer uses a separate packet beautifier. It
+moves complete bare component packets through family-registered coordinate
+parsers and records every binary translation in
+`layout_plan.actual_binary_placements`.
+
+Current rules:
+
+- passive/discrete/source families use proven parsed or linked coordinate paths;
+- each IC family must pass an independent packet-profile survey before
+  registration;
+- broad `component_text_or_body` scanning is rejected for production output;
+- `SWITCH` and `POT-HG` use exact requested counts;
+- D20 display infrastructure is immutable and retains donor coordinates;
+- terminals and wires are not emitted by the component placer.

@@ -387,7 +387,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate_component_placement_parser.add_argument(
         "--control-strategy",
         choices=("accepted", "hidden_dummy_control", "hidden_dummy_switch", "switch_precedence"),
-        help="Control-family policy for SWITCH/POT-HG experiments; legacy switch_precedence/hidden_dummy_switch alias to hidden_dummy_control",
+        help="Control-family policy; legacy strategy names normalize to accepted exact-count placement",
     )
     generate_component_placement_parser.add_argument("--donor", help="Optional explicit donor .pdsprj path")
     generate_component_placement_parser.add_argument("--prune-cdb", action="store_true", help="Rebuild ROOT.CDB to selected package refs instead of using full donor CDB")

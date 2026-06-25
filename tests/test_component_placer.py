@@ -148,6 +148,9 @@ def test_history_rule_loader_has_camber_rules() -> None:
 
     assert "DSEL_REMOVAL_ONLY_001" in ids
     assert "PVAL_REF_001" in ids
+    assert "BVAL_D20_IMMUTABLE_003" in ids
+    assert "BVAL_IC_REGISTERED_COORDS_004" in ids
+    assert "OUTVAL_STAGE_AND_CUMULATIVE_001" in ids
 
 
 def test_component_placement_generator_uses_real_cli_backend(tmp_path: Path) -> None:
@@ -288,7 +291,7 @@ def test_component_placement_generator_uses_d20_display_bridge(tmp_path: Path) -
     assert not any(marker in chunk for marker in (b"$TERBIDIR", b"$TERINPUT", b"$TEROUTPUT"))
 
 
-def test_component_placement_display_bridge_hiding_is_explicit(tmp_path: Path) -> None:
+def test_component_placement_display_bridge_is_immutable(tmp_path: Path) -> None:
     baseline = generate_component_placement_project(
         {"components": {"7segcomanode": 1}},
         tmp_path / "display_bridge_default.pdsprj",
@@ -306,24 +309,15 @@ def test_component_placement_display_bridge_hiding_is_explicit(tmp_path: Path) -
     assert hidden.valid
     baseline_d20 = next(group for group in baseline.selected_groups if group.key == "D20")
     hidden_d20 = next(group for group in hidden.selected_groups if group.key == "D20")
-    assert baseline_d20.data != hidden_d20.data
-    baseline_pairs = layout_coordinate_pairs(baseline_d20.data, "DIODE")
-    for baseline_x, baseline_y, _reason in baseline_pairs:
-        baseline_x_value = int.from_bytes(baseline_d20.data[baseline_x : baseline_x + 4], "little", signed=True)
-        baseline_y_value = int.from_bytes(baseline_d20.data[baseline_y : baseline_y + 4], "little", signed=True)
-        hidden_x_value = int.from_bytes(hidden_d20.data[baseline_x : baseline_x + 4], "little", signed=True)
-        hidden_y_value = int.from_bytes(hidden_d20.data[baseline_y : baseline_y + 4], "little", signed=True)
-        assert hidden_x_value != baseline_x_value
-        assert hidden_y_value != baseline_y_value
+    assert baseline_d20.data == hidden_d20.data
     d20_entry = next(
         entry
         for entry in hidden.layout_plan["actual_binary_placements"]
         if entry["key"] == "D20"
     )
-    moved_bbox = d20_entry["after_bbox"]
-    assert moved_bbox["min_x"] == 10_000
-    assert moved_bbox["min_y"] == -100_000
-    assert "D20 display bridge moved" in hidden.cdb_policy
+    assert d20_entry["translated"] is False
+    assert d20_entry["coordinate_mode"] == "preserve_donor"
+    assert "D20 movement request ignored" in hidden.cdb_policy
 
 
 def test_component_placement_beautifies_each_display_row_separately(tmp_path: Path) -> None:
@@ -382,6 +376,33 @@ def test_component_placement_beautifies_each_display_row_separately(tmp_path: Pa
     )
     assert sentinel_entry["role"] == "display_infrastructure"
     assert "slot" not in sentinel_entry
+
+
+def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"74HC160": 3},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "hc160_registered_coordinates.pdsprj",
+        donor_path=ROOT / "proteus_ic" / "donors" / "main_mega_20260618" / (
+            "Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160"
+            "hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj"
+        ),
+        full_cdb=True,
+    )
+
+    assert result.valid
+    entries = [
+        entry
+        for entry in result.layout_plan["actual_binary_placements"]
+        if entry["family"] == "74HC160"
+    ]
+    assert len(entries) == 3
+    assert all(entry["translated"] for entry in entries)
+    assert all(entry["coordinate_pair_count"] == 4 for entry in entries)
+    assert all("component_text_or_body" not in entry["coordinate_reason_counts"] for entry in entries)
+    assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
 def test_component_placement_generator_uses_clean_source_packets(tmp_path: Path) -> None:
@@ -551,6 +572,7 @@ def test_component_placement_manifest_records_next_pipeline_stages(tmp_path: Pat
     assert manifest["hidden_dummy_controls"]["long_term_owner"] == "beautifier"
     assert manifest["hidden_dummy_controls"]["controls"] == []
     assert manifest["validation_reports"]["component_packet_validator"]["valid"] is True
+    assert manifest["validation_reports"]["generated_output_validator"]["valid"] is True
 
 
 def test_component_placement_value_and_wiring_intent_are_planned(tmp_path: Path) -> None:

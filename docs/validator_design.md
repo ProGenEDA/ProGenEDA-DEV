@@ -6,6 +6,24 @@ The validator consumes CircuitIR JSON and returns a validation report matching `
 
 The validator must reject bad or unsupported circuit descriptions before generation.
 
+## Pipeline validator model
+
+Every generation stage owns two validators:
+
+1. A stage-output validator for the artifact it directly emits.
+2. A cumulative regression validator for that artifact plus all accepted rules
+   from previous stages.
+
+The complete pipeline also has:
+
+- a user-specification validator before each stage;
+- an information completer that either applies a documented safe default or
+  asks the user;
+- a final whole-project validator before delivery.
+
+The component placer currently implements this model first. Every manifest
+contains `component_packet_validator` and `generated_output_validator`.
+
 ## Required checks for v0
 
 ### Schema checks

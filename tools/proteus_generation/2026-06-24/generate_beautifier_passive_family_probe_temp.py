@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import re
@@ -65,6 +66,28 @@ SUPPORTED_FAMILIES = (
     "7SEG-COM-CAT-BLUE",
     "SWITCH",
     "POT-HG",
+    "74HC00",
+    "74HC02",
+    "74HC04",
+    "74HC08",
+    "74HC32",
+    "74HC74",
+    "74HC76",
+    "74HC85",
+    "74HC86",
+    "74HC151",
+    "74HC157",
+    "74HC160",
+    "74HC174",
+    "74HC192",
+    "74HC266",
+    "74HC283",
+    "4027",
+    "4511",
+    "7447",
+    "7490",
+    "LM741",
+    "NE555",
 )
 DEFAULT_COUNTS = (1, 3, 5)
 KNOWN_ACCEPTED_LIMITS = {"RESISTOR": 91}
@@ -142,6 +165,30 @@ REMAINING_NON_IC_SOLO_FAMILIES = (
     "7SEG-COM-CAT-BLUE",
     "SWITCH",
     "POT-HG",
+)
+IC_SOLO_FAMILIES = (
+    "74HC00",
+    "74HC02",
+    "74HC04",
+    "74HC08",
+    "74HC32",
+    "74HC74",
+    "74HC76",
+    "74HC85",
+    "74HC86",
+    "74HC151",
+    "74HC157",
+    "74HC160",
+    "74HC174",
+    "74HC192",
+    "74HC266",
+    "74HC283",
+    "4027",
+    "4511",
+    "7447",
+    "7490",
+    "LM741",
+    "NE555",
 )
 NEW_COMPONENT_DONOR_FAMILIES = {
     "1N4007",
@@ -340,8 +387,8 @@ def write_root_readme(
         "",
         f"Generated on {run_date}.",
         "",
-        "This pack uses the reusable passive-family beautifier probe harness.",
-        "It keeps the accepted parsed-coordinate method and avoids creating one-off scripts per component.",
+        "This pack uses the reusable component-family beautifier probe harness.",
+        "It keeps family-registered coordinate parsing and avoids creating one-off scripts per component.",
         "",
         "## Family",
         "",
@@ -402,45 +449,38 @@ def _mutation_layout(family: str, *, hide_display_bridge: bool = True) -> dict[s
     if family in DISPLAY_FAMILIES:
         layout.update(
             {
-                "hide_display_bridge": hide_display_bridge,
-                "display_bridge_coordinate_mode": "display_absolute_10k_negative_100k",
+                "hide_display_bridge": False,
+                "display_bridge_coordinate_mode": "preserve_donor",
             }
         )
     return layout
 
 
-def build_cases(family: str, counts: tuple[int, ...]) -> list[dict[str, Any]]:
+def build_cases(
+    family: str,
+    counts: tuple[int, ...],
+    *,
+    include_baseline: bool = True,
+) -> list[dict[str, Any]]:
     prefix = case_prefix(family)
-    cases: list[dict[str, Any]] = [
-        {
-            "name": f"{prefix}00_1X_BASELINE",
-            "components": {family: 1},
-            "layout": {"strategy": "legacy", "binary_coordinate_mutation": False},
-            "purpose": f"Baseline donor-selected `{family}` placement before coordinate mutation.",
-            "what_to_check": f"Baseline control. One `{family}` should open in the original donor-selected position.",
-        }
-    ]
-    if family in DISPLAY_FAMILIES:
+    cases: list[dict[str, Any]] = []
+    if include_baseline:
         cases.append(
             {
-                "name": f"{prefix}01_1X_MOVE_D20_STATIC",
+                "name": f"{prefix}00_1X_BASELINE",
                 "components": {family: 1},
-                "layout": _mutation_layout(family, hide_display_bridge=False),
-                "purpose": f"Isolate `{family}` row-coordinate mutation while leaving D20 unchanged.",
-                "what_to_check": (
-                    f"One `{family}` should move onto the grid and remain intact. "
-                    "D20 should stay in its donor position. This separates display movement from D20 movement."
-                ),
+                "layout": {"strategy": "legacy", "binary_coordinate_mutation": False},
+                "purpose": f"Baseline donor-selected `{family}` placement before coordinate mutation.",
+                "what_to_check": f"Baseline control. One `{family}` should open in the original donor-selected position.",
             }
         )
     for index, count in enumerate(counts, start=1):
-        case_number = index + (1 if family in DISPLAY_FAMILIES else 0)
+        case_number = index
         special_note = ""
         if family in DISPLAY_FAMILIES:
             special_note = (
                 " Proteus-generated Dxxx names should stay attached to their displays. "
-                "D20 should have bbox origin 10000/-100000 and must not "
-                "count as a requested diode."
+                "D20 must retain its donor coordinates and must not count as a requested diode."
             )
         elif family in CONTROL_DUMMY_FAMILIES:
             special_note = (
@@ -455,12 +495,69 @@ def build_cases(family: str, counts: tuple[int, ...]) -> list[dict[str, Any]]:
                 "purpose": f"Focused `{family}` parsed-coordinate beautifier probe.",
                 "what_to_check": (
                     f"{count} `{family}` components should move onto the beautifier grid. "
-                    "Check for DLL errors, bad object records, detached labels/values, or damaged controls."
+                    "Check the exact component count, package/subpart integrity, labels, model text, "
+                    "DLL errors, bad object records, and simulation startup."
                     + special_note
                 ),
             }
         )
     return cases
+
+
+def validate_family_probe_records(family: str, records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Script-specific validator for every project emitted by this harness."""
+
+    errors: list[dict[str, str]] = []
+    cases: list[dict[str, Any]] = []
+    for record in records:
+        manifest_path = ROOT / record["manifest"]
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        expected = int(record["components"][family])
+        strategy = str(record["layout"].get("strategy", "beautify"))
+        output_validator = manifest.get("validation_reports", {}).get("generated_output_validator", {})
+        entries = [
+            entry
+            for entry in manifest.get("layout_plan", {}).get("actual_binary_placements", [])
+            if entry.get("family") == family
+        ]
+        case_errors: list[str] = []
+        if not manifest.get("valid"):
+            case_errors.append("manifest is invalid")
+        if not output_validator.get("valid"):
+            case_errors.append("generated_output_validator failed")
+        actual = int(output_validator.get("actual_counts", {}).get(family, 0))
+        if actual != expected:
+            case_errors.append(f"actual count {actual} != expected {expected}")
+        if strategy == "beautify":
+            if len(entries) != expected:
+                case_errors.append(f"layout entry count {len(entries)} != expected {expected}")
+            if any(not entry.get("translated") for entry in entries):
+                case_errors.append("one or more packets were not translated")
+            if any(
+                entry.get("coordinate_reason_counts", {}).get("component_text_or_body")
+                for entry in entries
+            ):
+                case_errors.append("rejected broad component_text_or_body scanner was used")
+            if any(entry.get("refs_unchanged") is False for entry in entries):
+                case_errors.append("reference bytes changed during translation")
+        if case_errors:
+            errors.append({"case": record["case"], "message": "; ".join(case_errors)})
+        cases.append(
+            {
+                "case": record["case"],
+                "expected_count": expected,
+                "actual_count": actual,
+                "layout_entry_count": len(entries),
+                "valid": not case_errors,
+            }
+        )
+    return {
+        "stage": "experiment_output_validator",
+        "family": family,
+        "valid": not errors,
+        "cases": cases,
+        "errors": errors,
+    }
 
 
 def generate_family_probe(
@@ -470,6 +567,7 @@ def generate_family_probe(
     accepted_limit: int | None = None,
     variant: str | None = None,
     run_date: str = "2026-06-24",
+    include_baseline: bool = True,
 ) -> dict[str, Any]:
     if family not in SUPPORTED_FAMILIES:
         raise ValueError(f"Unsupported family {family!r}; expected one of {', '.join(SUPPORTED_FAMILIES)}")
@@ -501,7 +599,7 @@ def generate_family_probe(
     byte_probe = build_byte_probe(family, donor_path)
     (out_dir / "byte_probe.json").write_text(json.dumps(byte_probe, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-    cases = build_cases(family, counts)
+    cases = build_cases(family, counts, include_baseline=include_baseline)
     if accepted_limit is not None and accepted_limit not in counts:
         cases.append(
             {
@@ -545,9 +643,12 @@ def generate_family_probe(
                 "manifest": str(result.manifest_path.relative_to(ROOT)),
                 "valid": result.valid,
                 "errors": [issue.as_dict() for issue in result.errors],
+                "generated_output_validator": result.validation_reports.get("generated_output_validator", {}),
                 "what_to_check": case["what_to_check"],
             }
         )
+
+    probe_validation = validate_family_probe_records(family, records)
 
     summary = {
         "test_id": f"BEAUTIFIER_{family.replace('-', '_')}_COORDINATE_PROBE{archive_variant_part}_V1_TEMP_{run_date_slug}",
@@ -559,12 +660,14 @@ def generate_family_probe(
         "donor_inventory_count": donor_inventory_count,
         "records": records,
         "byte_probe": "byte_probe.json",
+        "probe_validation": probe_validation,
         "policy": {
             "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
             "explicit_donor": str(donor_path),
             "full_cdb": True,
             "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "reuses_parsed_coordinate_method": True,
+            "include_baseline": include_baseline,
         },
     }
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -594,6 +697,7 @@ def generate_family_probe(
         "case_count": len(records),
         "donor_inventory_count": donor_inventory_count,
         "accepted_limit": accepted_limit,
+        "probe_validation": probe_validation,
     }
 
 
@@ -841,8 +945,8 @@ def generate_mixed_non_ic_batch(
         layout = {
             "strategy": "beautify",
             "binary_coordinate_mutation": True,
-            "hide_display_bridge": True,
-            "display_bridge_coordinate_mode": "display_absolute_10k_negative_100k",
+            "hide_display_bridge": False,
+            "display_bridge_coordinate_mode": "preserve_donor",
         }
         case = {
             "name": f"NIC{requested_count:02d}X_ALL_NON_IC",
@@ -910,7 +1014,7 @@ def generate_mixed_non_ic_batch(
         "",
         "- `7SEG-COM-AN-BLUE` and `7SEG-COM-CAT-BLUE` automatically carry the internal `D20` display bridge.",
         "- `D20` is not included in the requested `DIODE` count.",
-        "- `hide_display_bridge=true` moves the `D20` bridge to parsed-coordinate bbox origin `10000/-100000`.",
+        "- `D20` is immutable infrastructure and retains its exact donor coordinates.",
         "- `SWITCH` and `POT-HG` use the exact requested count and are beautified like other components.",
         "",
         "## Families",
@@ -955,8 +1059,8 @@ def generate_mixed_non_ic_batch(
             "explicit_donor": str(donor_path),
             "full_cdb": True,
             "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
-            "hide_display_bridge": True,
-            "display_bridge_coordinate_mode": "display_absolute_10k_negative_100k",
+            "hide_display_bridge": False,
+            "display_bridge_coordinate_mode": "preserve_donor",
             "control_count_policy": "exact_requested_count_no_dummy",
         },
     }
@@ -1017,9 +1121,9 @@ def generate_remaining_non_ic_solo_batch(counts: tuple[int, ...], *, run_date: s
         family = result["family"]
         extra = ""
         if family in DISPLAY_FAMILIES:
-            extra = " Display pack also isolates display movement with D20 unchanged before moving D20 separately."
+            extra = " D20 remains unchanged at its donor coordinates in every case."
         elif family in CONTROL_DUMMY_FAMILIES:
-            extra = " Check that every visible control remains interactive; one internal dummy is excluded from the user count."
+            extra = " Check that every exact-count visible control remains interactive."
         lines.append(f"{index}. `{Path(result['archive']).name}` - `{family}`.{extra}")
     lines.extend(
         [
@@ -1029,7 +1133,7 @@ def generate_remaining_non_ic_solo_batch(counts: tuple[int, ...], *, run_date: s
             "- `00`: unchanged donor-position baseline",
             "- `01`: one component with family-specific coordinate mutation",
             "- next cases: 3, 15, and 25 components with the same mutation path",
-            "- display packs include an additional one-display D20-unchanged isolation case",
+            "- display packs keep D20 unchanged in every case",
             "",
             "## Report",
             "",
@@ -1074,6 +1178,294 @@ def generate_remaining_non_ic_solo_batch(counts: tuple[int, ...], *, run_date: s
     }
 
 
+def build_ic_family_research(
+    family: str,
+    *,
+    donor_path: Path,
+    sample_count: int = 25,
+) -> dict[str, Any]:
+    """Inspect each IC family independently before applying the shared parser."""
+
+    donor = ROOT / donor_path
+    chunk = _extract_object_chunk(read_internal_file(donor, "ROOT.DSN"))
+    groups = _raw_groups_from_chunk(chunk, _generation_markers())
+    cdb_refs = _cdb_package_set(read_internal_file(donor, "ROOT.CDB"))
+    selected, hidden = _select_raw_groups(
+        groups,
+        cdb_refs,
+        {family: sample_count},
+        control_strategy="accepted",
+        hidden_coordinate_mode="none",
+    )
+    errors: list[str] = []
+    signatures: Counter[tuple[Any, ...]] = Counter()
+    packets: list[dict[str, Any]] = []
+    for index, group in enumerate(selected, start=1):
+        pairs = layout_coordinate_pairs(group.data, family)
+        reason_counts = Counter(reason.split(":", 1)[0] for _x, _y, reason in pairs)
+        expected_minimum = 4 * len(group.refs)
+        packet_errors: list[str] = []
+        if group.key not in cdb_refs:
+            packet_errors.append("package missing from donor CDB")
+        if len(pairs) < expected_minimum:
+            packet_errors.append(f"coordinate pairs {len(pairs)} < expected minimum {expected_minimum}")
+        if reason_counts.get("marker_body", 0) < len(group.refs):
+            packet_errors.append("not every subpart has a marker-body coordinate")
+        if reason_counts.get("length_prefixed_text", 0) < 3 * len(group.refs):
+            packet_errors.append("not every subpart has ref/name/value text coordinates")
+        if any(reason == "component_text_or_body" for _x, _y, reason in pairs):
+            packet_errors.append("rejected broad coordinate scanner used")
+        if any(marker in group.data for marker in (b"$TERBIDIR", b"$TERINPUT", b"$TEROUTPUT")):
+            packet_errors.append("bare IC packet unexpectedly contains terminal records")
+        if packet_errors:
+            errors.extend(f"{group.key}: {message}" for message in packet_errors)
+        signature = (
+            len(group.refs),
+            len(group.data),
+            len(pairs),
+            tuple(sorted(reason_counts.items())),
+        )
+        signatures[signature] += 1
+        packets.append(
+            {
+                "index": index,
+                "key": group.key,
+                "refs": list(group.refs),
+                "packet_size": len(group.data),
+                "tail": group.data[-8:].hex(),
+                "cdb_backed": group.key in cdb_refs,
+                "coordinate_pair_count": len(pairs),
+                "coordinate_reason_counts": dict(sorted(reason_counts.items())),
+                "errors": packet_errors,
+            }
+        )
+    return {
+        "family": family,
+        "donor": str(donor_path),
+        "sample_count": sample_count,
+        "selected_count": len(selected),
+        "hidden_count": len(hidden),
+        "valid": not errors,
+        "errors": errors,
+        "signatures": [
+            {
+                "occurrences": occurrences,
+                "subpart_count": signature[0],
+                "packet_size": signature[1],
+                "coordinate_pair_count": signature[2],
+                "coordinate_reason_counts": dict(signature[3]),
+            }
+            for signature, occurrences in sorted(signatures.items(), key=lambda item: item[0])
+        ],
+        "packets": packets,
+    }
+
+
+def validate_ic_solo_batch(
+    results: list[dict[str, Any]],
+    research: list[dict[str, Any]],
+    counts: tuple[int, ...],
+) -> dict[str, Any]:
+    """Cumulative validator for the IC experiment and preceding placer stages."""
+
+    errors: list[str] = []
+    expected_families = set(IC_SOLO_FAMILIES)
+    result_families = {str(result["family"]) for result in results}
+    research_families = {str(item["family"]) for item in research}
+    if result_families != expected_families:
+        errors.append(f"generated family set mismatch: {sorted(result_families ^ expected_families)}")
+    if research_families != expected_families:
+        errors.append(f"research family set mismatch: {sorted(research_families ^ expected_families)}")
+    for item in research:
+        if not item["valid"]:
+            errors.append(f"{item['family']} research failed: {item['errors']}")
+        if item["selected_count"] < max(counts):
+            errors.append(f"{item['family']} has only {item['selected_count']} researched packets")
+    for result in results:
+        validation = result.get("probe_validation", {})
+        if not validation.get("valid"):
+            errors.append(f"{result['family']} experiment validation failed: {validation.get('errors', [])}")
+        if result.get("donor_inventory_count", 0) < max(counts):
+            errors.append(f"{result['family']} donor inventory is below {max(counts)}")
+    return {
+        "stage": "ic_solo_cumulative_validator",
+        "valid": not errors,
+        "family_count": len(results),
+        "counts": list(counts),
+        "checks": [
+            "per-family 25-packet byte research",
+            "complete donor packet selection",
+            "CDB-backed package references",
+            "family-registered coordinate parser",
+            "no component_text_or_body broad scan",
+            "exact generated counts",
+            "full donor CDB parity",
+            "reference preservation",
+            "no generated terminals or wires",
+        ],
+        "errors": errors,
+    }
+
+
+def _remove_generated_experiment_path(path: Path) -> None:
+    resolved = path.resolve()
+    experiment_root = (ROOT / "experiments").resolve()
+    resolved.relative_to(experiment_root)
+    if resolved.is_dir():
+        shutil.rmtree(resolved)
+    elif resolved.exists():
+        resolved.unlink()
+
+
+def generate_ic_solo_batch(counts: tuple[int, ...], *, run_date: str) -> dict[str, Any]:
+    run_date_slug = run_date.replace("-", "_")
+    batch_dir = ROOT / "experiments" / f"beautifier_ic_solo_1_3_15_25_v1_temp_{run_date_slug}"
+    batch_archive = ROOT / "experiments" / f"BEAUTIFIER_IC_SOLO_1_3_15_25_V1_TEMP_{run_date_slug}.zip"
+    family_archive_dir = batch_dir / "family_archives"
+    if batch_dir.exists():
+        shutil.rmtree(batch_dir)
+    batch_dir.mkdir(parents=True, exist_ok=True)
+    family_archive_dir.mkdir(parents=True, exist_ok=True)
+
+    donor_path = MAIN_MEGA_NO_SOURCE_DONOR
+    research: list[dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
+    for family in IC_SOLO_FAMILIES:
+        family_research = build_ic_family_research(
+            family,
+            donor_path=donor_path,
+            sample_count=max(counts),
+        )
+        research.append(family_research)
+        if not family_research["valid"]:
+            raise RuntimeError(f"{family} byte research failed: {family_research['errors']}")
+        result = generate_family_probe(
+            family,
+            counts,
+            variant="ic_solo",
+            run_date=run_date,
+            include_baseline=False,
+        )
+        if not result["probe_validation"]["valid"]:
+            raise RuntimeError(f"{family} generated output validation failed.")
+        shutil.copy2(Path(result["archive"]), family_archive_dir / Path(result["archive"]).name)
+        results.append(result)
+
+    validation = validate_ic_solo_batch(results, research, counts)
+    if not validation["valid"]:
+        raise RuntimeError(f"IC batch validation failed: {validation['errors']}")
+
+    research_payload = {
+        "schema": "progen-ic-coordinate-research/v0.1",
+        "donor": str(donor_path),
+        "method": (
+            "Every family is inspected independently across the requested maximum count. "
+            "Shared length-prefixed-text and marker-body parsing is used only after the "
+            "family's own packet signatures pass."
+        ),
+        "families": research,
+    }
+    (batch_dir / "ic_coordinate_research.json").write_text(
+        json.dumps(research_payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (batch_dir / "validation.json").write_text(
+        json.dumps(validation, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    lines = [
+        "# IC Solo Beautifier Acceptance Pack",
+        "",
+        f"Generated on {run_date}.",
+        "",
+        "This pack tests each IC family separately at 1x, 3x, 15x, and 25x.",
+        "There are no terminals or wires. The purpose is to prove bare packet selection",
+        "and coordinate mutation before any IC families are combined.",
+        "",
+        "## Important",
+        "",
+        "- D20 is not part of this IC pack and is now immutable everywhere.",
+        "- Each family has its own 25-packet byte profile in `ic_coordinate_research.json`.",
+        "- Similar-looking ICs are not assumed identical; packet sizes, subpart counts,",
+        "  coordinate counts, CDB backing, and finalization are checked per family.",
+        "- Every generated project contains a production `generated_output_validator`",
+        "  report in its manifest.",
+        "",
+        "## Test Order",
+        "",
+    ]
+    for index, result in enumerate(results, start=1):
+        lines.append(
+            f"{index}. `{Path(result['archive']).name}` - `{result['family']}` "
+            f"(donor inventory {result['donor_inventory_count']})"
+        )
+    lines.extend(
+        [
+            "",
+            "## Inside Each Family ZIP",
+            "",
+            "- one beautified 1x project",
+            "- one beautified 3x project",
+            "- one beautified 15x project",
+            "- one beautified 25x project",
+            "- payload JSON, manifest, byte probe, summary, and inspection notes",
+            "",
+            "For each family, report the first failing count and whether Proteus crashed,",
+            "showed a DLL/bad-object error, detached text, wrong package/subpart count,",
+            "or failed simulation startup.",
+            "",
+        ]
+    )
+    (batch_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+    summary = {
+        "test_id": f"BEAUTIFIER_IC_SOLO_1_3_15_25_V1_TEMP_{run_date_slug}",
+        "run_date": run_date,
+        "donor": str(donor_path),
+        "families": list(IC_SOLO_FAMILIES),
+        "counts": list(counts),
+        "results": results,
+        "research": "ic_coordinate_research.json",
+        "validation": "validation.json",
+        "policy": {
+            "single_reusable_harness": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "family_specific_research_required": True,
+            "full_cdb": True,
+            "terminals_and_wires": False,
+            "d20_coordinate_policy": "preserve_donor",
+        },
+    }
+    (batch_dir / "summary.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    if batch_archive.exists():
+        batch_archive.unlink()
+    shutil.make_archive(str(batch_archive.with_suffix("")), "zip", batch_dir)
+    summary["archive"] = str(batch_archive.relative_to(ROOT))
+    summary["archive_sha256"] = sha256(batch_archive)
+    (batch_dir / "summary.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    # The batch ZIP already contains every family ZIP. Keep only lightweight
+    # research/validation files outside it to avoid duplicating large projects.
+    shutil.rmtree(family_archive_dir)
+    for result in results:
+        _remove_generated_experiment_path(Path(result["out_dir"]))
+        _remove_generated_experiment_path(Path(result["archive"]))
+
+    return {
+        "out_dir": str(batch_dir),
+        "archive": str(batch_archive),
+        "archive_sha256": summary["archive_sha256"],
+        "families": list(IC_SOLO_FAMILIES),
+        "counts": list(counts),
+        "validation": validation,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate reusable passive-family beautifier coordinate probes.")
     parser.add_argument("--family", choices=SUPPORTED_FAMILIES)
@@ -1091,6 +1483,11 @@ def main() -> None:
         "--remaining-non-ic-solo",
         action="store_true",
         help="Generate and bundle solo coordinate probes for every remaining non-IC family.",
+    )
+    parser.add_argument(
+        "--ic-solo",
+        action="store_true",
+        help="Generate family-researched bare IC probes at the requested counts.",
     )
     parser.add_argument("--counts", default=",".join(str(count) for count in DEFAULT_COUNTS))
     parser.add_argument("--accepted-limit", type=int, default=None)
@@ -1114,11 +1511,15 @@ def main() -> None:
         result = generate_remaining_non_ic_solo_batch(parse_counts(args.counts), run_date=args.run_date)
         print(json.dumps(result, indent=2, sort_keys=True))
         return
+    if args.ic_solo:
+        result = generate_ic_solo_batch(parse_counts(args.counts), run_date=args.run_date)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
 
     if not args.family:
         parser.error(
             "--family is required unless --mixed-base135, --mixed-non-ic, "
-            "or --remaining-non-ic-solo is used"
+            "--remaining-non-ic-solo, or --ic-solo is used"
         )
 
     accepted_limit = args.accepted_limit

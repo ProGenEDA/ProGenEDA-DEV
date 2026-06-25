@@ -14,7 +14,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
-from zipfile import ZIP_DEFLATED
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from .cdb import (
     COUNT_OFFSET,
@@ -39,8 +39,6 @@ from .component_pipeline import (
 )
 from .component_beautifier import (
     DEFAULT_HIDDEN_COORDINATE_MODE,
-    D20_ABSOLUTE_X,
-    D20_ABSOLUTE_Y,
     D20_SMALL_COORD_DX,
     D20_SMALL_COORD_DY,
     HIDDEN_PACKET_START,
@@ -1574,7 +1572,7 @@ def generate_component_placement_project(
             for family, offset in payload["component_offsets"].items()
         }
     hidden_coordinate_mode = DEFAULT_HIDDEN_COORDINATE_MODE
-    display_bridge_coordinate_mode = "display_absolute_10k_negative_100k"
+    display_bridge_coordinate_mode = "preserve_donor"
     if isinstance(payload, dict):
         raw_layout = payload.get("layout") if isinstance(payload.get("layout"), dict) else {}
         hidden_coordinate_mode = str(
@@ -1587,7 +1585,7 @@ def generate_component_placement_project(
             or payload.get("d20_coordinate_mode")
             or raw_layout.get("display_bridge_coordinate_mode")
             or raw_layout.get("d20_coordinate_mode")
-            or "display_absolute_10k_negative_100k"
+            or "preserve_donor"
         ).lower()
         hide_display_bridge = _payload_bool(
             payload.get("hide_display_bridge")
@@ -1649,38 +1647,20 @@ def generate_component_placement_project(
             display_groups, display_notes = _display_rows_for_request(_display_records_from_chunk(display_chunk_source), display_request)
             display_bridge = _load_d20_display_bridge(display_chunk_source)
         display_infrastructure_entries: list[dict[str, Any]] = []
-        if hide_display_bridge:
-            if display_bridge_coordinate_mode not in {
-                "display_absolute_10k_negative_100k",
-                "display_absolute_100k",
-                "display_small_relative",
-                "d20_small_relative",
-            }:
-                raise ValueError(
-                    f"Unsupported display bridge coordinate mode {display_bridge_coordinate_mode!r}."
-                )
-            moved_bridge, bridge_entry = translate_packet_to_slot(
-                display_bridge.data,
-                slot=0,
-                key=display_bridge.key,
-                family="DIODE",
-                origin_x=D20_ABSOLUTE_X,
-                origin_y=D20_ABSOLUTE_Y,
-            )
-            bridge_entry["role"] = "display_infrastructure"
-            bridge_entry["coordinate_mode"] = "absolute_bbox_origin"
-            display_infrastructure_entries.append(bridge_entry)
-            display_bridge = _replace_group_data(
-                display_bridge,
-                moved_bridge,
-                start=HIDDEN_PACKET_START + 1,
-            )
+        display_infrastructure_entries.append(
+            {
+                "key": display_bridge.key,
+                "family": display_bridge.family,
+                "translated": False,
+                "role": "display_infrastructure",
+                "coordinate_mode": "preserve_donor",
+                "reason": "D20 is an immutable donor bridge and is never moved by the beautifier",
+            }
+        )
+        if hide_display_bridge or display_bridge_coordinate_mode != "preserve_donor":
             display_notes = (
                 *display_notes,
-                (
-                    "D20 display bridge moved through parsed diode coordinates to "
-                    f"bbox origin {D20_ABSOLUTE_X}/{D20_ABSOLUTE_Y}"
-                ),
+                "D20 movement request ignored; the accepted bridge packet keeps donor coordinates",
             )
         selected_with_terminals, selected_layout_entries, next_slot = _apply_binary_beautifier(
             payload,
@@ -1791,6 +1771,24 @@ def generate_component_placement_project(
                 "translated_count": translated_count,
                 "skipped_count": len(actual_layout_entries) - translated_count,
             }
+        )
+    output_validation = validate_generated_component_output(
+        output_path,
+        donor=donor,
+        request=request,
+        selected_groups=reported_selected,
+        layout_entries=actual_layout_entries,
+        require_layout_translation=_binary_beautifier_enabled(payload),
+        full_cdb=full_cdb,
+    )
+    pipeline_metadata["validation_reports"]["generated_output_validator"] = output_validation
+    for issue in output_validation["errors"]:
+        errors.append(
+            ValidationIssue(
+                code=str(issue.get("code", "E_GENERATED_OUTPUT")),
+                message=str(issue.get("message", "Generated output validation failed.")),
+                severity=str(issue.get("severity", "error")),
+            )
         )
     for issue in pipeline_errors(pipeline_metadata):
         errors.append(
@@ -2053,6 +2051,139 @@ def validate_project_placement(project: str | Path, *, markers: Iterable[str] | 
     except Exception as exc:
         errors.append(ValidationIssue("E_CDB_PARSE_FAILED", str(exc)))
     return ComponentPlacerReport(errors=tuple(errors), warnings=tuple(warnings))
+
+
+def validate_generated_component_output(
+    project: str | Path,
+    *,
+    donor: str | Path,
+    request: dict[str, int],
+    selected_groups: Iterable[RawComponentGroup],
+    layout_entries: Iterable[dict[str, Any]],
+    require_layout_translation: bool,
+    full_cdb: bool,
+) -> dict[str, Any]:
+    """Validate one emitted component-placer project against its exact request."""
+
+    errors: list[ValidationIssue] = []
+    warnings: list[ValidationIssue] = []
+    project_path = _repo_path(project)
+    donor_path = _repo_path(donor)
+    required_members = {"PROJECT.XML", "ROOT.DSN", "ROOT.CDB", "SCRIPTS/PWRRAILS.DAT"}
+    try:
+        with ZipFile(project_path) as archive:
+            members = set(archive.namelist())
+        missing_members = sorted(required_members - members)
+        if missing_members:
+            errors.append(
+                ValidationIssue(
+                    "E_OUTPUT_CONTAINER_MEMBER_MISSING",
+                    f"Generated project is missing required members: {missing_members}",
+                )
+            )
+    except Exception as exc:
+        errors.append(ValidationIssue("E_OUTPUT_CONTAINER_READ_FAILED", str(exc)))
+
+    placement = validate_project_placement(project_path, strict_cdb_subset=not full_cdb)
+    errors.extend(placement.errors)
+    warnings.extend(placement.warnings)
+
+    infrastructure_keys = {"D20", "DISPLAY_ANODE_SENTINEL"}
+    visible_groups = tuple(group for group in selected_groups if group.key not in infrastructure_keys)
+    actual_counts = Counter(group.family for group in visible_groups)
+    for family, required in sorted(request.items()):
+        actual = actual_counts.get(family, 0)
+        if actual != required:
+            errors.append(
+                ValidationIssue(
+                    "E_OUTPUT_COMPONENT_COUNT",
+                    f"{family} emitted group count {actual} != requested {required}.",
+                )
+            )
+    unexpected = {
+        family: count
+        for family, count in actual_counts.items()
+        if family not in request
+    }
+    if unexpected:
+        errors.append(
+            ValidationIssue(
+                "E_OUTPUT_UNREQUESTED_COMPONENT",
+                f"Generated output contains unrequested component groups: {dict(sorted(unexpected.items()))}",
+            )
+        )
+
+    entries_by_key = {
+        str(entry.get("key")): entry
+        for entry in layout_entries
+        if entry.get("key") is not None
+    }
+    if require_layout_translation:
+        for group in visible_groups:
+            entry = entries_by_key.get(group.key)
+            if entry is None:
+                errors.append(
+                    ValidationIssue(
+                        "E_OUTPUT_LAYOUT_ENTRY_MISSING",
+                        f"{group.key} has no emitted binary layout entry.",
+                    )
+                )
+                continue
+            if not entry.get("translated"):
+                errors.append(
+                    ValidationIssue(
+                        "E_OUTPUT_LAYOUT_NOT_TRANSLATED",
+                        f"{group.key} was requested under beautify but was not translated.",
+                    )
+                )
+            reasons = entry.get("coordinate_reason_counts", {})
+            if isinstance(reasons, dict) and reasons.get("component_text_or_body"):
+                errors.append(
+                    ValidationIssue(
+                        "E_OUTPUT_LAYOUT_BROAD_SCAN",
+                        f"{group.key} used the rejected broad component_text_or_body coordinate scanner.",
+                    )
+                )
+            if entry.get("known_refs_unchanged") is False or entry.get("refs_unchanged") is False:
+                errors.append(
+                    ValidationIssue(
+                        "E_OUTPUT_LAYOUT_REF_CHANGED",
+                        f"{group.key} reference text changed during coordinate translation.",
+                    )
+                )
+
+    d20_entries = [entry for entry in layout_entries if entry.get("key") == "D20"]
+    for entry in d20_entries:
+        if entry.get("translated"):
+            errors.append(
+                ValidationIssue(
+                    "E_D20_COORDINATE_MUTATION",
+                    "D20 is immutable display infrastructure and must retain donor coordinates.",
+                )
+            )
+
+    if full_cdb:
+        try:
+            if read_internal_file(project_path, "ROOT.CDB") != read_internal_file(donor_path, "ROOT.CDB"):
+                errors.append(
+                    ValidationIssue(
+                        "E_OUTPUT_FULL_CDB_CHANGED",
+                        "full_cdb output does not preserve donor ROOT.CDB byte-for-byte.",
+                    )
+                )
+        except Exception as exc:
+            errors.append(ValidationIssue("E_OUTPUT_CDB_COMPARE_FAILED", str(exc)))
+
+    return {
+        "stage": "generated_output_validator",
+        "valid": not errors,
+        "request": dict(sorted(request.items())),
+        "actual_counts": dict(sorted(actual_counts.items())),
+        "layout_translation_required": require_layout_translation,
+        "full_cdb": full_cdb,
+        "errors": [issue.as_dict() for issue in errors],
+        "warnings": [issue.as_dict() for issue in warnings],
+    }
 
 
 def validate_move_linkage(move_report: dict[str, Any]) -> ComponentPlacerReport:

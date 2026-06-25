@@ -22,8 +22,6 @@ HIDDEN_PACKET_START = -1_000_000_000
 DEFAULT_HIDDEN_COORDINATE_MODE = "none"
 D20_SMALL_COORD_DX = 350_000
 D20_SMALL_COORD_DY = 350_000
-D20_ABSOLUTE_X = 10_000
-D20_ABSOLUTE_Y = -100_000
 
 VISIBLE_LAYOUT_ORIGIN_X = -6_350_000
 VISIBLE_LAYOUT_ORIGIN_Y = -5_080_000
@@ -84,6 +82,30 @@ PARSED_PASSIVE_LAYOUT_FAMILIES = {
     "CSOURCE",
     "VSINE",
     "VPULSE",
+}
+PARSED_IC_LAYOUT_FAMILIES = {
+    "74HC00",
+    "74HC02",
+    "74HC04",
+    "74HC08",
+    "74HC32",
+    "74HC74",
+    "74HC76",
+    "74HC85",
+    "74HC86",
+    "74HC151",
+    "74HC157",
+    "74HC160",
+    "74HC174",
+    "74HC192",
+    "74HC266",
+    "74HC283",
+    "4027",
+    "4511",
+    "7447",
+    "7490",
+    "LM741",
+    "NE555",
 }
 DISPLAY_LAYOUT_FAMILIES = {
     "7SEG-COM-AN-BLUE",
@@ -392,7 +414,7 @@ def _dedupe_coordinate_pairs(pairs: list[tuple[int, int, str]]) -> list[tuple[in
 
 def layout_coordinate_pairs(fragment: bytes, family: str | None = None) -> list[tuple[int, int, str]]:
     if family:
-        if family in PARSED_PASSIVE_LAYOUT_FAMILIES:
+        if family in PARSED_PASSIVE_LAYOUT_FAMILIES or family in PARSED_IC_LAYOUT_FAMILIES:
             return _parsed_family_coordinate_pairs(fragment, family)
         if family in DISPLAY_LAYOUT_FAMILIES:
             return _display_coordinate_pairs(fragment)

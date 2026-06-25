@@ -63,6 +63,27 @@
       "check": "Every accepted fixed bug must become a validator_history_rules.json entry plus a regression test.",
       "failure_category": "E_HISTORY_RULE_MISSING",
       "implementation_hint": "Treat user-reported Proteus failures as permanent regression evidence."
+    },
+    {
+      "rule_id": "BVAL_D20_IMMUTABLE_003",
+      "stage": "beautifier_validator",
+      "check": "The D20 seven-segment bridge packet must retain donor bytes and coordinates.",
+      "failure_category": "E_D20_COORDINATE_MUTATION",
+      "implementation_hint": "Record D20 as untranslated infrastructure and reject any generated layout entry that moves it."
+    },
+    {
+      "rule_id": "BVAL_IC_REGISTERED_COORDS_004",
+      "stage": "beautifier_validator",
+      "check": "Every IC family must be independently researched and registered before coordinate mutation; broad component_text_or_body scanning is forbidden.",
+      "failure_category": "E_OUTPUT_LAYOUT_BROAD_SCAN",
+      "implementation_hint": "Use length-prefixed ref/name/value coordinates and family marker-body coordinates, then validate each family's packet signatures across the requested count."
+    },
+    {
+      "rule_id": "OUTVAL_STAGE_AND_CUMULATIVE_001",
+      "stage": "all_validators",
+      "check": "Every generator stage must provide a direct output validator and a cumulative validator covering accepted earlier-stage rules.",
+      "failure_category": "E_STAGE_VALIDATOR_MISSING",
+      "implementation_hint": "Persist validator reports in the generation manifest and make experiment harnesses fail closed when either report is invalid."
     }
   ]
 }

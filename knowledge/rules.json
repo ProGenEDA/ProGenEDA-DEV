@@ -3414,7 +3414,7 @@
     {
       "id": "R_COMPONENT_PLACER_DISPLAY_CONTROLS_V3_20260625",
       "title": "Display rows move independently and controls use exact requested counts",
-      "status": "static_verified_pending_user_proteus",
+      "status": "superseded_by_R_D20_IMMUTABLE_IC_FAMILY_RESEARCH_20260626",
       "confidence": 0.9,
       "applies_to": [
         "component_placer",
@@ -3435,7 +3435,7 @@
     {
       "id": "R_COMPONENT_PLACER_CONTROLS_D20_V4_20260626",
       "title": "Exact controls are beautified and D20 uses the corrected target",
-      "status": "static_verified_pending_user_proteus",
+      "status": "superseded_by_R_D20_IMMUTABLE_IC_FAMILY_RESEARCH_20260626",
       "confidence": 0.92,
       "applies_to": [
         "component_placer",
@@ -3451,6 +3451,25 @@
         "BEAUTIFIER_MIXED_NON_IC_ALL_IN_ONE_CONTROLS_BEAUTIFIED_D20_V4_V1_TEMP_2026_06_26"
       ],
       "rule": "SWITCH and POT-HG select exactly the requested count with no dummy packet and are always translated by the normal beautifier when layout.strategy is beautify. Remove the obsolete move_visible_controls opt-in guard. D20 remains required display infrastructure, is excluded from the requested DIODE count, and is translated through all four parsed diode coordinate pairs to bounding-box origin 10000/-100000.",
+      "date": "2026-06-26"
+    },
+    {
+      "id": "R_D20_IMMUTABLE_IC_FAMILY_RESEARCH_20260626",
+      "title": "Preserve D20 and research every IC family independently",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.94,
+      "applies_to": [
+        "component_placer",
+        "beautifier",
+        "D20",
+        "IC families"
+      ],
+      "evidence": [
+        "User report 2026-06-26: D20 relocation still left the bridge in-frame; preserve it instead.",
+        "tests/test_component_placer.py 32 passed",
+        "Per-family 25-packet IC byte survey on the main mega donor"
+      ],
+      "rule": "D20 is immutable display infrastructure: never remove, translate, or count it as a requested diode. IC coordinate mutation requires an explicit family registration and an independent packet survey. Quad, hex, dual-subpart, single-symbol, 7447, and 4027 packet shapes have distinct profiles even when they share the same length-prefixed-text and marker-body parser. Every generated output must include a stage-specific generated_output_validator report.",
       "date": "2026-06-26"
     }
   ]

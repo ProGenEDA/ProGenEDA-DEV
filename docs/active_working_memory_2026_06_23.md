@@ -495,3 +495,38 @@ and is still excluded from the user-requested diode count.
 The V4 test is generated with the existing reusable
 `generate_beautifier_passive_family_probe_temp.py` harness. No component-specific
 test generator is introduced.
+
+## 2026-06-26 D20 Preservation And IC Solo Phase
+
+User Proteus inspection showed that D20 still appeared in-frame after V4.
+Coordinate relocation is therefore rejected as useful behavior. D20 is now
+immutable: preserve the original donor packet and donor coordinates, ignore
+legacy hide/move requests, and validate that no D20 layout entry is translated.
+
+The next phase is bare IC beautification. Test every family independently at
+1x, 3x, 15x, and 25x before combining ICs. Do not assume one IC coordinate
+shape applies to all families. The reusable harness now researches the first 25
+usable packets of every family and records packet sizes, subpart counts,
+coordinate counts/reasons, CDB backing, and finalization behavior.
+
+Observed IC profile classes are evidence only, not permission to skip
+family-level checks:
+
+- quad gates: 16 parsed coordinate pairs;
+- hex inverter: 24 pairs;
+- dual flip-flop/subpart packages: 8 pairs;
+- ordinary single-symbol packages: 4 pairs;
+- 7447: 5 pairs because it carries an extra model/property text coordinate;
+- 4027: valid one- and two-subpart packet variants.
+
+The component placer now writes a `generated_output_validator` report into
+every manifest. It checks exact counts, required container members, CDB/ref
+integrity, full-CDB parity, registered coordinate usage, unchanged references,
+and immutable D20.
+
+The resulting acceptance archive contains 88 projects: 22 independently
+researched IC families at 1x, 3x, 15x, and 25x. Focused verification passed
+32 component-placer tests, compileall, archive/JSON audits, and focused diff
+checks. The repository-wide test run reported 185 passed plus 78 passed
+subtests, with one unrelated existing KiCad target-pack failure at 52/55.
+Manual Proteus open/render/simulation testing remains the acceptance gate.

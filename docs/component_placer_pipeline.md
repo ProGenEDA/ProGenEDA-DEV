@@ -27,8 +27,8 @@ The post-placement stages are recorded in the sidecar manifest at
   control is translated through its proven linked family coordinate plan.
 - The rejected V3 runaway coordinate experiment used a `1,500,000,000`
   displacement; do not reintroduce that as a default.
-- D20 display infrastructure is translated through its parsed diode coordinate
-  fields so its bounding-box origin is `10000/-100000`.
+- D20 display infrastructure is immutable. It retains its exact donor bytes and
+  coordinates even when a legacy payload requests bridge hiding.
 - When `layout.strategy` is `beautify`, visible packets, including controls, are
   translated by the shared packet-grid beautifier and recorded under
   `layout_plan.actual_binary_placements`.
@@ -45,8 +45,8 @@ packet; it does not leave controls at donor coordinates.
 
 When seven-segment display packets require the donor bridge record, the D20
 bridge is selected as infrastructure and is not counted as a user-requested
-diode. The current policy preserves D20 packet geometry while translating its
-parsed coordinate bounding box to `10000/-100000`.
+diode. The current policy preserves D20 packet geometry and donor coordinates
+exactly. Relocation and removal attempts remain rejected.
 
 ## Testing Notes
 

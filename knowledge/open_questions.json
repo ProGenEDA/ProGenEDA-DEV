@@ -1694,7 +1694,7 @@
       "id": "Q126",
       "priority": "high",
       "question": "Can the visible D20 bridge packet be removed or minimized after generating an accepted display/4027 circuit?",
-      "status": "awaiting_user_proteus_test_bare_display_d20_removal_v12",
+      "status": "answered_preserve_donor_packet_and_coordinates",
       "needed_for": [
         "bare_component_placer",
         "clean_display_output",
@@ -1706,9 +1706,10 @@
         "The V9 direct 4027/display boundary failed without D20.",
         "User requested an explicit attempt at removing D20 after circuit generation.",
         "tools/proteus_generation/2026-06-18/generate_bare_display_d20_removal_v12_temp.py",
-        "experiments/BARE_DISPLAY_D20_REMOVAL_V12_TEMP_2026_06_18.zip"
+        "experiments/BARE_DISPLAY_D20_REMOVAL_V12_TEMP_2026_06_18.zip",
+        "User report 2026-06-26: relocation still left D20 in-frame; stop moving it."
       ],
-      "notes": "V12 should compare adjusted D20 deletion, stale-pointer postbuild deletion, and minimal subrecord variants against D20-preserved controls."
+      "notes": "Current accepted limitation: preserve D20 bytes and donor coordinates exactly. Do not remove, minimize, or relocate it until new donor evidence proves a different bridge."
     },
     {
       "id": "Q127",
