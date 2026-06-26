@@ -527,6 +527,7 @@ def pipeline_errors(metadata: Mapping[str, Any]) -> list[dict[str, str]]:
     errors.extend(validation.get("errors", []) if isinstance(validation, Mapping) else [])
     value_plan = metadata.get("value_plan", {})
     if isinstance(value_plan, Mapping) and not value_plan.get("valid", True):
+        errors.extend(value_plan.get("errors", []))
         for row in value_plan.get("unsupported_requests", []):
             if isinstance(row, Mapping):
                 errors.append(

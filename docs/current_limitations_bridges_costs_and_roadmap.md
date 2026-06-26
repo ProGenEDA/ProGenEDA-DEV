@@ -38,6 +38,14 @@ from a trusted mega donor and removes everything else.
   component placement. CDB pruning is not the default.
 - Component placement currently emits bare components only. It does not emit
   terminals, wires, or junctions.
+- Value changing is currently proven only for same-length ASCII value tokens in
+  selected packets and matching CDB property rows. `RESISTOR`, `CAP`,
+  `CAP-ELEC`, `REALIND`, `POT-HG`, `VSOURCE`, and `CSOURCE` have static probe
+  packs. `VSINE` and `VPULSE` value mutation is blocked until their property
+  model is decoded.
+- Bidirectional terminal placement is now a separate experimental stage. It can
+  append donor-derived `$TERBIDIR` records beside proven two-pin packets, but it
+  does not emit Proteus wires or guarantee electrical connection yet.
 - Coordinate mutation is accepted only for families with a recorded parser.
   Rejected broad scans and guessed fixed offsets must not be used.
 
@@ -120,13 +128,14 @@ D20 behavior.
 2. Combine all accepted IC families at 3x, 15x, and 25x.
 3. Combine all accepted IC and non-IC families at the same stress levels.
 4. Implement arrangement-decision logic and the wiring architecture.
-5. Implement the family-specific value/property changer.
-6. Emit actual Proteus wire records.
-7. Place power and ground terminals with attached bidirectional terminals.
-8. Place ordinary bidirectional terminals as a modular fallback to wires.
-9. Add a connection decider that chooses direct wiring or same-name terminals
+5. Expand the family-specific value/property changer beyond same-length tokens.
+6. Promote bidirectional terminal placement after Proteus testing.
+7. Emit actual Proteus wire records.
+8. Place power and ground terminals with attached bidirectional terminals.
+9. Place ordinary bidirectional terminals as a modular fallback to wires.
+10. Add a connection decider that chooses direct wiring or same-name terminals
    per pin unless the user explicitly chooses.
-10. Complete stage validators, user-intent validators, the information
+11. Complete stage validators, user-intent validators, the information
     completer, and the final project validator.
 
 The design goal is not merely “a file that opens.” It is a deterministic

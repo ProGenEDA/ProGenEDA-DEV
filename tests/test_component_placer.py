@@ -616,10 +616,10 @@ def test_component_placement_value_and_wiring_intent_are_planned(tmp_path: Path)
     result = generate_component_placement_project(
         {
             "components": {
-                "RESISTOR": {"count": 1, "value": "4.7k"},
+                "RESISTOR": {"count": 1, "value": "4k7"},
                 "CAP": 1,
             },
-            "values": {"C1": "10uF"},
+            "values": {"C1": "2uF"},
             "connections": [
                 {
                     "net": "N_FILTER",
@@ -633,9 +633,9 @@ def test_component_placement_value_and_wiring_intent_are_planned(tmp_path: Path)
 
     assert result.valid
     value_requests = result.value_plan["requests"]
-    assert {"family": "RESISTOR", "target": "R1", "value": "4.7k", "source": "components.value"} in value_requests
-    assert any(row["family"] == "CAP" and row["target"] == "C1" and row["value"] == "10uF" for row in value_requests)
-    assert result.value_plan["binary_mutation"]["applied"] is False
+    assert {"family": "RESISTOR", "target": "R1", "value": "4k7", "source": "components.value"} in value_requests
+    assert any(row["family"] == "CAP" and row["target"] == "C1" and row["value"] == "2uF" for row in value_requests)
+    assert result.value_plan["binary_mutation"]["applied"] is True
     assert result.wiring_plan["same_net_groups"] == [
         {
             "net": "N_FILTER",

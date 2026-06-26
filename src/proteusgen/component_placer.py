@@ -37,6 +37,10 @@ from .component_pipeline import (
     manifest_path_for_output,
     pipeline_errors,
 )
+from .component_value_changer import (
+    apply_value_mutations_to_groups,
+    patch_cdb_property_rows,
+)
 from .component_beautifier import (
     DEFAULT_HIDDEN_COORDINATE_MODE,
     D20_SMALL_COORD_DX,
@@ -1674,6 +1678,11 @@ def generate_component_placement_project(
     if not hidden:
         hidden_coordinate_mode = DEFAULT_HIDDEN_COORDINATE_MODE
     selected_with_terminals = selected
+    selected_with_terminals, value_mutations, value_mutation_report = apply_value_mutations_to_groups(
+        payload,
+        selected_with_terminals,
+        normalize_component,
+    )
     prefix = _chunk_prefix_for_request(request, donor_chunk)
     actual_layout_entries: list[dict[str, Any]] = []
     display_groups: tuple[RawComponentGroup, ...] = ()
@@ -1779,6 +1788,15 @@ def generate_component_placement_project(
         keep_refs = [group.key for group in selected if not group.key.startswith("ANON")]
         cdb = build_component_placer_cdb_subset(parse_component_placer_cdb(donor_cdb), keep_refs)
         cdb_policy = "pruned_to_selected_package_refs"
+    if value_mutations:
+        cdb, value_cdb_report = patch_cdb_property_rows(parse_component_placer_cdb(cdb), value_mutations)
+    else:
+        value_cdb_report = {
+            "stage": "value_changer_cdb_patch",
+            "applied": False,
+            "mode": "same_length_selected_property_rows",
+            "mutations": [],
+        }
     dsn, _pointers = build_dsn(donor_dsn, donor_dsn, object_chunk)
     write_project_from_parts(donor, output_path, {"ROOT.DSN": dsn, "ROOT.CDB": cdb}, compression=ZIP_DEFLATED)
     final_chunk = _extract_object_chunk(read_internal_file(output_path, "ROOT.DSN"))
@@ -1797,6 +1815,19 @@ def generate_component_placement_project(
         normalize_family=normalize_component,
         hidden_coordinate_mode=hidden_coordinate_mode,
     )
+    pipeline_metadata["value_plan"]["binary_mutation"] = value_mutation_report["binary_mutation"]
+    pipeline_metadata["value_plan"]["packet_mutations"] = value_mutation_report["mutations"]
+    pipeline_metadata["value_plan"]["cdb_patch"] = value_cdb_report
+    if value_mutation_report["errors"]:
+        pipeline_metadata["value_plan"]["valid"] = False
+        pipeline_metadata["value_plan"]["errors"] = value_mutation_report["errors"]
+    pipeline_metadata["validation_reports"]["value_changer"] = {
+        "valid": not value_mutation_report["errors"],
+        "errors": value_mutation_report["errors"],
+        "warnings": value_mutation_report["warnings"],
+        "packet_mutation_count": len(value_mutation_report["mutations"]),
+        "cdb_mutation_count": len(value_cdb_report["mutations"]),
+    }
     if actual_layout_entries:
         translated_count = sum(1 for entry in actual_layout_entries if entry.get("translated"))
         hidden_applied = bool(pipeline_metadata["layout_plan"]["binary_coordinate_mutation"].get("applied"))
@@ -1824,6 +1855,7 @@ def generate_component_placement_project(
         layout_entries=actual_layout_entries,
         require_layout_translation=_binary_beautifier_enabled(payload),
         full_cdb=full_cdb,
+        allow_full_cdb_mutation=bool(value_mutations),
     )
     pipeline_metadata["validation_reports"]["generated_output_validator"] = output_validation
     for issue in output_validation["errors"]:
@@ -2106,6 +2138,7 @@ def validate_generated_component_output(
     layout_entries: Iterable[dict[str, Any]],
     require_layout_translation: bool,
     full_cdb: bool,
+    allow_full_cdb_mutation: bool = False,
 ) -> dict[str, Any]:
     """Validate one emitted component-placer project against its exact request."""
 
@@ -2232,7 +2265,7 @@ def validate_generated_component_output(
                 )
             )
 
-    if full_cdb:
+    if full_cdb and not allow_full_cdb_mutation:
         try:
             if read_internal_file(project_path, "ROOT.CDB") != read_internal_file(donor_path, "ROOT.CDB"):
                 errors.append(

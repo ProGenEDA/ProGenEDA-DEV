@@ -571,3 +571,48 @@ Manual Proteus testing is still required. In the regenerated pack, specifically
 check that `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC86`, and
 `74HC266` multi-gate packages no longer overlap, and that large single-symbol
 native IC rows remain readable.
+
+## 2026-06-26 Coordinate vs Arrangement, Value Changer, Terminal Placer
+
+User clarified that current screenshots showing awkward IC rows must not be
+fixed yet. The current beautifier milestone is coordinate-changing capability
+only. The screenshot issue is recorded as placement-logic / arrangement-policy,
+not coordinate-byte corruption, in
+`docs/beautifier_coordinate_vs_arrangement_report_2026_06_26.md`.
+
+Implemented the first real value changer path:
+
+- module: `src/proteusgen/component_value_changer.py`
+- integrated caller: `src/proteusgen/component_placer.py`
+- script: `tools/proteus_generation/2026-06-26/generate_value_changer_probe_v1_temp.py`
+- archive: `experiments/VALUE_CHANGER_PROBE_V1_TEMP_2026_06_26.zip`
+
+The value changer edits same-length visible value tokens inside selected
+component packets and mirrors the same edit into matching CDB property rows
+when that selected row contains the old token. It is intentionally conservative:
+no byte-length changes, no guessed source wave property edits. Proven probe
+families are `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`, `VSOURCE`,
+and `CSOURCE`, each generated as a 15x value-variation project. `VSINE` and
+`VPULSE` are explicitly blocked for binary value mutation until property rows
+are decoded.
+
+Implemented the first bidirectional terminal-placement stage:
+
+- module: `src/proteusgen/component_terminal_placer.py`
+- script: `tools/proteus_generation/2026-06-26/generate_terminal_placer_probe_v1_temp.py`
+- archive: `experiments/TERMINAL_PLACER_BIDIR_PROBE_V1_TEMP_2026_06_26.zip`
+
+The terminal stage appends complete donor-derived `$TERBIDIR` records to an
+already generated component-placement project. It owns terminal labels and
+terminal coordinates. It does not emit Proteus wire records. First probe covers
+side terminals for proven two-pin packets; the user should inspect whether the
+bider triangles are placed at useful endpoint-side anchors.
+
+Verification:
+
+- `tests/test_component_placer.py`: 33 passed
+- `python -m compileall -q src tools/proteus_generation/2026-06-26`: passed
+- value probe summary: 7/7 static-valid cases
+- terminal probe summary: 2/2 static-valid cases
+
+Manual Proteus testing remains the acceptance gate.

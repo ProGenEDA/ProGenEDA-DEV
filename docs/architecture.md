@@ -79,11 +79,18 @@ The manifest includes:
 - `hidden_dummy_controls`
 - `validation_reports.generated_output_validator`
 
-The value changer currently parses and validates supported value requests for
-`RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`, `VSOURCE`, `CSOURCE`,
-`VSINE`, and `VPULSE`. Binary DSN/CDB mutation is intentionally guarded until
-family-specific patch rules are proven. The wiring planner emits net intent only
-and never emits Proteus wire records.
+The value changer now applies the first proven binary mutation path:
+same-length selected-packet value-token edits, mirrored into matching CDB
+property rows when the selected row contains the old value token. Current
+proven families are `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`,
+`VSOURCE`, and `CSOURCE`. `VSINE` and `VPULSE` remain blocked for value
+mutation until their property rows are decoded. The wiring planner emits net
+intent only and never emits Proteus wire records.
+
+The terminal placer now has a first experimental stage for appending
+donor-derived `$TERBIDIR` records beside proven two-pin packets. It owns
+terminal naming and coordinates for those appended terminals, but it does not
+emit wire records or claim complete electrical routing yet.
 
 Every stage must eventually provide both a direct stage-output validator and a
 cumulative validator covering all accepted earlier stages. User-specification,
