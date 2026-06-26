@@ -42,9 +42,19 @@ from .component_beautifier import (
     D20_SMALL_COORD_DX,
     D20_SMALL_COORD_DY,
     HIDDEN_PACKET_START,
+    VISIBLE_LAYOUT_COLUMNS,
+    VISIBLE_LAYOUT_MARGIN_X,
+    VISIBLE_LAYOUT_MARGIN_Y,
+    VISIBLE_LAYOUT_ORIGIN_X,
+    VISIBLE_LAYOUT_ORIGIN_Y,
+    VISIBLE_LAYOUT_SHELF_WIDTH,
+    VISIBLE_LAYOUT_SLOT_X,
+    VISIBLE_LAYOUT_SLOT_Y,
+    coordinate_bbox,
     hide_packet,
+    layout_coordinate_pairs,
     translate_packet_by_delta,
-    translate_packet_to_slot,
+    translate_packet_to_position,
 )
 from .templates import FixtureRegistry, repository_root
 
@@ -1273,6 +1283,12 @@ def _apply_binary_beautifier(
     translated: list[RawComponentGroup] = []
     layout_entries: list[dict[str, Any]] = []
     slot = start_slot
+    cursor_x = VISIBLE_LAYOUT_ORIGIN_X + (start_slot % VISIBLE_LAYOUT_COLUMNS) * VISIBLE_LAYOUT_SLOT_X
+    cursor_y = VISIBLE_LAYOUT_ORIGIN_Y + (start_slot // VISIBLE_LAYOUT_COLUMNS) * VISIBLE_LAYOUT_SLOT_Y
+    row_height = 0
+    row_index = start_slot // VISIBLE_LAYOUT_COLUMNS
+    column_index = start_slot % VISIBLE_LAYOUT_COLUMNS
+    shelf_right = VISIBLE_LAYOUT_ORIGIN_X + VISIBLE_LAYOUT_SHELF_WIDTH
     for group in groups:
         if id(group) in hidden_ids:
             translated.append(group)
@@ -1285,7 +1301,32 @@ def _apply_binary_beautifier(
                 }
             )
             continue
-        data, entry = translate_packet_to_slot(group.data, slot=slot, key=group.key, family=group.family)
+        pairs = layout_coordinate_pairs(group.data, group.family)
+        if pairs:
+            before = coordinate_bbox(group.data, pairs)
+            allocation_width = max(int(before["width"]), VISIBLE_LAYOUT_SLOT_X) + VISIBLE_LAYOUT_MARGIN_X
+            allocation_height = max(int(before["height"]), VISIBLE_LAYOUT_SLOT_Y) + VISIBLE_LAYOUT_MARGIN_Y
+        else:
+            allocation_width = VISIBLE_LAYOUT_SLOT_X + VISIBLE_LAYOUT_MARGIN_X
+            allocation_height = VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y
+        if cursor_x != VISIBLE_LAYOUT_ORIGIN_X and cursor_x + allocation_width > shelf_right:
+            cursor_x = VISIBLE_LAYOUT_ORIGIN_X
+            cursor_y += max(row_height, VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y)
+            row_height = 0
+            row_index += 1
+            column_index = 0
+        data, entry = translate_packet_to_position(
+            group.data,
+            slot=slot,
+            key=group.key,
+            family=group.family,
+            target_min_x=cursor_x,
+            target_min_y=cursor_y,
+            row=row_index,
+            column=column_index,
+            allocation_width=allocation_width,
+            allocation_height=allocation_height,
+        )
         known_refs_unchanged = all(
             group.data.count(ref.encode("ascii")) == data.count(ref.encode("ascii"))
             for ref in group.refs
@@ -1296,6 +1337,9 @@ def _apply_binary_beautifier(
             raise ValueError(f"Beautifier changed references for {group.key}; refusing to emit corrupted packet.")
         translated.append(_replace_group_data(group, data))
         layout_entries.append(entry)
+        cursor_x += allocation_width
+        row_height = max(row_height, allocation_height)
+        column_index += 1
         slot += 1
     return tuple(translated), layout_entries, slot
 
@@ -2151,6 +2195,32 @@ def validate_generated_component_output(
                         f"{group.key} reference text changed during coordinate translation.",
                     )
                 )
+        placed_entries: list[tuple[str, dict[str, Any]]] = []
+        visible_keys = {group.key for group in visible_groups}
+        for key, entry in entries_by_key.items():
+            if key not in visible_keys or not entry.get("translated"):
+                continue
+            bbox = entry.get("after_bbox")
+            if isinstance(bbox, dict) and {"min_x", "min_y", "max_x", "max_y"} <= set(bbox):
+                placed_entries.append((key, bbox))
+        overlaps: list[tuple[str, str]] = []
+        for left_index, (left_key, left_bbox) in enumerate(placed_entries):
+            for right_key, right_bbox in placed_entries[left_index + 1 :]:
+                separated = (
+                    int(left_bbox["max_x"]) <= int(right_bbox["min_x"])
+                    or int(right_bbox["max_x"]) <= int(left_bbox["min_x"])
+                    or int(left_bbox["max_y"]) <= int(right_bbox["min_y"])
+                    or int(right_bbox["max_y"]) <= int(left_bbox["min_y"])
+                )
+                if not separated:
+                    overlaps.append((left_key, right_key))
+        if overlaps:
+            errors.append(
+                ValidationIssue(
+                    "E_OUTPUT_LAYOUT_OVERLAP",
+                    f"Beautified visible packet bboxes overlap: {overlaps[:20]}",
+                )
+            )
 
     d20_entries = [entry for entry in layout_entries if entry.get("key") == "D20"]
     for entry in d20_entries:

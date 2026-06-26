@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
 
-from proteusgen.component_beautifier import _s32_at, layout_coordinate_pairs
+from proteusgen.component_beautifier import _s32_at, coordinate_bbox, layout_coordinate_pairs
 from proteusgen.component_placer import (
     MAIN_MEGA_NO_SOURCE_DONOR,
     NEW_COMPONENT_MEGA_DONOR,
@@ -504,6 +504,28 @@ def build_cases(
     return cases
 
 
+def _layout_overlap_pairs(entries: list[dict[str, Any]]) -> list[tuple[str, str]]:
+    bboxes: list[tuple[str, dict[str, Any]]] = []
+    for entry in entries:
+        if not entry.get("translated"):
+            continue
+        bbox = entry.get("after_bbox")
+        if isinstance(bbox, dict) and {"min_x", "min_y", "max_x", "max_y"} <= set(bbox):
+            bboxes.append((str(entry.get("key")), bbox))
+    overlaps: list[tuple[str, str]] = []
+    for left_index, (left_key, left) in enumerate(bboxes):
+        for right_key, right in bboxes[left_index + 1 :]:
+            separated = (
+                int(left["max_x"]) <= int(right["min_x"])
+                or int(right["max_x"]) <= int(left["min_x"])
+                or int(left["max_y"]) <= int(right["min_y"])
+                or int(right["max_y"]) <= int(left["min_y"])
+            )
+            if not separated:
+                overlaps.append((left_key, right_key))
+    return overlaps
+
+
 def validate_family_probe_records(family: str, records: list[dict[str, Any]]) -> dict[str, Any]:
     """Script-specific validator for every project emitted by this harness."""
 
@@ -540,6 +562,9 @@ def validate_family_probe_records(family: str, records: list[dict[str, Any]]) ->
                 case_errors.append("rejected broad component_text_or_body scanner was used")
             if any(entry.get("refs_unchanged") is False for entry in entries):
                 case_errors.append("reference bytes changed during translation")
+            overlap_pairs = _layout_overlap_pairs(entries)
+            if overlap_pairs:
+                case_errors.append(f"layout overlaps detected: {overlap_pairs[:10]}")
         if case_errors:
             errors.append({"case": record["case"], "message": "; ".join(case_errors)})
         cases.append(
@@ -1202,6 +1227,7 @@ def build_ic_family_research(
     packets: list[dict[str, Any]] = []
     for index, group in enumerate(selected, start=1):
         pairs = layout_coordinate_pairs(group.data, family)
+        bbox = coordinate_bbox(group.data, pairs) if pairs else {}
         reason_counts = Counter(reason.split(":", 1)[0] for _x, _y, reason in pairs)
         expected_minimum = 4 * len(group.refs)
         packet_errors: list[str] = []
@@ -1223,6 +1249,8 @@ def build_ic_family_research(
             len(group.refs),
             len(group.data),
             len(pairs),
+            int(bbox.get("width", 0)),
+            int(bbox.get("height", 0)),
             tuple(sorted(reason_counts.items())),
         )
         signatures[signature] += 1
@@ -1236,6 +1264,7 @@ def build_ic_family_research(
                 "cdb_backed": group.key in cdb_refs,
                 "coordinate_pair_count": len(pairs),
                 "coordinate_reason_counts": dict(sorted(reason_counts.items())),
+                "before_bbox": bbox,
                 "errors": packet_errors,
             }
         )
@@ -1253,7 +1282,9 @@ def build_ic_family_research(
                 "subpart_count": signature[0],
                 "packet_size": signature[1],
                 "coordinate_pair_count": signature[2],
-                "coordinate_reason_counts": dict(signature[3]),
+                "bbox_width": signature[3],
+                "bbox_height": signature[4],
+                "coordinate_reason_counts": dict(signature[5]),
             }
             for signature, occurrences in sorted(signatures.items(), key=lambda item: item[0])
         ],
@@ -1301,6 +1332,48 @@ def validate_ic_solo_batch(
             "exact generated counts",
             "full donor CDB parity",
             "reference preservation",
+            "no generated terminals or wires",
+        ],
+        "errors": errors,
+    }
+
+
+def validate_ic_all_in_one_batch(records: list[dict[str, Any]], counts: tuple[int, ...]) -> dict[str, Any]:
+    errors: list[str] = []
+    for record in records:
+        manifest = json.loads((ROOT / record["manifest"]).read_text(encoding="utf-8"))
+        expected_count = int(record["count_per_family"])
+        output_validator = manifest.get("validation_reports", {}).get("generated_output_validator", {})
+        if not manifest.get("valid"):
+            errors.append(f"{record['case']} manifest is invalid")
+        if not output_validator.get("valid"):
+            errors.append(f"{record['case']} generated_output_validator failed: {output_validator.get('errors', [])}")
+        actual_counts = output_validator.get("actual_counts", {})
+        for family in IC_SOLO_FAMILIES:
+            actual = int(actual_counts.get(family, 0))
+            if actual != expected_count:
+                errors.append(f"{record['case']} {family} actual count {actual} != {expected_count}")
+        entries = manifest.get("layout_plan", {}).get("actual_binary_placements", [])
+        ic_entries = [entry for entry in entries if entry.get("family") in IC_SOLO_FAMILIES]
+        expected_entries = expected_count * len(IC_SOLO_FAMILIES)
+        if len(ic_entries) != expected_entries:
+            errors.append(f"{record['case']} layout entries {len(ic_entries)} != {expected_entries}")
+        if any(entry.get("layout_mode") != "footprint_shelf" for entry in ic_entries):
+            errors.append(f"{record['case']} has non-footprint IC layout entries")
+        overlap_pairs = _layout_overlap_pairs(ic_entries)
+        if overlap_pairs:
+            errors.append(f"{record['case']} layout overlaps detected: {overlap_pairs[:10]}")
+    return {
+        "stage": "ic_all_in_one_cumulative_validator",
+        "valid": not errors,
+        "counts": list(counts),
+        "family_count": len(IC_SOLO_FAMILIES),
+        "checks": [
+            "all IC families present in each project",
+            "exact per-family counts",
+            "footprint-shelf placement",
+            "no bbox overlap between visible IC packets",
+            "full donor CDB parity",
             "no generated terminals or wires",
         ],
         "errors": errors,
@@ -1466,6 +1539,152 @@ def generate_ic_solo_batch(counts: tuple[int, ...], *, run_date: str) -> dict[st
     }
 
 
+def generate_ic_all_in_one_batch(counts: tuple[int, ...], *, run_date: str) -> dict[str, Any]:
+    run_date_slug = run_date.replace("-", "_")
+    batch_dir = ROOT / "experiments" / f"beautifier_all_ics_in_one_1_5_15_v1_temp_{run_date_slug}"
+    batch_archive = ROOT / "experiments" / f"BEAUTIFIER_ALL_ICS_IN_ONE_1_5_15_V1_TEMP_{run_date_slug}.zip"
+    if batch_dir.exists():
+        shutil.rmtree(batch_dir)
+    batch_dir.mkdir(parents=True, exist_ok=True)
+
+    donor_path = MAIN_MEGA_NO_SOURCE_DONOR
+    donor_counts = _inspect_donor_counts_for_selection(ROOT / donor_path, _generation_markers())
+    max_count = max(counts)
+    under_limit = {
+        family: int(donor_counts.get(family, 0))
+        for family in IC_SOLO_FAMILIES
+        if int(donor_counts.get(family, 0)) < max_count
+    }
+    if under_limit:
+        raise RuntimeError(f"Donor cannot satisfy all-IC max count {max_count}: {under_limit}")
+
+    records: list[dict[str, Any]] = []
+    for index, count in enumerate(counts, start=1):
+        case_name = f"AIC{index:02d}_ALL_ICS_{count}X_EACH"
+        case_dir = batch_dir / f"{index:02d}_{case_name}"
+        case_dir.mkdir(parents=True, exist_ok=True)
+        components = {family: count for family in IC_SOLO_FAMILIES}
+        payload = {
+            "schema": "component-placement/v0.1",
+            "components": components,
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+            },
+        }
+        (case_dir / "payload.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        output_path = case_dir / f"{case_name}.pdsprj"
+        result = generate_component_placement_project(
+            payload,
+            output_path,
+            donor_path=donor_path,
+            full_cdb=True,
+        )
+        lines = [
+            f"# {case_name}",
+            "",
+            "## Purpose",
+            "",
+            f"All supported IC families in one bare component-placement project, `{count}` of each.",
+            "This stresses mixed IC footprints after the solo family tests.",
+            "",
+            "## What To Check In Proteus",
+            "",
+            f"- There should be `{count}` package groups for every listed IC family.",
+            "- Multi-subpart gates such as 74HC00/02/04/08/32/86/266 must not overlap.",
+            "- Larger native ICs should be separated into readable rows.",
+            "- No terminals or wires are expected.",
+            "- Report crash, DLL error, bad object record, detached text, wrong count, or obvious overlap.",
+            "",
+            "## User Result",
+            "",
+            "Pending.",
+            "",
+        ]
+        (case_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+        records.append(
+            {
+                "case": case_name,
+                "case_folder": case_dir.name,
+                "count_per_family": count,
+                "components": components,
+                "layout": payload["layout"],
+                "output": str(output_path.relative_to(ROOT)),
+                "output_name": output_path.name,
+                "manifest": str(result.manifest_path.relative_to(ROOT)),
+                "valid": result.valid,
+                "errors": [issue.as_dict() for issue in result.errors],
+                "generated_output_validator": result.validation_reports.get("generated_output_validator", {}),
+            }
+        )
+
+    validation = validate_ic_all_in_one_batch(records, counts)
+    if not validation["valid"]:
+        raise RuntimeError(f"All-IC batch validation failed: {validation['errors']}")
+
+    lines = [
+        "# All ICs In One Beautifier Pack",
+        "",
+        f"Generated on {run_date}.",
+        "",
+        "This pack uses the same component placer and footprint-aware beautifier as the solo IC pack.",
+        "It combines every currently supported IC family into one bare project at each count.",
+        "",
+        "## Cases",
+        "",
+    ]
+    for record in records:
+        lines.append(f"- `{record['case_folder']}/{record['output_name']}`: {record['count_per_family']} of each IC family")
+    lines.extend(
+        [
+            "",
+            "## Families",
+            "",
+            ", ".join(IC_SOLO_FAMILIES),
+            "",
+            "## Validation",
+            "",
+            "`validation.json` checks exact counts, footprint-shelf entries, and bbox overlap before Proteus testing.",
+            "",
+        ]
+    )
+    (batch_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+    (batch_dir / "validation.json").write_text(
+        json.dumps(validation, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    summary = {
+        "test_id": f"BEAUTIFIER_ALL_ICS_IN_ONE_1_5_15_V1_TEMP_{run_date_slug}",
+        "run_date": run_date,
+        "donor": str(donor_path),
+        "families": list(IC_SOLO_FAMILIES),
+        "counts": list(counts),
+        "records": records,
+        "validation": "validation.json",
+        "policy": {
+            "single_reusable_harness": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "footprint_shelf_layout": True,
+            "full_cdb": True,
+            "terminals_and_wires": False,
+        },
+    }
+    (batch_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if batch_archive.exists():
+        batch_archive.unlink()
+    shutil.make_archive(str(batch_archive.with_suffix("")), "zip", batch_dir)
+    summary["archive"] = str(batch_archive.relative_to(ROOT))
+    summary["archive_sha256"] = sha256(batch_archive)
+    (batch_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {
+        "out_dir": str(batch_dir),
+        "archive": str(batch_archive),
+        "archive_sha256": summary["archive_sha256"],
+        "families": list(IC_SOLO_FAMILIES),
+        "counts": list(counts),
+        "validation": validation,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate reusable passive-family beautifier coordinate probes.")
     parser.add_argument("--family", choices=SUPPORTED_FAMILIES)
@@ -1488,6 +1707,11 @@ def main() -> None:
         "--ic-solo",
         action="store_true",
         help="Generate family-researched bare IC probes at the requested counts.",
+    )
+    parser.add_argument(
+        "--ic-all-in-one",
+        action="store_true",
+        help="Generate all supported IC families together in one bare project for each requested count.",
     )
     parser.add_argument("--counts", default=",".join(str(count) for count in DEFAULT_COUNTS))
     parser.add_argument("--accepted-limit", type=int, default=None)
@@ -1513,6 +1737,10 @@ def main() -> None:
         return
     if args.ic_solo:
         result = generate_ic_solo_batch(parse_counts(args.counts), run_date=args.run_date)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
+    if args.ic_all_in_one:
+        result = generate_ic_all_in_one_batch(parse_counts(args.counts), run_date=args.run_date)
         print(json.dumps(result, indent=2, sort_keys=True))
         return
 

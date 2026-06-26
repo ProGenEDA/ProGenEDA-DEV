@@ -3471,6 +3471,26 @@
       ],
       "rule": "D20 is immutable display infrastructure: never remove, translate, or count it as a requested diode. IC coordinate mutation requires an explicit family registration and an independent packet survey. Quad, hex, dual-subpart, single-symbol, 7447, and 4027 packet shapes have distinct profiles even when they share the same length-prefixed-text and marker-body parser. Every generated output must include a stage-specific generated_output_validator report.",
       "date": "2026-06-26"
+    },
+    {
+      "id": "R_IC_FOOTPRINT_SHELF_BEAUTIFIER_20260626",
+      "title": "IC beautifier must reserve measured packet footprints",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.94,
+      "applies_to": [
+        "component_placer",
+        "beautifier",
+        "IC families",
+        "multi-subpart gate packages"
+      ],
+      "evidence": [
+        "User report 2026-06-26: IC solo pack opened but multi-gate packages overlapped visually; 74HC08/74HC00-style packages contain multiple visible gates per requested package.",
+        "tests/test_component_placer.py 33 passed",
+        "BEAUTIFIER_IC_SOLO_1_3_15_25_V1_TEMP_2026_06_26 regenerated after footprint-shelf fix",
+        "BEAUTIFIER_ALL_ICS_IN_ONE_1_5_15_V1_TEMP_2026_06_26 static validator passed"
+      ],
+      "rule": "Do not place IC packets with a fixed-size slot grid. For layout.strategy=beautify, measure each selected packet's parsed coordinate bounding box, reserve at least max(packet bbox, default slot) plus clearance, and pack packets using the deterministic footprint_shelf allocator. Manifests must record before/after bboxes and the generated-output validator must reject visible packet bbox overlaps.",
+      "date": "2026-06-26"
     }
   ]
 }

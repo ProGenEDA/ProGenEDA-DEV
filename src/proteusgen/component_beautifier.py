@@ -28,6 +28,9 @@ VISIBLE_LAYOUT_ORIGIN_Y = -5_080_000
 VISIBLE_LAYOUT_SLOT_X = 3_810_000
 VISIBLE_LAYOUT_SLOT_Y = 2_540_000
 VISIBLE_LAYOUT_COLUMNS = 10
+VISIBLE_LAYOUT_MARGIN_X = 1_270_000
+VISIBLE_LAYOUT_MARGIN_Y = 1_270_000
+VISIBLE_LAYOUT_SHELF_WIDTH = VISIBLE_LAYOUT_SLOT_X * 16
 SCAN_COORD_LIMIT = 30_000_000
 MIN_COORD_ABS = 50_000
 SAFE_PACKET_COORD_LIMIT = 700_000_000
@@ -479,6 +482,7 @@ def translate_packet_to_slot(
         "key": key,
         "family": family,
         "slot": slot,
+        "layout_mode": "fixed_slot_grid",
         "translated": translated != data,
         "dx": dx,
         "dy": dy,
@@ -490,6 +494,80 @@ def translate_packet_to_slot(
         "marker_count_before": data.count(marker) if marker else 0,
         "marker_count_after": translated.count(marker) if marker else 0,
     }
+
+
+def translate_packet_to_position(
+    data: bytes,
+    *,
+    key: str,
+    family: str,
+    target_min_x: int,
+    target_min_y: int,
+    slot: int | None = None,
+    row: int | None = None,
+    column: int | None = None,
+    allocation_width: int | None = None,
+    allocation_height: int | None = None,
+) -> tuple[bytes, dict[str, Any]]:
+    """Move a complete packet so its parsed bbox begins at an explicit point."""
+
+    pairs = layout_coordinate_pairs(data, family)
+    if not pairs:
+        entry: dict[str, Any] = {
+            "key": key,
+            "family": family,
+            "translated": False,
+            "layout_mode": "footprint_shelf",
+            "reason": "no layout coordinate pairs found",
+            "target_min_x": target_min_x,
+            "target_min_y": target_min_y,
+        }
+        if slot is not None:
+            entry["slot"] = slot
+        if row is not None:
+            entry["row"] = row
+        if column is not None:
+            entry["column"] = column
+        return data, entry
+
+    before = coordinate_bbox(data, pairs)
+    dx = target_min_x - before["min_x"]
+    dy = target_min_y - before["min_y"]
+    out = bytearray(data)
+    for x_offset, y_offset, _reason in pairs:
+        _put_s32_at(out, x_offset, _s32_at(out, x_offset) + dx)
+        _put_s32_at(out, y_offset, _s32_at(out, y_offset) + dy)
+    translated = bytes(out)
+    reason_counts = Counter(reason for _x_offset, _y_offset, reason in pairs)
+    marker = family.encode("ascii", errors="ignore")
+    entry = {
+        "key": key,
+        "family": family,
+        "layout_mode": "footprint_shelf",
+        "translated": translated != data,
+        "dx": dx,
+        "dy": dy,
+        "target_min_x": target_min_x,
+        "target_min_y": target_min_y,
+        "coordinate_pair_count": len(pairs),
+        "coordinate_reason_counts": dict(sorted(reason_counts.items())),
+        "before_bbox": before,
+        "after_bbox": coordinate_bbox(translated, pairs),
+        "refs_unchanged": refs_in_packet(data) == refs_in_packet(translated),
+        "marker_count_before": data.count(marker) if marker else 0,
+        "marker_count_after": translated.count(marker) if marker else 0,
+    }
+    if slot is not None:
+        entry["slot"] = slot
+    if row is not None:
+        entry["row"] = row
+    if column is not None:
+        entry["column"] = column
+    if allocation_width is not None:
+        entry["allocation_width"] = allocation_width
+    if allocation_height is not None:
+        entry["allocation_height"] = allocation_height
+    return translated, entry
 
 
 def translate_packet_by_delta(

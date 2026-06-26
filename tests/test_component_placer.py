@@ -405,6 +405,43 @@ def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> N
     assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
+def test_component_placement_ic_beautifier_reserves_multi_gate_footprints(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"74HC02": 15},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "hc02_footprint_shelf.pdsprj",
+        donor_path=ROOT / "proteus_ic" / "donors" / "main_mega_20260618" / (
+            "Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160"
+            "hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj"
+        ),
+        full_cdb=True,
+    )
+
+    assert result.valid
+    entries = [
+        entry
+        for entry in result.layout_plan["actual_binary_placements"]
+        if entry["family"] == "74HC02"
+    ]
+    assert len(entries) == 15
+    assert all(entry["layout_mode"] == "footprint_shelf" for entry in entries)
+    assert all(entry["allocation_width"] >= entry["before_bbox"]["width"] for entry in entries)
+    assert result.validation_reports["generated_output_validator"]["valid"] is True
+
+    bboxes = [(entry["key"], entry["after_bbox"]) for entry in entries]
+    for left_index, (left_key, left) in enumerate(bboxes):
+        for right_key, right in bboxes[left_index + 1 :]:
+            separated = (
+                left["max_x"] <= right["min_x"]
+                or right["max_x"] <= left["min_x"]
+                or left["max_y"] <= right["min_y"]
+                or right["max_y"] <= left["min_y"]
+            )
+            assert separated, f"{left_key} overlaps {right_key}"
+
+
 def test_component_placement_generator_uses_clean_source_packets(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {

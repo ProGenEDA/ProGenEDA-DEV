@@ -530,3 +530,44 @@ researched IC families at 1x, 3x, 15x, and 25x. Focused verification passed
 checks. The repository-wide test run reported 185 passed plus 78 passed
 subtests, with one unrelated existing KiCad target-pack failure at 52/55.
 Manual Proteus open/render/simulation testing remains the acceptance gate.
+
+## 2026-06-26 IC Footprint Shelf Correction
+
+User Proteus inspection of the IC solo pack showed a common visual failure:
+multi-subpart IC packets overlapped. Example: `74HC08` and `74HC00` are not a
+single small rectangle in Proteus; one requested package contains four visible
+gate symbols, while `74HC04` contains six inverter symbols. The previous
+beautifier used a fixed grid slot of `3810000 x 2540000`, so wide/tall donor
+packets touched or overlapped when counts reached 15x/25x.
+
+Correction:
+
+- keep the same reusable harness and same component-count JSON requests;
+- continue using each family's registered coordinate parser only;
+- measure every selected packet's parsed bounding box before movement;
+- reserve `max(packet_bbox, default_slot) + 1270000` clearance;
+- pack packets with a deterministic shelf allocator instead of fixed-size
+  slots;
+- record `layout_mode: footprint_shelf`, allocation size, row, column, target
+  origin, before bbox, and after bbox in every manifest entry;
+- make the generated-output validator fail on visible packet bbox overlaps.
+
+Generated artifacts:
+
+- `experiments/BEAUTIFIER_IC_SOLO_1_3_15_25_V1_TEMP_2026_06_26.zip`
+  regenerated with the same 22 IC families and the same 1x/3x/15x/25x payloads.
+- `experiments/BEAUTIFIER_ALL_ICS_IN_ONE_1_5_15_V1_TEMP_2026_06_26.zip`
+  adds all 22 supported IC families in one bare project at 1x, 5x, and 15x
+  each.
+
+Static validation:
+
+- `tests/test_component_placer.py`: 33 passed
+- `python -m compileall -q src tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py`: passed
+- IC solo cumulative validator: valid, no errors
+- all-ICs-in-one cumulative validator: valid, no errors
+
+Manual Proteus testing is still required. In the regenerated pack, specifically
+check that `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC86`, and
+`74HC266` multi-gate packages no longer overlap, and that large single-symbol
+native IC rows remain readable.
