@@ -111,4 +111,10 @@ Confirmed findings are promoted into:
 
 ## Current maturity level
 
-The repo now contains a deterministic CLI, CircuitIR parsing and readiness validation, clean fixture provenance checks, exact-template generation, semantic project comparison, and result ingestion. Binary composition of rails/ICs remains intentionally blocked until its clean Proteus 8.13 oracle is available.
+The repository contains a deterministic CLI, CircuitIR parsing and readiness
+validation, fixture provenance checks, locked legacy circuit generators,
+removal-only mega-donor component placement, family-specific coordinate
+mutation, semantic project comparison, and result ingestion. Value editing and
+all-family bidirectional terminal placement are experimental. Attached
+terminal/wire composition and arbitrary unified-route wiring remain blocked
+until donor-backed fragments pass Proteus 8.13 testing.

@@ -1,0 +1,1 @@
+"""KiCad CircuitIR generation helpers."""

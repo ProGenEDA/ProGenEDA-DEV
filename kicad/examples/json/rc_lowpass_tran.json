@@ -1,0 +1,54 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "project": {
+    "name": "rc_lowpass_tran",
+    "title": "RC low-pass transient",
+    "description": "sine source through resistor into capacitor",
+    "analysis": [
+      ".tran 1u 5m",
+      ".save all"
+    ]
+  },
+  "components": [
+    {
+      "id": "V1",
+      "kind": "VSIN",
+      "value": "SIN(0 1 1k)",
+      "pins": {
+        "1": "IN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "kind": "R",
+      "value": "1k",
+      "pins": {
+        "1": "IN",
+        "2": "OUT"
+      }
+    },
+    {
+      "id": "C1",
+      "kind": "C",
+      "value": "1u",
+      "pins": {
+        "1": "OUT",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "G1",
+      "kind": "GND",
+      "value": "GND",
+      "pins": {
+        "1": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "IN": "input",
+    "OUT": "filtered output",
+    "GND": "ground"
+  }
+}

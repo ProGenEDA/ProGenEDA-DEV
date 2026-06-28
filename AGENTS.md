@@ -78,10 +78,17 @@ projects. The production direction is now removal-only donor mutation:
 - Value changing, terminal generation, and wiring are separate stages. Do not
   mix those responsibilities into the component placer.
 
-The current active engineering focus is the component-packet beautifier. It is
-strictly a coordinate/layout stage. Because coordinate fields vary by component
-family, improve it family-by-family inside the shared implementation rather
-than assuming one byte-edit method works for every component.
+The component-packet beautifier has a family-registered coordinate path. The
+current active engineering focus is the post-placement terminal layer:
+family-specific pin anchors, bidirectional terminal orientation, and
+donor-derived short-wire attachment. Do not infer electrical attachment from a
+component bounding box. Left-side bidirs use 180 degrees and right-side bidirs
+use 0 degrees. The current `bbox_side_anchor_no_wire` experiment is diagnostic,
+not production.
+
+The value changer is also experimental. It may mutate only family-validated,
+same-length tokens in complete selected packets and matching CDB property rows.
+Unsupported value syntax must fail before binary mutation.
 
 ## Development style
 
@@ -98,3 +105,7 @@ than assuming one byte-edit method works for every component.
 - Keep iteration history traceable: do not replace the tested `.py` behavior
   from scratch; copy/update the current baseline, then promote only after user
   acceptance.
+- Never commit `.workspace` files, Proteus `Project Backups`, generated KiCad
+  run directories, dependency caches, debug probes, or credentials.
+- Read `docs/README.md` and `docs/current_status_2026_06_29.md` before using
+  older chronological research as current policy.

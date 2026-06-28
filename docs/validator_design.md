@@ -56,18 +56,22 @@ contains `component_packet_validator` and `generated_output_validator`.
 
 ### Scope checks
 
-For production generation, reject unsupported or unvalidated composition even when clean donor material exists.
+Production generation must reject unsupported or unvalidated composition even
+when donor material exists. Scope is route-specific:
 
-CircuitIR vocabulary:
+- legacy resistor/passive/RCL/source/combinational routes use their accepted
+  schemas and validators;
+- the unified component placer accepts the inventory in
+  `proteus_ic/registry/mega_component_support_20260618.json`;
+- placement support does not imply wiring or simulation certification;
+- value mutation is restricted to family-safe same-length tokens;
+- the terminal side-anchor experiment is not electrical-attachment evidence;
+- rendered terminals, wires, junctions, and layout objects are not counted as
+  requested electrical components.
 
-```text
-RESISTOR
-74HC08
-LOGICSTATE
-LOGICPROBE
-```
-
-Only exact validated passive recipes are production-ready today. `74HC08`, `LOGICSTATE`, and `LOGICPROBE` remain represented in the contract for acceptance/diagnostic inputs, while composed production rendering is gated on D05. Rendered terminals, wires, junctions, and fixed-grid placement are layout objects rather than electrical components.
+The generated-output validator must verify the selected route, donor policy,
+exact requested counts, packet references, CDB/device policy, coordinate parser
+policy, immutable display infrastructure, and overlap results.
 
 ## Warning examples
 

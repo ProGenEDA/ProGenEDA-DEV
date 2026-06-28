@@ -126,20 +126,18 @@ D20 behavior.
 
 ## Roadmap
 
-1. Prove every IC family separately at 1x, 3x, 15x, and 25x.
-2. Combine all accepted IC families at 3x, 15x, and 25x.
-3. Combine all accepted IC and non-IC families at the same stress levels.
-4. Implement arrangement-decision logic and the wiring architecture.
-5. Expand the family-specific value/property changer beyond same-length tokens.
-6. Promote bidirectional terminal placement after Proteus testing.
-7. Learn family-specific pin anchors and emit donor-derived short-wire records
+1. Keep the accepted per-family and all-family placement packs as regressions.
+2. Finish arrangement-decision logic without changing proven coordinate parsers.
+3. Learn family-specific pin anchors and emit donor-derived short-wire records
    where direct terminal coincidence is insufficient.
-8. Place power and ground terminals with attached bidirectional terminals.
-9. Place ordinary bidirectional terminals as a modular fallback to wires.
-10. Add a connection decider that chooses direct wiring or same-name terminals
+4. Promote bidirectional terminal placement only after Proteus testing.
+5. Expand the family-specific value/property changer beyond same-length tokens.
+6. Place power and ground terminals with attached bidirectional terminals.
+7. Place ordinary bidirectional terminals as a modular fallback to wires.
+8. Add a connection decider that chooses direct wiring or same-name terminals
    per pin unless the user explicitly chooses.
-11. Complete stage validators, user-intent validators, the information
-    completer, and the final project validator.
+9. Complete stage validators, user-intent validators, the information
+   completer, and the final project validator.
 
 The design goal is not merely “a file that opens.” It is a deterministic
 compiler whose decisions can be inspected, validated, reproduced, and improved

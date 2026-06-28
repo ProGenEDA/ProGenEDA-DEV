@@ -1,0 +1,189 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "purpose": "Strict JSON rulebook for KiCad V1 visual project generation.",
+  "generator_entrypoint": "proteusgen generate-kicad",
+  "supported_scope": [
+    "R/C/L passive networks",
+    "DC voltage sources",
+    "DC current sources",
+    "AC or sine voltage sources",
+    "GND symbols",
+    "local net labels and SPICE directive text",
+    "broad project-local symbols for switches, diodes, LEDs, transistors, regulators, op-amps, counters, shift registers, display drivers, muxes, adders, comparators, and common 40xx/74HC logic ICs",
+    "source-guided schematic writing using bundled KiCad source references and mined exact core symbols where available"
+  ],
+  "required_top_level_keys": [
+    "schema_version",
+    "project",
+    "components",
+    "nets"
+  ],
+  "project": {
+    "name": "slug_safe_project_name",
+    "title": "Human readable title",
+    "analysis": [
+      ".op",
+      ".tran 1u 10m",
+      ".save all"
+    ]
+  },
+  "component_object": {
+    "id": "Unique reference like R1, C1, L1, V1, I1, G1",
+    "kind": "one of component_kinds below; core exact symbols are R, L, VDC, VSIN, GND, while broad kinds are emitted as project-local symbols when exact mined symbols are unavailable",
+    "value": "display/simulation value such as 1k, 100n, 10m, 10, 1m, AC 1, SIN(0 1 1k)",
+    "at": "optional [x,y] in millimeters; omit for automatic topology placement",
+    "rotation": "optional degrees; omit for generator defaults",
+    "pins": "map KiCad pin number strings to net names, e.g. {\"1\":\"VIN\",\"2\":\"GND\"}"
+  },
+  "pin_rules": {
+    "R": {"1": "left terminal after default placement", "2": "right terminal after default placement"},
+    "C": {"1": "left terminal after default placement", "2": "right terminal after default placement"},
+    "L": {"1": "left terminal after default placement", "2": "right terminal after default placement"},
+    "VDC": {"1": "positive/source net", "2": "negative/return net"},
+    "IDC": {"1": "positive/source net", "2": "negative/return net"},
+    "VAC": {"1": "source net", "2": "return net"},
+    "VSIN": {"1": "source net", "2": "return net"},
+    "GND": {"1": "GND"},
+    "broad_project_local": "Use numeric pin strings from the part package or chosen functional mapping. Omitted pins remain visually unconnected. Same net names connect by wire trunks or repeated KiCad local labels."
+  },
+  "net_rules": [
+    "Use GND for ground.",
+    "Use readable net names such as VIN, OUT, N1, N2, TANK, LOAD.",
+    "All electrical pins on V1-supported components must be assigned.",
+    "A same net name means those pins are electrically connected.",
+    "Do not create visual-only component zoos for circuit requests."
+  ],
+  "kicad_writer_rules": [
+    "The generated .kicad_pro is the file the user opens.",
+    "The matching .kicad_sch is generated beside it.",
+    "Every wire object must have exactly two xy points.",
+    "All wires must be horizontal or vertical.",
+    "Wires terminate exactly on pin endpoints, junctions, or same-net trunks.",
+    "Symbols are embedded in the project schematic; V1 exact symbols are source-pack mined where available.",
+    "Rails and broad digital bus/control nets may use repeated local labels instead of long sheet-spanning wires."
+  ],
+  "component_kinds": [
+    "4008",
+    "4013",
+    "4017",
+    "4020",
+    "4024",
+    "4027",
+    "4040",
+    "4051",
+    "4060",
+    "4063",
+    "4093",
+    "4511",
+    "4518",
+    "4520",
+    "7490",
+    "74HC00",
+    "74HC02",
+    "74HC04",
+    "74HC08",
+    "74HC151",
+    "74HC153",
+    "74HC157",
+    "74HC160",
+    "74HC161",
+    "74HC163",
+    "74HC165",
+    "74HC174",
+    "74HC175",
+    "74HC192",
+    "74HC193",
+    "74HC266",
+    "74HC273",
+    "74HC283",
+    "74HC32",
+    "74HC47",
+    "74HC48",
+    "74HC595",
+    "74HC74",
+    "74HC76",
+    "74HC85",
+    "74HC86",
+    "74HC90",
+    "BRIDGE",
+    "C",
+    "CONN_2",
+    "CONN_3",
+    "CONN_4",
+    "CP",
+    "D",
+    "FERRITE",
+    "FUSE",
+    "GND",
+    "L",
+    "L7805",
+    "LED",
+    "LM317",
+    "LM358",
+    "LM393",
+    "LM741",
+    "MOV",
+    "NE555",
+    "NMOS",
+    "NPN",
+    "OPAMP",
+    "PMOS",
+    "PNP",
+    "PTC",
+    "R",
+    "R_POT",
+    "SCHOTTKY",
+    "SW_DIP",
+    "SW_PUSH",
+    "TESTPOINT",
+    "TVS",
+    "VAC",
+    "IDC",
+    "IPULSE",
+    "ISIN",
+    "JFET_N",
+    "JFET_P",
+    "VDC",
+    "VPULSE",
+    "VSIN",
+    "ZENER"
+  ],
+  "examples": [
+    {
+      "schema_version": "progen-kicad-circuit-ir/v1",
+      "project": {
+        "name": "vdc_resistor_op",
+        "title": "10 V source feeding 1k resistor to ground",
+        "analysis": [".op", ".save all"]
+      },
+      "components": [
+        {"id": "V1", "kind": "VDC", "value": "10", "pins": {"1": "VIN", "2": "GND"}},
+        {"id": "R1", "kind": "R", "value": "1k", "pins": {"1": "VIN", "2": "GND"}},
+        {"id": "G1", "kind": "GND", "value": "GND", "pins": {"1": "GND"}}
+      ],
+      "nets": {
+        "VIN": "source positive and resistor input",
+        "GND": "return"
+      }
+    },
+    {
+      "schema_version": "progen-kicad-circuit-ir/v1",
+      "project": {
+        "name": "rc_lowpass_tran",
+        "title": "Sine source RC low-pass",
+        "analysis": [".tran 1u 5m", ".save all"]
+      },
+      "components": [
+        {"id": "V1", "kind": "VSIN", "value": "SIN(0 1 1k)", "pins": {"1": "IN", "2": "GND"}},
+        {"id": "R1", "kind": "R", "value": "1k", "pins": {"1": "IN", "2": "OUT"}},
+        {"id": "C1", "kind": "C", "value": "1u", "pins": {"1": "OUT", "2": "GND"}},
+        {"id": "G1", "kind": "GND", "value": "GND", "pins": {"1": "GND"}}
+      ],
+      "nets": {
+        "IN": "source input",
+        "OUT": "filtered output",
+        "GND": "return"
+      }
+    }
+  ]
+}

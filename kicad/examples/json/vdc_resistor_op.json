@@ -1,0 +1,44 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "project": {
+    "name": "vdc_resistor_op",
+    "title": "VDC resistor OP",
+    "description": "10V source feeding 1k resistor to ground",
+    "analysis": [
+      ".op",
+      ".save all"
+    ]
+  },
+  "components": [
+    {
+      "id": "V1",
+      "kind": "VDC",
+      "value": "10",
+      "pins": {
+        "1": "VIN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "kind": "R",
+      "value": "1k",
+      "pins": {
+        "1": "VIN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "G1",
+      "kind": "GND",
+      "value": "GND",
+      "pins": {
+        "1": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "VIN": "source positive and resistor top",
+    "GND": "ground"
+  }
+}

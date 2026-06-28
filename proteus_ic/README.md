@@ -1,8 +1,19 @@
 # Proteus IC Generation Workspace
 
+> Current project status is summarized in
+> [`../docs/current_status_2026_06_29.md`](../docs/current_status_2026_06_29.md).
+> This file also preserves the chronological IC experiment record below.
+
 This folder is the IC learning and donor evidence area. Production
 combinational IC generation is now enabled through the locked main CLI route
 after the user accepted the HC04/all-seven pack in Proteus 8.13.
+
+The newer unified component placer can also place the 22 IC package families
+listed in `registry/mega_component_support_20260618.json` as bare donor-native
+packets. That placement path is distinct from the locked directional
+combinational generator. Its current terminal experiment uses bidirectional
+side anchors for all families but does not yet emit the short wires required to
+claim electrical pin attachment.
 
 Current rules:
 

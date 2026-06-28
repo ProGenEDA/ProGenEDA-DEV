@@ -2,9 +2,17 @@
 
 ## Status
 
-The V2 beautifier is accepted and is the production default when layout is
-omitted. Explicit positions without a strategy retain `manual` behavior, and
-`legacy` remains available for byte-compatible regression output.
+There are two related layout systems:
+
+1. The accepted legacy circuit-route beautifier, used by locked passive,
+   RCL, source, and related generators.
+2. The newer component-placer packet beautifier, which translates bare donor
+   packets through family-registered coordinate parsers.
+
+The V2 legacy beautifier is accepted and is the default for its routes when
+layout is omitted. The packet beautifier has passed static and broad Proteus
+placement tests, but arrangement quality and later terminal/wire placement are
+separate milestones.
 
 The layout stage runs before Proteus binary emission. It translates complete
 donor-derived component, terminal, source, and attached short-wire records. It
