@@ -19,7 +19,9 @@ The post-placement stages are recorded in the sidecar manifest at
 
 ## Current Binary Policy
 
-- Value mutation is planned only; binary DSN/CDB value patching is not enabled.
+- Value mutation is enabled only for family-validated, same-length tokens.
+  It patches selected DSN packets and matching CDB property rows. Unsupported
+  syntax fails before binary mutation.
 - Wiring planning emits logical net intent only; Proteus wire records are not
   synthesized yet.
 - `SWITCH` and `POT-HG` use the exact requested count. No dummy packet is
@@ -47,6 +49,19 @@ When seven-segment display packets require the donor bridge record, the D20
 bridge is selected as infrastructure and is not counted as a user-requested
 diode. The current policy preserves D20 packet geometry and donor coordinates
 exactly. Relocation and removal attempts remain rejected.
+
+## Terminal Placement
+
+The experimental terminal stage covers every selected user component family,
+not only two-pin passives. Left-side `$TERBIDIR` records use 180 degrees and
+right-side records use 0 degrees. D20 and display-final sentinel packets are
+infrastructure and receive no user terminal plan.
+
+Current attachment mode is `bbox_side_anchor_no_wire`. This proves terminal
+record construction, family coverage, naming ownership, and orientation only.
+It does not prove electrical attachment. Accepted donor circuits show that
+some pins require a complete short-wire record, so promotion is blocked until
+family pin anchors and donor-derived wire fragments are implemented.
 
 ## Testing Notes
 

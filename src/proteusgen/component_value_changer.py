@@ -9,6 +9,7 @@ proven per family.
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict, deque
 from dataclasses import dataclass, replace
 from typing import Any, Callable, Iterable, Mapping
@@ -36,6 +37,19 @@ VISIBLE_VALUE_TOKEN_CANDIDATES: dict[str, tuple[str, ...]] = {
 }
 
 UNPROVEN_VALUE_FAMILIES = {"VSINE", "VPULSE"}
+
+VALUE_PATTERNS: dict[str, re.Pattern[str]] = {
+    # Keep the first production pass intentionally narrow. Same-length byte
+    # mutation can still create syntactically bad values (for example "10u"),
+    # so family validation must happen before touching donor bytes.
+    "RESISTOR": re.compile(r"^[0-9][0-9]?[RkM]?[0-9]?$"),
+    "CAP": re.compile(r"^[1-9][unp]F$"),
+    "CAP-ELEC": re.compile(r"^[1-9][unp]F$"),
+    "REALIND": re.compile(r"^[1-9][mun]H$"),
+    "POT-HG": re.compile(r"^(?:[1-9][0-9]?|[1-9][kM])$"),
+    "VSOURCE": re.compile(r"^[1-9]V$"),
+    "CSOURCE": re.compile(r"^[1-9]A$"),
+}
 
 
 @dataclass(frozen=True)
@@ -107,6 +121,17 @@ def _same_length_replace_once(data: bytes, old_values: tuple[str, ...], new: str
         if old_bytes in data:
             return data.replace(old_bytes, new_bytes, 1), old, 1
     raise ValueError(f"Packet does not contain any expected value token from {length_matches!r}.")
+
+
+def _validate_requested_value(family: str, value: str) -> None:
+    pattern = VALUE_PATTERNS.get(family)
+    if pattern is None:
+        return
+    if not pattern.fullmatch(value):
+        raise ValueError(
+            f"{family} value {value!r} is not in the proven compact value syntax for "
+            "same-length byte mutation."
+        )
 
 
 def _requested_values_by_key(
@@ -192,6 +217,7 @@ def apply_value_mutations_to_groups(
             continue
 
         try:
+            _validate_requested_value(family, new_value)
             data, old_value, count = _same_length_replace_once(_group_data(group), old_values, new_value)
         except ValueError as exc:
             errors.append({"code": "E_VALUE_PATCH_REJECTED", "message": str(exc), "severity": "error"})

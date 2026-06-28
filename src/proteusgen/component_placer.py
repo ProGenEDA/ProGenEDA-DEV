@@ -1126,6 +1126,32 @@ def _select_cdb_backed(
     return tuple(groups[:count])
 
 
+def _select_cap_elec_groups(
+    groups_by_family: dict[str, list[RawComponentGroup]],
+    cdb_refs: set[str],
+    count: int,
+    *,
+    offset: int = 0,
+) -> tuple[RawComponentGroup, ...]:
+    groups: list[RawComponentGroup] = []
+    for group in groups_by_family.get("CAP-ELEC", []):
+        if group.key not in cdb_refs:
+            continue
+        accepted_full_packet = len(group.data) == 379 and _is_finalizable(group) and group.data.endswith(b"\x00")
+        accepted_semimega_packet = (
+            len(group.data) == 352
+            and b"CAP-ELEC" in group.data
+            and b"ELEC-RAD10" in group.data
+            and b"1uF" in group.data
+        )
+        if accepted_full_packet or accepted_semimega_packet:
+            groups.append(group)
+    groups = groups[offset:]
+    if len(groups) < count:
+        raise ValueError(f"Need {count} clean CAP-ELEC groups after offset={offset}, found {len(groups)}.")
+    return tuple(groups[:count])
+
+
 def _select_switch_groups(
     groups_by_family: dict[str, list[RawComponentGroup]],
     count: int,
@@ -1398,6 +1424,15 @@ def _select_raw_groups(
                     tail=b"\x08",
                 )
             )
+        elif family == "CAP-ELEC":
+            selected.extend(
+                _select_cap_elec_groups(
+                    groups_by_family,
+                    cdb_refs,
+                    count,
+                    offset=family_offset,
+                )
+            )
         elif family == "PNP":
             selected.extend(_select_cdb_backed(groups_by_family, cdb_refs, family, count, offset=family_offset, min_length=342, tail=b"\x00"))
         elif family in SOURCE_CLEAN_MIN_LENGTHS:
@@ -1441,6 +1476,14 @@ def _select_generation_donor(request: dict[str, int], donor_path: str | Path | N
     requested = set(donor_request)
     if requested & NEW_COMPONENT_ONLY_FAMILIES:
         return _repo_path(NEW_COMPONENT_MEGA_DONOR)
+    if "CAP-ELEC" in requested:
+        # The semimega CAP-ELEC packets selected by the generic registry have
+        # non-final record tails. They work as donor-middle packets but cannot
+        # safely terminate a generated object chunk. The full mega donor has
+        # the accepted CDB-backed, finalizable CAP-ELEC packet family.
+        if requested & {"VSOURCE", "CSOURCE", "VSINE"}:
+            return _repo_path(MAIN_MEGA_SOURCE_DONOR)
+        return _repo_path(MAIN_MEGA_NO_SOURCE_DONOR)
     if requested & DISPLAY_FAMILIES:
         if requested & {"VSOURCE", "CSOURCE", "VSINE"}:
             return _repo_path(MAIN_MEGA_SOURCE_DONOR)

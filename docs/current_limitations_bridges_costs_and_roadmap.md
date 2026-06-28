@@ -44,8 +44,10 @@ from a trusted mega donor and removes everything else.
   packs. `VSINE` and `VPULSE` value mutation is blocked until their property
   model is decoded.
 - Bidirectional terminal placement is now a separate experimental stage. It can
-  append donor-derived `$TERBIDIR` records beside proven two-pin packets, but it
-  does not emit Proteus wires or guarantee electrical connection yet.
+  append donor-derived `$TERBIDIR` records for every selected user component
+  family with left=180 degrees and right=0 degrees, but it currently uses bbox
+  side anchors. It does not emit Proteus wires or guarantee electrical
+  connection yet.
 - Coordinate mutation is accepted only for families with a recorded parser.
   Rejected broad scans and guessed fixed offsets must not be used.
 
@@ -130,7 +132,8 @@ D20 behavior.
 4. Implement arrangement-decision logic and the wiring architecture.
 5. Expand the family-specific value/property changer beyond same-length tokens.
 6. Promote bidirectional terminal placement after Proteus testing.
-7. Emit actual Proteus wire records.
+7. Learn family-specific pin anchors and emit donor-derived short-wire records
+   where direct terminal coincidence is insufficient.
 8. Place power and ground terminals with attached bidirectional terminals.
 9. Place ordinary bidirectional terminals as a modular fallback to wires.
 10. Add a connection decider that chooses direct wiring or same-name terminals

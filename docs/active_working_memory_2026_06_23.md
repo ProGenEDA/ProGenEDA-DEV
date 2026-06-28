@@ -616,3 +616,49 @@ Verification:
 - terminal probe summary: 2/2 static-valid cases
 
 Manual Proteus testing remains the acceptance gate.
+
+## 2026-06-29 Value V2 and All-Family Terminal Feedback
+
+User Proteus feedback rejected two assumptions in the first probes:
+
+- the V1 `CAP-ELEC` value case did not work;
+- V1 bidirectional terminals were visible but were not actually attached to
+  component pins;
+- terminal placement must cover every component family, including ICs,
+  displays, sources, controls, and discrete devices;
+- donor evidence confirms left-side bidirectional terminals use 180 degrees
+  (`1800` tenths) and right-side terminals use 0 degrees;
+- some accepted circuits use short `WIRE` records between the terminal and
+  component pin, so bbox coincidence alone cannot be called electrical
+  attachment.
+
+Shared-code corrections:
+
+- `component_value_changer.py` now validates family-specific compact value
+  syntax before any same-length mutation. Unitless source values and malformed
+  values such as `10u` are rejected.
+- CAP-ELEC requests default to the full mega donor, whose selected packets are
+  CDB-backed and finalizable. The odd/incomplete CAP-ELEC packet is skipped.
+- V2 CAP-ELEC values are `1uF` through `9uF`, preserving the proven token shape.
+- `component_terminal_placer.py` now plans terminals for every selected user
+  family, skips D20/display infrastructure, and applies role-correct 180/0
+  orientation.
+- Coordinate-pair provenance metadata is accepted by the terminal planner.
+
+Generated artifacts:
+
+- `experiments/VALUE_CHANGER_PROBE_V2_SAFE_VALUES_TEMP_2026_06_26.zip`
+- `experiments/TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip`
+
+V2 terminal status is deliberately narrow: all three generated base projects
+and terminal marker checks are static-valid, but the records use
+`bbox_side_anchor_no_wire`. They are not promoted and must not be described as
+electrically attached. The next terminal milestone is donor-derived,
+family-specific pin anchors plus complete short-wire records where required.
+
+Verification:
+
+- `tests/test_component_placer.py`: 36 passed
+- `python -m compileall -q src/proteusgen tools/proteus_generation/2026-06-26`: passed
+- value V2: 7/7 static-valid
+- terminal V2: 3/3 base-valid and terminal-marker-valid

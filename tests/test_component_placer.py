@@ -7,9 +7,11 @@ import pytest
 
 from proteusgen.component_placer import (
     ComponentPlacerBlocked,
+    MAIN_MEGA_NO_SOURCE_DONOR,
     NEW_COMPONENT_MEGA_DONOR,
     TrustedDonor,
     _generation_markers,
+    _repo_path,
     _raw_groups_from_chunk,
     build_deletion_plan,
     build_component_placer_cdb_subset,
@@ -23,6 +25,7 @@ from proteusgen.component_placer import (
     validate_project_placement,
 )
 from proteusgen.component_beautifier import layout_coordinate_pairs
+from proteusgen.component_terminal_placer import plan_side_bidir_terminals
 from proteusgen.cdb import package_ref
 from proteusgen.pdsprj import read_internal_file
 from proteusgen.resistor_v9 import _extract_object_chunk
@@ -645,3 +648,50 @@ def test_component_placement_value_and_wiring_intent_are_planned(tmp_path: Path)
             ],
         }
     ]
+
+
+def test_cap_elec_selection_uses_strict_cdb_backed_packets(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"CAP-ELEC": 15},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "cap_elec_strict_selection.pdsprj",
+    )
+
+    assert result.valid
+    cap_elec_groups = [group for group in result.selected_groups if group.family == "CAP-ELEC"]
+    assert len(cap_elec_groups) == 15
+    assert {len(group.data) for group in cap_elec_groups} <= {352, 379}
+    assert all(b"CAP-ELEC" in group.data and b"1uF" in group.data for group in cap_elec_groups)
+
+
+def test_value_changer_rejects_bad_same_length_cap_elec_value(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"CAP-ELEC": {"count": 1, "value": "10u"}},
+        },
+        tmp_path / "bad_cap_elec_value_rejected.pdsprj",
+    )
+
+    assert not result.valid
+    assert result.value_plan["valid"] is False
+    assert any("CAP-ELEC value '10u'" in row["message"] for row in result.value_plan["errors"])
+
+
+def test_terminal_planner_covers_all_selected_families_and_uses_role_angles(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "components": {"74HC00": 1, "RESISTOR": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "terminal_orientation_probe_base.pdsprj",
+    )
+
+    assert result.valid
+    specs = plan_side_bidir_terminals(result.selected_groups, label_prefix="T")
+    assert specs
+    assert {"74HC00", "RESISTOR"} <= {spec.component_family for spec in specs}
+    assert all(spec.angle_tenths == 1800 for spec in specs if spec.pin_hint.startswith("left"))
+    assert all(spec.angle_tenths == 0 for spec in specs if spec.pin_hint.startswith("right"))

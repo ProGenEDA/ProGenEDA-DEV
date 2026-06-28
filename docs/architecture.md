@@ -87,10 +87,11 @@ proven families are `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`,
 mutation until their property rows are decoded. The wiring planner emits net
 intent only and never emits Proteus wire records.
 
-The terminal placer now has a first experimental stage for appending
-donor-derived `$TERBIDIR` records beside proven two-pin packets. It owns
-terminal naming and coordinates for those appended terminals, but it does not
-emit wire records or claim complete electrical routing yet.
+The terminal placer now has an experimental all-family stage for appending
+donor-derived `$TERBIDIR` records. It owns terminal naming, coordinates, and
+left/right orientation. Its current `bbox_side_anchor_no_wire` policy does not
+emit wire records or claim electrical attachment; donor-derived pin anchors and
+short-wire packets remain the next required step.
 
 Every stage must eventually provide both a direct stage-output validator and a
 cumulative validator covering all accepted earlier stages. User-specification,
