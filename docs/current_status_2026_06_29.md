@@ -11,10 +11,11 @@ validated request
   -> donor selection
   -> packet placement
   -> packet/output validation
-  -> value mutation
-  -> wiring intent
   -> packet coordinate beautification
-  -> terminal/wire stages
+  -> routing decision
+  -> terminal placement or wire-planner/beautifier loop
+  -> wire emission where selected
+  -> value mutation
   -> final validation
 ```
 
@@ -41,6 +42,8 @@ validated request
   - accepted `RESISTOR/v3` attachment with donor-derived short wires;
   - static-valid `CAP/v1` attachment with family-specific tail-link patching
     and short-wire emission;
+  - static-valid `REALIND/v1` attachment derived independently from the bare
+    and two-terminal manual inductor donors;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
@@ -60,6 +63,8 @@ The current user test packs are:
 
 - `experiments/VALUE_CHANGER_PROBE_V2_SAFE_VALUES_TEMP_2026_06_26.zip`
 - `experiments/TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip`
+- `experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip`
+- `experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -78,14 +83,23 @@ offsets so longer refs such as `C14` still patch correctly. Its static pack is
 ready for manual Proteus testing:
 `experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip`.
 
+`REALIND/v1` now follows the same shared entrypoint with independently proven
+inductor geometry: pins are 762000 units either side of the REALIND body
+center, active link suffixes are patched at body-relative offsets `+25/+29`,
+and the short-wire record templates come from
+`inductor_02_two_terminal.pdsprj`. The 1x/3x/15x static pack is ready for
+manual Proteus testing:
+`experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29.zip`.
+
 ## Verification Baseline
 
-- focused component placer suite: 41 passed;
+- focused component placer suite: 43 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
 - resistor-specific V3 attachment: Proteus-accepted and locked.
 - capacitor-specific V1 attachment: static-valid, pending user Proteus test.
+- inductor-specific V1 attachment: static-valid, pending user Proteus test.
 
 ## Next Engineering Step
 

@@ -3509,6 +3509,25 @@
       ],
       "rule": "Attach resistor bidirectional terminals with the RESISTOR/v3 handler only: horizontal pin span 1270000, terminal symbols 508000 from pins, donor-derived 254000 short wires, left orientation 1800, right orientation 0, and matching active suffixes in the resistor pin-link fields. Never regress to bounding-box side anchors.",
       "date": "2026-06-29"
+    },
+    {
+      "id": "R_TERMINAL_REALIND_V1_STATIC_20260629",
+      "title": "Inductor terminal attachment uses independent donor geometry",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.94,
+      "applies_to": [
+        "component_terminal_placer",
+        "REALIND",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "fixtures/pdsprj/inductor_01_single_free.pdsprj",
+        "fixtures/pdsprj/inductor_02_two_terminal.pdsprj",
+        "TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29",
+        "tests/test_component_placer.py => 43 passed"
+      ],
+      "rule": "Attach horizontal REALIND bidirectional terminals only through REALIND/v1: derive the center from the final REALIND body marker, use pins at center +/- 762000, patch active input/output suffixes at body-relative offsets +25 and +29, orient the left terminal 1800 and right terminal 0, and emit the two 50-byte short-wire templates proven by the manual two-terminal inductor donor. Three-character refs require the REALIND-specific body-anchor fallback.",
+      "date": "2026-06-29"
     }
   ]
 }

@@ -1,128 +1,63 @@
-# Agent Instructions
+# Repository Guidelines
 
-This repository stores the working memory for a Proteus `.pdsprj` generator project.
+## Project Structure
 
-## Mission
+Core Python code lives in `src/proteusgen/`. Tests are under `tests/`, while
+`tools/proteus_generation/YYYY-MM-DD/` contains reproducible experiment
+runners. Trusted Proteus donors are stored in `fixtures/pdsprj/` and
+`proteus_ic/donors/`; generated test packs belong in `experiments/`.
+Architecture and current status are documented in `docs/`, with repeatable
+binary findings recorded in `knowledge/`.
 
-Build a Python-based system that accepts a strict CircuitIR JSON circuit description and emits a Proteus 8.x `.pdsprj` file.
+The canonical pipeline is defined in
+`docs/progen_eda_canonical_pipeline.md`. Extend shared modules instead of
+creating component-specific implementations. In particular, all researched
+terminal families must use `src/proteusgen/component_terminal_placer.py`.
 
-The planner is outside the core generator. Any AI model may later convert user text into CircuitIR. The generator and validator must be deterministic.
+## Build, Test, and Development Commands
 
-## Canonical pipeline
+Use Python 3.11+ from the repository root:
 
-Treat `docs/progen_eda_canonical_pipeline.md` as authoritative. Do not reorder
-the high-level pipeline based on older experiment documents.
-
-There is one component terminal implementation:
-
-```text
-src/proteusgen/component_terminal_placer.py
+```powershell
+$env:PYTHONPATH = "src"
+python -m pytest tests/test_component_placer.py -q
+python -m pytest -q
+python -m compileall -q src tests tools/proteus_generation
 ```
 
-Add researched family handlers to that module. Dated scripts may regenerate
-test packs but must not become alternate terminal implementations. Before the
-terminal stage, a component must pass component placement, placement
-validation, beautification, and beautifier validation. Unsupported attachment
-must fail loudly rather than use bounding-box guesses.
+Run a dated experiment script directly to regenerate its pack, for example:
 
-## Hard boundaries
-
-- Do not modify Proteus executables.
-- Do not bypass licensing.
-- Do not depend on GUI automation for the main Route A generator.
-- Use only user-created test projects and public example project files as research/corpus material.
-- Keep generated project files compatible with the observed `.pdsprj` container structure.
-
-## Current known file model
-
-For Proteus 8.13 `.pdsprj`:
-
-- The outer `.pdsprj` is a ZIP-style container.
-- Required internal files observed: `PROJECT.XML`, `ROOT.DSN`, `ROOT.CDB`, `SCRIPTS/PWRRAILS.DAT`.
-- `ROOT.DSN` controls visual object existence, terminal labels, visible wires, and topology.
-- `ROOT.CDB` controls resistor values and reference names for existing resistors.
-- `ROOT.CDB` must exist; removing it causes fatal Proteus/ISIS failure in tests.
-- `SCRIPTS/PWRRAILS.DAT` has remained unchanged in visible terminal/resistor experiments.
-
-## Implementation language
-
-Use Python 3.11+.
-
-Recommended package modules:
-
-```text
-src/proteusgen/extractor.py
-src/proteusgen/analyzer.py
-src/proteusgen/validator.py
-src/proteusgen/generator.py
-src/proteusgen/packer.py
-src/proteusgen/circuit_ir.py
-src/proteusgen/knowledge.py
+```powershell
+python tools/proteus_generation/2026-06-29/generate_terminal_placer_two_pin_family_temp.py --family REALIND
 ```
 
-Recommended libraries:
+## Coding Style and Naming
 
-```text
-pydantic
-jsonschema
-typer
-rich
-networkx
-construct
-pytest
-```
+Use four-space indentation, type hints, `pathlib.Path`, dataclasses for
+structured records, and deterministic standard-library logic where practical.
+Functions and files use `snake_case`; classes use `PascalCase`; constants use
+`UPPER_SNAKE_CASE`. Format experiment names as
+`feature_family_version_temp_YYYY_MM_DD`. Unsupported binary mutations must
+raise a clear error instead of guessing.
 
-## Input language
+## Testing Guidelines
 
-Use CircuitIR JSON. Do not make the generator parse free-form English.
+Tests use `pytest` and follow `test_<behavior>` naming. Every family change
+needs focused unit tests, compile checks, and a generated Proteus pack. Static
+validation is not Proteus acceptance: record open, render, and simulation
+results in the experiment README and `knowledge/test_results.jsonl`.
 
-The planner prompt in `prompts/planner_prompt.md` is responsible for turning natural language into CircuitIR.
+## Commit and Pull Request Guidelines
 
-## Current generator target
+History uses short imperative subjects such as `Add shared capacitor terminal
+attachment stage`. Keep commits scoped and exclude caches, credentials,
+Proteus backups, and disposable debug output. Pull requests should describe
+the binary evidence, affected families, tests run, generated pack, and any
+remaining Proteus verification.
 
-The active Proteus route has moved away from synthesizing circuits from empty
-projects. The production direction is now removal-only donor mutation:
+## Agent-Specific Rules
 
-- Start from a trusted donor or mega donor that already contains the needed
-  components.
-- Remove unneeded complete component packets and linked metadata.
-- Do not clone, synthesize, or freehand component records in the production
-  component placer.
-- The component placer only places/selects components. It must not add
-  terminals or wires.
-- After placement the pipeline is: component packet validation, value changer,
-  wiring-intent planner, beautifier, final binary emission.
-- Value changing, terminal generation, and wiring are separate stages. Do not
-  mix those responsibilities into the component placer.
-
-The component-packet beautifier has a family-registered coordinate path. The
-current active engineering focus is the post-placement terminal layer:
-family-specific pin anchors, bidirectional terminal orientation, and
-donor-derived short-wire attachment. Do not infer electrical attachment from a
-component bounding box. Left-side bidirs use 180 degrees and right-side bidirs
-use 0 degrees. The current `bbox_side_anchor_no_wire` experiment is diagnostic,
-not production.
-
-The value changer is also experimental. It may mutate only family-validated,
-same-length tokens in complete selected packets and matching CDB property rows.
-Unsupported value syntax must fail before binary mutation.
-
-## Development style
-
-- Update `knowledge/test_results.jsonl` after every test batch.
-- Promote repeatable findings into `knowledge/rules.json`.
-- Keep uncertain items in `knowledge/open_questions.json`.
-- Update `docs/proteus_file_model.md` when evidence changes.
-- Avoid speculative generator logic unless marked experimental.
-- Every experiment must have or update a Markdown note explaining the purpose,
-  generated files, what the user should inspect in Proteus, user feedback, and
-  Codex observations/root cause.
-- When the user reports results, update the experiment Markdown before moving
-  to the next variant.
-- Keep iteration history traceable: do not replace the tested `.py` behavior
-  from scratch; copy/update the current baseline, then promote only after user
-  acceptance.
-- Never commit `.workspace` files, Proteus `Project Backups`, generated KiCad
-  run directories, dependency caches, debug probes, or credentials.
-- Read `docs/README.md` and `docs/current_status_2026_06_29.md` before using
-  older chronological research as current policy.
+Preserve accepted donor-native routes. Never modify Proteus executables,
+bypass licensing, or replace the removal-only component placer with speculative
+record synthesis. Update the existing implementation and experiment notes
+after every user result so another contributor can resume without chat context.
