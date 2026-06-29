@@ -1,0 +1,57 @@
+{
+  "schema_version": "orcad-pspice-visual-ir/v0.1",
+  "project_name": "ee215_diode_iv_curve_example",
+  "metadata": {
+    "target_backend": "OrCAD/PSpice visual project generator",
+    "manual_experiment": "EE-215 Experiment 2: Diode Characteristics",
+    "note": "This is CircuitIR for native visual project generation. It is not a raw netlist target."
+  },
+  "components": [
+    {
+      "ref": "V1",
+      "type": "DC_VOLTAGE_SOURCE",
+      "nodes": ["V0", "0"],
+      "value": "DC 0V",
+      "properties": {
+        "sweep_start": "0V",
+        "sweep_stop": "10V",
+        "sweep_step": "0.1V"
+      }
+    },
+    {
+      "ref": "R1",
+      "type": "RESISTOR",
+      "nodes": ["V0", "D0"],
+      "value": "1k"
+    },
+    {
+      "ref": "D1",
+      "type": "DIODE",
+      "nodes": ["D0", "0"],
+      "model": "1N4001"
+    }
+  ],
+  "analyses": [
+    {
+      "type": "DC",
+      "parameters": {
+        "source": "V1",
+        "start": "0V",
+        "stop": "10V",
+        "step": "0.1V"
+      }
+    }
+  ],
+  "probes": [
+    {
+      "type": "voltage",
+      "node": "D0",
+      "label": "diode_voltage"
+    },
+    {
+      "type": "current",
+      "component": "D1",
+      "label": "diode_current"
+    }
+  ]
+}

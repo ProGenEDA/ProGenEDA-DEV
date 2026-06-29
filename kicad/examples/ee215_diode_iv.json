@@ -1,0 +1,24 @@
+{
+  "project_name": "ee215_diode_iv_kicad_visual",
+  "components": [
+    {"ref": "V1", "kind": "VDC", "value": "0", "at": [30, 40], "pins": {"1": "VIN", "2": "GND"}},
+    {"ref": "R1", "kind": "R", "value": "1k", "at": [50, 40], "rotation": 90, "pins": {"1": "VIN", "2": "N1"}},
+    {"ref": "D1", "kind": "D", "value": "1N4001", "at": [70, 40], "pins": {"1": "N1", "2": "GND"}},
+    {"ref": "#PWR01", "kind": "GND", "value": "GND", "at": [30, 55], "pins": {"1": "GND"}},
+    {"ref": "#PWR02", "kind": "GND", "value": "GND", "at": [70, 55], "pins": {"1": "GND"}}
+  ],
+  "wires": [
+    {"points": [[30, 35], [30, 30], [50, 30], [50, 36]]},
+    {"points": [[50, 44], [70, 40]]},
+    {"points": [[30, 45], [30, 55]]},
+    {"points": [[70, 40], [70, 55]]}
+  ],
+  "labels": [
+    {"text": "VIN", "at": [40, 30]},
+    {"text": "VD", "at": [72, 39]}
+  ],
+  "spice_directives": [
+    {"text": ".dc V1 0 10 0.1\n.save all", "at": [25, 75]}
+  ],
+  "notes": ["EE-215 diode characteristics target"]
+}
