@@ -56,16 +56,23 @@ The current user test packs are:
 - `experiments/VALUE_CHANGER_PROBE_V2_SAFE_VALUES_TEMP_2026_06_26.zip`
 - `experiments/TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip`
 
-The terminal pack is a side-anchor diagnostic. It emits no wire records and
-must not be treated as attachment proof.
+The terminal V2 pack was rejected by user testing on 2026-06-29: its
+bounding-box side anchors were not correctly placed or electrically attached.
+It emits no wire records and must not be treated as attachment proof.
+
+Terminal development now proceeds component by component in the existing
+unified terminal placer. The first focused `RESISTOR/v3` handler patches
+terminal suffixes into resistor pin-link fields and emits donor-derived short
+wires. Its 1x/3x/15x static pack passed; Proteus acceptance is pending. See
+`experiments/terminal_placer_resistor_attachment_v3_temp_2026_06_29/README.md`.
 
 ## Verification Baseline
 
 - focused component placer suite: 36 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
-- terminal V2: 3/3 base-valid and terminal-marker-valid;
-- Proteus user acceptance remains pending for V2.
+- terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
+- resistor-specific V3 attachment: static-valid, pending Proteus acceptance.
 
 ## Next Engineering Step
 
