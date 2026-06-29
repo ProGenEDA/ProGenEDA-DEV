@@ -3491,6 +3491,24 @@
       ],
       "rule": "Do not place IC packets with a fixed-size slot grid. For layout.strategy=beautify, measure each selected packet's parsed coordinate bounding box, reserve at least max(packet bbox, default slot) plus clearance, and pack packets using the deterministic footprint_shelf allocator. Manifests must record before/after bboxes and the generated-output validator must reject visible packet bbox overlaps.",
       "date": "2026-06-26"
+    },
+    {
+      "id": "R_TERMINAL_RESISTOR_V3_ACCEPTED_20260629",
+      "title": "Resistor terminal attachment is family-specific",
+      "status": "user_confirmed",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "RESISTOR",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "User report 2026-06-29: R01, R03, and R15 terminalized resistor cases all worked",
+        "TERMINAL_PLACER_RESISTOR_ATTACHMENT_V3_TEMP_2026_06_29",
+        "Matched terminal suffix, resistor pin-link, and short-wire endpoint audit"
+      ],
+      "rule": "Attach resistor bidirectional terminals with the RESISTOR/v3 handler only: horizontal pin span 1270000, terminal symbols 508000 from pins, donor-derived 254000 short wires, left orientation 1800, right orientation 0, and matching active suffixes in the resistor pin-link fields. Never regress to bounding-box side anchors.",
+      "date": "2026-06-29"
     }
   ]
 }

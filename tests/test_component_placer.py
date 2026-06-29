@@ -26,10 +26,14 @@ from proteusgen.component_placer import (
 )
 from proteusgen.component_beautifier import layout_coordinate_pairs
 from proteusgen.component_terminal_placer import (
+    CAP_PIN_HALF_SPAN,
     RESISTOR_PIN_SPAN,
     TERMINAL_CONTACT_TO_PIN,
     TERMINAL_SYMBOL_TO_PIN,
+    attach_capacitor_bidir_terminals_to_project,
+    attach_component_bidir_terminals_to_project,
     attach_resistor_bidir_terminals_to_project,
+    plan_attached_capacitor_terminals,
     plan_attached_resistor_terminals,
     plan_side_bidir_terminals,
 )
@@ -759,3 +763,78 @@ def test_resistor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pat
             suffix = bytes.fromhex(terminal["suffix"])
             little_endian_suffix = suffix[::-1]
             assert chunk.count(little_endian_suffix) >= 2
+
+
+def test_capacitor_terminal_planner_uses_body_center_plus_half_span(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "components": {"CAP": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "capacitor_terminal_geometry_base.pdsprj",
+    )
+
+    pairs = plan_attached_capacitor_terminals(result.selected_groups, label_prefix="C")
+
+    assert len(pairs) == 1
+    pair = pairs[0]
+    assert pair.right_pin_x - pair.left_pin_x == CAP_PIN_HALF_SPAN * 2
+    assert pair.left.symbol_x == pair.left_pin_x - TERMINAL_SYMBOL_TO_PIN
+    assert pair.right.symbol_x == pair.right_pin_x + TERMINAL_SYMBOL_TO_PIN
+    assert pair.left_wire_start_x == pair.left_pin_x - TERMINAL_CONTACT_TO_PIN
+    assert pair.right_wire_start_x == pair.right_pin_x + TERMINAL_CONTACT_TO_PIN
+    assert pair.left.angle_tenths == 1800
+    assert pair.right.angle_tenths == 0
+
+
+def test_capacitor_terminal_attachment_patches_links_and_adds_short_wires(tmp_path: Path) -> None:
+    base = tmp_path / "capacitor_terminal_attach_base.pdsprj"
+    output = tmp_path / "capacitor_terminal_attach.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "components": {"CAP": 3},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+
+    report = attach_capacitor_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        label_prefix="C",
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    assert report["valid"] is True
+    assert report["family_handler"] == "CAP/v1"
+    assert report["terminal_count_added"] == 6
+    assert report["wire_count_added"] == 6
+    assert chunk.count(b"$TERBIDIR") == 6
+    assert chunk.count(b"\x7fWIRE") == 6
+    assert chunk.endswith(b"\xff")
+    for pair in report["terminal_pairs"]:
+        for terminal in (pair["left"], pair["right"]):
+            suffix = bytes.fromhex(terminal["suffix"])
+            little_endian_suffix = suffix[::-1]
+            assert chunk.count(little_endian_suffix) >= 2
+
+
+def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> None:
+    base = tmp_path / "shared_dispatch_cap_base.pdsprj"
+    output = tmp_path / "shared_dispatch_cap_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "components": {"CAP": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+
+    report = attach_component_bidir_terminals_to_project(base, output, result.selected_groups)
+
+    assert report["family_handler"] == "CAP/v1"
+    assert report["terminal_count_added"] == 2

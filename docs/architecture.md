@@ -46,18 +46,22 @@ Early strategy:
 
 Initial emitted output domain: exact clean single-sheet template recipes. The first composition milestone is the structured AND reference circuit after D05-based validation.
 
-### Component placer pipeline
+### Canonical Progen EDA pipeline
+
+The authoritative end-to-end order and implementation-status matrix are in
+[`progen_eda_canonical_pipeline.md`](progen_eda_canonical_pipeline.md). It
+supersedes older experimental stage orders.
+
+### Current component-placer implementation
 
 The removal-only component placer now runs through the deterministic pipeline
 used by the next native component route:
 
 1. User input/CircuitIR validation.
-2. Component placer.
-3. Component packet validator.
-4. Value changer.
-5. Wiring planner.
-6. Beautifier.
-7. Final binary emission.
+2. Component selection and placement.
+3. Component packet and placement validation.
+4. Beautification and beautifier validation.
+5. Route-specific experimental stages.
 
 The current component placer keeps the accepted donor-packet emission path. It
 does not synthesize terminals, wires, or cloned components. `SWITCH` and
@@ -87,11 +91,10 @@ proven families are `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`,
 mutation until their property rows are decoded. The wiring planner emits net
 intent only and never emits Proteus wire records.
 
-The terminal placer now has an experimental all-family stage for appending
-donor-derived `$TERBIDIR` records. It owns terminal naming, coordinates, and
-left/right orientation. Its current `bbox_side_anchor_no_wire` policy does not
-emit wire records or claim electrical attachment; donor-derived pin anchors and
-short-wire packets remain the next required step.
+The generic all-family bounding-box terminal experiment was rejected. Terminal
+attachment now proceeds family by family in the single
+`component_terminal_placer.py` module. `RESISTOR/v3` is the first accepted
+handler and uses matched pin-link suffixes plus donor-derived short wires.
 
 Every stage must eventually provide both a direct stage-output validator and a
 cumulative validator covering all accepted earlier stages. User-specification,
@@ -114,7 +117,6 @@ Confirmed findings are promoted into:
 The repository contains a deterministic CLI, CircuitIR parsing and readiness
 validation, fixture provenance checks, locked legacy circuit generators,
 removal-only mega-donor component placement, family-specific coordinate
-mutation, semantic project comparison, and result ingestion. Value editing and
-all-family bidirectional terminal placement are experimental. Attached
-terminal/wire composition and arbitrary unified-route wiring remain blocked
-until donor-backed fragments pass Proteus 8.13 testing.
+mutation, semantic project comparison, and result ingestion. Value editing is
+lightly tested. Resistor terminal attachment is accepted; other terminal
+families and arbitrary unified-route wiring remain experimental.

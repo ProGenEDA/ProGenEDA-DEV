@@ -22,67 +22,71 @@ from proteusgen.component_terminal_placer import (  # noqa: E402
 SOURCE_PAYLOAD = (
     ROOT
     / "experiments"
-    / "beautifier_resistor_coordinate_probe_v2_temp_2026_06_24"
-    / "01_R01_RESISTOR_1X_PARSED_COORDS"
+    / "beautifier_cap_coordinate_probe_v1_temp_2026_06_24"
+    / "01_C01_CAP_1X_PARSED_COORDS"
     / "payload.json"
 )
 OUT_DIR = (
     ROOT
     / "experiments"
-    / "terminal_placer_resistor_attachment_v3_temp_2026_06_29"
+    / "terminal_placer_capacitor_attachment_v1_temp_2026_06_29"
 )
 ARCHIVE = (
     ROOT
     / "experiments"
-    / "TERMINAL_PLACER_RESISTOR_ATTACHMENT_V3_TEMP_2026_06_29.zip"
+    / "TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip"
 )
 COUNTS = (1, 3, 15)
 
 
-README = """# Terminal Placer Resistor Attachment V3
+README = """# Terminal Placer Capacitor Attachment V1
 
 ## Purpose
 
-This is the first family-specific terminal-attachment test. It uses the
-accepted component placer and beautifier, then the unified terminal placer.
-The JSON comes from the accepted resistor beautifier probe and only the count
-is changed for R01, R03, and R15.
+This is the second family-specific terminal-attachment test. It uses the
+accepted component placer and beautifier, then the shared terminal placer with
+the new `CAP/v1` handler. The JSON comes from the accepted capacitor
+beautifier probe and only the count is changed for C01, C03, and C15.
 
-## Previous Result
+## Why This Is Focused
 
-- Value changer V2: user-confirmed working.
-- Generic terminal placer V2: rejected because terminals were incorrectly
-  positioned and not electrically attached.
+Older capacitor work proved that ordinary input/output terminal ordering is
+fragile when multiple terminal-attached capacitors are synthesized. This V1
+pack is narrower:
 
-V2 used bounding-box edges and no wires. V3 does not use that method.
+- bare `CAP` packets come from the current main mega donor;
+- bidirectional terminals come from the production terminal templates;
+- capacitor pin-link suffix fields are patched from byte-proven CAP offsets;
+- donor-proven body-center geometry determines the real left/right pin points;
+- short wires are emitted explicitly so attachment is visible and testable.
 
-## V3 Resistor Structure
+## V1 Capacitor Structure
 
-For each horizontal resistor V3 emits:
+For each capacitor V1 emits:
 
 - one left `$TERBIDIR` at 180 degrees;
 - one right `$TERBIDIR` at 0 degrees;
-- terminal symbols at the locked 508,000-unit resistor spacing;
-- one donor-derived 254,000-unit short wire on each side;
-- resistor pin-link suffixes matching the corresponding terminal suffixes.
+- terminal symbols one fixed bidirectional-terminal span away from each pin;
+- one short wire from each terminal contact to its real pin;
+- capacitor link suffixes patched into the bare mega packet tail.
 
-The binary object order follows the locked resistor route:
+The binary object order follows the same accepted shared pattern:
 
 ```text
 header
 left terminal records
 right terminal records
 separator
-resistor + left short wire + right short wire
+capacitor + left short wire + right short wire
 ...
 final FF
 ```
 
 ## Test Cases
 
-- R01: one resistor, two attached terminals.
-- R03: three resistors, six attached terminals.
-- R15: fifteen resistors, thirty attached terminals.
+- C01: one capacitor, two attached terminals.
+- C03: three capacitors, six attached terminals.
+- C15: fifteen capacitors, thirty attached terminals.
 
 Each case folder contains the reused `payload.json`, bare base project,
 terminalized project, placer manifest, terminal plan, and `WHAT_TO_CHECK.txt`.
@@ -92,10 +96,10 @@ terminalized project, placer manifest, terminal plan, and `WHAT_TO_CHECK.txt`.
 For every case:
 
 1. Open the terminalized file, not the `_BASE` file.
-2. Confirm every resistor has one terminal on each side.
-3. Confirm left arrows face right and right arrows face left toward the body.
-4. Confirm there is a short green wire from each terminal contact to its pin.
-5. Confirm no terminal floats or overlaps the resistor.
+2. Confirm every capacitor has one bidirectional terminal on each side.
+3. Confirm left arrows face into the body from the left and right arrows from the right.
+4. Confirm each terminal reaches its capacitor pin through a visible short wire.
+5. Confirm no terminal floats, overlaps, or lands between the plates instead of on a pin.
 6. Run simulation/netlist and report any DLL, bad-object, duplicate-reference,
    or unconnected-pin error.
 
@@ -103,13 +107,10 @@ For every case:
 
 Static generation passed on 2026-06-29:
 
-- R01/R03/R15 have exactly two terminals and two short wires per resistor;
-- terminal suffixes match resistor pin-link fields;
-- short-wire endpoints match terminal contacts and resistor pins;
-- object lengths and final terminators are exact;
-- the component-placer test file passes.
-
-Proteus acceptance remains pending user testing.
+- C01/C03/C15 have exactly two terminals and two short wires per capacitor;
+- terminal suffixes are patched into the capacitor tail fields;
+- local regression tests pass with the shared terminal dispatcher;
+- Proteus acceptance is still pending user testing.
 """
 
 
@@ -126,12 +127,12 @@ def main() -> None:
     reused_payload = json.loads(SOURCE_PAYLOAD.read_text(encoding="utf-8"))
     summary: list[dict[str, object]] = []
     for count in COUNTS:
-        case_id = f"R{count:02d}_RESISTOR_{count}X_ATTACHED_BIDIR"
+        case_id = f"C{count:02d}_CAP_{count}X_ATTACHED_BIDIR"
         case_dir = OUT_DIR / case_id
         case_dir.mkdir()
         payload = json.loads(json.dumps(reused_payload))
         payload["donor"] = str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR))
-        payload["components"] = {"RESISTOR": count}
+        payload["components"] = {"CAP": count}
         payload["layout"] = {
             "strategy": "beautify",
             "binary_coordinate_mutation": True,
@@ -145,7 +146,7 @@ def main() -> None:
             base,
             output,
             placement.selected_groups,
-            label_prefix="R",
+            label_prefix="C",
         )
         if not terminal_report["valid"]:
             raise RuntimeError(f"{case_id} terminal attachment failed static validation.")
@@ -165,18 +166,18 @@ def main() -> None:
         (case_dir / "WHAT_TO_CHECK.txt").write_text(
             f"{case_id}\n\n"
             f"Open: {output.name}\n"
-            f"Expected resistors: {count}\n"
+            f"Expected capacitors: {count}\n"
             f"Expected bidirectional terminals: {count * 2}\n"
             f"Expected short wires: {count * 2}\n\n"
             "Check one 180-degree terminal on the left and one 0-degree terminal "
-            "on the right of every resistor. Each terminal must meet its resistor "
-            "pin through a short wire. Then run simulation/netlist.\n",
+            "on the right of every capacitor. Each terminal must meet its real pin "
+            "through a short wire. Then run simulation/netlist.\n",
             encoding="utf-8",
         )
         summary.append(
             {
                 "case_id": case_id,
-                "resistor_count": count,
+                "capacitor_count": count,
                 "terminal_count": terminal_report["terminal_count_added"],
                 "wire_count": terminal_report["wire_count_added"],
                 "placement_valid": placement.valid,

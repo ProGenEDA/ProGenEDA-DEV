@@ -37,7 +37,12 @@ validated request
 
 - Same-length value mutation for resistor, capacitor, electrolytic capacitor,
   inductor, potentiometer, DC voltage, and DC current.
-- All-family `$TERBIDIR` record placement with left=180 degrees and right=0.
+- Shared `$TERBIDIR` placement now has:
+  - accepted `RESISTOR/v3` attachment with donor-derived short wires;
+  - static-valid `CAP/v1` attachment with family-specific tail-link patching
+    and short-wire emission;
+  - rejected old V2 bounding-box side-anchor logic retained only as negative
+    evidence.
 - Logical wiring plans and same-net groups.
 
 ## Not Yet Promoted
@@ -63,16 +68,24 @@ It emits no wire records and must not be treated as attachment proof.
 Terminal development now proceeds component by component in the existing
 unified terminal placer. The first focused `RESISTOR/v3` handler patches
 terminal suffixes into resistor pin-link fields and emits donor-derived short
-wires. Its 1x/3x/15x static pack passed; Proteus acceptance is pending. See
+wires. Its 1x/3x/15x pack passed Proteus testing on 2026-06-29 and is locked.
+See
 `experiments/terminal_placer_resistor_attachment_v3_temp_2026_06_29/README.md`.
+
+The next focused family is `CAP/v1`. It uses the same shared terminal module,
+but with capacitor-specific body-center pin derivation and dynamic tail-link
+offsets so longer refs such as `C14` still patch correctly. Its static pack is
+ready for manual Proteus testing:
+`experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip`.
 
 ## Verification Baseline
 
-- focused component placer suite: 36 passed;
+- focused component placer suite: 41 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
-- resistor-specific V3 attachment: static-valid, pending Proteus acceptance.
+- resistor-specific V3 attachment: Proteus-accepted and locked.
+- capacitor-specific V1 attachment: static-valid, pending user Proteus test.
 
 ## Next Engineering Step
 

@@ -68,4 +68,11 @@ Static generation passed on 2026-06-29:
 - object lengths and final terminators are exact;
 - the component-placer test file passes.
 
-Proteus acceptance remains pending user testing.
+User Proteus acceptance passed on 2026-06-29:
+
+- R01 worked;
+- R03 worked;
+- R15 worked.
+
+`RESISTOR/v3` is locked as the first accepted family-specific terminal
+attachment handler. Do not replace it with bounding-box terminal inference.

@@ -8,6 +8,23 @@ Build a Python-based system that accepts a strict CircuitIR JSON circuit descrip
 
 The planner is outside the core generator. Any AI model may later convert user text into CircuitIR. The generator and validator must be deterministic.
 
+## Canonical pipeline
+
+Treat `docs/progen_eda_canonical_pipeline.md` as authoritative. Do not reorder
+the high-level pipeline based on older experiment documents.
+
+There is one component terminal implementation:
+
+```text
+src/proteusgen/component_terminal_placer.py
+```
+
+Add researched family handlers to that module. Dated scripts may regenerate
+test packs but must not become alternate terminal implementations. Before the
+terminal stage, a component must pass component placement, placement
+validation, beautification, and beautifier validation. Unsupported attachment
+must fail loudly rather than use bounding-box guesses.
+
 ## Hard boundaries
 
 - Do not modify Proteus executables.
