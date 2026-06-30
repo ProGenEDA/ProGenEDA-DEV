@@ -1,4 +1,4 @@
-# Current Status - 2026-06-29
+# Current Status - 2026-06-30
 
 ## Active Architecture
 
@@ -40,10 +40,8 @@ validated request
   inductor, potentiometer, DC voltage, and DC current.
 - Shared `$TERBIDIR` placement now has:
   - accepted `RESISTOR/v3` attachment with donor-derived short wires;
-  - static-valid `CAP/v1` attachment with family-specific tail-link patching
-    and short-wire emission;
-  - static-valid `REALIND/v1` attachment derived independently from the bare
-    and two-terminal manual inductor donors;
+  - static-valid `CAP/v2` attachment using the accepted capacitor-native object
+    order, suffix progression, pin geometry, and wire-record lengths;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
@@ -63,8 +61,7 @@ The current user test packs are:
 
 - `experiments/VALUE_CHANGER_PROBE_V2_SAFE_VALUES_TEMP_2026_06_26.zip`
 - `experiments/TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip`
-- `experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip`
-- `experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29.zip`
+- `experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -77,33 +74,36 @@ wires. Its 1x/3x/15x pack passed Proteus testing on 2026-06-29 and is locked.
 See
 `experiments/terminal_placer_resistor_attachment_v3_temp_2026_06_29/README.md`.
 
-The next focused family is `CAP/v1`. It uses the same shared terminal module,
-but with capacitor-specific body-center pin derivation and dynamic tail-link
-offsets so longer refs such as `C14` still patch correctly. Its static pack is
-ready for manual Proteus testing:
-`experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip`.
+The old `CAP/v1` pack is invalidated. It used resistor-style terminal ordering,
+placed terminal symbols 508000 units beyond the pins, emitted 254000-length
+wires, and did not preserve the accepted capacitor right-wire trimming.
 
-`REALIND/v1` now follows the same shared entrypoint with independently proven
-inductor geometry: pins are 762000 units either side of the REALIND body
-center, active link suffixes are patched at body-relative offsets `+25/+29`,
-and the short-wire record templates come from
-`inductor_02_two_terminal.pdsprj`. The 1x/3x/15x static pack is ready for
-manual Proteus testing:
-`experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29.zip`.
+`CAP/v2` is the only current capacitor candidate. It preserves the accepted
+manual capacitor route: right-terminal array first; repeated left-terminal,
+component, left-wire, and right-wire groups; donor-native suffix progression;
+pins 508000 units from the body; terminal symbols another 254000 units outward;
+zero-length attachment records at the pins; 49-byte non-final right wires; and
+a 50-byte final right wire. Its 1x/3x/15x pack is ready for manual Proteus
+testing:
+`experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30.zip`.
+
+`REALIND/v1` is rejected. The user reported the generated inductor output was
+faulty. The public shared dispatcher now fails loudly for REALIND until that
+family is re-researched from accepted donor-native order and record boundaries.
 
 ## Verification Baseline
 
-- focused component placer suite: 43 passed;
+- focused component placer suite: 42 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
 - resistor-specific V3 attachment: Proteus-accepted and locked.
-- capacitor-specific V1 attachment: static-valid, pending user Proteus test.
-- inductor-specific V1 attachment: static-valid, pending user Proteus test.
+- capacitor-specific V1 attachment: invalidated by donor audit.
+- capacitor-specific V2 attachment: static-valid, pending user Proteus test.
+- inductor-specific V1 attachment: user-rejected and disabled.
 
 ## Next Engineering Step
 
-Use accepted terminalized donors to learn per-family pin anchors and complete
-terminal-plus-short-wire fragments. Start with two-pin passives, then sources,
-controls/transistors, displays, combinational packages, and native IC packages.
-Do not infer all pin anchors from a component bounding box.
+Test CAP/v2 in Proteus. Do not start another family until CAP open, render,
+attachment, and simulation results are recorded. Continue through the one
+shared `component_terminal_placer.py` module only.

@@ -19,7 +19,7 @@ from typing import Any, Iterable
 from .bidirectional import BIDIR_MARKER, build_bidir_record, load_production_templates
 from .component_beautifier import coordinate_bbox, layout_coordinate_pairs
 from .pdsprj import read_internal_file, write_project_from_parts
-from .mixed_passive import _load_manual_cap_templates
+from .mixed_passive import _load_manual_cap_templates, _manual_cap_suffixes
 from .resistor_v9 import (
     _extract_object_chunk,
     _load_templates as _load_resistor_templates,
@@ -35,9 +35,12 @@ LEFT_SIDE_ANGLE = 1800
 RIGHT_SIDE_ANGLE = 0
 RESISTOR_PIN_SPAN = 1_270_000
 CAP_PIN_HALF_SPAN = 508_000
+CAP_TERMINAL_SYMBOL_TO_PIN = 254_000
 INDUCTOR_PIN_HALF_SPAN = 762_000
 TERMINAL_SYMBOL_TO_PIN = 508_000
 TERMINAL_CONTACT_TO_PIN = 254_000
+CAP_WIRE_RECORD_SIZE = 50
+CAP_TRIMMED_WIRE_RECORD_SIZE = 49
 INDUCTOR_WIRE_RECORD_SIZE = 50
 INDUCTOR_WIRE_MARKER_OFFSET = 24
 TWO_PIN_FAMILIES = {
@@ -196,6 +199,20 @@ def _s32_at(data: bytes, offset: int) -> int:
 
 def _u32_at(data: bytes, offset: int) -> int:
     return int.from_bytes(data[offset : offset + 4], "little", signed=False)
+
+
+def _compact_terminal_label(prefix: str, terminal_index: int) -> str:
+    """Return the donor-safe two-character terminal label used by CAP/v2."""
+
+    alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    if len(prefix) != 1 or prefix not in alphabet:
+        raise ValueError("CAP/v2 label prefix must be one uppercase ASCII letter or digit.")
+    if not 0 <= terminal_index < len(alphabet):
+        raise ValueError(
+            "CAP/v2 currently supports at most 18 capacitors because its accepted "
+            "donor path uses two-character terminal labels."
+        )
+    return prefix + alphabet[terminal_index]
 
 
 def _resistor_body_offsets(data: bytes) -> tuple[int, int]:
@@ -365,9 +382,8 @@ def plan_attached_capacitor_terminals(
     selected_groups: Iterable[Any],
     *,
     label_prefix: str = "C",
-    suffix_start: int = 0x7900,
 ) -> tuple[CapacitorTerminalPair, ...]:
-    """Plan donor-proven capacitor pins plus bidirectional terminal geometry."""
+    """Plan CAP/v2 using the accepted manual capacitor donor geometry."""
 
     pairs: list[CapacitorTerminalPair] = []
     for index, group in enumerate(selected_groups, start=1):
@@ -388,11 +404,10 @@ def plan_attached_capacitor_terminals(
         left_pin_y = body_y
         right_pin_x = body_x + CAP_PIN_HALF_SPAN
         right_pin_y = body_y
-        left_suffix = (suffix_start + (index - 1) * 2 + 1) & 0xFFFF
-        right_suffix = (suffix_start + (index - 1) * 2 + 2) & 0xFFFF
+        left_suffix, right_suffix = _manual_cap_suffixes(index)
         left = TerminalSpec(
-            label=f"{label_prefix}{index:03d}A",
-            symbol_x=left_pin_x - TERMINAL_SYMBOL_TO_PIN,
+            label=_compact_terminal_label(label_prefix, (index - 1) * 2),
+            symbol_x=left_pin_x - CAP_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=left_pin_y,
             angle_tenths=LEFT_SIDE_ANGLE,
             suffix=left_suffix,
@@ -402,8 +417,8 @@ def plan_attached_capacitor_terminals(
             attachment_policy="cap_link_suffix_and_short_wire",
         )
         right = TerminalSpec(
-            label=f"{label_prefix}{index:03d}B",
-            symbol_x=right_pin_x + TERMINAL_SYMBOL_TO_PIN,
+            label=_compact_terminal_label(label_prefix, (index - 1) * 2 + 1),
+            symbol_x=right_pin_x + CAP_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=right_pin_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
             suffix=right_suffix,
@@ -422,9 +437,9 @@ def plan_attached_capacitor_terminals(
                 left_pin_y=left_pin_y,
                 right_pin_x=right_pin_x,
                 right_pin_y=right_pin_y,
-                left_wire_start_x=left_pin_x - TERMINAL_CONTACT_TO_PIN,
+                left_wire_start_x=left_pin_x,
                 left_wire_start_y=left_pin_y,
-                right_wire_start_x=right_pin_x + TERMINAL_CONTACT_TO_PIN,
+                right_wire_start_x=right_pin_x,
                 right_wire_start_y=right_pin_y,
                 component_x_offset=x_offset,
                 component_y_offset=y_offset,
@@ -732,45 +747,28 @@ def attach_capacitor_bidir_terminals_to_project(
     selected_groups: Iterable[Any],
     *,
     label_prefix: str = "C",
-    suffix_start: int = 0x7900,
 ) -> dict[str, Any]:
-    """Attach bidirectional terminals to bare capacitor packets."""
+    """Attach CAP/v2 terminals using the accepted capacitor-native object order."""
 
     groups = tuple(selected_groups)
+    if not groups:
+        raise ValueError("CAP/v2 requires at least one selected capacitor packet.")
     for group in groups:
         data = bytes(getattr(group, "data", b""))
         if BIDIR_MARKER in data or b"\x7fWIRE" in data:
             raise ValueError(
-                "CAP/v1 requires bare component-placer packets; "
+                "CAP/v2 requires bare component-placer packets; "
                 f"{getattr(group, 'key', '<unknown>')} already contains terminal or wire records."
             )
     pairs = plan_attached_capacitor_terminals(
         groups,
         label_prefix=label_prefix,
-        suffix_start=suffix_start,
     )
     registry = FixtureRegistry.load()
     terminal_templates = load_production_templates(registry)
-    resistor_fixture = registry.get("r21_v9_resistor_terminal_donor")
-    resistor_templates = _load_resistor_templates(
-        read_internal_file(resistor_fixture.path, "ROOT.DSN"),
-        resistor_fixture.path,
-    )
     manual_cap_fixture = registry.get("cap2_with_terminals_manual")
-    _manual_cap_templates = _load_manual_cap_templates(manual_cap_fixture.path)
+    manual_cap_templates = _load_manual_cap_templates(manual_cap_fixture.path)
 
-    left_records = [
-        build_bidir_record(
-            terminal_templates,
-            label=pair.left.label,
-            symbol_x=pair.left.symbol_x,
-            symbol_y=pair.left.symbol_y,
-            angle_tenths=pair.left.angle_tenths,
-            suffix=pair.left.suffix,
-            active_link=True,
-        )
-        for pair in pairs
-    ]
     right_records = [
         build_bidir_record(
             terminal_templates,
@@ -783,29 +781,53 @@ def attach_capacitor_bidir_terminals_to_project(
         )
         for pair in pairs
     ]
-    component_records: list[bytes] = []
+    cap_groups: list[bytes] = []
+    group_reports: list[dict[str, Any]] = []
     for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
-        component_records.append(_patch_capacitor_terminal_links(bytes(group.data), pair))
-        _resistor, left_wire_template, right_wire_template = resistor_templates.groups[
-            index % len(resistor_templates.groups)
-        ]
-        component_records.append(
-            _patch_wire(
-                right_wire_template,
-                pair.left_wire_start_x,
-                pair.left_wire_start_y,
-                pair.left_pin_x,
-                pair.left_pin_y,
+        data = bytes(group.data)
+        if not data.startswith(b"\xff"):
+            raise ValueError(
+                f"CAP/v2 expected {pair.component_key} to start with its donor FF boundary."
             )
+        left_record = build_bidir_record(
+            terminal_templates,
+            label=pair.left.label,
+            symbol_x=pair.left.symbol_x,
+            symbol_y=pair.left.symbol_y,
+            angle_tenths=pair.left.angle_tenths,
+            suffix=pair.left.suffix,
+            active_link=True,
         )
-        component_records.append(
-            _patch_wire(
-                left_wire_template,
-                pair.right_wire_start_x,
-                pair.right_wire_start_y,
-                pair.right_pin_x,
-                pair.right_pin_y,
-            )
+        component_record = b"\x00" + _patch_capacitor_terminal_links(data, pair)
+        template_index = index % len(manual_cap_templates.wire_lefts)
+        left_wire = _patch_wire(
+            manual_cap_templates.wire_rights[template_index],
+            pair.left_wire_start_x,
+            pair.left_wire_start_y,
+            pair.left_pin_x,
+            pair.left_pin_y,
+        )
+        right_wire = _patch_wire(
+            manual_cap_templates.wire_lefts[template_index],
+            pair.right_wire_start_x,
+            pair.right_wire_start_y,
+            pair.right_pin_x,
+            pair.right_pin_y,
+        )
+        is_final = index == len(groups) - 1
+        if not is_final:
+            right_wire = right_wire[:-1]
+        cap_groups.extend((left_record, component_record, left_wire, right_wire))
+        group_reports.append(
+            {
+                "component_key": pair.component_key,
+                "left_terminal_size": len(left_record),
+                "bare_component_size": len(data),
+                "component_record_size": len(component_record),
+                "left_wire_size": len(left_wire),
+                "right_wire_size": len(right_wire),
+                "right_wire_final": is_final,
+            }
         )
 
     source = Path(project)
@@ -813,15 +835,13 @@ def attach_capacitor_bidir_terminals_to_project(
     original_chunk = _extract_object_chunk(dsn)
     if BIDIR_MARKER in original_chunk or b"\x7fWIRE" in original_chunk:
         raise ValueError(
-            "CAP/v1 base project is not bare; choose the main mega donor "
+            "CAP/v2 base project is not bare; choose the main mega donor "
             "before applying terminal attachment."
         )
     new_chunk = (
         original_chunk[:1]
-        + b"".join(left_records)
         + b"".join(right_records)
-        + b"\x00"
-        + b"".join(component_records)
+        + b"".join(cap_groups)
     )
     if not new_chunk:
         raise ValueError("CAP terminal attachment produced an empty object chunk.")
@@ -832,15 +852,28 @@ def attach_capacitor_bidir_terminals_to_project(
 
     expected_terminals = len(pairs) * 2
     expected_wires = len(pairs) * 2
+    expected_right_wire_sizes = [
+        CAP_WIRE_RECORD_SIZE if index == len(pairs) - 1 else CAP_TRIMMED_WIRE_RECORD_SIZE
+        for index in range(len(pairs))
+    ]
+    suffix_counts_valid = all(
+        final_chunk.count(struct.pack("<H", terminal.suffix)) >= 2
+        for pair in pairs
+        for terminal in (pair.left, pair.right)
+    )
     return {
         "stage": "terminal_placer",
-        "family_handler": "CAP/v1",
+        "family_handler": "CAP/v2",
         "terminal_kind": "$TERBIDIR",
         "wire_record_emission": True,
-        "attachment_policy": "cap_link_suffix_and_short_wire",
+        "attachment_policy": "cap_native_order_links_and_zero_length_pin_records",
+        "object_order": "right_bidir_array_then_left_bidir_component_left_wire_right_wire_groups",
+        "label_policy": "two_character_prefix_plus_base36_terminal_index",
+        "suffix_policy": "cap2_with_terminals_manual_0x0238_progression",
         "terminal_count_added": expected_terminals,
         "wire_count_added": expected_wires,
         "terminal_pairs": [pair.as_dict() for pair in pairs],
+        "group_records": group_reports,
         "bidir_count_before": original_chunk.count(BIDIR_MARKER),
         "bidir_count_after": final_chunk.count(BIDIR_MARKER),
         "wire_count_before": original_chunk.count(b"\x7fWIRE"),
@@ -849,14 +882,25 @@ def attach_capacitor_bidir_terminals_to_project(
         "object_chunk_size_after": len(final_chunk),
         "manual_cap_donor": str(manual_cap_fixture.path),
         "valid": (
-            final_chunk.count(BIDIR_MARKER) == expected_terminals
+            final_chunk == new_chunk
+            and final_chunk.count(BIDIR_MARKER) == expected_terminals
             and final_chunk.count(b"\x7fWIRE") == expected_wires
+            and all(
+                item["component_record_size"] == item["bare_component_size"] + 1
+                for item in group_reports
+            )
+            and [item["right_wire_size"] for item in group_reports]
+            == expected_right_wire_sizes
+            and all(item["left_wire_size"] == CAP_WIRE_RECORD_SIZE for item in group_reports)
+            and all(pair.left_wire_start_x == pair.left_pin_x for pair in pairs)
+            and all(pair.right_wire_start_x == pair.right_pin_x for pair in pairs)
+            and suffix_counts_valid
             and final_chunk.endswith(b"\xff")
         ),
     }
 
 
-def attach_inductor_bidir_terminals_to_project(
+def _rejected_attach_inductor_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
     selected_groups: Iterable[Any],
@@ -980,6 +1024,23 @@ def attach_inductor_bidir_terminals_to_project(
     }
 
 
+def attach_inductor_bidir_terminals_to_project(
+    project: str | Path,
+    output: str | Path,
+    selected_groups: Iterable[Any],
+    *,
+    label_prefix: str = "L",
+    suffix_start: int = 0x7B00,
+) -> dict[str, Any]:
+    """Reject the user-failed REALIND/v1 path while retaining it as evidence."""
+
+    del project, output, selected_groups, label_prefix, suffix_start
+    raise ValueError(
+        "REALIND/v1 is rejected by user Proteus testing and disabled. "
+        "Re-research the family from accepted donor-native ordering before generation."
+    )
+
+
 def attach_component_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
@@ -1007,20 +1068,18 @@ def attach_component_bidir_terminals_to_project(
             suffix_start=0x7100 if suffix_start is None else suffix_start,
         )
     if family == "CAP":
+        if suffix_start is not None:
+            raise ValueError("CAP/v2 uses donor-native suffix progression; suffix_start is unsupported.")
         return attach_capacitor_bidir_terminals_to_project(
             project,
             output,
             groups,
             label_prefix=label_prefix or "C",
-            suffix_start=0x7900 if suffix_start is None else suffix_start,
         )
     if family == "REALIND":
-        return attach_inductor_bidir_terminals_to_project(
-            project,
-            output,
-            groups,
-            label_prefix=label_prefix or "L",
-            suffix_start=0x7B00 if suffix_start is None else suffix_start,
+        raise ValueError(
+            "REALIND/v1 is rejected by user Proteus testing and disabled. "
+            "Re-research the family from accepted donor-native ordering before generation."
         )
     raise ValueError(
         "Shared terminal attachment has no accepted handler for "

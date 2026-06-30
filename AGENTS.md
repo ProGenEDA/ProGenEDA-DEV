@@ -61,3 +61,23 @@ Preserve accepted donor-native routes. Never modify Proteus executables,
 bypass licensing, or replace the removal-only component placer with speculative
 record synthesis. Update the existing implementation and experiment notes
 after every user result so another contributor can resume without chat context.
+
+Treat commit `a6deb648` as the last trusted terminal-placement checkpoint:
+`RESISTOR/v3` passed Proteus testing. Later terminal-family work is untrusted
+until separately revalidated. Keep all researched terminal behavior in
+`src/proteusgen/component_terminal_placer.py`; dated scripts may only generate
+focused packs through that shared module.
+
+From the restart prompt recorded in `context.md`, append every user message and
+every visible agent response to that file verbatim and in chronological order,
+with timestamps and any files edited. Update the log during the same turn so
+continuation never depends on chat history alone.
+
+This checkout is connected to the GitHub repository `memory` through the
+`origin` remote. At the start of every user turn, verify that the previous
+checkpoint was committed successfully, the working branch has an upstream,
+and local `HEAD` matches the corresponding remote branch before beginning new
+implementation work. After any repository change, update `context.md`, create
+a scoped commit, push the current branch without force, and verify the remote
+branch hash matches local `HEAD`. Do not leave completed work only in the
+working tree or only in chat.

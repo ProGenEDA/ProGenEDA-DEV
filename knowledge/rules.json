@@ -3512,9 +3512,9 @@
     },
     {
       "id": "R_TERMINAL_REALIND_V1_STATIC_20260629",
-      "title": "Inductor terminal attachment uses independent donor geometry",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.94,
+      "title": "Rejected REALIND V1 must not be generated",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "REALIND",
@@ -3524,10 +3524,31 @@
         "fixtures/pdsprj/inductor_01_single_free.pdsprj",
         "fixtures/pdsprj/inductor_02_two_terminal.pdsprj",
         "TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29",
-        "tests/test_component_placer.py => 43 passed"
+        "User report 2026-06-29/30: latest generated inductor is faulty",
+        "CAP restart audit from trusted RESISTOR/v3 checkpoint a6deb648"
       ],
-      "rule": "Attach horizontal REALIND bidirectional terminals only through REALIND/v1: derive the center from the final REALIND body marker, use pins at center +/- 762000, patch active input/output suffixes at body-relative offsets +25 and +29, orient the left terminal 1800 and right terminal 0, and emit the two 50-byte short-wire templates proven by the manual two-terminal inductor donor. Three-character refs require the REALIND-specific body-anchor fallback.",
-      "date": "2026-06-29"
+      "rule": "Do not generate REALIND through REALIND/v1. Static marker counts and guessed geometry did not establish Proteus correctness. The shared dispatcher must fail loudly until REALIND is re-researched from accepted donor-native object ordering, component boundaries, suffix progression, and final/non-final wire lengths.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_CAP_V2_STATIC_20260630",
+      "title": "CAP V2 preserves accepted capacitor-native attachment records",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.95,
+      "applies_to": [
+        "component_terminal_placer",
+        "CAP",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "fixtures/pdsprj/cap2_with_terminals_manual.pdsprj",
+        "src/proteusgen/mixed_passive.py accepted capacitor route",
+        "TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30",
+        "tests/test_component_placer.py => 42 passed",
+        "Independent object-stream cursor, link-suffix, and zero-length-wire audit"
+      ],
+      "rule": "CAP/v2 is the only current capacitor terminal candidate. Preserve the capacitor-native right-terminal array followed by left-terminal/component/left-wire/right-wire groups; use donor suffix step 0x0238; place pins at body +/-508000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF. This remains unaccepted until Proteus open, render, attachment, and simulation testing passes.",
+      "date": "2026-06-30"
     }
   ]
 }

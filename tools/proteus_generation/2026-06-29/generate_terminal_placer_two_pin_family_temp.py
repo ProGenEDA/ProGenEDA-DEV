@@ -25,6 +25,7 @@ from proteusgen.component_terminal_placer import (  # noqa: E402
 class FamilyConfig:
     family: str
     ref_prefix: str
+    version: str
     source_payload: Path
     experiment_name: str
     archive_name: str
@@ -36,6 +37,7 @@ CONFIGS = {
     "CAP": FamilyConfig(
         family="CAP",
         ref_prefix="C",
+        version="V2",
         source_payload=(
             ROOT
             / "experiments"
@@ -43,25 +45,13 @@ CONFIGS = {
             / "01_C01_CAP_1X_PARSED_COORDS"
             / "payload.json"
         ),
-        experiment_name="terminal_placer_capacitor_attachment_v1_temp_2026_06_29",
-        archive_name="TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip",
-        handler="CAP/v1",
-        evidence="cap2_with_terminals_manual",
-    ),
-    "REALIND": FamilyConfig(
-        family="REALIND",
-        ref_prefix="L",
-        source_payload=(
-            ROOT
-            / "experiments"
-            / "beautifier_realind_coordinate_probe_base135_v1_temp_2026_06_24"
-            / "01_L01_REALIND_1X_PARSED_COORDS"
-            / "payload.json"
+        experiment_name="terminal_placer_capacitor_attachment_v2_temp_2026_06_30",
+        archive_name="TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30.zip",
+        handler="CAP/v2",
+        evidence=(
+            "cap2_with_terminals_manual plus the user-accepted "
+            "mixed_passive.convert_production_terminals route"
         ),
-        experiment_name="terminal_placer_realind_attachment_v1_temp_2026_06_29",
-        archive_name="TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29.zip",
-        handler="REALIND/v1",
-        evidence="inductor_01_single_free + inductor_02_two_terminal",
     ),
 }
 
@@ -75,14 +65,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--family",
         choices=sorted(CONFIGS),
-        default="REALIND",
+        default="CAP",
         help="Generate only this family. One family is processed per run.",
     )
     return parser.parse_args()
 
 
 def readme(config: FamilyConfig) -> str:
-    return f"""# Terminal Placer {config.family} Attachment V1
+    return f"""# Terminal Placer {config.family} Attachment {config.version}
 
 ## Purpose
 
@@ -95,18 +85,33 @@ shared `component_terminal_placer.py` dispatcher. It processes `1x`, `3x`, and
 - Family handler: `{config.handler}`
 - Manual evidence: `{config.evidence}`
 - Terminals: left `$TERBIDIR` at 180 degrees; right at 0 degrees
-- Attachment: one active component link and one short wire per pin
+- CAP geometry: pins at body `+/-508000`; terminal symbols another `254000`
+  outward; one zero-length donor-native wire record at each true pin
+- CAP object order: all right bidirectional records first, followed by repeated
+  left bidirectional/component/left-wire/right-wire groups
+- Non-final right wires: 49 bytes; final right wire: 50 bytes ending in `FF`
+- Suffixes: donor-native `0x0238` progression
 - Input JSON: reused from the accepted family beautifier experiment; only the
   requested count and donor path are changed
 
 ## Test Order
 
 Open the non-`_BASE` project in each case folder. Confirm every component has
-one attached bidirectional terminal on each side, with a short green wire
-meeting the real pin. Then run netlist/simulation and report any bad-object,
-DLL, duplicate-reference, or floating-terminal error.
+one attached bidirectional terminal on each side and each terminal touches the
+real capacitor pin. The zero-length attachment records may not render as a
+visible wire segment. Run netlist/simulation and report any bad-object, DLL,
+duplicate-reference, or floating-terminal error.
 
 Static validation passed locally. Proteus acceptance remains pending.
+
+## Static Verification
+
+- Focused and cumulative component-placer suite: `42 passed`
+- Object-stream cursor reconstruction: exact for 1x, 3x, and 15x
+- Terminal/component suffix matches: passed
+- Zero-length attachment coordinates at every CAP pin: passed
+- Right-wire sizes: 49 bytes for non-final groups, 50 bytes for final group
+- Compile checks: passed
 """
 
 
@@ -171,8 +176,9 @@ def main() -> None:
             f"Expected bidirectional terminals: {count * 2}\n"
             f"Expected short wires: {count * 2}\n\n"
             "Every component must have one 180-degree terminal on its left and "
-            "one 0-degree terminal on its right. Both must meet the true pin "
-            "through a short wire. Then run netlist/simulation.\n",
+            "one 0-degree terminal on its right. Both must meet the true pin. "
+            "CAP/v2 uses zero-length donor-native attachment records, so a green "
+            "wire segment may not be visible. Then run netlist/simulation.\n",
             encoding="utf-8",
         )
         summary.append(

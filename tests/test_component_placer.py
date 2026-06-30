@@ -25,18 +25,17 @@ from proteusgen.component_placer import (
     validate_project_placement,
 )
 from proteusgen.component_beautifier import layout_coordinate_pairs
+from proteusgen.bidirectional import extract_bidir_records
 from proteusgen.component_terminal_placer import (
     CAP_PIN_HALF_SPAN,
-    INDUCTOR_PIN_HALF_SPAN,
+    CAP_TERMINAL_SYMBOL_TO_PIN,
     RESISTOR_PIN_SPAN,
     TERMINAL_CONTACT_TO_PIN,
     TERMINAL_SYMBOL_TO_PIN,
     attach_capacitor_bidir_terminals_to_project,
     attach_component_bidir_terminals_to_project,
-    attach_inductor_bidir_terminals_to_project,
     attach_resistor_bidir_terminals_to_project,
     plan_attached_capacitor_terminals,
-    plan_attached_inductor_terminals,
     plan_attached_resistor_terminals,
     plan_side_bidir_terminals,
 )
@@ -783,15 +782,21 @@ def test_capacitor_terminal_planner_uses_body_center_plus_half_span(tmp_path: Pa
     assert len(pairs) == 1
     pair = pairs[0]
     assert pair.right_pin_x - pair.left_pin_x == CAP_PIN_HALF_SPAN * 2
-    assert pair.left.symbol_x == pair.left_pin_x - TERMINAL_SYMBOL_TO_PIN
-    assert pair.right.symbol_x == pair.right_pin_x + TERMINAL_SYMBOL_TO_PIN
-    assert pair.left_wire_start_x == pair.left_pin_x - TERMINAL_CONTACT_TO_PIN
-    assert pair.right_wire_start_x == pair.right_pin_x + TERMINAL_CONTACT_TO_PIN
+    assert pair.left.symbol_x == pair.left_pin_x - CAP_TERMINAL_SYMBOL_TO_PIN
+    assert pair.right.symbol_x == pair.right_pin_x + CAP_TERMINAL_SYMBOL_TO_PIN
+    assert pair.left_wire_start_x == pair.left_pin_x
+    assert pair.right_wire_start_x == pair.right_pin_x
     assert pair.left.angle_tenths == 1800
     assert pair.right.angle_tenths == 0
+    assert pair.left.label == "C0"
+    assert pair.right.label == "C1"
+    assert pair.left.suffix == 0x011A
+    assert pair.right.suffix == 0x00E8
 
 
-def test_capacitor_terminal_attachment_patches_links_and_adds_short_wires(tmp_path: Path) -> None:
+def test_capacitor_terminal_attachment_preserves_native_order_and_record_sizes(
+    tmp_path: Path,
+) -> None:
     base = tmp_path / "capacitor_terminal_attach_base.pdsprj"
     output = tmp_path / "capacitor_terminal_attach.pdsprj"
     result = generate_component_placement_project(
@@ -810,14 +815,44 @@ def test_capacitor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pa
         label_prefix="C",
     )
     chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    bidir_records = extract_bidir_records(chunk)
+    bidir_labels = [
+        record[31 : 31 + record[30]].decode("ascii")
+        for record in bidir_records
+    ]
+    wire_coordinates: list[tuple[int, int, int, int]] = []
+    search_from = 0
+    while True:
+        marker = chunk.find(b"\x7fWIRE", search_from)
+        if marker < 0:
+            break
+        start = marker - 23
+        wire_coordinates.append(
+            tuple(
+                int.from_bytes(chunk[start + offset : start + offset + 4], "little", signed=True)
+                for offset in (33, 37, 41, 45)
+            )
+        )
+        search_from = marker + 1
 
     assert report["valid"] is True
-    assert report["family_handler"] == "CAP/v1"
+    assert report["family_handler"] == "CAP/v2"
+    assert report["object_order"] == (
+        "right_bidir_array_then_left_bidir_component_left_wire_right_wire_groups"
+    )
     assert report["terminal_count_added"] == 6
     assert report["wire_count_added"] == 6
     assert chunk.count(b"$TERBIDIR") == 6
     assert chunk.count(b"\x7fWIRE") == 6
     assert chunk.endswith(b"\xff")
+    assert bidir_labels == ["C1", "C3", "C5", "C0", "C2", "C4"]
+    assert [item["right_wire_size"] for item in report["group_records"]] == [49, 49, 50]
+    assert all(item["left_wire_size"] == 50 for item in report["group_records"])
+    assert all(
+        item["component_record_size"] == item["bare_component_size"] + 1
+        for item in report["group_records"]
+    )
+    assert all(x1 == x2 and y1 == y2 for x1, y1, x2, y2 in wire_coordinates)
     for pair in report["terminal_pairs"]:
         for terminal in (pair["left"], pair["right"]):
             suffix = bytes.fromhex(terminal["suffix"])
@@ -825,63 +860,20 @@ def test_capacitor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pa
             assert chunk.count(little_endian_suffix) >= 2
 
 
-def test_inductor_terminal_planner_handles_one_and_three_char_refs(tmp_path: Path) -> None:
+def test_shared_terminal_dispatcher_rejects_user_failed_realind(tmp_path: Path) -> None:
+    base = tmp_path / "rejected_realind_base.pdsprj"
+    output = tmp_path / "rejected_realind_output.pdsprj"
     result = generate_component_placement_project(
         {
             "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
-            "components": {"REALIND": 15},
-            "layout": {"strategy": "beautify"},
-        },
-        tmp_path / "inductor_terminal_geometry_base.pdsprj",
-    )
-
-    pairs = plan_attached_inductor_terminals(result.selected_groups, label_prefix="L")
-
-    assert len(pairs) == 15
-    assert pairs[0].component_key == "L1"
-    assert pairs[13].component_key == "L14"
-    for pair in pairs:
-        assert pair.right_pin_x - pair.left_pin_x == INDUCTOR_PIN_HALF_SPAN * 2
-        assert pair.left.symbol_x == pair.left_pin_x - TERMINAL_SYMBOL_TO_PIN
-        assert pair.right.symbol_x == pair.right_pin_x + TERMINAL_SYMBOL_TO_PIN
-        assert pair.left_wire_start_x == pair.left_pin_x - TERMINAL_CONTACT_TO_PIN
-        assert pair.right_wire_start_x == pair.right_pin_x + TERMINAL_CONTACT_TO_PIN
-        assert pair.left.angle_tenths == 1800
-        assert pair.right.angle_tenths == 0
-
-
-def test_inductor_terminal_attachment_uses_manual_wire_evidence(tmp_path: Path) -> None:
-    base = tmp_path / "inductor_terminal_attach_base.pdsprj"
-    output = tmp_path / "inductor_terminal_attach.pdsprj"
-    result = generate_component_placement_project(
-        {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
-            "components": {"REALIND": 3},
+            "components": {"REALIND": 1},
             "layout": {"strategy": "beautify"},
         },
         base,
     )
 
-    report = attach_inductor_bidir_terminals_to_project(
-        base,
-        output,
-        result.selected_groups,
-        label_prefix="L",
-    )
-    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
-
-    assert report["valid"] is True
-    assert report["family_handler"] == "REALIND/v1"
-    assert report["terminal_count_added"] == 6
-    assert report["wire_count_added"] == 6
-    assert chunk.count(b"$TERBIDIR") == 6
-    assert chunk.count(b"\x7fWIRE") == 6
-    assert chunk.endswith(b"\xff")
-    for pair in report["terminal_pairs"]:
-        for terminal in (pair["left"], pair["right"]):
-            suffix = bytes.fromhex(terminal["suffix"])
-            little_endian_suffix = suffix[::-1]
-            assert chunk.count(little_endian_suffix) >= 2
+    with pytest.raises(ValueError, match="REALIND/v1 is rejected"):
+        attach_component_bidir_terminals_to_project(base, output, result.selected_groups)
 
 
 def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> None:
@@ -898,5 +890,5 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
 
     report = attach_component_bidir_terminals_to_project(base, output, result.selected_groups)
 
-    assert report["family_handler"] == "CAP/v1"
+    assert report["family_handler"] == "CAP/v2"
     assert report["terminal_count_added"] == 2
