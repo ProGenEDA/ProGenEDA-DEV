@@ -4513,7 +4513,7 @@ The final audit is clean except for one intentional trailing space preserved ver
 
 #### Response 08 - final_answer
 
-Timestamp: `2026-06-30T12:15:53.585Z` (UTC) / `2026-06-30 17:15:53.585 +05:00` (Pakistan; pre-recorded before push and subject to exact session-timestamp reconciliation)
+Timestamp: `2026-06-30T12:17:00.441Z` (UTC) / `2026-06-30 17:17:00.441 +05:00` (Pakistan)
 
 ~~~~markdown
 REALIND V2 is ready for Proteus testing: [1x/3x/15x pack](C:/Users/Empty/Documents/Progentotal/protuesgen/experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip).
@@ -4538,4 +4538,266 @@ Test only the non-`_BASE` REALIND projects. I will wait for your result before s
 - `experiments/terminal_placer_realind_attachment_v2_temp_2026_06_30/` - generated the focused REALIND 1x/3x/15x projects and manifests.
 - `experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip` - packaged the focused Proteus test set.
 
-<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 737 -->
+<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 770 -->
+
+
+
+## Live User Message 005
+
+Timestamp: `2026-06-30T12:43:00.812Z` (UTC) / `2026-06-30 17:43:00.812 +05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+# Context from my IDE setup:
+
+## Open tabs:
+- context.md: c:\Users\Empty\Documents\Progentotal\protuesgen\context.md
+
+# Selected text:
+
+## Selection 1
+1x/3x/15x pack.
+
+## My request for Codex:
+good now these work, now work on many components
+
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-06-30T12:43:11.720Z` (UTC) / `2026-06-30 17:43:11.720 +05:00` (Pakistan)
+
+~~~~markdown
+I’ll continue across the simple two-pin families sequentially, one researched family per Proteus checkpoint. First I’m verifying the pushed REALIND commit and logging its acceptance; then I’ll work only on `CAP-ELEC`, using the same shared terminal placer and existing runner, and stop with its solo 1x/3x/15x pack for your test.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-06-30T12:44:12.742Z` (UTC) / `2026-06-30 17:44:12.742 +05:00` (Pakistan)
+
+~~~~markdown
+The required startup check passed: local and remote are both `ce104bb9`, and the tree was clean before logging this turn. REALIND V2 is now accepted evidence. I’m tracing CAP-ELEC donors and previously accepted mixed-passive behavior to determine its actual packet order, pin geometry, link fields, suffix progression, polarity orientation, and wire boundaries before changing code.
+~~~~
+
+#### Response 03 - commentary
+
+Timestamp: `2026-06-30T12:48:42.246Z` (UTC) / `2026-06-30 17:48:42.246 +05:00` (Pakistan)
+
+~~~~markdown
+The accepted eight-part electrolytic donor gives a complete, repeatable schema: each component is `right bidirectional -> left bidirectional -> CAP-ELEC -> left wire -> right wire`. Pins are 508000 from the body, symbols another 254000 outward, both wires are zero-length at the pins, suffixes advance by `0x02A8`, and only non-final right wires are trimmed to 49 bytes. I’ll implement that exact route as `CAP-ELEC/v3`; the rejected generic terminal probes remain negative evidence.
+~~~~
+
+#### Response 04 - commentary
+
+Timestamp: `2026-06-30T12:51:39.807Z` (UTC) / `2026-06-30 17:51:39.807 +05:00` (Pakistan)
+
+~~~~markdown
+The focused 15-part test caught a real edge case before pack generation: beautification moves `C35` low enough that the generic coordinate parser omits its body anchor, even though the donor’s structural `CAP-ELEC + coordinate` field remains valid. I’m adding the same bounded structural fallback already proven for CAP, then rerunning both focused cases; no artifact will be produced from the failed attempt.
+~~~~
+
+#### Response 05 - commentary
+
+Timestamp: `2026-06-30T12:52:57.978Z` (UTC) / `2026-06-30 17:52:57.978 +05:00` (Pakistan)
+
+~~~~markdown
+CAP-ELEC’s focused planner and attachment tests now pass, including all 15 selected full-mega packets and the skipped unsafe donor packet. The shared handler preserves right-before-left terminal order, patches the two body link fields, and rebuilds exact zero-length wire endpoints. I’ve added CAP-ELEC to the existing family runner and am generating only its 1x/3x/15x pack.
+~~~~
+
+#### Response 06 - commentary
+
+Timestamp: `2026-06-30T12:53:44.088Z` (UTC) / `2026-06-30 17:53:44.088 +05:00` (Pakistan)
+
+~~~~markdown
+The generated CAP-ELEC pack passes an independent binary audit in all three sizes: exact right/left ordering, exact stream cursor completion, matching terminal/body suffixes, zero-length wires at the actual pins, 380-byte generated component records, and final `FF`. I’m running the cumulative suite now, then I’ll lock REALIND V2 and record CAP-ELEC V3 as pending Proteus.
+~~~~
+
+#### Response 07 - commentary
+
+Timestamp: `2026-06-30T12:57:36.131Z` (UTC) / `2026-06-30 17:57:36.131 +05:00` (Pakistan)
+
+~~~~markdown
+The cumulative suite is `45 passed`, and compileall is clean. Documentation now locks REALIND V2 from your result and makes CAP-ELEC V3 the sole active terminal test. I’m checking the complete diff, archive contents, hashes, and structured logs before recording the final transcript and pushing the checkpoint.
+~~~~
+
+### Files Edited
+
+- `context.md` - reconciled the prior final timestamp and appended this complete user turn with responses, timestamps, and file manifest.
+- `docs/current_status_2026_06_29.md` - locked REALIND V2 and made CAP-ELEC V3 the active terminal test.
+- `docs/progen_eda_canonical_pipeline.md` - recorded REALIND V2 acceptance and CAP-ELEC V3 static status.
+- `knowledge/rules.json` - promoted the REALIND V2 rule and added donor-derived CAP-ELEC V3 invariants.
+- `knowledge/test_results.jsonl` - recorded REALIND V2 user acceptance and CAP-ELEC V3 static evidence.
+- `src/proteusgen/component_terminal_placer.py` - added the donor-researched CAP-ELEC V3 handler to the shared terminal placer.
+- `tests/test_component_placer.py` - added CAP-ELEC V3 geometry, ordering, suffix, endpoint, boundary, fallback, and 15-part tests.
+- `tools/proteus_generation/2026-06-29/generate_terminal_placer_two_pin_family_temp.py` - extended the existing one-family runner with CAP-ELEC V3.
+- `experiments/terminal_placer_cap_elec_attachment_v3_temp_2026_06_30/` - generated focused CAP-ELEC 1x/3x/15x projects and manifests.
+- `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip` - packaged the focused Proteus test set.
+
+<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 962 -->
+
+
+
+## Live User Message 006
+
+Timestamp: `2026-06-30T12:59:02.970Z` (UTC) / `2026-06-30 17:59:02.970 +05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+# Context from my IDE setup:
+
+## Open tabs:
+- context.md: c:\Users\Empty\Documents\Progentotal\protuesgen\context.md
+
+# Selected text:
+
+## Selection 1
+two-pin families sequentially, one researched family per Proteus checkpoin
+
+## My request for Codex:
+keep it sequential but donot do one per checkpoint, do multiple, see for pattern validate, check for something new etc etc, but do multple components per checkpoint do all 2 pinned if u see a clear as sun during day pattern
+
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-06-30T12:59:15.840Z` (UTC) / `2026-06-30 17:59:15.840 +05:00` (Pakistan)
+
+~~~~markdown
+Understood. I’ll keep the research sequential but make this one checkpoint cover every remaining two-pin family whose donor evidence is unambiguous. CAP-ELEC stays complete; next I’ll classify diode variants, LED, fuse, and two-terminal sources by actual donor structure, reuse a shared pattern only where byte-level invariants match, add family-specific exceptions where they do not, and generate separate 1x/3x/15x packs for each supported family before one commit.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-06-30T13:00:22.960Z` (UTC) / `2026-06-30 18:00:22.960 +05:00` (Pakistan)
+
+~~~~markdown
+I’m now doing a repository-wide donor scan instead of assuming every two-pin symbol follows CAP-ELEC. The criterion is strict: a family enters this checkpoint only if there is a Proteus-accepted terminalized donor or an already accepted generator route that proves terminal order, link fields, pin geometry, and wire boundaries. Families without that evidence will be listed as blocked rather than guessed.
+~~~~
+
+#### Response 03 - commentary
+
+Timestamp: `2026-06-30T13:09:06.951Z` (UTC) / `2026-06-30 18:09:06.951 +05:00` (Pakistan)
+
+~~~~markdown
+The classification is now clear. `VSOURCE` and `CSOURCE` qualify: both have user-accepted V3 bidirectional source routes, exact body-link fields, exact 0/180 role mapping, source-native wire geometry, and a proven `0x80` per-source suffix step; the accepted three-DCV case also proves multi-unit boundaries. Diodes, LED, fuse, and VPULSE have bare placement donors but no terminalized attachment donor, while VSINE’s accepted route proves only a special non-final single-source unit—not a general 1x/3x/15x ordering. I’ll add VSOURCE and CSOURCE now and explicitly retain the others as unsupported rather than extrapolating.
+~~~~
+
+### Files Edited
+
+- `context.md` - recorded the expanded multi-family checkpoint instruction and visible responses.
+- `src/proteusgen/component_terminal_placer.py` - began the shared role-specific VSOURCE/CSOURCE attachment implementation.
+- `tests/test_component_placer.py` - added parameterized source geometry and attachment tests.
+
+<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 1107 -->
+
+
+
+## Live User Message 007
+
+Timestamp: `2026-06-30T17:53:09.401Z` (UTC) / `2026-06-30 22:53:09.401 +05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+continue
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-06-30T17:53:18.188Z` (UTC) / `2026-06-30 22:53:18.188 +05:00` (Pakistan)
+
+~~~~markdown
+Continuing. The VSOURCE/CSOURCE shared implementation and parameterized 15-part tests are in place; I’m compiling and running those four focused cases now. Any mismatch in role order, source-body suffixes, or source-native wire geometry will stop generation before the runner is expanded.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-06-30T17:54:04.024Z` (UTC) / `2026-06-30 22:54:04.024 +05:00` (Pakistan)
+
+~~~~markdown
+The focused test found the expected variable-length case: `CSOURCE` packets grow by one byte when references cross from `I9` to `I10`. The source structure itself is unchanged; the fixed-size guard was too strict. I’m replacing it with a donor-derived `base size + reference length` rule and will validate both two- and three-character source references explicitly.
+~~~~
+
+#### Response 03 - commentary
+
+Timestamp: `2026-06-30T17:56:04.099Z` (UTC) / `2026-06-30 22:56:04.099 +05:00` (Pakistan)
+
+~~~~markdown
+The four focused source cases pass after the dynamic-reference correction. I’m generating VSOURCE first, then I’ll independently reconstruct its 1x/3x/15x streams before moving to CSOURCE; this keeps the research sequential even though both will ship in the same checkpoint.
+~~~~
+
+#### Response 04 - commentary
+
+Timestamp: `2026-06-30T17:56:45.820Z` (UTC) / `2026-06-30 22:56:45.820 +05:00` (Pakistan)
+
+~~~~markdown
+VSOURCE passes its independent audit at all three scales, including exact active-suffix multiplicity and the accepted output/input source order. I’m moving to CSOURCE now; its upper/lower roles are reversed, so it uses a separate validated mapping even though both families share the same source suffix progression.
+~~~~
+
+#### Response 05 - commentary
+
+Timestamp: `2026-06-30T17:57:23.403Z` (UTC) / `2026-06-30 22:57:23.403 +05:00` (Pakistan)
+
+~~~~markdown
+CSOURCE also passes at 1x/3x/15x, including the `I9 -> I10` record-size transition and its input/output role reversal. This checkpoint now contains three separately generated families: CAP-ELEC, VSOURCE, and CSOURCE. I’m running the cumulative 49-test suite; after it passes I’ll regenerate CAP-ELEC’s metadata so all three packs report the same final baseline.
+~~~~
+
+#### Response 06 - commentary
+
+Timestamp: `2026-06-30T18:00:59.672Z` (UTC) / `2026-06-30 23:00:59.672 +05:00` (Pakistan)
+
+~~~~markdown
+The final baseline is `49 passed`. CAP-ELEC was regenerated so its README and archive now match that baseline; VSOURCE and CSOURCE retain their independently audited outputs. I’m updating the checkpoint documentation to list all three packs and to record the remaining two-pin families as evidence-blocked—not silently “supported.”
+~~~~
+
+#### Response 07 - commentary
+
+Timestamp: `2026-06-30T18:10:55.221Z` (UTC) / `2026-06-30 23:10:55.221 +05:00` (Pakistan)
+
+~~~~markdown
+The final audit is clean: all three archives contain exactly the three focused cases plus manifests, JSON/JSONL parse, `git diff --check` passes, and no unrelated files changed. The remaining unsupported-family decision is now recorded as an explicit evidence rule. I’m appending this handoff, then committing the complete three-family checkpoint, pushing it, and verifying local/remote equality and a clean tree.
+~~~~
+
+#### Response 08 - final_answer
+
+Timestamp: `2026-06-30T18:11:42.743Z` (UTC) / `2026-06-30 23:11:42.743 +05:00` (Pakistan; pre-recorded before push and subject to exact session-timestamp reconciliation)
+
+~~~~markdown
+Three-family checkpoint ready:
+
+- [CAP-ELEC V3 1x/3x/15x](C:/Users/Empty/Documents/Progentotal/protuesgen/experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip)
+- [VSOURCE V4 1x/3x/15x](C:/Users/Empty/Documents/Progentotal/protuesgen/experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip)
+- [CSOURCE V4 1x/3x/15x](C:/Users/Empty/Documents/Progentotal/protuesgen/experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip)
+
+All use the same shared terminal placer and runner. Validation: `49 passed`, compileall passed, and all nine outputs passed independent ordering, suffix-link, pin-endpoint, boundary, and cursor audits. The checkpoint and transcript are committed and pushed; local and remote match, and the tree is clean.
+
+DIODE variants, LED-RED, FUSE, and VPULSE remain blocked by missing terminalized donors; VSINE lacks proven general multi-unit ordering. No mappings were guessed.
+
+Test the non-`_BASE` projects in all three packs and report any failing family/count.
+~~~~
+
+### Files Edited
+
+- `context.md` - appended the continuation, all visible responses, timestamps, and this file manifest.
+- `docs/current_status_2026_06_29.md` - documented the three-family checkpoint and evidence-blocked two-pin families.
+- `docs/progen_eda_canonical_pipeline.md` - recorded CAP-ELEC/VSOURCE/CSOURCE static status and unsupported-family boundaries.
+- `knowledge/rules.json` - added locked source role, suffix, geometry, dynamic-reference, and wire-boundary rules.
+- `knowledge/test_results.jsonl` - recorded final CAP-ELEC, VSOURCE, and CSOURCE archive evidence.
+- `src/proteusgen/component_terminal_placer.py` - completed VSOURCE/CSOURCE V4 role-specific handlers in the shared terminal placer.
+- `tests/test_component_placer.py` - validated both source families through 15 parts, including the `I9`/`I10` boundary.
+- `tools/proteus_generation/2026-06-29/generate_terminal_placer_two_pin_family_temp.py` - added source-aware donor selection, evidence, and checking text.
+- `experiments/terminal_placer_cap_elec_attachment_v3_temp_2026_06_30/` - regenerated CAP-ELEC with the final 49-test baseline.
+- `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip` - repackaged CAP-ELEC with final metadata.
+- `experiments/terminal_placer_vsource_attachment_v4_temp_2026_06_30/` - generated VSOURCE 1x/3x/15x projects and manifests.
+- `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip` - packaged the VSOURCE test set.
+- `experiments/terminal_placer_csource_attachment_v4_temp_2026_06_30/` - generated CSOURCE 1x/3x/15x projects and manifests.
+- `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip` - packaged the CSOURCE test set.
+
+<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 1258 -->

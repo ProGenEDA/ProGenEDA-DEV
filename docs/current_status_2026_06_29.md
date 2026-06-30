@@ -42,8 +42,12 @@ validated request
   - accepted `RESISTOR/v3` attachment with donor-derived short wires;
   - accepted `CAP/v2` attachment using the accepted capacitor-native object
     order, suffix progression, pin geometry, and wire-record lengths;
-  - static-valid `REALIND/v2` attachment using the accepted sequential
+  - accepted `REALIND/v2` attachment using the accepted sequential
     six-inductor donor structure;
+  - static-valid `CAP-ELEC/v3` attachment using the accepted sequential
+    eight-electrolytic-capacitor donor structure;
+  - static-valid `VSOURCE/v4` and `CSOURCE/v4` attachment using the accepted
+    bidirectional V3 source roles, body links, and wire geometry;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
@@ -63,7 +67,9 @@ The current user test packs are:
 
 - `experiments/VALUE_CHANGER_PROBE_V2_SAFE_VALUES_TEMP_2026_06_26.zip`
 - `experiments/TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip`
-- `experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -96,13 +102,39 @@ faulty. It remains negative evidence and must not be restored.
 sequential left-terminal/right-terminal/component/left-wire/right-wire groups,
 uses pins 762000 units from the body, places terminal symbols another 254000
 units outward, patches the donor-native suffix progression, emits zero-length
-pin records, and preserves 49-byte non-final and 50-byte final right wires. Its
-1x/3x/15x pack is static-valid and awaiting Proteus testing:
+pin records, and preserves 49-byte non-final and 50-byte final right wires. The
+user confirmed its 1x/3x/15x Proteus pack worked on 2026-06-30:
 `experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip`.
+
+The old generic CAP-ELEC terminal probes are rejected because their terminals
+were visible but unattached. `CAP-ELEC/v3` instead follows the accepted
+eight-component donor: repeated right-terminal/left-terminal/component/
+left-wire/right-wire groups; pins 508000 units from the body; terminal symbols
+another 254000 units outward; donor-native suffix progression; zero-length
+records at both pins; 49-byte non-final right wires; and a 50-byte final right
+wire. Its 1x/3x/15x pack is static-valid and awaiting Proteus testing:
+`experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`.
+
+`VSOURCE/v4` and `CSOURCE/v4` reuse the manually accepted bidirectional V3
+source method: input roles use 180 degrees, output roles use 0 degrees, source
+body link fields are patched with the same endpoint suffixes, and two
+zero-length source-native wire records end at the actual pins. VSOURCE
+preserves output/input order; CSOURCE preserves input/output order. Both use
+the accepted `0x0080` per-source suffix step and handle dynamic reference
+lengths such as `I9` to `I10`. Their 1x/3x/15x packs are static-valid:
+
+- `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+
+Repository-wide donor scanning did not find terminalized attachment evidence
+for DIODE, the named diode variants, LED-RED, FUSE, or VPULSE. VSINE has an
+accepted special single non-final source unit, but not a proven general
+1x/3x/15x ordering. These families remain unsupported in the shared terminal
+dispatcher; no passive/source pattern is guessed for them.
 
 ## Verification Baseline
 
-- focused component placer suite: 43 passed;
+- focused component placer suite: 49 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
@@ -110,10 +142,17 @@ pin records, and preserves 49-byte non-final and 50-byte final right wires. Its
 - capacitor-specific V1 attachment: invalidated by donor audit.
 - capacitor-specific V2 attachment: Proteus-accepted and locked.
 - inductor-specific V1 attachment: user-rejected and disabled.
-- inductor-specific V2 attachment: static-valid, pending user Proteus test.
+- inductor-specific V2 attachment: Proteus-accepted and locked.
+- electrolytic-capacitor-specific V3 attachment: static-valid, pending user
+  Proteus test.
+- DC-voltage-source-specific V4 attachment: static-valid, pending user Proteus
+  test.
+- DC-current-source-specific V4 attachment: static-valid, pending user Proteus
+  test.
 
 ## Next Engineering Step
 
-Test REALIND/v2 in Proteus. Do not start another family until REALIND open,
-render, attachment, and simulation results are recorded. Continue through the
-one shared `component_terminal_placer.py` module only.
+Test CAP-ELEC/v3, VSOURCE/v4, and CSOURCE/v4 in Proteus as one checkpoint.
+Continue sequential donor research inside the one shared
+`component_terminal_placer.py` module, grouping multiple families per
+checkpoint only when their byte-level evidence is complete.

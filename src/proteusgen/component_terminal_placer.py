@@ -26,7 +26,7 @@ from .resistor_v9 import (
     _patch_wire,
     build_dsn,
 )
-from .templates import FixtureRegistry
+from .templates import FixtureRegistry, repository_root
 
 
 TERMINAL_MARGIN = 0
@@ -36,12 +36,32 @@ RIGHT_SIDE_ANGLE = 0
 RESISTOR_PIN_SPAN = 1_270_000
 CAP_PIN_HALF_SPAN = 508_000
 CAP_TERMINAL_SYMBOL_TO_PIN = 254_000
+CAP_ELEC_PIN_HALF_SPAN = 508_000
+CAP_ELEC_TERMINAL_SYMBOL_TO_PIN = 254_000
 INDUCTOR_PIN_HALF_SPAN = 762_000
 INDUCTOR_TERMINAL_SYMBOL_TO_PIN = 254_000
 TERMINAL_SYMBOL_TO_PIN = 508_000
 TERMINAL_CONTACT_TO_PIN = 254_000
 CAP_WIRE_RECORD_SIZE = 50
 CAP_TRIMMED_WIRE_RECORD_SIZE = 49
+CAP_ELEC_BIDIR_RECORD_SIZE = 101
+CAP_ELEC_COMPONENT_RECORD_SIZE = 379
+CAP_ELEC_WIRE_RECORD_SIZE = 50
+CAP_ELEC_TRIMMED_WIRE_RECORD_SIZE = 49
+CAP_ELEC_DONOR_GROUP_SIZE = (
+    CAP_ELEC_BIDIR_RECORD_SIZE * 2
+    + CAP_ELEC_COMPONENT_RECORD_SIZE
+    + CAP_ELEC_WIRE_RECORD_SIZE
+    + CAP_ELEC_TRIMMED_WIRE_RECORD_SIZE
+)
+SOURCE_PIN_X_FROM_BODY = 508_000
+SOURCE_UPPER_PIN_Y_FROM_BODY = 254_000
+SOURCE_LOWER_PIN_Y_FROM_BODY = -1_270_000
+SOURCE_TERMINAL_SYMBOL_TO_PIN = 254_000
+SOURCE_COMPONENT_BARE_BASE_SIZES = {
+    "VSOURCE": 340,
+    "CSOURCE": 342,
+}
 INDUCTOR_INPUT_RECORD_SIZE = 103
 INDUCTOR_OUTPUT_RECORD_SIZE = 104
 INDUCTOR_COMPONENT_RECORD_SIZE = 374
@@ -202,6 +222,7 @@ class CapacitorTerminalPair:
 
 
 InductorTerminalPair = CapacitorTerminalPair
+ElectrolyticCapTerminalPair = CapacitorTerminalPair
 
 
 @dataclass(frozen=True)
@@ -210,6 +231,77 @@ class InductorDonorTemplates:
     wire_lefts: tuple[bytes, ...]
     wire_rights: tuple[bytes, ...]
     donor_chunk: bytes
+
+
+@dataclass(frozen=True)
+class ElectrolyticCapDonorTemplates:
+    header: bytes
+    wire_lefts: tuple[bytes, ...]
+    wire_rights: tuple[bytes, ...]
+    donor_chunk: bytes
+
+
+@dataclass(frozen=True)
+class SourceDonorTemplates:
+    family: str
+    input_wire: bytes
+    output_wire: bytes
+    donor_chunk: bytes
+    donor_path: Path
+
+
+@dataclass(frozen=True)
+class SourceTerminalPair:
+    component_key: str
+    component_family: str
+    input: TerminalSpec
+    output: TerminalSpec
+    input_pin_x: int
+    input_pin_y: int
+    output_pin_x: int
+    output_pin_y: int
+    input_wire_start_x: int
+    input_wire_start_y: int
+    output_wire_start_x: int
+    output_wire_start_y: int
+    component_x_offset: int
+    component_y_offset: int
+    input_link_offset: int
+    output_link_offset: int
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "component_key": self.component_key,
+            "component_family": self.component_family,
+            "input": self.input.as_dict(),
+            "output": self.output.as_dict(),
+            "pins": {
+                "input": {"x": self.input_pin_x, "y": self.input_pin_y},
+                "output": {"x": self.output_pin_x, "y": self.output_pin_y},
+            },
+            "short_wires": {
+                "input": {
+                    "start": {
+                        "x": self.input_wire_start_x,
+                        "y": self.input_wire_start_y,
+                    },
+                    "end": {"x": self.input_pin_x, "y": self.input_pin_y},
+                },
+                "output": {
+                    "start": {
+                        "x": self.output_wire_start_x,
+                        "y": self.output_wire_start_y,
+                    },
+                    "end": {"x": self.output_pin_x, "y": self.output_pin_y},
+                },
+            },
+            "packet_offsets": {
+                "component_x": self.component_x_offset,
+                "component_y": self.component_y_offset,
+                "input_link": self.input_link_offset,
+                "output_link": self.output_link_offset,
+            },
+        }
 
 
 def _s32_at(data: bytes, offset: int) -> int:
@@ -225,7 +317,9 @@ def _compact_terminal_label(prefix: str, terminal_index: int) -> str:
 
     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     if len(prefix) != 1 or prefix not in alphabet:
-        raise ValueError("CAP/v2 label prefix must be one uppercase ASCII letter or digit.")
+        raise ValueError(
+            "Terminal label prefix must be one uppercase ASCII letter or digit."
+        )
     if not 0 <= terminal_index < len(alphabet):
         raise ValueError(
             "This terminal handler currently supports at most 18 components because its accepted "
@@ -240,6 +334,19 @@ def _inductor_suffixes(index: int) -> tuple[int, int]:
         (0x01B2 + (index - 1) * step) & 0xFFFF,
         (0x01E4 + (index - 1) * step) & 0xFFFF,
     )
+
+
+def _cap_elec_suffixes(index: int) -> tuple[int, int]:
+    step = 0x02A8
+    return (
+        (0x0120 + (index - 1) * step) & 0xFFFF,
+        (0x0152 + (index - 1) * step) & 0xFFFF,
+    )
+
+
+def _source_suffixes(index: int) -> tuple[int, int]:
+    output_suffix = 0x7000 + (index - 1) * 0x80
+    return output_suffix & 0xFFFF, (output_suffix + 0x32) & 0xFFFF
 
 
 def _resistor_body_offsets(data: bytes) -> tuple[int, int]:
@@ -317,6 +424,66 @@ def _realind_body_offsets(data: bytes) -> tuple[int, int]:
     if len(candidates) != 1:
         raise ValueError(
             "REALIND terminal attachment needs exactly one parsed structural body anchor; "
+            f"found {len(candidates)}."
+        )
+    return candidates[0]
+
+
+def _cap_elec_body_offsets(data: bytes) -> tuple[int, int]:
+    candidates = [
+        (x_offset, y_offset)
+        for x_offset, y_offset, reason in layout_coordinate_pairs(data, "CAP-ELEC")
+        if reason == "marker_body:CAP-ELEC"
+    ]
+    if not candidates:
+        marker_offset = data.rfind(b"CAP-ELEC")
+        if marker_offset >= 0:
+            x_offset = marker_offset + len(b"CAP-ELEC")
+            y_offset = x_offset + 4
+            if y_offset + 4 <= len(data):
+                x_value = _s32_at(data, x_offset)
+                y_value = _s32_at(data, y_offset)
+                if (
+                    -700_000_000 <= x_value <= 700_000_000
+                    and -700_000_000 <= y_value <= 700_000_000
+                    and x_value % 10 == 0
+                    and y_value % 10 == 0
+                    and not (x_value == 0 and y_value == 0)
+                ):
+                    candidates.append((x_offset, y_offset))
+    if len(candidates) != 1:
+        raise ValueError(
+            "CAP-ELEC terminal attachment needs exactly one parsed structural body anchor; "
+            f"found {len(candidates)}."
+        )
+    return candidates[0]
+
+
+def _source_body_offsets(data: bytes, family: str) -> tuple[int, int]:
+    candidates = [
+        (x_offset, y_offset)
+        for x_offset, y_offset, reason in layout_coordinate_pairs(data, family)
+        if reason == f"marker_body:{family}"
+    ]
+    if not candidates:
+        marker_offset = data.rfind(family.encode("ascii"))
+        if marker_offset >= 0:
+            x_offset = marker_offset + len(family)
+            y_offset = x_offset + 4
+            if y_offset + 4 <= len(data):
+                x_value = _s32_at(data, x_offset)
+                y_value = _s32_at(data, y_offset)
+                if (
+                    -700_000_000 <= x_value <= 700_000_000
+                    and -700_000_000 <= y_value <= 700_000_000
+                    and x_value % 10 == 0
+                    and y_value % 10 == 0
+                    and not (x_value == 0 and y_value == 0)
+                ):
+                    candidates.append((x_offset, y_offset))
+    if len(candidates) != 1:
+        raise ValueError(
+            f"{family} terminal attachment needs exactly one parsed structural body anchor; "
             f"found {len(candidates)}."
         )
     return candidates[0]
@@ -501,7 +668,7 @@ def plan_attached_inductor_terminals(
         if angle_tenths != 0:
             raise ValueError(
                 f"REALIND {key} uses unproven orientation {angle_tenths}; "
-                "V1 accepts horizontal donor packets only."
+                "V2 accepts horizontal donor packets only."
             )
 
         body_x = _s32_at(data, x_offset)
@@ -549,6 +716,200 @@ def plan_attached_inductor_terminals(
                 component_y_offset=y_offset,
                 input_link_offset=x_offset + 25,
                 output_link_offset=x_offset + 29,
+            )
+        )
+    return tuple(pairs)
+
+
+def plan_attached_electrolytic_capacitor_terminals(
+    selected_groups: Iterable[Any],
+    *,
+    label_prefix: str = "E",
+) -> tuple[ElectrolyticCapTerminalPair, ...]:
+    """Plan CAP-ELEC/v3 from the accepted eight-component donor geometry."""
+
+    pairs: list[ElectrolyticCapTerminalPair] = []
+    for index, group in enumerate(selected_groups, start=1):
+        family = str(getattr(group, "family", ""))
+        key = str(getattr(group, "key", ""))
+        if family != "CAP-ELEC":
+            raise ValueError(
+                "The attached-terminal CAP-ELEC handler supports CAP-ELEC only; "
+                f"received {family or '<unknown>'} ({key or '<unknown>'})."
+            )
+        data = getattr(group, "data", b"")
+        if not isinstance(data, bytes):
+            data = bytes(data)
+        if len(data) != CAP_ELEC_COMPONENT_RECORD_SIZE:
+            raise ValueError(
+                f"CAP-ELEC/v3 requires the accepted {CAP_ELEC_COMPONENT_RECORD_SIZE}-byte "
+                f"full-mega packet; {key} has {len(data)} bytes."
+            )
+        x_offset, y_offset = _cap_elec_body_offsets(data)
+        angle_tenths = _u32_at(data, x_offset + 8)
+        if angle_tenths != 0:
+            raise ValueError(
+                f"CAP-ELEC {key} uses unproven orientation {angle_tenths}; "
+                "V3 accepts horizontal donor packets only."
+            )
+
+        body_x = _s32_at(data, x_offset)
+        body_y = _s32_at(data, y_offset)
+        left_pin_x = body_x - CAP_ELEC_PIN_HALF_SPAN
+        right_pin_x = body_x + CAP_ELEC_PIN_HALF_SPAN
+        left_suffix, right_suffix = _cap_elec_suffixes(index)
+        left = TerminalSpec(
+            label=_compact_terminal_label(label_prefix, (index - 1) * 2),
+            symbol_x=left_pin_x - CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=body_y,
+            angle_tenths=LEFT_SIDE_ANGLE,
+            suffix=left_suffix,
+            component_key=key,
+            component_family=family,
+            pin_hint="left_pin",
+            attachment_policy="cap_elec_native_links_and_zero_length_pin_records",
+        )
+        right = TerminalSpec(
+            label=_compact_terminal_label(label_prefix, (index - 1) * 2 + 1),
+            symbol_x=right_pin_x + CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=body_y,
+            angle_tenths=RIGHT_SIDE_ANGLE,
+            suffix=right_suffix,
+            component_key=key,
+            component_family=family,
+            pin_hint="right_pin",
+            attachment_policy="cap_elec_native_links_and_zero_length_pin_records",
+        )
+        pairs.append(
+            ElectrolyticCapTerminalPair(
+                component_key=key,
+                component_family=family,
+                left=left,
+                right=right,
+                left_pin_x=left_pin_x,
+                left_pin_y=body_y,
+                right_pin_x=right_pin_x,
+                right_pin_y=body_y,
+                left_wire_start_x=left_pin_x,
+                left_wire_start_y=body_y,
+                right_wire_start_x=right_pin_x,
+                right_wire_start_y=body_y,
+                component_x_offset=x_offset,
+                component_y_offset=y_offset,
+                input_link_offset=x_offset + 25,
+                output_link_offset=x_offset + 29,
+            )
+        )
+    return tuple(pairs)
+
+
+def plan_attached_source_terminals(
+    selected_groups: Iterable[Any],
+    *,
+    label_prefix: str | None = None,
+) -> tuple[SourceTerminalPair, ...]:
+    """Plan VSOURCE/CSOURCE from the accepted role-correct V3 source routes."""
+
+    groups = tuple(selected_groups)
+    families = {str(getattr(group, "family", "")) for group in groups}
+    if (
+        len(families) != 1
+        or next(iter(families), "") not in SOURCE_COMPONENT_BARE_BASE_SIZES
+    ):
+        raise ValueError(
+            "The attached source-terminal handler requires one VSOURCE or CSOURCE family; "
+            f"received {sorted(families)}."
+        )
+    family = next(iter(families))
+    prefix = label_prefix or ("V" if family == "VSOURCE" else "I")
+    base_size = SOURCE_COMPONENT_BARE_BASE_SIZES[family]
+
+    pairs: list[SourceTerminalPair] = []
+    for index, group in enumerate(groups, start=1):
+        key = str(getattr(group, "key", ""))
+        data = getattr(group, "data", b"")
+        if not isinstance(data, bytes):
+            data = bytes(data)
+        expected_size = base_size + len(key)
+        if len(data) != expected_size:
+            raise ValueError(
+                f"{family}/v4 requires the accepted {expected_size}-byte packet; "
+                f"{key} has {len(data)} bytes."
+            )
+        x_offset, y_offset = _source_body_offsets(data, family)
+        angle_tenths = _u32_at(data, x_offset + 8)
+        if angle_tenths != 0:
+            raise ValueError(
+                f"{family} {key} uses unproven orientation {angle_tenths}; "
+                "V4 accepts the horizontal donor packet only."
+            )
+
+        body_x = _s32_at(data, x_offset)
+        body_y = _s32_at(data, y_offset)
+        upper_pin = (
+            body_x + SOURCE_PIN_X_FROM_BODY,
+            body_y + SOURCE_UPPER_PIN_Y_FROM_BODY,
+        )
+        lower_pin = (
+            body_x + SOURCE_PIN_X_FROM_BODY,
+            body_y + SOURCE_LOWER_PIN_Y_FROM_BODY,
+        )
+        output_suffix, input_suffix = _source_suffixes(index)
+        if family == "VSOURCE":
+            output_pin = upper_pin
+            input_pin = lower_pin
+            output_label_index = (index - 1) * 2
+            input_label_index = output_label_index + 1
+            output_link_offset = x_offset + 25
+            input_link_offset = x_offset + 29
+        else:
+            input_pin = upper_pin
+            output_pin = lower_pin
+            input_label_index = (index - 1) * 2
+            output_label_index = input_label_index + 1
+            input_link_offset = x_offset + 25
+            output_link_offset = x_offset + 29
+
+        input_terminal = TerminalSpec(
+            label=_compact_terminal_label(prefix, input_label_index),
+            symbol_x=input_pin[0] - SOURCE_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=input_pin[1],
+            angle_tenths=LEFT_SIDE_ANGLE,
+            suffix=input_suffix,
+            component_key=key,
+            component_family=family,
+            pin_hint="negative/input",
+            attachment_policy="source_native_role_links_and_zero_length_pin_records",
+        )
+        output_terminal = TerminalSpec(
+            label=_compact_terminal_label(prefix, output_label_index),
+            symbol_x=output_pin[0] + SOURCE_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=output_pin[1],
+            angle_tenths=RIGHT_SIDE_ANGLE,
+            suffix=output_suffix,
+            component_key=key,
+            component_family=family,
+            pin_hint="positive/output",
+            attachment_policy="source_native_role_links_and_zero_length_pin_records",
+        )
+        pairs.append(
+            SourceTerminalPair(
+                component_key=key,
+                component_family=family,
+                input=input_terminal,
+                output=output_terminal,
+                input_pin_x=input_pin[0],
+                input_pin_y=input_pin[1],
+                output_pin_x=output_pin[0],
+                output_pin_y=output_pin[1],
+                input_wire_start_x=input_pin[0],
+                input_wire_start_y=input_pin[1],
+                output_wire_start_x=output_pin[0],
+                output_wire_start_y=output_pin[1],
+                component_x_offset=x_offset,
+                component_y_offset=y_offset,
+                input_link_offset=input_link_offset,
+                output_link_offset=output_link_offset,
             )
         )
     return tuple(pairs)
@@ -602,6 +963,57 @@ def _patch_inductor_terminal_links(
         out[offset + 3] = 0x00
     out[-1] = 0x00
     return bytes(out)
+
+
+def _patch_cap_elec_terminal_links(
+    data: bytes,
+    pair: ElectrolyticCapTerminalPair,
+) -> bytes:
+    out = bytearray(data)
+    for offset, terminal in (
+        (pair.input_link_offset, pair.left),
+        (pair.output_link_offset, pair.right),
+    ):
+        if offset + 4 > len(out):
+            raise ValueError(
+                f"CAP-ELEC {pair.component_key} packet ends before its pin-link fields."
+            )
+        out[offset : offset + 2] = struct.pack("<H", terminal.suffix)
+        out[offset + 2] = 0x01
+        out[offset + 3] = 0x00
+    out[-1] = 0x00
+    return bytes(out)
+
+
+def _patch_source_terminal_links(
+    data: bytes,
+    pair: SourceTerminalPair,
+) -> bytes:
+    out = bytearray(data)
+    for offset, terminal in (
+        (pair.input_link_offset, pair.input),
+        (pair.output_link_offset, pair.output),
+    ):
+        if offset + 4 > len(out):
+            raise ValueError(
+                f"{pair.component_family} {pair.component_key} packet ends before "
+                "its source endpoint-link fields."
+            )
+        out[offset : offset + 2] = struct.pack("<H", terminal.suffix)
+        out[offset + 2] = 0x01
+        out[offset + 3] = 0x00
+    out[-1] = 0x00
+    return bytes(out)
+
+
+def _wire_coordinates(record: bytes) -> tuple[int, int, int, int]:
+    marker = record.find(b"\x7fWIRE")
+    if marker < 23:
+        raise ValueError("Donor wire record is missing its structural WIRE marker.")
+    coordinate_start = marker - 23 + 33
+    if coordinate_start + 16 > len(record):
+        raise ValueError("Donor wire record ends before its coordinate fields.")
+    return struct.unpack("<iiii", record[coordinate_start : coordinate_start + 16])
 
 
 def _load_six_inductor_templates(project: Path) -> InductorDonorTemplates:
@@ -659,6 +1071,245 @@ def _load_six_inductor_templates(project: Path) -> InductorDonorTemplates:
         wire_lefts=tuple(wire_lefts),
         wire_rights=tuple(wire_rights),
         donor_chunk=chunk,
+    )
+
+
+def _load_eight_cap_elec_templates(project: Path) -> ElectrolyticCapDonorTemplates:
+    chunk = _extract_object_chunk(read_internal_file(project, "ROOT.DSN"))
+    expected_size = 1 + 7 * CAP_ELEC_DONOR_GROUP_SIZE + (
+        CAP_ELEC_DONOR_GROUP_SIZE + 1
+    )
+    if (
+        len(chunk) != expected_size
+        or chunk[:1] != b"\x00"
+        or chunk[-1:] != b"\xff"
+        or chunk.count(BIDIR_MARKER) != 16
+        or chunk.count(b"$TERINPUT") != 0
+        or chunk.count(b"$TEROUTPUT") != 0
+        or chunk.count(b"CAP-ELEC") != 16
+        or chunk.count(b"\x7fWIRE") != 16
+    ):
+        raise ValueError(
+            "Eight-component CAP-ELEC donor does not match its accepted sequential shape."
+        )
+
+    wire_lefts: list[bytes] = []
+    wire_rights: list[bytes] = []
+    cursor = 1
+    for index in range(8):
+        right_record = chunk[cursor : cursor + CAP_ELEC_BIDIR_RECORD_SIZE]
+        cursor += CAP_ELEC_BIDIR_RECORD_SIZE
+        left_record = chunk[cursor : cursor + CAP_ELEC_BIDIR_RECORD_SIZE]
+        cursor += CAP_ELEC_BIDIR_RECORD_SIZE
+        component = chunk[cursor : cursor + CAP_ELEC_COMPONENT_RECORD_SIZE]
+        cursor += CAP_ELEC_COMPONENT_RECORD_SIZE
+        left_wire = chunk[cursor : cursor + CAP_ELEC_WIRE_RECORD_SIZE]
+        cursor += CAP_ELEC_WIRE_RECORD_SIZE
+        right_size = (
+            CAP_ELEC_WIRE_RECORD_SIZE
+            if index == 7
+            else CAP_ELEC_TRIMMED_WIRE_RECORD_SIZE
+        )
+        right_wire = chunk[cursor : cursor + right_size]
+        cursor += right_size
+
+        body_x_offset, body_y_offset = _cap_elec_body_offsets(component)
+        body_x = _s32_at(component, body_x_offset)
+        body_y = _s32_at(component, body_y_offset)
+        left_suffix, right_suffix = _cap_elec_suffixes(index + 1)
+        right_symbol = struct.unpack("<ii", right_record[1:9])
+        left_symbol = struct.unpack("<ii", left_record[1:9])
+        expected_left_pin = body_x - CAP_ELEC_PIN_HALF_SPAN
+        expected_right_pin = body_x + CAP_ELEC_PIN_HALF_SPAN
+        if (
+            len(right_record) != CAP_ELEC_BIDIR_RECORD_SIZE
+            or len(left_record) != CAP_ELEC_BIDIR_RECORD_SIZE
+            or right_record.count(BIDIR_MARKER) != 1
+            or left_record.count(BIDIR_MARKER) != 1
+            or right_record[30] != 0
+            or left_record[30] != 0
+            or _u32_at(right_record, 9) != RIGHT_SIDE_ANGLE
+            or _u32_at(left_record, 9) != LEFT_SIDE_ANGLE
+            or struct.unpack("<H", right_record[-4:-2])[0] != right_suffix
+            or struct.unpack("<H", left_record[-4:-2])[0] != left_suffix
+            or right_symbol
+            != (
+                expected_right_pin + CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
+                body_y,
+            )
+            or left_symbol
+            != (
+                expected_left_pin - CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
+                body_y,
+            )
+            or len(component) != CAP_ELEC_COMPONENT_RECORD_SIZE
+            or not component.startswith(b"\x00\xff")
+            or component.count(b"CAP-ELEC") != 2
+            or component[body_x_offset + 25 : body_x_offset + 27]
+            != struct.pack("<H", left_suffix)
+            or component[body_x_offset + 29 : body_x_offset + 31]
+            != struct.pack("<H", right_suffix)
+            or len(left_wire) != CAP_ELEC_WIRE_RECORD_SIZE
+            or len(right_wire) != right_size
+            or left_wire.count(b"\x7fWIRE") != 1
+            or right_wire.count(b"\x7fWIRE") != 1
+        ):
+            raise ValueError(f"Eight-component CAP-ELEC donor group {index + 1} is malformed.")
+
+        for wire, pin_x in (
+            (left_wire, expected_left_pin),
+            (right_wire, expected_right_pin),
+        ):
+            marker = wire.find(b"\x7fWIRE")
+            coordinate_start = marker - 23 + 33
+            x1, y1, x2, y2 = struct.unpack(
+                "<iiii", wire[coordinate_start : coordinate_start + 16]
+            )
+            if (x1, y1, x2, y2) != (pin_x, body_y, pin_x, body_y):
+                raise ValueError(
+                    f"Eight-component CAP-ELEC donor group {index + 1} "
+                    "does not use zero-length pin attachments."
+                )
+        wire_lefts.append(left_wire)
+        wire_rights.append(right_wire)
+
+    if cursor != len(chunk):
+        raise ValueError(
+            f"Eight-component CAP-ELEC donor cursor ended at {cursor}, expected {len(chunk)}."
+        )
+    return ElectrolyticCapDonorTemplates(
+        header=chunk[:1],
+        wire_lefts=tuple(wire_lefts),
+        wire_rights=tuple(wire_rights),
+        donor_chunk=chunk,
+    )
+
+
+def _load_vsource_templates(project: Path) -> SourceDonorTemplates:
+    chunk = _extract_object_chunk(read_internal_file(project, "ROOT.DSN"))
+    output_record = chunk[1:102]
+    input_record = chunk[102:203]
+    component = chunk[203:546]
+    output_wire = chunk[546:596]
+    input_wire = chunk[596:646]
+    body_x_offset, body_y_offset = _source_body_offsets(component, "VSOURCE")
+    body_x = _s32_at(component, body_x_offset)
+    body_y = _s32_at(component, body_y_offset)
+    output_suffix = struct.unpack("<H", output_record[-4:-2])[0]
+    input_suffix = struct.unpack("<H", input_record[-4:-2])[0]
+    output_pin = (
+        body_x + SOURCE_PIN_X_FROM_BODY,
+        body_y + SOURCE_UPPER_PIN_Y_FROM_BODY,
+    )
+    input_pin = (
+        body_x + SOURCE_PIN_X_FROM_BODY,
+        body_y + SOURCE_LOWER_PIN_Y_FROM_BODY,
+    )
+    if (
+        len(chunk) != 646
+        or chunk[:1] != b"\x00"
+        or chunk[-1:] != b"\xff"
+        or chunk.count(BIDIR_MARKER) != 2
+        or chunk.count(b"VSOURCE") != 2
+        or chunk.count(b"\x7fWIRE") != 2
+        or len(output_record) != 101
+        or len(input_record) != 101
+        or output_record.count(BIDIR_MARKER) != 1
+        or input_record.count(BIDIR_MARKER) != 1
+        or output_record[30] != 0
+        or input_record[30] != 0
+        or _u32_at(output_record, 9) != RIGHT_SIDE_ANGLE
+        or _u32_at(input_record, 9) != LEFT_SIDE_ANGLE
+        or struct.unpack("<ii", output_record[1:9])
+        != (output_pin[0] + SOURCE_TERMINAL_SYMBOL_TO_PIN, output_pin[1])
+        or struct.unpack("<ii", input_record[1:9])
+        != (input_pin[0] - SOURCE_TERMINAL_SYMBOL_TO_PIN, input_pin[1])
+        or len(component)
+        != SOURCE_COMPONENT_BARE_BASE_SIZES["VSOURCE"] + len("V1") + 1
+        or not component.startswith(b"\x00\xff")
+        or component[body_x_offset + 25 : body_x_offset + 27]
+        != struct.pack("<H", output_suffix)
+        or component[body_x_offset + 29 : body_x_offset + 31]
+        != struct.pack("<H", input_suffix)
+        or len(output_wire) != 50
+        or len(input_wire) != 50
+        or _wire_coordinates(output_wire)
+        != (output_pin[0], output_pin[1], output_pin[0], output_pin[1])
+        or _wire_coordinates(input_wire)
+        != (input_pin[0], input_pin[1], input_pin[0], input_pin[1])
+    ):
+        raise ValueError("Clean bidirectional VSOURCE donor shape changed.")
+    return SourceDonorTemplates(
+        family="VSOURCE",
+        input_wire=input_wire,
+        output_wire=output_wire,
+        donor_chunk=chunk,
+        donor_path=project,
+    )
+
+
+def _load_csource_templates(project: Path) -> SourceDonorTemplates:
+    chunk = _extract_object_chunk(read_internal_file(project, "ROOT.DSN"))
+    input_marker = chunk.rfind(b"$TERINPUT")
+    if input_marker < 14:
+        raise ValueError("Accepted CSOURCE donor is missing its final input terminal.")
+    input_start = input_marker - 14
+    output_marker = chunk.find(b"$TEROUTPUT", input_marker)
+    if output_marker < 14:
+        raise ValueError("Accepted CSOURCE donor is missing its final output terminal.")
+    output_start = output_marker - 14
+    input_record = chunk[input_start:output_start]
+    component_start = output_start + 104
+    first_wire_marker = chunk.find(b"\x7fWIRE", component_start)
+    if first_wire_marker < 23:
+        raise ValueError("Accepted CSOURCE donor is missing its source wire records.")
+    first_wire_start = first_wire_marker - 23
+    output_record = chunk[output_start:component_start]
+    component = chunk[component_start:first_wire_start]
+    input_wire = chunk[first_wire_start : first_wire_start + 50]
+    output_wire = chunk[first_wire_start + 50 : first_wire_start + 100]
+
+    body_x_offset, body_y_offset = _source_body_offsets(component, "CSOURCE")
+    body_x = _s32_at(component, body_x_offset)
+    body_y = _s32_at(component, body_y_offset)
+    input_suffix = struct.unpack("<H", input_record[-4:-2])[0]
+    output_suffix = struct.unpack("<H", output_record[-4:-2])[0]
+    input_pin = (
+        body_x + SOURCE_PIN_X_FROM_BODY,
+        body_y + SOURCE_UPPER_PIN_Y_FROM_BODY,
+    )
+    output_pin = (
+        body_x + SOURCE_PIN_X_FROM_BODY,
+        body_y + SOURCE_LOWER_PIN_Y_FROM_BODY,
+    )
+    if (
+        input_start + 652 != len(chunk)
+        or len(input_record) != 103
+        or len(output_record) != 104
+        or input_record.count(b"$TERINPUT") != 1
+        or output_record.count(b"$TEROUTPUT") != 1
+        or len(component)
+        != SOURCE_COMPONENT_BARE_BASE_SIZES["CSOURCE"] + len("I1") + 1
+        or not component.startswith(b"\x00\xff")
+        or component.count(b"CSOURCE") != 2
+        or component[body_x_offset + 25 : body_x_offset + 27]
+        != struct.pack("<H", input_suffix)
+        or component[body_x_offset + 29 : body_x_offset + 31]
+        != struct.pack("<H", output_suffix)
+        or len(input_wire) != 50
+        or len(output_wire) != 50
+        or _wire_coordinates(input_wire)
+        != (input_pin[0], input_pin[1], input_pin[0], input_pin[1])
+        or _wire_coordinates(output_wire)
+        != (output_pin[0], output_pin[1], output_pin[0], output_pin[1])
+    ):
+        raise ValueError("Accepted CSOURCE V15 donor shape changed.")
+    return SourceDonorTemplates(
+        family="CSOURCE",
+        input_wire=input_wire,
+        output_wire=output_wire,
+        donor_chunk=chunk,
+        donor_path=project,
     )
 
 
@@ -1114,6 +1765,384 @@ def attach_inductor_bidir_terminals_to_project(
     }
 
 
+def attach_electrolytic_capacitor_bidir_terminals_to_project(
+    project: str | Path,
+    output: str | Path,
+    selected_groups: Iterable[Any],
+    *,
+    label_prefix: str = "E",
+) -> dict[str, Any]:
+    """Attach CAP-ELEC/v3 using the accepted eight-component donor schema."""
+
+    groups = tuple(selected_groups)
+    if not groups:
+        raise ValueError("CAP-ELEC/v3 requires at least one selected electrolytic capacitor.")
+    for group in groups:
+        data = bytes(getattr(group, "data", b""))
+        if BIDIR_MARKER in data or b"\x7fWIRE" in data:
+            raise ValueError(
+                "CAP-ELEC/v3 requires bare component-placer packets; "
+                f"{getattr(group, 'key', '<unknown>')} already contains terminal or wire records."
+            )
+    pairs = plan_attached_electrolytic_capacitor_terminals(
+        groups,
+        label_prefix=label_prefix,
+    )
+    terminal_templates = load_production_templates(FixtureRegistry.load())
+    manual_donor = (
+        repository_root()
+        / "proteus_ic"
+        / "donors"
+        / "analog_misc_batch1"
+        / "8ELEC-CAP.pdsprj"
+    )
+    donor_templates = _load_eight_cap_elec_templates(manual_donor)
+
+    object_records: list[bytes] = []
+    group_reports: list[dict[str, Any]] = []
+    for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+        data = bytes(group.data)
+        if not data.startswith(b"\xff"):
+            raise ValueError(
+                f"CAP-ELEC/v3 expected {pair.component_key} to start with its donor FF boundary."
+            )
+        right_record = build_bidir_record(
+            terminal_templates,
+            label=pair.right.label,
+            symbol_x=pair.right.symbol_x,
+            symbol_y=pair.right.symbol_y,
+            angle_tenths=pair.right.angle_tenths,
+            suffix=pair.right.suffix,
+            active_link=True,
+        )
+        left_record = build_bidir_record(
+            terminal_templates,
+            label=pair.left.label,
+            symbol_x=pair.left.symbol_x,
+            symbol_y=pair.left.symbol_y,
+            angle_tenths=pair.left.angle_tenths,
+            suffix=pair.left.suffix,
+            active_link=True,
+        )
+        component_record = b"\x00" + _patch_cap_elec_terminal_links(data, pair)
+        template_index = index % len(donor_templates.wire_lefts)
+        left_wire = _patch_wire(
+            donor_templates.wire_lefts[template_index],
+            pair.left_pin_x,
+            pair.left_pin_y,
+            pair.left_pin_x,
+            pair.left_pin_y,
+        )
+        right_template = donor_templates.wire_rights[template_index]
+        is_final = index == len(groups) - 1
+        if len(right_template) == CAP_ELEC_TRIMMED_WIRE_RECORD_SIZE:
+            right_template += b"\x00"
+        right_wire = _patch_wire(
+            right_template,
+            pair.right_pin_x,
+            pair.right_pin_y,
+            pair.right_pin_x,
+            pair.right_pin_y,
+        )
+        if not is_final:
+            right_wire = right_wire[:-1]
+        object_records.extend(
+            (right_record, left_record, component_record, left_wire, right_wire)
+        )
+        group_reports.append(
+            {
+                "component_key": pair.component_key,
+                "right_terminal_size": len(right_record),
+                "left_terminal_size": len(left_record),
+                "bare_component_size": len(data),
+                "component_record_size": len(component_record),
+                "left_wire_size": len(left_wire),
+                "right_wire_size": len(right_wire),
+                "right_wire_final": is_final,
+                "donor_slot": template_index + 1,
+            }
+        )
+
+    source = Path(project)
+    dsn = read_internal_file(source, "ROOT.DSN")
+    original_chunk = _extract_object_chunk(dsn)
+    if BIDIR_MARKER in original_chunk or b"\x7fWIRE" in original_chunk:
+        raise ValueError(
+            "CAP-ELEC/v3 base project is not bare; choose the main mega donor "
+            "before applying terminal attachment."
+        )
+    new_chunk = original_chunk[:1] + b"".join(object_records)
+    new_chunk = new_chunk[:-1] + b"\xff"
+    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
+    write_project_from_parts(source, output, {"ROOT.DSN": new_dsn})
+    final_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    expected_terminals = len(pairs) * 2
+    expected_wires = len(pairs) * 2
+    expected_right_wire_sizes = [
+        (
+            CAP_ELEC_WIRE_RECORD_SIZE
+            if index == len(pairs) - 1
+            else CAP_ELEC_TRIMMED_WIRE_RECORD_SIZE
+        )
+        for index in range(len(pairs))
+    ]
+    suffix_counts_valid = all(
+        final_chunk.count(struct.pack("<H", terminal.suffix)) >= 2
+        for pair in pairs
+        for terminal in (pair.left, pair.right)
+    )
+    return {
+        "stage": "terminal_placer",
+        "family_handler": "CAP-ELEC/v3",
+        "terminal_kind": "$TERBIDIR",
+        "wire_record_emission": True,
+        "attachment_policy": "cap_elec_eight_donor_sequential_zero_length_pin_records",
+        "object_order": "repeated_right_bidir_left_bidir_cap_elec_left_wire_right_wire",
+        "label_policy": "two_character_prefix_plus_base36_terminal_index",
+        "suffix_policy": "eight_elec_cap_0x02a8_progression",
+        "terminal_count_added": expected_terminals,
+        "wire_count_added": expected_wires,
+        "terminal_pairs": [pair.as_dict() for pair in pairs],
+        "group_records": group_reports,
+        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
+        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
+        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
+        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
+        "object_chunk_size_before": len(original_chunk),
+        "object_chunk_size_after": len(final_chunk),
+        "manual_cap_elec_donor": str(manual_donor),
+        "valid": (
+            final_chunk == new_chunk
+            and final_chunk.count(BIDIR_MARKER) == expected_terminals
+            and final_chunk.count(b"\x7fWIRE") == expected_wires
+            and all(
+                item["component_record_size"] == item["bare_component_size"] + 1
+                for item in group_reports
+            )
+            and [item["right_wire_size"] for item in group_reports]
+            == expected_right_wire_sizes
+            and all(
+                item["left_wire_size"] == CAP_ELEC_WIRE_RECORD_SIZE
+                for item in group_reports
+            )
+            and all(pair.left_wire_start_x == pair.left_pin_x for pair in pairs)
+            and all(pair.right_wire_start_x == pair.right_pin_x for pair in pairs)
+            and suffix_counts_valid
+            and final_chunk.endswith(b"\xff")
+        ),
+    }
+
+
+def attach_source_bidir_terminals_to_project(
+    project: str | Path,
+    output: str | Path,
+    selected_groups: Iterable[Any],
+    *,
+    label_prefix: str | None = None,
+) -> dict[str, Any]:
+    """Attach VSOURCE/CSOURCE endpoints using the user-accepted V3 source rules."""
+
+    groups = tuple(selected_groups)
+    if not groups:
+        raise ValueError("Source/v4 attachment requires at least one selected source packet.")
+    families = {str(getattr(group, "family", "")) for group in groups}
+    if (
+        len(families) != 1
+        or next(iter(families), "") not in SOURCE_COMPONENT_BARE_BASE_SIZES
+    ):
+        raise ValueError(
+            "Source/v4 attachment requires one VSOURCE or CSOURCE family; "
+            f"received {sorted(families)}."
+        )
+    family = next(iter(families))
+    for group in groups:
+        data = bytes(getattr(group, "data", b""))
+        if BIDIR_MARKER in data or b"\x7fWIRE" in data:
+            raise ValueError(
+                f"{family}/v4 requires bare component-placer packets; "
+                f"{getattr(group, 'key', '<unknown>')} already contains terminal or wire records."
+            )
+    pairs = plan_attached_source_terminals(groups, label_prefix=label_prefix)
+
+    registry = FixtureRegistry.load()
+    terminal_templates = load_production_templates(registry)
+    if family == "VSOURCE":
+        donor_templates = _load_vsource_templates(
+            registry.get("bidirectional_dcv_source_donor").path
+        )
+        terminal_order = ("output", "input")
+        wire_order = ("output", "input")
+    else:
+        donor_templates = _load_csource_templates(
+            registry.get("source_dc_mixed_v15_donor").path
+        )
+        terminal_order = ("input", "output")
+        wire_order = ("input", "output")
+
+    object_records: list[bytes] = []
+    group_reports: list[dict[str, Any]] = []
+    for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+        data = bytes(group.data)
+        if not data.startswith(b"\xff"):
+            raise ValueError(
+                f"{family}/v4 expected {pair.component_key} to start with its donor FF boundary."
+            )
+        terminal_records = {
+            "input": build_bidir_record(
+                terminal_templates,
+                label=pair.input.label,
+                symbol_x=pair.input.symbol_x,
+                symbol_y=pair.input.symbol_y,
+                angle_tenths=pair.input.angle_tenths,
+                suffix=pair.input.suffix,
+                active_link=True,
+            ),
+            "output": build_bidir_record(
+                terminal_templates,
+                label=pair.output.label,
+                symbol_x=pair.output.symbol_x,
+                symbol_y=pair.output.symbol_y,
+                angle_tenths=pair.output.angle_tenths,
+                suffix=pair.output.suffix,
+                active_link=True,
+            ),
+        }
+        component_record = b"\x00" + _patch_source_terminal_links(data, pair)
+        wire_templates = {
+            "input": donor_templates.input_wire,
+            "output": donor_templates.output_wire,
+        }
+        pins = {
+            "input": (pair.input_pin_x, pair.input_pin_y),
+            "output": (pair.output_pin_x, pair.output_pin_y),
+        }
+        first_wire_role, second_wire_role = wire_order
+        first_pin = pins[first_wire_role]
+        first_wire = _patch_wire(
+            wire_templates[first_wire_role],
+            first_pin[0],
+            first_pin[1],
+            first_pin[0],
+            first_pin[1],
+        )
+        second_pin = pins[second_wire_role]
+        second_wire = _patch_wire(
+            wire_templates[second_wire_role],
+            second_pin[0],
+            second_pin[1],
+            second_pin[0],
+            second_pin[1],
+        )
+        is_final = index == len(groups) - 1
+        if not is_final:
+            second_wire = second_wire[:-1]
+        object_records.extend(
+            (
+                terminal_records[terminal_order[0]],
+                terminal_records[terminal_order[1]],
+                component_record,
+                first_wire,
+                second_wire,
+            )
+        )
+        group_reports.append(
+            {
+                "component_key": pair.component_key,
+                "terminal_sizes": {
+                    role: len(terminal_records[role]) for role in terminal_order
+                },
+                "bare_component_size": len(data),
+                "component_record_size": len(component_record),
+                "wire_sizes": {
+                    first_wire_role: len(first_wire),
+                    second_wire_role: len(second_wire),
+                },
+                "second_wire_final": is_final,
+            }
+        )
+
+    source = Path(project)
+    dsn = read_internal_file(source, "ROOT.DSN")
+    original_chunk = _extract_object_chunk(dsn)
+    if BIDIR_MARKER in original_chunk or b"\x7fWIRE" in original_chunk:
+        raise ValueError(
+            f"{family}/v4 base project is not bare; choose a component-placer source donor "
+            "before applying terminal attachment."
+        )
+    new_chunk = original_chunk[:1] + b"".join(object_records)
+    new_chunk = new_chunk[:-1] + b"\xff"
+    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
+    write_project_from_parts(source, output, {"ROOT.DSN": new_dsn})
+    final_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    expected_terminals = len(pairs) * 2
+    expected_wires = len(pairs) * 2
+    expected_second_wire_sizes = [
+        50 if index == len(pairs) - 1 else 49
+        for index in range(len(pairs))
+    ]
+    suffix_links_valid = all(
+        final_chunk.count(struct.pack("<H", terminal.suffix) + b"\x01\x00") == 2
+        for pair in pairs
+        for terminal in (pair.input, pair.output)
+    )
+    object_order = (
+        f"repeated_{terminal_order[0]}_bidir_{terminal_order[1]}_bidir_"
+        f"{family.lower()}_{wire_order[0]}_wire_{wire_order[1]}_wire"
+    )
+    return {
+        "stage": "terminal_placer",
+        "family_handler": f"{family}/v4",
+        "terminal_kind": "$TERBIDIR",
+        "wire_record_emission": True,
+        "attachment_policy": "accepted_v3_source_role_links_and_zero_length_pin_records",
+        "object_order": object_order,
+        "terminal_order": list(terminal_order),
+        "wire_order": list(wire_order),
+        "label_policy": "two_character_prefix_plus_base36_terminal_index",
+        "suffix_policy": "accepted_source_0x0080_step_output_plus_0x0032_input",
+        "terminal_count_added": expected_terminals,
+        "wire_count_added": expected_wires,
+        "terminal_pairs": [pair.as_dict() for pair in pairs],
+        "group_records": group_reports,
+        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
+        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
+        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
+        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
+        "object_chunk_size_before": len(original_chunk),
+        "object_chunk_size_after": len(final_chunk),
+        "manual_source_donor": str(donor_templates.donor_path),
+        "valid": (
+            final_chunk == new_chunk
+            and final_chunk.count(BIDIR_MARKER) == expected_terminals
+            and final_chunk.count(b"\x7fWIRE") == expected_wires
+            and all(
+                item["component_record_size"] == item["bare_component_size"] + 1
+                for item in group_reports
+            )
+            and [
+                item["wire_sizes"][wire_order[1]]
+                for item in group_reports
+            ]
+            == expected_second_wire_sizes
+            and all(
+                item["wire_sizes"][wire_order[0]] == 50
+                for item in group_reports
+            )
+            and all(
+                pair.input_wire_start_x == pair.input_pin_x
+                and pair.input_wire_start_y == pair.input_pin_y
+                and pair.output_wire_start_x == pair.output_pin_x
+                and pair.output_wire_start_y == pair.output_pin_y
+                for pair in pairs
+            )
+            and suffix_links_valid
+            and final_chunk.endswith(b"\xff")
+        ),
+    }
+
+
 def attach_component_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
@@ -1159,6 +2188,29 @@ def attach_component_bidir_terminals_to_project(
             output,
             groups,
             label_prefix=label_prefix or "L",
+        )
+    if family == "CAP-ELEC":
+        if suffix_start is not None:
+            raise ValueError(
+                "CAP-ELEC/v3 uses donor-native suffix progression; suffix_start is unsupported."
+            )
+        return attach_electrolytic_capacitor_bidir_terminals_to_project(
+            project,
+            output,
+            groups,
+            label_prefix=label_prefix or "E",
+        )
+    if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
+        if suffix_start is not None:
+            raise ValueError(
+                f"{family}/v4 uses the accepted source suffix progression; "
+                "suffix_start is unsupported."
+            )
+        return attach_source_bidir_terminals_to_project(
+            project,
+            output,
+            groups,
+            label_prefix=label_prefix,
         )
     raise ValueError(
         "Shared terminal attachment has no accepted handler for "

@@ -119,10 +119,14 @@ wires.
 
 `CAP/v2` passed user Proteus testing on 2026-06-30 and is locked. `CAP/v1` was
 invalidated by donor comparison. `REALIND/v1` was rejected by user testing;
-its donor-researched `REALIND/v2` replacement is static-valid and awaiting
-Proteus testing. All other families remain unaccepted until their own focused
-pack passes Proteus. A visible `$TERBIDIR` beside a component is not attachment
-proof.
+its donor-researched `REALIND/v2` replacement passed user Proteus testing on
+2026-06-30 and is locked. `CAP-ELEC/v3`, `VSOURCE/v4`, and `CSOURCE/v4` are
+static-valid and awaiting Proteus testing. DIODE variants, LED-RED, FUSE, and
+VPULSE lack terminalized attachment donors; VSINE lacks a proven general
+multi-unit ordering. They remain unsupported rather than inheriting another
+family's byte pattern. All other families remain unaccepted until their own
+focused pack passes Proteus. A visible `$TERBIDIR` beside a component is not
+attachment proof.
 
 ## Non-Negotiable Rules
 

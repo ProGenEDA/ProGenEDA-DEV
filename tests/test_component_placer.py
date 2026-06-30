@@ -27,19 +27,24 @@ from proteusgen.component_placer import (
 from proteusgen.component_beautifier import layout_coordinate_pairs
 from proteusgen.bidirectional import extract_bidir_records
 from proteusgen.component_terminal_placer import (
+    CAP_ELEC_PIN_HALF_SPAN,
+    CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
     CAP_PIN_HALF_SPAN,
     CAP_TERMINAL_SYMBOL_TO_PIN,
     INDUCTOR_PIN_HALF_SPAN,
     INDUCTOR_TERMINAL_SYMBOL_TO_PIN,
     RESISTOR_PIN_SPAN,
+    SOURCE_TERMINAL_SYMBOL_TO_PIN,
     TERMINAL_CONTACT_TO_PIN,
     TERMINAL_SYMBOL_TO_PIN,
     attach_capacitor_bidir_terminals_to_project,
     attach_component_bidir_terminals_to_project,
     attach_resistor_bidir_terminals_to_project,
     plan_attached_capacitor_terminals,
+    plan_attached_electrolytic_capacitor_terminals,
     plan_attached_inductor_terminals,
     plan_attached_resistor_terminals,
+    plan_attached_source_terminals,
     plan_side_bidir_terminals,
 )
 from proteusgen.cdb import package_ref
@@ -984,6 +989,328 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
     assert all(item["left_wire_size"] == 50 for item in report["group_records"])
     assert component_sizes[-2:] == [375, 375]
     assert all(x1 == x2 and y1 == y2 for x1, y1, x2, y2 in wire_coordinates)
+    assert cursor == len(chunk)
+    assert chunk.endswith(b"\xff")
+
+
+def test_cap_elec_terminal_planner_uses_accepted_eight_donor_geometry(
+    tmp_path: Path,
+) -> None:
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "components": {"CAP-ELEC": 15},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "cap_elec_v3_geometry_base.pdsprj",
+    )
+
+    pairs = plan_attached_electrolytic_capacitor_terminals(result.selected_groups)
+
+    assert len(pairs) == 15
+    assert pairs[0].component_key == "C21"
+    assert pairs[14].component_key == "C36"
+    assert "C35" in {pair.component_key for pair in pairs}
+    assert pairs[0].left.label == "E0"
+    assert pairs[0].right.label == "E1"
+    assert pairs[0].left.suffix == 0x0120
+    assert pairs[0].right.suffix == 0x0152
+    assert pairs[1].left.suffix - pairs[0].left.suffix == 0x02A8
+    assert pairs[1].right.suffix - pairs[0].right.suffix == 0x02A8
+    for pair in pairs:
+        assert pair.right_pin_x - pair.left_pin_x == CAP_ELEC_PIN_HALF_SPAN * 2
+        assert (
+            pair.left.symbol_x
+            == pair.left_pin_x - CAP_ELEC_TERMINAL_SYMBOL_TO_PIN
+        )
+        assert (
+            pair.right.symbol_x
+            == pair.right_pin_x + CAP_ELEC_TERMINAL_SYMBOL_TO_PIN
+        )
+        assert pair.left_wire_start_x == pair.left_pin_x
+        assert pair.right_wire_start_x == pair.right_pin_x
+        assert pair.left.angle_tenths == 1800
+        assert pair.right.angle_tenths == 0
+
+
+def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "cap_elec_v3_base.pdsprj"
+    output = tmp_path / "cap_elec_v3_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "components": {"CAP-ELEC": 15},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    bidir_records = extract_bidir_records(chunk)
+    labels = [
+        record[31 : 31 + record[30]].decode("ascii")
+        for record in bidir_records
+    ]
+    cursor = 1
+    component_sizes: list[int] = []
+    wire_coordinates: list[tuple[int, int, int, int]] = []
+    expected_wire_coordinates: list[tuple[int, int, int, int]] = []
+    for index, pair in enumerate(report["terminal_pairs"]):
+        right_record = bidir_records[index * 2]
+        left_record = bidir_records[index * 2 + 1]
+        assert chunk[cursor : cursor + len(right_record)] == right_record
+        cursor += len(right_record)
+        assert chunk[cursor : cursor + len(left_record)] == left_record
+        cursor += len(left_record)
+
+        wire_marker = chunk.find(b"\x7fWIRE", cursor)
+        wire_start = wire_marker - 23
+        component = chunk[cursor:wire_start]
+        component_sizes.append(len(component))
+        assert component.startswith(b"\x00\xff")
+        x_offset = pair["packet_offsets"]["component_x"] + 1
+        assert component[x_offset + 25 : x_offset + 27] == bytes.fromhex(
+            pair["left"]["suffix"]
+        )[::-1]
+        assert component[x_offset + 29 : x_offset + 31] == bytes.fromhex(
+            pair["right"]["suffix"]
+        )[::-1]
+        cursor = wire_start
+
+        left_wire = chunk[cursor : cursor + 50]
+        cursor += 50
+        right_size = 50 if index == len(report["terminal_pairs"]) - 1 else 49
+        right_wire = chunk[cursor : cursor + right_size]
+        cursor += right_size
+        for wire in (left_wire, right_wire):
+            marker = wire.find(b"\x7fWIRE")
+            coordinate_start = marker - 23
+            wire_coordinates.append(
+                tuple(
+                    int.from_bytes(
+                        wire[coordinate_start + offset : coordinate_start + offset + 4],
+                        "little",
+                        signed=True,
+                    )
+                    for offset in (33, 37, 41, 45)
+                )
+            )
+        expected_wire_coordinates.extend(
+            (
+                (
+                    pair["pins"]["left"]["x"],
+                    pair["pins"]["left"]["y"],
+                    pair["pins"]["left"]["x"],
+                    pair["pins"]["left"]["y"],
+                ),
+                (
+                    pair["pins"]["right"]["x"],
+                    pair["pins"]["right"]["y"],
+                    pair["pins"]["right"]["x"],
+                    pair["pins"]["right"]["y"],
+                ),
+            )
+        )
+
+    assert report["valid"] is True
+    assert report["family_handler"] == "CAP-ELEC/v3"
+    assert report["object_order"] == (
+        "repeated_right_bidir_left_bidir_cap_elec_left_wire_right_wire"
+    )
+    assert report["terminal_count_added"] == 30
+    assert report["wire_count_added"] == 30
+    assert chunk.count(b"$TERBIDIR") == 30
+    assert chunk.count(b"\x7fWIRE") == 30
+    assert labels == [
+        label
+        for pair in report["terminal_pairs"]
+        for label in (pair["right"]["label"], pair["left"]["label"])
+    ]
+    assert [item["right_wire_size"] for item in report["group_records"]] == [
+        *([49] * 14),
+        50,
+    ]
+    assert all(item["left_wire_size"] == 50 for item in report["group_records"])
+    assert component_sizes == [380] * 15
+    assert wire_coordinates == expected_wire_coordinates
+    assert cursor == len(chunk)
+    assert chunk.endswith(b"\xff")
+
+
+@pytest.mark.parametrize(
+    ("family", "prefix", "expected_sizes", "upper_role"),
+    [
+        ("VSOURCE", "V", {343}, "output"),
+        ("CSOURCE", "I", {344, 345}, "input"),
+    ],
+)
+def test_source_terminal_planner_uses_accepted_role_geometry_and_suffixes(
+    tmp_path: Path,
+    family: str,
+    prefix: str,
+    expected_sizes: set[int],
+    upper_role: str,
+) -> None:
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 15},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / f"{family.lower()}_v4_geometry_base.pdsprj",
+    )
+
+    pairs = plan_attached_source_terminals(
+        result.selected_groups,
+        label_prefix=prefix,
+    )
+
+    assert len(pairs) == 15
+    assert {len(group.data) for group in result.selected_groups} == expected_sizes
+    assert pairs[0].output.suffix == 0x7000
+    assert pairs[0].input.suffix == 0x7032
+    assert pairs[1].output.suffix - pairs[0].output.suffix == 0x0080
+    assert pairs[1].input.suffix - pairs[0].input.suffix == 0x0080
+    if family == "VSOURCE":
+        assert pairs[0].output.label == "V0"
+        assert pairs[0].input.label == "V1"
+    else:
+        assert pairs[0].input.label == "I0"
+        assert pairs[0].output.label == "I1"
+    for pair in pairs:
+        assert pair.input.angle_tenths == 1800
+        assert pair.output.angle_tenths == 0
+        assert pair.input.symbol_x == pair.input_pin_x - SOURCE_TERMINAL_SYMBOL_TO_PIN
+        assert (
+            pair.output.symbol_x
+            == pair.output_pin_x + SOURCE_TERMINAL_SYMBOL_TO_PIN
+        )
+        assert pair.input_pin_x == pair.output_pin_x
+        assert abs(pair.input_pin_y - pair.output_pin_y) == 1_524_000
+        assert pair.input_wire_start_x == pair.input_pin_x
+        assert pair.input_wire_start_y == pair.input_pin_y
+        assert pair.output_wire_start_x == pair.output_pin_x
+        assert pair.output_wire_start_y == pair.output_pin_y
+        upper_y = max(pair.input_pin_y, pair.output_pin_y)
+        assert (
+            pair.output_pin_y if upper_role == "output" else pair.input_pin_y
+        ) == upper_y
+
+
+@pytest.mark.parametrize(
+    (
+        "family",
+        "prefix",
+        "expected_terminal_order",
+        "expected_wire_order",
+    ),
+    [
+        ("VSOURCE", "V", ("output", "input"), ("output", "input")),
+        ("CSOURCE", "I", ("input", "output"), ("input", "output")),
+    ],
+)
+def test_source_v4_attachment_preserves_role_order_links_and_wire_boundaries(
+    tmp_path: Path,
+    family: str,
+    prefix: str,
+    expected_terminal_order: tuple[str, str],
+    expected_wire_order: tuple[str, str],
+) -> None:
+    base = tmp_path / f"{family.lower()}_v4_base.pdsprj"
+    output = tmp_path / f"{family.lower()}_v4_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 15},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        label_prefix=prefix,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    bidir_records = extract_bidir_records(chunk)
+    cursor = 1
+    labels: list[str] = []
+    component_sizes: list[int] = []
+    wire_coordinates: list[tuple[int, int, int, int]] = []
+    expected_wire_coordinates: list[tuple[int, int, int, int]] = []
+    for index, pair in enumerate(report["terminal_pairs"]):
+        for role, record in zip(
+            expected_terminal_order,
+            bidir_records[index * 2 : index * 2 + 2],
+            strict=True,
+        ):
+            assert chunk[cursor : cursor + len(record)] == record
+            labels.append(record[31 : 31 + record[30]].decode("ascii"))
+            assert labels[-1] == pair[role]["label"]
+            cursor += len(record)
+
+        wire_marker = chunk.find(b"\x7fWIRE", cursor)
+        wire_start = wire_marker - 23
+        component = chunk[cursor:wire_start]
+        component_sizes.append(len(component))
+        assert component.startswith(b"\x00\xff")
+        x_offset = pair["packet_offsets"]["component_x"] + 1
+        assert component[
+            pair["packet_offsets"]["input_link"] + 1 :
+            pair["packet_offsets"]["input_link"] + 3
+        ] == bytes.fromhex(pair["input"]["suffix"])[::-1]
+        assert component[
+            pair["packet_offsets"]["output_link"] + 1 :
+            pair["packet_offsets"]["output_link"] + 3
+        ] == bytes.fromhex(pair["output"]["suffix"])[::-1]
+        assert x_offset < len(component)
+        cursor = wire_start
+
+        wire_sizes = (50, 50 if index == len(report["terminal_pairs"]) - 1 else 49)
+        for role, size in zip(expected_wire_order, wire_sizes, strict=True):
+            wire = chunk[cursor : cursor + size]
+            marker = wire.find(b"\x7fWIRE")
+            coordinate_start = marker - 23
+            wire_coordinates.append(
+                tuple(
+                    int.from_bytes(
+                        wire[
+                            coordinate_start + offset :
+                            coordinate_start + offset + 4
+                        ],
+                        "little",
+                        signed=True,
+                    )
+                    for offset in (33, 37, 41, 45)
+                )
+            )
+            pin = pair["pins"][role]
+            expected_wire_coordinates.append(
+                (pin["x"], pin["y"], pin["x"], pin["y"])
+            )
+            cursor += size
+
+    assert report["valid"] is True
+    assert report["family_handler"] == f"{family}/v4"
+    assert report["terminal_order"] == list(expected_terminal_order)
+    assert report["wire_order"] == list(expected_wire_order)
+    assert report["terminal_count_added"] == 30
+    assert report["wire_count_added"] == 30
+    assert chunk.count(b"$TERBIDIR") == 30
+    assert chunk.count(b"\x7fWIRE") == 30
+    assert component_sizes == [
+        len(group.data) + 1 for group in result.selected_groups
+    ]
+    assert wire_coordinates == expected_wire_coordinates
     assert cursor == len(chunk)
     assert chunk.endswith(b"\xff")
 

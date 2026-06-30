@@ -3553,9 +3553,9 @@
     },
     {
       "id": "R_TERMINAL_REALIND_V2_STATIC_20260630",
-      "title": "REALIND V2 preserves the accepted sequential donor structure",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.95,
+      "title": "REALIND V2 is the accepted inductor terminal handler",
+      "status": "user_confirmed",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "REALIND",
@@ -3567,9 +3567,78 @@
         "Locked mixed_rcl bidirectional-terminal conversion",
         "TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30",
         "tests/test_component_placer.py => 43 passed",
-        "Independent 1x/3x/15x cursor, suffix-link, boundary, and zero-length-wire audit"
+        "Independent 1x/3x/15x cursor, suffix-link, boundary, and zero-length-wire audit",
+        "User report 2026-06-30: REALIND V2 1x/3x/15x pack worked"
       ],
-      "rule": "REALIND/v2 is the only current inductor terminal candidate. Preserve repeated left-terminal/right-terminal/component/left-wire/right-wire groups; use donor suffix step 0x02A8 from 0x01B2/0x01E4; place pins at body +/-762000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF. Do not promote it until Proteus open, render, attachment, and simulation testing passes.",
+      "rule": "REALIND/v2 is the accepted inductor terminal handler. Preserve repeated left-terminal/right-terminal/component/left-wire/right-wire groups; use donor suffix step 0x02A8 from 0x01B2/0x01E4; place pins at body +/-762000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_CAP_ELEC_V3_STATIC_20260630",
+      "title": "CAP-ELEC V3 preserves the accepted sequential donor structure",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.95,
+      "applies_to": [
+        "component_terminal_placer",
+        "CAP-ELEC",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "proteus_ic/donors/analog_misc_batch1/8ELEC-CAP.pdsprj",
+        "ANALOG_MISC_BATCH1_SOLO_USER_ACCEPTANCE_20260609",
+        "Accepted donor-native CAP-ELEC terminal-label mutation controls",
+        "TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30",
+        "tests/test_component_placer.py => 49 passed",
+        "Independent 1x/3x/15x right-left order, cursor, suffix-link, boundary, and pin-endpoint audit"
+      ],
+      "rule": "CAP-ELEC/v3 is the only current electrolytic-capacitor terminal candidate. Preserve repeated right-terminal/left-terminal/component/left-wire/right-wire groups; use donor suffix step 0x02A8 from left/right 0x0120/0x0152; place pins at body +/-508000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; replace donor blank labels with compact non-empty labels; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF. Do not promote it until Proteus open, render, attachment, and simulation testing passes.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_DC_SOURCES_V4_STATIC_20260630",
+      "title": "DC source V4 handlers preserve accepted role-specific source units",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.95,
+      "applies_to": [
+        "component_terminal_placer",
+        "VSOURCE",
+        "CSOURCE",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "BIDIRECTIONAL_V3_USER_ACCEPTANCE_20260607",
+        "fixtures/pdsprj/bidirectional_dcv_source_donor.pdsprj",
+        "fixtures/pdsprj/source_dc_mixed_v15_donor.pdsprj",
+        "Accepted three-DCV sequential source boundary evidence",
+        "TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30",
+        "TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30",
+        "tests/test_component_placer.py => 49 passed",
+        "Independent 1x/3x/15x role-order, cursor, suffix-link, endpoint, reference-length, and boundary audits"
+      ],
+      "rule": "VSOURCE/v4 and CSOURCE/v4 are the only current component-placer DC source terminal candidates. Preserve input=1800 and output=0 role orientation, the accepted output/input VSOURCE order and input/output CSOURCE order, family-specific upper/lower pin roles, source-body endpoint links, zero-length source-native wire records, output suffix 0x7000 with input at +0x0032, and a per-source step of 0x0080. Packet length must be validated as the donor-derived base plus reference length so I9/I10 transitions remain intact. Keep the second wire at 49 bytes for non-final groups and 50 bytes ending FF for the final group. Do not promote either family until its focused Proteus pack passes.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_REMAINING_TWO_PIN_BLOCKED_20260630",
+      "title": "Remaining two-pin families need terminalized attachment evidence",
+      "status": "blocked_by_missing_donor_evidence",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "DIODE",
+        "named diode variants",
+        "LED-RED",
+        "FUSE",
+        "VSINE",
+        "VPULSE"
+      ],
+      "evidence": [
+        "Repository-wide ROOT.DSN object-chunk donor scan 2026-06-30",
+        "Bare new-component mega placement donors",
+        "Accepted VSINE route limited to a special single non-final unit",
+        "No terminalized 1x/3x/15x attachment donor found for these families"
+      ],
+      "rule": "Do not dispatch DIODE, named diode variants, LED-RED, FUSE, VSINE, or VPULSE through a resistor, capacitor, inductor, CAP-ELEC, or DC-source terminal pattern. Bare two-pin placement does not prove terminal order, endpoint link fields, pin geometry, or final/non-final wire boundaries. Add a handler only after terminalized donor evidence proves the complete family shape; VSINE additionally needs a general multi-unit ordering rather than its accepted special single non-final source block.",
       "date": "2026-06-30"
     }
   ]
