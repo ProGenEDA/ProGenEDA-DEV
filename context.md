@@ -4767,7 +4767,7 @@ The final audit is clean: all three archives contain exactly the three focused c
 
 #### Response 08 - final_answer
 
-Timestamp: `2026-06-30T18:11:42.743Z` (UTC) / `2026-06-30 23:11:42.743 +05:00` (Pakistan; pre-recorded before push and subject to exact session-timestamp reconciliation)
+Timestamp: `2026-06-30T18:14:07.130Z` (UTC) / `2026-06-30 23:14:07.130 +05:00` (Pakistan)
 
 ~~~~markdown
 Three-family checkpoint ready:
@@ -4800,4 +4800,114 @@ Test the non-`_BASE` projects in all three packs and report any failing family/c
 - `experiments/terminal_placer_csource_attachment_v4_temp_2026_06_30/` - generated CSOURCE 1x/3x/15x projects and manifests.
 - `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip` - packaged the CSOURCE test set.
 
-<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 1258 -->
+<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 1290 -->
+
+
+
+## Live User Message 008
+
+Timestamp: `2026-06-30T18:30:01.240Z` (UTC) / `2026-06-30 23:30:01.240 +05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+okk these all work, give me list of all the componet donors u need all componet, ic none ic all.
+
+and now all these that i have tested
+cap resistor, vsource csource, cap-elec, ind
+make circuits with all these in them, obv pass it thought the full path, make a json, then make it go through placer, beautifer, then obv terminal placer.
+terminal placer needs to be able to only place on the componets it allowed to, bascially, the cap side of .py only places terminal on cap.
+for this testing add none terminal working components too to see if it tries to put terminals on that
+N if it does fix it
+
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-06-30T18:30:53.318Z` (UTC) / `2026-06-30 23:30:53.318 +05:00` (Pakistan)
+
+~~~~markdown
+I’ll verify the pushed checkpoint first, then trace the current JSON → component placer → beautifier → shared terminal placer path. I’ll build a mixed-family pack containing the six accepted terminal families plus supported non-terminal controls, and I’ll audit that terminal eligibility is enforced per component—not merely per circuit. I’ll also produce a complete donor-needs inventory split into non-IC and IC families.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-06-30T18:32:44.231Z` (UTC) / `2026-06-30 23:32:44.231 +05:00` (Pakistan)
+
+~~~~markdown
+The existing shared terminal entrypoint has the exact bug this test should expose: it rejects mixed selections, and every family-specific writer rebuilds the whole object stream, which would discard unrelated components if called naïvely. I’m treating mixed dispatch as a real serialization problem: eligible families must be terminalized while DIODE/NPN/IC control packets remain byte-preserved and terminal-free.
+~~~~
+
+#### Response 03 - commentary
+
+Timestamp: `2026-06-30T18:42:18.963Z` (UTC) / `2026-06-30 23:42:18.963 +05:00` (Pakistan)
+
+~~~~markdown
+The selective dispatcher now passes focused regression tests. In a mixed base it terminalizes exactly RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE; DIODE, NPN, and 74HC08 packets remain byte-identical. VSOURCE and CSOURCE now share a global source suffix sequence, preventing cross-family link collisions. I’m turning this into a reproducible JSON-driven Proteus pack and documenting the donor corpus next.
+~~~~
+
+#### Response 04 - commentary
+
+Timestamp: `2026-06-30T18:49:12.090Z` (UTC) / `2026-06-30 23:49:12.090 +05:00` (Pakistan)
+
+~~~~markdown
+The focused implementation suite is clean: `51 passed`. The generated pack also reports the intended split—T01 has 12 terminals on six accepted components, T02 has 36 on eighteen accepted components, and T03 is an exact byte-for-byte copy with zero terminals. I’m running the repository-wide tests and an independent archive/object-stream audit before recording this as a pending Proteus checkpoint.
+~~~~
+
+#### Response 05 - commentary
+
+Timestamp: `2026-06-30T18:56:20.332Z` (UTC) / `2026-06-30 23:56:20.332 +05:00` (Pakistan)
+
+~~~~markdown
+The repository-wide `tests/` run produced `204 passed` and the same pre-existing KiCad target-pack failure already documented at 52/55; the focused Proteus component suite remains fully green. The unrestricted root collection also hits an old temporary 2026-06-01 inductor test that imports a module intentionally never promoted. Neither failure is caused by this terminal checkpoint.
+~~~~
+
+#### Response 06 - commentary
+
+Timestamp: `2026-06-30T18:57:47.925Z` (UTC) / `2026-06-30 23:57:47.925 +05:00` (Pakistan)
+
+~~~~markdown
+The implementation and evidence are complete. The donor request covers the full current Progen catalog, with exact TP2/MP4/IC4/DSP4 file suites and a priority order; the six already accepted families are explicitly excluded from re-creation. I’m recording this turn verbatim in `context.md`, then I’ll commit, push, and verify the remote hash and clean tree before handing over the mixed pack.
+~~~~
+
+#### Response 07 - final_answer
+
+Timestamp: `2026-06-30T18:57:57.193Z` (UTC) / `2026-06-30 23:57:57.193 +05:00` (Pakistan; pre-recorded before push and subject to exact session-timestamp reconciliation)
+
+~~~~markdown
+Done.
+
+- [Complete donor request—non-IC and IC](C:/Users/Empty/Documents/Progentotal/protuesgen/docs/complete_component_donor_request.md)
+- [Mixed selective test pack](C:/Users/Empty/Documents/Progentotal/protuesgen/experiments/TERMINAL_PLACER_MIXED_SELECTIVE_V1_TEMP_2026_06_30.zip)
+
+The donor document lists every current Progen family and exact TP2/MP4/IC4/DSP4 files needed. The immediate batch is DIODE and its named variants, LED-RED, FUSE, VSINE, and VPULSE. The six accepted families do not need recreating.
+
+The pack runs `input.json → component placer → beautifier → shared terminal placer`:
+
+- T01: one of all six accepted families plus DIODE, NPN, and 74HC08 controls.
+- T02: three of all six accepted families plus repeated controls.
+- T03: controls only; final output is byte-identical to its base.
+
+Only RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE receive terminals. Control packets remain byte-identical. Validation: `51 passed`, compileall passed, and all three pack cases passed independent marker, suffix-link, boundary, required-file, and preservation audits.
+
+The checkpoint is committed and pushed with local/remote hashes matching. Test the non-`_BASE` T01 and T02 projects in Proteus; T03 is the exact-copy negative control.
+~~~~
+
+### Files Edited
+
+- `context.md` - appended the complete user message, visible responses, timestamps, and file manifest.
+- `docs/README.md` - linked the canonical pipeline and complete donor request.
+- `docs/complete_component_donor_request.md` - added the full current-catalog non-IC and IC donor inventory, exact suite definitions, and delivery order.
+- `docs/current_status_2026_06_29.md` - promoted the user-confirmed families and documented the mixed selective checkpoint.
+- `docs/progen_eda_canonical_pipeline.md` - recorded accepted family eligibility and the mixed-stage preservation rule.
+- `knowledge/rules.json` - locked CAP-ELEC/VSOURCE/CSOURCE acceptance and added the mixed selective allowlist rule.
+- `knowledge/test_results.jsonl` - recorded user acceptance and mixed-pack static evidence.
+- `src/proteusgen/component_terminal_placer.py` - added family-selective mixed dispatch, unsupported packet preservation, and global VSOURCE/CSOURCE suffix ordinals.
+- `tests/test_component_placer.py` - added mixed-family eligibility and exact-copy negative-control regression tests.
+- `tools/proteus_generation/2026-06-30/generate_terminal_placer_mixed_selective_v1_temp.py` - added the reproducible JSON-to-placement-to-beautifier-to-terminal runner.
+- `experiments/terminal_placer_mixed_selective_v1_temp_2026_06_30/` - generated T01/T02/T03 bases, outputs, JSON inputs, reports, and instructions.
+- `experiments/TERMINAL_PLACER_MIXED_SELECTIVE_V1_TEMP_2026_06_30.zip` - packaged the mixed selective Proteus checkpoint.
+
+<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 1596 -->

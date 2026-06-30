@@ -13,7 +13,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import shutil
 import struct
+from tempfile import TemporaryDirectory
 from typing import Any, Iterable
 
 from .bidirectional import BIDIR_MARKER, build_bidir_record, load_production_templates
@@ -62,6 +64,14 @@ SOURCE_COMPONENT_BARE_BASE_SIZES = {
     "VSOURCE": 340,
     "CSOURCE": 342,
 }
+ACCEPTED_TERMINAL_FAMILY_ORDER = (
+    "VSOURCE",
+    "CSOURCE",
+    "CAP",
+    "CAP-ELEC",
+    "REALIND",
+    "RESISTOR",
+)
 INDUCTOR_INPUT_RECORD_SIZE = 103
 INDUCTOR_OUTPUT_RECORD_SIZE = 104
 INDUCTOR_COMPONENT_RECORD_SIZE = 374
@@ -807,6 +817,7 @@ def plan_attached_source_terminals(
     selected_groups: Iterable[Any],
     *,
     label_prefix: str | None = None,
+    source_index_start: int = 1,
 ) -> tuple[SourceTerminalPair, ...]:
     """Plan VSOURCE/CSOURCE from the accepted role-correct V3 source routes."""
 
@@ -823,9 +834,12 @@ def plan_attached_source_terminals(
     family = next(iter(families))
     prefix = label_prefix or ("V" if family == "VSOURCE" else "I")
     base_size = SOURCE_COMPONENT_BARE_BASE_SIZES[family]
+    if source_index_start < 1:
+        raise ValueError("source_index_start must be at least 1.")
 
     pairs: list[SourceTerminalPair] = []
-    for index, group in enumerate(groups, start=1):
+    for local_index, group in enumerate(groups, start=1):
+        source_index = source_index_start + local_index - 1
         key = str(getattr(group, "key", ""))
         data = getattr(group, "data", b"")
         if not isinstance(data, bytes):
@@ -854,18 +868,18 @@ def plan_attached_source_terminals(
             body_x + SOURCE_PIN_X_FROM_BODY,
             body_y + SOURCE_LOWER_PIN_Y_FROM_BODY,
         )
-        output_suffix, input_suffix = _source_suffixes(index)
+        output_suffix, input_suffix = _source_suffixes(source_index)
         if family == "VSOURCE":
             output_pin = upper_pin
             input_pin = lower_pin
-            output_label_index = (index - 1) * 2
+            output_label_index = (local_index - 1) * 2
             input_label_index = output_label_index + 1
             output_link_offset = x_offset + 25
             input_link_offset = x_offset + 29
         else:
             input_pin = upper_pin
             output_pin = lower_pin
-            input_label_index = (index - 1) * 2
+            input_label_index = (local_index - 1) * 2
             output_label_index = input_label_index + 1
             input_link_offset = x_offset + 25
             output_link_offset = x_offset + 29
@@ -1940,6 +1954,7 @@ def attach_source_bidir_terminals_to_project(
     selected_groups: Iterable[Any],
     *,
     label_prefix: str | None = None,
+    source_index_start: int = 1,
 ) -> dict[str, Any]:
     """Attach VSOURCE/CSOURCE endpoints using the user-accepted V3 source rules."""
 
@@ -1963,7 +1978,11 @@ def attach_source_bidir_terminals_to_project(
                 f"{family}/v4 requires bare component-placer packets; "
                 f"{getattr(group, 'key', '<unknown>')} already contains terminal or wire records."
             )
-    pairs = plan_attached_source_terminals(groups, label_prefix=label_prefix)
+    pairs = plan_attached_source_terminals(
+        groups,
+        label_prefix=label_prefix,
+        source_index_start=source_index_start,
+    )
 
     registry = FixtureRegistry.load()
     terminal_templates = load_production_templates(registry)
@@ -2102,6 +2121,7 @@ def attach_source_bidir_terminals_to_project(
         "wire_order": list(wire_order),
         "label_policy": "two_character_prefix_plus_base36_terminal_index",
         "suffix_policy": "accepted_source_0x0080_step_output_plus_0x0032_input",
+        "source_index_start": source_index_start,
         "terminal_count_added": expected_terminals,
         "wire_count_added": expected_wires,
         "terminal_pairs": [pair.as_dict() for pair in pairs],
@@ -2143,15 +2163,16 @@ def attach_source_bidir_terminals_to_project(
     }
 
 
-def attach_component_bidir_terminals_to_project(
+def _attach_single_family_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
     selected_groups: Iterable[Any],
     *,
     label_prefix: str | None = None,
     suffix_start: int | None = None,
+    source_index_start: int = 1,
 ) -> dict[str, Any]:
-    """Shared entrypoint that dispatches to the proven family handler."""
+    """Dispatch one already-filtered family to its proven attachment handler."""
 
     groups = tuple(selected_groups)
     families = {str(getattr(group, "family", "")) for group in groups}
@@ -2211,11 +2232,244 @@ def attach_component_bidir_terminals_to_project(
             output,
             groups,
             label_prefix=label_prefix,
+            source_index_start=source_index_start,
         )
     raise ValueError(
         "Shared terminal attachment has no accepted handler for "
         f"{family}. Add the family-specific logic to component_terminal_placer.py."
     )
+
+
+def _terminal_suffixes(report: dict[str, Any]) -> tuple[int, ...]:
+    suffixes: list[int] = []
+    for pair in report.get("terminal_pairs", []):
+        for role in ("left", "right", "input", "output"):
+            terminal = pair.get(role)
+            if isinstance(terminal, dict) and isinstance(terminal.get("suffix"), str):
+                suffixes.append(int(terminal["suffix"], 16))
+    return tuple(suffixes)
+
+
+def attach_component_bidir_terminals_to_project(
+    project: str | Path,
+    output: str | Path,
+    selected_groups: Iterable[Any],
+    *,
+    label_prefix: str | None = None,
+    suffix_start: int | None = None,
+) -> dict[str, Any]:
+    """Attach only accepted component families and preserve every other packet.
+
+    Single-family calls retain the exact accepted writer. Mixed calls isolate
+    each eligible family through that same writer, then compose the proven
+    family blocks after byte-identical non-terminal control packets. This keeps
+    family handlers from attaching terminals to unrelated components.
+    """
+
+    groups = tuple(selected_groups)
+    if not groups:
+        raise ValueError("Shared terminal attachment requires selected component groups.")
+    families = {str(getattr(group, "family", "")) for group in groups}
+    accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
+    eligible_families = tuple(
+        family for family in ACCEPTED_TERMINAL_FAMILY_ORDER if family in families
+    )
+    preserved_groups = tuple(
+        sorted(
+            (
+                group
+                for group in groups
+                if str(getattr(group, "family", "")) not in accepted
+            ),
+            key=lambda group: int(getattr(group, "start", 0)),
+        )
+    )
+
+    if len(families) == 1 and eligible_families:
+        return _attach_single_family_bidir_terminals_to_project(
+            project,
+            output,
+            groups,
+            label_prefix=label_prefix,
+            suffix_start=suffix_start,
+        )
+    if label_prefix is not None or suffix_start is not None:
+        raise ValueError(
+            "label_prefix and suffix_start are single-family overrides; "
+            "mixed selective attachment uses family-safe defaults."
+        )
+
+    source = Path(project)
+    destination = Path(output)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    dsn = read_internal_file(source, "ROOT.DSN")
+    original_chunk = _extract_object_chunk(dsn)
+    if BIDIR_MARKER in original_chunk or b"\x7fWIRE" in original_chunk:
+        raise ValueError(
+            "Mixed selective terminal attachment requires a bare component-placer project."
+        )
+
+    if not eligible_families:
+        shutil.copyfile(source, destination)
+        final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
+        return {
+            "stage": "terminal_placer",
+            "family_handler": "NONE/selective-copy-v1",
+            "attachment_policy": "accepted_family_allowlist_preserve_all_others",
+            "eligible_families": [],
+            "skipped_families": sorted(families),
+            "terminalized_component_count": 0,
+            "preserved_component_count": len(preserved_groups),
+            "preserved_groups": [
+                {
+                    "component_key": str(getattr(group, "key", "")),
+                    "component_family": str(getattr(group, "family", "")),
+                    "packet_size": len(bytes(getattr(group, "data", b""))),
+                    "byte_preserved": True,
+                }
+                for group in preserved_groups
+            ],
+            "terminal_count_added": 0,
+            "wire_count_added": 0,
+            "bidir_count_before": original_chunk.count(BIDIR_MARKER),
+            "bidir_count_after": final_chunk.count(BIDIR_MARKER),
+            "wire_count_before": original_chunk.count(b"\x7fWIRE"),
+            "wire_count_after": final_chunk.count(b"\x7fWIRE"),
+            "object_chunk_size_before": len(original_chunk),
+            "object_chunk_size_after": len(final_chunk),
+            "valid": final_chunk == original_chunk,
+        }
+
+    for group in preserved_groups:
+        data = bytes(getattr(group, "data", b""))
+        if not data or not data.startswith(b"\xff") or data.endswith(b"\xff"):
+            raise ValueError(
+                "Cannot safely preserve non-terminal packet "
+                f"{getattr(group, 'key', '<unknown>')}: unsupported object boundary."
+            )
+
+    family_reports: list[dict[str, Any]] = []
+    family_chunks: list[bytes] = []
+    source_index_start = 1
+    with TemporaryDirectory(prefix="proteusgen-terminal-") as temporary:
+        temporary_root = Path(temporary)
+        for family in eligible_families:
+            family_groups = tuple(
+                group
+                for group in groups
+                if str(getattr(group, "family", "")) == family
+            )
+            family_output = temporary_root / f"{family.lower()}-terminalized.pdsprj"
+            family_report = _attach_single_family_bidir_terminals_to_project(
+                source,
+                family_output,
+                family_groups,
+                source_index_start=source_index_start,
+            )
+            if not family_report.get("valid"):
+                raise ValueError(f"{family} isolated terminal attachment failed validation.")
+            if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
+                source_index_start += len(family_groups)
+            family_chunk = _extract_object_chunk(
+                read_internal_file(family_output, "ROOT.DSN")
+            )
+            if not family_chunk.startswith(b"\x00") or not family_chunk.endswith(b"\xff"):
+                raise ValueError(f"{family} isolated terminal block has invalid boundaries.")
+            family_reports.append(family_report)
+            family_chunks.append(family_chunk)
+
+    if preserved_groups:
+        new_chunk = (
+            original_chunk[:2]
+            + b"".join(bytes(getattr(group, "data", b"")) for group in preserved_groups)
+        )
+    else:
+        new_chunk = original_chunk[:1]
+    for index, family_chunk in enumerate(family_chunks):
+        new_chunk += (
+            family_chunk[1:]
+            if index == len(family_chunks) - 1
+            else family_chunk[1:-1]
+        )
+
+    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
+    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
+    final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
+
+    expected_terminals = sum(
+        int(report["terminal_count_added"]) for report in family_reports
+    )
+    expected_wires = sum(int(report["wire_count_added"]) for report in family_reports)
+    suffixes = tuple(
+        suffix
+        for report in family_reports
+        for suffix in _terminal_suffixes(report)
+    )
+    suffixes_unique = len(suffixes) == len(set(suffixes))
+    suffix_links_valid = suffixes_unique and all(
+        final_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
+        for suffix in suffixes
+    )
+    preserved_rows = [
+        {
+            "component_key": str(getattr(group, "key", "")),
+            "component_family": str(getattr(group, "family", "")),
+            "packet_size": len(bytes(getattr(group, "data", b""))),
+            "byte_preserved": final_chunk.count(bytes(getattr(group, "data", b"")))
+            == original_chunk.count(bytes(getattr(group, "data", b"")))
+            == 1,
+        }
+        for group in preserved_groups
+    ]
+    terminalized_keys = [
+        str(getattr(group, "key", ""))
+        for family in eligible_families
+        for group in groups
+        if str(getattr(group, "family", "")) == family
+    ]
+    reported_terminalized_keys = [
+        str(pair["component_key"])
+        for report in family_reports
+        for pair in report.get("terminal_pairs", [])
+    ]
+    return {
+        "stage": "terminal_placer",
+        "family_handler": "MIXED/selective-v1",
+        "attachment_policy": "accepted_family_allowlist_preserve_all_others",
+        "object_order": (
+            "byte_preserved_nonterminal_groups_then_"
+            + "_then_".join(family.lower() for family in eligible_families)
+        ),
+        "eligible_families": list(eligible_families),
+        "skipped_families": sorted(families - accepted),
+        "terminalized_component_count": len(terminalized_keys),
+        "terminalized_component_keys": terminalized_keys,
+        "reported_terminalized_component_keys": reported_terminalized_keys,
+        "preserved_component_count": len(preserved_groups),
+        "preserved_groups": preserved_rows,
+        "family_reports": family_reports,
+        "source_suffix_ordinal_policy": "global_across_vsource_then_csource",
+        "terminal_suffixes": [f"{suffix:04x}" for suffix in suffixes],
+        "terminal_suffixes_unique": suffixes_unique,
+        "terminal_suffix_links_valid": suffix_links_valid,
+        "terminal_count_added": expected_terminals,
+        "wire_count_added": expected_wires,
+        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
+        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
+        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
+        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
+        "object_chunk_size_before": len(original_chunk),
+        "object_chunk_size_after": len(final_chunk),
+        "valid": (
+            final_chunk == new_chunk
+            and final_chunk.count(BIDIR_MARKER) == expected_terminals
+            and final_chunk.count(b"\x7fWIRE") == expected_wires
+            and suffix_links_valid
+            and terminalized_keys == reported_terminalized_keys
+            and all(row["byte_preserved"] for row in preserved_rows)
+            and final_chunk.endswith(b"\xff")
+        ),
+    }
 
 
 def _side_y_candidates(

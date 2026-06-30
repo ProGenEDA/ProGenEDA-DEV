@@ -3576,8 +3576,8 @@
     {
       "id": "R_TERMINAL_CAP_ELEC_V3_STATIC_20260630",
       "title": "CAP-ELEC V3 preserves the accepted sequential donor structure",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.95,
+      "status": "user_confirmed",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "CAP-ELEC",
@@ -3589,16 +3589,17 @@
         "Accepted donor-native CAP-ELEC terminal-label mutation controls",
         "TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30",
         "tests/test_component_placer.py => 49 passed",
-        "Independent 1x/3x/15x right-left order, cursor, suffix-link, boundary, and pin-endpoint audit"
+        "Independent 1x/3x/15x right-left order, cursor, suffix-link, boundary, and pin-endpoint audit",
+        "User report 2026-06-30: CAP-ELEC V3 1x/3x/15x pack worked"
       ],
-      "rule": "CAP-ELEC/v3 is the only current electrolytic-capacitor terminal candidate. Preserve repeated right-terminal/left-terminal/component/left-wire/right-wire groups; use donor suffix step 0x02A8 from left/right 0x0120/0x0152; place pins at body +/-508000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; replace donor blank labels with compact non-empty labels; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF. Do not promote it until Proteus open, render, attachment, and simulation testing passes.",
+      "rule": "CAP-ELEC/v3 is the accepted electrolytic-capacitor terminal handler. Preserve repeated right-terminal/left-terminal/component/left-wire/right-wire groups; use donor suffix step 0x02A8 from left/right 0x0120/0x0152; place pins at body +/-508000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; replace donor blank labels with compact non-empty labels; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF.",
       "date": "2026-06-30"
     },
     {
       "id": "R_TERMINAL_DC_SOURCES_V4_STATIC_20260630",
       "title": "DC source V4 handlers preserve accepted role-specific source units",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.95,
+      "status": "user_confirmed",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "VSOURCE",
@@ -3613,9 +3614,10 @@
         "TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30",
         "TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30",
         "tests/test_component_placer.py => 49 passed",
-        "Independent 1x/3x/15x role-order, cursor, suffix-link, endpoint, reference-length, and boundary audits"
+        "Independent 1x/3x/15x role-order, cursor, suffix-link, endpoint, reference-length, and boundary audits",
+        "User report 2026-06-30: VSOURCE V4 and CSOURCE V4 1x/3x/15x packs worked"
       ],
-      "rule": "VSOURCE/v4 and CSOURCE/v4 are the only current component-placer DC source terminal candidates. Preserve input=1800 and output=0 role orientation, the accepted output/input VSOURCE order and input/output CSOURCE order, family-specific upper/lower pin roles, source-body endpoint links, zero-length source-native wire records, output suffix 0x7000 with input at +0x0032, and a per-source step of 0x0080. Packet length must be validated as the donor-derived base plus reference length so I9/I10 transitions remain intact. Keep the second wire at 49 bytes for non-final groups and 50 bytes ending FF for the final group. Do not promote either family until its focused Proteus pack passes.",
+      "rule": "VSOURCE/v4 and CSOURCE/v4 are the accepted component-placer DC source terminal handlers. Preserve input=1800 and output=0 role orientation, the accepted output/input VSOURCE order and input/output CSOURCE order, family-specific upper/lower pin roles, source-body endpoint links, zero-length source-native wire records, output suffix 0x7000 with input at +0x0032, and a per-source step of 0x0080. Packet length must be validated as the donor-derived base plus reference length so I9/I10 transitions remain intact. Keep the second wire at 49 bytes for non-final groups and 50 bytes ending FF for the final group.",
       "date": "2026-06-30"
     },
     {
@@ -3639,6 +3641,28 @@
         "No terminalized 1x/3x/15x attachment donor found for these families"
       ],
       "rule": "Do not dispatch DIODE, named diode variants, LED-RED, FUSE, VSINE, or VPULSE through a resistor, capacitor, inductor, CAP-ELEC, or DC-source terminal pattern. Bare two-pin placement does not prove terminal order, endpoint link fields, pin geometry, or final/non-final wire boundaries. Add a handler only after terminalized donor evidence proves the complete family shape; VSINE additionally needs a general multi-unit ordering rather than its accepted special single non-final source block.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_MIXED_SELECTIVE_V1_STATIC_20260630",
+      "title": "Mixed terminal dispatch uses an accepted-family allowlist",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.9,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "terminal eligibility",
+        "unsupported component preservation"
+      ],
+      "evidence": [
+        "TERMINAL_PLACER_MIXED_SELECTIVE_V1_TEMP_2026_06_30",
+        "T01 one of every accepted family plus DIODE/NPN/74HC08 controls",
+        "T02 three of every accepted family plus repeated controls",
+        "T03 control-only exact-copy negative control",
+        "tests/test_component_placer.py => 51 passed",
+        "Independent archive, required-file, suffix-link, marker-count, final-FF, and byte-preservation audit"
+      ],
+      "rule": "Mixed terminal dispatch may invoke only the accepted RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE handlers. Partition groups by family before attachment; never pass a mixed group list to one family handler. Preserve unsupported component packets byte-for-byte and add zero terminal or wire records to them. Use one global source ordinal across VSOURCE then CSOURCE so all source endpoint suffixes remain unique. The current mixed block composition is static-valid but must not be promoted until Proteus open, render, attachment, and simulation testing passes.",
       "date": "2026-06-30"
     }
   ]

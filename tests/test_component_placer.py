@@ -1331,3 +1331,106 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
 
     assert report["family_handler"] == "CAP/v2"
     assert report["terminal_count_added"] == 2
+
+
+def test_shared_terminal_dispatcher_mixed_selection_terminalizes_only_allowlisted_families(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "mixed_selective_base.pdsprj"
+    output = tmp_path / "mixed_selective_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "components": {
+                "RESISTOR": 1,
+                "CAP": 1,
+                "CAP-ELEC": 1,
+                "REALIND": 1,
+                "VSOURCE": 1,
+                "CSOURCE": 1,
+                "DIODE": 1,
+                "NPN": 1,
+                "74HC08": 1,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    preserved_keys = {row["component_key"] for row in report["preserved_groups"]}
+    terminal_pair_families = {
+        pair["component_family"]
+        for family_report in report["family_reports"]
+        for pair in family_report["terminal_pairs"]
+    }
+
+    assert result.valid
+    assert result.layout_plan["binary_coordinate_mutation"]["visible_translated_count"] == 9
+    assert report["valid"] is True
+    assert report["family_handler"] == "MIXED/selective-v1"
+    assert report["eligible_families"] == [
+        "VSOURCE",
+        "CSOURCE",
+        "CAP",
+        "CAP-ELEC",
+        "REALIND",
+        "RESISTOR",
+    ]
+    assert report["skipped_families"] == ["74HC08", "DIODE", "NPN"]
+    assert report["terminalized_component_count"] == 6
+    assert report["preserved_component_count"] == 3
+    assert preserved_keys == {"U66", "D1", "Q1"}
+    assert all(row["byte_preserved"] for row in report["preserved_groups"])
+    assert terminal_pair_families == {
+        "RESISTOR",
+        "CAP",
+        "CAP-ELEC",
+        "REALIND",
+        "VSOURCE",
+        "CSOURCE",
+    }
+    assert terminal_pair_families.isdisjoint({"DIODE", "NPN", "74HC08"})
+    assert report["terminal_count_added"] == 12
+    assert report["wire_count_added"] == 12
+    assert report["terminal_suffixes_unique"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert chunk.count(b"$TERBIDIR") == 12
+    assert chunk.count(b"\x7fWIRE") == 12
+
+
+def test_shared_terminal_dispatcher_noneligible_selection_is_exact_copy(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "noneligible_base.pdsprj"
+    output = tmp_path / "noneligible_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "components": {"DIODE": 2, "NPN": 1, "74HC08": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["family_handler"] == "NONE/selective-copy-v1"
+    assert report["eligible_families"] == []
+    assert report["skipped_families"] == ["74HC08", "DIODE", "NPN"]
+    assert report["terminal_count_added"] == 0
+    assert report["wire_count_added"] == 0
+    assert base.read_bytes() == output.read_bytes()

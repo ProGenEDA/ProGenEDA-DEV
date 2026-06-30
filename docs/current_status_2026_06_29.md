@@ -44,17 +44,19 @@ validated request
     order, suffix progression, pin geometry, and wire-record lengths;
   - accepted `REALIND/v2` attachment using the accepted sequential
     six-inductor donor structure;
-  - static-valid `CAP-ELEC/v3` attachment using the accepted sequential
+  - accepted `CAP-ELEC/v3` attachment using the accepted sequential
     eight-electrolytic-capacitor donor structure;
-  - static-valid `VSOURCE/v4` and `CSOURCE/v4` attachment using the accepted
+  - accepted `VSOURCE/v4` and `CSOURCE/v4` attachment using the accepted
     bidirectional V3 source roles, body links, and wire geometry;
+  - static-valid mixed selective dispatch that terminalizes only those six
+    accepted families while preserving unsupported component packets;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
 
 ## Not Yet Promoted
 
-- Electrically attached generated bidirectional terminals.
+- Mixed-family terminal block composition pending Proteus acceptance.
 - Donor-derived short-wire emission for every family/pin.
 - Arbitrary Proteus wiring and junction synthesis.
 - General power/ground terminal placement on the unified component route.
@@ -70,6 +72,7 @@ The current user test packs are:
 - `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_MIXED_SELECTIVE_V1_TEMP_2026_06_30.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -112,7 +115,7 @@ eight-component donor: repeated right-terminal/left-terminal/component/
 left-wire/right-wire groups; pins 508000 units from the body; terminal symbols
 another 254000 units outward; donor-native suffix progression; zero-length
 records at both pins; 49-byte non-final right wires; and a 50-byte final right
-wire. Its 1x/3x/15x pack is static-valid and awaiting Proteus testing:
+wire. The user confirmed its 1x/3x/15x pack worked on 2026-06-30:
 `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`.
 
 `VSOURCE/v4` and `CSOURCE/v4` reuse the manually accepted bidirectional V3
@@ -121,7 +124,8 @@ body link fields are patched with the same endpoint suffixes, and two
 zero-length source-native wire records end at the actual pins. VSOURCE
 preserves output/input order; CSOURCE preserves input/output order. Both use
 the accepted `0x0080` per-source suffix step and handle dynamic reference
-lengths such as `I9` to `I10`. Their 1x/3x/15x packs are static-valid:
+lengths such as `I9` to `I10`. The user confirmed both 1x/3x/15x packs worked
+on 2026-06-30:
 
 - `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
@@ -132,9 +136,23 @@ accepted special single non-final source unit, but not a proven general
 1x/3x/15x ordering. These families remain unsupported in the shared terminal
 dispatcher; no passive/source pattern is guessed for them.
 
+`MIXED/selective-v1` partitions one beautified component-placer result by
+family. It runs only the accepted six handlers, assigns VSOURCE and CSOURCE a
+shared global source-suffix sequence, preserves every unsupported packet
+byte-for-byte, and composes the accepted terminal blocks after the preserved
+controls. Its JSON-driven pack includes DIODE, NPN, and 74HC08 as negative
+controls:
+
+- T01: one of every accepted family plus one of each control;
+- T02: three of every accepted family plus repeated controls;
+- T03: controls only, with terminal-stage output exactly equal to its base.
+
+Static validation passed with terminal counts 12/36/0 and wire counts 12/36/0.
+Proteus open, render, attachment, and simulation testing is still required.
+
 ## Verification Baseline
 
-- focused component placer suite: 49 passed;
+- focused component placer suite: 51 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
@@ -143,16 +161,13 @@ dispatcher; no passive/source pattern is guessed for them.
 - capacitor-specific V2 attachment: Proteus-accepted and locked.
 - inductor-specific V1 attachment: user-rejected and disabled.
 - inductor-specific V2 attachment: Proteus-accepted and locked.
-- electrolytic-capacitor-specific V3 attachment: static-valid, pending user
-  Proteus test.
-- DC-voltage-source-specific V4 attachment: static-valid, pending user Proteus
-  test.
-- DC-current-source-specific V4 attachment: static-valid, pending user Proteus
-  test.
+- electrolytic-capacitor-specific V3 attachment: Proteus-accepted and locked.
+- DC-voltage-source-specific V4 attachment: Proteus-accepted and locked.
+- DC-current-source-specific V4 attachment: Proteus-accepted and locked.
+- mixed selective V1: 3/3 static-valid; pending user Proteus test.
 
 ## Next Engineering Step
 
-Test CAP-ELEC/v3, VSOURCE/v4, and CSOURCE/v4 in Proteus as one checkpoint.
-Continue sequential donor research inside the one shared
-`component_terminal_placer.py` module, grouping multiple families per
-checkpoint only when their byte-level evidence is complete.
+Test the mixed selective V1 pack in Proteus. Continue donor collection using
+`docs/complete_component_donor_request.md`; the next handler batch remains the
+unsupported two-pin families, with no cross-family pattern guessing.
