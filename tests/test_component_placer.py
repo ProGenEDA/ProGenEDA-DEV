@@ -29,6 +29,8 @@ from proteusgen.bidirectional import extract_bidir_records
 from proteusgen.component_terminal_placer import (
     CAP_PIN_HALF_SPAN,
     CAP_TERMINAL_SYMBOL_TO_PIN,
+    INDUCTOR_PIN_HALF_SPAN,
+    INDUCTOR_TERMINAL_SYMBOL_TO_PIN,
     RESISTOR_PIN_SPAN,
     TERMINAL_CONTACT_TO_PIN,
     TERMINAL_SYMBOL_TO_PIN,
@@ -36,6 +38,7 @@ from proteusgen.component_terminal_placer import (
     attach_component_bidir_terminals_to_project,
     attach_resistor_bidir_terminals_to_project,
     plan_attached_capacitor_terminals,
+    plan_attached_inductor_terminals,
     plan_attached_resistor_terminals,
     plan_side_bidir_terminals,
 )
@@ -860,20 +863,129 @@ def test_capacitor_terminal_attachment_preserves_native_order_and_record_sizes(
             assert chunk.count(little_endian_suffix) >= 2
 
 
-def test_shared_terminal_dispatcher_rejects_user_failed_realind(tmp_path: Path) -> None:
-    base = tmp_path / "rejected_realind_base.pdsprj"
-    output = tmp_path / "rejected_realind_output.pdsprj"
+def test_inductor_terminal_planner_uses_donor05_geometry_and_suffixes(
+    tmp_path: Path,
+) -> None:
     result = generate_component_placement_project(
         {
             "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
-            "components": {"REALIND": 1},
+            "components": {"REALIND": 15},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "inductor_v2_geometry_base.pdsprj",
+    )
+
+    pairs = plan_attached_inductor_terminals(result.selected_groups)
+
+    assert len(pairs) == 15
+    assert pairs[0].component_key == "L1"
+    assert pairs[13].component_key == "L14"
+    assert pairs[0].left.label == "L0"
+    assert pairs[0].right.label == "L1"
+    assert pairs[0].left.suffix == 0x01B2
+    assert pairs[0].right.suffix == 0x01E4
+    assert pairs[1].left.suffix - pairs[0].left.suffix == 0x02A8
+    assert pairs[1].right.suffix - pairs[0].right.suffix == 0x02A8
+    for pair in pairs:
+        assert pair.right_pin_x - pair.left_pin_x == INDUCTOR_PIN_HALF_SPAN * 2
+        assert pair.left.symbol_x == pair.left_pin_x - INDUCTOR_TERMINAL_SYMBOL_TO_PIN
+        assert pair.right.symbol_x == pair.right_pin_x + INDUCTOR_TERMINAL_SYMBOL_TO_PIN
+        assert pair.left_wire_start_x == pair.left_pin_x
+        assert pair.right_wire_start_x == pair.right_pin_x
+        assert pair.left.angle_tenths == 1800
+        assert pair.right.angle_tenths == 0
+
+
+def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "inductor_v2_base.pdsprj"
+    output = tmp_path / "inductor_v2_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "components": {"REALIND": 15},
             "layout": {"strategy": "beautify"},
         },
         base,
     )
 
-    with pytest.raises(ValueError, match="REALIND/v1 is rejected"):
-        attach_component_bidir_terminals_to_project(base, output, result.selected_groups)
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    bidir_records = extract_bidir_records(chunk)
+    labels = [
+        record[31 : 31 + record[30]].decode("ascii")
+        for record in bidir_records
+    ]
+    cursor = 1
+    wire_coordinates: list[tuple[int, int, int, int]] = []
+    component_sizes: list[int] = []
+    for index, pair in enumerate(report["terminal_pairs"]):
+        left_record = bidir_records[index * 2]
+        right_record = bidir_records[index * 2 + 1]
+        assert chunk[cursor : cursor + len(left_record)] == left_record
+        cursor += len(left_record)
+        assert chunk[cursor : cursor + len(right_record)] == right_record
+        cursor += len(right_record)
+        wire_marker = chunk.find(b"\x7fWIRE", cursor)
+        wire_start = wire_marker - 23
+        component = chunk[cursor:wire_start]
+        component_sizes.append(len(component))
+        assert component.startswith(b"\x00\xff")
+        x_offset = pair["packet_offsets"]["component_x"] + 1
+        assert component[x_offset + 25 : x_offset + 27] == bytes.fromhex(
+            pair["left"]["suffix"]
+        )[::-1]
+        assert component[x_offset + 29 : x_offset + 31] == bytes.fromhex(
+            pair["right"]["suffix"]
+        )[::-1]
+        cursor = wire_start
+        left_wire = chunk[cursor : cursor + 50]
+        cursor += 50
+        right_size = 50 if index == len(report["terminal_pairs"]) - 1 else 49
+        right_wire = chunk[cursor : cursor + right_size]
+        cursor += right_size
+        for wire in (left_wire, right_wire):
+            marker = wire.find(b"\x7fWIRE")
+            start = marker - 23
+            wire_coordinates.append(
+                tuple(
+                    int.from_bytes(
+                        wire[start + offset : start + offset + 4],
+                        "little",
+                        signed=True,
+                    )
+                    for offset in (33, 37, 41, 45)
+                )
+            )
+
+    assert report["valid"] is True
+    assert report["family_handler"] == "REALIND/v2"
+    assert report["object_order"] == (
+        "repeated_left_bidir_right_bidir_realind_left_wire_right_wire"
+    )
+    assert report["terminal_count_added"] == 30
+    assert report["wire_count_added"] == 30
+    assert chunk.count(b"$TERBIDIR") == 30
+    assert chunk.count(b"\x7fWIRE") == 30
+    assert labels == [
+        label
+        for pair in report["terminal_pairs"]
+        for label in (pair["left"]["label"], pair["right"]["label"])
+    ]
+    assert [item["right_wire_size"] for item in report["group_records"]] == [
+        *([49] * 14),
+        50,
+    ]
+    assert all(item["left_wire_size"] == 50 for item in report["group_records"])
+    assert component_sizes[-2:] == [375, 375]
+    assert all(x1 == x2 and y1 == y2 for x1, y1, x2, y2 in wire_coordinates)
+    assert cursor == len(chunk)
+    assert chunk.endswith(b"\xff")
 
 
 def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> None:

@@ -40,8 +40,10 @@ validated request
   inductor, potentiometer, DC voltage, and DC current.
 - Shared `$TERBIDIR` placement now has:
   - accepted `RESISTOR/v3` attachment with donor-derived short wires;
-  - static-valid `CAP/v2` attachment using the accepted capacitor-native object
+  - accepted `CAP/v2` attachment using the accepted capacitor-native object
     order, suffix progression, pin geometry, and wire-record lengths;
+  - static-valid `REALIND/v2` attachment using the accepted sequential
+    six-inductor donor structure;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
@@ -61,7 +63,7 @@ The current user test packs are:
 
 - `experiments/VALUE_CHANGER_PROBE_V2_SAFE_VALUES_TEMP_2026_06_26.zip`
 - `experiments/TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip`
-- `experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -78,32 +80,40 @@ The old `CAP/v1` pack is invalidated. It used resistor-style terminal ordering,
 placed terminal symbols 508000 units beyond the pins, emitted 254000-length
 wires, and did not preserve the accepted capacitor right-wire trimming.
 
-`CAP/v2` is the only current capacitor candidate. It preserves the accepted
+`CAP/v2` is the accepted capacitor handler. It preserves the accepted
 manual capacitor route: right-terminal array first; repeated left-terminal,
 component, left-wire, and right-wire groups; donor-native suffix progression;
 pins 508000 units from the body; terminal symbols another 254000 units outward;
 zero-length attachment records at the pins; 49-byte non-final right wires; and
-a 50-byte final right wire. Its 1x/3x/15x pack is ready for manual Proteus
-testing:
+a 50-byte final right wire. The user confirmed its 1x/3x/15x Proteus pack
+worked on 2026-06-30:
 `experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30.zip`.
 
 `REALIND/v1` is rejected. The user reported the generated inductor output was
-faulty. The public shared dispatcher now fails loudly for REALIND until that
-family is re-researched from accepted donor-native order and record boundaries.
+faulty. It remains negative evidence and must not be restored.
+
+`REALIND/v2` was re-researched from the accepted six-inductor donor. It emits
+sequential left-terminal/right-terminal/component/left-wire/right-wire groups,
+uses pins 762000 units from the body, places terminal symbols another 254000
+units outward, patches the donor-native suffix progression, emits zero-length
+pin records, and preserves 49-byte non-final and 50-byte final right wires. Its
+1x/3x/15x pack is static-valid and awaiting Proteus testing:
+`experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip`.
 
 ## Verification Baseline
 
-- focused component placer suite: 42 passed;
+- focused component placer suite: 43 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
 - resistor-specific V3 attachment: Proteus-accepted and locked.
 - capacitor-specific V1 attachment: invalidated by donor audit.
-- capacitor-specific V2 attachment: static-valid, pending user Proteus test.
+- capacitor-specific V2 attachment: Proteus-accepted and locked.
 - inductor-specific V1 attachment: user-rejected and disabled.
+- inductor-specific V2 attachment: static-valid, pending user Proteus test.
 
 ## Next Engineering Step
 
-Test CAP/v2 in Proteus. Do not start another family until CAP open, render,
-attachment, and simulation results are recorded. Continue through the one
-shared `component_terminal_placer.py` module only.
+Test REALIND/v2 in Proteus. Do not start another family until REALIND open,
+render, attachment, and simulation results are recorded. Continue through the
+one shared `component_terminal_placer.py` module only.

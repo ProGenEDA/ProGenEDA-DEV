@@ -117,11 +117,12 @@ first, then terminals are attached to the remaining selected pins.
 matched terminal suffixes, resistor pin-link fields, and donor-derived short
 wires.
 
-`CAP/v2` is static-valid and awaiting Proteus testing. `CAP/v1` was invalidated
-by donor comparison, and `REALIND/v1` was rejected by user testing and disabled
-in the shared dispatcher. All other families remain unaccepted until their own
-focused pack passes Proteus. A visible `$TERBIDIR` beside a component is not
-attachment proof.
+`CAP/v2` passed user Proteus testing on 2026-06-30 and is locked. `CAP/v1` was
+invalidated by donor comparison. `REALIND/v1` was rejected by user testing;
+its donor-researched `REALIND/v2` replacement is static-valid and awaiting
+Proteus testing. All other families remain unaccepted until their own focused
+pack passes Proteus. A visible `$TERBIDIR` beside a component is not attachment
+proof.
 
 ## Non-Negotiable Rules
 

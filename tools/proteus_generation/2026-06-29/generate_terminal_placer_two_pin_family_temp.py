@@ -53,6 +53,25 @@ CONFIGS = {
             "mixed_passive.convert_production_terminals route"
         ),
     ),
+    "REALIND": FamilyConfig(
+        family="REALIND",
+        ref_prefix="L",
+        version="V2",
+        source_payload=(
+            ROOT
+            / "experiments"
+            / "beautifier_realind_coordinate_probe_base135_v1_temp_2026_06_24"
+            / "01_L01_REALIND_1X_PARSED_COORDS"
+            / "payload.json"
+        ),
+        experiment_name="terminal_placer_realind_attachment_v2_temp_2026_06_30",
+        archive_name="TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip",
+        handler="REALIND/v2",
+        evidence=(
+            "inductor_05_six_terminal plus the user-accepted INDUCTOR_V8 "
+            "sequential donor route and locked mixed_rcl bidirectional conversion"
+        ),
+    ),
 }
 
 COUNTS = (1, 3, 15)
@@ -72,6 +91,22 @@ def parse_args() -> argparse.Namespace:
 
 
 def readme(config: FamilyConfig) -> str:
+    if config.family == "CAP":
+        family_evidence = """- CAP geometry: pins at body `+/-508000`; terminal symbols another `254000`
+  outward; one zero-length donor-native wire record at each true pin
+- CAP object order: all right bidirectional records first, followed by repeated
+  left bidirectional/component/left-wire/right-wire groups
+- Suffixes: donor-native `0x0238` progression"""
+        component_name = "capacitor"
+    elif config.family == "REALIND":
+        family_evidence = """- REALIND geometry: pins at body `+/-762000`; terminal symbols another
+  `254000` outward; one zero-length donor-native wire record at each true pin
+- REALIND object order: repeated left bidirectional/right bidirectional/
+  component/left-wire/right-wire groups
+- Suffixes: donor-native `0x02A8` progression from `0x01B2`/`0x01E4`"""
+        component_name = "inductor"
+    else:
+        raise ValueError(f"No README evidence is defined for {config.family}.")
     return f"""# Terminal Placer {config.family} Attachment {config.version}
 
 ## Purpose
@@ -85,12 +120,8 @@ shared `component_terminal_placer.py` dispatcher. It processes `1x`, `3x`, and
 - Family handler: `{config.handler}`
 - Manual evidence: `{config.evidence}`
 - Terminals: left `$TERBIDIR` at 180 degrees; right at 0 degrees
-- CAP geometry: pins at body `+/-508000`; terminal symbols another `254000`
-  outward; one zero-length donor-native wire record at each true pin
-- CAP object order: all right bidirectional records first, followed by repeated
-  left bidirectional/component/left-wire/right-wire groups
+{family_evidence}
 - Non-final right wires: 49 bytes; final right wire: 50 bytes ending in `FF`
-- Suffixes: donor-native `0x0238` progression
 - Input JSON: reused from the accepted family beautifier experiment; only the
   requested count and donor path are changed
 
@@ -98,7 +129,7 @@ shared `component_terminal_placer.py` dispatcher. It processes `1x`, `3x`, and
 
 Open the non-`_BASE` project in each case folder. Confirm every component has
 one attached bidirectional terminal on each side and each terminal touches the
-real capacitor pin. The zero-length attachment records may not render as a
+real {component_name} pin. The zero-length attachment records may not render as a
 visible wire segment. Run netlist/simulation and report any bad-object, DLL,
 duplicate-reference, or floating-terminal error.
 
@@ -106,10 +137,10 @@ Static validation passed locally. Proteus acceptance remains pending.
 
 ## Static Verification
 
-- Focused and cumulative component-placer suite: `42 passed`
+- Focused and cumulative component-placer suite: `43 passed`
 - Object-stream cursor reconstruction: exact for 1x, 3x, and 15x
 - Terminal/component suffix matches: passed
-- Zero-length attachment coordinates at every CAP pin: passed
+- Zero-length attachment coordinates at every {config.family} pin: passed
 - Right-wire sizes: 49 bytes for non-final groups, 50 bytes for final group
 - Compile checks: passed
 """
@@ -177,7 +208,7 @@ def main() -> None:
             f"Expected short wires: {count * 2}\n\n"
             "Every component must have one 180-degree terminal on its left and "
             "one 0-degree terminal on its right. Both must meet the true pin. "
-            "CAP/v2 uses zero-length donor-native attachment records, so a green "
+            f"{config.handler} uses zero-length donor-native attachment records, so a green "
             "wire segment may not be visible. Then run netlist/simulation.\n",
             encoding="utf-8",
         )

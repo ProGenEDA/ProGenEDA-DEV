@@ -37,12 +37,23 @@ RESISTOR_PIN_SPAN = 1_270_000
 CAP_PIN_HALF_SPAN = 508_000
 CAP_TERMINAL_SYMBOL_TO_PIN = 254_000
 INDUCTOR_PIN_HALF_SPAN = 762_000
+INDUCTOR_TERMINAL_SYMBOL_TO_PIN = 254_000
 TERMINAL_SYMBOL_TO_PIN = 508_000
 TERMINAL_CONTACT_TO_PIN = 254_000
 CAP_WIRE_RECORD_SIZE = 50
 CAP_TRIMMED_WIRE_RECORD_SIZE = 49
+INDUCTOR_INPUT_RECORD_SIZE = 103
+INDUCTOR_OUTPUT_RECORD_SIZE = 104
+INDUCTOR_COMPONENT_RECORD_SIZE = 374
 INDUCTOR_WIRE_RECORD_SIZE = 50
-INDUCTOR_WIRE_MARKER_OFFSET = 24
+INDUCTOR_TRIMMED_WIRE_RECORD_SIZE = 49
+INDUCTOR_DONOR_GROUP_SIZE = (
+    INDUCTOR_INPUT_RECORD_SIZE
+    + INDUCTOR_OUTPUT_RECORD_SIZE
+    + INDUCTOR_COMPONENT_RECORD_SIZE
+    + INDUCTOR_WIRE_RECORD_SIZE
+    + INDUCTOR_TRIMMED_WIRE_RECORD_SIZE
+)
 TWO_PIN_FAMILIES = {
     "RESISTOR",
     "CAP",
@@ -193,6 +204,14 @@ class CapacitorTerminalPair:
 InductorTerminalPair = CapacitorTerminalPair
 
 
+@dataclass(frozen=True)
+class InductorDonorTemplates:
+    header: bytes
+    wire_lefts: tuple[bytes, ...]
+    wire_rights: tuple[bytes, ...]
+    donor_chunk: bytes
+
+
 def _s32_at(data: bytes, offset: int) -> int:
     return int.from_bytes(data[offset : offset + 4], "little", signed=True)
 
@@ -202,17 +221,25 @@ def _u32_at(data: bytes, offset: int) -> int:
 
 
 def _compact_terminal_label(prefix: str, terminal_index: int) -> str:
-    """Return the donor-safe two-character terminal label used by CAP/v2."""
+    """Return the donor-safe two-character label used by researched families."""
 
     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     if len(prefix) != 1 or prefix not in alphabet:
         raise ValueError("CAP/v2 label prefix must be one uppercase ASCII letter or digit.")
     if not 0 <= terminal_index < len(alphabet):
         raise ValueError(
-            "CAP/v2 currently supports at most 18 capacitors because its accepted "
+            "This terminal handler currently supports at most 18 components because its accepted "
             "donor path uses two-character terminal labels."
         )
     return prefix + alphabet[terminal_index]
+
+
+def _inductor_suffixes(index: int) -> tuple[int, int]:
+    step = 0x02A8
+    return (
+        (0x01B2 + (index - 1) * step) & 0xFFFF,
+        (0x01E4 + (index - 1) * step) & 0xFFFF,
+    )
 
 
 def _resistor_body_offsets(data: bytes) -> tuple[int, int]:
@@ -454,9 +481,8 @@ def plan_attached_inductor_terminals(
     selected_groups: Iterable[Any],
     *,
     label_prefix: str = "L",
-    suffix_start: int = 0x7B00,
 ) -> tuple[InductorTerminalPair, ...]:
-    """Plan donor-proven REALIND pins plus bidirectional terminal geometry."""
+    """Plan REALIND/v2 from the accepted six-inductor donor geometry."""
 
     pairs: list[InductorTerminalPair] = []
     for index, group in enumerate(selected_groups, start=1):
@@ -482,11 +508,10 @@ def plan_attached_inductor_terminals(
         body_y = _s32_at(data, y_offset)
         left_pin_x = body_x - INDUCTOR_PIN_HALF_SPAN
         right_pin_x = body_x + INDUCTOR_PIN_HALF_SPAN
-        left_suffix = (suffix_start + (index - 1) * 2 + 1) & 0xFFFF
-        right_suffix = (suffix_start + (index - 1) * 2 + 2) & 0xFFFF
+        left_suffix, right_suffix = _inductor_suffixes(index)
         left = TerminalSpec(
-            label=f"{label_prefix}{index:03d}A",
-            symbol_x=left_pin_x - TERMINAL_SYMBOL_TO_PIN,
+            label=_compact_terminal_label(label_prefix, (index - 1) * 2),
+            symbol_x=left_pin_x - INDUCTOR_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=LEFT_SIDE_ANGLE,
             suffix=left_suffix,
@@ -496,8 +521,8 @@ def plan_attached_inductor_terminals(
             attachment_policy="realind_link_suffix_and_short_wire",
         )
         right = TerminalSpec(
-            label=f"{label_prefix}{index:03d}B",
-            symbol_x=right_pin_x + TERMINAL_SYMBOL_TO_PIN,
+            label=_compact_terminal_label(label_prefix, (index - 1) * 2 + 1),
+            symbol_x=right_pin_x + INDUCTOR_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
             suffix=right_suffix,
@@ -516,9 +541,9 @@ def plan_attached_inductor_terminals(
                 left_pin_y=body_y,
                 right_pin_x=right_pin_x,
                 right_pin_y=body_y,
-                left_wire_start_x=left_pin_x - TERMINAL_CONTACT_TO_PIN,
+                left_wire_start_x=left_pin_x,
                 left_wire_start_y=body_y,
-                right_wire_start_x=right_pin_x + TERMINAL_CONTACT_TO_PIN,
+                right_wire_start_x=right_pin_x,
                 right_wire_start_y=body_y,
                 component_x_offset=x_offset,
                 component_y_offset=y_offset,
@@ -579,34 +604,62 @@ def _patch_inductor_terminal_links(
     return bytes(out)
 
 
-def _load_manual_inductor_wire_templates(project: Path) -> tuple[bytes, bytes]:
+def _load_six_inductor_templates(project: Path) -> InductorDonorTemplates:
     chunk = _extract_object_chunk(read_internal_file(project, "ROOT.DSN"))
-    component_start = chunk.find(b"\xff\x02L1")
-    first_wire_marker = chunk.find(b"\x7fWIRE", component_start)
-    if component_start < 0 or first_wire_marker < 0:
-        raise ValueError("Manual REALIND donor is missing its L1 packet or short-wire records.")
-    first_wire_start = first_wire_marker - INDUCTOR_WIRE_MARKER_OFFSET
-    component = chunk[component_start:first_wire_start]
-    first_wire = chunk[
-        first_wire_start : first_wire_start + INDUCTOR_WIRE_RECORD_SIZE
-    ]
-    second_wire = chunk[
-        first_wire_start + INDUCTOR_WIRE_RECORD_SIZE :
-        first_wire_start + INDUCTOR_WIRE_RECORD_SIZE * 2
-    ]
-    body_x_offset, _body_y_offset = _realind_body_offsets(component)
+    expected_size = 1 + 5 * INDUCTOR_DONOR_GROUP_SIZE + (
+        INDUCTOR_DONOR_GROUP_SIZE + 1
+    )
     if (
-        len(component) != 372
-        or component.count(b"REALIND") != 3
-        or component[body_x_offset + 25 : body_x_offset + 27] == b"\x00\x00"
-        or component[body_x_offset + 29 : body_x_offset + 31] == b"\x00\x00"
-        or len(first_wire) != INDUCTOR_WIRE_RECORD_SIZE
-        or len(second_wire) != INDUCTOR_WIRE_RECORD_SIZE
-        or first_wire.count(b"\x7fWIRE") != 1
-        or second_wire.count(b"\x7fWIRE") != 1
+        len(chunk) != expected_size
+        or chunk[:1] != b"\x00"
+        or chunk[-1:] != b"\xff"
+        or chunk.count(b"$TERINPUT") != 6
+        or chunk.count(b"$TEROUTPUT") != 6
+        or chunk.count(b"REALIND") != 18
+        or chunk.count(b"\x7fWIRE") != 12
     ):
-        raise ValueError("Manual REALIND donor does not match the proven two-terminal packet shape.")
-    return first_wire, second_wire
+        raise ValueError("Six-inductor donor does not match its accepted sequential shape.")
+
+    wire_lefts: list[bytes] = []
+    wire_rights: list[bytes] = []
+    cursor = 1
+    for index in range(6):
+        cursor += INDUCTOR_INPUT_RECORD_SIZE + INDUCTOR_OUTPUT_RECORD_SIZE
+        component = chunk[cursor : cursor + INDUCTOR_COMPONENT_RECORD_SIZE]
+        cursor += INDUCTOR_COMPONENT_RECORD_SIZE
+        left_wire = chunk[cursor : cursor + INDUCTOR_WIRE_RECORD_SIZE]
+        cursor += INDUCTOR_WIRE_RECORD_SIZE
+        right_size = (
+            INDUCTOR_WIRE_RECORD_SIZE
+            if index == 5
+            else INDUCTOR_TRIMMED_WIRE_RECORD_SIZE
+        )
+        right_wire = chunk[cursor : cursor + right_size]
+        cursor += right_size
+        body_x_offset, _body_y_offset = _realind_body_offsets(component)
+        if (
+            len(component) != INDUCTOR_COMPONENT_RECORD_SIZE
+            or component.count(b"REALIND") != 3
+            or component[body_x_offset + 25 : body_x_offset + 27] == b"\x00\x00"
+            or component[body_x_offset + 29 : body_x_offset + 31] == b"\x00\x00"
+            or len(left_wire) != INDUCTOR_WIRE_RECORD_SIZE
+            or len(right_wire) != right_size
+            or left_wire.count(b"\x7fWIRE") != 1
+            or right_wire.count(b"\x7fWIRE") != 1
+        ):
+            raise ValueError(f"Six-inductor donor group {index + 1} is malformed.")
+        wire_lefts.append(left_wire)
+        wire_rights.append(right_wire)
+    if cursor != len(chunk):
+        raise ValueError(
+            f"Six-inductor donor cursor ended at {cursor}, expected {len(chunk)}."
+        )
+    return InductorDonorTemplates(
+        header=chunk[:1],
+        wire_lefts=tuple(wire_lefts),
+        wire_rights=tuple(wire_rights),
+        donor_chunk=chunk,
+    )
 
 
 def attach_resistor_bidir_terminals_to_project(
@@ -900,38 +953,40 @@ def attach_capacitor_bidir_terminals_to_project(
     }
 
 
-def _rejected_attach_inductor_bidir_terminals_to_project(
+def attach_inductor_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
     selected_groups: Iterable[Any],
     *,
     label_prefix: str = "L",
-    suffix_start: int = 0x7B00,
 ) -> dict[str, Any]:
-    """Attach bidirectional terminals to bare horizontal REALIND packets."""
+    """Attach REALIND/v2 using the accepted six-inductor sequential schema."""
 
     groups = tuple(selected_groups)
+    if not groups:
+        raise ValueError("REALIND/v2 requires at least one selected inductor packet.")
     for group in groups:
         data = bytes(getattr(group, "data", b""))
         if BIDIR_MARKER in data or b"\x7fWIRE" in data:
             raise ValueError(
-                "REALIND/v1 requires bare component-placer packets; "
+                "REALIND/v2 requires bare component-placer packets; "
                 f"{getattr(group, 'key', '<unknown>')} already contains terminal or wire records."
             )
-    pairs = plan_attached_inductor_terminals(
-        groups,
-        label_prefix=label_prefix,
-        suffix_start=suffix_start,
-    )
+    pairs = plan_attached_inductor_terminals(groups, label_prefix=label_prefix)
     registry = FixtureRegistry.load()
     terminal_templates = load_production_templates(registry)
-    manual_fixture = registry.get("inductor_02_two_terminal")
-    left_wire_template, right_wire_template = _load_manual_inductor_wire_templates(
-        manual_fixture.path
-    )
+    manual_fixture = registry.get("inductor_05_six_terminal")
+    donor_templates = _load_six_inductor_templates(manual_fixture.path)
 
-    left_records = [
-        build_bidir_record(
+    object_records: list[bytes] = []
+    group_reports: list[dict[str, Any]] = []
+    for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+        data = bytes(group.data)
+        if not data.startswith(b"\xff"):
+            raise ValueError(
+                f"REALIND/v2 expected {pair.component_key} to start with its donor FF boundary."
+            )
+        left_record = build_bidir_record(
             terminal_templates,
             label=pair.left.label,
             symbol_x=pair.left.symbol_x,
@@ -940,10 +995,7 @@ def _rejected_attach_inductor_bidir_terminals_to_project(
             suffix=pair.left.suffix,
             active_link=True,
         )
-        for pair in pairs
-    ]
-    right_records = [
-        build_bidir_record(
+        right_record = build_bidir_record(
             terminal_templates,
             label=pair.right.label,
             symbol_x=pair.right.symbol_x,
@@ -952,28 +1004,43 @@ def _rejected_attach_inductor_bidir_terminals_to_project(
             suffix=pair.right.suffix,
             active_link=True,
         )
-        for pair in pairs
-    ]
-    component_records: list[bytes] = []
-    for group, pair in zip(groups, pairs, strict=True):
-        component_records.append(_patch_inductor_terminal_links(bytes(group.data), pair))
-        component_records.append(
-            _patch_wire(
-                left_wire_template,
-                pair.left_wire_start_x,
-                pair.left_wire_start_y,
-                pair.left_pin_x,
-                pair.left_pin_y,
-            )
+        component_record = b"\x00" + _patch_inductor_terminal_links(data, pair)
+        template_index = index % len(donor_templates.wire_lefts)
+        left_wire = _patch_wire(
+            donor_templates.wire_lefts[template_index],
+            pair.left_pin_x,
+            pair.left_pin_y,
+            pair.left_pin_x,
+            pair.left_pin_y,
         )
-        component_records.append(
-            _patch_wire(
-                right_wire_template,
-                pair.right_wire_start_x,
-                pair.right_wire_start_y,
-                pair.right_pin_x,
-                pair.right_pin_y,
-            )
+        right_template = donor_templates.wire_rights[template_index]
+        is_final = index == len(groups) - 1
+        if len(right_template) == INDUCTOR_TRIMMED_WIRE_RECORD_SIZE:
+            right_template += b"\x00"
+        right_wire = _patch_wire(
+            right_template,
+            pair.right_pin_x,
+            pair.right_pin_y,
+            pair.right_pin_x,
+            pair.right_pin_y,
+        )
+        if not is_final:
+            right_wire = right_wire[:-1]
+        object_records.extend(
+            (left_record, right_record, component_record, left_wire, right_wire)
+        )
+        group_reports.append(
+            {
+                "component_key": pair.component_key,
+                "left_terminal_size": len(left_record),
+                "right_terminal_size": len(right_record),
+                "bare_component_size": len(data),
+                "component_record_size": len(component_record),
+                "left_wire_size": len(left_wire),
+                "right_wire_size": len(right_wire),
+                "right_wire_final": is_final,
+                "donor_slot": template_index + 1,
+            }
         )
 
     source = Path(project)
@@ -981,18 +1048,10 @@ def _rejected_attach_inductor_bidir_terminals_to_project(
     original_chunk = _extract_object_chunk(dsn)
     if BIDIR_MARKER in original_chunk or b"\x7fWIRE" in original_chunk:
         raise ValueError(
-            "REALIND/v1 base project is not bare; choose the main mega donor "
+            "REALIND/v2 base project is not bare; choose the main mega donor "
             "before applying terminal attachment."
         )
-    new_chunk = (
-        original_chunk[:1]
-        + b"".join(left_records)
-        + b"".join(right_records)
-        + b"\x00"
-        + b"".join(component_records)
-    )
-    if not new_chunk:
-        raise ValueError("REALIND terminal attachment produced an empty object chunk.")
+    new_chunk = original_chunk[:1] + b"".join(object_records)
     new_chunk = new_chunk[:-1] + b"\xff"
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     write_project_from_parts(source, output, {"ROOT.DSN": new_dsn})
@@ -1000,15 +1059,32 @@ def _rejected_attach_inductor_bidir_terminals_to_project(
 
     expected_terminals = len(pairs) * 2
     expected_wires = len(pairs) * 2
+    expected_right_wire_sizes = [
+        (
+            INDUCTOR_WIRE_RECORD_SIZE
+            if index == len(pairs) - 1
+            else INDUCTOR_TRIMMED_WIRE_RECORD_SIZE
+        )
+        for index in range(len(pairs))
+    ]
+    suffix_counts_valid = all(
+        final_chunk.count(struct.pack("<H", terminal.suffix)) >= 2
+        for pair in pairs
+        for terminal in (pair.left, pair.right)
+    )
     return {
         "stage": "terminal_placer",
-        "family_handler": "REALIND/v1",
+        "family_handler": "REALIND/v2",
         "terminal_kind": "$TERBIDIR",
         "wire_record_emission": True,
-        "attachment_policy": "realind_link_suffix_and_short_wire",
+        "attachment_policy": "realind_donor05_sequential_zero_length_pin_records",
+        "object_order": "repeated_left_bidir_right_bidir_realind_left_wire_right_wire",
+        "label_policy": "two_character_prefix_plus_base36_terminal_index",
+        "suffix_policy": "inductor_05_six_terminal_0x02a8_progression",
         "terminal_count_added": expected_terminals,
         "wire_count_added": expected_wires,
         "terminal_pairs": [pair.as_dict() for pair in pairs],
+        "group_records": group_reports,
         "bidir_count_before": original_chunk.count(BIDIR_MARKER),
         "bidir_count_after": final_chunk.count(BIDIR_MARKER),
         "wire_count_before": original_chunk.count(b"\x7fWIRE"),
@@ -1017,28 +1093,25 @@ def _rejected_attach_inductor_bidir_terminals_to_project(
         "object_chunk_size_after": len(final_chunk),
         "manual_inductor_donor": str(manual_fixture.path),
         "valid": (
-            final_chunk.count(BIDIR_MARKER) == expected_terminals
+            final_chunk == new_chunk
+            and final_chunk.count(BIDIR_MARKER) == expected_terminals
             and final_chunk.count(b"\x7fWIRE") == expected_wires
+            and all(
+                item["component_record_size"] == item["bare_component_size"] + 1
+                for item in group_reports
+            )
+            and [item["right_wire_size"] for item in group_reports]
+            == expected_right_wire_sizes
+            and all(
+                item["left_wire_size"] == INDUCTOR_WIRE_RECORD_SIZE
+                for item in group_reports
+            )
+            and all(pair.left_wire_start_x == pair.left_pin_x for pair in pairs)
+            and all(pair.right_wire_start_x == pair.right_pin_x for pair in pairs)
+            and suffix_counts_valid
             and final_chunk.endswith(b"\xff")
         ),
     }
-
-
-def attach_inductor_bidir_terminals_to_project(
-    project: str | Path,
-    output: str | Path,
-    selected_groups: Iterable[Any],
-    *,
-    label_prefix: str = "L",
-    suffix_start: int = 0x7B00,
-) -> dict[str, Any]:
-    """Reject the user-failed REALIND/v1 path while retaining it as evidence."""
-
-    del project, output, selected_groups, label_prefix, suffix_start
-    raise ValueError(
-        "REALIND/v1 is rejected by user Proteus testing and disabled. "
-        "Re-research the family from accepted donor-native ordering before generation."
-    )
 
 
 def attach_component_bidir_terminals_to_project(
@@ -1077,9 +1150,15 @@ def attach_component_bidir_terminals_to_project(
             label_prefix=label_prefix or "C",
         )
     if family == "REALIND":
-        raise ValueError(
-            "REALIND/v1 is rejected by user Proteus testing and disabled. "
-            "Re-research the family from accepted donor-native ordering before generation."
+        if suffix_start is not None:
+            raise ValueError(
+                "REALIND/v2 uses donor-native suffix progression; suffix_start is unsupported."
+            )
+        return attach_inductor_bidir_terminals_to_project(
+            project,
+            output,
+            groups,
+            label_prefix=label_prefix or "L",
         )
     raise ValueError(
         "Shared terminal attachment has no accepted handler for "
