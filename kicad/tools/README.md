@@ -12,10 +12,18 @@ Register it as the default opener for `.kicad_pro` files:
 kicad/tools/open_local_kicad.sh --install-desktop
 ```
 
-Normal launches default to safer rendering settings for KDE/Wayland stability:
+Normal launches default to native Wayland with software rendering when a
+Wayland session is detected. This avoids the XWayland resize crash seen on this
+NixOS/KDE workspace:
 
 ```bash
 kicad/tools/open_local_kicad.sh path/to/project.kicad_pro
+```
+
+To explicitly test the old XWayland fallback:
+
+```bash
+KICAD_LOCAL_RENDERING=x11-safe kicad/tools/open_local_kicad.sh path/to/project.kicad_pro
 ```
 
 To test native GPU/desktop rendering later:

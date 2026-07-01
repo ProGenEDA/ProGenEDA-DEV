@@ -15,8 +15,9 @@ Usage:
   open_local_kicad.sh --install-desktop
 
 Environment:
-  KICAD_LOCAL_RENDERING=safe    default; force XWayland/software GL for stability
-  KICAD_LOCAL_RENDERING=native  use desktop/GPU defaults
+  KICAD_LOCAL_RENDERING=safe      default; prefer Wayland/software GL
+  KICAD_LOCAL_RENDERING=x11-safe  force XWayland/software GL
+  KICAD_LOCAL_RENDERING=native    use desktop/GPU defaults
 EOF
 }
 
@@ -108,6 +109,17 @@ export WEBKIT_DISABLE_DMABUF_RENDERER=1
 
 case "${KICAD_LOCAL_RENDERING:-safe}" in
   safe)
+    if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+      export GDK_BACKEND="${KICAD_LOCAL_GDK_BACKEND:-wayland}"
+    elif [[ -n "${DISPLAY:-}" ]]; then
+      export GDK_BACKEND="${KICAD_LOCAL_GDK_BACKEND:-x11}"
+    fi
+    export GSK_RENDERER="${KICAD_LOCAL_GSK_RENDERER:-cairo}"
+    export GDK_RENDERING="${KICAD_LOCAL_GDK_RENDERING:-cairo}"
+    export LIBGL_ALWAYS_SOFTWARE="${LIBGL_ALWAYS_SOFTWARE:-1}"
+    export GALLIUM_DRIVER="${GALLIUM_DRIVER:-llvmpipe}"
+    ;;
+  x11-safe)
     if [[ -n "${DISPLAY:-}" ]]; then
       export GDK_BACKEND="${KICAD_LOCAL_GDK_BACKEND:-x11}"
     fi
@@ -120,7 +132,7 @@ case "${KICAD_LOCAL_RENDERING:-safe}" in
     ;;
   *)
     echo "Unsupported KICAD_LOCAL_RENDERING=${KICAD_LOCAL_RENDERING}" >&2
-    echo "Use 'safe' or 'native'." >&2
+    echo "Use 'safe', 'x11-safe', or 'native'." >&2
     exit 2
     ;;
 esac
