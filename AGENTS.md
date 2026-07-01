@@ -68,6 +68,15 @@ until separately revalidated. Keep all researched terminal behavior in
 `src/proteusgen/component_terminal_placer.py`; dated scripts may only generate
 focused packs through that shared module.
 
+The user rejected `MIXED/short-wire-v6-temp`: Bad Object Record remained and
+no wires rendered. Never emit standalone wire geometry after an inactive
+terminal array. A native Proteus attachment unit requires all three together:
+an active terminal suffix, the same active suffix in the component pin-link
+field, and donor-derived WIRE records immediately beside that component in the
+object stream. The V7 mixed writer is static evidence pending Proteus testing;
+its six currently researched families are RESISTOR, CAP, CAP-ELEC, REALIND,
+VSOURCE, and CSOURCE.
+
 From the restart prompt recorded in `context.md`, append every user message and
 every visible agent response to that file verbatim and in chronological order,
 with timestamps and any files edited. Update the log during the same turn so

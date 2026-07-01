@@ -73,7 +73,7 @@ The current user test packs are:
 - `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
-- `experiments/TERMINAL_PLACER_SHORT_WIRE_V6_TEMP_2026_07_01.zip`
+- `experiments/TERMINAL_PLACER_NATIVE_WIRE_V7_TEMP_2026_07_01.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -190,19 +190,29 @@ Proteus Ctrl+S also removed both old resistor wire records. The repaired
 terminal-only output generated with these rules is now object-chunk identical
 to the supplied Ctrl+S project.
 
-`MIXED/short-wire-v6-temp` is the only active mixed attachment method. It uses
-Ctrl+S-normalized T01 terminal placement, labels, and orientation, then adds
-donor-derived short wires without component-link patches or active-terminal
-suffixes. RESISTOR uses two 254,000-unit wires from terminal contacts to pins.
-CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE use their accepted zero-length
-pin-coincident wire records. DIODE, NPN, and 74HC08 remain byte-preserved and
-terminal-free.
+The user rejected `MIXED/short-wire-v6-temp`: Bad Object Record remained and
+none of its appended wire records rendered. V6 proved that wire coordinates
+alone are insufficient. Proteus attachment state must be serialized as a
+complete native unit:
 
-The V6 pack contains the exact saved repair, a generated object-identical
-terminal-only control, resistor 1x/3x/15x, and full mixed
-1x/3x/15x short-wire projects. All eight cases pass static record, endpoint,
-orientation, suffix-tail, preservation, and layout checks. Proteus testing is
-required for the short-wire outputs.
+```text
+active terminal suffix
+    + matching active component pin-link suffix
+    + component-adjacent donor WIRE records
+```
+
+`MIXED/native-wire-v7-temp` is the active mixed experiment. It preserves
+original component order and emits the accepted per-family terminal/component/
+wire boundaries. DIODE, NPN, and 74HC08 remain byte-preserved and
+terminal-free. Three-component V7 output for each researched family is
+object-chunk byte-identical to that family's already accepted standalone
+writer.
+
+The V7 pack contains six 3x family-oracle pairs and mixed all-family 1x/3x/15x
+cases with controls. All nine cases pass static validation. The 15x case has
+93 components, 180 active terminals, 180 WIRE records, unique suffixes, exactly
+two active copies of every suffix, complete terminal-to-wire-to-pin paths, and
+separate IC/non-IC layout bands. Mixed Proteus testing remains required.
 
 The packet beautifier now places IC and non-IC families in separate vertical
 bands when they coexist. The lower band begins at least 5,080,000 internal
@@ -211,7 +221,7 @@ units below the maximum parsed IC coordinate. This corrects the reported
 
 ## Verification Baseline
 
-- focused component placer suite: 53 passed;
+- focused component placer suite: 59 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
@@ -227,12 +237,14 @@ units below the maximum parsed IC coordinate. This corrects the reported
 - mixed append-overlay V3: rejected; only T01 supplied useful placement/order
   evidence.
 - mixed wire-ablation V5: rejected with Bad Object Record.
-- mixed short-wire V6: 8/8 static-valid; terminal-only control matches the
-  user Ctrl+S repair exactly; short-wire Proteus tests pending.
+- mixed short-wire V6: user-rejected; Bad Object Record remained and wires did
+  not render.
+- mixed native-wire V7: 9/9 static-valid; six 3x native outputs are byte-exact
+  with accepted family writers; mixed Proteus tests pending.
 - mixed IC/non-IC bands: focused static regression passed; pending visual test.
 
 ## Next Engineering Step
 
-Test the V6 pack in T00 through T07 order, prioritizing T01 and T02. Continue donor collection using
+Test V7 N01-N06 first, then N07-N09. Continue donor collection using
 `docs/complete_component_donor_request.md`; the next handler batch remains the
 unsupported two-pin families, with no cross-family pattern guessing.

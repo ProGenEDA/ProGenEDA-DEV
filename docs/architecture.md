@@ -136,10 +136,14 @@ proven families are `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`,
 mutation until their property rows are decoded. The wiring planner emits net
 intent only and never emits Proteus wire records.
 
-The generic all-family bounding-box terminal experiment was rejected. Terminal
-attachment now proceeds family by family in the single
-`component_terminal_placer.py` module. `RESISTOR/v3` is the first accepted
-handler and uses matched pin-link suffixes plus donor-derived short wires.
+The generic all-family bounding-box experiment and the inactive-terminal plus
+trailing-wire V6 experiment were rejected. A Proteus wire is not standalone
+geometry: native attachment requires an active terminal suffix, the same
+active suffix in the component pin-link field, and component-adjacent
+donor-derived WIRE records with native boundaries. All researched family logic
+remains in `component_terminal_placer.py`. The V7 mixed serializer composes
+the accepted RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE native
+units while preserving component order and unsupported packets.
 
 Every stage must eventually provide both a direct stage-output validator and a
 cumulative validator covering all accepted earlier stages. User-specification,
@@ -164,6 +168,7 @@ validation, fixture provenance checks, locked legacy circuit generators,
 removal-only mega-donor component placement, family-specific coordinate
 mutation, semantic project comparison, and result ingestion. Value editing is
 lightly tested. Focused terminal attachment is accepted for RESISTOR, CAP,
-REALIND, CAP-ELEC, VSOURCE, and CSOURCE; the unified mixed short-wire route
-remains experimental. Formal placed-design and normalized-pin contracts are
-the next decoupling milestone after terminal placement.
+REALIND, CAP-ELEC, VSOURCE, and CSOURCE. The unified V7 native-wire route is
+byte-equivalent to each accepted single-family writer and remains experimental
+until Proteus tests the mixed outputs. Formal placed-design and normalized-pin
+contracts are the next decoupling milestone after terminal placement.

@@ -8,10 +8,10 @@ retained for diagnostic compatibility, but production experiments must use a
 researched family handler that patches pin-link suffixes and emits any
 donor-proven short-wire records required by that family.
 
-The temporary mixed route is narrower: it preserves the user-proven T01
-terminal coordinates/order, applies Proteus Ctrl+S normalization to inactive
-terminal tails, and uses only family-derived short WIRE records for pin
-attachment. It does not reuse the single-family link-patch ordering.
+The rejected V6 mixed route is retained only for reproducing its terminal-only
+Ctrl+S control. Production mixed attachment uses the same active terminal
+links, component pin-link patches, component-adjacent short-wire records, and
+record boundaries as the accepted single-family writers.
 """
 
 from __future__ import annotations
@@ -2818,6 +2818,341 @@ def attach_mixed_overlay_bidir_terminals_to_project(
     }
 
 
+def _covered_bare_component_stream(
+    original_chunk: bytes,
+    groups: tuple[Any, ...],
+) -> tuple[Any, ...]:
+    """Require the supplied groups to describe the complete bare object stream."""
+
+    ordered = tuple(sorted(groups, key=lambda group: int(getattr(group, "start", 0))))
+    if not ordered:
+        raise ValueError("Native mixed attachment requires at least one component group.")
+    prefix = original_chunk[:2]
+    data = [bytes(getattr(group, "data", b"")) for group in ordered]
+    candidates = (
+        prefix + b"".join(data),
+        prefix + b"".join(data[:-1]) + data[-1][:-1] + b"\xff",
+    )
+    if original_chunk not in candidates:
+        raise ValueError(
+            "Native mixed attachment cannot account for the complete bare object "
+            "stream from the supplied component groups. Pass every placed group; "
+            "hidden or synthetic records must be exposed by the component placer."
+        )
+    return ordered
+
+
+def _wire_path_contact_checks(
+    family_reports: Iterable[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Verify terminal tip -> donor wire -> parsed component pin continuity."""
+
+    checks: list[dict[str, Any]] = []
+    for family_report in family_reports:
+        for pair in family_report.get("terminal_pairs", []):
+            roles = ("left", "right") if pair.get("left") else ("input", "output")
+            for role in roles:
+                terminal = pair[role]
+                pin = pair["pins"][role]
+                wire = pair["short_wires"][role]
+                angle = terminal["angle_tenths"]
+                if angle == LEFT_SIDE_ANGLE:
+                    contact_x = terminal["symbol_x"] + TERMINAL_CONTACT_TO_PIN
+                elif angle == RIGHT_SIDE_ANGLE:
+                    contact_x = terminal["symbol_x"] - TERMINAL_CONTACT_TO_PIN
+                else:
+                    contact_x = None
+                terminal_to_wire = (
+                    contact_x == wire["start"]["x"]
+                    and terminal["symbol_y"] == wire["start"]["y"]
+                )
+                wire_to_pin = (
+                    wire["end"]["x"] == pin["x"]
+                    and wire["end"]["y"] == pin["y"]
+                )
+                checks.append(
+                    {
+                        "component_key": pair["component_key"],
+                        "component_family": pair["component_family"],
+                        "role": role,
+                        "terminal_to_wire": terminal_to_wire,
+                        "wire_to_pin": wire_to_pin,
+                        "valid": terminal_to_wire and wire_to_pin,
+                    }
+                )
+    return checks
+
+
+def attach_mixed_native_bidir_terminals_to_project(
+    project: str | Path,
+    output: str | Path,
+    selected_groups: Iterable[Any],
+    *,
+    terminal_families: Iterable[str] | None = None,
+) -> dict[str, Any]:
+    """Attach researched families with their accepted native wire grammar.
+
+    Proteus wires are serialized as part of an active attachment unit, not as
+    a trailing geometry overlay. The unit consists of active terminal records,
+    matching component pin-link suffixes, and two donor-derived WIRE records
+    immediately following the patched component. Component order is preserved.
+    """
+
+    groups = tuple(selected_groups)
+    if not groups:
+        raise ValueError("Native mixed attachment requires selected component groups.")
+    accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
+    available = tuple(
+        dict.fromkeys(
+            str(getattr(group, "family", ""))
+            for group in groups
+            if str(getattr(group, "family", "")) in accepted
+        )
+    )
+    requested = available if terminal_families is None else tuple(
+        dict.fromkeys(str(item) for item in terminal_families)
+    )
+    unknown = sorted(set(requested) - accepted)
+    missing = sorted(set(requested) - set(available))
+    if unknown:
+        raise ValueError(f"No accepted native-wire handler exists for {unknown}.")
+    if missing:
+        raise ValueError(f"Requested native-wire families are absent: {missing}.")
+    if not requested:
+        raise ValueError(
+            "Native mixed attachment requires at least one researched terminal family."
+        )
+
+    source = Path(project)
+    destination = Path(output)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    dsn = read_internal_file(source, "ROOT.DSN")
+    original_chunk = _extract_object_chunk(dsn)
+    if BIDIR_MARKER in original_chunk or b"\x7fWIRE" in original_chunk:
+        raise ValueError("Native mixed attachment requires a bare component-placer project.")
+    ordered_groups = _covered_bare_component_stream(original_chunk, groups)
+
+    terminal_templates = load_production_templates(FixtureRegistry.load())
+    family_parts: dict[
+        str,
+        tuple[
+            tuple[Any, ...],
+            list[bytes],
+            list[tuple[bytes, bytes]],
+            dict[int, bytes],
+        ],
+    ] = {}
+    family_reports: list[dict[str, Any]] = []
+    source_index_start = 1
+    for family in requested:
+        family_groups = tuple(
+            group
+            for group in ordered_groups
+            if str(getattr(group, "family", "")) == family
+        )
+        parts = _mixed_overlay_family_parts(
+            family,
+            family_groups,
+            terminal_templates=terminal_templates,
+            source_index_start=source_index_start,
+            active_links=True,
+        )
+        if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
+            source_index_start += len(family_groups)
+        family_parts[family] = parts
+        pairs, terminal_records, wire_pairs, _patches = parts
+        family_reports.append(
+            {
+                "family_handler": f"{family}/accepted-native-unit",
+                "component_count": len(family_groups),
+                "terminal_count": len(terminal_records),
+                "wire_count": len(wire_pairs) * 2,
+                "terminal_pairs": [pair.as_dict() for pair in pairs],
+            }
+        )
+
+    leading_records: list[bytes] = []
+    terminal_by_group_id: dict[int, tuple[bytes, ...]] = {}
+    wire_by_group_id: dict[int, tuple[bytes, bytes]] = {}
+    patched_by_group_id: dict[int, bytes] = {}
+    for family in requested:
+        family_groups = tuple(
+            group
+            for group in ordered_groups
+            if str(getattr(group, "family", "")) == family
+        )
+        _pairs, terminal_records, wire_pairs, patches = family_parts[family]
+        patched_by_group_id.update(patches)
+        if family == "RESISTOR":
+            leading_records.extend(terminal_records)
+            for group, wires in zip(family_groups, wire_pairs, strict=True):
+                terminal_by_group_id[id(group)] = ()
+                wire_by_group_id[id(group)] = wires
+        elif family == "CAP":
+            component_count = len(family_groups)
+            leading_records.extend(terminal_records[:component_count])
+            for index, (group, wires) in enumerate(
+                zip(family_groups, wire_pairs, strict=True)
+            ):
+                terminal_by_group_id[id(group)] = (
+                    terminal_records[component_count + index],
+                )
+                wire_by_group_id[id(group)] = wires
+        else:
+            for index, (group, wires) in enumerate(
+                zip(family_groups, wire_pairs, strict=True)
+            ):
+                terminal_by_group_id[id(group)] = tuple(
+                    terminal_records[index * 2 : index * 2 + 2]
+                )
+                wire_by_group_id[id(group)] = wires
+
+    local_starts_with_terminal = [
+        bool(terminal_by_group_id.get(id(group), ()))
+        for group in ordered_groups
+    ]
+    local_records: list[bytes] = []
+    preserved_rows: list[dict[str, Any]] = []
+    for index, group in enumerate(ordered_groups):
+        group_id = id(group)
+        family = str(getattr(group, "family", ""))
+        if family not in requested:
+            data = bytes(getattr(group, "data", b""))
+            local_records.append(data)
+            preserved_rows.append(
+                {
+                    "component_key": str(getattr(group, "key", "")),
+                    "component_family": family,
+                    "packet_size": len(data),
+                    "byte_preserved": True,
+                }
+            )
+            continue
+
+        terminals = terminal_by_group_id[group_id]
+        patched = patched_by_group_id[group_id]
+        first_wire, second_wire = wire_by_group_id[group_id]
+        if len(first_wire) != 50 or len(second_wire) != 50:
+            raise ValueError(
+                f"{family} {getattr(group, 'key', '')} lacks full native wire records."
+            )
+        local_records.extend(terminals)
+        if family != "RESISTOR":
+            local_records.append(b"\x00")
+        local_records.extend((patched, first_wire))
+        next_starts_with_terminal = (
+            index + 1 < len(local_starts_with_terminal)
+            and local_starts_with_terminal[index + 1]
+        )
+        local_records.append(
+            second_wire[:-1] if next_starts_with_terminal else second_wire
+        )
+
+    if not local_records:
+        raise ValueError("Native mixed attachment produced no component records.")
+    first_local_starts_with_terminal = local_starts_with_terminal[0]
+    separator = b"" if first_local_starts_with_terminal else b"\x00"
+    new_chunk = (
+        original_chunk[:1]
+        + b"".join(leading_records)
+        + separator
+        + b"".join(local_records)
+    )
+    new_chunk = new_chunk[:-1] + b"\xff"
+    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
+    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
+    final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
+
+    suffixes = tuple(
+        suffix
+        for report in family_reports
+        for suffix in _terminal_suffixes(report)
+    )
+    suffixes_unique = len(suffixes) == len(set(suffixes))
+    suffix_links_valid = suffixes_unique and all(
+        final_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
+        for suffix in suffixes
+    )
+    wire_path_checks = _wire_path_contact_checks(family_reports)
+    expected_terminals = sum(report["terminal_count"] for report in family_reports)
+    expected_wires = sum(report["wire_count"] for report in family_reports)
+    preserved_valid = all(
+        final_chunk.count(bytes(getattr(group, "data", b""))[:-1]) == 1
+        for group in ordered_groups
+        if str(getattr(group, "family", "")) not in requested
+    )
+    return {
+        "stage": "terminal_placer",
+        "family_handler": "MIXED/native-wire-v7-temp",
+        "status": "temporary_pending_proteus",
+        "attachment_policy": "accepted_active_links_and_component_adjacent_short_wires",
+        "object_order": (
+            "native_leading_terminal_arrays_then_original_component_order_with_"
+            "family_native_terminal_component_wire_units"
+        ),
+        "historical_basis": (
+            "accepted_single_family_native_writers_and_user_rejection_of_"
+            "append_after_terminal_wire_overlay"
+        ),
+        "wire_requirement_basis": "user_confirmed_terminal_to_pin_wires_are_mandatory",
+        "terminal_array_order_policy": "accepted_family_native_order",
+        "terminal_family_order": list(requested),
+        "eligible_families": list(requested),
+        "available_accepted_families": [
+            family
+            for family in ACCEPTED_TERMINAL_FAMILY_ORDER
+            if family in available
+        ],
+        "skipped_families": sorted(
+            {
+                str(getattr(group, "family", ""))
+                for group in ordered_groups
+            }
+            - set(requested)
+        ),
+        "patch_component_links": True,
+        "active_terminal_links": True,
+        "wire_record_emission": True,
+        "allow_unlinked_short_wires": False,
+        "expected_active_suffix_copies": 2,
+        "base_component_stream_covered": True,
+        "component_record_order_mutation": False,
+        "single_family_oracle_policy": "byte_exact_accepted_writer_grammar",
+        "terminal_pin_contacts_valid": all(
+            row["coincident"]
+            for row in _terminal_pin_contact_checks(family_reports)
+        ),
+        "wire_path_contacts_valid": all(row["valid"] for row in wire_path_checks),
+        "wire_path_contact_checks": wire_path_checks,
+        "family_reports": family_reports,
+        "terminal_suffixes": [f"{suffix:04x}" for suffix in suffixes],
+        "terminal_suffixes_unique": suffixes_unique,
+        "terminal_suffix_links_valid": suffix_links_valid,
+        "terminal_count_added": expected_terminals,
+        "wire_count_added": expected_wires,
+        "terminalized_component_count": sum(
+            report["component_count"] for report in family_reports
+        ),
+        "preserved_component_count": len(preserved_rows),
+        "preserved_groups": preserved_rows,
+        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
+        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
+        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
+        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
+        "object_chunk_size_before": len(original_chunk),
+        "object_chunk_size_after": len(final_chunk),
+        "valid": (
+            final_chunk == new_chunk
+            and final_chunk.count(BIDIR_MARKER) == expected_terminals
+            and final_chunk.count(b"\x7fWIRE") == expected_wires
+            and suffix_links_valid
+            and all(row["valid"] for row in wire_path_checks)
+            and preserved_valid
+            and final_chunk.endswith(b"\xff")
+        ),
+    }
+
+
 def attach_component_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
@@ -2830,10 +3165,8 @@ def attach_component_bidir_terminals_to_project(
     """Attach accepted families and preserve every unsupported mixed packet.
 
     Single-family calls retain the exact accepted family writer. Mixed calls
-    keep the component-placer stream and Ctrl+S-normalized T01 terminal array
-    intact, then append family-derived WIRE records. Component link fields and
-    terminal active-link flags remain untouched; short WIRE records are the
-    only mixed attachment method.
+    serialize the same native active-link/component/WIRE units in original
+    component order; unsupported packets remain byte-identical and terminal-free.
     """
 
     groups = tuple(selected_groups)
@@ -2937,15 +3270,11 @@ def attach_component_bidir_terminals_to_project(
             "valid": final_chunk == original_chunk,
         }
 
-    return attach_mixed_overlay_bidir_terminals_to_project(
+    return attach_mixed_native_bidir_terminals_to_project(
         source,
         destination,
         groups,
         terminal_families=eligible_families,
-        patch_component_links=False,
-        active_terminal_links=False,
-        include_wires=True,
-        allow_unlinked_short_wires=True,
     )
 
 

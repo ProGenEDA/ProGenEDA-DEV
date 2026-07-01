@@ -3724,9 +3724,9 @@
     },
     {
       "id": "R_TERMINAL_SHORT_WIRE_V6_STATIC_20260701",
-      "title": "V6 normalizes T01 terminals before short-wire-only attachment",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.9,
+      "title": "V6 inactive terminals plus trailing wires are rejected",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "mixed component placement",
@@ -3741,9 +3741,34 @@
         "TERMINAL_PLACER_SHORT_WIRE_V6_TEMP_2026_07_01",
         "Resistor short-wire cases at 1x, 3x, and 15x",
         "Mixed accepted-family short-wire cases at 1x, 3x, and 15x",
-        "Static terminal-tail, final-sentinel, orientation, wire-coordinate, unsupported-packet, and layout audits"
+        "Static terminal-tail, final-sentinel, orientation, wire-coordinate, unsupported-packet, and layout audits",
+        "User report 2026-07-01: Bad Object Record remained and no wires rendered"
       ],
-      "rule": "For inactive appended bidirectional terminals, encode suffix/link tail 00000000 and preserve the full last terminal record before a separate final FF sentinel. The active mixed attachment method is T01 terminal placement/labels/orientation followed only by family-derived short WIRE records: RESISTOR uses 254000-unit contact-to-pin wires; CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE use donor-derived zero-length pin records. Left/input bidirectional terminals remain 1800 and right/output terminals remain 0. Do not patch mixed component links or activate mixed terminal suffixes unless future Proteus evidence explicitly requires it.",
+      "rule": "Do not use the V6 mixed output. The Ctrl+S-normalized terminal-only stream remains useful repair evidence, but appending standalone donor wire geometry after inactive terminals is invalid: Proteus retained Bad Object Record and rendered no wires. Wire coordinates alone do not encode attachment.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_NATIVE_WIRE_V7_STATIC_20260701",
+      "title": "V7 serializes complete native terminal/component/wire units",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.95,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "$TERBIDIR",
+        "component pin links",
+        "WIRE",
+        "native object order"
+      ],
+      "evidence": [
+        "User report 2026-07-01: V6 Bad Object Record remained and no wires rendered",
+        "Accepted RESISTOR/v3 component-adjacent wire stream",
+        "Three-component V7 object chunks are byte-identical to accepted RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE writers",
+        "TERMINAL_PLACER_NATIVE_WIRE_V7_TEMP_2026_07_01",
+        "Mixed 1x, 3x, and 15x static validations",
+        "15x stress case: 93 components, 180 active terminals, 180 WIRE records, unique suffixes, two active copies per suffix"
+      ],
+      "rule": "Treat a Proteus attachment as one native unit: activate the terminal suffix, write the same active suffix into the matching component pin-link field, and serialize the donor-derived WIRE records immediately beside that patched component with the accepted family boundary rules. Preserve original component order and unsupported packets. RESISTOR uses 254000-unit contact-to-pin wires; CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE use their accepted pin-coincident donor wires. This V7 mixed composition remains pending Proteus acceptance.",
       "date": "2026-07-01"
     },
     {

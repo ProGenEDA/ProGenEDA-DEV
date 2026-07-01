@@ -453,6 +453,25 @@ Evidence:
   15-input AND/OR gate JSON through the main CLI with zero static issues; the
   AND/OR object and CDB hashes match the earlier accepted expression packs.
 
+## D031: Reject standalone mixed wires and require native attachment units
+
+Decision: reject `MIXED/short-wire-v6-temp`. Mixed terminal attachment must
+serialize each wire as part of the accepted native attachment unit: active
+terminal suffix, matching active component pin-link suffix, and donor-derived
+WIRE records immediately beside the patched component. Keep all six researched
+families in the shared terminal placer.
+
+Evidence:
+
+- The user reported V6 still raised Bad Object Record and rendered no wires.
+- The accepted `RESISTOR/v3` stream proves that its patched component is
+  immediately followed by two 50-byte wire records; the terminal and component
+  carry the same active suffix.
+- V7 reproduces the accepted three-component object chunk byte-for-byte for
+  RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE.
+- V7 mixed 1x/3x/15x static checks pass with DIODE, NPN, and 74HC08 preserved
+  and terminal-free. Mixed Proteus acceptance remains pending.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

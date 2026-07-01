@@ -103,7 +103,7 @@ first, then terminals are attached to the remaining selected pins.
 | Wire Planner | Partial intent only | `component_pipeline.py` |
 | Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
-| Terminal Placer | Six accepted families; temporary Ctrl+S-normalized short-wire candidate | `component_terminal_placer.py` |
+| Terminal Placer | Six accepted families; V7 native-unit mixed candidate | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
 | Value Editor | Lightly tested | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |
@@ -137,15 +137,16 @@ the final terminal record must remain complete before a separate final `FF`
 sentinel. The generated terminal-only control now matches that saved object
 chunk exactly.
 
-The current V6 candidate uses one mixed attachment method only: preserve T01
-terminal coordinates, labels, family order, and 180° left/input versus 0°
-right/output orientation; normalize inactive terminal tails; then append
-family-derived short wires. RESISTOR wires bridge 254,000 internal units from
-terminal contact to pin. CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE preserve
-their donor-derived zero-length pin records. Component link patches and active
-terminal suffixes are disabled in the mixed method. Unsupported packets remain
-byte-identical and terminal-free. The short-wire outputs are static-valid but
-not yet Proteus-accepted.
+V6 was rejected: Bad Object Record remained and none of its standalone trailing
+wire records rendered. V7 therefore serializes the complete accepted native
+attachment state: active terminal suffix, the same active component pin-link
+suffix, and donor-derived WIRE records immediately beside the patched
+component. It preserves original component order and keeps unsupported packets
+byte-identical and terminal-free. RESISTOR wires bridge 254,000 internal units
+from terminal contact to pin. CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE
+preserve their accepted pin-coincident donor wires. Each V7 3x family output is
+byte-identical to its accepted standalone writer; mixed outputs remain pending
+Proteus acceptance.
 
 When IC and non-IC packets coexist, the packet beautifier uses separate
 vertical bands with at least 5,080,000 internal units between the parsed IC
