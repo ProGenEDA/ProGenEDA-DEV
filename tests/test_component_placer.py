@@ -42,6 +42,7 @@ from proteusgen.component_terminal_placer import (
     TERMINAL_SYMBOL_TO_PIN,
     attach_capacitor_bidir_terminals_to_project,
     attach_component_bidir_terminals_to_project,
+    attach_mixed_overlay_bidir_terminals_to_project,
     attach_resistor_bidir_terminals_to_project,
     plan_attached_capacitor_terminals,
     plan_attached_electrolytic_capacitor_terminals,
@@ -1380,7 +1381,7 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
     assert report["terminal_count_added"] == 2
 
 
-def test_shared_terminal_dispatcher_mixed_selection_uses_append_overlay(
+def test_shared_terminal_dispatcher_mixed_selection_preserves_t01_then_adds_wires(
     tmp_path: Path,
 ) -> None:
     base = tmp_path / "mixed_selective_base.pdsprj"
@@ -1409,6 +1410,14 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_append_overlay(
         base,
         output,
         result.selected_groups,
+        terminal_families=[
+            "VSOURCE",
+            "CSOURCE",
+            "CAP",
+            "CAP-ELEC",
+            "REALIND",
+            "RESISTOR",
+        ],
     )
     chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
     preserved_keys = {row["component_key"] for row in report["preserved_groups"]}
@@ -1417,11 +1426,55 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_append_overlay(
         for family_report in report["family_reports"]
         for pair in family_report["terminal_pairs"]
     }
+    resistor_pair = next(
+        pair
+        for family_report in report["family_reports"]
+        for pair in family_report["terminal_pairs"]
+        if pair["component_family"] == "RESISTOR"
+    )
+    expected_wire_coordinates = sorted(
+        (
+            wire["start"]["x"],
+            wire["start"]["y"],
+            wire["end"]["x"],
+            wire["end"]["y"],
+        )
+        for family_report in report["family_reports"]
+        for pair in family_report["terminal_pairs"]
+        for wire in pair["short_wires"].values()
+    )
+    actual_wire_coordinates: list[tuple[int, int, int, int]] = []
+    wire_cursor = chunk.find(b"\x7fWIRE") - 23
+    for pair_index in range(report["wire_count_added"] // 2):
+        wire_sizes = (
+            50,
+            50
+            if pair_index == report["wire_count_added"] // 2 - 1
+            else 49,
+        )
+        for size in wire_sizes:
+            wire = chunk[wire_cursor : wire_cursor + size]
+            marker = wire.find(b"\x7fWIRE")
+            coordinate_start = marker - 23
+            actual_wire_coordinates.append(
+                tuple(
+                    int.from_bytes(
+                        wire[
+                            coordinate_start + offset :
+                            coordinate_start + offset + 4
+                        ],
+                        "little",
+                        signed=True,
+                    )
+                    for offset in (33, 37, 41, 45)
+                )
+            )
+            wire_cursor += size
 
     assert result.valid
     assert result.layout_plan["binary_coordinate_mutation"]["visible_translated_count"] == 9
     assert report["valid"] is True
-    assert report["family_handler"] == "MIXED/append-overlay-v3-temp"
+    assert report["family_handler"] == "MIXED/short-wire-v6-temp"
     assert report["eligible_families"] == [
         "RESISTOR",
         "CAP",
@@ -1453,10 +1506,76 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_append_overlay(
     assert terminal_pair_families.isdisjoint({"DIODE", "NPN", "74HC08"})
     assert report["terminal_count_added"] == 12
     assert report["wire_count_added"] == 12
+    assert report["patch_component_links"] is False
+    assert report["active_terminal_links"] is False
+    assert report["terminal_pin_contacts_valid"] is False
+    assert report["allow_unlinked_short_wires"] is True
+    assert report["expected_active_suffix_copies"] == 0
     assert report["terminal_suffixes_unique"] is True
     assert report["terminal_suffix_links_valid"] is True
+    assert (
+        resistor_pair["left"]["symbol_x"]
+        == resistor_pair["pins"]["left"]["x"] - TERMINAL_SYMBOL_TO_PIN
+    )
+    assert (
+        resistor_pair["right"]["symbol_x"]
+        == resistor_pair["pins"]["right"]["x"] + TERMINAL_SYMBOL_TO_PIN
+    )
     assert chunk.count(b"$TERBIDIR") == 12
     assert chunk.count(b"\x7fWIRE") == 12
+    assert all(
+        record[-4:] == b"\x00\x00\x00\x00"
+        for record in extract_bidir_records(chunk)
+    )
+    assert sorted(actual_wire_coordinates) == expected_wire_coordinates
+    assert wire_cursor == len(chunk)
+
+
+def test_resistor_terminal_only_stream_matches_user_ctrl_s_repair(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "resistor_ctrl_s_base.pdsprj"
+    output = tmp_path / "resistor_ctrl_s_normalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "components": {
+                "RESISTOR": 1,
+                "DIODE": 1,
+                "NPN": 1,
+                "74HC08": 1,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_overlay_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=("RESISTOR",),
+        patch_component_links=False,
+        active_terminal_links=False,
+        include_wires=False,
+    )
+    output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    saved_chunk = _extract_object_chunk(
+        read_internal_file(
+            ROOT
+            / "fixtures"
+            / "pdsprj"
+            / "t06_resistor_ctrl_s_repair_20260701.pdsprj",
+            "ROOT.DSN",
+        )
+    )
+    terminals = extract_bidir_records(output_chunk)
+
+    assert report["valid"] is True
+    assert output_chunk == saved_chunk
+    assert len(terminals) == 2
+    assert all(record[-4:] == b"\x00\x00\x00\x00" for record in terminals)
+    assert output_chunk.count(b"\x7fWIRE") == 0
 
 
 def test_shared_terminal_dispatcher_noneligible_selection_is_exact_copy(

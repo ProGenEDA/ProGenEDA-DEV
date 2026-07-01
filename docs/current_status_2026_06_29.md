@@ -48,9 +48,9 @@ validated request
     eight-electrolytic-capacitor donor structure;
   - accepted `VSOURCE/v4` and `CSOURCE/v4` attachment using the accepted
     bidirectional V3 source roles, body links, and wire geometry;
-  - a temporary mixed append-overlay candidate that keeps the beautified
-    component stream intact, attaches only those six accepted families, and
-    preserves unsupported component packets;
+  - a temporary short-wire-only mixed candidate that keeps the beautified
+    component stream and Ctrl+S-normalized T01 terminal order intact, adds
+    family-derived wires, and preserves unsupported component packets;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
@@ -73,7 +73,7 @@ The current user test packs are:
 - `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
-- `experiments/TERMINAL_PLACER_MIXED_OVERLAY_V3_TEMP_2026_07_01.zip`
+- `experiments/TERMINAL_PLACER_SHORT_WIRE_V6_TEMP_2026_07_01.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -165,8 +165,44 @@ The V3 diagnostic pack contains:
 - T03: passive-only attachment overlay with 8 terminals and 8 wires;
 - T04: source-only attachment overlay with 4 terminals and 4 wires.
 
-All five cases pass static checks. Proteus open, render, attachment, and
-simulation testing is still required.
+The user rejected V3 as a mixed attachment method. T02-T04 were described as
+terrible. T01 was the only close case: its component-first append-only order
+placed terminals correctly near the pins, but the resistor remained
+unattached. The user then clarified the missing invariant: Proteus requires a
+small `WIRE` record between each terminal and component pin. Direct coordinate
+contact without a wire is not attachment.
+
+The T01/V3 comparison also exposes two independent differences:
+
+- T01 retains RESISTOR/CAP/REALIND/CAP-ELEC/VSOURCE/CSOURCE terminal order;
+- rejected T02 reordered the array source-first and simultaneously changed
+  component links, terminal active flags, and wire presence.
+
+V5 confirmed the short-wire geometry but still produced Bad Object Record.
+The user supplied a Proteus Ctrl+S repair of its isolated resistor case. The
+binary diff proves two exact writer faults:
+
+- inactive appended terminal suffix/link tails must be `00 00 00 00`;
+- a terminal-only stream keeps the full last terminal record and appends a
+  separate final `FF` sentinel.
+
+Proteus Ctrl+S also removed both old resistor wire records. The repaired
+terminal-only output generated with these rules is now object-chunk identical
+to the supplied Ctrl+S project.
+
+`MIXED/short-wire-v6-temp` is the only active mixed attachment method. It uses
+Ctrl+S-normalized T01 terminal placement, labels, and orientation, then adds
+donor-derived short wires without component-link patches or active-terminal
+suffixes. RESISTOR uses two 254,000-unit wires from terminal contacts to pins.
+CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE use their accepted zero-length
+pin-coincident wire records. DIODE, NPN, and 74HC08 remain byte-preserved and
+terminal-free.
+
+The V6 pack contains the exact saved repair, a generated object-identical
+terminal-only control, resistor 1x/3x/15x, and full mixed
+1x/3x/15x short-wire projects. All eight cases pass static record, endpoint,
+orientation, suffix-tail, preservation, and layout checks. Proteus testing is
+required for the short-wire outputs.
 
 The packet beautifier now places IC and non-IC families in separate vertical
 bands when they coexist. The lower band begins at least 5,080,000 internal
@@ -175,7 +211,7 @@ units below the maximum parsed IC coordinate. This corrects the reported
 
 ## Verification Baseline
 
-- focused component placer suite: 51 passed;
+- focused component placer suite: 53 passed;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
@@ -188,11 +224,15 @@ units below the maximum parsed IC coordinate. This corrects the reported
 - DC-voltage-source-specific V4 attachment: Proteus-accepted and locked.
 - DC-current-source-specific V4 attachment: Proteus-accepted and locked.
 - mixed selective V1: user-rejected.
-- mixed append-overlay V3: 5/5 static-valid; pending user Proteus test.
+- mixed append-overlay V3: rejected; only T01 supplied useful placement/order
+  evidence.
+- mixed wire-ablation V5: rejected with Bad Object Record.
+- mixed short-wire V6: 8/8 static-valid; terminal-only control matches the
+  user Ctrl+S repair exactly; short-wire Proteus tests pending.
 - mixed IC/non-IC bands: focused static regression passed; pending visual test.
 
 ## Next Engineering Step
 
-Test the V3 pack in T00 through T04 order. Continue donor collection using
+Test the V6 pack in T00 through T07 order, prioritizing T01 and T02. Continue donor collection using
 `docs/complete_component_donor_request.md`; the next handler batch remains the
 unsupported two-pin families, with no cross-family pattern guessing.

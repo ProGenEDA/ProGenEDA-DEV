@@ -3668,9 +3668,9 @@
     },
     {
       "id": "R_TERMINAL_MIXED_APPEND_OVERLAY_V3_STATIC_20260701",
-      "title": "Mixed append overlay preserves the opening component-first order",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.85,
+      "title": "V3 mixed append overlay is rejected but T01 preserves useful order evidence",
+      "status": "rejected_with_partial_order_evidence",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "component_beautifier",
@@ -3687,9 +3687,85 @@
         "T03 passive-only 8-terminal/8-wire overlay",
         "T04 source-only 4-terminal/4-wire overlay",
         "Focused family attachment and mixed-dispatch tests",
-        "Independent component-prefix, suffix-link, marker-count, unsupported-packet, and layout-band audit"
+        "Independent component-prefix, suffix-link, marker-count, unsupported-packet, and layout-band audit",
+        "User report 2026-07-01: V3 was terrible; only T01 came close",
+        "User report 2026-07-01: T01 terminals were positioned correctly but resistor was unattached"
       ],
-      "rule": "For the temporary mixed candidate, retain the beautified component stream and its component record order. Patch only accepted RESISTOR, CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE endpoint link fields, then append their terminal records and donor-derived zero-length wires. Preserve DIODE, NPN, 74HC08, and every other unsupported packet byte-for-byte and emit no terminals for them. Keep source suffixes globally unique. When IC and non-IC packets coexist, place them in separate vertical bands with at least 5080000 internal units of parsed-coordinate clearance. This candidate must not be promoted until Proteus open, render, attachment, and simulation tests pass.",
+      "rule": "Do not use V3 T02-T04 as a mixed attachment method. Retain only T01 evidence: keep the complete beautified component stream first and preserve its RESISTOR/CAP/REALIND/CAP-ELEC/VSOURCE/CSOURCE terminal order. T01 does not prove attachment because it has no WIRE records. Rejected T02 also reordered terminals source-first while changing component links, terminal active flags, and wires simultaneously.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_MIXED_WIRE_V5_STATIC_20260701",
+      "title": "Mixed V5 is rejected by Bad Object Record",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "terminal WIRE records",
+        "terminal eligibility",
+        "unsupported component preservation"
+      ],
+      "evidence": [
+        "User clarification 2026-07-01: small wires are mandatory in Proteus",
+        "TERMINAL_PLACER_MIXED_WIRE_V5_TEMP_2026_07_01",
+        "T00 exact known-close V3 T01 reproduction",
+        "T01 preserves T00 component and terminal streams then adds 12 family-derived wires only",
+        "T02/T03 independently ablate terminal active flags and component link patches",
+        "T04 exactly reproduces rejected V3 T02",
+        "T05 component move-away/move-back restores the exact T01 object chunk",
+        "T06 isolates resistor plus its two 254000-unit wires and unsupported controls",
+        "All emitted wire starts match terminal contacts and wire ends match component pins",
+        "User report 2026-07-01: V5 has Bad Object Record, also present in terminal-only T01",
+        "User supplied Ctrl+S repair of isolated resistor T06"
+      ],
+      "rule": "Do not use V5 output. Although its planned wire geometry was correct, inactive terminal records retained nonzero suffixes and the terminal-only writer overwrote the last terminal tail byte with the final FF. Proteus reported Bad Object Record. Ctrl+S zeroed the inactive suffixes, restored a separate final sentinel, and removed the invalid old wire records.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_SHORT_WIRE_V6_STATIC_20260701",
+      "title": "V6 normalizes T01 terminals before short-wire-only attachment",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.9,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "$TERBIDIR",
+        "WIRE",
+        "Ctrl+S normalization"
+      ],
+      "evidence": [
+        "fixtures/pdsprj/t06_resistor_ctrl_s_repair_20260701.pdsprj",
+        "User-supplied Ctrl+S repair SHA256 a81bd7a5fa0fb23bd9eeccd43b86813ec67510980bcc87af0a158cbf3080f068",
+        "Generated terminal-only control object chunk exactly matches the Ctrl+S repair",
+        "TERMINAL_PLACER_SHORT_WIRE_V6_TEMP_2026_07_01",
+        "Resistor short-wire cases at 1x, 3x, and 15x",
+        "Mixed accepted-family short-wire cases at 1x, 3x, and 15x",
+        "Static terminal-tail, final-sentinel, orientation, wire-coordinate, unsupported-packet, and layout audits"
+      ],
+      "rule": "For inactive appended bidirectional terminals, encode suffix/link tail 00000000 and preserve the full last terminal record before a separate final FF sentinel. The active mixed attachment method is T01 terminal placement/labels/orientation followed only by family-derived short WIRE records: RESISTOR uses 254000-unit contact-to-pin wires; CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE use donor-derived zero-length pin records. Left/input bidirectional terminals remain 1800 and right/output terminals remain 0. Do not patch mixed component links or activate mixed terminal suffixes unless future Proteus evidence explicitly requires it.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_ARCH_REPLACEABLE_PLACER_CONTRACT_20260701",
+      "title": "Downstream stages consume a replaceable placed-design contract",
+      "status": "owner_directive",
+      "confidence": 1.0,
+      "applies_to": [
+        "component placer",
+        "beautifier",
+        "terminal placer",
+        "wire planner",
+        "value editor",
+        "backend adapters"
+      ],
+      "evidence": [
+        "Owner architecture directive 2026-07-01",
+        "AGENTS.md Replaceable Stage Contracts",
+        "docs/architecture.md Replaceable placer contract",
+        "docs/progen_eda_canonical_pipeline.md non-negotiable rules"
+      ],
+      "rule": "A deletion-based mega-donor placer and a future byte-forming placer must be interchangeable when they emit the same placed-design contract. Downstream stages may consume ordered component identity/family/reference/native packet, bounds, transform, normalized pin descriptors, backend profile IDs, and project output. They must not depend on a giant donor filename, donor slot, fixed template coordinate, global hardcoded component ID, or incidental removal-only object order. IC pin number/name/role/electrical type/coordinates come from backend symbol/device metadata or accepted donor/library parsers, never visual guessing. Shared IR remains backend-neutral for Proteus, KiCad, PSpice, and Altium adapters.",
       "date": "2026-07-01"
     }
   ]

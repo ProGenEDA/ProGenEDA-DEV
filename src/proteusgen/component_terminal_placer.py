@@ -7,6 +7,11 @@ Terminal attachment is family-specific. The rejected V2 bounding-box helper is
 retained for diagnostic compatibility, but production experiments must use a
 researched family handler that patches pin-link suffixes and emits any
 donor-proven short-wire records required by that family.
+
+The temporary mixed route is narrower: it preserves the user-proven T01
+terminal coordinates/order, applies Proteus Ctrl+S normalization to inactive
+terminal tails, and uses only family-derived short WIRE records for pin
+attachment. It does not reuse the single-family link-patch ordering.
 """
 
 from __future__ import annotations
@@ -2249,6 +2254,46 @@ def _terminal_suffixes(report: dict[str, Any]) -> tuple[int, ...]:
     return tuple(suffixes)
 
 
+def _terminal_pin_contact_checks(
+    family_reports: Iterable[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Describe whether every appended terminal's triangle tip reaches its pin."""
+
+    checks: list[dict[str, Any]] = []
+    for family_report in family_reports:
+        for pair in family_report.get("terminal_pairs", []):
+            pins = pair.get("pins", {})
+            roles = ("left", "right") if pair.get("left") else ("input", "output")
+            for role in roles:
+                terminal = pair.get(role, {})
+                pin = pins.get(role, {})
+                angle = terminal.get("angle_tenths")
+                if angle == LEFT_SIDE_ANGLE:
+                    contact_x = terminal.get("symbol_x", 0) + TERMINAL_CONTACT_TO_PIN
+                elif angle == RIGHT_SIDE_ANGLE:
+                    contact_x = terminal.get("symbol_x", 0) - TERMINAL_CONTACT_TO_PIN
+                else:
+                    contact_x = None
+                checks.append(
+                    {
+                        "component_key": pair.get("component_key"),
+                        "component_family": pair.get("component_family"),
+                        "role": role,
+                        "terminal_symbol_x": terminal.get("symbol_x"),
+                        "terminal_symbol_y": terminal.get("symbol_y"),
+                        "terminal_contact_x": contact_x,
+                        "terminal_contact_y": terminal.get("symbol_y"),
+                        "pin_x": pin.get("x"),
+                        "pin_y": pin.get("y"),
+                        "coincident": (
+                            contact_x == pin.get("x")
+                            and terminal.get("symbol_y") == pin.get("y")
+                        ),
+                    }
+                )
+    return checks
+
+
 def _overlay_terminal_record(
     templates: Any,
     terminal: TerminalSpec,
@@ -2261,7 +2306,7 @@ def _overlay_terminal_record(
         symbol_x=terminal.symbol_x,
         symbol_y=terminal.symbol_y,
         angle_tenths=terminal.angle_tenths,
-        suffix=terminal.suffix,
+        suffix=terminal.suffix if active_link else 0,
         active_link=active_link,
     )
 
@@ -2510,6 +2555,7 @@ def attach_mixed_overlay_bidir_terminals_to_project(
     patch_component_links: bool = True,
     active_terminal_links: bool = True,
     include_wires: bool = True,
+    allow_unlinked_short_wires: bool = False,
 ) -> dict[str, Any]:
     """Temporary mixed route based on the user-confirmed opening V2 order.
 
@@ -2544,15 +2590,23 @@ def attach_mixed_overlay_bidir_terminals_to_project(
         raise ValueError(
             "Mixed terminal overlay requires at least one accepted terminal family."
         )
-    if include_wires and not (patch_component_links and active_terminal_links):
+    if (
+        include_wires
+        and not (patch_component_links and active_terminal_links)
+        and not (
+            allow_unlinked_short_wires
+            and not patch_component_links
+            and not active_terminal_links
+        )
+    ):
         raise ValueError(
-            "Mixed overlay wires require patched component links and active terminal links."
+            "Unlinked mixed wires require allow_unlinked_short_wires=True "
+            "with both component and terminal link state disabled."
         )
     if patch_component_links != active_terminal_links:
         raise ValueError(
             "Component link patches and active terminal links must be enabled together."
         )
-
     source = Path(project)
     destination = Path(output)
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -2639,7 +2693,10 @@ def attach_mixed_overlay_bidir_terminals_to_project(
     )
     if not new_chunk:
         raise ValueError("Mixed terminal overlay produced an empty object chunk.")
-    new_chunk = new_chunk[:-1] + b"\xff"
+    if wire_records:
+        new_chunk = new_chunk[:-1] + b"\xff"
+    else:
+        new_chunk += b"\xff"
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
@@ -2650,18 +2707,31 @@ def attach_mixed_overlay_bidir_terminals_to_project(
         for suffix in _terminal_suffixes(report)
     )
     suffixes_unique = len(suffixes) == len(set(suffixes))
+    expected_active_suffix_copies = int(patch_component_links) + int(
+        active_terminal_links
+    )
     suffix_links_valid = (
-        not patch_component_links
-        or (
-            suffixes_unique
-            and all(
-                final_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
-                for suffix in suffixes
-            )
+        suffixes_unique
+        and all(
+            final_chunk.count(struct.pack("<H", suffix) + b"\x01\x00")
+            == expected_active_suffix_copies
+            for suffix in suffixes
         )
     )
     expected_terminals = len(terminal_records)
     expected_wires = len(wire_pairs) * 2 if include_wires else 0
+    terminal_pin_contact_checks = _terminal_pin_contact_checks(family_reports)
+    terminal_pin_contacts_valid = all(
+        row["coincident"] for row in terminal_pin_contact_checks
+    )
+    if (
+        include_wires
+        and not patch_component_links
+        and not active_terminal_links
+    ):
+        family_handler = "MIXED/short-wire-v6-temp"
+    else:
+        family_handler = "MIXED/append-overlay-v3-temp"
     preserved_rows = []
     for group in groups:
         family = str(getattr(group, "family", ""))
@@ -2680,11 +2750,18 @@ def attach_mixed_overlay_bidir_terminals_to_project(
         )
     return {
         "stage": "terminal_placer",
-        "family_handler": "MIXED/append-overlay-v3-temp",
+        "family_handler": family_handler,
         "status": "temporary_pending_proteus",
         "attachment_policy": "preserve_component_order_then_append_terminal_wire_overlay",
         "object_order": "component_placer_stream_then_all_terminals_then_all_wires",
-        "historical_basis": "user_confirmed_all_family_v2_opened_with_unattached_appended_terminals",
+        "historical_basis": (
+            "user_ctrl_s_normalized_t01_terminal_stream_then_short_wires"
+            if family_handler == "MIXED/short-wire-v6-temp"
+            else "user_confirmed_all_family_v2_opened_with_unattached_appended_terminals"
+        ),
+        "wire_requirement_basis": "user_confirmed_terminal_to_pin_wires_are_mandatory",
+        "terminal_array_order_policy": "selected_component_stream_order",
+        "terminal_family_order": list(requested),
         "eligible_families": list(requested),
         "available_accepted_families": [
             family
@@ -2700,7 +2777,16 @@ def attach_mixed_overlay_bidir_terminals_to_project(
         ),
         "patch_component_links": patch_component_links,
         "active_terminal_links": active_terminal_links,
+        "inactive_terminal_suffix_policy": (
+            "not_applicable"
+            if active_terminal_links
+            else "zero_as_proteus_ctrl_s_normalized"
+        ),
         "wire_record_emission": include_wires,
+        "allow_unlinked_short_wires": allow_unlinked_short_wires,
+        "expected_active_suffix_copies": expected_active_suffix_copies,
+        "terminal_pin_contacts_valid": terminal_pin_contacts_valid,
+        "terminal_pin_contact_checks": terminal_pin_contact_checks,
         "component_stream_prefix_preserved": final_chunk.startswith(
             patched_chunk[:-1]
         ),
@@ -2744,10 +2830,10 @@ def attach_component_bidir_terminals_to_project(
     """Attach accepted families and preserve every unsupported mixed packet.
 
     Single-family calls retain the exact accepted family writer. Mixed calls
-    keep the component-placer stream in place and append terminals and wires
-    through the temporary overlay route. This follows the older all-family
-    record order that opened in Proteus while applying the accepted per-family
-    attachment geometry and link fields.
+    keep the component-placer stream and Ctrl+S-normalized T01 terminal array
+    intact, then append family-derived WIRE records. Component link fields and
+    terminal active-link flags remain untouched; short WIRE records are the
+    only mixed attachment method.
     """
 
     groups = tuple(selected_groups)
@@ -2756,7 +2842,11 @@ def attach_component_bidir_terminals_to_project(
     families = {str(getattr(group, "family", "")) for group in groups}
     accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     available_eligible_families = tuple(
-        family for family in ACCEPTED_TERMINAL_FAMILY_ORDER if family in families
+        dict.fromkeys(
+            str(getattr(group, "family", ""))
+            for group in groups
+            if str(getattr(group, "family", "")) in accepted
+        )
     )
     if terminal_families is None:
         eligible_families = available_eligible_families
@@ -2778,7 +2868,7 @@ def attach_component_bidir_terminals_to_project(
             )
         eligible_families = tuple(
             family
-            for family in ACCEPTED_TERMINAL_FAMILY_ORDER
+            for family in available_eligible_families
             if family in requested_terminal_families
         )
     preserved_groups = tuple(
@@ -2851,12 +2941,11 @@ def attach_component_bidir_terminals_to_project(
         source,
         destination,
         groups,
-        terminal_families=(
-            None if terminal_families is None else eligible_families
-        ),
-        patch_component_links=True,
-        active_terminal_links=True,
+        terminal_families=eligible_families,
+        patch_component_links=False,
+        active_terminal_links=False,
         include_wires=True,
+        allow_unlinked_short_wires=True,
     )
 
 

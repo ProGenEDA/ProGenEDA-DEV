@@ -103,7 +103,7 @@ first, then terminals are attached to the remaining selected pins.
 | Wire Planner | Partial intent only | `component_pipeline.py` |
 | Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
-| Terminal Placer | Six accepted families; temporary mixed append-overlay candidate | `component_terminal_placer.py` |
+| Terminal Placer | Six accepted families; temporary Ctrl+S-normalized short-wire candidate | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
 | Value Editor | Lightly tested | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |
@@ -123,15 +123,29 @@ its donor-researched `REALIND/v2` replacement passed user Proteus testing on
 2026-06-30 and is locked. `CAP-ELEC/v3`, `VSOURCE/v4`, and `CSOURCE/v4` also
 passed their 1x/3x/15x Proteus tests on 2026-06-30.
 
-The first mixed selective candidate is rejected by user Proteus testing
-because it rebuilt independently accepted family blocks. The current
-temporary candidate instead retains the older user-confirmed opening order:
-the complete beautified component stream remains first, accepted component
-link fields are patched in place, and terminal/wire records are appended as
-an overlay. It terminalizes only RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE,
-and CSOURCE; other packets are copied byte-for-byte. VSOURCE and CSOURCE use
-one global source ordinal so endpoint suffixes cannot collide. This V3
-append-overlay is static-valid but not Proteus-accepted yet.
+The first mixed selective candidate is rejected because it rebuilt
+independently accepted family blocks. V3 retained the complete beautified
+component stream, but the user rejected its full attachment cases. Only its
+T01 no-wire case supplied useful evidence: the component-first stream and
+RESISTOR/CAP/REALIND/CAP-ELEC/VSOURCE/CSOURCE terminal order opened and placed
+terminals correctly. The user confirmed that terminal-to-pin attachment still
+requires a Proteus `WIRE` record.
+
+V5 still produced Bad Object Record. A user-supplied Proteus Ctrl+S repair
+proved that inactive appended terminal suffix/link tails must be zero and that
+the final terminal record must remain complete before a separate final `FF`
+sentinel. The generated terminal-only control now matches that saved object
+chunk exactly.
+
+The current V6 candidate uses one mixed attachment method only: preserve T01
+terminal coordinates, labels, family order, and 180° left/input versus 0°
+right/output orientation; normalize inactive terminal tails; then append
+family-derived short wires. RESISTOR wires bridge 254,000 internal units from
+terminal contact to pin. CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE preserve
+their donor-derived zero-length pin records. Component link patches and active
+terminal suffixes are disabled in the mixed method. Unsupported packets remain
+byte-identical and terminal-free. The short-wire outputs are static-valid but
+not yet Proteus-accepted.
 
 When IC and non-IC packets coexist, the packet beautifier uses separate
 vertical bands with at least 5,080,000 internal units between the parsed IC
@@ -163,3 +177,16 @@ request is `docs/complete_component_donor_request.md`.
 9. A mixed terminal route must preserve the component-placer stream order;
    independently rebuilding and concatenating accepted family-native blocks is
    rejected evidence.
+10. A terminal touching a pin geometrically is not attachment proof. Every
+    accepted terminal endpoint requires its family-derived `WIRE` record, even
+    when that record has zero geometric length.
+11. Mixed terminal-family order must follow the opening T01 component/terminal
+    stream; do not silently reorder accepted families through dispatcher
+    priority.
+12. The component placer is replaceable. Every placer must emit the stable
+    placed-design contract documented in `docs/architecture.md`; downstream
+    stages must not depend on mega-donor filenames, donor slots, or fixed
+    template coordinates.
+13. IC pin meaning comes from normalized backend pin metadata, not geometry.
+    Terminal/wire stages consume pin number, name, role, electrical type, and
+    connection coordinates from the placed-design contract.

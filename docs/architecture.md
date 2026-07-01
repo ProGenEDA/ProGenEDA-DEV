@@ -68,6 +68,51 @@ does not synthesize terminals, wires, or cloned components. `SWITCH` and
 `POT-HG` use exactly the requested packet count and are beautified through
 their proven linked coordinate plans.
 
+### Replaceable placer contract
+
+The component placer is an interchangeable producer. Removal from a mega
+donor is the current implementation, not an architectural requirement. A
+future byte-forming placer may add components to an empty sheet without
+changing beautification, terminal placement, wiring, value editing, or final
+validation if it emits the same placed-design contract.
+
+That contract must contain:
+
+- the generated backend project;
+- ordered component identity, family, reference, and complete native packet;
+- body bounds and transform/orientation;
+- normalized pin descriptors: number, name, logical role, electrical type,
+  connection coordinate, and backend record/link identity;
+- backend/family profile IDs needed for safe mutation;
+- explicit capabilities and unsupported families.
+
+Downstream stages must not depend on:
+
+- one giant donor filename or donor slot;
+- fixed coordinates inherited from a template;
+- globally hardcoded component IDs;
+- the removal-only placer’s incidental object order;
+- a value token or wire position belonging to one old project.
+
+The current implementation is only partially decoupled. The packet beautifier
+and terminal placer already accept ordered selected packets rather than a
+specific mega-donor filename, but they still rely on Proteus family-specific
+packet parsers and donor-derived terminal/wire profiles. The value editor
+still supports only proven same-length property mutations. Replacing the
+placer today is therefore feasible through an adapter, but not yet a zero-code
+swap. The required cleanup is to formalize the placed-design/pin contract and
+make every downstream stage consume it instead of private placer records.
+
+For ICs, pin number and meaning must come from backend symbol/device metadata
+or an accepted donor/library parser and be normalized into the pin descriptor.
+Reset, clock, input, output, enable, and supply roles must never be guessed
+from visual position alone. Proteus can source this from accepted DSN/CDB
+device evidence; KiCad should source it from symbol-library pin metadata.
+
+Logical CircuitIR and stage contracts should remain backend-neutral. Proteus,
+KiCad, PSpice, and Altium details belong in backend profiles and emitters so
+the same high-level architecture can scale to 200+ component families.
+
 Each generated component-placement project writes a sidecar manifest:
 
 ```text
@@ -118,5 +163,7 @@ The repository contains a deterministic CLI, CircuitIR parsing and readiness
 validation, fixture provenance checks, locked legacy circuit generators,
 removal-only mega-donor component placement, family-specific coordinate
 mutation, semantic project comparison, and result ingestion. Value editing is
-lightly tested. Resistor terminal attachment is accepted; other terminal
-families and arbitrary unified-route wiring remain experimental.
+lightly tested. Focused terminal attachment is accepted for RESISTOR, CAP,
+REALIND, CAP-ELEC, VSOURCE, and CSOURCE; the unified mixed short-wire route
+remains experimental. Formal placed-design and normalized-pin contracts are
+the next decoupling milestone after terminal placement.

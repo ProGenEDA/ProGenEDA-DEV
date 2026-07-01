@@ -81,3 +81,29 @@ implementation work. After any repository change, update `context.md`, create
 a scoped commit, push the current branch without force, and verify the remote
 branch hash matches local `HEAD`. Do not leave completed work only in the
 working tree or only in chat.
+
+## Replaceable Stage Contracts
+
+The component placer is a replaceable producer, not the owner of downstream
+behavior. A deletion-based mega-donor placer and a future byte-forming placer
+must be interchangeable when they emit the same placed-design contract:
+ordered component identity/family/reference, complete backend-native packet,
+resolved body bounds, pin descriptors, and the generated project.
+
+Beautification, terminal placement, wiring, value editing, and validation must
+not depend on one giant donor filename, donor slot numbers, fixed template
+coordinates, or unrelated component IDs. They may depend only on the stable
+placed-design contract plus backend/family profiles. Do not add new downstream
+logic that searches for a specific mega donor or assumes the removal-only
+placer’s object order.
+
+Pin identity is a first-class contract. Backend adapters must expose normalized
+pin number/name/role/electrical type/coordinates; IC terminal and wiring logic
+must consume those descriptors rather than infer reset, clock, input, output,
+or supply roles from geometry. New component families should be added through
+one family/profile registry and focused evidence, not by editing many
+unrelated scripts.
+
+Shared logical IR and stage interfaces should remain backend-neutral enough
+for Proteus, KiCad, PSpice, and Altium adapters. Backend-specific binary or
+symbol details belong behind backend profiles and emitters.
