@@ -30,6 +30,43 @@ embedded Python metadata from the repository:
 - source-backed generator specs in `kicad.generator.kicad_json_to_project.KIND_SPECS`
 - partial CircuitIR placement specs in `kicad.pipeline.placement_catalog`
 
+The current validator is intentionally only a placement-stage validator. The
+future full output validation stack is:
+
+```text
+1. File validity
+2. Component count/reference/value check
+3. Pin existence check
+4. Netlist export
+5. Expected-net comparison
+6. ERC
+7. Optional PDF/SVG preview export
+8. Final validation_report.json
+```
+
+## Arrangement, Beautifier, And Wire Planner
+
+The next independent JSON stages are present but not wired into project writing:
+
+- `arrangement_decider.decide_arrangement(placement, circuit)`
+  emits a coordinate-plan JSON using topology depth, barycenter ordering,
+  power/ground placement, clock detection, and density warnings.
+- `beautifier.apply_coordinate_edits(placement, coordinate_plan)`
+  applies only coordinate edits and returns a new placement JSON object.
+- `wire_planner.plan_wiring(placement, circuit)`
+  emits two JSON contracts: `coordinate_plan` for the beautifier and `wire_plan`
+  for a later EDA-specific wire maker.
+
+`wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
+S-expressions or Proteus files.
+
+Detailed behavior, JSON contracts, validation expectations, and future routing
+rules are recorded in:
+
+```text
+kicad/pipeline/BEAUTIFIER_WIRE_PLANNER_DESIGN.md
+```
+
 ## Practical Component Pack
 
 Historical early input packs live under:

@@ -62,6 +62,56 @@ its existing support modules/tests safely.
 
 `kicad/pipeline/component_placer.py` is only a compatibility wrapper.
 
+## Component Placer Validation Extension
+
+The current validator is a placement-stage validator, not the final circuit
+validator. It checks input shape, supported component kinds/pins where known,
+requested component placement, and component body overlaps.
+
+The future validation pipeline for generated KiCad output is:
+
+```text
+1. File validity
+2. Component count/reference/value check
+3. Pin existence check
+4. Netlist export
+5. Expected-net comparison
+6. ERC
+7. Optional PDF/SVG preview export
+8. Final validation_report.json
+```
+
+Add these as incremental validator extensions after each producing stage exists.
+Do not treat static placement validation as final schematic correctness.
+
+## Arrangement, Beautifier, And Wire Planner
+
+The active post-placer stage files are:
+
+```text
+kicad/pipeline/arrangement_decider.py
+kicad/pipeline/beautifier.py
+kicad/pipeline/wire_planner.py
+```
+
+`arrangement_decider.py` decides first-pass coordinates from topology,
+signal-flow, power/ground, grouping, clock, density, and crossing-minimization
+rules.
+
+`beautifier.py` is only a coordinate editor. It applies coordinate-plan JSON and
+must not invent placement or routing logic.
+
+`wire_planner.py` is a pure mathematical JSON unit. It consumes placement JSON
+and CircuitIR-style connection JSON, then emits:
+
+```text
+wire_coordinate_plan.json
+wire_plan.json
+```
+
+The wire planner must remain independent of KiCad/Proteus file formats. EDA
+specific drawing belongs to a later wire maker.
+
 ## Generated Circuit Records
 
 Never overwrite a generated KiCad circuit or generated example run. Even a

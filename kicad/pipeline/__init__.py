@@ -1,9 +1,12 @@
 """Stage-based KiCad generation pipeline."""
 
 from .context import PipelineContext, PipelineError, StageResult
+from .arrangement_decider import decide_arrangement
+from .beautifier import apply_coordinate_edits
 from .placement_input_validator import validate_placement_input
 from .placement_validator import validate_placement
 from .placer_pipeline import run_placer_pipeline
+from .wire_planner import plan_wire_routes, plan_wiring, write_wire_planner_jsons
 
 
 def place_components(*args, **kwargs):
@@ -21,9 +24,14 @@ __all__ = [
     "PipelineContext",
     "PipelineError",
     "StageResult",
+    "apply_coordinate_edits",
+    "decide_arrangement",
     "place_components",
+    "plan_wire_routes",
+    "plan_wiring",
     "run_placer_pipeline",
     "run_placer_pack",
     "validate_placement",
     "validate_placement_input",
+    "write_wire_planner_jsons",
 ]

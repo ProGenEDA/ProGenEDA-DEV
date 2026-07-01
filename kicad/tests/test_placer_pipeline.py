@@ -7,7 +7,14 @@ from pathlib import Path
 
 from kicad.automation.generate_practical_placer_examples import CIRCUITS, build_circuit, suite_specs
 from kicad.generator.kicad_json_to_project import plan_placement
-from kicad.pipeline import PipelineError, run_placer_pipeline, validate_placement_input
+from kicad.pipeline import (
+    PipelineError,
+    apply_coordinate_edits,
+    decide_arrangement,
+    plan_wiring,
+    run_placer_pipeline,
+    validate_placement_input,
+)
 
 
 def vdc_resistor() -> dict[str, object]:
@@ -21,6 +28,34 @@ def vdc_resistor() -> dict[str, object]:
         ],
         "nets": {"VIN": "input", "GND": "return"},
     }
+
+
+def vdc_resistor_led() -> dict[str, object]:
+    return {
+        "schema_version": "progen-kicad-circuit-ir/v1",
+        "project": {"name": "vdc_resistor_led", "title": "VDC resistor LED wiring"},
+        "components": [
+            {"id": "V1", "kind": "VDC", "value": "5V", "pins": {"1": "SRC", "2": "GND"}},
+            {"id": "R1", "kind": "R", "value": "220", "pins": {"1": "SRC", "2": "LED_A"}},
+            {"id": "D1", "kind": "LED", "value": "LED", "pins": {"1": "LED_A", "2": "GND"}},
+            {"id": "G1", "kind": "GND", "value": "GND", "pins": {"1": "GND"}},
+        ],
+        "nets": {"SRC": "source signal", "LED_A": "series node", "GND": "return"},
+    }
+
+
+def segment_crosses_body(segment: dict[str, object], body: dict[str, float]) -> bool:
+    start = segment["start"]  # type: ignore[index]
+    end = segment["end"]  # type: ignore[index]
+    sx, sy = float(start[0]), float(start[1])  # type: ignore[index]
+    ex, ey = float(end[0]), float(end[1])  # type: ignore[index]
+    if sx == ex:
+        low, high = sorted((sy, ey))
+        return body["left"] < sx < body["right"] and low < body["bottom"] and high > body["top"]
+    if sy == ey:
+        low, high = sorted((sx, ex))
+        return body["top"] < sy < body["bottom"] and low < body["right"] and high > body["left"]
+    return True
 
 
 class PlacerPipelineTests(unittest.TestCase):
@@ -171,6 +206,55 @@ class PlacerPipelineTests(unittest.TestCase):
         self.assertEqual(totals["LIME400"], 400)
         self.assertEqual(sum(totals.values()), 2747)
 
+    def test_arrangement_decider_emits_topology_coordinate_plan(self) -> None:
+        circuit = vdc_resistor_led()
+        ctx = run_placer_pipeline(circuit, write_trace=False)
+        arrangement = decide_arrangement(ctx.placement_plan.as_dict(), circuit)
+        self.assertEqual(arrangement["schema"], "progen-kicad-arrangement-decision/v0.1")
+        self.assertEqual(arrangement["algorithm"]["primary"], "sugiyama_layered_layout")
+        self.assertGreaterEqual(len(arrangement["coordinate_edits"]), 1)
+        planned = arrangement["components"]
+        self.assertLessEqual(planned["V1"]["planned_at"][0], planned["R1"]["planned_at"][0])
+        self.assertLessEqual(planned["R1"]["planned_at"][0], planned["D1"]["planned_at"][0])
+        self.assertGreater(planned["G1"]["planned_at"][1], planned["R1"]["planned_at"][1])
+
+    def test_beautifier_only_applies_coordinate_edits(self) -> None:
+        circuit = vdc_resistor_led()
+        ctx = run_placer_pipeline(circuit, write_trace=False)
+        placement = ctx.placement_plan.as_dict()
+        arrangement = decide_arrangement(placement, circuit)
+        beautified = apply_coordinate_edits(placement, arrangement)
+        self.assertEqual(beautified["schema"], "progen-kicad-beautified-placement/v0.1")
+        edit_by_ref = {edit["ref"]: edit for edit in arrangement["coordinate_edits"]}
+        for ref, edit in edit_by_ref.items():
+            self.assertEqual(beautified["components"][ref]["at"], edit["to"])
+        old_obstacles = {item["owner"]: item for item in placement["obstacles"]}
+        new_obstacles = {item["owner"]: item for item in beautified["obstacles"]}
+        for ref, edit in edit_by_ref.items():
+            old_width = old_obstacles[ref]["right"] - old_obstacles[ref]["left"]
+            new_width = new_obstacles[ref]["right"] - new_obstacles[ref]["left"]
+            self.assertAlmostEqual(old_width, new_width)
+
+    def test_wire_planner_emits_coordinate_and_astar_wire_json(self) -> None:
+        circuit = vdc_resistor_led()
+        ctx = run_placer_pipeline(circuit, write_trace=False)
+        planned = plan_wiring(ctx.placement_plan.as_dict(), circuit)
+        self.assertEqual(planned["schema"], "progen-kicad-wire-planner-output/v0.1")
+        self.assertEqual(planned["coordinate_plan"]["schema"], "progen-kicad-arrangement-decision/v0.1")
+        wire_plan = planned["wire_plan"]
+        self.assertEqual(wire_plan["schema"], "progen-kicad-wire-plan/v0.1")
+        self.assertEqual(wire_plan["algorithm"]["router"], "grid_astar_orthogonal")
+        self.assertEqual(wire_plan["nets"]["GND"]["strategy"], "local_labels")
+        self.assertGreaterEqual(wire_plan["metrics"]["wired_route_count"], 2)
+        self.assertEqual(wire_plan["metrics"]["different_net_crossing_count"], 0)
+        bodies = {item["owner"]: item for item in ctx.placement_plan.as_dict()["obstacles"]}
+        for route in wire_plan["routes"]:
+            for segment in route["segments"]:
+                self.assertIn(segment["direction"], {"up", "down", "left", "right"})
+                for ref, body in bodies.items():
+                    if ref in {route["from"]["ref"], route["to"]["ref"]}:
+                        continue
+                    self.assertFalse(segment_crosses_body(segment, body), f"{route['net']} crosses {ref}")
 
     def test_all_practical_pack_circuits_place_five_components_without_overlaps(self) -> None:
         for cid, title, components in CIRCUITS:
