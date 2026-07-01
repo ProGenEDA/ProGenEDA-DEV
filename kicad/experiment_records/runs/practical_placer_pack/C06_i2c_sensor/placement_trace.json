@@ -1,0 +1,149 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "BME280",
+            "name": "BME280 Sensor",
+            "at": [
+              29.0,
+              34.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "sensor",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X2": {
+            "kind": "R_4K7_PULLUP",
+            "name": "4.7k Pull-up Resistor",
+            "at": [
+              48.5,
+              31.25
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X3": {
+            "kind": "JST_CONNECTOR",
+            "name": "JST Connector",
+            "at": [
+              68.0,
+              32.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X4": {
+            "kind": "DECOUPLING_CAPACITOR",
+            "name": "Decoupling Capacitor",
+            "at": [
+              86.0,
+              31.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X5": {
+            "kind": "PIN_HEADER",
+            "name": "Pin Header",
+            "at": [
+              105.0,
+              31.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.0,
+            "top": 30.0,
+            "right": 33.0,
+            "bottom": 38.0
+          },
+          {
+            "owner": "X2",
+            "left": 45.0,
+            "top": 30.0,
+            "right": 52.0,
+            "bottom": 32.5
+          },
+          {
+            "owner": "X3",
+            "left": 64.0,
+            "top": 30.0,
+            "right": 72.0,
+            "bottom": 35.0
+          },
+          {
+            "owner": "X4",
+            "left": 84.0,
+            "top": 30.0,
+            "right": 88.0,
+            "bottom": 33.0
+          },
+          {
+            "owner": "X5",
+            "left": 100.0,
+            "top": 30.0,
+            "right": 110.0,
+            "bottom": 33.0
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

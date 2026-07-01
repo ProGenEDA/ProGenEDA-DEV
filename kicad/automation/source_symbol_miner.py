@@ -68,7 +68,7 @@ def mine(path: Path) -> dict[str, str]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", default=str(REPO_ROOT / "kicad/source_pack/KiCad_Source_Files_Needed_20260612_030305.zip"))
-    ap.add_argument("--out", default=str(REPO_ROOT / "kicad/experiments/symbol_cache_index.json"))
+    ap.add_argument("--out", default=str(REPO_ROOT / "kicad/experiment_records/symbol_cache_index.json"))
     args = ap.parse_args()
     source = Path(args.source)
     if not source.exists():

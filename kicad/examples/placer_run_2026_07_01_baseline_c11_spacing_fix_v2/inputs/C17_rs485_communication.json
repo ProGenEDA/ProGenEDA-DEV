@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c17_rs485_communication",
+    "title": "RS485 Communication",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "MAX485",
+      "value": "MAX485 Transceiver"
+    },
+    {
+      "id": "X2",
+      "kind": "RS485_TERMINAL",
+      "value": "RS485 Terminal"
+    },
+    {
+      "id": "X3",
+      "kind": "R_120_RS485",
+      "value": "120 ohm Termination Resistor"
+    },
+    {
+      "id": "X4",
+      "kind": "TVS_DIODE_RS485",
+      "value": "TVS Protection Diode"
+    },
+    {
+      "id": "X5",
+      "kind": "HEADER_CONNECTOR",
+      "value": "Header Connector"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Purpose: 100-component accepted baseline."
+  ]
+}

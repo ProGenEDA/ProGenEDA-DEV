@@ -1,0 +1,154 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "RELAY_5V",
+            "name": "5V Relay",
+            "at": [
+              34.29,
+              38.1
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "relay",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Relay:Relay_SPDT"
+          },
+          "X2": {
+            "kind": "BC547",
+            "name": "BC547 NPN Transistor",
+            "at": [
+              58.42,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "bjt",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Transistor_BJT:BC547"
+          },
+          "X3": {
+            "kind": "RELAY_FLYBACK_DIODE",
+            "name": "Relay Flyback Diode",
+            "at": [
+              77.47,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "diode",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:D"
+          },
+          "X4": {
+            "kind": "RELAY_INDICATOR_LED",
+            "name": "Indicator LED",
+            "at": [
+              95.25,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "indicator",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:LED"
+          },
+          "X5": {
+            "kind": "TERMINAL_BLOCK",
+            "name": "Terminal Block",
+            "at": [
+              115.57,
+              34.29
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "terminal",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector:Screw_Terminal_01x02"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 24.79,
+            "top": 30.6,
+            "right": 43.79,
+            "bottom": 45.6
+          },
+          {
+            "owner": "X2",
+            "left": 55.92,
+            "top": 29.75,
+            "right": 60.92,
+            "bottom": 33.75
+          },
+          {
+            "owner": "X3",
+            "left": 73.47,
+            "top": 30.25,
+            "right": 81.47,
+            "bottom": 33.25
+          },
+          {
+            "owner": "X4",
+            "left": 92.75,
+            "top": 30.52,
+            "right": 97.75,
+            "bottom": 35.52
+          },
+          {
+            "owner": "X5",
+            "left": 109.57,
+            "top": 30.29,
+            "right": 121.57,
+            "bottom": 38.29
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

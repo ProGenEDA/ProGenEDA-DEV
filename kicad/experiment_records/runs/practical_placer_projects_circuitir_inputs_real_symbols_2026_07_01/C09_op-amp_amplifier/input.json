@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c09_op-amp_amplifier",
+    "title": "Op-Amp Amplifier",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "LM358",
+      "value": "LM358 Op-Amp"
+    },
+    {
+      "id": "X2",
+      "kind": "FEEDBACK_RESISTOR",
+      "value": "Feedback Resistor"
+    },
+    {
+      "id": "X3",
+      "kind": "INPUT_CAPACITOR",
+      "value": "Input Capacitor"
+    },
+    {
+      "id": "X4",
+      "kind": "POTENTIOMETER",
+      "value": "Potentiometer"
+    },
+    {
+      "id": "X5",
+      "kind": "AUDIO_JACK",
+      "value": "Audio Jack"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Used to prove real KiCad symbol placement coverage before beautifier and routing stages are enabled."
+  ]
+}

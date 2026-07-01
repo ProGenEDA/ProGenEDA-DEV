@@ -95,7 +95,7 @@ def main() -> None:
     target_path = REPO_ROOT / "kicad/targets/proteus_generator_circuit_test_set_ocr.md"
     supp_path = REPO_ROOT / "kicad/targets/supplemental_supported_component_circuits.md"
     run_id = dt.datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + slugify(args.run_label)
-    run_dir = REPO_ROOT / "kicad/experiments/runs" / run_id
+    run_dir = REPO_ROOT / "kicad/experiment_records/runs" / run_id
     json_dir = run_dir / "json"
     proj_dir = run_dir / "projects"
     json_dir.mkdir(parents=True, exist_ok=True)

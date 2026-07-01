@@ -1,0 +1,149 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "PAM8403",
+            "name": "PAM8403 Amplifier",
+            "at": [
+              29.5,
+              34.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "audio_ic",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X2": {
+            "kind": "SPEAKER",
+            "name": "Speaker",
+            "at": [
+              55.0,
+              39.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "speaker",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X3": {
+            "kind": "VOLUME_POTENTIOMETER",
+            "name": "Volume Potentiometer",
+            "at": [
+              80.5,
+              34.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "potentiometer",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X4": {
+            "kind": "AUDIO_INPUT_JACK",
+            "name": "Audio Input Jack",
+            "at": [
+              102.5,
+              34.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X5": {
+            "kind": "OUTPUT_FILTER_CAPACITOR",
+            "name": "Output Filter Capacitor",
+            "at": [
+              122.5,
+              32.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.0,
+            "top": 30.0,
+            "right": 34.0,
+            "bottom": 38.0
+          },
+          {
+            "owner": "X2",
+            "left": 46.0,
+            "top": 30.0,
+            "right": 64.0,
+            "bottom": 48.0
+          },
+          {
+            "owner": "X3",
+            "left": 76.0,
+            "top": 30.0,
+            "right": 85.0,
+            "bottom": 39.0
+          },
+          {
+            "owner": "X4",
+            "left": 97.0,
+            "top": 30.0,
+            "right": 108.0,
+            "bottom": 38.0
+          },
+          {
+            "owner": "X5",
+            "left": 120.0,
+            "top": 30.0,
+            "right": 125.0,
+            "bottom": 34.0
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

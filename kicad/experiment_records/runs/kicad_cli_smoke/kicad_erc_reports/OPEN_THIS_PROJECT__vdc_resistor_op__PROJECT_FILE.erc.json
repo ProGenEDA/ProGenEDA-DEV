@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-07-01T17:23:23",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning"
+    ],
+    "kicad_version": "10.0.4",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/00000000-0000-0000-0000-000000000001",
+            "violations": [
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol G1 Hidden pin 1 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 0.4572,
+                                "y": 0.7112
+                            },
+                            "uuid": "5998b29a-ec49-540e-bd06-effa3139a610"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "The current configuration does not include the symbol library 'Simulation_SPICE'",
+                    "items": [
+                        {
+                            "description": "Symbol V1 [VDC]",
+                            "pos": {
+                                "x": 0.2032,
+                                "y": 0.4572
+                            },
+                            "uuid": "2151ae34-017d-52c5-aba6-9c10f1c91629"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "lib_symbol_issues"
+                },
+                {
+                    "description": "The current configuration does not include the symbol library 'power'",
+                    "items": [
+                        {
+                            "description": "Symbol G1 [GND]",
+                            "pos": {
+                                "x": 0.4572,
+                                "y": 0.7112
+                            },
+                            "uuid": "23ffcd07-d9b5-5de7-b106-b0e2ebaa0522"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "lib_symbol_issues"
+                },
+                {
+                    "description": "The current configuration does not include the symbol library 'Device'",
+                    "items": [
+                        {
+                            "description": "Symbol R1 [R]",
+                            "pos": {
+                                "x": 0.7239,
+                                "y": 0.4572
+                            },
+                            "uuid": "83748228-ce5e-5d4d-8303-337de5b88db6"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "lib_symbol_issues"
+                }
+            ]
+        }
+    ],
+    "source": "OPEN_THIS_PROJECT__vdc_resistor_op__PROJECT_FILE.kicad_sch"
+}

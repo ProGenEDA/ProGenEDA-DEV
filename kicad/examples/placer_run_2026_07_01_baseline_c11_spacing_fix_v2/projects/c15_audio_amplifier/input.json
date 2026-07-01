@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c15_audio_amplifier",
+    "title": "Audio Amplifier",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "PAM8403",
+      "value": "PAM8403 Amplifier"
+    },
+    {
+      "id": "X2",
+      "kind": "SPEAKER",
+      "value": "Speaker"
+    },
+    {
+      "id": "X3",
+      "kind": "VOLUME_POTENTIOMETER",
+      "value": "Volume Potentiometer"
+    },
+    {
+      "id": "X4",
+      "kind": "AUDIO_INPUT_JACK",
+      "value": "Audio Input Jack"
+    },
+    {
+      "id": "X5",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output Filter Capacitor"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Purpose: 100-component accepted baseline."
+  ]
+}

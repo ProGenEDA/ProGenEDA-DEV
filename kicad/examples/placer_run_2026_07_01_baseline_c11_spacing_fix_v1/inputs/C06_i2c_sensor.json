@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c06_i2c_sensor",
+    "title": "I2C Sensor",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "BME280",
+      "value": "BME280 Sensor"
+    },
+    {
+      "id": "X2",
+      "kind": "R_4K7_PULLUP",
+      "value": "4.7k Pull-up Resistor"
+    },
+    {
+      "id": "X3",
+      "kind": "JST_CONNECTOR",
+      "value": "JST Connector"
+    },
+    {
+      "id": "X4",
+      "kind": "DECOUPLING_CAPACITOR",
+      "value": "Decoupling Capacitor"
+    },
+    {
+      "id": "X5",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Purpose: 100-component accepted baseline."
+  ]
+}

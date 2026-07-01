@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c18_rtc_clock",
+    "title": "RTC Clock",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "DS3231",
+      "value": "DS3231 RTC"
+    },
+    {
+      "id": "X2",
+      "kind": "COIN_CELL_HOLDER",
+      "value": "Coin Cell Holder"
+    },
+    {
+      "id": "X3",
+      "kind": "CR2032_BATTERY",
+      "value": "CR2032 Battery"
+    },
+    {
+      "id": "X4",
+      "kind": "SDA_PULLUP",
+      "value": "SDA Pull-up"
+    },
+    {
+      "id": "X5",
+      "kind": "SCL_PULLUP",
+      "value": "SCL Pull-up"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Used to prove real KiCad symbol placement coverage before beautifier and routing stages are enabled."
+  ]
+}

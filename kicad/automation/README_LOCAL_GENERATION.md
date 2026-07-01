@@ -4,13 +4,13 @@ Preferred V1 path:
 
 ```text
 python kicad/automation/local_generate_experiments_with_groq.py --offline-json path/to/json_folder
-python kicad/automation/generate_target_pack.py --outdir kicad/experiments/runs/local_target_pack
+python kicad/automation/generate_target_pack.py --outdir kicad/experiment_records/runs/local_target_pack
 ```
 
 The script reads every `.json` file in the folder, validates/generates the KiCad project, and writes:
 
 ```text
-kicad/experiments/runs/<run_id>/
+kicad/experiment_records/runs/<run_id>/
   json/
   projects/
   run_manifest.json

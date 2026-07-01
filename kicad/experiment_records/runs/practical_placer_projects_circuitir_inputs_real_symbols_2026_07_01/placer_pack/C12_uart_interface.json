@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c12_uart_interface",
+    "title": "UART Interface",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "CH340",
+      "value": "CH340 USB-UART"
+    },
+    {
+      "id": "X2",
+      "kind": "USB_CONNECTOR_UART",
+      "value": "USB Connector"
+    },
+    {
+      "id": "X3",
+      "kind": "TX_HEADER",
+      "value": "TX Header"
+    },
+    {
+      "id": "X4",
+      "kind": "RX_HEADER",
+      "value": "RX Header"
+    },
+    {
+      "id": "X5",
+      "kind": "RESET_CAPACITOR",
+      "value": "Reset Capacitor"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Used to prove real KiCad symbol placement coverage before beautifier and routing stages are enabled."
+  ]
+}

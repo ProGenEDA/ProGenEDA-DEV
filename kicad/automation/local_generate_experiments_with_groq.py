@@ -283,7 +283,7 @@ def run_offline_json(folder: Path) -> None:
 
     run_label = slugify(f"offline_{folder.name}")
     run_id = dt.datetime.now().strftime("local_%Y%m%d_%H%M%S_") + run_label
-    run_dir = REPO_ROOT / "kicad/experiments/runs" / run_id
+    run_dir = REPO_ROOT / "kicad/experiment_records/runs" / run_id
     json_dir = run_dir / "json"
     project_dir = run_dir / "projects"
     json_dir.mkdir(parents=True, exist_ok=True)
@@ -383,7 +383,7 @@ def run() -> None:
         raise SystemExit("No Cxx targets found in target text.")
 
     run_id = dt.datetime.now().strftime("local_%Y%m%d_%H%M%S_") + run_label
-    run_dir = REPO_ROOT / "kicad/experiments/runs" / run_id
+    run_dir = REPO_ROOT / "kicad/experiment_records/runs" / run_id
     json_dir = run_dir / "json"
     raw_dir = run_dir / "raw_model_responses"
     project_dir = run_dir / "projects"

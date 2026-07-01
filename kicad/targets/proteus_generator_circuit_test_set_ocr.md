@@ -73,7 +73,7 @@ The page-1 coverage table includes common digital ICs and primitives such as 74H
 ## Output folder contract
 
 ```text
-kicad/experiments/runs/<run_id>/projects/<circuit>/
+kicad/experiment_records/runs/<run_id>/projects/<circuit>/
   input.json
   OPEN_THIS_PROJECT__<slug>__PROJECT_FILE.kicad_pro
   OPEN_THIS_PROJECT__<slug>__PROJECT_FILE.kicad_sch

@@ -15,15 +15,21 @@ from kicad.generator.kicad_json_to_project import validate_schematic
 
 
 DEFAULT_WINDOWS_KICAD_CLI = Path(r"C:\Program Files\KiCad\10.0\bin\kicad-cli.exe")
-TOLERATED_ERC_TYPES = {
+BASE_TOLERATED_ERC_TYPES = {
     # V1 intentionally exposes many named off-page/local IO labels.
     "isolated_pin_label",
     # Generated projects can embed exact/mined source symbols while the local KiCad install has a newer library.
     "lib_symbol_mismatch",
+    # KiCad 10.0.4 reports missing global library configuration with this broader type even when symbols are embedded.
+    "lib_symbol_issues",
     # V1 power sources are schematic-level symbols, not full KiCad PWR_FLAG/power-tree modeling yet.
     "power_pin_not_driven",
     # Broad generated IC symbols may have unused pins where a no-connect marker would collide with a routed wire.
     "pin_not_connected",
+}
+PLACER_ONLY_TOLERATED_ERC_TYPES = BASE_TOLERATED_ERC_TYPES | {
+    # Placement-only projects intentionally stop before route/drive logic.
+    "pin_not_driven",
 }
 
 
@@ -44,12 +50,14 @@ def discover_schematics(target: Path) -> list[Path]:
         return [target]
     if target.is_dir():
         exact = sorted(target.glob("OPEN_THIS_PROJECT__*__PROJECT_FILE.kicad_sch"))
+        exact.extend(sorted(target.glob("OPEN_THIS_PROJECT__*__PLACER.kicad_sch")))
         if exact:
             return exact
         return sorted(
             path
             for path in target.rglob("*.kicad_sch")
-            if path.name.startswith("OPEN_THIS_PROJECT__") and "__PROJECT_FILE" in path.name
+            if path.name.startswith("OPEN_THIS_PROJECT__")
+            and ("__PROJECT_FILE" in path.name or "__PLACER" in path.name)
         )
     raise FileNotFoundError(target)
 
@@ -62,7 +70,7 @@ def erc_violations(report: dict[str, Any]) -> list[dict[str, Any]]:
     return violations
 
 
-def run_erc(kicad_cli: str, schematic: Path, output_json: Path) -> dict[str, Any]:
+def run_erc(kicad_cli: str, schematic: Path, output_json: Path, tolerated_types: set[str]) -> dict[str, Any]:
     output_json.parent.mkdir(parents=True, exist_ok=True)
     process = subprocess.run(
         [kicad_cli, "sch", "erc", "--format", "json", "--output", str(output_json), str(schematic)],
@@ -73,8 +81,8 @@ def run_erc(kicad_cli: str, schematic: Path, output_json: Path) -> dict[str, Any
     )
     report = json.loads(output_json.read_text(encoding="utf-8")) if output_json.exists() else {"violations": []}
     violations = erc_violations(report)
-    tolerated = [item for item in violations if str(item.get("type", "unknown")) in TOLERATED_ERC_TYPES]
-    blocking = [item for item in violations if str(item.get("type", "unknown")) not in TOLERATED_ERC_TYPES]
+    tolerated = [item for item in violations if str(item.get("type", "unknown")) in tolerated_types]
+    blocking = [item for item in violations if str(item.get("type", "unknown")) not in tolerated_types]
     by_type = Counter(str(item.get("type", "unknown")) for item in violations)
     tolerated_by_type = Counter(str(item.get("type", "unknown")) for item in tolerated)
     blocking_by_type = Counter(str(item.get("type", "unknown")) for item in blocking)
@@ -102,9 +110,12 @@ def check_schematic(
 ) -> dict[str, Any]:
     text = schematic.read_text(encoding="utf-8")
     static = validate_schematic(text)
+    tolerated_types = (
+        PLACER_ONLY_TOLERATED_ERC_TYPES if "progen-kicad-placer" in text else BASE_TOLERATED_ERC_TYPES
+    )
     erc: dict[str, Any]
     if run_erc_check and kicad_cli:
-        erc = run_erc(kicad_cli, schematic, report_dir / f"{schematic.stem}.erc.json")
+        erc = run_erc(kicad_cli, schematic, report_dir / f"{schematic.stem}.erc.json", tolerated_types)
     else:
         erc = {
             "available": bool(kicad_cli),
