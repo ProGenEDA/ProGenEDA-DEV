@@ -1,5 +1,29 @@
 # KiCad Tools
 
+## open_local_kicad.sh
+
+Launches the local KiCad 10.0.4 AppImage unpacked under `kicad/.local/`.
+The wrapper avoids the AppImage `AppRun` script because that file uses a
+`/bin/bash` shebang that is not portable on this NixOS workspace.
+
+Register it as the default opener for `.kicad_pro` files:
+
+```bash
+kicad/tools/open_local_kicad.sh --install-desktop
+```
+
+Normal launches default to safer rendering settings for KDE/Wayland stability:
+
+```bash
+kicad/tools/open_local_kicad.sh path/to/project.kicad_pro
+```
+
+To test native GPU/desktop rendering later:
+
+```bash
+KICAD_LOCAL_RENDERING=native kicad/tools/open_local_kicad.sh path/to/project.kicad_pro
+```
+
 ## download_kicad_github_assets.py
 
 Auto-discovers/downloads KiCad files and repositories from the KiCad GitHub organization.
