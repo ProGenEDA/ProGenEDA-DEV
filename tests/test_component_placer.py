@@ -24,7 +24,10 @@ from proteusgen.component_placer import (
     validate_move_linkage,
     validate_project_placement,
 )
-from proteusgen.component_beautifier import layout_coordinate_pairs
+from proteusgen.component_beautifier import (
+    MIXED_LAYOUT_BAND_GAP_Y,
+    layout_coordinate_pairs,
+)
 from proteusgen.bidirectional import extract_bidir_records
 from proteusgen.component_terminal_placer import (
     CAP_ELEC_PIN_HALF_SPAN,
@@ -464,6 +467,50 @@ def test_component_placement_ic_beautifier_reserves_multi_gate_footprints(tmp_pa
                 or right["max_y"] <= left["min_y"]
             )
             assert separated, f"{left_key} overlaps {right_key}"
+
+
+def test_component_placement_mixed_ic_non_ic_beautifier_uses_separate_bands(
+    tmp_path: Path,
+) -> None:
+    result = generate_component_placement_project(
+        {
+            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "components": {
+                "74HC08": 2,
+                "RESISTOR": 2,
+                "CAP": 2,
+                "REALIND": 2,
+                "DIODE": 2,
+                "NPN": 2,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "mixed_ic_non_ic_separate_bands.pdsprj",
+        full_cdb=True,
+    )
+
+    entries = result.layout_plan["actual_binary_placements"]
+    ic_entries = [entry for entry in entries if entry["layout_band"] == "ic"]
+    non_ic_entries = [
+        entry for entry in entries if entry["layout_band"] == "non_ic"
+    ]
+    ic_max_y = max(int(entry["after_bbox"]["max_y"]) for entry in ic_entries)
+    non_ic_min_y = min(
+        int(entry["after_bbox"]["min_y"]) for entry in non_ic_entries
+    )
+
+    assert result.valid
+    assert {entry["family"] for entry in ic_entries} == {"74HC08"}
+    assert {entry["family"] for entry in non_ic_entries} == {
+        "RESISTOR",
+        "CAP",
+        "REALIND",
+        "DIODE",
+        "NPN",
+    }
+    assert all(entry["mixed_band_separation"] for entry in entries)
+    assert non_ic_min_y - ic_max_y >= MIXED_LAYOUT_BAND_GAP_Y
+    assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
 def test_component_placement_generator_uses_clean_source_packets(tmp_path: Path) -> None:
@@ -1333,7 +1380,7 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
     assert report["terminal_count_added"] == 2
 
 
-def test_shared_terminal_dispatcher_mixed_selection_terminalizes_only_allowlisted_families(
+def test_shared_terminal_dispatcher_mixed_selection_uses_append_overlay(
     tmp_path: Path,
 ) -> None:
     base = tmp_path / "mixed_selective_base.pdsprj"
@@ -1374,8 +1421,16 @@ def test_shared_terminal_dispatcher_mixed_selection_terminalizes_only_allowliste
     assert result.valid
     assert result.layout_plan["binary_coordinate_mutation"]["visible_translated_count"] == 9
     assert report["valid"] is True
-    assert report["family_handler"] == "MIXED/selective-v1"
+    assert report["family_handler"] == "MIXED/append-overlay-v3-temp"
     assert report["eligible_families"] == [
+        "RESISTOR",
+        "CAP",
+        "REALIND",
+        "CAP-ELEC",
+        "VSOURCE",
+        "CSOURCE",
+    ]
+    assert report["available_accepted_families"] == [
         "VSOURCE",
         "CSOURCE",
         "CAP",
@@ -1384,15 +1439,14 @@ def test_shared_terminal_dispatcher_mixed_selection_terminalizes_only_allowliste
         "RESISTOR",
     ]
     assert report["skipped_families"] == ["74HC08", "DIODE", "NPN"]
-    assert report["terminalized_component_count"] == 6
     assert report["preserved_component_count"] == 3
-    assert preserved_keys == {"U66", "D1", "Q1"}
+    assert preserved_keys == {"U66", "Q1", "D1"}
     assert all(row["byte_preserved"] for row in report["preserved_groups"])
     assert terminal_pair_families == {
         "RESISTOR",
         "CAP",
-        "CAP-ELEC",
         "REALIND",
+        "CAP-ELEC",
         "VSOURCE",
         "CSOURCE",
     }

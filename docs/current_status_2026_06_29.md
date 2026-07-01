@@ -1,4 +1,4 @@
-# Current Status - 2026-06-30
+# Current Status - 2026-07-01
 
 ## Active Architecture
 
@@ -48,15 +48,16 @@ validated request
     eight-electrolytic-capacitor donor structure;
   - accepted `VSOURCE/v4` and `CSOURCE/v4` attachment using the accepted
     bidirectional V3 source roles, body links, and wire geometry;
-  - static-valid mixed selective dispatch that terminalizes only those six
-    accepted families while preserving unsupported component packets;
+  - a temporary mixed append-overlay candidate that keeps the beautified
+    component stream intact, attaches only those six accepted families, and
+    preserves unsupported component packets;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
 
 ## Not Yet Promoted
 
-- Mixed-family terminal block composition pending Proteus acceptance.
+- Mixed-family append-overlay ordering pending Proteus acceptance.
 - Donor-derived short-wire emission for every family/pin.
 - Arbitrary Proteus wiring and junction synthesis.
 - General power/ground terminal placement on the unified component route.
@@ -72,7 +73,7 @@ The current user test packs are:
 - `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
-- `experiments/TERMINAL_PLACER_MIXED_SELECTIVE_V1_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_MIXED_OVERLAY_V3_TEMP_2026_07_01.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -136,19 +137,41 @@ accepted special single non-final source unit, but not a proven general
 1x/3x/15x ordering. These families remain unsupported in the shared terminal
 dispatcher; no passive/source pattern is guessed for them.
 
-`MIXED/selective-v1` partitions one beautified component-placer result by
-family. It runs only the accepted six handlers, assigns VSOURCE and CSOURCE a
-shared global source-suffix sequence, preserves every unsupported packet
-byte-for-byte, and composes the accepted terminal blocks after the preserved
-controls. Its JSON-driven pack includes DIODE, NPN, and 74HC08 as negative
-controls:
+`MIXED/selective-v1` is rejected. The user reported that its mixed pack failed
+in Proteus. It rebuilt independently accepted family blocks and therefore did
+not preserve the object order of the older all-family files.
 
-- T01: one of every accepted family plus one of each control;
-- T02: three of every accepted family plus repeated controls;
-- T03: controls only, with terminal-stage output exactly equal to its base.
+The user clarified that the older V2 all-family files did open and render:
+their terminals were present beside components but floated because no
+attachment links or wires were emitted. That establishes one useful ordering
+constraint without establishing attachment:
 
-Static validation passed with terminal counts 12/36/0 and wire counts 12/36/0.
-Proteus open, render, attachment, and simulation testing is still required.
+```text
+beautified component stream -> appended terminals
+```
+
+`MIXED/append-overlay-v3-temp` retains that component-first ordering. It
+patches accepted family link fields in the existing component packets, then
+appends terminal records and donor-derived zero-length attachment wires. The
+learned RESISTOR/v3, CAP/v2, REALIND/v2, CAP-ELEC/v3, VSOURCE/v4, and
+CSOURCE/v4 geometry/suffix rules are reused inside the one shared terminal
+module. DIODE, NPN, and 74HC08 remain byte-identical and receive no terminals.
+
+The V3 diagnostic pack contains:
+
+- T00: exact-copy bare control with separated IC/non-IC layout bands;
+- T01: historical opening-order control with 12 floating appended terminals;
+- T02: full six-family attachment overlay with 12 terminals and 12 wires;
+- T03: passive-only attachment overlay with 8 terminals and 8 wires;
+- T04: source-only attachment overlay with 4 terminals and 4 wires.
+
+All five cases pass static checks. Proteus open, render, attachment, and
+simulation testing is still required.
+
+The packet beautifier now places IC and non-IC families in separate vertical
+bands when they coexist. The lower band begins at least 5,080,000 internal
+units below the maximum parsed IC coordinate. This corrects the reported
+74HC08/non-IC visual overlap; Proteus confirmation remains pending.
 
 ## Verification Baseline
 
@@ -164,10 +187,12 @@ Proteus open, render, attachment, and simulation testing is still required.
 - electrolytic-capacitor-specific V3 attachment: Proteus-accepted and locked.
 - DC-voltage-source-specific V4 attachment: Proteus-accepted and locked.
 - DC-current-source-specific V4 attachment: Proteus-accepted and locked.
-- mixed selective V1: 3/3 static-valid; pending user Proteus test.
+- mixed selective V1: user-rejected.
+- mixed append-overlay V3: 5/5 static-valid; pending user Proteus test.
+- mixed IC/non-IC bands: focused static regression passed; pending visual test.
 
 ## Next Engineering Step
 
-Test the mixed selective V1 pack in Proteus. Continue donor collection using
+Test the V3 pack in T00 through T04 order. Continue donor collection using
 `docs/complete_component_donor_request.md`; the next handler batch remains the
 unsupported two-pin families, with no cross-family pattern guessing.

@@ -15,7 +15,6 @@ from dataclasses import dataclass
 from pathlib import Path
 import shutil
 import struct
-from tempfile import TemporaryDirectory
 from typing import Any, Iterable
 
 from .bidirectional import BIDIR_MARKER, build_bidir_record, load_production_templates
@@ -2250,6 +2249,489 @@ def _terminal_suffixes(report: dict[str, Any]) -> tuple[int, ...]:
     return tuple(suffixes)
 
 
+def _overlay_terminal_record(
+    templates: Any,
+    terminal: TerminalSpec,
+    *,
+    active_link: bool,
+) -> bytes:
+    return build_bidir_record(
+        templates,
+        label=terminal.label,
+        symbol_x=terminal.symbol_x,
+        symbol_y=terminal.symbol_y,
+        angle_tenths=terminal.angle_tenths,
+        suffix=terminal.suffix,
+        active_link=active_link,
+    )
+
+
+def _mixed_overlay_family_parts(
+    family: str,
+    groups: tuple[Any, ...],
+    *,
+    terminal_templates: Any,
+    source_index_start: int,
+    active_links: bool,
+) -> tuple[
+    tuple[Any, ...],
+    list[bytes],
+    list[tuple[bytes, bytes]],
+    dict[int, bytes],
+]:
+    terminal_records: list[bytes] = []
+    wire_pairs: list[tuple[bytes, bytes]] = []
+    patched_by_id: dict[int, bytes] = {}
+
+    if family == "RESISTOR":
+        pairs = plan_attached_resistor_terminals(groups)
+        fixture = FixtureRegistry.load().get("r21_v9_resistor_terminal_donor")
+        donor_templates = _load_resistor_templates(
+            read_internal_file(fixture.path, "ROOT.DSN"),
+            fixture.path,
+        )
+        terminals = [
+            *(pair.left for pair in pairs),
+            *(pair.right for pair in pairs),
+        ]
+        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+            patched_by_id[id(group)] = _patch_resistor_terminal_links(
+                bytes(group.data),
+                pair,
+            )
+            _component, left_template, right_template = donor_templates.groups[
+                index % len(donor_templates.groups)
+            ]
+            wire_pairs.append(
+                (
+                    _patch_wire(
+                        left_template,
+                        pair.left_wire_start_x,
+                        pair.left_wire_start_y,
+                        pair.left_pin_x,
+                        pair.left_pin_y,
+                    ),
+                    _patch_wire(
+                        right_template,
+                        pair.right_wire_start_x,
+                        pair.right_wire_start_y,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
+                    ),
+                )
+            )
+    elif family == "CAP":
+        pairs = plan_attached_capacitor_terminals(groups)
+        fixture = FixtureRegistry.load().get("cap2_with_terminals_manual")
+        donor_templates = _load_manual_cap_templates(fixture.path)
+        terminals = [
+            *(pair.right for pair in pairs),
+            *(pair.left for pair in pairs),
+        ]
+        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+            patched_by_id[id(group)] = _patch_capacitor_terminal_links(
+                bytes(group.data),
+                pair,
+            )
+            template_index = index % len(donor_templates.wire_lefts)
+            wire_pairs.append(
+                (
+                    _patch_wire(
+                        donor_templates.wire_rights[template_index],
+                        pair.left_pin_x,
+                        pair.left_pin_y,
+                        pair.left_pin_x,
+                        pair.left_pin_y,
+                    ),
+                    _patch_wire(
+                        donor_templates.wire_lefts[template_index],
+                        pair.right_pin_x,
+                        pair.right_pin_y,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
+                    ),
+                )
+            )
+    elif family == "REALIND":
+        pairs = plan_attached_inductor_terminals(groups)
+        fixture = FixtureRegistry.load().get("inductor_05_six_terminal")
+        donor_templates = _load_six_inductor_templates(fixture.path)
+        terminals = [
+            terminal
+            for pair in pairs
+            for terminal in (pair.left, pair.right)
+        ]
+        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+            patched_by_id[id(group)] = _patch_inductor_terminal_links(
+                bytes(group.data),
+                pair,
+            )
+            template_index = index % len(donor_templates.wire_lefts)
+            right_template = donor_templates.wire_rights[template_index]
+            if len(right_template) == INDUCTOR_TRIMMED_WIRE_RECORD_SIZE:
+                right_template += b"\x00"
+            wire_pairs.append(
+                (
+                    _patch_wire(
+                        donor_templates.wire_lefts[template_index],
+                        pair.left_pin_x,
+                        pair.left_pin_y,
+                        pair.left_pin_x,
+                        pair.left_pin_y,
+                    ),
+                    _patch_wire(
+                        right_template,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
+                    ),
+                )
+            )
+    elif family == "CAP-ELEC":
+        pairs = plan_attached_electrolytic_capacitor_terminals(groups)
+        donor_path = (
+            repository_root()
+            / "proteus_ic"
+            / "donors"
+            / "analog_misc_batch1"
+            / "8ELEC-CAP.pdsprj"
+        )
+        donor_templates = _load_eight_cap_elec_templates(donor_path)
+        terminals = [
+            terminal
+            for pair in pairs
+            for terminal in (pair.right, pair.left)
+        ]
+        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+            patched_by_id[id(group)] = _patch_cap_elec_terminal_links(
+                bytes(group.data),
+                pair,
+            )
+            template_index = index % len(donor_templates.wire_lefts)
+            right_template = donor_templates.wire_rights[template_index]
+            if len(right_template) == CAP_ELEC_TRIMMED_WIRE_RECORD_SIZE:
+                right_template += b"\x00"
+            wire_pairs.append(
+                (
+                    _patch_wire(
+                        donor_templates.wire_lefts[template_index],
+                        pair.left_pin_x,
+                        pair.left_pin_y,
+                        pair.left_pin_x,
+                        pair.left_pin_y,
+                    ),
+                    _patch_wire(
+                        right_template,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
+                    ),
+                )
+            )
+    elif family in SOURCE_COMPONENT_BARE_BASE_SIZES:
+        pairs = plan_attached_source_terminals(
+            groups,
+            source_index_start=source_index_start,
+        )
+        registry = FixtureRegistry.load()
+        if family == "VSOURCE":
+            donor_templates = _load_vsource_templates(
+                registry.get("bidirectional_dcv_source_donor").path
+            )
+            terminal_order = ("output", "input")
+            wire_order = ("output", "input")
+        else:
+            donor_templates = _load_csource_templates(
+                registry.get("source_dc_mixed_v15_donor").path
+            )
+            terminal_order = ("input", "output")
+            wire_order = ("input", "output")
+        terminals = [
+            getattr(pair, role)
+            for pair in pairs
+            for role in terminal_order
+        ]
+        for group, pair in zip(groups, pairs, strict=True):
+            patched_by_id[id(group)] = _patch_source_terminal_links(
+                bytes(group.data),
+                pair,
+            )
+            pins = {
+                "input": (pair.input_pin_x, pair.input_pin_y),
+                "output": (pair.output_pin_x, pair.output_pin_y),
+            }
+            templates = {
+                "input": donor_templates.input_wire,
+                "output": donor_templates.output_wire,
+            }
+            first_role, second_role = wire_order
+            first_pin = pins[first_role]
+            second_pin = pins[second_role]
+            wire_pairs.append(
+                (
+                    _patch_wire(
+                        templates[first_role],
+                        first_pin[0],
+                        first_pin[1],
+                        first_pin[0],
+                        first_pin[1],
+                    ),
+                    _patch_wire(
+                        templates[second_role],
+                        second_pin[0],
+                        second_pin[1],
+                        second_pin[0],
+                        second_pin[1],
+                    ),
+                )
+            )
+    else:
+        raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
+
+    terminal_records.extend(
+        _overlay_terminal_record(
+            terminal_templates,
+            terminal,
+            active_link=active_links,
+        )
+        for terminal in terminals
+    )
+    return tuple(pairs), terminal_records, wire_pairs, patched_by_id
+
+
+def attach_mixed_overlay_bidir_terminals_to_project(
+    project: str | Path,
+    output: str | Path,
+    selected_groups: Iterable[Any],
+    *,
+    terminal_families: Iterable[str] | None = None,
+    patch_component_links: bool = True,
+    active_terminal_links: bool = True,
+    include_wires: bool = True,
+) -> dict[str, Any]:
+    """Temporary mixed route based on the user-confirmed opening V2 order.
+
+    Complete beautified component packets remain in their component-placer
+    order. Known component link fields are patched in place, then all terminal
+    records and optional donor-derived wire records are appended as an overlay.
+    This is intentionally temporary until a Proteus-created mixed donor proves
+    the final production ordering.
+    """
+
+    groups = tuple(selected_groups)
+    if not groups:
+        raise ValueError("Mixed terminal overlay requires selected component groups.")
+    accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
+    available = tuple(
+        dict.fromkeys(
+            str(getattr(group, "family", ""))
+            for group in groups
+            if str(getattr(group, "family", "")) in accepted
+        )
+    )
+    requested = available if terminal_families is None else tuple(
+        dict.fromkeys(str(item) for item in terminal_families)
+    )
+    unknown = sorted(set(requested) - accepted)
+    missing = sorted(set(requested) - set(available))
+    if unknown:
+        raise ValueError(f"No accepted mixed-overlay handler exists for {unknown}.")
+    if missing:
+        raise ValueError(f"Requested mixed-overlay families are absent: {missing}.")
+    if not requested:
+        raise ValueError(
+            "Mixed terminal overlay requires at least one accepted terminal family."
+        )
+    if include_wires and not (patch_component_links and active_terminal_links):
+        raise ValueError(
+            "Mixed overlay wires require patched component links and active terminal links."
+        )
+    if patch_component_links != active_terminal_links:
+        raise ValueError(
+            "Component link patches and active terminal links must be enabled together."
+        )
+
+    source = Path(project)
+    destination = Path(output)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    dsn = read_internal_file(source, "ROOT.DSN")
+    original_chunk = _extract_object_chunk(dsn)
+    if BIDIR_MARKER in original_chunk or b"\x7fWIRE" in original_chunk:
+        raise ValueError("Mixed overlay requires a bare component-placer project.")
+
+    terminal_templates = load_production_templates(FixtureRegistry.load())
+    terminal_records: list[bytes] = []
+    wire_pairs: list[tuple[bytes, bytes]] = []
+    patched_by_id: dict[int, bytes] = {}
+    family_reports: list[dict[str, Any]] = []
+    source_index_start = 1
+    for family in requested:
+        family_groups = tuple(
+            group
+            for group in groups
+            if str(getattr(group, "family", "")) == family
+        )
+        pairs, family_terminals, family_wires, family_patches = (
+            _mixed_overlay_family_parts(
+                family,
+                family_groups,
+                terminal_templates=terminal_templates,
+                source_index_start=source_index_start,
+                active_links=active_terminal_links,
+            )
+        )
+        if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
+            source_index_start += len(family_groups)
+        terminal_records.extend(family_terminals)
+        wire_pairs.extend(family_wires)
+        patched_by_id.update(family_patches)
+        family_reports.append(
+            {
+                "family_handler": f"{family}/mixed-overlay-temp",
+                "component_count": len(family_groups),
+                "terminal_count": len(pairs) * 2,
+                "wire_count": len(pairs) * 2 if include_wires else 0,
+                "terminal_pairs": [pair.as_dict() for pair in pairs],
+            }
+        )
+
+    patched_chunk = original_chunk
+    if patch_component_links:
+        for group in groups:
+            patched = patched_by_id.get(id(group))
+            if patched is None:
+                continue
+            original_core = bytes(getattr(group, "data", b""))[:-1]
+            patched_core = patched[:-1]
+            if len(original_core) != len(patched_core):
+                raise ValueError(
+                    f"Mixed overlay changed packet size for {getattr(group, 'key', '')}."
+                )
+            if patched_chunk.count(original_core) != 1:
+                raise ValueError(
+                    "Mixed overlay cannot uniquely locate component packet "
+                    f"{getattr(group, 'key', '')}."
+                )
+            patched_chunk = patched_chunk.replace(
+                original_core,
+                patched_core,
+                1,
+            )
+
+    wire_records: list[bytes] = []
+    if include_wires:
+        for index, (first_wire, second_wire) in enumerate(wire_pairs):
+            if len(first_wire) != 50 or len(second_wire) != 50:
+                raise ValueError("Mixed overlay requires full 50-byte wire templates.")
+            wire_records.append(first_wire)
+            wire_records.append(
+                second_wire
+                if index == len(wire_pairs) - 1
+                else second_wire[:-1]
+            )
+
+    new_chunk = (
+        patched_chunk[:-1]
+        + b"".join(terminal_records)
+        + b"".join(wire_records)
+    )
+    if not new_chunk:
+        raise ValueError("Mixed terminal overlay produced an empty object chunk.")
+    new_chunk = new_chunk[:-1] + b"\xff"
+    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
+    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
+    final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
+
+    suffixes = tuple(
+        suffix
+        for report in family_reports
+        for suffix in _terminal_suffixes(report)
+    )
+    suffixes_unique = len(suffixes) == len(set(suffixes))
+    suffix_links_valid = (
+        not patch_component_links
+        or (
+            suffixes_unique
+            and all(
+                final_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
+                for suffix in suffixes
+            )
+        )
+    )
+    expected_terminals = len(terminal_records)
+    expected_wires = len(wire_pairs) * 2 if include_wires else 0
+    preserved_rows = []
+    for group in groups:
+        family = str(getattr(group, "family", ""))
+        if family in requested:
+            continue
+        core = bytes(getattr(group, "data", b""))[:-1]
+        preserved_rows.append(
+            {
+                "component_key": str(getattr(group, "key", "")),
+                "component_family": family,
+                "packet_size": len(bytes(getattr(group, "data", b""))),
+                "byte_preserved": (
+                    original_chunk.count(core) == final_chunk.count(core) == 1
+                ),
+            }
+        )
+    return {
+        "stage": "terminal_placer",
+        "family_handler": "MIXED/append-overlay-v3-temp",
+        "status": "temporary_pending_proteus",
+        "attachment_policy": "preserve_component_order_then_append_terminal_wire_overlay",
+        "object_order": "component_placer_stream_then_all_terminals_then_all_wires",
+        "historical_basis": "user_confirmed_all_family_v2_opened_with_unattached_appended_terminals",
+        "eligible_families": list(requested),
+        "available_accepted_families": [
+            family
+            for family in ACCEPTED_TERMINAL_FAMILY_ORDER
+            if family in available
+        ],
+        "skipped_families": sorted(
+            {
+                str(getattr(group, "family", ""))
+                for group in groups
+            }
+            - set(requested)
+        ),
+        "patch_component_links": patch_component_links,
+        "active_terminal_links": active_terminal_links,
+        "wire_record_emission": include_wires,
+        "component_stream_prefix_preserved": final_chunk.startswith(
+            patched_chunk[:-1]
+        ),
+        "component_record_order_mutation": False,
+        "family_reports": family_reports,
+        "terminal_suffixes": [f"{suffix:04x}" for suffix in suffixes],
+        "terminal_suffixes_unique": suffixes_unique,
+        "terminal_suffix_links_valid": suffix_links_valid,
+        "terminal_count_added": expected_terminals,
+        "wire_count_added": expected_wires,
+        "terminalized_component_count": len(groups) - len(preserved_rows),
+        "preserved_component_count": len(preserved_rows),
+        "preserved_groups": preserved_rows,
+        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
+        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
+        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
+        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
+        "object_chunk_size_before": len(original_chunk),
+        "object_chunk_size_after": len(final_chunk),
+        "valid": (
+            final_chunk == new_chunk
+            and final_chunk.count(BIDIR_MARKER) == expected_terminals
+            and final_chunk.count(b"\x7fWIRE") == expected_wires
+            and suffix_links_valid
+            and final_chunk.startswith(patched_chunk[:-1])
+            and all(row["byte_preserved"] for row in preserved_rows)
+            and final_chunk.endswith(b"\xff")
+        ),
+    }
+
+
 def attach_component_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
@@ -2257,13 +2739,15 @@ def attach_component_bidir_terminals_to_project(
     *,
     label_prefix: str | None = None,
     suffix_start: int | None = None,
+    terminal_families: Iterable[str] | None = None,
 ) -> dict[str, Any]:
-    """Attach only accepted component families and preserve every other packet.
+    """Attach accepted families and preserve every unsupported mixed packet.
 
-    Single-family calls retain the exact accepted writer. Mixed calls isolate
-    each eligible family through that same writer, then compose the proven
-    family blocks after byte-identical non-terminal control packets. This keeps
-    family handlers from attaching terminals to unrelated components.
+    Single-family calls retain the exact accepted family writer. Mixed calls
+    keep the component-placer stream in place and append terminals and wires
+    through the temporary overlay route. This follows the older all-family
+    record order that opened in Proteus while applying the accepted per-family
+    attachment geometry and link fields.
     """
 
     groups = tuple(selected_groups)
@@ -2271,15 +2755,38 @@ def attach_component_bidir_terminals_to_project(
         raise ValueError("Shared terminal attachment requires selected component groups.")
     families = {str(getattr(group, "family", "")) for group in groups}
     accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
-    eligible_families = tuple(
+    available_eligible_families = tuple(
         family for family in ACCEPTED_TERMINAL_FAMILY_ORDER if family in families
     )
+    if terminal_families is None:
+        eligible_families = available_eligible_families
+    else:
+        requested_terminal_families = tuple(
+            dict.fromkeys(str(item) for item in terminal_families)
+        )
+        unknown = sorted(set(requested_terminal_families) - accepted)
+        missing = sorted(set(requested_terminal_families) - families)
+        if unknown:
+            raise ValueError(
+                "No accepted terminal handler exists for requested mixed families: "
+                f"{unknown}."
+            )
+        if missing:
+            raise ValueError(
+                "Requested terminal families are absent from selected groups: "
+                f"{missing}."
+            )
+        eligible_families = tuple(
+            family
+            for family in ACCEPTED_TERMINAL_FAMILY_ORDER
+            if family in requested_terminal_families
+        )
     preserved_groups = tuple(
         sorted(
             (
                 group
                 for group in groups
-                if str(getattr(group, "family", "")) not in accepted
+                if str(getattr(group, "family", "")) not in eligible_families
             ),
             key=lambda group: int(getattr(group, "start", 0)),
         )
@@ -2340,136 +2847,17 @@ def attach_component_bidir_terminals_to_project(
             "valid": final_chunk == original_chunk,
         }
 
-    for group in preserved_groups:
-        data = bytes(getattr(group, "data", b""))
-        if not data or not data.startswith(b"\xff") or data.endswith(b"\xff"):
-            raise ValueError(
-                "Cannot safely preserve non-terminal packet "
-                f"{getattr(group, 'key', '<unknown>')}: unsupported object boundary."
-            )
-
-    family_reports: list[dict[str, Any]] = []
-    family_chunks: list[bytes] = []
-    source_index_start = 1
-    with TemporaryDirectory(prefix="proteusgen-terminal-") as temporary:
-        temporary_root = Path(temporary)
-        for family in eligible_families:
-            family_groups = tuple(
-                group
-                for group in groups
-                if str(getattr(group, "family", "")) == family
-            )
-            family_output = temporary_root / f"{family.lower()}-terminalized.pdsprj"
-            family_report = _attach_single_family_bidir_terminals_to_project(
-                source,
-                family_output,
-                family_groups,
-                source_index_start=source_index_start,
-            )
-            if not family_report.get("valid"):
-                raise ValueError(f"{family} isolated terminal attachment failed validation.")
-            if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
-                source_index_start += len(family_groups)
-            family_chunk = _extract_object_chunk(
-                read_internal_file(family_output, "ROOT.DSN")
-            )
-            if not family_chunk.startswith(b"\x00") or not family_chunk.endswith(b"\xff"):
-                raise ValueError(f"{family} isolated terminal block has invalid boundaries.")
-            family_reports.append(family_report)
-            family_chunks.append(family_chunk)
-
-    if preserved_groups:
-        new_chunk = (
-            original_chunk[:2]
-            + b"".join(bytes(getattr(group, "data", b"")) for group in preserved_groups)
-        )
-    else:
-        new_chunk = original_chunk[:1]
-    for index, family_chunk in enumerate(family_chunks):
-        new_chunk += (
-            family_chunk[1:]
-            if index == len(family_chunks) - 1
-            else family_chunk[1:-1]
-        )
-
-    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
-    final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
-
-    expected_terminals = sum(
-        int(report["terminal_count_added"]) for report in family_reports
-    )
-    expected_wires = sum(int(report["wire_count_added"]) for report in family_reports)
-    suffixes = tuple(
-        suffix
-        for report in family_reports
-        for suffix in _terminal_suffixes(report)
-    )
-    suffixes_unique = len(suffixes) == len(set(suffixes))
-    suffix_links_valid = suffixes_unique and all(
-        final_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
-        for suffix in suffixes
-    )
-    preserved_rows = [
-        {
-            "component_key": str(getattr(group, "key", "")),
-            "component_family": str(getattr(group, "family", "")),
-            "packet_size": len(bytes(getattr(group, "data", b""))),
-            "byte_preserved": final_chunk.count(bytes(getattr(group, "data", b"")))
-            == original_chunk.count(bytes(getattr(group, "data", b"")))
-            == 1,
-        }
-        for group in preserved_groups
-    ]
-    terminalized_keys = [
-        str(getattr(group, "key", ""))
-        for family in eligible_families
-        for group in groups
-        if str(getattr(group, "family", "")) == family
-    ]
-    reported_terminalized_keys = [
-        str(pair["component_key"])
-        for report in family_reports
-        for pair in report.get("terminal_pairs", [])
-    ]
-    return {
-        "stage": "terminal_placer",
-        "family_handler": "MIXED/selective-v1",
-        "attachment_policy": "accepted_family_allowlist_preserve_all_others",
-        "object_order": (
-            "byte_preserved_nonterminal_groups_then_"
-            + "_then_".join(family.lower() for family in eligible_families)
+    return attach_mixed_overlay_bidir_terminals_to_project(
+        source,
+        destination,
+        groups,
+        terminal_families=(
+            None if terminal_families is None else eligible_families
         ),
-        "eligible_families": list(eligible_families),
-        "skipped_families": sorted(families - accepted),
-        "terminalized_component_count": len(terminalized_keys),
-        "terminalized_component_keys": terminalized_keys,
-        "reported_terminalized_component_keys": reported_terminalized_keys,
-        "preserved_component_count": len(preserved_groups),
-        "preserved_groups": preserved_rows,
-        "family_reports": family_reports,
-        "source_suffix_ordinal_policy": "global_across_vsource_then_csource",
-        "terminal_suffixes": [f"{suffix:04x}" for suffix in suffixes],
-        "terminal_suffixes_unique": suffixes_unique,
-        "terminal_suffix_links_valid": suffix_links_valid,
-        "terminal_count_added": expected_terminals,
-        "wire_count_added": expected_wires,
-        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
-        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
-        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
-        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
-        "object_chunk_size_before": len(original_chunk),
-        "object_chunk_size_after": len(final_chunk),
-        "valid": (
-            final_chunk == new_chunk
-            and final_chunk.count(BIDIR_MARKER) == expected_terminals
-            and final_chunk.count(b"\x7fWIRE") == expected_wires
-            and suffix_links_valid
-            and terminalized_keys == reported_terminalized_keys
-            and all(row["byte_preserved"] for row in preserved_rows)
-            and final_chunk.endswith(b"\xff")
-        ),
-    }
+        patch_component_links=True,
+        active_terminal_links=True,
+        include_wires=True,
+    )
 
 
 def _side_y_candidates(

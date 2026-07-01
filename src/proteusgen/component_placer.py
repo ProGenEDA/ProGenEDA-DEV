@@ -49,6 +49,7 @@ from .component_beautifier import (
     VISIBLE_LAYOUT_COLUMNS,
     VISIBLE_LAYOUT_MARGIN_X,
     VISIBLE_LAYOUT_MARGIN_Y,
+    MIXED_LAYOUT_BAND_GAP_Y,
     VISIBLE_LAYOUT_ORIGIN_X,
     VISIBLE_LAYOUT_ORIGIN_Y,
     VISIBLE_LAYOUT_SHELF_WIDTH,
@@ -56,6 +57,7 @@ from .component_beautifier import (
     VISIBLE_LAYOUT_SLOT_Y,
     coordinate_bbox,
     hide_packet,
+    is_ic_layout_family,
     layout_coordinate_pairs,
     translate_packet_by_delta,
     translate_packet_to_position,
@@ -1310,15 +1312,120 @@ def _apply_binary_beautifier(
         return groups, [], start_slot
 
     hidden_ids = {id(group) for group in hidden_groups}
+    visible_groups = tuple(group for group in groups if id(group) not in hidden_ids)
+    ic_groups = tuple(group for group in visible_groups if is_ic_layout_family(group.family))
+    non_ic_groups = tuple(
+        group for group in visible_groups if not is_ic_layout_family(group.family)
+    )
+    use_separate_bands = bool(ic_groups and non_ic_groups)
+    bands = (
+        (("ic", ic_groups), ("non_ic", non_ic_groups))
+        if use_separate_bands
+        else (("combined", visible_groups),)
+    )
+
+    translated_by_id: dict[int, RawComponentGroup] = {}
+    entries_by_id: dict[int, dict[str, Any]] = {}
+    slot = start_slot
+    band_origin_y = (
+        VISIBLE_LAYOUT_ORIGIN_Y
+        + (start_slot // VISIBLE_LAYOUT_COLUMNS) * VISIBLE_LAYOUT_SLOT_Y
+    )
+    for band_name, band_groups in bands:
+        cursor_x = (
+            VISIBLE_LAYOUT_ORIGIN_X
+            + (
+                start_slot % VISIBLE_LAYOUT_COLUMNS
+                if band_name == "combined"
+                else 0
+            )
+            * VISIBLE_LAYOUT_SLOT_X
+        )
+        cursor_y = band_origin_y
+        row_height = 0
+        row_index = (
+            start_slot // VISIBLE_LAYOUT_COLUMNS
+            if band_name == "combined"
+            else 0
+        )
+        column_index = (
+            start_slot % VISIBLE_LAYOUT_COLUMNS
+            if band_name == "combined"
+            else 0
+        )
+        shelf_right = VISIBLE_LAYOUT_ORIGIN_X + VISIBLE_LAYOUT_SHELF_WIDTH
+        band_max_y = band_origin_y
+
+        for group in band_groups:
+            pairs = layout_coordinate_pairs(group.data, group.family)
+            if pairs:
+                before = coordinate_bbox(group.data, pairs)
+                allocation_width = (
+                    max(int(before["width"]), VISIBLE_LAYOUT_SLOT_X)
+                    + VISIBLE_LAYOUT_MARGIN_X
+                )
+                allocation_height = (
+                    max(int(before["height"]), VISIBLE_LAYOUT_SLOT_Y)
+                    + VISIBLE_LAYOUT_MARGIN_Y
+                )
+            else:
+                allocation_width = VISIBLE_LAYOUT_SLOT_X + VISIBLE_LAYOUT_MARGIN_X
+                allocation_height = VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y
+            if (
+                cursor_x != VISIBLE_LAYOUT_ORIGIN_X
+                and cursor_x + allocation_width > shelf_right
+            ):
+                cursor_x = VISIBLE_LAYOUT_ORIGIN_X
+                cursor_y += max(
+                    row_height,
+                    VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y,
+                )
+                row_height = 0
+                row_index += 1
+                column_index = 0
+            data, entry = translate_packet_to_position(
+                group.data,
+                slot=slot,
+                key=group.key,
+                family=group.family,
+                target_min_x=cursor_x,
+                target_min_y=cursor_y,
+                row=row_index,
+                column=column_index,
+                allocation_width=allocation_width,
+                allocation_height=allocation_height,
+            )
+            known_refs_unchanged = all(
+                group.data.count(ref.encode("ascii"))
+                == data.count(ref.encode("ascii"))
+                for ref in group.refs
+            )
+            entry["known_refs_unchanged"] = known_refs_unchanged
+            entry["refs_unchanged"] = known_refs_unchanged
+            entry["layout_band"] = band_name
+            entry["mixed_band_separation"] = use_separate_bands
+            if not known_refs_unchanged:
+                raise ValueError(
+                    f"Beautifier changed references for {group.key}; "
+                    "refusing to emit corrupted packet."
+                )
+            translated_by_id[id(group)] = _replace_group_data(group, data)
+            entries_by_id[id(group)] = entry
+            after_bbox = entry.get("after_bbox")
+            if isinstance(after_bbox, dict):
+                band_max_y = max(band_max_y, int(after_bbox["max_y"]))
+            else:
+                band_max_y = max(band_max_y, cursor_y + allocation_height)
+            cursor_x += allocation_width
+            row_height = max(row_height, allocation_height)
+            column_index += 1
+            slot += 1
+
+        if use_separate_bands and band_name == "ic":
+            band_origin_y = band_max_y + MIXED_LAYOUT_BAND_GAP_Y
+
     translated: list[RawComponentGroup] = []
     layout_entries: list[dict[str, Any]] = []
-    slot = start_slot
-    cursor_x = VISIBLE_LAYOUT_ORIGIN_X + (start_slot % VISIBLE_LAYOUT_COLUMNS) * VISIBLE_LAYOUT_SLOT_X
-    cursor_y = VISIBLE_LAYOUT_ORIGIN_Y + (start_slot // VISIBLE_LAYOUT_COLUMNS) * VISIBLE_LAYOUT_SLOT_Y
-    row_height = 0
-    row_index = start_slot // VISIBLE_LAYOUT_COLUMNS
-    column_index = start_slot % VISIBLE_LAYOUT_COLUMNS
-    shelf_right = VISIBLE_LAYOUT_ORIGIN_X + VISIBLE_LAYOUT_SHELF_WIDTH
     for group in groups:
         if id(group) in hidden_ids:
             translated.append(group)
@@ -1327,50 +1434,13 @@ def _apply_binary_beautifier(
                     "key": group.key,
                     "family": group.family,
                     "translated": False,
+                    "layout_band": "hidden",
                     "reason": "hidden dummy control kept in accepted donor packet position",
                 }
             )
             continue
-        pairs = layout_coordinate_pairs(group.data, group.family)
-        if pairs:
-            before = coordinate_bbox(group.data, pairs)
-            allocation_width = max(int(before["width"]), VISIBLE_LAYOUT_SLOT_X) + VISIBLE_LAYOUT_MARGIN_X
-            allocation_height = max(int(before["height"]), VISIBLE_LAYOUT_SLOT_Y) + VISIBLE_LAYOUT_MARGIN_Y
-        else:
-            allocation_width = VISIBLE_LAYOUT_SLOT_X + VISIBLE_LAYOUT_MARGIN_X
-            allocation_height = VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y
-        if cursor_x != VISIBLE_LAYOUT_ORIGIN_X and cursor_x + allocation_width > shelf_right:
-            cursor_x = VISIBLE_LAYOUT_ORIGIN_X
-            cursor_y += max(row_height, VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y)
-            row_height = 0
-            row_index += 1
-            column_index = 0
-        data, entry = translate_packet_to_position(
-            group.data,
-            slot=slot,
-            key=group.key,
-            family=group.family,
-            target_min_x=cursor_x,
-            target_min_y=cursor_y,
-            row=row_index,
-            column=column_index,
-            allocation_width=allocation_width,
-            allocation_height=allocation_height,
-        )
-        known_refs_unchanged = all(
-            group.data.count(ref.encode("ascii")) == data.count(ref.encode("ascii"))
-            for ref in group.refs
-        )
-        entry["known_refs_unchanged"] = known_refs_unchanged
-        entry["refs_unchanged"] = known_refs_unchanged
-        if not known_refs_unchanged:
-            raise ValueError(f"Beautifier changed references for {group.key}; refusing to emit corrupted packet.")
-        translated.append(_replace_group_data(group, data))
-        layout_entries.append(entry)
-        cursor_x += allocation_width
-        row_height = max(row_height, allocation_height)
-        column_index += 1
-        slot += 1
+        translated.append(translated_by_id[id(group)])
+        layout_entries.append(entries_by_id[id(group)])
     return tuple(translated), layout_entries, slot
 
 

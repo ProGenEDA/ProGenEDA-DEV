@@ -103,7 +103,7 @@ first, then terminals are attached to the remaining selected pins.
 | Wire Planner | Partial intent only | `component_pipeline.py` |
 | Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
-| Terminal Placer | Six accepted families; mixed selective candidate | `component_terminal_placer.py` |
+| Terminal Placer | Six accepted families; temporary mixed append-overlay candidate | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
 | Value Editor | Lightly tested | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |
@@ -123,11 +123,20 @@ its donor-researched `REALIND/v2` replacement passed user Proteus testing on
 2026-06-30 and is locked. `CAP-ELEC/v3`, `VSOURCE/v4`, and `CSOURCE/v4` also
 passed their 1x/3x/15x Proteus tests on 2026-06-30.
 
-The shared mixed candidate partitions selected groups by an explicit accepted
-allowlist. It terminalizes only RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and
-CSOURCE; other packets are copied byte-for-byte. VSOURCE and CSOURCE use one
-global source ordinal so endpoint suffixes cannot collide. This mixed
-composition is static-valid but not Proteus-accepted yet.
+The first mixed selective candidate is rejected by user Proteus testing
+because it rebuilt independently accepted family blocks. The current
+temporary candidate instead retains the older user-confirmed opening order:
+the complete beautified component stream remains first, accepted component
+link fields are patched in place, and terminal/wire records are appended as
+an overlay. It terminalizes only RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE,
+and CSOURCE; other packets are copied byte-for-byte. VSOURCE and CSOURCE use
+one global source ordinal so endpoint suffixes cannot collide. This V3
+append-overlay is static-valid but not Proteus-accepted yet.
+
+When IC and non-IC packets coexist, the packet beautifier uses separate
+vertical bands with at least 5,080,000 internal units between the parsed IC
+maximum Y and non-IC minimum Y. This is a static correction for the reported
+mixed visual overlap and remains pending Proteus inspection.
 
 DIODE variants, LED-RED, FUSE, and VPULSE lack terminalized attachment donors;
 VSINE lacks a proven general multi-unit ordering. They remain unsupported
@@ -151,3 +160,6 @@ request is `docs/complete_component_donor_request.md`.
    confirmed behavior is promoted to `knowledge/rules.json`.
 8. Mixed dispatch must use an explicit family allowlist. Unsupported
    components must remain byte-identical and receive zero terminal records.
+9. A mixed terminal route must preserve the component-placer stream order;
+   independently rebuilding and concatenating accepted family-native blocks is
+   rejected evidence.

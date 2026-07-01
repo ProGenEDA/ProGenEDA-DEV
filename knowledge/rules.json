@@ -3644,10 +3644,10 @@
       "date": "2026-06-30"
     },
     {
-      "id": "R_TERMINAL_MIXED_SELECTIVE_V1_STATIC_20260630",
-      "title": "Mixed terminal dispatch uses an accepted-family allowlist",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.9,
+      "id": "R_TERMINAL_MIXED_SELECTIVE_V1_REJECTED_20260701",
+      "title": "Independent family-block composition is rejected for mixed terminals",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "mixed component placement",
@@ -3660,10 +3660,37 @@
         "T02 three of every accepted family plus repeated controls",
         "T03 control-only exact-copy negative control",
         "tests/test_component_placer.py => 51 passed",
-        "Independent archive, required-file, suffix-link, marker-count, final-FF, and byte-preservation audit"
+        "Independent archive, required-file, suffix-link, marker-count, final-FF, and byte-preservation audit",
+        "User report 2026-07-01: mixed selective pack failed"
       ],
-      "rule": "Mixed terminal dispatch may invoke only the accepted RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE handlers. Partition groups by family before attachment; never pass a mixed group list to one family handler. Preserve unsupported component packets byte-for-byte and add zero terminal or wire records to them. Use one global source ordinal across VSOURCE then CSOURCE so all source endpoint suffixes remain unique. The current mixed block composition is static-valid but must not be promoted until Proteus open, render, attachment, and simulation testing passes.",
-      "date": "2026-06-30"
+      "rule": "Do not rebuild and concatenate independently accepted family-native object blocks for a mixed component-placer stream. MIXED/selective-v1 passed static checks but failed Proteus and is negative evidence. Keep the explicit accepted-family allowlist and unsupported-packet preservation requirements, but use a mixed ordering supported by opening evidence.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_MIXED_APPEND_OVERLAY_V3_STATIC_20260701",
+      "title": "Mixed append overlay preserves the opening component-first order",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.85,
+      "applies_to": [
+        "component_terminal_placer",
+        "component_beautifier",
+        "mixed component placement",
+        "terminal eligibility",
+        "unsupported component preservation"
+      ],
+      "evidence": [
+        "User clarification 2026-07-01: older all-family appended-terminal files opened and rendered, but terminals floated",
+        "TERMINAL_PLACER_MIXED_OVERLAY_V3_TEMP_2026_07_01",
+        "T00 exact-copy bare control",
+        "T01 12-terminal opening-order control without attachment",
+        "T02 full six-family 12-terminal/12-wire overlay",
+        "T03 passive-only 8-terminal/8-wire overlay",
+        "T04 source-only 4-terminal/4-wire overlay",
+        "Focused family attachment and mixed-dispatch tests",
+        "Independent component-prefix, suffix-link, marker-count, unsupported-packet, and layout-band audit"
+      ],
+      "rule": "For the temporary mixed candidate, retain the beautified component stream and its component record order. Patch only accepted RESISTOR, CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE endpoint link fields, then append their terminal records and donor-derived zero-length wires. Preserve DIODE, NPN, 74HC08, and every other unsupported packet byte-for-byte and emit no terminals for them. Keep source suffixes globally unique. When IC and non-IC packets coexist, place them in separate vertical bands with at least 5080000 internal units of parsed-coordinate clearance. This candidate must not be promoted until Proteus open, render, attachment, and simulation tests pass.",
+      "date": "2026-07-01"
     }
   ]
 }
