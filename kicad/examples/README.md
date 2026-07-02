@@ -11,6 +11,7 @@ Current useful runs:
 - `final_json_run_2026_07_02_132530_t01_t10_connected_v3`: connected final JSON for T01-T10 plus placement inputs and bounded arrangement/beautifier/wire-planner reports.
 - `final_json_project_run_2026_07_02_133420_t01_t10_connected_projects_v1`: KiCad project folders generated from the connected final JSON run. Static quality: 10 checked, 10 passed, 0 failed. These are placement schematics and remain as the pre-wire-maker record.
 - `final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4`: current KiCad wired project folders generated from connected final JSON. Static quality: 10 checked, 10 passed, 0 failed. Contains 430 components, 442 symbol instances, 3357 wire objects, 530 labels, 18 recorded unresolved symbol-model pins, and 5 deferred T10 route-cap nets.
+- `final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules`: strict wire-geometry validation evidence. Static quality and KiCad netlist export passed 10/10, but ERC quality passed 1/10 and geometry validation passed 0/10. This is a failure record, not accepted final wiring.
 
 Historical folders:
 

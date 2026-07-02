@@ -202,6 +202,18 @@ and five deferred nets from the bounded route cap. The remaining 18 unresolved
 pins are recorded model gaps: T07 has two artificial `LM358.BIAS` endpoints,
 and T08 needs a better LED array/DIP-common symbol model.
 
+The first strict wire-geometry validation run is:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules/
+```
+
+That run adds hard checks that wires must not cross/touch other nets and must
+not touch component bodies except at intended pins. Result: static schematic
+quality passed 10/10, KiCad netlist export passed 10/10, but ERC quality passed
+only 1/10 and geometry validation passed 0/10. Treat it as failure evidence for
+the current router, not as accepted final wiring.
+
 ## Not Active Yet
 
 Future stages are named in `placeholders.py`, but they are not run by

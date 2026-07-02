@@ -29,6 +29,7 @@ from .kicad_symbol_library import KiCadSymbolLibrary, _balanced_block, _child_he
 from .placement_catalog import CatalogPlacementPlan, PlacedCatalogComponent, resolve_placement_spec
 from .placement_project_writer import write_placement_project
 from .placer_pipeline import run_placer_pipeline
+from .wire_geometry_validator import AllowedTouch, ComponentBody, WireGeometrySegment, validate_wire_geometry
 from .wire_planner import plan_wire_routes
 
 
@@ -44,6 +45,14 @@ class PinGeometry:
     x: float
     y: float
     rotation: float
+
+
+@dataclass(frozen=True)
+class BodyBounds:
+    left: float
+    top: float
+    right: float
+    bottom: float
 
 
 @dataclass(frozen=True)
@@ -206,6 +215,69 @@ def _pin_geometries(symbol_text: str) -> tuple[PinGeometry, ...]:
     return tuple(geometry for pin_block in _pin_blocks(symbol_text) if (geometry := _parse_pin_block(pin_block, 1)))
 
 
+def _merge_bounds(left: BodyBounds | None, right: BodyBounds | None) -> BodyBounds | None:
+    if left is None:
+        return right
+    if right is None:
+        return left
+    return BodyBounds(
+        min(left.left, right.left),
+        min(left.top, right.top),
+        max(left.right, right.right),
+        max(left.bottom, right.bottom),
+    )
+
+
+def _bounds_from_points(points: list[tuple[float, float]]) -> BodyBounds | None:
+    if not points:
+        return None
+    xs = [point[0] for point in points]
+    ys = [point[1] for point in points]
+    return BodyBounds(min(xs), min(ys), max(xs), max(ys))
+
+
+def _shape_bounds(block: str) -> BodyBounds | None:
+    points: list[tuple[float, float]] = []
+    head = _child_head(block)
+    if head == "circle":
+        center = re.search(r"\(center\s+([-0-9.]+)\s+([-0-9.]+)", block)
+        radius = re.search(r"\(radius\s+([-0-9.]+)", block)
+        if center and radius:
+            cx = float(center.group(1))
+            cy = float(center.group(2))
+            r = float(radius.group(1))
+            points.extend([(cx - r, cy - r), (cx + r, cy + r)])
+    elif head in {"rectangle", "arc"}:
+        for match in re.finditer(r"\((?:start|mid|end)\s+([-0-9.]+)\s+([-0-9.]+)", block):
+            points.append((float(match.group(1)), float(match.group(2))))
+    elif head in {"polyline", "bezier"}:
+        for match in re.finditer(r"\(xy\s+([-0-9.]+)\s+([-0-9.]+)", block):
+            points.append((float(match.group(1)), float(match.group(2))))
+    return _bounds_from_points(points)
+
+
+def _symbol_body_bounds(symbol_text: str) -> dict[int, BodyBounds]:
+    raw: dict[int, BodyBounds] = {}
+    for child in _direct_child_blocks(symbol_text):
+        if _child_head(child) != "symbol":
+            continue
+        match = re.match(r'\s*\(symbol\s+"[^"]+_(\d+)_[^"]+"', child)
+        if not match:
+            continue
+        unit = int(match.group(1))
+        bounds: BodyBounds | None = None
+        for grandchild in _direct_child_blocks(child):
+            bounds = _merge_bounds(bounds, _shape_bounds(grandchild))
+        if bounds is not None:
+            raw[unit] = bounds
+    if raw:
+        return raw
+    bounds = None
+    for child in _direct_child_blocks(symbol_text):
+        bounds = _merge_bounds(bounds, _shape_bounds(child))
+    return {1: bounds} if bounds is not None else {}
+
+
 def _geometry_aliases(geometry: PinGeometry) -> set[str]:
     aliases = {_norm_pin(geometry.number), _norm_pin(geometry.name)}
     for piece in re.split(r"[/\\\s]+", geometry.name):
@@ -312,21 +384,103 @@ def _catalog_plan_from_placement_dict(circuit: dict[str, Any], placement: dict[s
     return CatalogPlacementPlan(tuple(placed_components), tuple(obstacles))
 
 
-def _unit_position(component: PlacedCatalogComponent, geometry: PinGeometry, unit_count: int) -> tuple[float, float]:
+def _unit_origin(component: PlacedCatalogComponent, unit: int, unit_count: int) -> tuple[float, float]:
     x, y = component.at
     if unit_count <= 1:
         return x, y
-    index = max(0, geometry.unit - 1)
+    index = max(0, unit - 1)
     return x, round(y + index * 12.7, 3)
+
+
+def _unit_position(component: PlacedCatalogComponent, geometry: PinGeometry, unit_count: int) -> tuple[float, float]:
+    return _unit_origin(component, geometry.unit, unit_count)
+
+
+def _local_point_to_world(
+    component: PlacedCatalogComponent,
+    origin: tuple[float, float],
+    local: tuple[float, float],
+) -> tuple[float, float]:
+    angle = math.radians(component.rotation % 360)
+    local_y = -local[1]
+    x = local[0] * math.cos(angle) - local_y * math.sin(angle)
+    y = local[0] * math.sin(angle) + local_y * math.cos(angle)
+    return (round(origin[0] + x, 3), round(origin[1] + y, 3))
 
 
 def _pin_world(component: PlacedCatalogComponent, geometry: PinGeometry, unit_count: int) -> tuple[float, float]:
     origin_x, origin_y = _unit_position(component, geometry, unit_count)
-    angle = math.radians(component.rotation % 360)
-    local_y = -geometry.y
-    x = geometry.x * math.cos(angle) - local_y * math.sin(angle)
-    y = geometry.x * math.sin(angle) + local_y * math.cos(angle)
-    return (round(origin_x + x, 3), round(origin_y + y, 3))
+    return _local_point_to_world(component, (origin_x, origin_y), (geometry.x, geometry.y))
+
+
+def _component_body_bounds_for_unit(raw_bounds: dict[int, BodyBounds], unit: int) -> BodyBounds | None:
+    return _merge_bounds(raw_bounds.get(0), raw_bounds.get(unit))
+
+
+def _fallback_component_body(component: PlacedCatalogComponent) -> ComponentBody:
+    x, y = component.at
+    width = max(2.54, min(component.spec.width, 25.4))
+    height = max(2.54, min(component.spec.height, 25.4))
+    return ComponentBody(
+        component.ref,
+        round(x - width / 2, 3),
+        round(y - height / 2, 3),
+        round(x + width / 2, 3),
+        round(y + height / 2, 3),
+        "fallback_placement_spec_body",
+    )
+
+
+def _world_component_body(
+    component: PlacedCatalogComponent,
+    bounds: BodyBounds,
+    unit: int,
+    unit_count: int,
+    source: str,
+) -> ComponentBody:
+    origin = _unit_origin(component, unit, unit_count)
+    corners = [
+        _local_point_to_world(component, origin, (bounds.left, bounds.top)),
+        _local_point_to_world(component, origin, (bounds.left, bounds.bottom)),
+        _local_point_to_world(component, origin, (bounds.right, bounds.top)),
+        _local_point_to_world(component, origin, (bounds.right, bounds.bottom)),
+    ]
+    xs = [point[0] for point in corners]
+    ys = [point[1] for point in corners]
+    return ComponentBody(
+        component.ref,
+        round(min(xs), 3),
+        round(min(ys), 3),
+        round(max(xs), 3),
+        round(max(ys), 3),
+        source,
+    )
+
+
+def _component_bodies(
+    placement: CatalogPlacementPlan,
+    library: KiCadSymbolLibrary,
+) -> tuple[ComponentBody, ...]:
+    bodies: list[ComponentBody] = []
+    for component in placement.components:
+        lib_id = component.spec.lib_id
+        if not lib_id:
+            bodies.append(_fallback_component_body(component))
+            continue
+        symbol = library.load(lib_id)
+        raw_bounds = _symbol_body_bounds(symbol.text)
+        units = tuple(sorted(symbol.unit_pin_numbers)) or (1,)
+        unit_count = len(units)
+        added = False
+        for unit in units:
+            bounds = _component_body_bounds_for_unit(raw_bounds, unit)
+            if bounds is None:
+                continue
+            bodies.append(_world_component_body(component, bounds, unit, unit_count, f"{lib_id}:unit{unit}"))
+            added = True
+        if not added:
+            bodies.append(_fallback_component_body(component))
+    return tuple(bodies)
 
 
 def _orthogonal_points(start: tuple[float, float], end: tuple[float, float]) -> list[tuple[float, float]]:
@@ -412,18 +566,39 @@ def make_kicad_wires(
         return _pin_world(component, geometry, unit_count_cache.get(lib_id, 1))
 
     segments: list[tuple[tuple[float, float], tuple[float, float]]] = []
+    geometry_segments: list[WireGeometrySegment] = []
     labels: list[dict[str, Any]] = []
     route_count = 0
     fallback_route_count = 0
     deferred_nets: list[str] = []
 
+    def add_segments(
+        *,
+        net: str,
+        points: list[tuple[float, float]],
+        allowed_touches: tuple[AllowedTouch, ...],
+        source: str,
+    ) -> None:
+        for a, b in _segments_from_points(points):
+            segments.append((a, b))
+            geometry_segments.append(
+                WireGeometrySegment(
+                    net=net,
+                    start=a,
+                    end=b,
+                    allowed_touches=allowed_touches,
+                    source=source,
+                )
+            )
+
     for net, net_data in wire_plan.get("nets", {}).items():
         if not isinstance(net_data, dict):
             continue
+        net_name = str(net)
         strategy = str(net_data.get("strategy") or "")
         endpoints = [item for item in net_data.get("endpoints", []) if isinstance(item, dict)]
         if strategy == "deferred_after_route_limit":
-            deferred_nets.append(str(net))
+            deferred_nets.append(net_name)
             continue
         if strategy in {"local_labels", "single_endpoint_label"}:
             for endpoint in endpoints:
@@ -431,16 +606,30 @@ def make_kicad_wires(
                 raw_label = endpoint.get("point", [pin_point[0] + 5.08, pin_point[1]])
                 label_point = (round(float(raw_label[0]), 3), round(float(raw_label[1]), 3))
                 label_path = _orthogonal_points(pin_point, label_point)
-                segments.extend(_segments_from_points(label_path))
-                labels.append({"net": str(net), "at": label_point, "anchor": pin_point})
+                add_segments(
+                    net=net_name,
+                    points=label_path,
+                    allowed_touches=(AllowedTouch(str(endpoint.get("ref") or ""), pin_point),),
+                    source=f"{net_name}:local_label:{endpoint.get('ref')}.{endpoint.get('pin')}",
+                )
+                labels.append({"net": net_name, "at": label_point, "anchor": pin_point})
             continue
         for route in net_data.get("routes", []):
             if not isinstance(route, dict):
                 continue
-            start = endpoint_point(route.get("from", {}))
-            end = endpoint_point(route.get("to", {}))
+            raw_from = route.get("from", {})
+            raw_to = route.get("to", {})
+            start = endpoint_point(raw_from)
+            end = endpoint_point(raw_to)
             path = _path_with_actual_ends(start, route.get("path", []), end)
-            segments.extend(_segments_from_points(path))
+            from_ref = str(raw_from.get("ref") or "") if isinstance(raw_from, dict) else ""
+            to_ref = str(raw_to.get("ref") or "") if isinstance(raw_to, dict) else ""
+            add_segments(
+                net=net_name,
+                points=path,
+                allowed_touches=(AllowedTouch(from_ref, start), AllowedTouch(to_ref, end)),
+                source=f"{net_name}:{from_ref}->{to_ref}",
+            )
             route_count += 1
             if len(path) >= 3 and route.get("path"):
                 planned_start = tuple(route["path"][0])
@@ -449,6 +638,7 @@ def make_kicad_wires(
                     fallback_route_count += 1
 
     junctions = _insert_junctions(segments)
+    geometry_report = validate_wire_geometry(geometry_segments, _component_bodies(placement, library))
     project_name = str(circuit.get("project", {}).get("name") or circuit.get("circuit_id") or "wired")
     objects: list[str] = []
     for index, (a, b) in enumerate(segments, 1):
@@ -473,6 +663,9 @@ def make_kicad_wires(
         "fallback_route_count": fallback_route_count,
         "deferred_net_count": len(deferred_nets),
         "deferred_nets": deferred_nets,
+        "geometry_ok": bool(geometry_report["ok"]),
+        "geometry_violation_count": int(geometry_report["violation_count"]),
+        "wire_geometry_validator": geometry_report,
         "wire_planner_metrics": wire_plan.get("metrics", {}),
         "wire_planner_warning_count": len(wire_plan.get("warnings", [])),
     }
@@ -576,6 +769,8 @@ def generate_wired_projects_from_final_json(
                 "label_count": manifest["wire_maker"]["label_count"],
                 "unresolved_pin_count": manifest["wire_maker"]["unresolved_pin_count"],
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
+                "geometry_ok": bool(manifest["wire_maker"]["geometry_ok"]),
+                "geometry_violation_count": manifest["wire_maker"]["geometry_violation_count"],
                 "static_checks_ok": bool(manifest["static_checks"]["ok"]),
             }
         )
@@ -593,6 +788,8 @@ def generate_wired_projects_from_final_json(
         "total_labels": sum(int(item["label_count"]) for item in results),
         "total_unresolved_pins": sum(int(item["unresolved_pin_count"]) for item in results),
         "total_deferred_nets": sum(int(item["deferred_net_count"]) for item in results),
+        "all_geometry_ok": all(item["geometry_ok"] for item in results),
+        "total_geometry_violations": sum(int(item["geometry_violation_count"]) for item in results),
         "wire_config": cfg,
         "results": results,
     }
@@ -603,7 +800,8 @@ def generate_wired_projects_from_final_json(
         "runs the arrangement decider, beautifier, wire planner, and KiCad wire maker, then "
         "writes openable KiCad projects with real embedded symbols plus wire/label objects.\n\n"
         "The wire maker uses source-backed KiCad pin geometry when possible. Any unresolved "
-        "pin aliases or deferred route-limit nets are recorded in each project manifest.\n",
+        "pin aliases, deferred route-limit nets, wire crossings, and wire/component body "
+        "contacts are recorded in each project manifest.\n",
         encoding="utf-8",
     )
     return summary

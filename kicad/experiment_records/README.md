@@ -28,6 +28,7 @@ before, and what should happen next.
 | `../examples/final_json_wired_project_run_2026_07_02_134931_t01_t10_connected_wired_v2` | Superseded wired projects | Second KiCad wire-maker run. Static quality passed after checker discovery was updated, but T10 still had avoidable Arduino/CH340 alias misses. |
 | `../examples/final_json_wired_project_run_2026_07_02_135207_t01_t10_connected_wired_v3` | Superseded wired projects | Third KiCad wire-maker run. It fixed avoidable T10 pin aliases but was superseded because the schematic sheet note still said placement-only. |
 | `../examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4` | Current wired projects | 10 KiCad wired projects generated from final JSON. Static quality: 10 checked, 10 passed, 0 failed. 3357 wire objects, 530 labels, 18 unresolved symbol-model pins, and 5 deferred T10 route-cap nets. |
+| `../examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules` | Current strict failure evidence | First run with hard wire-geometry validation. Static quality and KiCad netlist export passed 10/10, but ERC quality passed 1/10 and geometry validation passed 0/10. The current router is not accepted. |
 
 ## Current Baseline
 
@@ -48,10 +49,14 @@ The current supported placer baseline is:
 - Current wired project evidence: 10 KiCad wired schematics checked, 10 passed,
   0 failed; total 430 components, 442 symbol instances, 3357 wire objects, and
   530 labels.
-- Current known wired limits: `kicad_cli` was unavailable for ERC in the last
-  quality run; T07 has two artificial `LM358.BIAS` unresolved endpoints; T08
-  needs a better LED array/DIP-common symbol model; T10 has five deferred nets
-  from the bounded route cap.
+- Current known wired limits: v4 static validation passed but skipped ERC before
+  the bundled CLI was wired into the checker; T07 has two artificial
+  `LM358.BIAS` unresolved endpoints; T08 needs a better LED array/DIP-common
+  symbol model; T10 has five deferred nets from the bounded route cap.
+- Current strict geometry evidence: the bundled KiCad CLI can export netlists
+  for all 10 v5 schematics, but the current wire planner/maker fails the new
+  no-crossing/no-component-body-touch rules and fails ERC quality for 9 of 10
+  schematics.
 
 ## Rules For New Experiments
 

@@ -439,6 +439,29 @@ This stage is KiCad-specific by design. Equivalent Proteus or future EDA
 backends should consume the same `wire_plan` JSON and implement their own file
 writer.
 
+## Wire Geometry Validator
+
+File:
+
+```text
+kicad/pipeline/wire_geometry_validator.py
+```
+
+Purpose:
+
+The wire geometry validator checks the actual segments emitted by a wire maker.
+It is independent of KiCad S-expressions and does not route anything.
+
+Hard rules:
+
+1. Different-net wires must not touch or cross.
+2. Same-net wires must not visually cross or overlap.
+3. Wires must not touch component bodies except at the intended pin point.
+
+The KiCad wire maker records this validator under
+`manifest.json -> wire_maker -> wire_geometry_validator`. A generated schematic
+is not accepted as final wiring unless this validator passes.
+
 Current generated evidence:
 
 ```text
@@ -461,11 +484,31 @@ Result:
   where the current selected KiCad symbols do not expose the requested logical
   pins.
 
+Current geometry-rule evidence:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules/
+```
+
+Result:
+
+- Static schematic quality passed 10/10.
+- Bundled KiCad CLI loaded all 10 schematics.
+- KiCad netlist export succeeded 10/10.
+- KiCad ERC quality gate passed 1/10; T01 and T03-T10 failed with blocking ERC
+  issues such as `label_multiple_wires`, `multiple_net_names`, and `pin_to_pin`.
+- Geometry rule gate passed 0/10.
+- Total geometry violations: 21268.
+- Therefore the current wire planner/maker output is openable evidence, but not
+  accepted final wiring.
+
 Run:
 
 ```bash
 python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v4
 PYTHONPATH=. python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4 --skip-erc
+python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v5_geometry_rules
+PYTHONPATH=. python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules --export-netlist
 ```
 
 ## Routing Rules To Preserve
@@ -560,10 +603,23 @@ Result:
 - Pin resolution is complete for T01-T06, T09, and T10.
 - Known gaps remain for T07/T08 symbol modeling and T10 route-cap deferrals.
 
+The first strict geometry-rule run is recorded in:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules/
+```
+
+Result:
+
+- The new wire-geometry validator correctly rejects the current routed outputs.
+- KiCad netlist export succeeds, so KiCad can parse/export the files.
+- ERC confirms these are not final-correct schematics yet.
+
 Run:
 
 ```bash
 PYTHONPATH=. python -m unittest kicad.tests.test_final_circuit_builder kicad.tests.test_kicad_wire_maker kicad.tests.test_placer_pipeline -v
+PYTHONPATH=. python -m unittest kicad.tests.test_wire_geometry_validator -v
 python -m compileall -q kicad/pipeline kicad/tests kicad/automation
 ```
 
@@ -580,8 +636,9 @@ These are intentionally future work:
 7. Feedback-loop routing below the main path.
 8. Better symbol models for LED arrays, DIP common pins, and artificial op-amp
    bias nodes.
-9. Final netlist export and expected-net comparison.
-10. ERC-backed final validation report.
+9. Router enforcement of the wire-geometry validator rules.
+10. Final netlist export and expected-net comparison.
+11. ERC-backed final validation report.
 
 ## Core Principle
 

@@ -102,6 +102,18 @@ The future validation pipeline for generated KiCad output is:
 Add these as incremental validator extensions after each producing stage exists.
 Do not treat static placement validation as final schematic correctness.
 
+The active wire-geometry validator must enforce these hard rules before a wired
+schematic can be called accepted:
+
+```text
+1. Wires must not cross or touch wires from other nets.
+2. Same-net wires must not visually cross or overlap.
+3. Wires must not touch component bodies except at the intended pin point.
+```
+
+If these fail, the output may still be an openable KiCad record, but it is not a
+validated final circuit.
+
 ## Arrangement, Beautifier, And Wire Planner
 
 The active post-placer stage files are:
@@ -134,6 +146,10 @@ The wire planner must remain independent of KiCad/Proteus file formats.
 CircuitIR JSON, beautified placement JSON, and `wire_plan` JSON, then writes
 real KiCad wire, label, and junction objects while recording unresolved pin
 aliases and deferred route-limit nets in manifests.
+
+`wire_geometry_validator.py` validates the actual wire segments emitted by the
+wire maker against wire-crossing and wire/body-contact rules. It is a validator,
+not a router.
 
 ## Generated Circuit Records
 

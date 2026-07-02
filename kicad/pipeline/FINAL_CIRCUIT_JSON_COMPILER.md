@@ -128,6 +128,20 @@ Result:
   symbol-model gaps, not missing final JSON structure: T07 has two artificial
   `LM358.BIAS` endpoints; T08 needs a better LED array/DIP-common symbol model.
 
+Strict geometry-rule evidence from the same final JSON:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules/
+```
+
+Result:
+
+- KiCad netlist export succeeded 10/10.
+- ERC quality gate passed 1/10.
+- Wire-geometry validation passed 0/10.
+- This proves the final JSON is usable for generation/export, but the current
+  routing output is not accepted as final-correct wiring.
+
 ## Upgrade Path
 
 Next compiler work should add these deterministic modules as real code, not

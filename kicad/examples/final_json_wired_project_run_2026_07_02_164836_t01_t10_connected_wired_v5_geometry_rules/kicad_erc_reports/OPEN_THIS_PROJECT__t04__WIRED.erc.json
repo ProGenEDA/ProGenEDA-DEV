@@ -1,0 +1,174 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-07-02T16:50:36",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning"
+    ],
+    "kicad_version": "10.0.4",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/00000000-0000-0000-0000-000000000001",
+            "violations": [
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol J1 Pin 2 [Pin_2, Passive, Line]",
+                            "pos": {
+                                "x": 1.2954,
+                                "y": 1.3716
+                            },
+                            "uuid": "2e94d222-fb21-518b-a96f-d47d7137c2d6"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol K1 Pin 12 [Passive, Line]",
+                            "pos": {
+                                "x": 4.3942,
+                                "y": 1.397
+                            },
+                            "uuid": "3d36c00c-8250-5110-bc60-312891c25592"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol K2 Pin 12 [Passive, Line]",
+                            "pos": {
+                                "x": 5.1308,
+                                "y": 1.397
+                            },
+                            "uuid": "5e830af5-5d6e-5744-8018-755da37ec72d"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Label connects more than one wire at 1016000, 1524000",
+                    "items": [
+                        {
+                            "description": "Label 'GND'",
+                            "pos": {
+                                "x": 1.016,
+                                "y": 1.524
+                            },
+                            "uuid": "2ab71b20-25c5-5f3a-ac9f-b23a24ac5f22"
+                        },
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 0.9398,
+                                "y": 1.524
+                            },
+                            "uuid": "220faf40-bca1-51b3-a04b-3582cae70bbc"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "label_multiple_wires"
+                },
+                {
+                    "description": "Label connects more than one wire at 1676400, 1320800",
+                    "items": [
+                        {
+                            "description": "Label '+5V'",
+                            "pos": {
+                                "x": 1.6764,
+                                "y": 1.3208
+                            },
+                            "uuid": "25f4b393-d3b1-5849-b91e-9177be3bdefa"
+                        },
+                        {
+                            "description": "Horizontal Wire, length 1.0160 mm",
+                            "pos": {
+                                "x": 1.5748,
+                                "y": 1.3208
+                            },
+                            "uuid": "351f2f7e-c873-5e8b-acf6-759aa8953921"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "label_multiple_wires"
+                },
+                {
+                    "description": "Label connects more than one wire at 1676400, 1676400",
+                    "items": [
+                        {
+                            "description": "Label 'GND'",
+                            "pos": {
+                                "x": 1.6764,
+                                "y": 1.6764
+                            },
+                            "uuid": "f1757abc-11e3-51fe-9c1a-c18087c31fad"
+                        },
+                        {
+                            "description": "Horizontal Wire, length 1.5240 mm",
+                            "pos": {
+                                "x": 1.4224,
+                                "y": 1.6764
+                            },
+                            "uuid": "e4d77479-6aae-581d-adf0-6248d44268b1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "label_multiple_wires"
+                },
+                {
+                    "description": "Both +5V and GND are attached to the same items; +5V will be used in the netlist",
+                    "items": [
+                        {
+                            "description": "Label '+5V'",
+                            "pos": {
+                                "x": 2.6924,
+                                "y": 1.524
+                            },
+                            "uuid": "3469399e-1e75-5310-a7cd-0a835efd112f"
+                        },
+                        {
+                            "description": "Label 'GND'",
+                            "pos": {
+                                "x": 2.6924,
+                                "y": 1.524
+                            },
+                            "uuid": "37017b94-fb8d-54b1-9a74-2d970cd985b7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "multiple_net_names"
+                }
+            ]
+        }
+    ],
+    "source": "OPEN_THIS_PROJECT__t04__WIRED.kicad_sch"
+}

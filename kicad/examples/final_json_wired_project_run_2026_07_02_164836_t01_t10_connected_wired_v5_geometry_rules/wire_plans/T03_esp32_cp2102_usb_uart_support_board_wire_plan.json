@@ -1,0 +1,3742 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "different-net existing wires receive high cost plus adjacency penalty"
+  },
+  "sheet": {
+    "width": 632.42,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "ESP_BOOT_IO0": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "SW2",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            243.84,
+            142.24
+          ]
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            365.76,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO0",
+          "side": "left",
+          "point": [
+            472.44,
+            121.92
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_BOOT_IO0",
+          "from": {
+            "ref": "SW2",
+            "pin": "1",
+            "point": [
+              243.84,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "2",
+            "point": [
+              365.76,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              243.84,
+              142.24
+            ],
+            [
+              243.84,
+              137.16
+            ],
+            [
+              365.76,
+              137.16
+            ],
+            [
+              365.76,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                243.84,
+                142.24
+              ],
+              "end": [
+                243.84,
+                137.16
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                243.84,
+                137.16
+              ],
+              "end": [
+                365.76,
+                137.16
+              ],
+              "direction": "right",
+              "length": 121.92
+            },
+            {
+              "start": [
+                365.76,
+                137.16
+              ],
+              "end": [
+                365.76,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "ESP_BOOT_IO0",
+          "from": {
+            "ref": "SW2",
+            "pin": "1",
+            "point": [
+              243.84,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO0",
+            "point": [
+              472.44,
+              121.92
+            ]
+          },
+          "path": [
+            [
+              243.84,
+              142.24
+            ],
+            [
+              243.84,
+              121.92
+            ],
+            [
+              472.44,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                243.84,
+                142.24
+              ],
+              "end": [
+                243.84,
+                121.92
+              ],
+              "direction": "up",
+              "length": 20.32
+            },
+            {
+              "start": [
+                243.84,
+                121.92
+              ],
+              "end": [
+                472.44,
+                121.92
+              ],
+              "direction": "right",
+              "length": 228.6
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_EN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            304.8,
+            142.24
+          ]
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            441.96,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "EN",
+          "side": "left",
+          "point": [
+            472.44,
+            121.92
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_EN",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              304.8,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "SW1",
+            "pin": "1",
+            "point": [
+              441.96,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              304.8,
+              142.24
+            ],
+            [
+              309.88,
+              142.24
+            ],
+            [
+              309.88,
+              162.56
+            ],
+            [
+              436.88,
+              162.56
+            ],
+            [
+              436.88,
+              142.24
+            ],
+            [
+              441.96,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                304.8,
+                142.24
+              ],
+              "end": [
+                309.88,
+                142.24
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                309.88,
+                142.24
+              ],
+              "end": [
+                309.88,
+                162.56
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                309.88,
+                162.56
+              ],
+              "end": [
+                436.88,
+                162.56
+              ],
+              "direction": "right",
+              "length": 127.0
+            },
+            {
+              "start": [
+                436.88,
+                162.56
+              ],
+              "end": [
+                436.88,
+                142.24
+              ],
+              "direction": "up",
+              "length": 20.32
+            },
+            {
+              "start": [
+                436.88,
+                142.24
+              ],
+              "end": [
+                441.96,
+                142.24
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "ESP_EN",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              304.8,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "EN",
+            "point": [
+              472.44,
+              121.92
+            ]
+          },
+          "path": [
+            [
+              304.8,
+              142.24
+            ],
+            [
+              472.44,
+              142.24
+            ],
+            [
+              472.44,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                304.8,
+                142.24
+              ],
+              "end": [
+                472.44,
+                142.24
+              ],
+              "direction": "right",
+              "length": 167.64
+            },
+            {
+              "start": [
+                472.44,
+                142.24
+              ],
+              "end": [
+                472.44,
+                121.92
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO18": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "4",
+          "side": "right",
+          "point": [
+            111.76,
+            137.16
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO18",
+          "side": "left",
+          "point": [
+            472.44,
+            127.0
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO18",
+          "from": {
+            "ref": "J2",
+            "pin": "4",
+            "point": [
+              111.76,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO18",
+            "point": [
+              472.44,
+              127.0
+            ]
+          },
+          "path": [
+            [
+              111.76,
+              137.16
+            ],
+            [
+              472.44,
+              137.16
+            ],
+            [
+              472.44,
+              127.0
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                111.76,
+                137.16
+              ],
+              "end": [
+                472.44,
+                137.16
+              ],
+              "direction": "right",
+              "length": 360.68
+            },
+            {
+              "start": [
+                472.44,
+                137.16
+              ],
+              "end": [
+                472.44,
+                127.0
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO19": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "5",
+          "side": "right",
+          "point": [
+            111.76,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO19",
+          "side": "left",
+          "point": [
+            472.44,
+            132.08
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO19",
+          "from": {
+            "ref": "J2",
+            "pin": "5",
+            "point": [
+              111.76,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO19",
+            "point": [
+              472.44,
+              132.08
+            ]
+          },
+          "path": [
+            [
+              111.76,
+              142.24
+            ],
+            [
+              472.44,
+              142.24
+            ],
+            [
+              472.44,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                111.76,
+                142.24
+              ],
+              "end": [
+                472.44,
+                142.24
+              ],
+              "direction": "right",
+              "length": 360.68
+            },
+            {
+              "start": [
+                472.44,
+                142.24
+              ],
+              "end": [
+                472.44,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO21": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            177.8,
+            137.16
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO21",
+          "side": "left",
+          "point": [
+            472.44,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO21",
+          "from": {
+            "ref": "J3",
+            "pin": "3",
+            "point": [
+              177.8,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO21",
+            "point": [
+              472.44,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              177.8,
+              137.16
+            ],
+            [
+              472.44,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                177.8,
+                137.16
+              ],
+              "end": [
+                472.44,
+                137.16
+              ],
+              "direction": "right",
+              "length": 294.64
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO22": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "4",
+          "side": "right",
+          "point": [
+            177.8,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO22",
+          "side": "left",
+          "point": [
+            472.44,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO22",
+          "from": {
+            "ref": "J3",
+            "pin": "4",
+            "point": [
+              177.8,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO22",
+            "point": [
+              472.44,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              177.8,
+              142.24
+            ],
+            [
+              472.44,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                177.8,
+                142.24
+              ],
+              "end": [
+                472.44,
+                142.24
+              ],
+              "direction": "right",
+              "length": 294.64
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO23": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "5",
+          "side": "right",
+          "point": [
+            177.8,
+            147.32
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO23",
+          "side": "left",
+          "point": [
+            472.44,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO23",
+          "from": {
+            "ref": "J3",
+            "pin": "5",
+            "point": [
+              177.8,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO23",
+            "point": [
+              472.44,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              177.8,
+              147.32
+            ],
+            [
+              177.8,
+              172.72
+            ],
+            [
+              472.44,
+              172.72
+            ],
+            [
+              472.44,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                177.8,
+                147.32
+              ],
+              "end": [
+                177.8,
+                172.72
+              ],
+              "direction": "down",
+              "length": 25.4
+            },
+            {
+              "start": [
+                177.8,
+                172.72
+              ],
+              "end": [
+                472.44,
+                172.72
+              ],
+              "direction": "right",
+              "length": 294.64
+            },
+            {
+              "start": [
+                472.44,
+                172.72
+              ],
+              "end": [
+                472.44,
+                147.32
+              ],
+              "direction": "up",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO5": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            111.76,
+            147.32
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO5",
+          "side": "left",
+          "point": [
+            472.44,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO5",
+          "from": {
+            "ref": "J2",
+            "pin": "3",
+            "point": [
+              111.76,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO5",
+            "point": [
+              472.44,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              111.76,
+              147.32
+            ],
+            [
+              472.44,
+              147.32
+            ],
+            [
+              472.44,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                111.76,
+                147.32
+              ],
+              "end": [
+                472.44,
+                147.32
+              ],
+              "direction": "right",
+              "length": 360.68
+            },
+            {
+              "start": [
+                472.44,
+                147.32
+              ],
+              "end": [
+                472.44,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_LED1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            457.2,
+            152.4
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO2",
+          "side": "right",
+          "point": [
+            528.32,
+            147.32
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            579.12,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_LED1",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              457.2,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO2",
+            "point": [
+              528.32,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              457.2,
+              152.4
+            ],
+            [
+              528.32,
+              152.4
+            ],
+            [
+              528.32,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                457.2,
+                152.4
+              ],
+              "end": [
+                528.32,
+                152.4
+              ],
+              "direction": "right",
+              "length": 71.12
+            },
+            {
+              "start": [
+                528.32,
+                152.4
+              ],
+              "end": [
+                528.32,
+                147.32
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "ESP_LED1",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              457.2,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "A",
+            "point": [
+              579.12,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              457.2,
+              152.4
+            ],
+            [
+              457.2,
+              182.88
+            ],
+            [
+              579.12,
+              182.88
+            ],
+            [
+              579.12,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                457.2,
+                152.4
+              ],
+              "end": [
+                457.2,
+                182.88
+              ],
+              "direction": "down",
+              "length": 30.48
+            },
+            {
+              "start": [
+                457.2,
+                182.88
+              ],
+              "end": [
+                579.12,
+                182.88
+              ],
+              "direction": "right",
+              "length": 121.92
+            },
+            {
+              "start": [
+                579.12,
+                182.88
+              ],
+              "end": [
+                579.12,
+                142.24
+              ],
+              "direction": "up",
+              "length": 40.64
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_LED2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R4",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            243.84,
+            152.4
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IO4",
+          "side": "left",
+          "point": [
+            472.44,
+            157.48
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            609.6,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_LED2",
+          "from": {
+            "ref": "R4",
+            "pin": "2",
+            "point": [
+              243.84,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO4",
+            "point": [
+              472.44,
+              157.48
+            ]
+          },
+          "path": [
+            [
+              243.84,
+              152.4
+            ],
+            [
+              472.44,
+              152.4
+            ],
+            [
+              472.44,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                243.84,
+                152.4
+              ],
+              "end": [
+                472.44,
+                152.4
+              ],
+              "direction": "right",
+              "length": 228.6
+            },
+            {
+              "start": [
+                472.44,
+                152.4
+              ],
+              "end": [
+                472.44,
+                157.48
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "ESP_LED2",
+          "from": {
+            "ref": "R4",
+            "pin": "2",
+            "point": [
+              243.84,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "A",
+            "point": [
+              609.6,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              243.84,
+              152.4
+            ],
+            [
+              243.84,
+              157.48
+            ],
+            [
+              223.52,
+              157.48
+            ],
+            [
+              223.52,
+              111.76
+            ],
+            [
+              609.6,
+              111.76
+            ],
+            [
+              609.6,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                243.84,
+                152.4
+              ],
+              "end": [
+                243.84,
+                157.48
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                243.84,
+                157.48
+              ],
+              "end": [
+                223.52,
+                157.48
+              ],
+              "direction": "left",
+              "length": 20.32
+            },
+            {
+              "start": [
+                223.52,
+                157.48
+              ],
+              "end": [
+                223.52,
+                111.76
+              ],
+              "direction": "up",
+              "length": 45.72
+            },
+            {
+              "start": [
+                223.52,
+                111.76
+              ],
+              "end": [
+                609.6,
+                111.76
+              ],
+              "direction": "right",
+              "length": 386.08
+            },
+            {
+              "start": [
+                609.6,
+                111.76
+              ],
+              "end": [
+                609.6,
+                142.24
+              ],
+              "direction": "down",
+              "length": 30.48
+            }
+          ]
+        }
+      ]
+    },
+    "UART_RX_FROM_ESP_TX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "4",
+          "side": "right",
+          "point": [
+            40.64,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "U0TXD",
+          "side": "left",
+          "point": [
+            472.44,
+            162.56
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "RXD",
+          "side": "left",
+          "point": [
+            543.56,
+            132.08
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "UART_RX_FROM_ESP_TX",
+          "from": {
+            "ref": "J4",
+            "pin": "4",
+            "point": [
+              40.64,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "U0TXD",
+            "point": [
+              472.44,
+              162.56
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              142.24
+            ],
+            [
+              472.44,
+              142.24
+            ],
+            [
+              472.44,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                142.24
+              ],
+              "end": [
+                472.44,
+                142.24
+              ],
+              "direction": "right",
+              "length": 431.8
+            },
+            {
+              "start": [
+                472.44,
+                142.24
+              ],
+              "end": [
+                472.44,
+                162.56
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "UART_RX_FROM_ESP_TX",
+          "from": {
+            "ref": "J4",
+            "pin": "4",
+            "point": [
+              40.64,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "RXD",
+            "point": [
+              543.56,
+              132.08
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              142.24
+            ],
+            [
+              543.56,
+              142.24
+            ],
+            [
+              543.56,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                142.24
+              ],
+              "end": [
+                543.56,
+                142.24
+              ],
+              "direction": "right",
+              "length": 502.92
+            },
+            {
+              "start": [
+                543.56,
+                142.24
+              ],
+              "end": [
+                543.56,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "UART_TX_TO_ESP_RX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            40.64,
+            147.32
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "U0RXD",
+          "side": "left",
+          "point": [
+            472.44,
+            172.72
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "TXD",
+          "side": "left",
+          "point": [
+            543.56,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "UART_TX_TO_ESP_RX",
+          "from": {
+            "ref": "J4",
+            "pin": "3",
+            "point": [
+              40.64,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "U0RXD",
+            "point": [
+              472.44,
+              172.72
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              147.32
+            ],
+            [
+              472.44,
+              147.32
+            ],
+            [
+              472.44,
+              172.72
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                147.32
+              ],
+              "end": [
+                472.44,
+                147.32
+              ],
+              "direction": "right",
+              "length": 431.8
+            },
+            {
+              "start": [
+                472.44,
+                147.32
+              ],
+              "end": [
+                472.44,
+                172.72
+              ],
+              "direction": "down",
+              "length": 25.4
+            }
+          ]
+        },
+        {
+          "net": "UART_TX_TO_ESP_RX",
+          "from": {
+            "ref": "J4",
+            "pin": "3",
+            "point": [
+              40.64,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "TXD",
+            "point": [
+              543.56,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              147.32
+            ],
+            [
+              543.56,
+              147.32
+            ],
+            [
+              543.56,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                147.32
+              ],
+              "end": [
+                543.56,
+                147.32
+              ],
+              "direction": "right",
+              "length": 502.92
+            },
+            {
+              "start": [
+                543.56,
+                147.32
+              ],
+              "end": [
+                543.56,
+                137.16
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "USB_CC1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "CC1",
+          "side": "right",
+          "point": [
+            147.32,
+            132.08
+          ]
+        },
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            289.56,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_CC1",
+          "from": {
+            "ref": "J1",
+            "pin": "CC1",
+            "point": [
+              147.32,
+              132.08
+            ]
+          },
+          "to": {
+            "ref": "R5",
+            "pin": "1",
+            "point": [
+              289.56,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              147.32,
+              132.08
+            ],
+            [
+              213.36,
+              132.08
+            ],
+            [
+              213.36,
+              162.56
+            ],
+            [
+              289.56,
+              162.56
+            ],
+            [
+              289.56,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                132.08
+              ],
+              "end": [
+                213.36,
+                132.08
+              ],
+              "direction": "right",
+              "length": 66.04
+            },
+            {
+              "start": [
+                213.36,
+                132.08
+              ],
+              "end": [
+                213.36,
+                162.56
+              ],
+              "direction": "down",
+              "length": 30.48
+            },
+            {
+              "start": [
+                213.36,
+                162.56
+              ],
+              "end": [
+                289.56,
+                162.56
+              ],
+              "direction": "right",
+              "length": 76.2
+            },
+            {
+              "start": [
+                289.56,
+                162.56
+              ],
+              "end": [
+                289.56,
+                152.4
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "USB_CC2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "CC2",
+          "side": "right",
+          "point": [
+            147.32,
+            137.16
+          ]
+        },
+        {
+          "ref": "R6",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            350.52,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_CC2",
+          "from": {
+            "ref": "J1",
+            "pin": "CC2",
+            "point": [
+              147.32,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "R6",
+            "pin": "1",
+            "point": [
+              350.52,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              147.32,
+              137.16
+            ],
+            [
+              350.52,
+              137.16
+            ],
+            [
+              350.52,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                137.16
+              ],
+              "end": [
+                350.52,
+                137.16
+              ],
+              "direction": "right",
+              "length": 203.2
+            },
+            {
+              "start": [
+                350.52,
+                137.16
+              ],
+              "end": [
+                350.52,
+                152.4
+              ],
+              "direction": "down",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "USB_D_MINUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "D-",
+          "side": "right",
+          "point": [
+            147.32,
+            142.24
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "D-",
+          "side": "left",
+          "point": [
+            543.56,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_D_MINUS",
+          "from": {
+            "ref": "J1",
+            "pin": "D-",
+            "point": [
+              147.32,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "D-",
+            "point": [
+              543.56,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              147.32,
+              142.24
+            ],
+            [
+              543.56,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                142.24
+              ],
+              "end": [
+                543.56,
+                142.24
+              ],
+              "direction": "right",
+              "length": 396.24
+            }
+          ]
+        }
+      ]
+    },
+    "USB_D_PLUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "D+",
+          "side": "right",
+          "point": [
+            147.32,
+            147.32
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "D+",
+          "side": "left",
+          "point": [
+            543.56,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_D_PLUS",
+          "from": {
+            "ref": "J1",
+            "pin": "D+",
+            "point": [
+              147.32,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "D+",
+            "point": [
+              543.56,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              147.32,
+              147.32
+            ],
+            [
+              543.56,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                147.32
+              ],
+              "end": [
+                543.56,
+                147.32
+              ],
+              "direction": "right",
+              "length": 396.24
+            }
+          ]
+        }
+      ]
+    },
+    "USB_VBUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "VBUS",
+          "side": "right",
+          "point": [
+            147.32,
+            157.48
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "VBUS",
+          "side": "left",
+          "point": [
+            543.56,
+            157.48
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_VBUS",
+          "from": {
+            "ref": "J1",
+            "pin": "VBUS",
+            "point": [
+              147.32,
+              157.48
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "VBUS",
+            "point": [
+              543.56,
+              157.48
+            ]
+          },
+          "path": [
+            [
+              147.32,
+              157.48
+            ],
+            [
+              543.56,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                157.48
+              ],
+              "end": [
+                543.56,
+                157.48
+              ],
+              "direction": "right",
+              "length": 396.24
+            }
+          ]
+        }
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            497.84,
+            116.84
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            548.64,
+            137.16
+          ]
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            294.64,
+            137.16
+          ]
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            355.6,
+            137.16
+          ]
+        },
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            447.04,
+            147.32
+          ]
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            233.68,
+            147.32
+          ]
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            416.56,
+            142.24
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            203.2,
+            142.24
+          ]
+        },
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            264.16,
+            142.24
+          ]
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            325.12,
+            142.24
+          ]
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            386.08,
+            142.24
+          ]
+        },
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            142.24
+          ]
+        },
+        {
+          "ref": "J3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            172.72,
+            142.24
+          ]
+        },
+        {
+          "ref": "J4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            142.24
+          ]
+        },
+        {
+          "ref": "J5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            142.24
+          ]
+        }
+      ],
+      "routes": []
+    },
+    "USB_GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "left",
+          "point": [
+            472.44,
+            172.72
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "GND",
+          "side": "left",
+          "point": [
+            543.56,
+            152.4
+          ]
+        },
+        {
+          "ref": "J1",
+          "pin": "GND",
+          "side": "right",
+          "point": [
+            147.32,
+            152.4
+          ]
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            441.96,
+            147.32
+          ]
+        },
+        {
+          "ref": "SW2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            243.84,
+            147.32
+          ]
+        },
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            304.8,
+            152.4
+          ]
+        },
+        {
+          "ref": "R6",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            350.52,
+            152.4
+          ]
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            411.48,
+            147.32
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            208.28,
+            147.32
+          ]
+        },
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            269.24,
+            147.32
+          ]
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            320.04,
+            147.32
+          ]
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            381.0,
+            147.32
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            579.12,
+            147.32
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            609.6,
+            147.32
+          ]
+        },
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            111.76,
+            152.4
+          ]
+        },
+        {
+          "ref": "J3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            177.8,
+            152.4
+          ]
+        },
+        {
+          "ref": "J4",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            152.4
+          ]
+        },
+        {
+          "ref": "J5",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            76.2,
+            147.32
+          ]
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "ESP_BOOT_IO0",
+      "from": {
+        "ref": "SW2",
+        "pin": "1",
+        "point": [
+          243.84,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "2",
+        "point": [
+          365.76,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          243.84,
+          142.24
+        ],
+        [
+          243.84,
+          137.16
+        ],
+        [
+          365.76,
+          137.16
+        ],
+        [
+          365.76,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            243.84,
+            142.24
+          ],
+          "end": [
+            243.84,
+            137.16
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            243.84,
+            137.16
+          ],
+          "end": [
+            365.76,
+            137.16
+          ],
+          "direction": "right",
+          "length": 121.92
+        },
+        {
+          "start": [
+            365.76,
+            137.16
+          ],
+          "end": [
+            365.76,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_BOOT_IO0",
+      "from": {
+        "ref": "SW2",
+        "pin": "1",
+        "point": [
+          243.84,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO0",
+        "point": [
+          472.44,
+          121.92
+        ]
+      },
+      "path": [
+        [
+          243.84,
+          142.24
+        ],
+        [
+          243.84,
+          121.92
+        ],
+        [
+          472.44,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            243.84,
+            142.24
+          ],
+          "end": [
+            243.84,
+            121.92
+          ],
+          "direction": "up",
+          "length": 20.32
+        },
+        {
+          "start": [
+            243.84,
+            121.92
+          ],
+          "end": [
+            472.44,
+            121.92
+          ],
+          "direction": "right",
+          "length": 228.6
+        }
+      ]
+    },
+    {
+      "net": "ESP_EN",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          304.8,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "SW1",
+        "pin": "1",
+        "point": [
+          441.96,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          304.8,
+          142.24
+        ],
+        [
+          309.88,
+          142.24
+        ],
+        [
+          309.88,
+          162.56
+        ],
+        [
+          436.88,
+          162.56
+        ],
+        [
+          436.88,
+          142.24
+        ],
+        [
+          441.96,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            304.8,
+            142.24
+          ],
+          "end": [
+            309.88,
+            142.24
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            309.88,
+            142.24
+          ],
+          "end": [
+            309.88,
+            162.56
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            309.88,
+            162.56
+          ],
+          "end": [
+            436.88,
+            162.56
+          ],
+          "direction": "right",
+          "length": 127.0
+        },
+        {
+          "start": [
+            436.88,
+            162.56
+          ],
+          "end": [
+            436.88,
+            142.24
+          ],
+          "direction": "up",
+          "length": 20.32
+        },
+        {
+          "start": [
+            436.88,
+            142.24
+          ],
+          "end": [
+            441.96,
+            142.24
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_EN",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          304.8,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "EN",
+        "point": [
+          472.44,
+          121.92
+        ]
+      },
+      "path": [
+        [
+          304.8,
+          142.24
+        ],
+        [
+          472.44,
+          142.24
+        ],
+        [
+          472.44,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            304.8,
+            142.24
+          ],
+          "end": [
+            472.44,
+            142.24
+          ],
+          "direction": "right",
+          "length": 167.64
+        },
+        {
+          "start": [
+            472.44,
+            142.24
+          ],
+          "end": [
+            472.44,
+            121.92
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO18",
+      "from": {
+        "ref": "J2",
+        "pin": "4",
+        "point": [
+          111.76,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO18",
+        "point": [
+          472.44,
+          127.0
+        ]
+      },
+      "path": [
+        [
+          111.76,
+          137.16
+        ],
+        [
+          472.44,
+          137.16
+        ],
+        [
+          472.44,
+          127.0
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            111.76,
+            137.16
+          ],
+          "end": [
+            472.44,
+            137.16
+          ],
+          "direction": "right",
+          "length": 360.68
+        },
+        {
+          "start": [
+            472.44,
+            137.16
+          ],
+          "end": [
+            472.44,
+            127.0
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO19",
+      "from": {
+        "ref": "J2",
+        "pin": "5",
+        "point": [
+          111.76,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO19",
+        "point": [
+          472.44,
+          132.08
+        ]
+      },
+      "path": [
+        [
+          111.76,
+          142.24
+        ],
+        [
+          472.44,
+          142.24
+        ],
+        [
+          472.44,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            111.76,
+            142.24
+          ],
+          "end": [
+            472.44,
+            142.24
+          ],
+          "direction": "right",
+          "length": 360.68
+        },
+        {
+          "start": [
+            472.44,
+            142.24
+          ],
+          "end": [
+            472.44,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO21",
+      "from": {
+        "ref": "J3",
+        "pin": "3",
+        "point": [
+          177.8,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO21",
+        "point": [
+          472.44,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          177.8,
+          137.16
+        ],
+        [
+          472.44,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            177.8,
+            137.16
+          ],
+          "end": [
+            472.44,
+            137.16
+          ],
+          "direction": "right",
+          "length": 294.64
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO22",
+      "from": {
+        "ref": "J3",
+        "pin": "4",
+        "point": [
+          177.8,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO22",
+        "point": [
+          472.44,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          177.8,
+          142.24
+        ],
+        [
+          472.44,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            177.8,
+            142.24
+          ],
+          "end": [
+            472.44,
+            142.24
+          ],
+          "direction": "right",
+          "length": 294.64
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO23",
+      "from": {
+        "ref": "J3",
+        "pin": "5",
+        "point": [
+          177.8,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO23",
+        "point": [
+          472.44,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          177.8,
+          147.32
+        ],
+        [
+          177.8,
+          172.72
+        ],
+        [
+          472.44,
+          172.72
+        ],
+        [
+          472.44,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            177.8,
+            147.32
+          ],
+          "end": [
+            177.8,
+            172.72
+          ],
+          "direction": "down",
+          "length": 25.4
+        },
+        {
+          "start": [
+            177.8,
+            172.72
+          ],
+          "end": [
+            472.44,
+            172.72
+          ],
+          "direction": "right",
+          "length": 294.64
+        },
+        {
+          "start": [
+            472.44,
+            172.72
+          ],
+          "end": [
+            472.44,
+            147.32
+          ],
+          "direction": "up",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO5",
+      "from": {
+        "ref": "J2",
+        "pin": "3",
+        "point": [
+          111.76,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO5",
+        "point": [
+          472.44,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          111.76,
+          147.32
+        ],
+        [
+          472.44,
+          147.32
+        ],
+        [
+          472.44,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            111.76,
+            147.32
+          ],
+          "end": [
+            472.44,
+            147.32
+          ],
+          "direction": "right",
+          "length": 360.68
+        },
+        {
+          "start": [
+            472.44,
+            147.32
+          ],
+          "end": [
+            472.44,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED1",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          457.2,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO2",
+        "point": [
+          528.32,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          457.2,
+          152.4
+        ],
+        [
+          528.32,
+          152.4
+        ],
+        [
+          528.32,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            457.2,
+            152.4
+          ],
+          "end": [
+            528.32,
+            152.4
+          ],
+          "direction": "right",
+          "length": 71.12
+        },
+        {
+          "start": [
+            528.32,
+            152.4
+          ],
+          "end": [
+            528.32,
+            147.32
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED1",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          457.2,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "A",
+        "point": [
+          579.12,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          457.2,
+          152.4
+        ],
+        [
+          457.2,
+          182.88
+        ],
+        [
+          579.12,
+          182.88
+        ],
+        [
+          579.12,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            457.2,
+            152.4
+          ],
+          "end": [
+            457.2,
+            182.88
+          ],
+          "direction": "down",
+          "length": 30.48
+        },
+        {
+          "start": [
+            457.2,
+            182.88
+          ],
+          "end": [
+            579.12,
+            182.88
+          ],
+          "direction": "right",
+          "length": 121.92
+        },
+        {
+          "start": [
+            579.12,
+            182.88
+          ],
+          "end": [
+            579.12,
+            142.24
+          ],
+          "direction": "up",
+          "length": 40.64
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED2",
+      "from": {
+        "ref": "R4",
+        "pin": "2",
+        "point": [
+          243.84,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO4",
+        "point": [
+          472.44,
+          157.48
+        ]
+      },
+      "path": [
+        [
+          243.84,
+          152.4
+        ],
+        [
+          472.44,
+          152.4
+        ],
+        [
+          472.44,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            243.84,
+            152.4
+          ],
+          "end": [
+            472.44,
+            152.4
+          ],
+          "direction": "right",
+          "length": 228.6
+        },
+        {
+          "start": [
+            472.44,
+            152.4
+          ],
+          "end": [
+            472.44,
+            157.48
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED2",
+      "from": {
+        "ref": "R4",
+        "pin": "2",
+        "point": [
+          243.84,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "A",
+        "point": [
+          609.6,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          243.84,
+          152.4
+        ],
+        [
+          243.84,
+          157.48
+        ],
+        [
+          223.52,
+          157.48
+        ],
+        [
+          223.52,
+          111.76
+        ],
+        [
+          609.6,
+          111.76
+        ],
+        [
+          609.6,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            243.84,
+            152.4
+          ],
+          "end": [
+            243.84,
+            157.48
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            243.84,
+            157.48
+          ],
+          "end": [
+            223.52,
+            157.48
+          ],
+          "direction": "left",
+          "length": 20.32
+        },
+        {
+          "start": [
+            223.52,
+            157.48
+          ],
+          "end": [
+            223.52,
+            111.76
+          ],
+          "direction": "up",
+          "length": 45.72
+        },
+        {
+          "start": [
+            223.52,
+            111.76
+          ],
+          "end": [
+            609.6,
+            111.76
+          ],
+          "direction": "right",
+          "length": 386.08
+        },
+        {
+          "start": [
+            609.6,
+            111.76
+          ],
+          "end": [
+            609.6,
+            142.24
+          ],
+          "direction": "down",
+          "length": 30.48
+        }
+      ]
+    },
+    {
+      "net": "UART_RX_FROM_ESP_TX",
+      "from": {
+        "ref": "J4",
+        "pin": "4",
+        "point": [
+          40.64,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "U0TXD",
+        "point": [
+          472.44,
+          162.56
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          142.24
+        ],
+        [
+          472.44,
+          142.24
+        ],
+        [
+          472.44,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            142.24
+          ],
+          "end": [
+            472.44,
+            142.24
+          ],
+          "direction": "right",
+          "length": 431.8
+        },
+        {
+          "start": [
+            472.44,
+            142.24
+          ],
+          "end": [
+            472.44,
+            162.56
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "UART_RX_FROM_ESP_TX",
+      "from": {
+        "ref": "J4",
+        "pin": "4",
+        "point": [
+          40.64,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "RXD",
+        "point": [
+          543.56,
+          132.08
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          142.24
+        ],
+        [
+          543.56,
+          142.24
+        ],
+        [
+          543.56,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            142.24
+          ],
+          "end": [
+            543.56,
+            142.24
+          ],
+          "direction": "right",
+          "length": 502.92
+        },
+        {
+          "start": [
+            543.56,
+            142.24
+          ],
+          "end": [
+            543.56,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "UART_TX_TO_ESP_RX",
+      "from": {
+        "ref": "J4",
+        "pin": "3",
+        "point": [
+          40.64,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "U0RXD",
+        "point": [
+          472.44,
+          172.72
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          147.32
+        ],
+        [
+          472.44,
+          147.32
+        ],
+        [
+          472.44,
+          172.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            147.32
+          ],
+          "end": [
+            472.44,
+            147.32
+          ],
+          "direction": "right",
+          "length": 431.8
+        },
+        {
+          "start": [
+            472.44,
+            147.32
+          ],
+          "end": [
+            472.44,
+            172.72
+          ],
+          "direction": "down",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "UART_TX_TO_ESP_RX",
+      "from": {
+        "ref": "J4",
+        "pin": "3",
+        "point": [
+          40.64,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "TXD",
+        "point": [
+          543.56,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          147.32
+        ],
+        [
+          543.56,
+          147.32
+        ],
+        [
+          543.56,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            147.32
+          ],
+          "end": [
+            543.56,
+            147.32
+          ],
+          "direction": "right",
+          "length": 502.92
+        },
+        {
+          "start": [
+            543.56,
+            147.32
+          ],
+          "end": [
+            543.56,
+            137.16
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "USB_CC1",
+      "from": {
+        "ref": "J1",
+        "pin": "CC1",
+        "point": [
+          147.32,
+          132.08
+        ]
+      },
+      "to": {
+        "ref": "R5",
+        "pin": "1",
+        "point": [
+          289.56,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          147.32,
+          132.08
+        ],
+        [
+          213.36,
+          132.08
+        ],
+        [
+          213.36,
+          162.56
+        ],
+        [
+          289.56,
+          162.56
+        ],
+        [
+          289.56,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            132.08
+          ],
+          "end": [
+            213.36,
+            132.08
+          ],
+          "direction": "right",
+          "length": 66.04
+        },
+        {
+          "start": [
+            213.36,
+            132.08
+          ],
+          "end": [
+            213.36,
+            162.56
+          ],
+          "direction": "down",
+          "length": 30.48
+        },
+        {
+          "start": [
+            213.36,
+            162.56
+          ],
+          "end": [
+            289.56,
+            162.56
+          ],
+          "direction": "right",
+          "length": 76.2
+        },
+        {
+          "start": [
+            289.56,
+            162.56
+          ],
+          "end": [
+            289.56,
+            152.4
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "USB_CC2",
+      "from": {
+        "ref": "J1",
+        "pin": "CC2",
+        "point": [
+          147.32,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "R6",
+        "pin": "1",
+        "point": [
+          350.52,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          147.32,
+          137.16
+        ],
+        [
+          350.52,
+          137.16
+        ],
+        [
+          350.52,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            137.16
+          ],
+          "end": [
+            350.52,
+            137.16
+          ],
+          "direction": "right",
+          "length": 203.2
+        },
+        {
+          "start": [
+            350.52,
+            137.16
+          ],
+          "end": [
+            350.52,
+            152.4
+          ],
+          "direction": "down",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "USB_D_MINUS",
+      "from": {
+        "ref": "J1",
+        "pin": "D-",
+        "point": [
+          147.32,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "D-",
+        "point": [
+          543.56,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          147.32,
+          142.24
+        ],
+        [
+          543.56,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            142.24
+          ],
+          "end": [
+            543.56,
+            142.24
+          ],
+          "direction": "right",
+          "length": 396.24
+        }
+      ]
+    },
+    {
+      "net": "USB_D_PLUS",
+      "from": {
+        "ref": "J1",
+        "pin": "D+",
+        "point": [
+          147.32,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "D+",
+        "point": [
+          543.56,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          147.32,
+          147.32
+        ],
+        [
+          543.56,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            147.32
+          ],
+          "end": [
+            543.56,
+            147.32
+          ],
+          "direction": "right",
+          "length": 396.24
+        }
+      ]
+    },
+    {
+      "net": "USB_VBUS",
+      "from": {
+        "ref": "J1",
+        "pin": "VBUS",
+        "point": [
+          147.32,
+          157.48
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "VBUS",
+        "point": [
+          543.56,
+          157.48
+        ]
+      },
+      "path": [
+        [
+          147.32,
+          157.48
+        ],
+        [
+          543.56,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            157.48
+          ],
+          "end": [
+            543.56,
+            157.48
+          ],
+          "direction": "right",
+          "length": 396.24
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 19,
+    "wired_route_count": 23,
+    "segment_count": 52,
+    "different_net_crossing_count": 62
+  },
+  "warnings": [
+    "astar_fallback_expansion_limit: ESP_EN exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO18 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO19 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO21 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO22 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO5 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_LED2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_RX_FROM_ESP_TX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_RX_FROM_ESP_TX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_TX_TO_ESP_RX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_TX_TO_ESP_RX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_CC2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_D_MINUS exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_D_PLUS exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_VBUS exceeded 1500 explored grid states.",
+    "different_net_crossings_detected: 62"
+  ]
+}
