@@ -670,7 +670,7 @@ These are intentionally future work:
 
 1. Automatic wire-planner/beautifier iterative loop.
 2. Beautifier validator.
-3. Terminal placer integration.
+3. Terminal placer expansion beyond the current KiCad local-label foundation.
 4. Bus routing.
 5. Pattern-template placement.
 6. Rotation optimization.
@@ -680,6 +680,30 @@ These are intentionally future work:
 9. Expected-net comparison against exported KiCad netlists.
 10. ERC-backed repair for label-heavy fallback nets.
 11. Final validation report.
+
+## 2026-07-03 Routing-Mode Boundary Update
+
+`routing_mode` is now explicit in final CircuitIR JSON and wire-plan JSON:
+
+- `wire` mode forbids local-label strategies. The planner records `unroutable`
+  failures instead of silently converting failed routes to labels, and the KiCad
+  wire maker reports strict wire connectivity by walking the actual
+  wire/junction/pin graph.
+- `terminal` mode is owned by `kicad/pipeline/terminal_placer.py`; its current
+  KiCad backend is local labels with short pin stubs.
+- `combination` mode may use both routed wires and terminal/local-label plans.
+
+The strict wire validator ignores labels and requires every expected net
+endpoint to be connected through physical wire segments. It also unions same-net
+T-junction/interior segment contacts so valid wire trunks are not falsely
+reported as disconnected.
+
+Current strict-wire status: the router now draws more physical wires and no
+labels in wire mode, but the routed Proteus-alias suite still reports unroutable
+nets and wire-geometry violations. Do not publish a new accepted strict-wire
+example run until both `strict_wire_ok` and `geometry_ok` pass for every
+generated project. Combination mode remains useful as label-assisted evidence,
+but it is not strict wire acceptance.
 
 ## Core Principle
 

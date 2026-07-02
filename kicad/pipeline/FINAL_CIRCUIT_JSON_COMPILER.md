@@ -56,6 +56,7 @@ Implemented stages:
    - component ref/kind/value presence
    - unique references
    - supported placement kinds
+   - `routing.mode` is one of `wire`, `terminal`, or `combination`
    - `REF.PIN` endpoint syntax
    - known endpoint component refs
    - at least two endpoints per net
@@ -63,6 +64,7 @@ Implemented stages:
 5. final CircuitIR JSON output
    - `components[]` with `id`, `ref`, `kind`, `value`, and `pins`
    - `nets` with final endpoint lists
+   - `routing.mode` with the required downstream connection strategy
    - `generation_notes.compiler_repairs`
    - `validation`
 

@@ -260,12 +260,19 @@ def validate_final_circuit(circuit: dict[str, Any]) -> dict[str, Any]:
     warnings: list[str] = []
     components = circuit.get("components", [])
     nets = circuit.get("nets", {})
+    routing = circuit.get("routing", {})
     if not isinstance(components, list) or not components:
         errors.append("components must be a non-empty array.")
         components = []
     if not isinstance(nets, dict) or not nets:
         errors.append("nets must be a non-empty object.")
         nets = {}
+    if not isinstance(routing, dict):
+        errors.append("routing must be an object.")
+    else:
+        mode = str(routing.get("mode") or "").strip()
+        if mode not in {"wire", "terminal", "combination"}:
+            errors.append("routing.mode must be one of: wire, terminal, combination.")
 
     refs: set[str] = set()
     endpoint_to_net: dict[str, str] = {}
@@ -337,6 +344,7 @@ def validate_final_circuit(circuit: dict[str, Any]) -> dict[str, Any]:
             "component ref/kind/value presence",
             "unique component refs",
             "supported placement kinds",
+            "routing mode contract",
             "REF.PIN endpoint syntax",
             "known endpoint component refs",
             "net has at least two endpoints",
@@ -392,6 +400,11 @@ def compile_raw_circuit(raw: dict[str, Any]) -> dict[str, Any]:
         "circuit_id": raw["circuit_id"],
         "circuit_name": raw["name"],
         "purpose": raw["purpose"],
+        "routing": {
+            "mode": str(raw.get("routing_mode") or "wire"),
+            "allowed_modes": ["wire", "terminal", "combination"],
+            "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+        },
         "components": final_components,
         "nets": compiled_nets,
         "blocks": raw.get("blocks", []),

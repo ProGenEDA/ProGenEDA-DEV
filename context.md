@@ -6465,3 +6465,215 @@ After the first commit attempt (`db7d8ae`), `git status` showed the KiCad CLI
 quality rerun had rewritten several v3 ERC/netlist evidence files. Those files
 were staged and folded into the same commit with `git commit --amend --no-edit`
 before pushing, so the pushed commit contains the latest quality evidence.
+
+## 2026-07-03 02:38:06 PKT - Strict Wire Mode And Terminal Boundary
+
+### User Message
+
+~~~~text
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+# Selected text:
+
+## Selection 1
+Add routing_mode to the pipeline: wire, terminal, or combination.In wire mode, forbid local_labels, local_labels_after_router_failure, and local_labels_after_geometry_violation.Move the current label behavior into a real terminal_placer.py placeholder/foundation.Add a strict wire validator that checks connectivity by actual wire/junction/pin graph, not KiCad labels.Make wire planner report unroutable nets instead of silently hiding them behind labels.Improve planner with pin escape stubs, routing lanes, better net ordering, bus-style routing, rip-up/reroute, and stricter component clearance.Regenerate fresh examples only after the validator proves every requested wire-mode net is physically wired.Next best work is to first make the validator fail these bad cases clearly, then fix the planner against that validator.
+
+## My request for Codex:
+goahead implement the plan
+~~~~
+
+### Visible Agent Responses
+
+~~~~markdown
+I’ll turn that report into the actual pipeline behavior now: first I’m checking the repo checkpoint/upstream like the project rules require, then I’ll wire the strict-mode failures into code before trying to “make it pretty.”
+
+The checkpoint is clean against `origin/main`; the only dirty files are older generated KiCad projects, so I’ll leave them alone and make the pipeline change in source/doc/test files only. Next I’m locating the current planner, maker, validators, and generation entry points so the strict mode lands in the existing architecture.
+
+I found the exact pressure point: `wire_planner` already tags label strategies, and `kicad_wire_maker` also converts geometry failures to labels. I’m going to split those behaviors instead of bolting on another script, so “wire mode” really means physical wires.
+
+The existing files already have most of the pieces; the missing contract is what separates a routed wire from a terminal/label helper. I’m editing the canonical modules now: planner contract, wire maker enforcement, a terminal placeholder, and tests that force old bad behavior to fail instead of masquerading as success.
+
+Before editing, I’m keeping the failure semantics blunt: strict wire mode will return “unroutable/invalid” rather than quietly producing local labels. That gives us honest red lights, and then the router can be improved against those red lights.
+
+I’m making the first source edit now: `wire_planner.py` gets a real `routing_mode` contract. In wire mode, power nets and high-fanout nets will no longer be auto-hidden behind labels.
+
+Next I’m changing the strategy decisions themselves: terminal mode can still produce labels, combination mode can reserve labels for high-fanout/power helper behavior, and strict wire mode has to admit failure when A* cannot find a real route.
+
+The planner now has honest strategy names in strict mode. I’m carrying that through to the higher-level planner helpers so future stages and generated reports inherit the same contract.
+
+I’m adding the terminal placeholder/foundation now. This keeps the old local-label behavior available, but names it as terminal placement instead of letting it leak through the wire path.
+
+Now I’m exporting that stage through the package API, so it is discoverable like the placer, beautifier, and wire planner instead of being an orphan file.
+
+The next edit is the key guardrail: the KiCad wire maker will stop accepting terminal-label strategies when the plan says `routing_mode: wire`, and it will validate actual wire graph connectivity instead of trusting KiCad labels.
+
+I’m adding the strict-wire validator as data-structure code, not a KiCad parser: it unions real drawn segments and then asks, for each expected net, whether all resolved endpoint pins actually sit on the same wire graph. Local labels are ignored in strict mode.
+
+Now I’m wiring the validator into `make_kicad_wires`: endpoint resolution gets cached so validation does not double-count pins, strict mode records forbidden labels/unrouted nets, and the manifest will expose `strict_wire_ok`.
+
+I noticed the wire maker was still checking a hard-coded subset of label strategies, so I’m tightening that to use the shared strategy set. That avoids another quiet escape hatch later.
+
+I’m removing the old “geometry failure becomes labels” behavior from strict wire mode. In wire mode, a geometry failure now stays a failed wire result, which is exactly the kind of honest signal we need.
+
+I’m propagating `routing_mode` into the batch generator next. The run manifest will now say whether the generated folder is strict-wire accepted, not just whether KiCad can open/export it.
+
+I’m adding a CLI switch too, because testing strict-wire vs terminal behavior should not require code edits or one-off scripts.
+
+I’m also putting `routing.mode` into the final JSON itself. That makes the user-facing JSON closer to the Proteus-style main contract: it says what kind of connection stage is expected, instead of leaving the backend to guess.
+
+I’m extending the JSON validator lightly so a bad `routing.mode` is caught at the final JSON boundary, before any placer or wire code runs.
+
+I’m updating the generated project note so future folders do not claim strict-wire outputs contain accepted labels. Small wording, but it matters when these folders become records.
+
+The source-side contract is in place. I’m running the focused tests now to see where old expectations and actual router limits show up; then I’ll patch the tests and routing improvements around real failures, not guesses.
+
+Good: final JSON still compiles cleanly, and the old label-emission test is now failing for the right reason. I’m updating that test into two separate checks: strict wire produces no labels; terminal placement owns labels.
+
+The test imports are through `kicad.pipeline`, so I’m applying the same update there instead of adding a side import.
+
+Now I’m updating the assertions around the old `GND` label expectation and adding the terminal-mode check beside it.
+
+I’m adding one validator expectation for the new final JSON field, so generated main JSON has the routing contract every time.
+
+I’m rerunning the focused tests after the contract change. This should catch both API mistakes and honest strict-wire failures.
+
+The new boundary tests pass. I’m running the full KiCad test set now; after that I’ll inspect the strict-wire summary on the real routed examples to see what router work is still needed.
+
+The suite hit a failure in the old “mixed wired projects obey geometry” expectation, which is expected territory because that test previously allowed fallback labels. I’m letting the run finish so we see all failures before editing assertions or code.
+
+The old batch tests were asserting “geometry clean after label fallback.” Under strict mode, fallback is disabled, so they now expose real router/geometry failures. I’m going to split those tests into: terminal/combination keeps the old label-clean behavior; strict mode reports failures until the router genuinely earns a pass.
+
+The strict routed suite is now honest: 0 labels, but it reports unrouted nets and geometry violations. I’m drilling into one generated report to see whether the next fix should target crossings, component-body contacts, or A* search failure first.
+
+The first router improvement is clear from the reports: the planner reserves the A* trunk, but not the short pin escape stubs that the wire maker later adds. That lets later nets cross those stubs. I’m fixing the planner so the actual pin-to-portal stubs become part of the planned path and occupied grid, and multi-endpoint nets route from the nearest already-connected endpoint instead of always from the first pin.
+
+I’m applying the new endpoint selection and full-path occupancy inside the routing loop now. This is the part that should reduce both hidden stub crossings and root-star spaghetti.
+
+I’m probing the routed suite again after that planner change. The numbers will tell us whether this first router improvement reduced the strict failures or just moved them around.
+
+The pin-stub reservation helped a little but did not solve the routed suite. The remaining failures are still mostly different-net crossings plus A* unroutable nets, so I’m checking the arrangement spacing knobs next; this may need the beautifier to leave more routing channel space before the planner even starts.
+
+The arrangement stage has simple spacing knobs. I’m testing larger routing channels without committing it yet, to see whether spacing is actually the bottleneck or the router needs a deeper algorithm change.
+
+The spacing probe is still running; the wider configs increase A* search cost a lot. I’m letting it finish rather than guessing from the first few seconds.
+
+Spacing alone did not fix the routed suite. I’m adding a controlled strict-wire fallback inside the planner: if a net cannot be routed with existing wires blocked, it retries with existing wires as a heavy penalty instead of a wall. That draws physical wires when possible, records the risk, and lets geometry validation decide whether the result is acceptable.
+
+I’m probing again with that fallback. The goal here is not to declare success; it is to see whether physical endpoint connectivity improves while geometry violations honestly remain visible.
+
+The fallback probe is heavier because it explores more route options on failed nets. It’s still running; I’m watching for whether it pays down the “unrouted net” count.
+
+The fallback helped physical routing count and cut unrouted nets from 29 to 20, but geometry violations rose. That’s useful: it confirms the router can draw more physical nets, but without lane/rip-up logic it creates messy crossings. I’m checking the remaining strict failures before locking tests around the new honest behavior.
+
+Some “not connected” reports are validator blind spots: same-net T-junctions/interior touches are drawn, but the strict graph only unions segment endpoints. I’m fixing the validator to union same-net segment touches before judging endpoint connectivity.
+
+I’m rerunning the probe after the validator fix; this should separate true missing wires from connected same-net junctions that the validator previously missed.
+
+The probe is still running through the harder fallback routes. This is the slow part, but it’s giving us useful truth instead of pretty fake green checks.
+
+That validator fix worked: strict violations now equal the true unrouted nets, not false disconnected reports. I’m testing whether a bigger A* budget clears more of those nets before I decide where to stop this pass.
+
+The A* budget probe is heavy too. If larger budgets do not materially reduce unrouted nets, the next real router work is lane/rip-up logic, not just “try harder.”
+
+Still running; the 250k/500k budgets are slow enough that I’m treating them as diagnostic only, not a good default for the pipeline.
+
+This probe is taking too long for the value it may give. I’m going to stop it if it keeps chewing time after this poll and continue with the structural improvements that already show up in tests.
+
+The high-budget probe is not returning promptly, so I’m stopping that diagnostic. The implementation should not depend on a brute-force budget anyway.
+
+The budget test confirms the shape of the problem: more search reduces unrouted nets but creates many more crossings, so brute force is not the final answer. I’m updating tests to preserve combination/terminal behavior separately while strict wire reports its remaining blockers honestly.
+
+I’m modifying the batch tests now: combination mode keeps the old geometry-clean label-assisted output, and a new strict-wire test checks that labels are absent and blockers are reported instead of hidden.
+
+The tests now encode the split behavior. I’m running the full suite again; after that I’ll update the docs/context and do one non-generated compile/check pass.
+
+This run is taking too long because the new fallback was forcing a 150k expansion budget even in tests that intentionally pass a tiny limit. I’m stopping it and tightening the fallback so test/config budgets are respected.
+
+I’m making the fallback budget explicit now. Small test configs stay small; larger diagnostic/generation configs can opt in.
+
+One more tightening: if a caller lowers `max_astar_expansions`, the fallback will inherit that lower budget unless they explicitly override it. That keeps unit tests responsive.
+
+I’m rerunning the previously stuck final-builder test first. If this returns quickly, the full suite should be safe to run.
+
+That fixed the runaway test budget. I’m running the full suite again now.
+
+The full suite is still running. The strict fallback routes make the wire-maker tests slower than before, but they are exercising the exact failure path we need.
+
+The suite is through the compiler and into the wire-maker batch tests. No failures yet.
+
+All 38 tests pass. I’m updating the documentation and context log now so the new behavior is recorded: strict wire is physical-only, terminal labels live in `terminal_placer`, and current strict routed examples still fail honestly rather than being regenerated as accepted.
+
+I found a few stale doc lines that still say the wire maker draws “wire/label” objects as one stage and that terminal placer is not integrated. I’m updating those so the repo docs match the new stage boundary.
+
+I’m updating the pipeline README with the new routing-mode contract and manifest fields next.
+
+I’m adding a short current-status note to the detailed wire planner design doc: strict wire now rejects labels; combination can still use them as terminal behavior; full strict routing is not accepted yet because geometry/unrouted blockers remain.
+
+The README still treated terminal placement as only a future name. I’m clarifying that the foundation exists, while terminal validation/full integration remains future work.
+
+I’m adding a caution beside the old “current generated wired run” record: it can remain useful evidence, but it should no longer be mistaken for strict-wire acceptance because it uses labels.
+
+I’m updating the final JSON compiler docs so the main JSON contract includes `routing.mode`, matching the code.
+
+The compiler doc has the right shape but no routing field yet. I’m adding that to the output and validator lists.
+
+I’m adding the required chronological context entry now with the user request, visible progress notes, files edited, and verification.
+
+The context log entry is a little long because the repo rule asks for visible responses verbatim. I’m appending it rather than touching old history.
+~~~~
+
+### Files Edited
+
+- `kicad/pipeline/wire_planner.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/terminal_placer.py`
+- `kicad/pipeline/final_circuit_builder.py`
+- `kicad/pipeline/__init__.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+- `kicad/tests/test_placer_pipeline.py`
+- `kicad/tests/test_final_circuit_builder.py`
+- `kicad/AGENTS.md`
+- `kicad/pipeline/README.md`
+- `kicad/pipeline/BEAUTIFIER_WIRE_PLANNER_DESIGN.md`
+- `kicad/pipeline/FINAL_CIRCUIT_JSON_COMPILER.md`
+- `context.md`
+
+### Implementation Notes
+
+- Added explicit `routing.mode` to final CircuitIR JSON and validation.
+- Added `routing_mode` handling to the pure JSON wire planner.
+- Strict `wire` mode now forbids `local_labels`, `local_labels_after_router_failure`, and `local_labels_after_geometry_violation`.
+- Added `kicad/pipeline/terminal_placer.py` as the KiCad local-label terminal foundation.
+- Wire maker now skips label strategies in strict wire mode, records forbidden label strategies, records unroutable nets, and reports strict wire connectivity by walking actual wire segments instead of labels.
+- Geometry failure no longer converts nets to labels in strict wire mode.
+- Planner now includes pin escape stubs in route paths/occupied cells and routes multi-endpoint nets from the nearest already connected endpoint instead of always the first endpoint.
+- Planner has a controlled strict fallback that treats existing wires as high-cost lanes rather than hard walls; this improves physical routing counts but leaves geometry validation to reject messy crossings.
+- Strict validator now unions same-net T-junction/interior touches to avoid false disconnected-net reports.
+- Combination mode keeps label-assisted output and remains geometry-clean in tests; strict routed examples still expose real unrouted/geometry blockers.
+
+### Verification
+
+- `python -m unittest discover kicad/tests -v`: 38 tests passed in 46.146s.
+- Strict routed probe after the validator fix: total labels 0, total unrouted nets 20, total strict-wire violations 20, total geometry violations 82.
+- High A* budget probe was interrupted intentionally after showing brute force reduces unrouted nets but increases geometry violations; lane/rip-up routing is the next real improvement path.
+
+### Additional Visible Responses Before Commit
+
+~~~~markdown
+The code and docs are updated. I’m doing the compile check now, then I’ll inspect the diff/status before committing.
+
+Compile passed. The old generated v4 project files are still dirty from before this turn, and I’m excluding them from staging. I’m reviewing the source diff now before commit.
+
+The source diff looks sane. I’m running whitespace checks on the edited source/docs/tests only, excluding the old generated KiCad files that were already dirty.
+
+Whitespace checks passed on the edited files. I’m staging only the source/docs/tests/context changes now, leaving the old dirty generated projects untouched.
+
+The scoped files are staged. I’m checking the staged diff and status before committing, especially to make sure those older generated folders stayed out.
+
+I sent a few more progress notes after the context append, so I’m adding a short follow-up context entry before committing. That keeps the handoff honest without rewriting the main log.
+~~~~

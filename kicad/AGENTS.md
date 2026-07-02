@@ -123,6 +123,7 @@ kicad/pipeline/arrangement_decider.py
 kicad/pipeline/beautifier.py
 kicad/pipeline/wire_planner.py
 kicad/pipeline/kicad_wire_maker.py
+kicad/pipeline/terminal_placer.py
 ```
 
 `arrangement_decider.py` decides first-pass coordinates from topology,
@@ -142,11 +143,23 @@ wire_plan.json
 
 The wire planner must remain independent of KiCad/Proteus file formats.
 
+`wire_planner.py` must honor `routing_mode`. In `wire` mode, local labels are
+forbidden and unroutable nets must be reported as failures instead of hidden as
+terminal helpers. In `terminal` mode, terminal/label behavior belongs to
+`terminal_placer.py`. In `combination` mode, the explicit combination path may
+use both wire and terminal plans.
+
 `kicad_wire_maker.py` is the KiCad-specific drawing backend. It consumes final
 CircuitIR JSON and beautified placement JSON, resolves source-backed KiCad
 symbol pin/body geometry into `routing_inputs/`, feeds that pure JSON to
-`wire_planner.py`, then writes real KiCad wire, label, and junction objects
-while recording unresolved pin aliases and route fallback nets in manifests.
+`wire_planner.py`, then writes real KiCad wire/junction objects for strict wire
+plans or terminal-label objects only when the upstream mode permits them. It
+records unresolved pin aliases, unroutable nets, strict-wire connectivity
+validation, and geometry validation in manifests.
+
+`terminal_placer.py` is the current placeholder/foundation for terminal-style
+connectivity. For KiCad its current backend is local labels with short pin
+stubs. Strict wire mode must not invoke it implicitly as a fallback.
 
 `wire_geometry_validator.py` validates the actual wire segments emitted by the
 wire maker against wire-crossing and wire/body-contact rules. It is a validator,

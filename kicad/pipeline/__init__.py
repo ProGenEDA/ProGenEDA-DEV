@@ -6,6 +6,7 @@ from .beautifier import apply_coordinate_edits
 from .placement_input_validator import validate_placement_input
 from .placement_validator import validate_placement
 from .placer_pipeline import run_placer_pipeline
+from .terminal_placer import place_terminals
 from .wire_planner import plan_wire_routes, plan_wiring, write_wire_planner_jsons
 
 
@@ -27,6 +28,7 @@ __all__ = [
     "apply_coordinate_edits",
     "decide_arrangement",
     "place_components",
+    "place_terminals",
     "plan_wire_routes",
     "plan_wiring",
     "run_placer_pipeline",

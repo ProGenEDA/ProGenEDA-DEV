@@ -45,7 +45,11 @@ class Body:
         return self.left - clearance <= x <= self.right + clearance and self.top - clearance <= y <= self.bottom + clearance
 
 
-DEFAULT_WIRE_CONFIG: dict[str, float] = {
+ROUTING_MODES = {"wire", "terminal", "combination"}
+LABEL_STRATEGIES = {"local_labels", "single_endpoint_label", "local_labels_after_router_failure", "local_labels_after_geometry_violation"}
+
+DEFAULT_WIRE_CONFIG: dict[str, Any] = {
+    "routing_mode": "wire",
     "grid": 2.54,
     "sheet_width": 420.0,
     "sheet_height": 297.0,
@@ -57,8 +61,36 @@ DEFAULT_WIRE_CONFIG: dict[str, float] = {
     "near_wire_penalty": 1.25,
     "block_existing_wires": 1.0,
     "max_astar_expansions": 50_000.0,
+    "strict_fallback_max_astar_expansions": 50_000.0,
     "max_wired_routes": 10_000.0,
 }
+
+
+def normalize_routing_mode(value: object) -> str:
+    mode = str(value or "wire").strip().lower().replace("-", "_")
+    if mode not in ROUTING_MODES:
+        raise ValueError(f"Unsupported routing_mode {value!r}; expected one of: {', '.join(sorted(ROUTING_MODES))}")
+    return mode
+
+
+def _wire_config(config: dict[str, Any] | None, circuit: dict[str, Any] | None = None) -> dict[str, Any]:
+    cfg = dict(DEFAULT_WIRE_CONFIG)
+    explicit_strict_fallback_budget = False
+    circuit_mode = None
+    if isinstance(circuit, dict):
+        raw_routing = circuit.get("routing")
+        if isinstance(raw_routing, dict):
+            circuit_mode = raw_routing.get("mode")
+    if circuit_mode:
+        cfg["routing_mode"] = circuit_mode
+    if config:
+        explicit_strict_fallback_budget = "strict_fallback_max_astar_expansions" in config
+        for key, value in config.items():
+            cfg[key] = value if key == "routing_mode" else float(value)
+    cfg["routing_mode"] = normalize_routing_mode(cfg.get("routing_mode"))
+    if not explicit_strict_fallback_budget:
+        cfg["strict_fallback_max_astar_expansions"] = float(cfg.get("max_astar_expansions", 50_000.0))
+    return cfg
 
 
 def _snap(value: float, grid: float) -> float:
@@ -483,7 +515,36 @@ def _segments(path: list[Point]) -> list[dict[str, Any]]:
     return out
 
 
-def _local_label_net(net: str, endpoints: list[dict[str, Any]]) -> bool:
+def _orthogonal_escape_path(start: Point, end: Point) -> list[Point]:
+    start = _round_point(start)
+    end = _round_point(end)
+    if start == end:
+        return [start]
+    if start[0] == end[0] or start[1] == end[1]:
+        return [start, end]
+    return [start, (end[0], start[1]), end]
+
+
+def _join_paths(*paths: list[Point]) -> list[Point]:
+    out: list[Point] = []
+    for path in paths:
+        for point in path:
+            rounded = _round_point(point)
+            if out and out[-1] == rounded:
+                continue
+            out.append(rounded)
+    return out
+
+
+def _manhattan(left: Point, right: Point) -> float:
+    return abs(left[0] - right[0]) + abs(left[1] - right[1])
+
+
+def _local_label_net(net: str, endpoints: list[dict[str, Any]], routing_mode: str) -> bool:
+    if routing_mode == "wire":
+        return False
+    if routing_mode == "terminal":
+        return True
     upper = net.upper()
     return upper in POWER_NETS or upper in GROUND_NETS or len(endpoints) >= 7
 
@@ -527,11 +588,10 @@ def plan_wire_routes(
     placement: dict[str, Any],
     circuit: dict[str, Any],
     *,
-    config: dict[str, float] | None = None,
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    cfg = dict(DEFAULT_WIRE_CONFIG)
-    if config:
-        cfg.update({key: float(value) for key, value in config.items()})
+    cfg = _wire_config(config, circuit)
+    routing_mode = str(cfg["routing_mode"])
 
     bodies = _bodies(placement)
     endpoints_by_net = _endpoint_points(placement, circuit, cfg)
@@ -558,20 +618,31 @@ def plan_wire_routes(
         upper = net.upper()
         if any(token in upper for token in ("CLK", "CLOCK", "CK", "CP")):
             return (0, net)
-        if upper in POWER_NETS or upper in GROUND_NETS:
+        if routing_mode != "wire" and (upper in POWER_NETS or upper in GROUND_NETS):
             return (2, net)
         return (1 if len(endpoints) <= 6 else 3, net)
 
     for net, endpoints in sorted(endpoints_by_net.items(), key=net_priority):
         if len(endpoints) < 2:
-            nets_out[net] = {"strategy": "single_endpoint_label", "endpoints": endpoints, "routes": []}
+            if routing_mode == "wire":
+                warning = f"strict_wire_single_endpoint: {net} has fewer than two endpoints."
+                warnings.append(warning)
+                nets_out[net] = {
+                    "strategy": "unroutable_single_endpoint",
+                    "endpoints": endpoints,
+                    "routes": [],
+                    "failure_warnings": [warning],
+                }
+            else:
+                nets_out[net] = {"strategy": "single_endpoint_label", "endpoints": endpoints, "routes": []}
             continue
-        if _local_label_net(net, endpoints):
+        if _local_label_net(net, endpoints, routing_mode):
             nets_out[net] = {"strategy": "local_labels", "endpoints": endpoints, "routes": []}
             continue
         if len(routes) >= max_wired_routes:
             warnings.append(f"wire_route_limit_deferred: {net} skipped after {max_wired_routes} routed connections.")
-            nets_out[net] = {"strategy": "deferred_after_route_limit", "endpoints": endpoints, "routes": []}
+            strategy = "unroutable_after_route_limit" if routing_mode == "wire" else "deferred_after_route_limit"
+            nets_out[net] = {"strategy": strategy, "endpoints": endpoints, "routes": [], "failure_warnings": ["wire_route_limit_deferred"]}
             continue
 
         endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
@@ -580,12 +651,20 @@ def plan_wire_routes(
         net_failed = False
         net_failure_warnings: list[str] = []
         root = endpoints[0]
+        connected_endpoints = [root]
         for target in endpoints[1:]:
             if len(routes) + len(net_routes) >= max_wired_routes:
                 warnings.append(f"wire_route_limit_deferred: remaining endpoints of {net} skipped after {max_wired_routes} routed connections.")
                 net_failed = True
                 net_failure_warnings.append("wire_route_limit_deferred")
                 break
+            root = min(
+                connected_endpoints,
+                key=lambda item: _manhattan(
+                    (float(item["point"][0]), float(item["point"][1])),
+                    (float(target["point"][0]), float(target["point"][1])),
+                ),
+            )
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))
             start_route = (
@@ -621,13 +700,42 @@ def plan_wire_routes(
                 ignore_refs=ignore_refs,
                 portals=portals,
             )
+            if not raw_path and routing_mode == "wire":
+                fallback_cfg = dict(cfg)
+                fallback_cfg["block_existing_wires"] = 0.0
+                fallback_cfg["near_wire_penalty"] = max(float(cfg.get("near_wire_penalty", 1.25)), 10.0)
+                fallback_cfg["max_astar_expansions"] = float(
+                    cfg.get("strict_fallback_max_astar_expansions", cfg.get("max_astar_expansions", 50_000.0))
+                )
+                fallback_path, fallback_warnings = _astar(
+                    start_route,
+                    goal_route,
+                    bodies,
+                    fallback_cfg,
+                    routed_occupied,
+                    net=net,
+                    ignore_refs=ignore_refs,
+                    portals=portals,
+                )
+                if fallback_path:
+                    raw_path = fallback_path
+                    route_warnings = [
+                        *route_warnings,
+                        "strict_crossing_risk_fallback: existing wires were treated as high-cost lanes instead of hard blocks.",
+                        *fallback_warnings,
+                    ]
             warnings.extend(route_warnings)
             if not raw_path:
                 net_failed = True
                 net_failure_warnings.extend(route_warnings or [f"unroutable: {net}"])
                 break
-            path = _compress_path(raw_path)
-            for point in raw_path:
+            full_raw_path = _join_paths(
+                _orthogonal_escape_path(start, start_route),
+                raw_path,
+                _orthogonal_escape_path(goal_route, goal),
+            )
+            path = _compress_path(full_raw_path)
+            for point in full_raw_path:
                 net_occupied[_to_grid(point, cfg["grid"])] = net
             route = {
                 "net": net,
@@ -649,14 +757,25 @@ def plan_wire_routes(
                 "segments": _segments(path),
             }
             net_routes.append(route)
+            connected_endpoints.append(target)
         if net_failed:
-            warnings.append(f"wire_net_label_fallback: {net} converted to local labels after router failure.")
-            nets_out[net] = {
-                "strategy": "local_labels_after_router_failure",
-                "endpoints": endpoints,
-                "routes": [],
-                "failure_warnings": net_failure_warnings[:20],
-            }
+            if routing_mode == "wire":
+                warnings.append(f"strict_wire_unroutable: {net} could not be routed without labels.")
+                nets_out[net] = {
+                    "strategy": "unroutable",
+                    "endpoints": endpoints,
+                    "routes": [],
+                    "partial_routes": net_routes,
+                    "failure_warnings": net_failure_warnings[:20],
+                }
+            else:
+                warnings.append(f"wire_net_label_fallback: {net} converted to local labels after router failure.")
+                nets_out[net] = {
+                    "strategy": "local_labels_after_router_failure",
+                    "endpoints": endpoints,
+                    "routes": [],
+                    "failure_warnings": net_failure_warnings[:20],
+                }
             continue
         occupied.update(net_occupied)
         routes.extend(net_routes)
@@ -670,17 +789,18 @@ def plan_wire_routes(
     return {
         "schema": "progen-kicad-wire-plan/v0.1",
         "stage": "wire_planner",
+        "routing_mode": routing_mode,
         "input_contract": {
             "placement": "components plus obstacles JSON; no EDA file required",
             "connections": "CircuitIR components[].pins and/or nets endpoint lists",
         },
         "algorithm": {
             "router": "grid_astar_orthogonal",
-            "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+            "routing_order": "clock, ordinary short nets, then remaining nets; terminal/combination mode may label selected nets",
             "component_avoidance": "inflated_obstacle_grid",
             "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
             "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
-            "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+            "failure_policy": "wire mode records unroutable nets as failures; terminal/combination mode may convert selected failures to local-label terminal plans",
             "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges",
         },
         "sheet": {"width": width, "height": height, "grid": cfg["grid"], "clearance": cfg["clearance"]},
@@ -691,6 +811,10 @@ def plan_wire_routes(
             "wired_route_count": len(routes),
             "segment_count": sum(len(route["segments"]) for route in routes),
             "different_net_crossing_count": crossing_count,
+            "label_strategy_count": sum(1 for item in nets_out.values() if isinstance(item, dict) and item.get("strategy") in LABEL_STRATEGIES),
+            "unroutable_net_count": sum(
+                1 for item in nets_out.values() if isinstance(item, dict) and str(item.get("strategy", "")).startswith("unroutable")
+            ),
         },
         "warnings": warnings,
     }
@@ -701,7 +825,7 @@ def plan_wiring(
     circuit: dict[str, Any],
     *,
     arrangement_config: dict[str, float] | None = None,
-    wire_config: dict[str, float] | None = None,
+    wire_config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     coordinate_plan = decide_arrangement(placement, circuit, config=arrangement_config or DEFAULT_ARRANGEMENT_CONFIG)
     wire_plan = plan_wire_routes(placement, circuit, config=wire_config)
@@ -718,7 +842,7 @@ def write_wire_planner_jsons(
     out_dir: str | Path,
     *,
     arrangement_config: dict[str, float] | None = None,
-    wire_config: dict[str, float] | None = None,
+    wire_config: dict[str, Any] | None = None,
 ) -> dict[str, Path]:
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)

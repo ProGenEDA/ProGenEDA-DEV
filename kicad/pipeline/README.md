@@ -57,15 +57,27 @@ The post-placer stages remain independent:
 - `beautifier.apply_coordinate_edits(placement, coordinate_plan)`
   applies only coordinate edits and returns a new placement JSON object.
 - `wire_planner.plan_wire_routes(placement, circuit)`
-  emits route-plan JSON for drawing backends.
+  emits route-plan JSON for drawing backends and honors `routing_mode`.
+- `terminal_placer.place_terminals(placement, circuit)`
+  owns terminal/local-label connectivity plans.
 - `kicad_wire_maker.py`
   is the first EDA-specific drawing backend. It does not plan routes. It
   resolves KiCad symbol pin/body geometry into `routing_inputs/`, feeds that
-  pure JSON to the wire planner, draws actual wire/label/junction S-expressions,
-  and records unresolved pin aliases in each manifest.
+  pure JSON to the wire planner, draws actual wire/junction S-expressions in
+  strict wire mode, and records unresolved pin aliases, unroutable nets,
+  geometry validation, and strict-wire connectivity validation in each manifest.
 
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.
+
+`routing_mode` is part of the final JSON and stage config:
+
+- `wire`: every compiled net endpoint must be connected by the physical
+  wire/junction/pin graph. Local labels are forbidden. Unroutable nets are
+  reported as failures.
+- `terminal`: local labels/terminal stubs are allowed and are owned by
+  `terminal_placer.py`.
+- `combination`: explicit mixed routing may use both wires and terminal plans.
 
 Detailed behavior, JSON contracts, validation expectations, and future routing
 rules are recorded in:
@@ -116,13 +128,13 @@ stage_reports/      arrangement, beautifier, and wire-planner metrics
 run_manifest.json   aggregate evidence
 ```
 
-The stage reports use bounded route-planning settings for batch evidence. If
-the current A* router cannot finish a path within the configured expansion
-limit, it emits a fallback route and records an
-`astar_fallback_expansion_limit` warning. If the stress report hits the route
-count cap, remaining nets are marked `deferred_after_route_limit`. These are
-wire-planner limitations that the KiCad wire maker records in manifests when it
-draws the current plan.
+The stage reports use bounded route-planning settings for batch evidence. In
+strict `wire` mode, the planner may retry an unroutable path with existing wires
+treated as high-cost lanes instead of hard walls, but it must not emit local
+labels. If a route still cannot be found, the net is marked `unroutable` and the
+KiCad wire maker records that as a strict-wire validation failure. Terminal and
+combination modes may use terminal/local-label strategies through the terminal
+stage contract.
 
 Old generated run folders remain immutable records.
 
@@ -204,6 +216,9 @@ gaps: T07 has two artificial `LM358.BIAS` endpoints, and T08 needs a better LED
 array/DIP-common symbol model. ERC quality currently passes 5/10, so this is
 geometry-clean routing evidence, not final electrical acceptance.
 
+After the 2026-07-03 routing-mode split, any run with local labels should be
+treated as terminal/combination evidence, not strict `wire` mode acceptance.
+
 The first strict wire-geometry validation run is:
 
 ```text
@@ -220,7 +235,9 @@ the old router, not as accepted final wiring.
 
 Future stages are named in `placeholders.py`, but they are not run by
 `run_placer_pipeline()`. They stay placeholders until the previous slice is
-tested and accepted.
+tested and accepted. `terminal_placer.py` now exists as the KiCad local-label
+foundation, but a full terminal validator and accepted terminal path are still
+future work.
 
 Next intended slices:
 

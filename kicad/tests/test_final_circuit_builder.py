@@ -55,6 +55,7 @@ class FinalCircuitBuilderTests(unittest.TestCase):
         for circuit in circuits:
             with self.subTest(cid=circuit["circuit_id"]):
                 self.assertEqual(circuit["schema_version"], "progen-kicad-circuit-ir/v1")
+                self.assertEqual(circuit["routing"]["mode"], "wire")
                 self.assertEqual(circuit["validation"]["status"], "pass")
                 self.assertEqual(circuit["validation"]["errors"], [])
                 self.assertEqual(circuit["validation"]["warnings"], [])

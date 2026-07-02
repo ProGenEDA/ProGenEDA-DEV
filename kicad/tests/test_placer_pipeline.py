@@ -14,6 +14,7 @@ from kicad.pipeline import (
     PipelineError,
     apply_coordinate_edits,
     decide_arrangement,
+    place_terminals,
     plan_wire_routes,
     plan_wiring,
     run_placer_pipeline,
@@ -329,7 +330,8 @@ class PlacerPipelineTests(unittest.TestCase):
         wire_plan = planned["wire_plan"]
         self.assertEqual(wire_plan["schema"], "progen-kicad-wire-plan/v0.1")
         self.assertEqual(wire_plan["algorithm"]["router"], "grid_astar_orthogonal")
-        self.assertEqual(wire_plan["nets"]["GND"]["strategy"], "local_labels")
+        self.assertEqual(wire_plan["routing_mode"], "wire")
+        self.assertNotEqual(wire_plan["nets"]["GND"]["strategy"], "local_labels")
         self.assertGreaterEqual(wire_plan["metrics"]["wired_route_count"], 2)
         self.assertEqual(wire_plan["metrics"]["different_net_crossing_count"], 0)
         bodies = {item["owner"]: item for item in ctx.placement_plan.as_dict()["obstacles"]}
@@ -340,6 +342,14 @@ class PlacerPipelineTests(unittest.TestCase):
                     if ref in {route["from"]["ref"], route["to"]["ref"]}:
                         continue
                     self.assertFalse(segment_crosses_body(segment, body), f"{route['net']} crosses {ref}")
+
+    def test_terminal_placer_emits_label_plan_independently_from_wire_mode(self) -> None:
+        circuit = vdc_resistor_led()
+        ctx = run_placer_pipeline(circuit, write_trace=False)
+        terminal_plan = place_terminals(ctx.placement_plan.as_dict(), circuit)
+        self.assertEqual(terminal_plan["schema"], "progen-kicad-terminal-plan/v0.1")
+        self.assertEqual(terminal_plan["routing_mode"], "terminal")
+        self.assertEqual(terminal_plan["nets"]["GND"]["strategy"], "local_labels")
 
     def test_wire_planner_prefers_exact_pin_points_when_provided(self) -> None:
         circuit = {

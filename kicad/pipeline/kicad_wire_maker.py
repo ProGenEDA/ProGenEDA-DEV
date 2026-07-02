@@ -30,11 +30,12 @@ from .placement_catalog import CatalogPlacementPlan, PlacedCatalogComponent, res
 from .placement_project_writer import write_placement_project
 from .placer_pipeline import run_placer_pipeline
 from .wire_geometry_validator import AllowedTouch, ComponentBody, WireGeometrySegment, validate_wire_geometry
-from .wire_planner import plan_wire_routes
+from .wire_planner import LABEL_STRATEGIES, normalize_routing_mode, plan_wire_routes
 
 
 WIRE_MAKER_VERSION = "progen-kicad-wire-maker/v0.1"
 POWER_LABEL_NETS = {"GND", "0", "VSS", "+5V", "5V", "+3V3", "3V3", "VCC", "VDD", "VIN", "VBUS"}
+UNROUTED_STRATEGY_PREFIXES = ("unroutable", "deferred")
 
 
 @dataclass(frozen=True)
@@ -967,22 +968,202 @@ def _insert_junctions(segments: list[tuple[tuple[float, float], tuple[float, flo
     return sorted(junctions, key=lambda item: (item[1], item[0]))
 
 
+class _PointUnionFind:
+    def __init__(self) -> None:
+        self.parent: dict[tuple[float, float], tuple[float, float]] = {}
+
+    def make(self, point: tuple[float, float]) -> None:
+        rounded = _round_wire_point(point)
+        if rounded not in self.parent:
+            self.parent[rounded] = rounded
+
+    def find(self, point: tuple[float, float]) -> tuple[float, float]:
+        rounded = _round_wire_point(point)
+        self.make(rounded)
+        parent = self.parent[rounded]
+        if parent != rounded:
+            self.parent[rounded] = self.find(parent)
+        return self.parent[rounded]
+
+    def union(self, left: tuple[float, float], right: tuple[float, float]) -> None:
+        left_root = self.find(left)
+        right_root = self.find(right)
+        if left_root != right_root:
+            self.parent[right_root] = left_root
+
+
+def _round_wire_point(point: tuple[float, float]) -> tuple[float, float]:
+    return (round(point[0], 3), round(point[1], 3))
+
+
+def _wire_plan_routing_mode(wire_plan: dict[str, Any]) -> str:
+    raw = wire_plan.get("routing_mode")
+    if raw is None:
+        raw = wire_plan.get("decision", {}).get("routing_mode") if isinstance(wire_plan.get("decision"), dict) else None
+    return normalize_routing_mode(raw or "wire")
+
+
+def _strict_wire_connectivity_report(
+    wire_plan: dict[str, Any],
+    geometry_segments: list[WireGeometrySegment],
+    endpoint_point: Any,
+) -> dict[str, Any]:
+    violations: list[dict[str, Any]] = []
+    checked_nets = 0
+    connected_nets = 0
+    routing_mode = _wire_plan_routing_mode(wire_plan)
+    label_strategy_count = 0
+    unrouted_net_count = 0
+
+    segments_by_net: dict[str, list[WireGeometrySegment]] = {}
+    for segment in geometry_segments:
+        segments_by_net.setdefault(segment.net, []).append(segment)
+
+    for net, net_data in wire_plan.get("nets", {}).items():
+        if not isinstance(net_data, dict):
+            continue
+        net_name = str(net)
+        strategy = str(net_data.get("strategy") or "")
+        endpoints = [item for item in net_data.get("endpoints", []) if isinstance(item, dict)]
+        if strategy in LABEL_STRATEGIES:
+            label_strategy_count += 1
+            if routing_mode == "wire":
+                violations.append(
+                    {
+                        "rule": "wire_mode_forbids_terminal_label_strategy",
+                        "net": net_name,
+                        "strategy": strategy,
+                    }
+                )
+        if strategy.startswith(UNROUTED_STRATEGY_PREFIXES):
+            unrouted_net_count += 1
+            violations.append(
+                {
+                    "rule": "expected_net_has_no_complete_wire_route",
+                    "net": net_name,
+                    "strategy": strategy,
+                    "failure_warnings": net_data.get("failure_warnings", []),
+                }
+            )
+            continue
+        if len(endpoints) < 2:
+            violations.append({"rule": "expected_net_has_fewer_than_two_endpoints", "net": net_name, "strategy": strategy})
+            continue
+        if strategy != "wire":
+            if routing_mode == "wire":
+                violations.append({"rule": "wire_mode_requires_wire_strategy", "net": net_name, "strategy": strategy})
+            continue
+
+        checked_nets += 1
+        net_segments = segments_by_net.get(net_name, [])
+        if not net_segments:
+            violations.append({"rule": "expected_net_has_no_wire_segments", "net": net_name})
+            continue
+
+        uf = _PointUnionFind()
+        for segment in net_segments:
+            uf.union(segment.start, segment.end)
+        for index, left in enumerate(net_segments):
+            for right in net_segments[index + 1 :]:
+                for point in _same_net_touch_points(left, right):
+                    uf.union(point, left.start)
+                    uf.union(point, left.end)
+                    uf.union(point, right.start)
+                    uf.union(point, right.end)
+
+        endpoint_points: list[tuple[str, tuple[float, float]]] = []
+        for endpoint in endpoints:
+            point = endpoint_point(endpoint)
+            rounded = _round_wire_point(point)
+            endpoint_points.append((f"{endpoint.get('ref')}.{endpoint.get('pin')}", rounded))
+            touches = [segment for segment in net_segments if _point_on_wire_segment(rounded, segment)]
+            if not touches:
+                violations.append(
+                    {
+                        "rule": "endpoint_pin_not_on_any_wire_segment",
+                        "net": net_name,
+                        "endpoint": endpoint_points[-1][0],
+                        "point": [rounded[0], rounded[1]],
+                    }
+                )
+                continue
+            for segment in touches:
+                uf.union(rounded, segment.start)
+                uf.union(rounded, segment.end)
+
+        if endpoint_points:
+            roots = {uf.find(point) for _name, point in endpoint_points}
+            if len(roots) == 1:
+                connected_nets += 1
+            else:
+                violations.append(
+                    {
+                        "rule": "net_endpoints_not_connected_by_wire_graph",
+                        "net": net_name,
+                        "strategy": strategy,
+                        "endpoint_count": len(endpoint_points),
+                        "component_groups": len(roots),
+                        "endpoints": [{"endpoint": name, "point": [point[0], point[1]]} for name, point in endpoint_points[:24]],
+                        "endpoints_truncated": len(endpoint_points) > 24,
+                    }
+                )
+
+    return {
+        "schema": "progen-kicad-strict-wire-connectivity-validation/v0.1",
+        "stage": "strict_wire_connectivity_validator",
+        "routing_mode": routing_mode,
+        "ok": not violations,
+        "checked_net_count": checked_nets,
+        "connected_net_count": connected_nets,
+        "label_strategy_count": label_strategy_count,
+        "unrouted_net_count": unrouted_net_count,
+        "violation_count": len(violations),
+        "violations": violations[:200],
+        "violations_truncated": len(violations) > 200,
+    }
+
+
+def _same_net_touch_points(left: WireGeometrySegment, right: WireGeometrySegment) -> list[tuple[float, float]]:
+    points: set[tuple[float, float]] = set()
+    for point in (left.start, left.end):
+        if _point_on_wire_segment(point, right):
+            points.add(_round_wire_point(point))
+    for point in (right.start, right.end):
+        if _point_on_wire_segment(point, left):
+            points.add(_round_wire_point(point))
+
+    left_horizontal = abs(left.start[1] - left.end[1]) <= 0.001
+    right_horizontal = abs(right.start[1] - right.end[1]) <= 0.001
+    if left_horizontal != right_horizontal:
+        horizontal = left if left_horizontal else right
+        vertical = right if left_horizontal else left
+        candidate = (round(vertical.start[0], 3), round(horizontal.start[1], 3))
+        if _point_on_wire_segment(candidate, horizontal) and _point_on_wire_segment(candidate, vertical):
+            points.add(candidate)
+    return sorted(points, key=lambda item: (item[1], item[0]))
+
+
 def make_kicad_wires(
     circuit: dict[str, Any],
     placement: CatalogPlacementPlan,
     wire_plan: dict[str, Any],
 ) -> WireMakerResult:
+    routing_mode = _wire_plan_routing_mode(wire_plan)
     library = KiCadSymbolLibrary()
     components = _component_lookup(placement)
     pin_cache: dict[str, tuple[PinGeometry, ...]] = {}
     unit_count_cache: dict[str, int] = {}
     unresolved: list[dict[str, Any]] = []
+    endpoint_point_cache: dict[tuple[str, str], tuple[float, float]] = {}
     resolved_count = 0
 
     def endpoint_point(endpoint: dict[str, Any]) -> tuple[float, float]:
         nonlocal resolved_count
         ref = str(endpoint.get("ref") or "")
         pin = str(endpoint.get("pin") or "")
+        key = (ref, pin)
+        if key in endpoint_point_cache:
+            return endpoint_point_cache[key]
         point, status, _geometry = _resolve_component_pin_point(
             ref=ref,
             pin=pin,
@@ -999,8 +1180,11 @@ def make_kicad_wires(
                 if component is not None:
                     unresolved[-1]["kind"] = component.kind
             raw_point = endpoint.get("point", [0.0, 0.0])
-            return (round(float(raw_point[0]), 3), round(float(raw_point[1]), 3))
+            fallback = (round(float(raw_point[0]), 3), round(float(raw_point[1]), 3))
+            endpoint_point_cache[key] = fallback
+            return fallback
         resolved_count += 1
+        endpoint_point_cache[key] = point
         return point
 
     segments: list[tuple[tuple[float, float], tuple[float, float]]] = []
@@ -1011,6 +1195,8 @@ def make_kicad_wires(
     fallback_route_count = 0
     label_collision_avoidance_count = 0
     deferred_nets: list[str] = []
+    unrouted_nets: list[str] = []
+    forbidden_label_strategy_nets: list[dict[str, str]] = []
 
     def add_segments(
         *,
@@ -1042,7 +1228,13 @@ def make_kicad_wires(
         if strategy == "deferred_after_route_limit":
             deferred_nets.append(net_name)
             continue
-        if strategy in {"local_labels", "single_endpoint_label", "local_labels_after_router_failure"}:
+        if strategy.startswith(UNROUTED_STRATEGY_PREFIXES):
+            unrouted_nets.append(net_name)
+            continue
+        if strategy in LABEL_STRATEGIES:
+            if routing_mode == "wire":
+                forbidden_label_strategy_nets.append({"net": net_name, "strategy": strategy})
+                continue
             for endpoint in endpoints:
                 pin_point = endpoint_point(endpoint)
                 raw_label = endpoint.get("point", [pin_point[0] + 5.08, pin_point[1]])
@@ -1105,6 +1297,7 @@ def make_kicad_wires(
     merged_segment_count = raw_segment_count - len(geometry_segments)
     junctions = _insert_junctions(segments)
     geometry_report = validate_wire_geometry(geometry_segments, component_bodies)
+    strict_wire_report = _strict_wire_connectivity_report(wire_plan, geometry_segments, endpoint_point)
     project_name = str(circuit.get("project", {}).get("name") or circuit.get("circuit_id") or "wired")
     objects: list[str] = []
     for index, (a, b) in enumerate(segments, 1):
@@ -1118,6 +1311,7 @@ def make_kicad_wires(
         "schema": "progen-kicad-wire-maker-report/v0.1",
         "stage": "kicad_wire_maker",
         "version": WIRE_MAKER_VERSION,
+        "routing_mode": routing_mode,
         "wire_object_count": len(segments),
         "raw_wire_segment_count": raw_segment_count,
         "merged_wire_segment_count": merged_segment_count,
@@ -1130,12 +1324,20 @@ def make_kicad_wires(
         "unresolved_pins": unresolved[:200],
         "unresolved_pin_report_truncated": len(unresolved) > 200,
         "fallback_route_count": fallback_route_count,
+        "forbidden_label_strategy_count": len(forbidden_label_strategy_nets),
+        "forbidden_label_strategy_nets": forbidden_label_strategy_nets[:200],
+        "forbidden_label_strategy_report_truncated": len(forbidden_label_strategy_nets) > 200,
         "label_collision_avoidance_count": label_collision_avoidance_count,
         "deferred_net_count": len(deferred_nets),
         "deferred_nets": deferred_nets,
+        "unrouted_net_count": len(unrouted_nets),
+        "unrouted_nets": unrouted_nets,
         "geometry_ok": bool(geometry_report["ok"]),
         "geometry_violation_count": int(geometry_report["violation_count"]),
         "wire_geometry_validator": geometry_report,
+        "strict_wire_ok": bool(strict_wire_report["ok"]) if routing_mode == "wire" else True,
+        "strict_wire_violation_count": int(strict_wire_report["violation_count"]),
+        "strict_wire_validator": strict_wire_report,
         "wire_planner_metrics": wire_plan.get("metrics", {}),
         "wire_planner_warning_count": len(wire_plan.get("warnings", [])),
     }
@@ -1217,6 +1419,12 @@ def repair_wire_plan_geometry(
     repair_passes: list[dict[str, Any]] = []
     already_fallback: set[str] = set()
     result = make_kicad_wires(circuit, placement, repaired_plan)
+    if _wire_plan_routing_mode(wire_plan) == "wire":
+        result.report["geometry_repair_pass_count"] = 0
+        result.report["geometry_repair_passes"] = []
+        result.report["geometry_repair_fallback_nets"] = []
+        result.report["geometry_repair_fallback_disabled"] = "strict wire mode forbids conversion of failed wires to terminal/local-label strategy"
+        return repaired_plan, result
     for pass_index in range(1, max_passes + 1):
         if result.report["geometry_ok"]:
             break
@@ -1300,7 +1508,7 @@ def write_wired_project(
         out_dir,
         project_suffix="WIRED",
         mode="wired_by_kicad_wire_maker",
-        note="This KiCad schematic was generated from final JSON with real embedded symbols and wire/label objects produced by kicad_wire_maker. Unresolved pin aliases and deferred route limits are recorded in this manifest.",
+        note="This KiCad schematic was generated from final JSON with real embedded symbols and connection objects produced by kicad_wire_maker. In strict wire mode, local labels are forbidden and any unroutable nets are recorded in this manifest.",
         extra_schematic_objects=result.schematic_objects,
         extra_manifest={"wire_maker": result.report},
     )
@@ -1328,7 +1536,8 @@ def generate_wired_projects_from_final_json(
     examples_root: Path,
     label: str = "t01_t10_connected_wired_v1",
     run_dir: Path | None = None,
-    wire_config: dict[str, float] | None = None,
+    wire_config: dict[str, Any] | None = None,
+    routing_mode: str | None = None,
 ) -> dict[str, Any]:
     files = _final_json_files(source)
     run_path = run_dir or _fresh_run_dir(examples_root, label)
@@ -1346,15 +1555,20 @@ def generate_wired_projects_from_final_json(
     routing_input_dir.mkdir()
     wire_plan_dir.mkdir()
 
-    cfg = dict(STAGE_REPORT_WIRE_CONFIG)
+    cfg: dict[str, Any] = dict(STAGE_REPORT_WIRE_CONFIG)
     if wire_config:
         cfg.update(wire_config)
+    if routing_mode:
+        cfg["routing_mode"] = normalize_routing_mode(routing_mode)
 
     results: list[dict[str, Any]] = []
     for source_file in files:
         circuit = json.loads(source_file.read_text(encoding="utf-8"))
         if not isinstance(circuit, dict):
             raise ValueError(f"{source_file} must contain a final CircuitIR object")
+        circuit_routing = circuit.get("routing")
+        if routing_mode is None and isinstance(circuit_routing, dict) and circuit_routing.get("mode"):
+            cfg["routing_mode"] = normalize_routing_mode(circuit_routing.get("mode"))
         cid = str(circuit.get("circuit_id") or source_file.stem)
         stem = source_file.stem
         shutil.copy2(source_file, final_json_dir / source_file.name)
@@ -1393,8 +1607,11 @@ def generate_wired_projects_from_final_json(
                 "component_body_overlap_count": body_overlap_report["component_body_overlap_count"],
                 "component_body_overlap_pass_count": body_overlap_report["pass_count"],
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
+                "unrouted_net_count": manifest["wire_maker"]["unrouted_net_count"],
                 "geometry_ok": bool(manifest["wire_maker"]["geometry_ok"]),
                 "geometry_violation_count": manifest["wire_maker"]["geometry_violation_count"],
+                "strict_wire_ok": bool(manifest["wire_maker"]["strict_wire_ok"]),
+                "strict_wire_violation_count": manifest["wire_maker"]["strict_wire_violation_count"],
                 "static_checks_ok": bool(manifest["static_checks"]["ok"]),
             }
         )
@@ -1416,8 +1633,11 @@ def generate_wired_projects_from_final_json(
         "all_component_body_overlap_ok": all(item["component_body_overlap_ok"] for item in results),
         "total_component_body_overlaps": sum(int(item["component_body_overlap_count"]) for item in results),
         "total_deferred_nets": sum(int(item["deferred_net_count"]) for item in results),
+        "total_unrouted_nets": sum(int(item["unrouted_net_count"]) for item in results),
         "all_geometry_ok": all(item["geometry_ok"] for item in results),
         "total_geometry_violations": sum(int(item["geometry_violation_count"]) for item in results),
+        "all_strict_wire_ok": all(item["strict_wire_ok"] for item in results),
+        "total_strict_wire_violations": sum(int(item["strict_wire_violation_count"]) for item in results),
         "wire_config": cfg,
         "results": results,
     }
@@ -1426,12 +1646,13 @@ def generate_wired_projects_from_final_json(
         "# Final JSON To KiCad Wired Project Run\n\n"
         "This folder is an immutable generated record. It takes connected final JSON files, "
         "runs the arrangement decider, beautifier, wire planner, and KiCad wire maker, then "
-        "writes openable KiCad projects with real embedded symbols plus wire/label objects.\n\n"
+        "writes openable KiCad projects with real embedded symbols plus wire objects. Terminal/local-label "
+        "objects are only valid when the run is generated in terminal or combination mode.\n\n"
         "The wire planner is fed exact KiCad source-symbol pin points through `routing_inputs/` "
         "when those pins can be resolved. The wire maker uses the same source-backed KiCad pin "
         "geometry when possible. Any unresolved "
-        "pin aliases, deferred route-limit nets, wire crossings, and wire/component body "
-        "contacts are recorded in each project manifest.\n",
+        "pin aliases, unroutable nets, strict-wire connectivity violations, wire crossings, and "
+        "wire/component body contacts are recorded in each project manifest.\n",
         encoding="utf-8",
     )
     return summary
@@ -1443,6 +1664,7 @@ def main() -> None:
     parser.add_argument("--examples-root", default="kicad/examples", help="Examples root for fresh wired run folders.")
     parser.add_argument("--label", default="t01_t10_connected_wired_v1", help="Label suffix for the fresh generated folder.")
     parser.add_argument("--run-dir", help="Optional explicit fresh run directory.")
+    parser.add_argument("--routing-mode", choices=("wire", "terminal", "combination"), help="Override final JSON routing.mode for this run.")
     parser.add_argument("--max-wired-routes", type=float, help="Optional route count cap passed to the wire planner.")
     parser.add_argument("--max-astar-expansions", type=float, help="Optional A* expansion cap passed to the wire planner.")
     args = parser.parse_args()
@@ -1457,6 +1679,7 @@ def main() -> None:
         label=args.label,
         run_dir=Path(args.run_dir) if args.run_dir else None,
         wire_config=wire_config or None,
+        routing_mode=args.routing_mode,
     )
     print(json.dumps(summary, indent=2))
 
