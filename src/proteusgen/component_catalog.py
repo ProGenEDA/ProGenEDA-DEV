@@ -21,7 +21,12 @@ CATALOG_PATH = Path("knowledge/component_catalog_v0.json")
 
 
 def _token(value: str) -> str:
-    return re.sub(r"[^A-Z0-9+]", "", value.upper())
+    stripped = value.strip()
+    if stripped == "+":
+        return "PLUS"
+    if stripped == "-":
+        return "MINUS"
+    return re.sub(r"[^A-Z0-9+]", "", stripped.upper())
 
 
 @dataclass(frozen=True)

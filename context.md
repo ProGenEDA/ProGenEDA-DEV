@@ -762,6 +762,309 @@ Timestamp: `2026-06-26T13:20:13.044Z` (UTC) / `2026-06-26 18:20:13.044 +05:00` (
 T02 was invalid because `FUSE` carries duplicate `FUSE` refs in that donor. That’s a component-placement limitation, not a terminal-placement test, so I’m removing `FUSE` from the terminal probe to keep this stage focused.
 ~~~~
 
+## 2026-07-03 - Proteus-only catalogue, node-map, and IC/3-pin planning audit
+
+### User Message 1
+
+Timestamp: `2026-07-03T03:42:49.9715423+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+test if the implementation is 100 percent correct n easily upgradeable for eerything and lets move on to ics n the 3 faced ones
+~~~~
+
+### Scope correction
+
+Timestamp: `2026-07-03T03:42:49.9715423+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+y are u working on kicad, kicad is just learning
+~~~~
+
+~~~~markdown
+work on proteus specifically donot touch kicad unless u are told
+~~~~
+
+### Complete visible agent response log for this turn
+
+Timestamp: `2026-07-03T03:42:49.9715423+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+I’ll first verify the pushed checkpoint, then run a stricter audit of the new catalogue/node-map layer. I won’t claim “100% correct” unless tests actually prove the specific contract; if gaps show up, I’ll harden the catalogue before starting IC/3-pin terminal work.
+~~~~
+
+~~~~markdown
+Checkpoint is clean: local HEAD, upstream, and GitHub all match `11e22062`; only unrelated `KICAD_LINUX_HANDOFF.md` is untracked. I’m adding audit coverage now because the existing tests prove the current path, not “everything is upgradeable.”
+~~~~
+
+~~~~markdown
+The audit already found a real correctness bug: pin aliases `"-"` for negative pins tokenized to an empty string, so an empty pin token could incorrectly normalize to pin 2. I’m fixing that before adding broader IC/3-pin planning.
+~~~~
+
+~~~~markdown
+I’m keeping role data conservative: catalogue names can say “B/C/E” or “G/D/S”, but binary terminal placement for those families remains pending until pin-coordinate evidence exists. The next module will produce a pin-terminal plan, not Proteus records.
+~~~~
+
+~~~~markdown
+I added a metadata-only pin terminal planner for the next phase. It classifies endpoints as accepted two-pin, three-pin, or multi-pin/IC and explicitly blocks binary emission until pin-coordinate evidence is available.
+~~~~
+
+~~~~markdown
+I wired that planner into component-placer pipeline metadata as `wiring_plan.pin_terminal_plan`, still with binary emission disabled. Now I’m expanding tests to audit upgradeability and the IC/three-pin planning contract.
+~~~~
+
+~~~~markdown
+The tests now include the empty-token bug, three-pin aliases, and the new IC/three-pin terminal-plan classifier. Running focused tests and compile now.
+~~~~
+
+~~~~markdown
+Focused tests pass (`25 passed`) and compileall passes. Because pipeline metadata changed, I’m running the full pytest suite now, not just the focused subset.
+~~~~
+
+~~~~markdown
+Full repository pytest is blocked by an old archived experiment test under `tools/proteus_generation/2026-06-01/...` importing removed `proteusgen.inductor`. That is outside current production `tests/`. I’m running the maintained `tests/` suite now.
+~~~~
+
+~~~~markdown
+The maintained `tests/` suite is mostly clean but found one failure: KiCad target pack now reports `51/55` ok. I need inspect the four failed target-pack cases before claiming the catalogue/node implementation is correct.
+~~~~
+
+~~~~markdown
+That failure is in the KiCad target-pack generator, not the Proteus catalogue directly, but I’m still treating it as part of the “everything” audit. I’m locating the four failed cases and whether the failure predates this change or is caused by catalogue imports.
+~~~~
+
+~~~~markdown
+The KiCad pack generator passed on direct rerun (`55/55`). That earlier failure looks transient or test-order/temp-state related, so I’m rerunning the KiCad test and then the maintained suite once more if needed.
+~~~~
+
+~~~~markdown
+The KiCad test still fails under pytest but passes when invoked directly. I’m inspecting the pytest-created manifest now; if it is deterministic under pytest, I’ll fix it.
+~~~~
+
+~~~~markdown
+The manifest filename is `run_manifest.json`; I’m reading that now to see exactly which four cases failed.
+~~~~
+
+~~~~markdown
+The four KiCad failures are missing-file checks for long project names under pytest’s long temp path, not schematic generation errors. The direct temp path was shorter, so it passed. I’m patching the KiCad manifest lookup to use the generated `open_this` path instead of reconstructing an overlong expected filename.
+~~~~
+
+~~~~markdown
+I’m continuing from the audit point: the remaining failure is a KiCad target-pack path/check issue exposed by the full maintained test run. I’m fixing that separately from the Proteus terminal/catalogue work, then I’ll rerun the maintained suite and commit/push everything.
+~~~~
+
+~~~~markdown
+Understood. I won’t patch or audit KiCad. No KiCad files were changed; I only inspected the failing maintained-suite case before your correction. I’m narrowing this to Proteus: component catalogue, node mapping, terminal planner, pipeline metadata, and Proteus-specific tests/compile.
+~~~~
+
+~~~~markdown
+I’m limiting verification to Proteus-owned code now. The relevant change set is catalogue normalization/profile data, the metadata-only pin-terminal planner, and pipeline metadata; no KiCad source is in the working tree.
+~~~~
+
+~~~~markdown
+The combined Proteus pytest command exceeded two minutes because `test_component_placer.py` is heavy. I’m splitting it: fast catalogue/validation/IC metadata first, then the placer suite as a monitored Proteus-only run.
+~~~~
+
+~~~~markdown
+Fast Proteus metadata tests pass: `25 passed`. I’m starting the heavy Proteus component-placer tests in the background and will poll the log instead of blocking.
+~~~~
+
+~~~~markdown
+While that runs, I’m doing a code-level audit of the Proteus catalogue/planner contract: no binary emission for 3-pin/IC yet, two-pin remains the only terminal-emission-ready path, and pin aliases are catalogue-driven.
+~~~~
+
+~~~~markdown
+Audit result so far: the planner is intentionally conservative. It creates work items for IC/3-pin endpoints but blocks Proteus binary terminal emission until catalogue pin coordinates and donor evidence exist. That is the right gate before moving into ICs.
+~~~~
+
+~~~~markdown
+Important boundary: `SWITCH` is present in the catalogue as a 2-pin part, but it is not marked accepted for V12 terminal emission. That means it will be planned/blocked, not silently terminalized, until we have Proteus evidence for its attachment behavior.
+~~~~
+
+~~~~markdown
+I’m also compiling the Proteus code paths now. I’m excluding KiCad from this verification per your correction.
+~~~~
+
+~~~~markdown
+Compile check passed for `src/proteusgen` plus the focused Proteus tests. Waiting on the heavy component-placer suite.
+~~~~
+
+~~~~markdown
+I’m going to record this phase in the Proteus architecture docs too: two-pin V12 remains the accepted emitter; IC/3-pin starts as catalogue + pin-terminal plan until pin-coordinate evidence is collected.
+~~~~
+
+~~~~markdown
+The existing docs already identify the catalogue/node-name layer; I’m adding the new `pin_terminal_planner.py` boundary so future IC/3-pin work does not accidentally emit unproven Proteus records.
+~~~~
+
+~~~~markdown
+Architecture doc updated with the Proteus boundary: IC/3-pin endpoints are planned, but binary terminal output stays blocked until coordinate/attachment evidence is added to catalogue profiles.
+~~~~
+
+~~~~markdown
+Canonical pipeline doc now says the same thing explicitly, so the next IC/3-pin work cannot bypass the evidence gate.
+~~~~
+
+~~~~markdown
+I’m adding one integration assertion to the Proteus component-placer tests so the pipeline must actually carry the new pin-terminal plan, not just the standalone module.
+~~~~
+
+~~~~markdown
+Added the pipeline integration check: two-pin endpoints are terminal-ready in metadata, but binary emission remains false at this planning stage.
+~~~~
+
+~~~~markdown
+I’m running the new single integration assertion separately now; the older background component-placer run is still in progress.
+~~~~
+
+~~~~markdown
+The new pipeline integration test passes. Next I’ll wait for the full component-placer suite result, then rerun the focused group once more after all edits.
+~~~~
+
+~~~~markdown
+I’m keeping the scope Proteus-only. I’m not using the failing KiCad test as a blocker, and I’m not editing KiCad.
+~~~~
+
+~~~~markdown
+Compile still passes after the integration-test edit. I’m running a small Proteus IC/donor metadata batch while the placer suite continues.
+~~~~
+
+~~~~markdown
+Proteus IC/donor metadata batch passes: `32 passed`.
+~~~~
+
+~~~~markdown
+Additional Proteus/non-KiCad batch passes: `64 passed, 78 subtests passed`. Still waiting for the heavy component-placer file.
+~~~~
+
+~~~~markdown
+The component-placer pytest process is active and consuming CPU, so it is not hung. I’m running one more Proteus IC/analog donor batch separately.
+~~~~
+
+~~~~markdown
+Proteus mixed IC/analog donor batch passes: `36 passed`.
+~~~~
+
+~~~~markdown
+At this point the Proteus-only evidence is strong except for the full `test_component_placer.py` file still running. I’ll give that run a bit more time because it covers the actual terminal/placer machinery.
+~~~~
+
+~~~~markdown
+I’m checking the diff while the long placer run continues, to make sure only Proteus files changed.
+~~~~
+
+~~~~markdown
+Diff check confirms no KiCad edits. The only source changes are Proteus catalogue/planner/pipeline/tests/docs.
+~~~~
+
+~~~~markdown
+I’ll update `context.md` before the commit with this turn’s user messages and my visible responses. I’m waiting on the placer run first so the log includes final test status accurately.
+~~~~
+
+~~~~markdown
+The long placer suite has been running about five minutes with no failure output; that is consistent with its heavy generated-project tests. I’m continuing to poll.
+~~~~
+
+~~~~markdown
+The previous committed run of `test_component_placer.py` took about 442 seconds. This run is approaching that range, so I’m letting it finish instead of killing it early.
+~~~~
+
+~~~~markdown
+The full component-placer suite is at `86%` and still passing dots only.
+~~~~
+
+~~~~markdown
+Still at the heavy final segment of component-placer tests; no failure output.
+~~~~
+
+~~~~markdown
+Full Proteus component-placer suite passed: `83 passed in 557.81s`. I’m rerunning the focused edited tests now after all source/doc changes.
+~~~~
+
+~~~~markdown
+Final focused Proteus edit suite passes: `26 passed`. I’m removing the temporary pytest logs, then I’ll update `context.md`, commit, push, and verify remote HEAD.
+~~~~
+
+~~~~markdown
+Temporary logs removed. Working tree has only the intended Proteus changes plus the unrelated untracked `KICAD_LINUX_HANDOFF.md`.
+~~~~
+
+~~~~markdown
+I’m appending the turn log now. This will include your correction that KiCad is learning-only and must not be touched unless explicitly requested.
+~~~~
+
+~~~~markdown
+The first context append patch missed the exact mojibake tail text. I’m re-reading the end of the file and appending with a simpler anchor.
+~~~~
+
+~~~~markdown
+I found the exact tail. I’ll append against the final `PowerShell rejected` block directly.
+~~~~
+
+~~~~markdown
+The second append attempt also failed on the encoded apostrophe line. I’ll use a nearby ASCII-only anchor instead and keep the inserted log self-contained.
+~~~~
+
+### Files Edited
+
+- `knowledge/component_catalog_v0.json` - added conservative aliases/roles/electrical types for `NPN`, `NMOSFET`, `LM317T`, and `POT-HG`.
+- `src/proteusgen/component_catalog.py` - fixed `+`/`-` pin-token normalization so empty input cannot normalize as the negative pin.
+- `src/proteusgen/pin_terminal_planner.py` - new metadata-only planner that classifies two-pin, three-pin, and multi-pin/IC endpoints and blocks unproven binary emission.
+- `src/proteusgen/component_pipeline.py` - records `wiring_plan.pin_terminal_plan`.
+- `tests/test_component_catalog.py` - added catalogue alias, empty-token, and IC/3-pin terminal-plan classifier tests.
+- `tests/test_component_placer.py` - added pipeline integration assertion for `pin_terminal_plan`.
+- `docs/architecture.md` - documented the IC/3-pin planning boundary.
+- `docs/progen_eda_canonical_pipeline.md` - documented that IC/3-pin binary terminal emission requires catalogue coordinate/attachment evidence first.
+- `context.md` - appended this turn.
+
+### Verification
+
+- Start-of-turn Git check: local `HEAD`, upstream branch, and GitHub branch all matched `11e22062bccb59429afafdbba35f02a2e791a377`; unrelated untracked `KICAD_LINUX_HANDOFF.md` preserved.
+- `tests/test_component_catalog.py tests/test_validation.py tests/test_ic_pinmap.py` with `PYTHONPATH=src`: `25 passed`.
+- `python -m compileall -q src\proteusgen tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py tests\test_component_placer.py`: passed.
+- `tests/test_component_placer.py::test_component_placement_value_and_wiring_intent_are_planned` with `PYTHONPATH=src`: `1 passed`.
+- `tests/test_ic_donor_learning.py tests/test_ic_pinmap.py tests/test_ic_native.py tests/test_ic_pairwise_error_focused.py` with `PYTHONPATH=src`: `32 passed`.
+- `tests/test_mixed_passive.py tests/test_mixed_rcl.py tests/test_resistor_v9.py tests/test_source_driven.py tests/test_templates.py tests/test_generator.py tests/test_fixtures.py tests/test_cdb_parser.py tests/test_layout.py tests/test_analog_misc_donors.py tests/test_results.py` with `PYTHONPATH=src`: `64 passed, 78 subtests passed`.
+- `tests/test_mixed_ic_analog_donors.py tests/test_ic_sequential_counters.py` with `PYTHONPATH=src`: `36 passed`.
+- Full Proteus component-placer file with `PYTHONPATH=src`: `83 passed in 557.81s`.
+- Final focused edited suite `tests/test_component_catalog.py tests/test_validation.py tests/test_ic_pinmap.py tests/test_component_placer.py::test_component_placement_value_and_wiring_intent_are_planned` with `PYTHONPATH=src`: `26 passed`.
+- KiCad was not edited or used as a blocker after user correction.
+
+### Planned Final Response
+
+~~~~markdown
+Done. Proteus-only audit and the IC/3-pin foundation are committed and pushed.
+
+What changed:
+
+- Fixed a real catalogue bug: `"-"` no longer tokenizes like an empty pin string, so empty pin input cannot normalize to VSOURCE pin 2.
+- Added `pin_terminal_planner.py`: metadata-only planning for two-pin, three-pin, and IC endpoints.
+- Wired that planner into `wiring_plan.pin_terminal_plan`.
+- Added conservative pin aliases/roles for `NPN`, `NMOSFET`, `LM317T`, and `POT-HG`.
+- Documented the rule: IC/3-pin endpoints may be planned/named now, but Proteus binary terminal emission stays blocked until we have pin-coordinate and attachment evidence.
+
+Proteus verification passed:
+
+- focused catalogue/validation/IC metadata: `25 passed`
+- Proteus component placer: `83 passed`
+- extra Proteus donor/source/template/result batches: `132 passed, 78 subtests passed`
+- final edited-suite rerun: `26 passed`
+- compile check: passed
+
+No KiCad files were changed. I also preserved the unrelated untracked `KICAD_LINUX_HANDOFF.md`.
+~~~~
+
+~~~~markdown
+Context log appended. I’ll commit and push now.
+~~~~
+
+~~~~markdown
+I need to log that last progress line too before committing.
+~~~~
+
+~~~~markdown
+Logged. Committing now without more progress text unless a command fails.
+~~~~
+
 #### Response 28 - commentary
 
 Timestamp: `2026-06-26T13:20:41.499Z` (UTC) / `2026-06-26 18:20:41.499 +05:00` (Pakistan)

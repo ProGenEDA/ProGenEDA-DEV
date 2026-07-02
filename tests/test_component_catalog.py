@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from proteusgen.component_catalog import load_component_catalog
 from proteusgen.node_name_mapping import build_node_name_mapping, terminal_label_for_node
+from proteusgen.pin_terminal_planner import build_pin_terminal_plan
 from proteusgen.validation import COMPONENT_PINS, HC08_INPUT_PINS, HC08_OUTPUT_PINS
 
 
@@ -43,6 +44,13 @@ def test_catalog_normalizes_component_and_pin_aliases() -> None:
     assert catalog.profile("74HC08").normalize_pin("1A").name == "1"
     assert catalog.profile("74HC08").normalize_pin("Pin 14").hidden
     assert catalog.profile("74HC08").normalize_pin("+5V").role == "VCC"
+    assert catalog.profile("VSOURCE").normalize_pin("-").name == "2"
+    try:
+        catalog.profile("VSOURCE").normalize_pin("")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("empty pin token must not normalize to the negative pin")
 
 
 def test_catalog_includes_more_than_two_pin_components() -> None:
@@ -52,6 +60,17 @@ def test_catalog_includes_more_than_two_pin_components() -> None:
     assert len(catalog.profile("NE555").pin_names(include_hidden=True)) == 8
     assert len(catalog.profile("LM741").pin_names(include_hidden=True)) == 8
     assert set(catalog.profile("NPN").pin_names(include_hidden=True)) == {"B", "C", "E"}
+    assert catalog.profile("NPN").normalize_pin("BASE").name == "B"
+    assert catalog.profile("NMOSFET").normalize_pin("DRAIN").name == "D"
+    assert catalog.profile("LM317T").normalize_pin("ADJ").name == "1"
+    assert catalog.profile("POT-HG").normalize_pin("WIPER").name == "2"
+
+
+def test_catalog_has_no_empty_alias_tokens() -> None:
+    catalog = load_component_catalog()
+
+    for profile in catalog.components.values():
+        assert "" not in profile.pin_aliases
 
 
 def test_validation_pin_vocabulary_comes_from_catalogue() -> None:
@@ -169,3 +188,43 @@ def test_terminal_label_for_node_is_deterministic_and_collision_safe() -> None:
     assert terminal_label_for_node("GND", kind="ground", index=1, used=used) == "G0"
     assert terminal_label_for_node("VIN", index=2, used=used) == "VIN"
     assert terminal_label_for_node("VIN", index=3, used=used) == "N003"
+
+
+def test_pin_terminal_plan_separates_two_pin_three_pin_and_ic_work() -> None:
+    plan = build_pin_terminal_plan(
+        {
+            "components": [
+                {"ref": "R1", "part": "RESISTOR"},
+                {"ref": "Q1", "part": "NPN"},
+                {"ref": "U1", "part": "74HC08"},
+            ],
+            "nets": {
+                "N1": "internal",
+                "BASE": "input",
+                "COL": "internal",
+                "EMIT": "ground",
+                "A": "input",
+                "Y": "output",
+            },
+            "connections": [
+                {"net": "N1", "endpoints": [{"component": "R1", "pin": "1"}]},
+                {"net": "BASE", "endpoints": [{"component": "Q1", "pin": "BASE"}]},
+                {"net": "COL", "endpoints": [{"component": "Q1", "pin": "COLLECTOR"}]},
+                {"net": "EMIT", "endpoints": [{"component": "Q1", "pin": "EMITTER"}]},
+                {"net": "A", "endpoints": [{"component": "U1", "pin": "1A"}]},
+                {"net": "Y", "endpoints": [{"component": "U1", "pin": "1Y"}]},
+            ],
+        }
+    )
+
+    assert plan["valid"]
+    assert plan["pin_class_counts"] == {"multi_pin": 2, "three_pin": 3, "two_pin": 1}
+    assert plan["terminal_emit_ready_count"] == 1
+    assert plan["blocked_terminal_count"] == 5
+    by_endpoint = {
+        (row["component"], row["pin"]): row
+        for row in plan["terminal_plans"]
+    }
+    assert by_endpoint[("Q1", "B")]["pin_class"] == "three_pin"
+    assert by_endpoint[("U1", "1")]["pin_class"] == "multi_pin"
+    assert by_endpoint[("R1", "1")]["terminal_emit_ready"]

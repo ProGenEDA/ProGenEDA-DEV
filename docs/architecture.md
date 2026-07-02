@@ -228,5 +228,9 @@ is the updateable component/pin source of truth, loaded through
 `src/proteusgen/component_catalog.py`. `src/proteusgen/node_name_mapping.py`
 normalizes two-pin and multi-pin component endpoints into logical node names,
 terminal labels, pin roles, hidden supply pins, and endpoint-to-node mappings.
-This is metadata-only for now; backend-neutral wire-plan contracts and
-multi-pin/IC terminalization still need binary emitter work.
+`src/proteusgen/pin_terminal_planner.py` now turns that node map into
+per-endpoint terminal work items and explicitly separates accepted two-pin V12
+terminal emission from three-pin and IC endpoints. This remains metadata-only
+for unproven families: multi-pin/IC terminalization must not emit Proteus binary
+records until backend pin-coordinate evidence and donor-derived attachment units
+exist in the component catalogue/profile data.

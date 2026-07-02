@@ -833,6 +833,11 @@ def test_component_placement_value_and_wiring_intent_are_planned(tmp_path: Path)
             ],
         }
     ]
+    pin_terminal_plan = result.wiring_plan["pin_terminal_plan"]
+    assert pin_terminal_plan["binary_emission"]["applied"] is False
+    assert pin_terminal_plan["pin_class_counts"] == {"two_pin": 2}
+    assert pin_terminal_plan["terminal_emit_ready_count"] == 2
+    assert pin_terminal_plan["blocked_terminal_count"] == 0
 
 
 def test_cap_elec_selection_uses_strict_cdb_backed_packets(tmp_path: Path) -> None:

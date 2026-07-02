@@ -199,3 +199,8 @@ request is `docs/complete_component_donor_request.md`.
 13. IC pin meaning comes from normalized backend pin metadata, not geometry.
     Terminal/wire stages consume pin number, name, role, electrical type, and
     connection coordinates from the placed-design contract.
+14. IC and three-pin terminal work starts in the catalogue/node layer. The
+    `pin_terminal_planner` may classify and name their endpoints, but Proteus
+    binary terminal emission remains disabled for those endpoints until the
+    catalogue has backend pin-coordinate evidence and donor-derived attachment
+    records for the family.

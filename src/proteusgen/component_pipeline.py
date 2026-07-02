@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 
 from .node_name_mapping import build_node_name_mapping
+from .pin_terminal_planner import build_pin_terminal_plan
 
 VALUE_MUTATION_FAMILIES = {
     "RESISTOR",
@@ -502,6 +503,10 @@ def build_component_pipeline_metadata(
     wiring_plan = build_wiring_plan(payload)
     node_name_mapping = build_node_name_mapping(payload)
     wiring_plan["node_name_mapping"] = node_name_mapping
+    wiring_plan["pin_terminal_plan"] = build_pin_terminal_plan(
+        payload,
+        node_name_mapping=node_name_mapping,
+    )
     layout_plan = build_layout_plan(
         payload,
         selected,
