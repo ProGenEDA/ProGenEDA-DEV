@@ -622,6 +622,83 @@ def _label_justify(anchor: tuple[float, float], label: tuple[float, float]) -> s
     return "right bottom" if label[0] < anchor[0] else "left bottom"
 
 
+def _side_vector(side: str) -> tuple[float, float]:
+    normalized = side.lower().strip()
+    if normalized == "left":
+        return (-1.0, 0.0)
+    if normalized == "right":
+        return (1.0, 0.0)
+    if normalized == "top":
+        return (0.0, -1.0)
+    if normalized == "bottom":
+        return (0.0, 1.0)
+    return (1.0, 0.0)
+
+
+def _label_direction(
+    pin_point: tuple[float, float],
+    label_point: tuple[float, float],
+    side: str,
+) -> tuple[float, float]:
+    dx = round(label_point[0] - pin_point[0], 3)
+    dy = round(label_point[1] - pin_point[1], 3)
+    if dx == 0.0 and dy == 0.0:
+        return _side_vector(side)
+    if abs(dx) >= abs(dy) and dx != 0.0:
+        return (1.0 if dx > 0 else -1.0, 0.0)
+    if dy != 0.0:
+        return (0.0, 1.0 if dy > 0 else -1.0)
+    return _side_vector(side)
+
+
+def _reserved_label_point(
+    *,
+    net: str,
+    ref: str,
+    pin_point: tuple[float, float],
+    raw_label: tuple[float, float],
+    side: str,
+    used_label_points: dict[tuple[float, float], str],
+    existing_segments: list[WireGeometrySegment],
+    component_bodies: tuple[ComponentBody, ...],
+) -> tuple[tuple[float, float], bool]:
+    candidate = raw_label
+    owner = used_label_points.get(candidate)
+    if owner in (None, net):
+        used_label_points[candidate] = net
+        return candidate, False
+
+    primary = _label_direction(pin_point, raw_label, side)
+    directions = [primary, (1.0, 0.0), (-1.0, 0.0), (0.0, -1.0), (0.0, 1.0)]
+    unique_directions: list[tuple[float, float]] = []
+    for direction in directions:
+        if direction not in unique_directions:
+            unique_directions.append(direction)
+
+    for step in range(1, 9):
+        for direction in unique_directions:
+            candidate = (
+                round(pin_point[0] + direction[0] * 2.54 * step, 3),
+                round(pin_point[1] + direction[1] * 2.54 * step, 3),
+            )
+            if used_label_points.get(candidate) not in (None, net):
+                continue
+            candidate_segment = WireGeometrySegment(
+                net=net,
+                start=pin_point,
+                end=candidate,
+                allowed_touches=(AllowedTouch(ref, pin_point),),
+                source=f"{net}:reserved_label_candidate:{ref}",
+            )
+            report = validate_wire_geometry(existing_segments + [candidate_segment], component_bodies)
+            if report["ok"]:
+                used_label_points[candidate] = net
+                return candidate, True
+
+    used_label_points[raw_label] = net
+    return raw_label, False
+
+
 def _insert_junctions(segments: list[tuple[tuple[float, float], tuple[float, float]]]) -> list[tuple[float, float]]:
     counts: dict[tuple[float, float], int] = {}
     for a, b in segments:
@@ -669,8 +746,10 @@ def make_kicad_wires(
     segments: list[tuple[tuple[float, float], tuple[float, float]]] = []
     geometry_segments: list[WireGeometrySegment] = []
     labels: list[dict[str, Any]] = []
+    used_label_points: dict[tuple[float, float], str] = {}
     route_count = 0
     fallback_route_count = 0
+    label_collision_avoidance_count = 0
     deferred_nets: list[str] = []
 
     def add_segments(
@@ -692,6 +771,8 @@ def make_kicad_wires(
                 )
             )
 
+    component_bodies = _component_bodies(placement, library)
+
     for net, net_data in wire_plan.get("nets", {}).items():
         if not isinstance(net_data, dict):
             continue
@@ -705,7 +786,19 @@ def make_kicad_wires(
             for endpoint in endpoints:
                 pin_point = endpoint_point(endpoint)
                 raw_label = endpoint.get("point", [pin_point[0] + 5.08, pin_point[1]])
-                label_point = (round(float(raw_label[0]), 3), round(float(raw_label[1]), 3))
+                ref = str(endpoint.get("ref") or "")
+                label_point, label_moved = _reserved_label_point(
+                    net=net_name,
+                    ref=ref,
+                    pin_point=pin_point,
+                    raw_label=(round(float(raw_label[0]), 3), round(float(raw_label[1]), 3)),
+                    side=str(endpoint.get("side") or ""),
+                    used_label_points=used_label_points,
+                    existing_segments=geometry_segments,
+                    component_bodies=component_bodies,
+                )
+                if label_moved:
+                    label_collision_avoidance_count += 1
                 label_path = _orthogonal_points(pin_point, label_point)
                 add_segments(
                     net=net_name,
@@ -739,7 +832,7 @@ def make_kicad_wires(
                     fallback_route_count += 1
 
     junctions = _insert_junctions(segments)
-    geometry_report = validate_wire_geometry(geometry_segments, _component_bodies(placement, library))
+    geometry_report = validate_wire_geometry(geometry_segments, component_bodies)
     project_name = str(circuit.get("project", {}).get("name") or circuit.get("circuit_id") or "wired")
     objects: list[str] = []
     for index, (a, b) in enumerate(segments, 1):
@@ -762,6 +855,7 @@ def make_kicad_wires(
         "unresolved_pins": unresolved[:200],
         "unresolved_pin_report_truncated": len(unresolved) > 200,
         "fallback_route_count": fallback_route_count,
+        "label_collision_avoidance_count": label_collision_avoidance_count,
         "deferred_net_count": len(deferred_nets),
         "deferred_nets": deferred_nets,
         "geometry_ok": bool(geometry_report["ok"]),
@@ -773,13 +867,93 @@ def make_kicad_wires(
     return WireMakerResult("".join(objects), report)
 
 
+def _geometry_violation_nets(report: dict[str, Any]) -> set[str]:
+    nets: set[str] = set()
+    for violation in report.get("wire_geometry_validator", {}).get("violations", []):
+        if not isinstance(violation, dict):
+            continue
+        for key in ("segment", "left", "right"):
+            segment = violation.get(key)
+            if isinstance(segment, dict) and segment.get("net"):
+                nets.add(str(segment["net"]))
+    return nets
+
+
+def _wire_plan_with_geometry_fallbacks(wire_plan: dict[str, Any], fallback_nets: set[str]) -> dict[str, Any]:
+    repaired = deepcopy(wire_plan)
+    nets = repaired.get("nets", {})
+    if not isinstance(nets, dict):
+        return repaired
+    for net in sorted(fallback_nets):
+        net_data = nets.get(net)
+        if not isinstance(net_data, dict):
+            continue
+        endpoints = net_data.get("endpoints", [])
+        failure_warnings = list(net_data.get("failure_warnings", [])) if isinstance(net_data.get("failure_warnings"), list) else []
+        failure_warnings.append("geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure.")
+        nets[net] = {
+            "strategy": "local_labels_after_geometry_violation",
+            "endpoints": endpoints if isinstance(endpoints, list) else [],
+            "routes": [],
+            "failure_warnings": failure_warnings[:20],
+        }
+
+    routes = [route for route in repaired.get("routes", []) if isinstance(route, dict) and str(route.get("net")) not in fallback_nets]
+    repaired["routes"] = routes
+    repaired.setdefault("warnings", [])
+    if isinstance(repaired["warnings"], list):
+        repaired["warnings"].append(
+            "geometry_repair_fallback: converted nets to local labels: " + ", ".join(sorted(fallback_nets))
+        )
+    metrics = repaired.setdefault("metrics", {})
+    if isinstance(metrics, dict):
+        metrics["wired_route_count"] = len(routes)
+        metrics["segment_count"] = sum(len(route.get("segments", [])) for route in routes if isinstance(route, dict))
+    return repaired
+
+
+def repair_wire_plan_geometry(
+    circuit: dict[str, Any],
+    placement: CatalogPlacementPlan,
+    wire_plan: dict[str, Any],
+    *,
+    max_passes: int = 6,
+) -> tuple[dict[str, Any], WireMakerResult]:
+    repaired_plan = deepcopy(wire_plan)
+    repair_passes: list[dict[str, Any]] = []
+    already_fallback: set[str] = set()
+    result = make_kicad_wires(circuit, placement, repaired_plan)
+    for pass_index in range(1, max_passes + 1):
+        if result.report["geometry_ok"]:
+            break
+        fallback_nets = _geometry_violation_nets(result.report) - already_fallback
+        if not fallback_nets:
+            break
+        repair_passes.append(
+            {
+                "pass": pass_index,
+                "fallback_nets": sorted(fallback_nets),
+                "geometry_violation_count_before": result.report["geometry_violation_count"],
+            }
+        )
+        already_fallback.update(fallback_nets)
+        repaired_plan = _wire_plan_with_geometry_fallbacks(repaired_plan, fallback_nets)
+        result = make_kicad_wires(circuit, placement, repaired_plan)
+    result.report["geometry_repair_pass_count"] = len(repair_passes)
+    result.report["geometry_repair_passes"] = repair_passes
+    result.report["geometry_repair_fallback_nets"] = sorted(already_fallback)
+    return repaired_plan, result
+
+
 def write_wired_project(
     circuit: dict[str, Any],
     placement: CatalogPlacementPlan,
     wire_plan: dict[str, Any],
     out_dir: Path,
+    *,
+    wire_result: WireMakerResult | None = None,
 ) -> dict[str, Any]:
-    result = make_kicad_wires(circuit, placement, wire_plan)
+    result = wire_result or make_kicad_wires(circuit, placement, wire_plan)
     manifest = write_placement_project(
         circuit,
         placement,
@@ -857,10 +1031,11 @@ def generate_wired_projects_from_final_json(
         routing_placement = _catalog_plan_as_routing_placement(circuit, placement)
         (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
         wire_plan = plan_wire_routes(routing_placement, circuit, config=cfg)
+        wire_plan, wire_result = repair_wire_plan_geometry(circuit, placement, wire_plan)
         (wire_plan_dir / f"{stem}_wire_plan.json").write_text(json.dumps(wire_plan, indent=2), encoding="utf-8")
 
         project_dir = projects_dir / slugify(cid).lower()
-        manifest = write_wired_project(circuit, placement, wire_plan, project_dir)
+        manifest = write_wired_project(circuit, placement, wire_plan, project_dir, wire_result=wire_result)
         results.append(
             {
                 "circuit_id": cid,

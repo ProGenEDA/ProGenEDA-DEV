@@ -35,6 +35,8 @@ from .wire_planner import plan_wire_routes
 SCHEMA_VERSION = "progen-kicad-circuit-ir/v1"
 PROMPT_CLEANER_VERSION = "progeneda-prompt-cleaner/v0.1"
 COMPILER_VERSION = "progeneda-final-circuit-builder/v0.1"
+DEFAULT_FINAL_CIRCUIT_SUITE = "t01_t10"
+PROTEUS_ALIAS_MIXED_SUITE = "proteus_alias_mixed"
 
 POWER_NET_PRIORITY = ("GND", "+5V", "+3V3", "VCC", "VDD", "VIN", "VBUS", "VBAT")
 POWER_NETS = set(POWER_NET_PRIORITY)
@@ -402,8 +404,29 @@ def compile_raw_circuit(raw: dict[str, Any]) -> dict[str, Any]:
     return circuit
 
 
+def available_final_circuit_suites() -> tuple[str, ...]:
+    return (DEFAULT_FINAL_CIRCUIT_SUITE, PROTEUS_ALIAS_MIXED_SUITE)
+
+
+def _raw_specs_for_suite(suite: str) -> list[dict[str, Any]]:
+    if suite == DEFAULT_FINAL_CIRCUIT_SUITE:
+        return _build_raw_test_specs()
+    if suite == PROTEUS_ALIAS_MIXED_SUITE:
+        return _build_raw_proteus_alias_mixed_specs()
+    known = ", ".join(available_final_circuit_suites())
+    raise ValueError(f"Unknown final circuit suite {suite!r}; expected one of: {known}")
+
+
+def build_final_circuits(suite: str = DEFAULT_FINAL_CIRCUIT_SUITE) -> list[dict[str, Any]]:
+    return [compile_raw_circuit(raw) for raw in _raw_specs_for_suite(suite)]
+
+
 def build_final_test_circuits() -> list[dict[str, Any]]:
-    return [compile_raw_circuit(raw) for raw in _build_raw_test_specs()]
+    return build_final_circuits(DEFAULT_FINAL_CIRCUIT_SUITE)
+
+
+def build_proteus_alias_mixed_circuits() -> list[dict[str, Any]]:
+    return build_final_circuits(PROTEUS_ALIAS_MIXED_SUITE)
 
 
 def placer_ready_circuit(circuit: dict[str, Any]) -> dict[str, Any]:
@@ -1061,6 +1084,362 @@ def _build_raw_test_specs() -> list[dict[str, Any]]:
     return [_t01(), _t02(), _t03(), _t04(), _t05(), _t06(), _t07(), _t08(), _t09(), _t10()]
 
 
+def _m01() -> dict[str, Any]:
+    components = [
+        _c("G1", "GROUND", "GND", "reference", "power"),
+        _c("V1", "VDC", "12V DC source", "source", "power"),
+        _c("V2", "VSOURCE", "AC source", "source", "power"),
+        _c("I1", "CSOURCE", "Current source", "source", "analog"),
+        _c("V3", "VSIN", "Sine source", "source", "analog"),
+        _c("V4", "VPULSE", "Pulse source", "source", "analog"),
+        _c("F1", "FUSE", "Fuse", "protection", "power"),
+        _c("SW1", "SWITCH", "Power switch", "switch", "power"),
+        _c("J1", "TERMINAL", "Output terminal", "connector", "power"),
+        _c("T1", "TRANSFORMER", "Transformer", "magnetics", "power"),
+        _c("BR1", "BRIDGE RECTIFIER", "Bridge rectifier", "rectifier", "power"),
+        _c("U1", "LM317", "LM317", "regulator", "power"),
+        _c("U2", "LM7805", "LM7805", "regulator", "power"),
+        _c("U3", "NE555", "NE555", "timer", "control"),
+        _c("U4", "OPAMP", "Generic op-amp", "opamp", "analog"),
+        _c("U5", "LM741", "LM741", "opamp", "analog"),
+        _c("R1", "RES", "240 ohm", "resistor", "power"),
+        _c("R2", "RES", "10k", "resistor", "control"),
+        _c("R3", "RESISTOR", "4.7k", "resistor", "analog"),
+        _c("R4", "R_220", "220 ohm", "resistor", "indicator"),
+        _c("R5", "RES", "1k", "resistor", "control"),
+        _c("RV1", "POT-HG", "10k pot", "control", "analog"),
+        _c("C1", "CAP", "10nF", "capacitor", "control"),
+        _c("C2", "CAP-ELEC", "100uF", "capacitor", "power"),
+        _c("C3", "C_100NF_CERAMIC", "100nF", "capacitor", "power"),
+        _c("L1", "REALIND", "47uH", "inductor", "power"),
+        _c("D1", "DIODE", "Signal diode", "diode", "protection"),
+        _c("D2", "1N4007", "1N4007", "diode", "power"),
+        _c("D3", "1N4148", "1N4148", "diode", "signal"),
+        _c("D4", "1N60", "1N60", "diode", "signal"),
+        _c("DZ1", "BZX55C5", "5.1V zener", "zener", "protection"),
+        _c("DZ2", "BZX79C5", "5.1V zener", "zener", "protection"),
+        _c("LED1", "LED", "Timer LED", "indicator", "control"),
+        _c("LED2", "LED_INDICATOR", "Signal LED", "indicator", "analog"),
+        _c("Q1", "NPN", "NPN", "transistor", "driver"),
+        _c("Q2", "PNP", "PNP", "transistor", "driver"),
+        _c("Q3", "NMOS", "NMOS", "mosfet", "driver"),
+        _c("Q4", "2N7000", "2N7000", "mosfet", "driver"),
+        _c("Q5", "BS170", "BS170", "mosfet", "driver"),
+    ]
+    nets = {
+        "GND": [
+            "G1.1",
+            "V1.2",
+            "V2.2",
+            "I1.2",
+            "V3.2",
+            "V4.2",
+            "T1.2",
+            "BR1.2",
+            "C2.2",
+            "C3.2",
+            "U1.1",
+            "U2.2",
+            "U3.1",
+            "U4.4",
+            "U5.4",
+            "RV1.1",
+            "Q1.3",
+            "Q2.3",
+            "Q3.3",
+            "Q4.3",
+            "Q5.3",
+            "DZ1.2",
+            "DZ2.2",
+            "J1.2",
+            "LED2.K",
+        ],
+        "VIN": ["V1.1", "F1.1"],
+        "VIN_FUSED": ["F1.2", "SW1.1"],
+        "VIN_SWITCHED": ["SW1.2", "D2.1", "U1.3"],
+        "VIN_PROTECTED": ["D2.2", "U2.1", "C2.1", "BR1.1"],
+        "+5V": ["U2.3", "U3.8", "U3.4", "U4.7", "U5.7", "RV1.3", "R4.1", "J1.1", "C3.1"],
+        "LM317_OUT": ["U1.2", "R1.1", "L1.1"],
+        "LC_NODE": ["L1.2", "C1.1", "D1.1"],
+        "CLAMP_NODE": ["D1.2", "DZ1.1", "DZ2.1", "R1.2"],
+        "TIMER_RC": ["U3.2", "U3.6", "R2.1", "C1.2"],
+        "TIMER_DISCH": ["U3.7", "R2.2"],
+        "TIMER_CTRL": ["U3.5", "R5.1"],
+        "TIMER_OUT": ["U3.3", "LED1.2", "R5.2"],
+        "LED_TIMER_A": ["R4.2", "LED1.1"],
+        "OPAMP_IN": ["RV1.2", "U4.3"],
+        "OPAMP_FB": ["U4.2", "U4.6", "R3.1"],
+        "OPAMP_LOAD": ["R3.2", "Q1.1"],
+        "LM741_IN": ["V3.1", "U5.3"],
+        "LM741_FB": ["U5.2", "U5.6", "Q2.1"],
+        "PULSE_GATE": ["V4.1", "Q3.1", "Q4.1", "Q5.1"],
+        "CURRENT_NODE": ["I1.1", "Q2.2"],
+        "BJT_CHAIN": ["Q1.2", "D3.1"],
+        "DIODE_BUS": ["D3.2", "D4.1"],
+        "SMALL_DIODE_OUT": ["D4.2", "LED2.A"],
+        "MOS_DRAIN_BUS": ["Q3.2", "Q4.2", "Q5.2"],
+        "AC_PRIMARY_A": ["V2.1", "T1.1"],
+        "AC_SECONDARY_A": ["T1.3", "BR1.3"],
+        "AC_SECONDARY_B": ["T1.4", "BR1.4"],
+    }
+    return _raw_spec(
+        "M01",
+        "Proteus Alias Analog Power Board",
+        "old and new analog, source, protection, and power aliases with pin-level nets",
+        components,
+        nets,
+    )
+
+
+def _m02() -> dict[str, Any]:
+    logic_kinds = [
+        ("U4027", "4027", "CD4027"),
+        ("U4511", "4511", "CD4511"),
+        ("U7447", "7447", "7447"),
+        ("U7490", "7490", "7490"),
+        ("U00", "74HC00", "74HC00"),
+        ("U02", "74HC02", "74HC02"),
+        ("U04", "74HC04", "74HC04"),
+        ("U08", "74HC08", "74HC08"),
+        ("U32", "74HC32", "74HC32"),
+        ("U74", "74HC74", "74HC74"),
+        ("U76", "74HC76", "74HC76"),
+        ("U85", "74HC85", "74HC85"),
+        ("U86", "74HC86", "74HC86"),
+        ("U151", "74HC151", "74HC151"),
+        ("U157", "74HC157", "74HC157"),
+        ("U160", "74HC160", "74HC160"),
+        ("U174", "74HC174", "74HC174"),
+        ("U192", "74HC192", "74HC192"),
+        ("U266", "74HC266", "74HC266"),
+        ("U283", "74HC283", "74HC283"),
+    ]
+    components = [
+        _c("G1", "GROUND", "GND", "reference", "logic"),
+        _c("V1", "VDC", "5V logic supply", "source", "logic"),
+        _c("J1", "PROGRAMMING_HEADER", "Control header", "connector", "logic"),
+        _c("J2", "SPI_HEADER_FLASH", "SPI/debug header", "connector", "logic"),
+        _c("DS1", "7SEGCOMA", "Common-anode display", "display", "display"),
+        _c("DS2", "7SEGCOMK", "Common-cathode display", "display", "display"),
+        *[_c(ref, kind, value, "logic_ic", "logic") for ref, kind, value in logic_kinds],
+        _c("U595", "74HC595_SHIFT_REGISTER", "74HC595", "logic_ic", "logic"),
+        _c("SW1", "DIP_SWITCH", "DIP switch", "input", "logic"),
+        _c("RN1", "RESISTOR_NETWORK", "Resistor network", "resistor", "logic"),
+        _c("DARR1", "LED_ARRAY", "RGB LED array", "indicator", "display"),
+        _c("LED1", "LED_INDICATOR", "Logic LED", "indicator", "display"),
+        _c("R1", "R_220", "220 ohm", "resistor", "display"),
+    ]
+    nets = {
+        "+5V": [
+            "V1.1",
+            "J1.1",
+            "J2.1",
+            "DS1.10",
+            "U4027.16",
+            "U4511.16",
+            "U00.14",
+            "U02.14",
+            "U04.14",
+            "U08.14",
+            "U32.14",
+            "U74.14",
+            "U76.5",
+            "U85.16",
+            "U86.14",
+            "U151.16",
+            "U157.16",
+            "U160.16",
+            "U174.16",
+            "U192.16",
+            "U266.14",
+            "U283.16",
+            "U595.16",
+            "U595.MR",
+            "RN1.COM",
+            "R1.1",
+        ],
+        "GND": [
+            "G1.1",
+            "V1.2",
+            "J1.2",
+            "J2.6",
+            "DS2.10",
+            "U4027.8",
+            "U4511.8",
+            "U00.7",
+            "U02.7",
+            "U04.7",
+            "U08.7",
+            "U32.7",
+            "U74.7",
+            "U76.13",
+            "U85.8",
+            "U86.7",
+            "U151.8",
+            "U157.8",
+            "U160.8",
+            "U174.8",
+            "U192.8",
+            "U266.7",
+            "U283.8",
+            "U595.8",
+            "U595.OE",
+            "SW1.1",
+            "DARR1.4",
+            "LED1.K",
+        ],
+        "CLK": ["J1.3", "U4027.3", "U7490.14", "U160.2", "U192.4", "U74.3", "U76.1", "U595.SHCP"],
+        "DATA_A": ["SW1.2", "U00.1", "U02.1", "U04.1", "U08.1", "U32.1", "U86.1", "U266.1", "U151.4", "U157.2", "U283.5"],
+        "DATA_B": ["SW1.3", "U00.2", "U02.2", "U08.2", "U32.2", "U86.2", "U266.2", "U151.3", "U157.3", "U283.3"],
+        "NAND_OUT": ["U00.3", "U74.2", "RN1.2"],
+        "NOR_OUT": ["U02.3", "U76.2", "RN1.3"],
+        "INV_OUT": ["U04.2", "U85.10", "RN1.4"],
+        "AND_OUT": ["U08.3", "RN1.5"],
+        "OR_OUT": ["U32.3", "RN1.6"],
+        "XOR_OUT": ["U86.3", "U174.3", "RN1.7"],
+        "XNOR_OUT": ["U266.3", "RN1.8"],
+        "JK_Q": ["U4027.1", "U595.SER"],
+        "SHIFT_LATCH": ["J2.2", "U595.STCP"],
+        "BCD_A": ["U160.14", "U4511.7", "U7447.7"],
+        "BCD_B": ["U160.13", "U4511.1", "U7447.1"],
+        "BCD_C": ["U160.12", "U4511.2", "U7447.2"],
+        "BCD_D": ["U160.11", "U4511.6", "U7447.6"],
+        "RIPPLE_Q0": ["U7490.12", "J1.5"],
+        "RIPPLE_Q1": ["U7490.9", "J1.6"],
+        "RIPPLE_Q2": ["U7490.8", "J1.7"],
+        "RIPPLE_Q3": ["U7490.11", "J1.8"],
+        "SHIFT_Q0": ["U595.Q0", "J1.9"],
+        "SHIFT_Q1": ["U595.Q1", "J1.10"],
+        "SHIFT_Q2": ["U595.Q2", "J1.11"],
+        "SHIFT_Q3": ["U595.Q3", "J1.12"],
+        "SEG_CA_A": ["U7447.13", "DS1.1"],
+        "SEG_CA_B": ["U7447.12", "DS1.2"],
+        "SEG_CA_C": ["U7447.11", "DS1.3"],
+        "SEG_CA_D": ["U7447.10", "DS1.4"],
+        "SEG_CA_E": ["U7447.9", "DS1.5"],
+        "SEG_CA_F": ["U7447.15", "DS1.6"],
+        "SEG_CA_G": ["U7447.14", "DS1.7"],
+        "SEG_CK_A": ["U4511.13", "DS2.1"],
+        "SEG_CK_B": ["U4511.12", "DS2.2"],
+        "SEG_CK_C": ["U4511.11", "DS2.3"],
+        "SEG_CK_D": ["U4511.10", "DS2.4"],
+        "SEG_CK_E": ["U4511.9", "DS2.5"],
+        "SEG_CK_F": ["U4511.15", "DS2.6"],
+        "SEG_CK_G": ["U4511.14", "DS2.7"],
+        "LED_LOGIC_A": ["R1.2", "LED1.A", "U595.Q7"],
+        "RGB_R": ["U174.2", "DARR1.1"],
+        "RGB_G": ["U174.5", "DARR1.2"],
+        "RGB_B": ["U174.6", "DARR1.3"],
+        "MUX_OUT": ["U151.6", "J2.3"],
+        "MUX_B_OUT": ["U157.7", "J1.13"],
+        "COUNTER_LOAD": ["U192.11", "J1.4"],
+        "ADDER_SUM0": ["U283.10", "J2.4"],
+        "ADDER_SUM1": ["U283.11", "J1.14"],
+    }
+    return _raw_spec(
+        "M02",
+        "Proteus Alias Logic Display Board",
+        "new logic/display aliases plus existing shift-register, switch, resistor-network, and LED parts",
+        components,
+        nets,
+    )
+
+
+def _m03() -> dict[str, Any]:
+    components = [
+        _c("G1", "GROUND", "GND", "reference", "mixed"),
+        _c("V1", "VDC", "5V source", "source", "power"),
+        _c("MCU", "ARDUINO_NANO", "Arduino Nano", "controller", "control"),
+        _c("ESP", "ESP32_WROOM", "ESP32-WROOM", "wireless_controller", "control"),
+        _c("BME", "BME280", "BME280", "sensor", "i2c"),
+        _c("OLED", "SSD1306_OLED", "SSD1306 OLED", "display", "i2c"),
+        _c("RTC", "DS3231", "DS3231", "rtc", "i2c"),
+        _c("FLASH", "W25Q64", "W25Q64", "memory", "spi"),
+        _c("CAN", "MCP2515", "MCP2515", "can_controller", "comm"),
+        _c("CANPHY", "TJA1050", "TJA1050", "can_transceiver", "comm"),
+        _c("RS485", "MAX485", "MAX485", "rs485_transceiver", "comm"),
+        _c("AMP", "LM358", "LM358", "opamp", "analog"),
+        _c("TIMER", "NE555", "NE555", "timer", "control"),
+        _c("BUF", "LM741", "LM741", "opamp", "analog"),
+        _c("Q1", "2N7000", "2N7000", "mosfet", "driver"),
+        _c("Q2", "BS170", "BS170", "mosfet", "driver"),
+        _c("D1", "1N4148", "1N4148", "diode", "signal"),
+        _c("DZ1", "BZX55C5", "5.1V zener", "zener", "protection"),
+        _c("C1", "CAP-ELEC", "47uF", "capacitor", "power"),
+        _c("C2", "CAP", "100nF", "capacitor", "power"),
+        _c("L1", "REALIND", "10uH", "inductor", "driver"),
+        _c("R1", "RES", "10k", "resistor", "control"),
+        _c("R2", "RESISTOR", "120 ohm", "resistor", "comm"),
+        _c("SW1", "SWITCH", "Mode switch", "switch", "control"),
+        _c("J_CAN", "TERMINAL", "CAN terminal", "connector", "comm"),
+        _c("J_RS485", "TERMINAL", "RS485 terminal", "connector", "comm"),
+        _c("J2", "PIN_HEADER", "Expansion header", "connector", "control"),
+        _c("TP1", "TEST_POINT", "Debug test point", "testpoint", "control"),
+    ]
+    nets = {
+        "+5V": ["V1.1", "MCU.5V", "RS485.VCC", "CANPHY.VCC", "AMP.VCC", "TIMER.8", "TIMER.4", "BUF.7", "SW1.1", "J2.1"],
+        "+3V3": ["ESP.3V3", "BME.VCC", "OLED.VCC", "RTC.VCC", "FLASH.VCC", "CAN.VDD", "C2.1", "J2.2"],
+        "GND": [
+            "G1.1",
+            "V1.2",
+            "MCU.GND",
+            "ESP.GND",
+            "BME.GND",
+            "OLED.GND",
+            "RTC.GND",
+            "FLASH.GND",
+            "CAN.VSS",
+            "CANPHY.GND",
+            "RS485.GND",
+            "AMP.GND",
+            "TIMER.1",
+            "BUF.4",
+            "C1.2",
+            "C2.2",
+            "Q1.3",
+            "Q2.3",
+            "DZ1.2",
+            "J2.3",
+        ],
+        "I2C_SDA": ["MCU.SDA", "ESP.IO21", "BME.SDA", "OLED.SDA", "RTC.SDA"],
+        "I2C_SCL": ["MCU.SCL", "ESP.IO22", "BME.SCL", "OLED.SCL", "RTC.SCL"],
+        "SPI_MOSI": ["MCU.MOSI", "FLASH.DI", "CAN.SI"],
+        "SPI_MISO": ["MCU.MISO", "FLASH.DO", "CAN.SO"],
+        "SPI_SCK": ["MCU.SCK", "FLASH.CLK", "CAN.SCK"],
+        "SPI_CS_FLASH": ["MCU.D10", "FLASH.CS"],
+        "SPI_CS_CAN": ["ESP.IO5", "CAN.CS"],
+        "CAN_INT": ["ESP.IO4", "CAN.INT", "TP1.1"],
+        "CAN_TXD": ["CAN.TXCAN", "CANPHY.TXD"],
+        "CAN_RXD": ["CAN.RXCAN", "CANPHY.RXD"],
+        "CANH": ["CANPHY.CANH", "J_CAN.1", "R2.1"],
+        "CANL": ["CANPHY.CANL", "J_CAN.2", "R2.2"],
+        "RS485_RO": ["RS485.RO", "MCU.D2"],
+        "RS485_DI": ["RS485.DI", "MCU.D3"],
+        "RS485_DE_RE": ["RS485.DE", "RS485.RE", "ESP.IO23"],
+        "RS485_A": ["RS485.A", "J_RS485.1"],
+        "RS485_B": ["RS485.B", "J_RS485.2"],
+        "TIMER_TRIGGER": ["SW1.2", "TIMER.2", "TIMER.6", "R1.2", "C1.1"],
+        "TIMER_PULLUP": ["R1.1", "DZ1.1"],
+        "TIMER_OUTPUT": ["TIMER.3", "Q1.1", "D1.1"],
+        "DIODE_TO_BUFFER": ["D1.2", "BUF.3"],
+        "BUFFER_FEEDBACK": ["BUF.2", "BUF.6", "AMP.IN_PLUS"],
+        "AMP_FEEDBACK": ["AMP.OUT", "AMP.IN_MINUS", "Q2.1"],
+        "LOAD_LOW": ["Q1.2", "Q2.2", "L1.1"],
+        "LOAD_OUT": ["L1.2", "J2.4"],
+    }
+    return _raw_spec(
+        "M03",
+        "Mixed Embedded Controller With Proteus Aliases",
+        "existing embedded components combined with new Proteus-style source, logic, protection, and analog aliases",
+        components,
+        nets,
+    )
+
+
+def _build_raw_proteus_alias_mixed_specs() -> list[dict[str, Any]]:
+    return [_m01(), _m02(), _m03()]
+
+
 def _overlap_pairs(obstacles: list[dict[str, Any]]) -> list[tuple[str, str]]:
     pairs: list[tuple[str, str]] = []
     for index, left in enumerate(obstacles):
@@ -1110,7 +1489,13 @@ def _final_json_files(source: Path) -> list[Path]:
     return files
 
 
-def generate_final_json_run(*, examples_root: Path, label: str = "t01_t10_connected_v1", run_dir: Path | None = None) -> dict[str, Any]:
+def generate_final_json_run(
+    *,
+    examples_root: Path,
+    label: str = "t01_t10_connected_v1",
+    run_dir: Path | None = None,
+    suite: str = DEFAULT_FINAL_CIRCUIT_SUITE,
+) -> dict[str, Any]:
     """Generate a fresh immutable final-JSON examples run and stage report."""
     run_path = run_dir or _fresh_run_dir(examples_root, label)
     if run_path.exists():
@@ -1124,7 +1509,7 @@ def generate_final_json_run(*, examples_root: Path, label: str = "t01_t10_connec
     stage_report_dir.mkdir()
 
     results: list[dict[str, Any]] = []
-    for circuit in build_final_test_circuits():
+    for circuit in build_final_circuits(suite):
         cid = str(circuit["circuit_id"])
         stem = f"{cid}_{re.sub(r'[^a-z0-9]+', '_', circuit['circuit_name'].lower()).strip('_')}"
         final_path = final_json_dir / f"{stem}.json"
@@ -1163,6 +1548,7 @@ def generate_final_json_run(*, examples_root: Path, label: str = "t01_t10_connec
         "schema": "progen-kicad-final-json-run/v0.1",
         "run_dir": str(run_path),
         "label": label,
+        "suite": suite,
         "circuit_count": len(results),
         "all_final_json_valid": all(item["validation"]["status"] == "pass" for item in results),
         "all_placements_ok": all(item["placement_ok"] for item in results),
@@ -1174,7 +1560,7 @@ def generate_final_json_run(*, examples_root: Path, label: str = "t01_t10_connec
     }
     (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     (run_path / "README.md").write_text(
-        "# Connected Final JSON T01-T10 Run\n\n"
+        f"# Connected Final JSON Run: {suite}\n\n"
         "This folder is an immutable generated record. It contains canonical final CircuitIR JSON, "
         "component-only placement inputs derived from that JSON, and per-circuit reports from the "
         "arrangement decider, beautifier, and wire planner.\n\n"
@@ -1280,6 +1666,12 @@ def main() -> None:
     parser.add_argument("--examples-root", default="kicad/examples", help="Examples root for fresh final_json_run_* folders.")
     parser.add_argument("--label", default="t01_t10_connected_v1", help="Label suffix for the fresh generated folder.")
     parser.add_argument("--run-dir", help="Optional explicit fresh run directory.")
+    parser.add_argument(
+        "--suite",
+        default=DEFAULT_FINAL_CIRCUIT_SUITE,
+        choices=available_final_circuit_suites(),
+        help="Named deterministic final JSON suite to generate.",
+    )
     parser.add_argument("--prompt", help="Optional prompt to clean/enhance and print instead of generating files.")
     parser.add_argument(
         "--project-run-from-final-json",
@@ -1305,6 +1697,7 @@ def main() -> None:
         examples_root=Path(args.examples_root),
         label=args.label,
         run_dir=Path(args.run_dir) if args.run_dir else None,
+        suite=args.suite,
     )
     print(json.dumps(summary, indent=2))
 

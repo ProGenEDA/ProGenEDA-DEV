@@ -7,7 +7,12 @@ from pathlib import Path
 
 from kicad.pipeline.arrangement_decider import decide_arrangement
 from kicad.pipeline.beautifier import apply_coordinate_edits
-from kicad.pipeline.final_circuit_builder import STAGE_REPORT_WIRE_CONFIG, build_final_test_circuits, placer_ready_circuit
+from kicad.pipeline.final_circuit_builder import (
+    STAGE_REPORT_WIRE_CONFIG,
+    build_final_test_circuits,
+    build_proteus_alias_mixed_circuits,
+    placer_ready_circuit,
+)
 from kicad.pipeline.kicad_wire_maker import generate_wired_projects_from_final_json, make_kicad_wires
 from kicad.pipeline.placer_pipeline import run_placer_pipeline
 from kicad.pipeline.wire_planner import plan_wire_routes
@@ -49,6 +54,29 @@ class KiCadWireMakerTests(unittest.TestCase):
                 self.assertTrue((root / "wired_run" / result["open_this"]).exists())
                 self.assertIn("wires, labels, and junctions are generated", schematic.read_text(encoding="utf-8"))
                 self.assertGreater(result["wire_object_count"], 0)
+
+    def test_proteus_alias_mixed_wired_projects_obey_geometry_rules(self) -> None:
+        circuits = build_proteus_alias_mixed_circuits()[:2]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "final_json"
+            source.mkdir()
+            for circuit in circuits:
+                (source / f"{circuit['circuit_id']}.json").write_text(json.dumps(circuit, indent=2), encoding="utf-8")
+            summary = generate_wired_projects_from_final_json(
+                source,
+                examples_root=root,
+                label="unit_test_proteus_alias_wired",
+                run_dir=root / "wired_run",
+            )
+            self.assertEqual(summary["project_count"], 2)
+            self.assertTrue(summary["all_static_checks_ok"])
+            self.assertTrue(summary["all_geometry_ok"])
+            self.assertEqual(summary["total_geometry_violations"], 0)
+            self.assertGreater(summary["total_wire_objects"], 0)
+            for result in summary["results"]:
+                self.assertTrue(result["geometry_ok"])
+                self.assertEqual(result["geometry_violation_count"], 0)
 
 
 if __name__ == "__main__":

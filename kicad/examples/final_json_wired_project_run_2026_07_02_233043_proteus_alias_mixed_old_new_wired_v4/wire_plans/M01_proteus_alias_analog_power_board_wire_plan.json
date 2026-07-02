@@ -1,0 +1,1640 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 891.5,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "AC_PRIMARY_A": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "V2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            109.22
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "T1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            561.34,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Transformer_1P_1S:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "AC_SECONDARY_A": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "BR1",
+          "pin": "3",
+          "side": "top",
+          "point": [
+            264.16,
+            139.7
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin3"
+        },
+        {
+          "ref": "T1",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            581.66,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:Transformer_1P_1S:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "AC_SECONDARY_B": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "BR1",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            264.16,
+            154.94
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin4"
+        },
+        {
+          "ref": "T1",
+          "pin": "4",
+          "side": "right",
+          "point": [
+            581.66,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Transformer_1P_1S:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "BJT_CHAIN": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "D3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            26.67,
+            187.96
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin1"
+        },
+        {
+          "ref": "Q1",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            200.66,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:Q_NPN_BCE:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "CLAMP_NODE": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            171.45
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            102.87,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "DZ1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            224.79,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin1"
+        },
+        {
+          "ref": "DZ2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            359.41,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "CURRENT_NODE": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "Q2",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            302.26,
+            142.24
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:Q_PNP_BCE:unit1:pin2"
+        },
+        {
+          "ref": "I1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            731.52,
+            142.24
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:IDC:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "DIODE_BUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "D3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            34.29,
+            187.96
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin2"
+        },
+        {
+          "ref": "D4",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            62.23,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "DIODE_BUS",
+          "from": {
+            "ref": "D3",
+            "pin": "2",
+            "point": [
+              34.29,
+              187.96
+            ],
+            "exact": true,
+            "source": "Diode:1N4148:unit1:pin2"
+          },
+          "to": {
+            "ref": "D4",
+            "pin": "1",
+            "point": [
+              62.23,
+              137.16
+            ],
+            "exact": true,
+            "source": "Device:D:unit1:pin1"
+          },
+          "path": [
+            [
+              39.37,
+              187.96
+            ],
+            [
+              39.37,
+              191.77
+            ],
+            [
+              16.51,
+              191.77
+            ],
+            [
+              16.51,
+              139.7
+            ],
+            [
+              57.15,
+              139.7
+            ],
+            [
+              57.15,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                39.37,
+                187.96
+              ],
+              "end": [
+                39.37,
+                191.77
+              ],
+              "direction": "down",
+              "length": 3.81
+            },
+            {
+              "start": [
+                39.37,
+                191.77
+              ],
+              "end": [
+                16.51,
+                191.77
+              ],
+              "direction": "left",
+              "length": 22.86
+            },
+            {
+              "start": [
+                16.51,
+                191.77
+              ],
+              "end": [
+                16.51,
+                139.7
+              ],
+              "direction": "up",
+              "length": 52.07
+            },
+            {
+              "start": [
+                16.51,
+                139.7
+              ],
+              "end": [
+                57.15,
+                139.7
+              ],
+              "direction": "right",
+              "length": 40.64
+            },
+            {
+              "start": [
+                57.15,
+                139.7
+              ],
+              "end": [
+                57.15,
+                137.16
+              ],
+              "direction": "up",
+              "length": 2.54
+            }
+          ]
+        }
+      ]
+    },
+    "LC_NODE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "L1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            189.23
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            95.25,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            132.08,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: LC_NODE exceeded 50000 explored grid states."
+      ]
+    },
+    "LED_TIMER_A": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            198.12,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "LED1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            648.97,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: LED_TIMER_A exceeded 50000 explored grid states."
+      ]
+    },
+    "LM317_OUT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "L1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            181.61
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            772.16,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: LM317_OUT exceeded 50000 explored grid states."
+      ]
+    },
+    "LM741_FB": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "Q2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            294.64,
+            147.32
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:Q_PNP_BCE:unit1:pin1"
+        },
+        {
+          "ref": "U5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            797.56,
+            149.86
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin2"
+        },
+        {
+          "ref": "U5",
+          "pin": "6",
+          "side": "right",
+          "point": [
+            812.8,
+            147.32
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "LM741_IN": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "V3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            429.26,
+            142.24
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VSIN:unit1:pin1"
+        },
+        {
+          "ref": "U5",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            797.56,
+            144.78
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "MOS_DRAIN_BUS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "Q3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            391.16,
+            157.48
+          ],
+          "exact": true,
+          "source": "Transistor_FET:Q_NMOS_DGS:unit1:pin2"
+        },
+        {
+          "ref": "Q4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            492.76,
+            147.32
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin2"
+        },
+        {
+          "ref": "Q5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            647.7,
+            139.7
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for MOS_DRAIN_BUS."
+      ]
+    },
+    "OPAMP_FB": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            228.6,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            683.26,
+            149.86
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin2"
+        },
+        {
+          "ref": "U4",
+          "pin": "6",
+          "side": "right",
+          "point": [
+            698.5,
+            147.32
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: OPAMP_FB exceeded 50000 explored grid states."
+      ]
+    },
+    "OPAMP_IN": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "RV1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            166.37,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin2"
+        },
+        {
+          "ref": "U4",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            683.26,
+            144.78
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: OPAMP_IN exceeded 50000 explored grid states."
+      ]
+    },
+    "OPAMP_LOAD": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "Q1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            193.04,
+            157.48
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:Q_NPN_BCE:unit1:pin1"
+        },
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            228.6,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "PULSE_GATE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "Q3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            398.78,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_FET:Q_NMOS_DGS:unit1:pin1"
+        },
+        {
+          "ref": "Q4",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            500.38,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin1"
+        },
+        {
+          "ref": "V4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            533.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VPULSE:unit1:pin1"
+        },
+        {
+          "ref": "Q5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            655.32,
+            134.62
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for PULSE_GATE."
+      ]
+    },
+    "SMALL_DIODE_OUT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "D4",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            69.85,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "LED2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            847.09,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: SMALL_DIODE_OUT exceeded 50000 explored grid states."
+      ]
+    },
+    "TIMER_CTRL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            128.27
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "5",
+          "side": "top",
+          "point": [
+            614.68,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: TIMER_CTRL exceeded 50000 explored grid states."
+      ]
+    },
+    "TIMER_DISCH": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "7",
+          "side": "left",
+          "point": [
+            604.52,
+            144.78
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: TIMER_DISCH exceeded 50000 explored grid states."
+      ]
+    },
+    "TIMER_OUT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            624.84,
+            147.32
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin3"
+        },
+        {
+          "ref": "LED1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            656.59,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: TIMER_OUT exceeded 50000 explored grid states."
+      ]
+    },
+    "TIMER_RC": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            132.08,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "6",
+          "side": "left",
+          "point": [
+            604.52,
+            149.86
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin6"
+        },
+        {
+          "ref": "U3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            604.52,
+            152.4
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: TIMER_RC exceeded 50000 explored grid states."
+      ]
+    },
+    "VIN_FUSED": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "F1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            99.06,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin2"
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            391.16,
+            137.16
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: VIN_FUSED exceeded 50000 explored grid states."
+      ]
+    },
+    "VIN_PROTECTED": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "BR1",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            271.78,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin1"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            330.2,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "D2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            367.03,
+            139.7
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin2"
+        },
+        {
+          "ref": "U2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            457.2,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: VIN_PROTECTED exceeded 50000 explored grid states."
+      ]
+    },
+    "VIN_SWITCHED": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "D2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            359.41,
+            139.7
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin1"
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            401.32,
+            137.16
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            756.92,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for VIN_SWITCHED."
+      ]
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            111.76
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        },
+        {
+          "ref": "U2",
+          "pin": "3",
+          "side": "top",
+          "point": [
+            472.44,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin3"
+        },
+        {
+          "ref": "U3",
+          "pin": "4",
+          "side": "top",
+          "point": [
+            604.52,
+            142.24
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin4"
+        },
+        {
+          "ref": "U3",
+          "pin": "8",
+          "side": "top",
+          "point": [
+            617.22,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin8"
+        },
+        {
+          "ref": "U4",
+          "pin": "7",
+          "side": "top",
+          "point": [
+            688.34,
+            139.7
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin7"
+        },
+        {
+          "ref": "U5",
+          "pin": "7",
+          "side": "top",
+          "point": [
+            802.64,
+            139.7
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin7"
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            198.12,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "RV1",
+          "pin": "3",
+          "side": "top",
+          "point": [
+            162.56,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin3"
+        },
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            132.08,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "G1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            873.76,
+            276.86
+          ],
+          "exact": true,
+          "source": "power:GND:unit1:pin1"
+        },
+        {
+          "ref": "V1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            165.1
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "V2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            119.38
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "I1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            731.52,
+            152.4
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:IDC:unit1:pin2"
+        },
+        {
+          "ref": "V3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            429.26,
+            152.4
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VSIN:unit1:pin2"
+        },
+        {
+          "ref": "V4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            533.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VPULSE:unit1:pin2"
+        },
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            25.4,
+            114.3
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        },
+        {
+          "ref": "T1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            561.34,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:Transformer_1P_1S:unit1:pin2"
+        },
+        {
+          "ref": "BR1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            256.54,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            764.54,
+            154.94
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin1"
+        },
+        {
+          "ref": "U2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            464.82,
+            154.94
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            614.68,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin1"
+        },
+        {
+          "ref": "U4",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            688.34,
+            154.94
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin4"
+        },
+        {
+          "ref": "U5",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            802.64,
+            154.94
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin4"
+        },
+        {
+          "ref": "RV1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            162.56,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin1"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            330.2,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            132.08,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "DZ1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            232.41,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin2"
+        },
+        {
+          "ref": "DZ2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            367.03,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin2"
+        },
+        {
+          "ref": "LED2",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            839.47,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "Q1",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            200.66,
+            162.56
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:Q_NPN_BCE:unit1:pin3"
+        },
+        {
+          "ref": "Q2",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            302.26,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:Q_PNP_BCE:unit1:pin3"
+        },
+        {
+          "ref": "Q3",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            398.78,
+            162.56
+          ],
+          "exact": true,
+          "source": "Transistor_FET:Q_NMOS_DGS:unit1:pin3"
+        },
+        {
+          "ref": "Q4",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            500.38,
+            142.24
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin3"
+        },
+        {
+          "ref": "Q5",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            655.32,
+            144.78
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin3"
+        }
+      ],
+      "routes": []
+    },
+    "VIN": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "V1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            154.94
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "F1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin1"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "DIODE_BUS",
+      "from": {
+        "ref": "D3",
+        "pin": "2",
+        "point": [
+          34.29,
+          187.96
+        ],
+        "exact": true,
+        "source": "Diode:1N4148:unit1:pin2"
+      },
+      "to": {
+        "ref": "D4",
+        "pin": "1",
+        "point": [
+          62.23,
+          137.16
+        ],
+        "exact": true,
+        "source": "Device:D:unit1:pin1"
+      },
+      "path": [
+        [
+          39.37,
+          187.96
+        ],
+        [
+          39.37,
+          191.77
+        ],
+        [
+          16.51,
+          191.77
+        ],
+        [
+          16.51,
+          139.7
+        ],
+        [
+          57.15,
+          139.7
+        ],
+        [
+          57.15,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            39.37,
+            187.96
+          ],
+          "end": [
+            39.37,
+            191.77
+          ],
+          "direction": "down",
+          "length": 3.81
+        },
+        {
+          "start": [
+            39.37,
+            191.77
+          ],
+          "end": [
+            16.51,
+            191.77
+          ],
+          "direction": "left",
+          "length": 22.86
+        },
+        {
+          "start": [
+            16.51,
+            191.77
+          ],
+          "end": [
+            16.51,
+            139.7
+          ],
+          "direction": "up",
+          "length": 52.07
+        },
+        {
+          "start": [
+            16.51,
+            139.7
+          ],
+          "end": [
+            57.15,
+            139.7
+          ],
+          "direction": "right",
+          "length": 40.64
+        },
+        {
+          "start": [
+            57.15,
+            139.7
+          ],
+          "end": [
+            57.15,
+            137.16
+          ],
+          "direction": "up",
+          "length": 2.54
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 28,
+    "wired_route_count": 1,
+    "segment_count": 5,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_expansion_limit: LC_NODE exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: LC_NODE converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: LED_TIMER_A exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: LED_TIMER_A converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: LM317_OUT exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: LM317_OUT converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for MOS_DRAIN_BUS.",
+    "wire_net_label_fallback: MOS_DRAIN_BUS converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: OPAMP_FB exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: OPAMP_FB converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: OPAMP_IN exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: OPAMP_IN converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for PULSE_GATE.",
+    "wire_net_label_fallback: PULSE_GATE converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: SMALL_DIODE_OUT exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: SMALL_DIODE_OUT converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: TIMER_CTRL exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: TIMER_CTRL converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: TIMER_DISCH exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: TIMER_DISCH converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: TIMER_OUT exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: TIMER_OUT converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: TIMER_RC exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: TIMER_RC converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: VIN_FUSED exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: VIN_FUSED converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: VIN_PROTECTED exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: VIN_PROTECTED converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for VIN_SWITCHED.",
+    "wire_net_label_fallback: VIN_SWITCHED converted to local labels after router failure.",
+    "geometry_repair_fallback: converted nets to local labels: AC_PRIMARY_A, AC_SECONDARY_A, AC_SECONDARY_B, BJT_CHAIN, CLAMP_NODE, CURRENT_NODE, LM741_FB, LM741_IN, OPAMP_LOAD"
+  ]
+}

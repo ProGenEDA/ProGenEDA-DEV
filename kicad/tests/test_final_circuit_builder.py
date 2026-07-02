@@ -7,7 +7,11 @@ from pathlib import Path
 
 from kicad.pipeline.beautifier import apply_coordinate_edits
 from kicad.pipeline.final_circuit_builder import (
+    PROTEUS_ALIAS_MIXED_SUITE,
+    available_final_circuit_suites,
+    build_final_circuits,
     build_final_test_circuits,
+    build_proteus_alias_mixed_circuits,
     clean_prompt,
     generate_projects_from_final_json,
     placer_ready_circuit,
@@ -49,6 +53,39 @@ class FinalCircuitBuilderTests(unittest.TestCase):
         for circuit in circuits:
             with self.subTest(cid=circuit["circuit_id"]):
                 self.assertEqual(circuit["schema_version"], "progen-kicad-circuit-ir/v1")
+                self.assertEqual(circuit["validation"]["status"], "pass")
+                self.assertEqual(circuit["validation"]["errors"], [])
+                self.assertEqual(circuit["validation"]["warnings"], [])
+                self.assertTrue(all(component["pins"] for component in circuit["components"]))
+
+    def test_proteus_alias_mixed_suite_compiles_old_and_new_components(self) -> None:
+        self.assertIn(PROTEUS_ALIAS_MIXED_SUITE, available_final_circuit_suites())
+        circuits = build_proteus_alias_mixed_circuits()
+        self.assertEqual([circuit["circuit_id"] for circuit in circuits], ["M01", "M02", "M03"])
+        self.assertEqual(build_final_circuits(PROTEUS_ALIAS_MIXED_SUITE), circuits)
+
+        kinds = {str(component["kind"]) for circuit in circuits for component in circuit["components"]}
+        for expected in (
+            "GROUND",
+            "VDC",
+            "VSOURCE",
+            "CSOURCE",
+            "VSIN",
+            "VPULSE",
+            "POT-HG",
+            "BRIDGE RECTIFIER",
+            "7SEGCOMA",
+            "74HC283",
+            "ARDUINO_NANO",
+            "ESP32_WROOM",
+            "BME280",
+            "SSD1306_OLED",
+            "MAX485",
+        ):
+            self.assertIn(expected, kinds)
+
+        for circuit in circuits:
+            with self.subTest(cid=circuit["circuit_id"]):
                 self.assertEqual(circuit["validation"]["status"], "pass")
                 self.assertEqual(circuit["validation"]["errors"], [])
                 self.assertEqual(circuit["validation"]["warnings"], [])

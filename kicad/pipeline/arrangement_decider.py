@@ -26,7 +26,7 @@ DEFAULT_ARRANGEMENT_CONFIG: dict[str, float] = {
     "row_gap": 12.7,
     "power_y": 17.78,
     "ground_margin": 17.78,
-    "component_clearance": 7.62,
+    "component_clearance": 15.24,
 }
 
 

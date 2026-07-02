@@ -332,6 +332,20 @@ def _open_pin_portals(
                         blocked.discard(adjacent)
 
 
+def _portal_point(point: Point, side: str, cfg: dict[str, float]) -> Point:
+    directions = {
+        "left": (-1.0, 0.0),
+        "right": (1.0, 0.0),
+        "top": (0.0, -1.0),
+        "bottom": (0.0, 1.0),
+    }
+    dx, dy = directions.get(side, (1.0, 0.0))
+    return (
+        _snap(point[0] + dx * cfg["pin_stub"], cfg["grid"]),
+        _snap(point[1] + dy * cfg["pin_stub"], cfg["grid"]),
+    )
+
+
 def _neighbors(point: GridPoint) -> tuple[GridPoint, GridPoint, GridPoint, GridPoint]:
     x, y = point
     return ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))
@@ -574,6 +588,16 @@ def plan_wire_routes(
                 break
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))
+            start_route = (
+                _portal_point(start, str(root.get("side") or "right"), cfg)
+                if root.get("exact")
+                else start
+            )
+            goal_route = (
+                _portal_point(goal, str(target.get("side") or "right"), cfg)
+                if target.get("exact")
+                else goal
+            )
             ignore_refs = set()
             if not root.get("exact"):
                 ignore_refs.add(str(root["ref"]))
@@ -588,8 +612,8 @@ def plan_wire_routes(
             if target.get("exact"):
                 portals.append((str(target["ref"]), goal, str(target.get("side") or "right")))
             raw_path, route_warnings = _astar(
-                start,
-                goal,
+                start_route,
+                goal_route,
                 bodies,
                 cfg,
                 routed_occupied,
