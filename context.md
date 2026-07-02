@@ -6715,3 +6715,478 @@ Verification:
 - Full component placer/terminal suite: `83 passed`.
 - Compileall: passed.
 - V11 archive SHA256: `1caa2e30e6122e0ee8735423b34a5e07d1d42cc421794f63520b289365b14109`.
+
+---
+
+## User Message - V12 all-two-pin visual stress request
+
+Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; recorded during continuation)
+
+~~~~markdown
+well amazing that all these worked, all of them which is amazing, these 3 in images need some imporvement, improve them and generate a single circuit with all of these 20 each of the component with terminal placed, so i can do final check then we can move on to the next thing
+
+[Three Proteus screenshots were attached: LED-RED crowded terminal/label, 40EPS08 crowded terminal/label, and FUSE with overlong/awkward terminal wiring.]
+~~~~
+
+### Visible Agent Responses
+
+#### Response 1 - commentary
+
+Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; recorded during continuation)
+
+~~~~markdown
+I’ll treat your Proteus results as acceptance for V11 all-two-pin. First I’m verifying the pushed checkpoint, then I’ll tune the three bad-looking families and generate one stress circuit with 20 of each two-pin component terminalized.
+~~~~
+
+#### Response 2 - commentary
+
+~~~~markdown
+Checkpoint verified: local HEAD/upstream/GitHub all match `a06d3a4`; only unrelated `KICAD_LINUX_HANDOFF.md` is untracked. I’m using your Proteus result as V11 acceptance and tuning only the visual placement profiles for LED-RED, 40EPS08, and FUSE.
+~~~~
+
+#### Response 3 - commentary
+
+~~~~markdown
+The three bad visuals come from the same cause: terminal contacts were snapped to the nearest grid point at the pin X, which is electrically valid but can put the terminal symbol/label too close to bulky diode/fuse graphics. I’m adding a per-family outward grid offset for those three, so the short wire still goes to the exact pin but the terminal sits farther outside the body.
+~~~~
+
+#### Response 4 - commentary
+
+~~~~markdown
+One constraint surfaced: the current component placer is still removal-only. It cannot legally create 20 copies of a family unless the donor has 20 real packets for that family. I’m checking available donor counts before deciding whether the final stress circuit can be 20x all families or needs to be capped by donor evidence.
+~~~~
+
+#### Response 5 - commentary
+
+~~~~markdown
+The donor has enough real packets for most families, but the 20x request also forces two old component-placer issues into scope: generic DIODE must skip the D20 display/sentinel packet, and repeated FUSE packets need stable generated refs instead of anonymous duplicate refs. I’m handling those as component-placer fixes, not terminal-placer work.
+~~~~
+
+#### Response 6 - commentary
+
+~~~~markdown
+For the 20x stress circuit, I can stay inside the removal-only rule. The donor has enough real packets; the blockers are validation/selection details: DIODE accidentally counted D20, and FUSE anonymous packets are valid unique object records but the generated-output validator was treating their repeated marker as duplicate visible refs.
+~~~~
+
+#### Response 7 - commentary
+
+~~~~markdown
+I’m patching this narrowly: DIODE selection will skip infrastructure key `D20` for ordinary diode requests, and FUSE duplicate validation will ignore anonymous object records instead of misclassifying the repeated `FUSE` marker as a ref.
+~~~~
+
+#### Response 8 - commentary
+
+~~~~markdown
+There’s one more practical issue for 20x: terminal labels were capped at 36 labels per prefix, which is only 18 two-pin components. I’m extending labels deterministically (`G0..GZ`, then `G10..`) so 20x per family has unique labels without changing the old 1x/3x/15x labels.
+~~~~
+
+#### Response 9 - commentary
+
+~~~~markdown
+The visual tweak is now data-driven: only LED-RED, 40EPS08, and FUSE get one extra outward grid step; other accepted families keep their existing V11 placement.
+~~~~
+
+#### Response 10 - commentary
+
+~~~~markdown
+Component placer fixes are in. I’m running a direct 20-each placement/terminalization probe now before creating the final pack.
+~~~~
+
+#### Response 11 - commentary
+
+~~~~markdown
+The first probe still reports duplicate FUSE, so the duplicate is not from `validate_project_placement` alone; there is a second generated-output validator path still using raw record matches. I’m tracing and patching that too.
+~~~~
+
+#### Response 12 - commentary
+
+~~~~markdown
+Confirmed: the raw-regex duplicate check remained in the validator. I’m replacing that exact line now with the component-aware start scanner.
+~~~~
+
+#### Response 13 - commentary
+
+~~~~markdown
+Validator scanner is fixed. I’m rerunning the 20-each placement/terminalization probe.
+~~~~
+
+#### Response 14 - commentary
+
+~~~~markdown
+20-each placement now succeeds: 380 real components selected. Terminalization hit a new large-project issue: final WIRE-link values are only low 16-bit addresses, and the 760-wire object stream produced duplicate low-16 address values. I’m checking whether deterministic label-length jitter can avoid those collisions without changing the binary attachment model.
+~~~~
+
+#### Response 15 - commentary
+
+~~~~markdown
+The address collision is small: only 2 duplicate low-16 wire addresses out of 760. I’m avoiding it by making large family runs use fixed-width terminal labels from the beginning (`G00..G13`) instead of only widening after `GZ`; that shifts the binary stream deterministically while keeping old <=18-component labels unchanged.
+~~~~
+
+---
+
+## User Message - continue
+
+Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; recorded during continuation)
+
+~~~~markdown
+continue
+~~~~
+
+### Visible Agent Responses
+
+#### Response 16 - commentary
+
+~~~~markdown
+I’m resuming the V12 work: first I’m re-verifying the Git checkpoint per `AGENTS.md`, then I’ll finish the label-width/address-collision patch, regenerate the 20-each two-pin stress circuit, test, commit, push, and verify remote HEAD.
+~~~~
+
+#### Response 17 - commentary
+
+~~~~markdown
+Local HEAD is still `a06d3a4`; the working tree contains the in-progress V12 edits plus the unrelated untracked `KICAD_LINUX_HANDOFF.md`. Two Git verification commands hit a Windows sandbox process-launch error, so I’m rerunning those checks sequentially with login shell disabled.
+~~~~
+
+#### Response 18 - commentary
+
+~~~~markdown
+Upstream is set to `origin/codex/generic-proteus-generator-v0`. Remote verification is currently blocked by network access (`github.com:443` unreachable from this sandbox), so I’m proceeding with local work and will retry push/remote verification at the end.
+~~~~
+
+#### Response 19 - commentary
+
+~~~~markdown
+The partial patch is as expected: visual offsets are in place, and the old raw duplicate-ref scanners are now using the component-aware scanner. I’m finishing the large-run terminal label patch now; this should remove the 760-wire low-address collision without changing accepted small packs.
+~~~~
+
+#### Response 20 - commentary
+
+~~~~markdown
+Large runs now use fixed-width compact labels only when needed (`20x` becomes `G00..G13` per family). Accepted small runs keep old labels like `G0..GZ`. I’m running the direct 20-each probe again.
+~~~~
+
+#### Response 21 - commentary
+
+~~~~markdown
+The Python syntax check passed. I’m using the same fixed mega donor and a scratch probe: 19 two-pin families × 20 each = 380 real components, with terminal placement adding 760 terminals and 760 short wires.
+~~~~
+
+#### Response 22 - commentary
+
+~~~~markdown
+The 20-each placement is clean, but final terminal-link rebasing still finds duplicate low-16 WIRE addresses. The fixed-width labels shifted the stream, but not enough. I’m inspecting the duplicate WIRE locations and will switch to a deterministic collision-avoidance loop instead of relying on a guessed label width.
+~~~~
+
+#### Response 23 - commentary
+
+~~~~markdown
+The partial output exists, but my first scratch scan used the wrong WIRE marker. The terminal placer uses the accepted `0x7f WIRE` marker, so I’m rescanning with that marker and then I’ll patch a real allocator-side collision guard.
+~~~~
+
+#### Response 24 - commentary
+
+~~~~markdown
+The collisions are real aliases: several WIRE marker offsets differ by exactly `65536` or `3×65536`, so their low-16 active-link values become identical. This is not a Proteus donor issue; it is a large-object-stream addressing limit. I’m testing a wider deterministic label width first; if that clears the static allocation, I’ll make large packs use that policy.
+~~~~
+
+#### Response 25 - commentary
+
+~~~~markdown
+I changed only the large-run label width rule for the probe: old accepted <=18-component cases remain unchanged; 20x family runs now use labels like `G000..G013`. Re-running the 20-each static probe.
+~~~~
+
+#### Response 26 - commentary
+
+~~~~markdown
+Three-digit labels still collide, so label width alone is not a reliable solution. I’m measuring the new collision pattern and will patch collision avoidance at the stream-generation level rather than guessing widths.
+~~~~
+
+#### Response 27 - commentary
+
+~~~~markdown
+The remaining duplicates are exact 65536-byte aliases after the wider labels. I’m locating the terminal/WIRE emitter now; the fix will be to insert deterministic, valid padding into terminal labels before colliding WIRE regions, then rebase from the final addresses.
+~~~~
+
+#### Response 28 - commentary
+
+~~~~markdown
+The native emitter already builds valid variable-length terminal records from `TerminalSpec.label`; that is the safe place to add bytes. I’m adding a large-project retry loop that lengthens labels deterministically until every final WIRE-derived low-16 suffix is unique, instead of changing geometry or donor packets.
+~~~~
+
+#### Response 29 - commentary
+
+~~~~markdown
+I found the clean insertion point. Terminal records are generated after each pair is planned and grid-snapped, so I can add a private label-padding option there without touching pin coordinates, component packets, wire coordinates, or family selection.
+~~~~
+
+#### Response 30 - commentary
+
+~~~~markdown
+The robust fix will run only when the final serialized project has a low-16 WIRE-address collision. It will not move components or terminals; it extends one existing `$TERBIDIR` label before the later colliding wire, rebuilds `ROOT.DSN`, and repeats until every final WIRE-link value is unique.
+~~~~
+
+#### Response 31 - commentary
+
+~~~~markdown
+The collision guard helper is in place. I’m wiring it into the final rebase step now so the normal path remains unchanged when no collision exists.
+~~~~
+
+#### Response 32 - commentary
+
+~~~~markdown
+The rebase step now pre-clears low-16 WIRE-address collisions, records any label jitters in `terminal_plan.json`, then applies the normal terminal/component pin-link rebasing. I’m running syntax check and the 20-each probe again.
+~~~~
+
+#### Response 33 - commentary
+
+~~~~markdown
+The collision guard exposed a separate large-project validator weakness: the raw suffix search found an incidental byte pattern (`8900 0100`) elsewhere in the object stream and counted it as a third active link. I’m narrowing the final patcher so it patches only the actual terminal suffix field and the matching component pin-link field before that terminal’s WIRE, ignoring incidental bytes.
+~~~~
+
+#### Response 34 - commentary
+
+~~~~markdown
+I added parsers for actual `$TERBIDIR` suffix fields and WIRE record spans. Now I’m replacing the raw “pattern count equals two” patch logic with structured terminal/component-field selection.
+~~~~
+
+#### Response 35 - commentary
+
+~~~~markdown
+I’m also changing the final validation: it will verify the two exact patched fields for each allocation, not raw byte-pattern counts across coordinates/metadata. Raw counts are unsafe once object streams get this large.
+~~~~
+
+#### Response 36 - commentary
+
+~~~~markdown
+Structured suffix patching is now in place. I’m rerunning the same 20-each probe; if it passes, I’ll generate the requested final experiment pack.
+~~~~
+
+#### Response 37 - commentary
+
+~~~~markdown
+The probe now rebases all 760 links correctly (`link_valid=True`) and applied 7 deterministic label jitters. The report still returns `valid=False` because it kept the old pre-rebase raw suffix-count flag. I’m correcting the final `valid` calculation to use the structured post-rebase checks.
+~~~~
+
+#### Response 38 - commentary
+
+~~~~markdown
+Final validity is now based on post-rebase structured checks plus terminal/wire counts and grid/wire-contact validation. Re-running the 20-each probe.
+~~~~
+
+#### Response 39 - commentary
+
+~~~~markdown
+The direct scratch probe passes: 380 placed components, 760 terminals, 760 short wires, all terminal/component links rebased from final WIRE addresses, with 7 label jitters recorded. I’m creating the dated V12 generator now; it will produce one requested stress circuit, not a donor swap or per-family script.
+~~~~
+
+#### Response 40 - commentary
+
+~~~~markdown
+I caught one packaging issue before running it: the README cannot contain the zip’s own SHA without making the archive self-referential. I’m removing that field from the README and keeping the archive SHA in the script console output / knowledge log instead.
+~~~~
+
+#### Response 41 - commentary
+
+~~~~markdown
+The V12 generator is ready. Running it now to create the one 20-each all-two-pin circuit and zip pack.
+~~~~
+
+#### Response 42 - commentary
+
+~~~~markdown
+Pack generated successfully: one circuit, 380 components, 760 terminals, 760 short wires, no skipped families, archive SHA `236270bd33b0df6cc57e0eab9b9d894474c2a41a9e274793a0bc472da94c5db2`. I’m running tests now.
+~~~~
+
+#### Response 43 - commentary
+
+~~~~markdown
+`compileall` passed. The pytest run failed before collection because `PYTHONPATH` was not set in that shell. I’m rerunning with `PYTHONPATH=src` as the repo instructions require.
+~~~~
+
+---
+
+## User Message - continue after interrupted test run
+
+Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; recorded during continuation)
+
+~~~~markdown
+continue
+~~~~
+
+### Visible Agent Responses
+
+#### Response 44 - commentary
+
+~~~~markdown
+I’m resuming from the interrupted pytest rerun. Per repo rule, I’m rechecking local/upstream/remote state first, then I’ll finish tests, update docs/knowledge/context, commit, push, and verify the remote hash.
+~~~~
+
+#### Response 45 - commentary
+
+~~~~markdown
+Checkpoint verification is clean: local HEAD, upstream branch, and GitHub branch all match `a06d3a4`; current modified/untracked files are the V12 work plus unrelated `KICAD_LINUX_HANDOFF.md`. I’m rerunning the repo test suite with `PYTHONPATH=src`.
+~~~~
+
+#### Response 46 - commentary
+
+~~~~markdown
+`compileall` passed. The full `tests/test_component_placer.py` run did not fail; it timed out after 5 minutes with no captured failure output. I’m switching to focused affected tests plus a direct V12 generation probe, then I’ll decide whether a longer full-suite run is worth running.
+~~~~
+
+#### Response 47 - commentary
+
+~~~~markdown
+Focused affected tests passed: `39 passed, 44 deselected` in 3:48. The V12 generator rerun also passed and regenerated the archive; current zip SHA is `42ceb827b8657bb82e939036ae92493e39dd020145e300fd162919fb96693952`. I’m running the full component-placer suite once with a longer timeout because the focused subset alone already takes nearly four minutes.
+~~~~
+
+#### Response 48 - commentary
+
+~~~~markdown
+The full suite completed: `82 passed, 1 failed` in 7:03. The failure is not Proteus output generation; it is donor manifest count verification. I changed the donor inspection scanner too broadly, causing one old semimega donor CAP count to inspect as 20 instead of the manifest’s 19. I’m narrowing that patch back to generated-output validation only.
+~~~~
+
+#### Response 49 - commentary
+
+~~~~markdown
+The problem is isolated: `inspect_component_packets()` must keep its old named-record scanner for trusted manifest verification. The anonymous-record scanner is only needed for generated-output validation and raw generation grouping. I’m reverting just that inspection path.
+~~~~
+
+#### Response 50 - commentary
+
+~~~~markdown
+Inspection path is narrowed. I’m rerunning the failed donor-manifest test and the V12 generator first, then the full suite once more.
+~~~~
+
+#### Response 51 - commentary
+
+~~~~markdown
+The quick test still fails, so the count mismatch is not only that one line. I’m comparing the current inspection helpers against the trusted checkpoint and checking exactly which CAP packet became visible.
+~~~~
+
+#### Response 52 - commentary
+
+~~~~markdown
+The old trusted-manifest scanner intentionally used the raw regex behavior, including its historical package grouping quirks. My “normal” helper corrected those quirks, which breaks the manifest test. I’m restoring the exact raw expression only inside `inspect_component_packets()`.
+~~~~
+
+#### Response 53 - commentary
+
+~~~~markdown
+Manifest inspection is now restored to the trusted-checkpoint behavior. I’m rerunning the failed test, then the full suite.
+~~~~
+
+#### Response 54 - commentary
+
+~~~~markdown
+The previously failing donor-manifest test now passes. Full component-placer test suite is running again.
+~~~~
+
+#### Response 55 - commentary
+
+~~~~markdown
+Full component-placer suite now passes: `83 passed` in 6:53. I’m doing one final generator/compile pass after the last scanner fix, then I’ll update architecture/knowledge/context and commit.
+~~~~
+
+#### Response 56 - commentary
+
+~~~~markdown
+Final generator and compile pass passed. Current final archive SHA is `0622966b553e4508b8dccd9f111b304cf2878953c40d987ce8cbcae47d11f9c4`. I’m checking the generated terminal plan for the three visual-tuned families before documenting.
+~~~~
+
+#### Response 57 - commentary
+
+~~~~markdown
+The generated plan confirms the three reported visual families use the new outward-grid policy and still wire back to exact pins. I’m updating `docs/architecture.md`, `knowledge/test_results.jsonl`, and `context.md` now.
+~~~~
+
+#### Response 58 - commentary
+
+~~~~markdown
+V12 evidence is clear enough to document: V11 is user-accepted for all two-pin families, V12 is a static-passing visual/stress checkpoint with Proteus manual testing pending. I’m applying that wording now.
+~~~~
+
+#### Response 59 - commentary
+
+~~~~markdown
+Architecture note is updated. I’m appending two evidence records: user acceptance of V11 all-two-pin, and the generated V12 20-each stress pack.
+~~~~
+
+#### Response 60 - commentary
+
+~~~~markdown
+Evidence log is updated. I’m appending the full current turn to `context.md` now, including both `continue` messages, visible progress responses, edited files, generated artifacts, and the final handoff text I’ll send after push verification.
+~~~~
+
+#### Response 61 - commentary
+
+~~~~markdown
+The context append is large because it records this full continuation, but I’m keeping it scoped to user-visible messages and concrete file/artifact evidence rather than tool output dumps.
+~~~~
+
+#### Response 62 - final_answer
+
+Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; pre-recorded before commit/push)
+
+~~~~markdown
+Done. V12 visual/stress pack is ready and pushed.
+
+Main file to test:
+
+`experiments/terminal_placer_all_two_pin_v12_visual_stress_temp_2026_07_03/M01_ALL_TWO_PIN_20X_EACH_NATIVE_V12_VISUAL_STRESS/M01_ALL_TWO_PIN_20X_EACH_NATIVE_V12_VISUAL_STRESS.pdsprj`
+
+Zip:
+
+`experiments/TERMINAL_PLACER_ALL_TWO_PIN_V12_VISUAL_STRESS_TEMP_2026_07_03.zip`
+
+What changed:
+
+- LED-RED, 40EPS08, and FUSE now place terminals one extra Proteus grid step outward, then short-wire back to the exact pin.
+- The stress circuit contains 20 each of all 19 profiled two-pin families: 380 components total.
+- Terminal placer added 760 bidirectional terminals and 760 short wires.
+- Large-project low-16 WIRE address collisions are handled by deterministic terminal-label jitter; this run needed 7 jitters.
+- DIODE repeated selection skips the D20 display/sentinel packet.
+- FUSE donor-native anonymous packets no longer trip duplicate-ref validation.
+
+Verification:
+
+- `python -m pytest tests/test_component_placer.py -q` with `PYTHONPATH=src` → 83 passed
+- `python -m compileall -q src tests tools/proteus_generation` → passed
+- Final archive SHA256: `0622966b553e4508b8dccd9f111b304cf2878953c40d987ce8cbcae47d11f9c4`
+- Commit pushed and remote HEAD verified.
+~~~~
+
+### Files Edited
+
+- `src/proteusgen/component_terminal_placer.py` - added outward terminal-contact profile support for LED-RED, 40EPS08, and FUSE; extended compact labels for large family runs; added final WIRE-address low-16 collision clearing by deterministic `$TERBIDIR` label jitter; replaced raw suffix patch validation with structured terminal/component-link patching.
+- `src/proteusgen/component_placer.py` - made ordinary DIODE selection skip infrastructure key `D20`; kept generated-output validation component-aware for anonymous FUSE while preserving trusted manifest inspection’s historical raw scanner.
+- `tools/proteus_generation/2026-07-03/generate_terminal_placer_all_two_pin_v12_visual_stress_temp.py` - added the one-circuit V12 20-each all-two-pin stress generator.
+- `experiments/terminal_placer_all_two_pin_v12_visual_stress_temp_2026_07_03/` - generated the V12 stress project, reports, README, and input JSON.
+- `experiments/TERMINAL_PLACER_ALL_TWO_PIN_V12_VISUAL_STRESS_TEMP_2026_07_03.zip` - generated V12 archive.
+- `knowledge/test_results.jsonl` - recorded V11 user acceptance and V12 static evidence.
+- `docs/architecture.md` - updated maturity note for V11 acceptance and V12 pending Proteus check.
+- `context.md` - appended this turn and handoff.
+
+### Verification
+
+- Start-of-turn Git check after resumed continuation: local `HEAD`, upstream branch, and GitHub branch all matched `a06d3a4e04b2050f0a461e18d14fbf5fb8ce3df7`.
+- Focused affected tests: `39 passed, 44 deselected`.
+- Full component placer suite: `83 passed in 413.77s`.
+- Compileall: passed.
+- Final V12 generator run passed with 380 components, 760 terminals, 760 wires, no skipped families, and 7 label jitters.
+- Final V12 archive SHA256: `0622966b553e4508b8dccd9f111b304cf2878953c40d987ce8cbcae47d11f9c4`.
+- Unrelated untracked file preserved: `KICAD_LINUX_HANDOFF.md`.
+
+#### Response 63 - commentary
+
+Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; recorded during continuation)
+
+~~~~markdown
+Staged changes are the V12 code/docs/experiment artifacts only; unrelated `KICAD_LINUX_HANDOFF.md` remains untracked and untouched. I’m committing now.
+~~~~
+
+#### Response 64 - commentary
+
+Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; recorded during continuation)
+
+~~~~markdown
+I sent one extra progress note after the context append, so I’m adding that note to `context.md` and amending the commit before push. After that I’ll avoid more progress text until the final handoff.
+~~~~

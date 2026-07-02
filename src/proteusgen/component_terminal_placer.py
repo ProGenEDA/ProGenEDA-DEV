@@ -122,6 +122,7 @@ GENERIC_TWO_PIN_PROFILES = {
         "suffix_base": 0x5C00,
         "left_pin_hint": "anode/left_pin",
         "right_pin_hint": "cathode/right_pin",
+        "terminal_contact_outward_grid_steps": 1,
     },
     "BZX55C5V1": {
         "label_prefix": "N",
@@ -146,12 +147,14 @@ GENERIC_TWO_PIN_PROFILES = {
         "suffix_base": 0x6400,
         "left_pin_hint": "anode/left_pin",
         "right_pin_hint": "cathode/right_pin",
+        "terminal_contact_outward_grid_steps": 1,
     },
     "FUSE": {
         "label_prefix": "F",
         "suffix_base": 0x6600,
         "left_pin_hint": "pin:1",
         "right_pin_hint": "pin:2",
+        "terminal_contact_outward_grid_steps": 1,
     },
 }
 # Dispatcher allow-list for the shared native terminal route.  The R/C/L/source
@@ -462,12 +465,17 @@ def _terminal_at_grid_contact(
     *,
     pin_x: int,
     pin_y: int,
+    outward_grid_steps: int = 0,
 ) -> tuple[TerminalSpec, int, int]:
+    if outward_grid_steps < 0:
+        raise ValueError("Terminal outward grid steps must be non-negative.")
     contact_x = snap_to_proteus_terminal_grid(pin_x)
     contact_y = snap_to_proteus_terminal_grid(pin_y)
     if terminal.angle_tenths == LEFT_SIDE_ANGLE:
+        contact_x -= outward_grid_steps * PROTEUS_TERMINAL_GRID
         symbol_x = contact_x - TERMINAL_CONTACT_TO_PIN
     elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
+        contact_x += outward_grid_steps * PROTEUS_TERMINAL_GRID
         symbol_x = contact_x + TERMINAL_CONTACT_TO_PIN
     else:
         raise ValueError(
@@ -481,6 +489,8 @@ def _terminal_at_grid_contact(
             symbol_y=contact_y,
             attachment_policy=(
                 "grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
+                if outward_grid_steps == 0
+                else "outward_grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
             ),
         ),
         contact_x,
@@ -491,6 +501,8 @@ def _terminal_at_grid_contact(
 def _snap_terminal_pair_to_grid(
     pair: ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair,
 ) -> ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair:
+    profile = GENERIC_TWO_PIN_PROFILES.get(pair.component_family, {})
+    outward_grid_steps = int(profile.get("terminal_contact_outward_grid_steps", 0))
     if isinstance(pair, SourceTerminalPair):
         input_terminal, input_x, input_y = _terminal_at_grid_contact(
             pair.input,
@@ -516,11 +528,13 @@ def _snap_terminal_pair_to_grid(
         pair.left,
         pin_x=pair.left_pin_x,
         pin_y=pair.left_pin_y,
+        outward_grid_steps=outward_grid_steps,
     )
     right_terminal, right_x, right_y = _terminal_at_grid_contact(
         pair.right,
         pin_x=pair.right_pin_x,
         pin_y=pair.right_pin_y,
+        outward_grid_steps=outward_grid_steps,
     )
     return replace(
         pair,
@@ -541,20 +555,35 @@ def _u32_at(data: bytes, offset: int) -> int:
     return int.from_bytes(data[offset : offset + 4], "little", signed=False)
 
 
-def _compact_terminal_label(prefix: str, terminal_index: int) -> str:
-    """Return the donor-safe two-character label used by researched families."""
+def _compact_terminal_label(
+    prefix: str,
+    terminal_index: int,
+    *,
+    min_digits: int = 1,
+) -> str:
+    """Return a compact deterministic terminal label for researched families."""
 
     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     if len(prefix) != 1 or prefix not in alphabet:
         raise ValueError(
             "Terminal label prefix must be one uppercase ASCII letter or digit."
         )
-    if not 0 <= terminal_index < len(alphabet):
+    if terminal_index < 0:
         raise ValueError(
-            "This terminal handler currently supports at most 18 components because its accepted "
-            "donor path uses two-character terminal labels."
+            "Terminal label index must be non-negative."
         )
-    return prefix + alphabet[terminal_index]
+    if min_digits <= 1 and terminal_index < len(alphabet):
+        return prefix + alphabet[terminal_index]
+    digits: list[str] = []
+    value = terminal_index
+    while value or len(digits) < min_digits:
+        digits.append(alphabet[value % len(alphabet)])
+        value //= len(alphabet)
+    return prefix + "".join(reversed(digits))
+
+
+def _compact_label_min_digits(component_count: int) -> int:
+    return 3 if component_count * 2 > 36 else 1
 
 
 def _inductor_suffixes(index: int) -> tuple[int, int]:
@@ -838,8 +867,10 @@ def plan_attached_capacitor_terminals(
 ) -> tuple[CapacitorTerminalPair, ...]:
     """Plan CAP/v2 using the accepted manual capacitor donor geometry."""
 
+    groups = tuple(selected_groups)
+    label_min_digits = _compact_label_min_digits(len(groups))
     pairs: list[CapacitorTerminalPair] = []
-    for index, group in enumerate(selected_groups, start=1):
+    for index, group in enumerate(groups, start=1):
         family = str(getattr(group, "family", ""))
         key = str(getattr(group, "key", ""))
         if family != "CAP":
@@ -859,7 +890,11 @@ def plan_attached_capacitor_terminals(
         right_pin_y = body_y
         left_suffix, right_suffix = _manual_cap_suffixes(index)
         left = TerminalSpec(
-            label=_compact_terminal_label(label_prefix, (index - 1) * 2),
+            label=_compact_terminal_label(
+                label_prefix,
+                (index - 1) * 2,
+                min_digits=label_min_digits,
+            ),
             symbol_x=left_pin_x - CAP_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=left_pin_y,
             angle_tenths=LEFT_SIDE_ANGLE,
@@ -870,7 +905,11 @@ def plan_attached_capacitor_terminals(
             attachment_policy="cap_link_suffix_and_short_wire",
         )
         right = TerminalSpec(
-            label=_compact_terminal_label(label_prefix, (index - 1) * 2 + 1),
+            label=_compact_terminal_label(
+                label_prefix,
+                (index - 1) * 2 + 1,
+                min_digits=label_min_digits,
+            ),
             symbol_x=right_pin_x + CAP_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=right_pin_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
@@ -910,8 +949,10 @@ def plan_attached_inductor_terminals(
 ) -> tuple[InductorTerminalPair, ...]:
     """Plan REALIND/v2 from the accepted six-inductor donor geometry."""
 
+    groups = tuple(selected_groups)
+    label_min_digits = _compact_label_min_digits(len(groups))
     pairs: list[InductorTerminalPair] = []
-    for index, group in enumerate(selected_groups, start=1):
+    for index, group in enumerate(groups, start=1):
         family = str(getattr(group, "family", ""))
         key = str(getattr(group, "key", ""))
         if family != "REALIND":
@@ -936,7 +977,11 @@ def plan_attached_inductor_terminals(
         right_pin_x = body_x + INDUCTOR_PIN_HALF_SPAN
         left_suffix, right_suffix = _inductor_suffixes(index)
         left = TerminalSpec(
-            label=_compact_terminal_label(label_prefix, (index - 1) * 2),
+            label=_compact_terminal_label(
+                label_prefix,
+                (index - 1) * 2,
+                min_digits=label_min_digits,
+            ),
             symbol_x=left_pin_x - INDUCTOR_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=LEFT_SIDE_ANGLE,
@@ -947,7 +992,11 @@ def plan_attached_inductor_terminals(
             attachment_policy="realind_link_suffix_and_short_wire",
         )
         right = TerminalSpec(
-            label=_compact_terminal_label(label_prefix, (index - 1) * 2 + 1),
+            label=_compact_terminal_label(
+                label_prefix,
+                (index - 1) * 2 + 1,
+                min_digits=label_min_digits,
+            ),
             symbol_x=right_pin_x + INDUCTOR_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
@@ -987,8 +1036,10 @@ def plan_attached_electrolytic_capacitor_terminals(
 ) -> tuple[ElectrolyticCapTerminalPair, ...]:
     """Plan CAP-ELEC/v3 from the accepted eight-component donor geometry."""
 
+    groups = tuple(selected_groups)
+    label_min_digits = _compact_label_min_digits(len(groups))
     pairs: list[ElectrolyticCapTerminalPair] = []
-    for index, group in enumerate(selected_groups, start=1):
+    for index, group in enumerate(groups, start=1):
         family = str(getattr(group, "family", ""))
         key = str(getattr(group, "key", ""))
         if family != "CAP-ELEC":
@@ -1018,7 +1069,11 @@ def plan_attached_electrolytic_capacitor_terminals(
         right_pin_x = body_x + CAP_ELEC_PIN_HALF_SPAN
         left_suffix, right_suffix = _cap_elec_suffixes(index)
         left = TerminalSpec(
-            label=_compact_terminal_label(label_prefix, (index - 1) * 2),
+            label=_compact_terminal_label(
+                label_prefix,
+                (index - 1) * 2,
+                min_digits=label_min_digits,
+            ),
             symbol_x=left_pin_x - CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=LEFT_SIDE_ANGLE,
@@ -1029,7 +1084,11 @@ def plan_attached_electrolytic_capacitor_terminals(
             attachment_policy="cap_elec_native_links_and_zero_length_pin_records",
         )
         right = TerminalSpec(
-            label=_compact_terminal_label(label_prefix, (index - 1) * 2 + 1),
+            label=_compact_terminal_label(
+                label_prefix,
+                (index - 1) * 2 + 1,
+                min_digits=label_min_digits,
+            ),
             symbol_x=right_pin_x + CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
@@ -1086,6 +1145,7 @@ def plan_attached_generic_two_pin_terminals(
     family = next(iter(families))
     profile = GENERIC_TWO_PIN_PROFILES[family]
     prefix = label_prefix or str(profile["label_prefix"])
+    label_min_digits = _compact_label_min_digits(len(groups))
     suffix_base = (
         int(profile["suffix_base"]) if suffix_start is None else suffix_start
     )
@@ -1117,7 +1177,11 @@ def plan_attached_generic_two_pin_terminals(
         left_suffix = (suffix_base + (index - 1) * 2 + 1) & 0xFFFF
         right_suffix = (suffix_base + (index - 1) * 2 + 2) & 0xFFFF
         left = TerminalSpec(
-            label=_compact_terminal_label(prefix, (index - 1) * 2),
+            label=_compact_terminal_label(
+                prefix,
+                (index - 1) * 2,
+                min_digits=label_min_digits,
+            ),
             symbol_x=left_pin_x - GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=LEFT_SIDE_ANGLE,
@@ -1128,7 +1192,11 @@ def plan_attached_generic_two_pin_terminals(
             attachment_policy="generic_two_pin_profile_link_suffix_and_short_wire",
         )
         right = TerminalSpec(
-            label=_compact_terminal_label(prefix, (index - 1) * 2 + 1),
+            label=_compact_terminal_label(
+                prefix,
+                (index - 1) * 2 + 1,
+                min_digits=label_min_digits,
+            ),
             symbol_x=right_pin_x + GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=body_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
@@ -1181,6 +1249,7 @@ def plan_attached_source_terminals(
         )
     family = next(iter(families))
     prefix = label_prefix or SOURCE_TERMINAL_LABEL_PREFIXES[family]
+    label_min_digits = _compact_label_min_digits(len(groups))
     base_size = SOURCE_COMPONENT_BARE_BASE_SIZES[family]
     if source_index_start < 1:
         raise ValueError("source_index_start must be at least 1.")
@@ -1233,7 +1302,11 @@ def plan_attached_source_terminals(
             output_link_offset = x_offset + 29
 
         input_terminal = TerminalSpec(
-            label=_compact_terminal_label(prefix, input_label_index),
+            label=_compact_terminal_label(
+                prefix,
+                input_label_index,
+                min_digits=label_min_digits,
+            ),
             symbol_x=input_pin[0] - SOURCE_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=input_pin[1],
             angle_tenths=LEFT_SIDE_ANGLE,
@@ -1244,7 +1317,11 @@ def plan_attached_source_terminals(
             attachment_policy="source_native_role_links_and_zero_length_pin_records",
         )
         output_terminal = TerminalSpec(
-            label=_compact_terminal_label(prefix, output_label_index),
+            label=_compact_terminal_label(
+                prefix,
+                output_label_index,
+                min_digits=label_min_digits,
+            ),
             symbol_x=output_pin[0] + SOURCE_TERMINAL_SYMBOL_TO_PIN,
             symbol_y=output_pin[1],
             angle_tenths=RIGHT_SIDE_ANGLE,
@@ -3602,6 +3679,217 @@ def _object_chunk_absolute_start(dsn: bytes) -> int:
     return start
 
 
+def _wire_rows_from_chunk(
+    chunk: bytes,
+    *,
+    chunk_start: int,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    cursor = 0
+    while True:
+        marker = chunk.find(b"\x7fWIRE", cursor)
+        if marker < 0:
+            return rows
+        coordinate_start = marker + 10
+        if coordinate_start + 16 > len(chunk):
+            raise ValueError(f"WIRE at object offset {marker} is truncated.")
+        rows.append(
+            {
+                "marker_offset": marker,
+                "coordinates": struct.unpack(
+                    "<iiii",
+                    chunk[coordinate_start : coordinate_start + 16],
+                ),
+                "suffix": (chunk_start + marker - 24) & 0xFFFF,
+            }
+        )
+        cursor = marker + len(b"\x7fWIRE")
+
+
+def _duplicate_wire_suffix_rows(
+    wire_rows: Iterable[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    by_suffix: dict[int, list[dict[str, Any]]] = {}
+    for row in wire_rows:
+        by_suffix.setdefault(int(row["suffix"]), []).append(row)
+    return [
+        row
+        for _suffix, rows in sorted(by_suffix.items())
+        if len(rows) > 1
+        for row in sorted(rows, key=lambda item: int(item["marker_offset"]))[1:]
+    ]
+
+
+def _bidir_label_records(chunk: bytes) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    cursor = 0
+    while True:
+        marker = chunk.find(BIDIR_MARKER, cursor)
+        if marker < 0:
+            return records
+        start = marker - 14
+        if start < 0 or chunk[start] != 0x10:
+            raise ValueError(f"Invalid bidirectional terminal start at marker {marker}.")
+        label_length = chunk[start + 30]
+        label_start = start + 31
+        label_end = label_start + label_length
+        if label_end > len(chunk):
+            raise ValueError(f"Truncated bidirectional terminal label at {start}.")
+        records.append(
+            {
+                "start": start,
+                "marker_offset": marker,
+                "label_start": label_start,
+                "label_end": label_end,
+                "label_length": label_length,
+                "label": chunk[label_start:label_end].decode("ascii"),
+            }
+        )
+        cursor = marker + 1
+
+
+def _pad_bidir_label_before_offset(
+    chunk: bytes,
+    *,
+    before_offset: int,
+    pad_char: str = "X",
+) -> tuple[bytes, dict[str, Any]]:
+    pad = pad_char.encode("ascii")
+    if len(pad) != 1:
+        raise ValueError("Bidirectional label padding must be one ASCII byte.")
+    candidates = [
+        record
+        for record in _bidir_label_records(chunk)
+        if int(record["start"]) < before_offset and int(record["label_length"]) < 255
+    ]
+    if not candidates:
+        raise ValueError(
+            "No bidirectional terminal label can be safely lengthened before "
+            f"WIRE offset {before_offset}."
+        )
+    record = max(candidates, key=lambda item: int(item["start"]))
+    label_end = int(record["label_end"])
+    new_length = int(record["label_length"]) + 1
+    old_label = str(record["label"])
+    new_label = old_label + pad_char
+    patched = (
+        chunk[: int(record["start"]) + 30]
+        + bytes([new_length])
+        + chunk[int(record["label_start"]) : label_end]
+        + pad
+        + chunk[label_end:]
+    )
+    return patched, {
+        "terminal_start": int(record["start"]),
+        "old_label": old_label,
+        "new_label": new_label,
+        "wire_marker_offset_before_padding": before_offset,
+    }
+
+
+def _update_report_terminal_label(
+    report: dict[str, Any],
+    *,
+    old_label: str,
+    new_label: str,
+) -> bool:
+    for family_report in report.get("family_reports", []):
+        for pair in family_report.get("terminal_pairs", []):
+            roles = ("left", "right") if "left" in pair else ("input", "output")
+            for role in roles:
+                terminal = pair.get(role)
+                if isinstance(terminal, dict) and terminal.get("label") == old_label:
+                    terminal["label"] = new_label
+                    return True
+    return False
+
+
+def _wire_record_spans(chunk: bytes) -> list[tuple[int, int]]:
+    spans: list[tuple[int, int]] = []
+    cursor = 0
+    while True:
+        marker = chunk.find(b"\x7fWIRE", cursor)
+        if marker < 0:
+            return spans
+        start = marker - 23
+        if start < 0:
+            raise ValueError(f"WIRE marker at {marker} starts before object chunk.")
+        spans.append((start, marker + 27))
+        cursor = marker + len(b"\x7fWIRE")
+
+
+def _position_in_spans(position: int, spans: Iterable[tuple[int, int]]) -> bool:
+    return any(start <= position < end for start, end in spans)
+
+
+def _bidir_terminal_suffix_positions(chunk: bytes) -> dict[tuple[str, int], list[int]]:
+    positions: dict[tuple[str, int], list[int]] = {}
+    for record in _bidir_label_records(chunk):
+        size = 101 + int(record["label_length"])
+        suffix_position = int(record["start"]) + size - 4
+        if suffix_position + 4 > len(chunk):
+            raise ValueError(
+                f"Truncated bidirectional terminal suffix for {record['label']}."
+            )
+        suffix = struct.unpack("<H", chunk[suffix_position : suffix_position + 2])[0]
+        active = chunk[suffix_position + 2 : suffix_position + 4] == b"\x01\x00"
+        if active:
+            positions.setdefault((str(record["label"]), suffix), []).append(
+                suffix_position
+            )
+    return positions
+
+
+def _ensure_unique_final_wire_suffixes(
+    destination: Path,
+    dsn: bytes,
+    chunk: bytes,
+    *,
+    expected_wire_count: int,
+    report: dict[str, Any],
+) -> tuple[bytes, bytes, int, list[dict[str, Any]], list[dict[str, Any]]]:
+    """Lengthen terminal labels when large object streams alias low-16 WIRE links."""
+
+    label_jitter_events: list[dict[str, Any]] = []
+    for iteration in range(1, 4097):
+        chunk_start = _object_chunk_absolute_start(dsn)
+        wire_rows = _wire_rows_from_chunk(chunk, chunk_start=chunk_start)
+        if len(wire_rows) != expected_wire_count:
+            raise ValueError(
+                f"Terminal/WIRE count mismatch: {expected_wire_count} bindings for "
+                f"{len(wire_rows)} WIRE records."
+            )
+        duplicates = _duplicate_wire_suffix_rows(wire_rows)
+        if not duplicates:
+            return dsn, chunk, chunk_start, wire_rows, label_jitter_events
+
+        target = max(duplicates, key=lambda row: int(row["marker_offset"]))
+        chunk, event = _pad_bidir_label_before_offset(
+            chunk,
+            before_offset=int(target["marker_offset"]),
+        )
+        event["iteration"] = iteration
+        event["duplicate_suffix"] = f"{int(target['suffix']):04x}"
+        event["report_label_updated"] = _update_report_terminal_label(
+            report,
+            old_label=str(event["old_label"]),
+            new_label=str(event["new_label"]),
+        )
+        label_jitter_events.append(event)
+        dsn, _pointers = build_dsn(dsn, dsn, chunk)
+        write_project_from_parts(
+            destination,
+            destination,
+            {"ROOT.DSN": dsn},
+        )
+        dsn = read_internal_file(destination, "ROOT.DSN")
+        chunk = _extract_object_chunk(dsn)
+
+    raise ValueError(
+        "Could not resolve low-16 WIRE-address collisions after 4096 label jitters."
+    )
+
+
 def _terminal_wire_bindings(report: dict[str, Any]) -> list[dict[str, Any]]:
     family_reports = report.get("family_reports")
     reports = family_reports if isinstance(family_reports, list) else [report]
@@ -3652,33 +3940,16 @@ def _rebase_terminal_links_to_final_wire_addresses(
     destination = Path(output)
     dsn = read_internal_file(destination, "ROOT.DSN")
     chunk = _extract_object_chunk(dsn)
-    chunk_start = _object_chunk_absolute_start(dsn)
     bindings = _terminal_wire_bindings(report)
-
-    wire_rows: list[dict[str, Any]] = []
-    cursor = 0
-    while True:
-        marker = chunk.find(b"\x7fWIRE", cursor)
-        if marker < 0:
-            break
-        coordinate_start = marker + 10
-        if coordinate_start + 16 > len(chunk):
-            raise ValueError(f"WIRE at object offset {marker} is truncated.")
-        wire_rows.append(
-            {
-                "marker_offset": marker,
-                "coordinates": struct.unpack(
-                    "<iiii",
-                    chunk[coordinate_start : coordinate_start + 16],
-                ),
-            }
+    dsn, chunk, chunk_start, wire_rows, label_jitter_events = (
+        _ensure_unique_final_wire_suffixes(
+            destination,
+            dsn,
+            chunk,
+            expected_wire_count=len(bindings),
+            report=report,
         )
-        cursor = marker + len(b"\x7fWIRE")
-    if len(wire_rows) != len(bindings):
-        raise ValueError(
-            f"Terminal/WIRE count mismatch: {len(bindings)} bindings for "
-            f"{len(wire_rows)} WIRE records."
-        )
+    )
 
     available_by_coordinates: dict[
         tuple[int, int, int, int],
@@ -3701,9 +3972,7 @@ def _rebase_terminal_links_to_final_wire_addresses(
                 f"{binding['role']}: {binding['coordinates']}."
             )
         wire = candidates.pop(0)
-        new_suffix = (
-            chunk_start + int(wire["marker_offset"]) - 24
-        ) & 0xFFFF
+        new_suffix = int(wire["suffix"])
         allocations.append(
             {
                 **binding,
@@ -3719,6 +3988,13 @@ def _rebase_terminal_links_to_final_wire_addresses(
     if len(new_suffixes) != len(set(new_suffixes)):
         raise ValueError("Final WIRE-address terminal suffixes are not unique.")
 
+    terminal_suffix_positions = _bidir_terminal_suffix_positions(chunk)
+    all_terminal_suffix_positions = {
+        position
+        for positions in terminal_suffix_positions.values()
+        for position in positions
+    }
+    wire_spans = _wire_record_spans(chunk)
     patch_positions: dict[int, tuple[int, int]] = {}
     for allocation in allocations:
         old_suffix = allocation["old_suffix"]
@@ -3731,12 +4007,35 @@ def _rebase_terminal_links_to_final_wire_addresses(
                 break
             positions.append(position)
             cursor = position + 1
-        if len(positions) != 2:
+        terminal_label = str(allocation["terminal"]["label"])
+        terminal_positions = terminal_suffix_positions.get(
+            (terminal_label, old_suffix),
+            [],
+        )
+        if len(terminal_positions) != 1:
             raise ValueError(
-                f"Active link {old_suffix:04x} has {len(positions)} copies; "
-                "expected terminal plus component pin."
+                f"Active link {old_suffix:04x} for terminal {terminal_label} has "
+                f"{len(terminal_positions)} matching terminal suffix fields; "
+                "expected exactly one."
             )
-        patch_positions[old_suffix] = (positions[0], positions[1])
+        terminal_position = terminal_positions[0]
+        component_candidates = [
+            position
+            for position in positions
+            if position != terminal_position
+            and position not in all_terminal_suffix_positions
+            and not _position_in_spans(position, wire_spans)
+            and position < int(allocation["wire_marker_offset"])
+        ]
+        if not component_candidates:
+            raise ValueError(
+                f"Active link {old_suffix:04x} for terminal {terminal_label} has no "
+                "structured component pin-link field before its WIRE record."
+            )
+        component_position = max(component_candidates)
+        patch_positions[old_suffix] = (terminal_position, component_position)
+        allocation["terminal_suffix_position"] = terminal_position
+        allocation["component_link_position"] = component_position
 
     rebased = bytearray(chunk)
     for allocation in allocations:
@@ -3769,11 +4068,21 @@ def _rebase_terminal_links_to_final_wire_addresses(
         f"{suffix:04x}"
         for suffix in new_suffixes
     ]
-    report["terminal_suffixes_unique"] = True
+    report["terminal_suffixes_unique"] = len(new_suffixes) == len(set(new_suffixes))
     report["terminal_suffix_links_valid"] = all(
-        written_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
-        for suffix in new_suffixes
+        written_chunk[position : position + 4]
+        == struct.pack("<H", allocation["new_suffix"]) + b"\x01\x00"
+        for allocation in allocations
+        for position in patch_positions[allocation["old_suffix"]]
     )
+    report["wire_address_label_jitter"] = {
+        "applied": bool(label_jitter_events),
+        "event_count": len(label_jitter_events),
+        "events": label_jitter_events,
+    }
+    report["object_chunk_size_after"] = len(written_chunk)
+    report["bidir_count_after"] = written_chunk.count(BIDIR_MARKER)
+    report["wire_count_after"] = written_chunk.count(b"\x7fWIRE")
     report["link_allocation"] = {
         "method": "final_root_dsn_wire_address",
         "formula": "(absolute_object_start + wire_marker_offset - 24) & 0xffff",
@@ -3789,15 +4098,26 @@ def _rebase_terminal_links_to_final_wire_addresses(
                 "suffix": f"{allocation['new_suffix']:04x}",
                 "wire_marker_offset": allocation["wire_marker_offset"],
                 "wire_absolute_marker": allocation["wire_absolute_marker"],
+                "terminal_suffix_position": allocation["terminal_suffix_position"],
+                "component_link_position": allocation["component_link_position"],
                 "coordinates": list(allocation["coordinates"]),
             }
             for allocation in allocations
         ],
-        "valid": report["terminal_suffix_links_valid"],
+        "valid": (
+            report["terminal_suffixes_unique"]
+            and report["terminal_suffix_links_valid"]
+        ),
     }
     report["valid"] = bool(
-        report.get("valid", False)
+        report["terminal_suffixes_unique"]
         and report["terminal_suffix_links_valid"]
+        and report.get("terminal_grid_alignment_valid", True)
+        and report.get("wire_path_contacts_valid", True)
+        and report.get("base_component_stream_covered", True)
+        and report.get("bidir_count_after") == report.get("terminal_count_added")
+        and report.get("wire_count_after") == report.get("wire_count_added")
+        and written_chunk.endswith(b"\xff")
     )
     return report
 

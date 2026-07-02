@@ -621,7 +621,10 @@ def inspect_component_packets(project: str | Path, markers: Iterable[str] | None
     )
     dsn = read_internal_file(_repo_path(project), "ROOT.DSN")
     chunk = _extract_object_chunk(dsn)
-    starts = [(match.start(), match.group(2).decode("ascii")) for match in RECORD_START_RE.finditer(chunk)]
+    starts = [
+        (match.start(), match.group(2).decode("ascii"))
+        for match in RECORD_START_RE.finditer(chunk)
+    ]
     by_package: dict[str, list[tuple[str, str, int, int]]] = defaultdict(list)
     for index, (start, ref) in enumerate(starts):
         end = starts[index + 1][0] if index + 1 < len(starts) else max(0, len(chunk) - 1)
@@ -1482,6 +1485,16 @@ def _select_raw_groups(
             selected.extend(fuse_groups[:count])
             if len(fuse_groups) < count:
                 raise ValueError(f"Need {count} strict 338-byte FUSE groups.")
+        elif family == "DIODE":
+            diode_groups = {
+                **groups_by_family,
+                "DIODE": [
+                    group
+                    for group in groups_by_family.get("DIODE", [])
+                    if group.key != "D20"
+                ],
+            }
+            selected.extend(_select_window(diode_groups, family, count, offset=family_offset))
         elif family == "POT-HG":
             selected.extend(
                 _select_cdb_backed(
@@ -2187,7 +2200,7 @@ def validate_project_placement(project: str | Path, *, markers: Iterable[str] | 
     except Exception as exc:
         return ComponentPlacerReport(errors=(ValidationIssue("E_PROJECT_READ_FAILED", str(exc)),))
 
-    starts = [(match.start(), match.group(2).decode("ascii")) for match in RECORD_START_RE.finditer(chunk)]
+    starts = _component_record_starts(chunk)
     exact_refs = [ref for _start, ref in starts]
     duplicate_exact_refs = [ref for ref, count in Counter(exact_refs).items() if count > 1]
     if duplicate_exact_refs:

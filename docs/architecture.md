@@ -215,10 +215,13 @@ validation, fixture provenance checks, locked legacy circuit generators,
 removal-only mega-donor component placement, family-specific coordinate
 mutation, semantic project comparison, and result ingestion. Value editing is
 lightly tested. Grid-snapped short-wire terminal attachment is user-tested for
-RESISTOR, CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE in V10. V11 extends the
-same shared native route to the remaining simple two-pin families and generated
-solo/mixed all-two-pin checkpoints, but those new profiles remain Proteus
-pending until open/render/simulation results are reported. V7 mixed output is
-rejected. Formal placed-design, normalized-pin, catalogue, node-name, and
-backend-neutral wire-plan contracts remain the next decoupling milestones after
-the V11 two-pin Proteus checkpoint is accepted or corrected.
+RESISTOR, CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE in V10. The user then
+reported the V11 all-two-pin pack worked for every profiled two-pin family.
+V12 keeps the same shared terminal placer, improves LED-RED/40EPS08/FUSE visual
+spacing by moving their terminal contact one extra Proteus grid step outward,
+and adds a 20-each all-two-pin stress checkpoint with 380 components, 760
+bidirectional terminals, and 760 short WIRE records. V12 static validation
+passes locally, but Proteus open/render/simulation acceptance remains pending.
+V7 mixed output is rejected. Formal placed-design, normalized-pin, catalogue,
+node-name, and backend-neutral wire-plan contracts remain the next decoupling
+milestones before multi-pin/IC terminalization.
