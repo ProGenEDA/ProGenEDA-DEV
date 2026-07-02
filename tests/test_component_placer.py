@@ -1507,6 +1507,51 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
     assert report["terminal_count_added"] == 2
 
 
+def test_native_terminal_placer_normalizes_preserved_control_before_terminal_unit(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "fuse_before_cap_elec_base.pdsprj"
+    output = tmp_path / "fuse_before_cap_elec_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"FUSE": 1, "CAP-ELEC": 3},
+            "component_offsets": {"CAP-ELEC": 21},
+            "layout": {
+                "strategy": "beautify",
+                "direction": "left_to_right",
+                "mixed_ic_non_ic_bands": "separate",
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+
+    assert [group.family for group in result.selected_groups][:2] == [
+        "FUSE",
+        "CAP-ELEC",
+    ]
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=["CAP-ELEC"],
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    first_terminal = extract_bidir_records(chunk)[0]
+    fuse_group = next(group for group in result.selected_groups if group.family == "FUSE")
+    fuse_row = next(row for row in report["preserved_groups"] if row["component_family"] == "FUSE")
+
+    assert report["valid"] is True
+    assert report["component_record_order_mutation"] is False
+    assert report["preserved_control_boundary_normalizations"] == 1
+    assert fuse_row["boundary_tail_normalized"] is True
+    assert fuse_row["emitted_packet_size"] == len(fuse_group.data) - 1
+    assert chunk.count(fuse_group.data + first_terminal) == 0
+    assert chunk.count(fuse_group.data[:-1] + first_terminal) == 1
+
+
 def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     tmp_path: Path,
 ) -> None:

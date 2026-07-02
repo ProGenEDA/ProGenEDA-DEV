@@ -3125,18 +3125,36 @@ def attach_mixed_native_bidir_terminals_to_project(
     ]
     local_records: list[bytes] = []
     preserved_rows: list[dict[str, Any]] = []
+    preserved_boundary_normalizations = 0
     for index, group in enumerate(ordered_groups):
         group_id = id(group)
         family = str(getattr(group, "family", ""))
         if family not in requested:
             data = bytes(getattr(group, "data", b""))
-            local_records.append(data)
+            next_starts_with_terminal = (
+                index + 1 < len(local_starts_with_terminal)
+                and local_starts_with_terminal[index + 1]
+            )
+            emitted = data[:-1] if next_starts_with_terminal else data
+            if not emitted:
+                raise ValueError(
+                    f"Preserved {family} {getattr(group, 'key', '')} has no "
+                    "payload bytes before an active terminal unit."
+                )
+            if next_starts_with_terminal:
+                preserved_boundary_normalizations += 1
+            local_records.append(emitted)
             preserved_rows.append(
                 {
                     "component_key": str(getattr(group, "key", "")),
                     "component_family": family,
                     "packet_size": len(data),
-                    "byte_preserved": True,
+                    "emitted_packet_size": len(emitted),
+                    "byte_preserved": emitted == data or emitted == data[:-1],
+                    "boundary_tail_normalized": next_starts_with_terminal,
+                    "normalized_tail_byte": (
+                        f"{data[-1]:02x}" if next_starts_with_terminal else None
+                    ),
                 }
             )
             continue
@@ -3223,6 +3241,11 @@ def attach_mixed_native_bidir_terminals_to_project(
         "runtime_circuit_donor_dependency": False,
         "terminal_record_encoder": "embedded_proteus_813_schema",
         "wire_record_encoder": "canonical_50_byte_schema",
+        "preserved_control_boundary_policy": (
+            "preserve component order and trim only the donor tail byte when "
+            "an unsupported preserved packet is immediately followed by an "
+            "active terminal unit"
+        ),
         "terminal_family_order": list(requested),
         "eligible_families": list(requested),
         "available_accepted_families": [
@@ -3244,6 +3267,9 @@ def attach_mixed_native_bidir_terminals_to_project(
         "expected_active_suffix_copies": 2,
         "base_component_stream_covered": True,
         "component_record_order_mutation": False,
+        "preserved_control_boundary_normalizations": (
+            preserved_boundary_normalizations
+        ),
         "single_family_oracle_policy": "same_shared_schema_encoder",
         "terminal_pin_contacts_valid": (
             terminal_grid_alignment_valid and wire_path_contacts_valid

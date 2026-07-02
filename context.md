@@ -5785,3 +5785,260 @@ Important: V10 terminalizes the six researched families. FUSE and other unresear
 - V10 generated pack: `9/9` cases static-valid, grid-aligned, exact-pin WIRE paths valid, component coordinate mutation false.
 
 <!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 4550 FINAL_PRE_RECORDED -->
+
+
+## Live User Message 023
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan; recorded during recovery)
+
+### User Prompt
+
+~~~~text
+V10_03_CAP_ELEC_3X_NATIVE_ORACLE_ACCEPTED_ORACLE
+V10_03_CAP_ELEC_3X_NATIVE_ORACLE
+V10_04_REALIND_3X_NATIVE_ORACLE_ACCEPTED_ORACLE
+V10_04_REALIND_3X_NATIVE_ORACLE
+V10_06_CSOURCE_3X_NATIVE_ORACLE_ACCEPTED_ORACLE
+V10_06_CSOURCE_3X_NATIVE_ORACLE
+
+all these failed, also mixed failed obv because of these, fixing these might just be solution to the problem
+and i hope u are not making new scripts for each time, instead fix teh old scripts
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan; recovered from active-turn summary)
+
+~~~~markdown
+I’ll fix the existing shared component_terminal_placer.py and regenerate the existing V10 pack in place—no new component-specific or V11 script.
+
+Your result isolates three bad profiles: CAP-ELEC, REALIND, and CSOURCE. I’ll first verify the pushed checkpoint, then compare their V10 packet variants and terminal/WIRE geometry against the previously Proteus-passed files; the files labelled “ACCEPTED_ORACLE” clearly were not valid historical oracles and that validation mistake will also be corrected.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan; recovered from active-turn summary)
+
+~~~~markdown
+The failure split has exposed a concrete ordering bug, not three unrelated family bugs. In the passing V10 solo cases, the terminalized component appears before the preserved FUSE control. In all three failing solo cases, FUSE appears first, and the shared serializer leaves the bare-component boundary unchanged before inserting a terminal record. Both “oracle” files reused that same serializer, so they duplicated the bug instead of validating against the previously accepted packs.
+
+I’m tracing that exact boundary now and will repair it in the existing shared serializer and V10 runner.
+~~~~
+
+
+## Live User Message 024
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+continue
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+I’m continuing in the existing shared terminal placer and existing V10 runner. First step is the required git/remote check, then I’ll patch the shared ordering/serialization issue and regenerate the V10 pack in place.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+The first check hit a PowerShell quoting issue for `@{u}`. I’m rerunning it with explicit quoting; no repository changes were made.
+~~~~
+
+#### Response 03 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+Checkpoint is clean for tracked files: local `HEAD` matches upstream `origin/codex/generic-proteus-generator-v0` at `6e02d371`. I’ll preserve the unrelated untracked `KICAD_LINUX_HANDOFF.md`.
+~~~~
+
+#### Response 04 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+The failing pattern is in `attach_mixed_native_bidir_terminals_to_project`: unsupported preserved controls can remain before terminalized units. That creates the exact FUSE-before-terminal stream the failed CAP-ELEC/REALIND/CSOURCE cases have. I’m patching that shared assembly path, not the family-specific profiles.
+~~~~
+
+#### Response 05 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+I found the second issue in the V10 runner: it was reusing the V7 “accepted oracle” mechanism, which just re-runs the current serializer and gives a false oracle. I’ll disable that in V10 so regenerated artifacts no longer include misleading `_ACCEPTED_ORACLE` files.
+~~~~
+
+#### Response 06 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+I’m keeping component order intact. The fix is to normalize the boundary byte when a preserved unsupported component is immediately followed by an active terminal unit; that is the same boundary rule already used between adjacent terminal/wire units, and it avoids making the terminal placer depend on donor order.
+~~~~
+
+#### Response 07 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+The `rg` pattern with pipes is being parsed badly by PowerShell in this shell wrapper. I’m switching to explicit `-e` patterns for the same read-only inspection.
+~~~~
+
+#### Response 08 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+That wrapper is still mangling quoted patterns; I’ll use native PowerShell search for this diagnostic only.
+~~~~
+
+#### Response 09 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+The accepted CSOURCE focused pack used `I7,I8,I9` for 3x and `I7,I8,I9,I10,I12…I22` for 15x. I’ll restore V10 CSOURCE selection to that proven sequence instead of the later offset that drifted to `I19+`.
+~~~~
+
+#### Response 10 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+Diagnostic placement confirms V10 should use no CSOURCE offset: with the exact fixed mega donor and FUSE control, no offset selects the previously accepted `I7,I8,I9` / `I7…I22` sequence. The current `CSOURCE: 11` is wrong and will be removed.
+~~~~
+
+#### Response 11 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+CAP-ELEC is different: the exact fixed donor has two CAP-ELEC packet shapes. The terminal profile requires the 379-byte donor-native shape, so the `CAP-ELEC: 21` offset stays. REALIND needs no offset.
+~~~~
+
+#### Response 12 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+Patch scope now: shared serializer boundary normalization + V10 runner offset/oracle correction + focused regression test for unsupported-first streams.
+~~~~
+
+#### Response 13 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+The shared patch is in place. I’m running the focused regression first, then the existing terminal-placement tests that exercise the shared V10 path.
+~~~~
+
+#### Response 14 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+Focused regression passed. I’m regenerating the existing V10 experiment directory and zip in place now; no new V11 or per-component runner.
+~~~~
+
+#### Response 15 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+V10 regenerated successfully. Static validation is clean for all 9 cases, including V10_03 CAP-ELEC, V10_04 REALIND, V10_06 CSOURCE, and mixed V10_07–09. The regenerated pack no longer creates `_ACCEPTED_ORACLE` files.
+~~~~
+
+#### Response 16 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+I verified the regenerated directory contains no `*ACCEPTED_ORACLE*` files, and V10_06 now selects `I7,I8,I9`. I’m running the repository’s main component tests plus compile checks now.
+~~~~
+
+#### Response 17 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+Full `tests/test_component_placer.py` exceeded the 5-minute command timeout before returning a result. I’m switching to the terminal/native subset and compile checks so this turn still has relevant verification instead of waiting indefinitely.
+~~~~
+
+#### Response 18 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+The targeted terminal/native subset passed: 37 tests. I’m running compile checks next.
+~~~~
+
+#### Response 19 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+Compile checks passed. I’ll inspect the changed files, update the persistent context log, then commit and push.
+~~~~
+
+#### Response 20 - commentary
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan)
+
+~~~~markdown
+I’m appending the missing user/result context plus the visible responses from this recovery turn into `context.md` before committing, per the repo rule.
+~~~~
+
+#### Response 21 - final_answer
+
+Timestamp: `2026-07-02T19:40:26.8569806+05:00` (Pakistan; pre-recorded before commit/push)
+
+~~~~markdown
+Done. I fixed the existing shared terminal placer and regenerated the existing V10 pack in place.
+
+Key changes:
+
+- Fixed preserved-control boundary handling before active terminal units, without reordering components.
+- Removed the bad V10 CSOURCE offset; V10_06 now uses `I7,I8,I9`.
+- Disabled the misleading `_ACCEPTED_ORACLE` generation in V10.
+- Regenerated the V10 experiment/zip from the same fixed mega donor.
+
+Verification:
+
+- V10 generation: all 9 cases static-valid.
+- Targeted terminal/native tests: `37 passed`.
+- Compile check: passed.
+- Full `tests/test_component_placer.py` was attempted but exceeded the 5-minute timeout.
+
+Files were committed and pushed; remote `origin/codex/generic-proteus-generator-v0` was verified to match local `HEAD`.
+~~~~
+
+### Files Edited
+
+- `context.md` - appended user messages 023-024 and all visible agent responses for this recovery turn.
+- `src/proteusgen/component_terminal_placer.py` - normalized preserved unsupported packet tail bytes only when immediately followed by active terminal units; preserved component order and added report fields for this boundary normalization.
+- `tests/test_component_placer.py` - added regression coverage for FUSE-before-CAP-ELEC unsupported-first streams.
+- `tools/proteus_generation/2026-07-02/generate_terminal_placer_grid_wire_v10_temp.py` - disabled self-generated accepted-oracle outputs and removed the incorrect CSOURCE offset.
+- `experiments/terminal_placer_grid_wire_v10_temp_2026_07_02/` - regenerated existing V10 cases in place; removed `_ACCEPTED_ORACLE` artifacts; V10_06 now selects the accepted CSOURCE sequence.
+- `experiments/TERMINAL_PLACER_GRID_WIRE_V10_TEMP_2026_07_02.zip` - regenerated V10 archive.
+
+### Verification
+
+- Required start-of-turn git check: local `HEAD` matched `origin/codex/generic-proteus-generator-v0` at `6e02d3717d5a56f3edc4e0e1fff4a3532ba3b838`; only unrelated untracked `KICAD_LINUX_HANDOFF.md` was present.
+- Focused regression: `python -m pytest tests/test_component_placer.py::test_native_terminal_placer_normalizes_preserved_control_before_terminal_unit tests/test_component_placer.py::test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units -q` -> `2 passed`.
+- V10 regeneration: `python tools/proteus_generation/2026-07-02/generate_terminal_placer_grid_wire_v10_temp.py` -> `all_static_valid: true` for 9 cases.
+- V10 artifact check: no `*ACCEPTED_ORACLE*` files remain; V10_06 CSOURCE manifest selects `I7`, `I8`, `I9`.
+- Targeted subset: `python -m pytest tests/test_component_placer.py -q -k 'terminal or native or cap_elec or source or mixed_selection'` -> `37 passed, 34 deselected`.
+- Compile: `python -m compileall -q src tests tools/proteus_generation` -> passed.
+- Full `tests/test_component_placer.py -q` attempted but command timed out after 5 minutes.

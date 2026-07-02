@@ -13,21 +13,22 @@
   "runtime_circuit_donor_dependency": false,
   "terminal_record_encoder": "embedded_proteus_813_schema",
   "wire_record_encoder": "canonical_50_byte_schema",
+  "preserved_control_boundary_policy": "preserve component order and trim only the donor tail byte when an unsupported preserved packet is immediately followed by an active terminal unit",
   "terminal_family_order": [
     "RESISTOR",
     "CAP",
     "VSOURCE",
+    "CSOURCE",
     "REALIND",
-    "CAP-ELEC",
-    "CSOURCE"
+    "CAP-ELEC"
   ],
   "eligible_families": [
     "RESISTOR",
     "CAP",
     "VSOURCE",
+    "CSOURCE",
     "REALIND",
-    "CAP-ELEC",
-    "CSOURCE"
+    "CAP-ELEC"
   ],
   "available_accepted_families": [
     "VSOURCE",
@@ -50,6 +51,7 @@
   "expected_active_suffix_copies": 2,
   "base_component_stream_covered": true,
   "component_record_order_mutation": false,
+  "preserved_control_boundary_normalizations": 2,
   "single_family_oracle_policy": "same_shared_schema_encoder",
   "terminal_pin_contacts_valid": true,
   "terminal_direct_pin_contacts_valid": false,
@@ -140,85 +142,85 @@
       "coincident": false
     },
     {
-      "component_key": "L21",
-      "component_family": "REALIND",
-      "role": "left",
-      "terminal_symbol_x": 18542000,
-      "terminal_symbol_y": 3048000,
-      "terminal_contact_x": 18796000,
-      "terminal_contact_y": 3048000,
-      "pin_x": 18816320,
-      "pin_y": 3108960,
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "coincident": false
-    },
-    {
-      "component_key": "L21",
-      "component_family": "REALIND",
-      "role": "right",
-      "terminal_symbol_x": 20574000,
-      "terminal_symbol_y": 3048000,
-      "terminal_contact_x": 20320000,
-      "terminal_contact_y": 3048000,
-      "pin_x": 20340320,
-      "pin_y": 3108960,
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "coincident": false
-    },
-    {
-      "component_key": "C62",
-      "component_family": "CAP-ELEC",
-      "role": "left",
-      "terminal_symbol_x": 23622000,
-      "terminal_symbol_y": 3302000,
-      "terminal_contact_x": 23876000,
-      "terminal_contact_y": 3302000,
-      "pin_x": 23896320,
-      "pin_y": 3362960,
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "coincident": false
-    },
-    {
-      "component_key": "C62",
-      "component_family": "CAP-ELEC",
-      "role": "right",
-      "terminal_symbol_x": 25146000,
-      "terminal_symbol_y": 3302000,
-      "terminal_contact_x": 24892000,
-      "terminal_contact_y": 3302000,
-      "pin_x": 24912320,
-      "pin_y": 3362960,
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "coincident": false
-    },
-    {
-      "component_key": "I19",
+      "component_key": "I7",
       "component_family": "CSOURCE",
       "role": "input",
-      "terminal_symbol_x": 34544000,
+      "terminal_symbol_x": 14224000,
       "terminal_symbol_y": 3810000,
-      "terminal_contact_x": 34798000,
+      "terminal_contact_x": 14478000,
       "terminal_contact_y": 3810000,
-      "pin_x": 34798000,
+      "pin_x": 14478000,
       "pin_y": 3703320,
       "terminal_symbol_grid_aligned": true,
       "terminal_contact_grid_aligned": true,
       "coincident": false
     },
     {
-      "component_key": "I19",
+      "component_key": "I7",
       "component_family": "CSOURCE",
       "role": "output",
-      "terminal_symbol_x": 35052000,
+      "terminal_symbol_x": 14732000,
       "terminal_symbol_y": 2286000,
-      "terminal_contact_x": 34798000,
+      "terminal_contact_x": 14478000,
       "terminal_contact_y": 2286000,
-      "pin_x": 34798000,
+      "pin_x": 14478000,
       "pin_y": 2179320,
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "coincident": false
+    },
+    {
+      "component_key": "L21",
+      "component_family": "REALIND",
+      "role": "left",
+      "terminal_symbol_x": 23622000,
+      "terminal_symbol_y": 3048000,
+      "terminal_contact_x": 23876000,
+      "terminal_contact_y": 3048000,
+      "pin_x": 23896320,
+      "pin_y": 3108960,
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "coincident": false
+    },
+    {
+      "component_key": "L21",
+      "component_family": "REALIND",
+      "role": "right",
+      "terminal_symbol_x": 25654000,
+      "terminal_symbol_y": 3048000,
+      "terminal_contact_x": 25400000,
+      "terminal_contact_y": 3048000,
+      "pin_x": 25420320,
+      "pin_y": 3108960,
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "coincident": false
+    },
+    {
+      "component_key": "C62",
+      "component_family": "CAP-ELEC",
+      "role": "left",
+      "terminal_symbol_x": 28702000,
+      "terminal_symbol_y": 3302000,
+      "terminal_contact_x": 28956000,
+      "terminal_contact_y": 3302000,
+      "pin_x": 28976320,
+      "pin_y": 3362960,
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "coincident": false
+    },
+    {
+      "component_key": "C62",
+      "component_family": "CAP-ELEC",
+      "role": "right",
+      "terminal_symbol_x": 30226000,
+      "terminal_symbol_y": 3302000,
+      "terminal_contact_x": 29972000,
+      "terminal_contact_y": 3302000,
+      "pin_x": 29992320,
+      "pin_y": 3362960,
       "terminal_symbol_grid_aligned": true,
       "terminal_contact_grid_aligned": true,
       "coincident": false
@@ -293,51 +295,7 @@
       "valid": true
     },
     {
-      "component_key": "L21",
-      "component_family": "REALIND",
-      "role": "left",
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "terminal_to_wire": true,
-      "wire_to_pin": true,
-      "wire_is_nonzero": true,
-      "valid": true
-    },
-    {
-      "component_key": "L21",
-      "component_family": "REALIND",
-      "role": "right",
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "terminal_to_wire": true,
-      "wire_to_pin": true,
-      "wire_is_nonzero": true,
-      "valid": true
-    },
-    {
-      "component_key": "C62",
-      "component_family": "CAP-ELEC",
-      "role": "left",
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "terminal_to_wire": true,
-      "wire_to_pin": true,
-      "wire_is_nonzero": true,
-      "valid": true
-    },
-    {
-      "component_key": "C62",
-      "component_family": "CAP-ELEC",
-      "role": "right",
-      "terminal_symbol_grid_aligned": true,
-      "terminal_contact_grid_aligned": true,
-      "terminal_to_wire": true,
-      "wire_to_pin": true,
-      "wire_is_nonzero": true,
-      "valid": true
-    },
-    {
-      "component_key": "I19",
+      "component_key": "I7",
       "component_family": "CSOURCE",
       "role": "input",
       "terminal_symbol_grid_aligned": true,
@@ -348,9 +306,53 @@
       "valid": true
     },
     {
-      "component_key": "I19",
+      "component_key": "I7",
       "component_family": "CSOURCE",
       "role": "output",
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "terminal_to_wire": true,
+      "wire_to_pin": true,
+      "wire_is_nonzero": true,
+      "valid": true
+    },
+    {
+      "component_key": "L21",
+      "component_family": "REALIND",
+      "role": "left",
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "terminal_to_wire": true,
+      "wire_to_pin": true,
+      "wire_is_nonzero": true,
+      "valid": true
+    },
+    {
+      "component_key": "L21",
+      "component_family": "REALIND",
+      "role": "right",
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "terminal_to_wire": true,
+      "wire_to_pin": true,
+      "wire_is_nonzero": true,
+      "valid": true
+    },
+    {
+      "component_key": "C62",
+      "component_family": "CAP-ELEC",
+      "role": "left",
+      "terminal_symbol_grid_aligned": true,
+      "terminal_contact_grid_aligned": true,
+      "terminal_to_wire": true,
+      "wire_to_pin": true,
+      "wire_is_nonzero": true,
+      "valid": true
+    },
+    {
+      "component_key": "C62",
+      "component_family": "CAP-ELEC",
+      "role": "right",
       "terminal_symbol_grid_aligned": true,
       "terminal_contact_grid_aligned": true,
       "terminal_to_wire": true,
@@ -518,7 +520,7 @@
             "symbol_x": 9144000,
             "symbol_y": 2286000,
             "angle_tenths": 1800,
-            "suffix": "4227",
+            "suffix": "4226",
             "component_key": "V23",
             "component_family": "VSOURCE",
             "pin_hint": "negative/input",
@@ -529,7 +531,7 @@
             "symbol_x": 9652000,
             "symbol_y": 3810000,
             "angle_tenths": 0,
-            "suffix": "41f5",
+            "suffix": "41f4",
             "component_key": "V23",
             "component_family": "VSOURCE",
             "pin_hint": "positive/output",
@@ -577,6 +579,78 @@
       ]
     },
     {
+      "family_handler": "CSOURCE/accepted-native-unit",
+      "component_count": 1,
+      "terminal_count": 2,
+      "wire_count": 2,
+      "terminal_pairs": [
+        {
+          "component_key": "I7",
+          "component_family": "CSOURCE",
+          "input": {
+            "label": "I0",
+            "symbol_x": 14224000,
+            "symbol_y": 3810000,
+            "angle_tenths": 1800,
+            "suffix": "447e",
+            "component_key": "I7",
+            "component_family": "CSOURCE",
+            "pin_hint": "negative/input",
+            "attachment_policy": "grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
+          },
+          "output": {
+            "label": "I1",
+            "symbol_x": 14732000,
+            "symbol_y": 2286000,
+            "angle_tenths": 0,
+            "suffix": "44b0",
+            "component_key": "I7",
+            "component_family": "CSOURCE",
+            "pin_hint": "positive/output",
+            "attachment_policy": "grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
+          },
+          "pins": {
+            "input": {
+              "x": 14478000,
+              "y": 3703320
+            },
+            "output": {
+              "x": 14478000,
+              "y": 2179320
+            }
+          },
+          "short_wires": {
+            "input": {
+              "start": {
+                "x": 14478000,
+                "y": 3810000
+              },
+              "end": {
+                "x": 14478000,
+                "y": 3703320
+              }
+            },
+            "output": {
+              "start": {
+                "x": 14478000,
+                "y": 2286000
+              },
+              "end": {
+                "x": 14478000,
+                "y": 2179320
+              }
+            }
+          },
+          "packet_offsets": {
+            "component_x": 310,
+            "component_y": 314,
+            "input_link": 335,
+            "output_link": 339
+          }
+        }
+      ]
+    },
+    {
       "family_handler": "REALIND/accepted-native-unit",
       "component_count": 1,
       "terminal_count": 2,
@@ -587,10 +661,10 @@
           "component_family": "REALIND",
           "left": {
             "label": "L0",
-            "symbol_x": 18542000,
+            "symbol_x": 23622000,
             "symbol_y": 3048000,
             "angle_tenths": 1800,
-            "suffix": "45f0",
+            "suffix": "4878",
             "component_key": "L21",
             "component_family": "REALIND",
             "pin_hint": "pin:1",
@@ -598,10 +672,10 @@
           },
           "right": {
             "label": "L1",
-            "symbol_x": 20574000,
+            "symbol_x": 25654000,
             "symbol_y": 3048000,
             "angle_tenths": 0,
-            "suffix": "4622",
+            "suffix": "48aa",
             "component_key": "L21",
             "component_family": "REALIND",
             "pin_hint": "pin:2",
@@ -609,32 +683,32 @@
           },
           "pins": {
             "left": {
-              "x": 18816320,
+              "x": 23896320,
               "y": 3108960
             },
             "right": {
-              "x": 20340320,
+              "x": 25420320,
               "y": 3108960
             }
           },
           "short_wires": {
             "left": {
               "start": {
-                "x": 18796000,
+                "x": 23876000,
                 "y": 3048000
               },
               "end": {
-                "x": 18816320,
+                "x": 23896320,
                 "y": 3108960
               }
             },
             "right": {
               "start": {
-                "x": 20320000,
+                "x": 25400000,
                 "y": 3048000
               },
               "end": {
-                "x": 20340320,
+                "x": 25420320,
                 "y": 3108960
               }
             }
@@ -659,10 +733,10 @@
           "component_family": "CAP-ELEC",
           "left": {
             "label": "E0",
-            "symbol_x": 23622000,
+            "symbol_x": 28702000,
             "symbol_y": 3302000,
             "angle_tenths": 1800,
-            "suffix": "489d",
+            "suffix": "4b25",
             "component_key": "C62",
             "component_family": "CAP-ELEC",
             "pin_hint": "left_pin",
@@ -670,10 +744,10 @@
           },
           "right": {
             "label": "E1",
-            "symbol_x": 25146000,
+            "symbol_x": 30226000,
             "symbol_y": 3302000,
             "angle_tenths": 0,
-            "suffix": "48cf",
+            "suffix": "4b57",
             "component_key": "C62",
             "component_family": "CAP-ELEC",
             "pin_hint": "right_pin",
@@ -681,32 +755,32 @@
           },
           "pins": {
             "left": {
-              "x": 23896320,
+              "x": 28976320,
               "y": 3362960
             },
             "right": {
-              "x": 24912320,
+              "x": 29992320,
               "y": 3362960
             }
           },
           "short_wires": {
             "left": {
               "start": {
-                "x": 23876000,
+                "x": 28956000,
                 "y": 3302000
               },
               "end": {
-                "x": 23896320,
+                "x": 28976320,
                 "y": 3362960
               }
             },
             "right": {
               "start": {
-                "x": 24892000,
+                "x": 29972000,
                 "y": 3302000
               },
               "end": {
-                "x": 24912320,
+                "x": 29992320,
                 "y": 3362960
               }
             }
@@ -719,78 +793,6 @@
           }
         }
       ]
-    },
-    {
-      "family_handler": "CSOURCE/accepted-native-unit",
-      "component_count": 1,
-      "terminal_count": 2,
-      "wire_count": 2,
-      "terminal_pairs": [
-        {
-          "component_key": "I19",
-          "component_family": "CSOURCE",
-          "input": {
-            "label": "I0",
-            "symbol_x": 34544000,
-            "symbol_y": 3810000,
-            "angle_tenths": 1800,
-            "suffix": "4c80",
-            "component_key": "I19",
-            "component_family": "CSOURCE",
-            "pin_hint": "negative/input",
-            "attachment_policy": "grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
-          },
-          "output": {
-            "label": "I1",
-            "symbol_x": 35052000,
-            "symbol_y": 2286000,
-            "angle_tenths": 0,
-            "suffix": "4cb2",
-            "component_key": "I19",
-            "component_family": "CSOURCE",
-            "pin_hint": "positive/output",
-            "attachment_policy": "grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
-          },
-          "pins": {
-            "input": {
-              "x": 34798000,
-              "y": 3703320
-            },
-            "output": {
-              "x": 34798000,
-              "y": 2179320
-            }
-          },
-          "short_wires": {
-            "input": {
-              "start": {
-                "x": 34798000,
-                "y": 3810000
-              },
-              "end": {
-                "x": 34798000,
-                "y": 3703320
-              }
-            },
-            "output": {
-              "start": {
-                "x": 34798000,
-                "y": 2286000
-              },
-              "end": {
-                "x": 34798000,
-                "y": 2179320
-              }
-            }
-          },
-          "packet_offsets": {
-            "component_x": 311,
-            "component_y": 315,
-            "input_link": 336,
-            "output_link": 340
-          }
-        }
-      ]
     }
   ],
   "terminal_suffixes": [
@@ -798,14 +800,14 @@
     "3bec",
     "3df2",
     "3e24",
-    "4227",
-    "41f5",
-    "45f0",
-    "4622",
-    "489d",
-    "48cf",
-    "4c80",
-    "4cb2"
+    "4226",
+    "41f4",
+    "447e",
+    "44b0",
+    "4878",
+    "48aa",
+    "4b25",
+    "4b57"
   ],
   "terminal_suffixes_unique": true,
   "terminal_suffix_links_valid": true,
@@ -818,33 +820,45 @@
       "component_key": "U66",
       "component_family": "74HC08",
       "packet_size": 1536,
-      "byte_preserved": true
+      "emitted_packet_size": 1536,
+      "byte_preserved": true,
+      "boundary_tail_normalized": false,
+      "normalized_tail_byte": null
     },
     {
       "component_key": "D18",
       "component_family": "DIODE",
       "packet_size": 377,
-      "byte_preserved": true
+      "emitted_packet_size": 376,
+      "byte_preserved": true,
+      "boundary_tail_normalized": true,
+      "normalized_tail_byte": "00"
     },
     {
       "component_key": "ANON342253",
       "component_family": "FUSE",
       "packet_size": 338,
-      "byte_preserved": true
+      "emitted_packet_size": 337,
+      "byte_preserved": true,
+      "boundary_tail_normalized": true,
+      "normalized_tail_byte": "08"
     },
     {
       "component_key": "Q129",
       "component_family": "NPN",
       "packet_size": 343,
-      "byte_preserved": true
+      "emitted_packet_size": 343,
+      "byte_preserved": true,
+      "boundary_tail_normalized": false,
+      "normalized_tail_byte": null
     }
   ],
   "bidir_count_before": 0,
   "bidir_count_after": 12,
   "wire_count_before": 0,
   "wire_count_after": 12,
-  "object_chunk_size_before": 4749,
-  "object_chunk_size_after": 6594,
+  "object_chunk_size_before": 4748,
+  "object_chunk_size_after": 6590,
   "valid": true,
   "link_allocation": {
     "method": "final_root_dsn_wire_address",
@@ -918,9 +932,9 @@
         "component_family": "VSOURCE",
         "role": "input",
         "old_suffix": "7032",
-        "suffix": "4227",
-        "wire_marker_offset": 3868,
-        "wire_absolute_marker": 148031,
+        "suffix": "4226",
+        "wire_marker_offset": 3867,
+        "wire_absolute_marker": 148030,
         "coordinates": [
           9398000,
           2286000,
@@ -933,9 +947,9 @@
         "component_family": "VSOURCE",
         "role": "output",
         "old_suffix": "7000",
-        "suffix": "41f5",
-        "wire_marker_offset": 3818,
-        "wire_absolute_marker": 147981,
+        "suffix": "41f4",
+        "wire_marker_offset": 3817,
+        "wire_absolute_marker": 147980,
         "coordinates": [
           9398000,
           3810000,
@@ -944,17 +958,47 @@
         ]
       },
       {
+        "component_key": "I7",
+        "component_family": "CSOURCE",
+        "role": "input",
+        "old_suffix": "70b2",
+        "suffix": "447e",
+        "wire_marker_offset": 4467,
+        "wire_absolute_marker": 148630,
+        "coordinates": [
+          14478000,
+          3810000,
+          14478000,
+          3703320
+        ]
+      },
+      {
+        "component_key": "I7",
+        "component_family": "CSOURCE",
+        "role": "output",
+        "old_suffix": "7080",
+        "suffix": "44b0",
+        "wire_marker_offset": 4517,
+        "wire_absolute_marker": 148680,
+        "coordinates": [
+          14478000,
+          2286000,
+          14478000,
+          2179320
+        ]
+      },
+      {
         "component_key": "L21",
         "component_family": "REALIND",
         "role": "left",
         "old_suffix": "01b2",
-        "suffix": "45f0",
-        "wire_marker_offset": 4837,
-        "wire_absolute_marker": 149000,
+        "suffix": "4878",
+        "wire_marker_offset": 5485,
+        "wire_absolute_marker": 149648,
         "coordinates": [
-          18796000,
+          23876000,
           3048000,
-          18816320,
+          23896320,
           3108960
         ]
       },
@@ -963,13 +1007,13 @@
         "component_family": "REALIND",
         "role": "right",
         "old_suffix": "01e4",
-        "suffix": "4622",
-        "wire_marker_offset": 4887,
-        "wire_absolute_marker": 149050,
+        "suffix": "48aa",
+        "wire_marker_offset": 5535,
+        "wire_absolute_marker": 149698,
         "coordinates": [
-          20320000,
+          25400000,
           3048000,
-          20340320,
+          25420320,
           3108960
         ]
       },
@@ -978,13 +1022,13 @@
         "component_family": "CAP-ELEC",
         "role": "left",
         "old_suffix": "0120",
-        "suffix": "489d",
-        "wire_marker_offset": 5522,
-        "wire_absolute_marker": 149685,
+        "suffix": "4b25",
+        "wire_marker_offset": 6170,
+        "wire_absolute_marker": 150333,
         "coordinates": [
-          23876000,
+          28956000,
           3302000,
-          23896320,
+          28976320,
           3362960
         ]
       },
@@ -993,44 +1037,14 @@
         "component_family": "CAP-ELEC",
         "role": "right",
         "old_suffix": "0152",
-        "suffix": "48cf",
-        "wire_marker_offset": 5572,
-        "wire_absolute_marker": 149735,
+        "suffix": "4b57",
+        "wire_marker_offset": 6220,
+        "wire_absolute_marker": 150383,
         "coordinates": [
-          24892000,
+          29972000,
           3302000,
-          24912320,
+          29992320,
           3362960
-        ]
-      },
-      {
-        "component_key": "I19",
-        "component_family": "CSOURCE",
-        "role": "input",
-        "old_suffix": "70b2",
-        "suffix": "4c80",
-        "wire_marker_offset": 6517,
-        "wire_absolute_marker": 150680,
-        "coordinates": [
-          34798000,
-          3810000,
-          34798000,
-          3703320
-        ]
-      },
-      {
-        "component_key": "I19",
-        "component_family": "CSOURCE",
-        "role": "output",
-        "old_suffix": "7080",
-        "suffix": "4cb2",
-        "wire_marker_offset": 6567,
-        "wire_absolute_marker": 150730,
-        "coordinates": [
-          34798000,
-          2286000,
-          34798000,
-          2179320
         ]
       }
     ],
