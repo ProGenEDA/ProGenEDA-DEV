@@ -4,10 +4,10 @@ This package is being built incrementally.
 
 ## Active Slice
 
-Current active flow:
+Current proven flow:
 
 ```text
-CircuitIR JSON -> Placement Input Validator -> Component Placer -> Placement Validator -> KiCad project
+CircuitIR JSON -> Placement Input Validator -> Component Placer -> Placement Validator -> Arrangement Decider -> Beautifier -> Wire Planner -> KiCad Wire Maker -> KiCad project
 ```
 
 The active stages are independent:
@@ -23,6 +23,9 @@ The active stages are independent:
 - `placement_project_writer.write_placement_project(circuit, placement, out_dir)`
   writes an openable `.kicad_pro` and `.kicad_sch` with embedded placement
   symbols.
+- `kicad_wire_maker.make_kicad_wires(circuit, placement, wire_plan)`
+  consumes pure JSON route output plus source-backed KiCad symbol pin geometry
+  and emits real KiCad wire, junction, and label schematic objects.
 
 This active placer slice does not require KiCad to be installed. It uses
 embedded Python metadata from the repository:
@@ -44,18 +47,21 @@ future full output validation stack is:
 8. Final validation_report.json
 ```
 
-## Arrangement, Beautifier, And Wire Planner
+## Arrangement, Beautifier, Wire Planner, And Wire Maker
 
-The next independent JSON stages are present but not wired into project writing:
+The post-placer stages remain independent:
 
 - `arrangement_decider.decide_arrangement(placement, circuit)`
   emits a coordinate-plan JSON using topology depth, barycenter ordering,
   power/ground placement, clock detection, and density warnings.
 - `beautifier.apply_coordinate_edits(placement, coordinate_plan)`
   applies only coordinate edits and returns a new placement JSON object.
-- `wire_planner.plan_wiring(placement, circuit)`
-  emits two JSON contracts: `coordinate_plan` for the beautifier and `wire_plan`
-  for a later EDA-specific wire maker.
+- `wire_planner.plan_wire_routes(placement, circuit)`
+  emits route-plan JSON for drawing backends.
+- `kicad_wire_maker.py`
+  is the first EDA-specific drawing backend. It does not plan routes. It
+  resolves KiCad symbol pin geometry, draws actual wire/label/junction
+  S-expressions, and records unresolved pin aliases in each manifest.
 
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.
@@ -114,7 +120,8 @@ the current A* router cannot finish a path within the configured expansion
 limit, it emits a fallback route and records an
 `astar_fallback_expansion_limit` warning. If the stress report hits the route
 count cap, remaining nets are marked `deferred_after_route_limit`. These are
-wire-planner limitations to fix before the later EDA-specific wire maker stage.
+wire-planner limitations that the KiCad wire maker records in manifests when it
+draws the current plan.
 
 Old generated run folders remain immutable records.
 
@@ -159,6 +166,42 @@ does not need global symbol libraries to display them.
 
 Do not regenerate into old folders. Generated projects are immutable records.
 
+Generate KiCad placement projects directly from connected final JSON with:
+
+```text
+python -m kicad.pipeline.final_circuit_builder --project-run-from-final-json kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_projects_v1
+```
+
+Current generated run:
+
+```text
+kicad/examples/final_json_project_run_2026_07_02_133420_t01_t10_connected_projects_v1/
+```
+
+That run has 10 KiCad project folders generated from final JSON and static
+quality passed 10/10. They are placement schematics with real embedded symbols;
+the connected final JSON is preserved for wiring evidence.
+
+Generate KiCad wired projects directly from connected final JSON with:
+
+```text
+python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v4
+```
+
+Current generated wired run:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/
+```
+
+That run has 10 KiCad project folders with real embedded symbols plus KiCad
+wire, label, and junction objects. Static schematic quality passed 10/10. It
+contains 430 components, 442 symbol instances, 3357 wire objects, and 530 net
+labels. T01-T06 and T09 have zero unresolved pins; T10 has zero unresolved pins
+and five deferred nets from the bounded route cap. The remaining 18 unresolved
+pins are recorded model gaps: T07 has two artificial `LM358.BIAS` endpoints,
+and T08 needs a better LED array/DIP-common symbol model.
+
 ## Not Active Yet
 
 Future stages are named in `placeholders.py`, but they are not run by
@@ -170,7 +213,7 @@ Next intended slices:
 ```text
 Component Placer -> Placement Validator
 Beautifier -> Beautifier Validator
-Wire Planner -> Wire Maker
+Wire Planner -> KiCad Wire Maker
 Terminal Placer -> Terminal Validator
 Value Editor -> Value Validator
 Final Validator -> Output

@@ -1,0 +1,314 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 13,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the canonical KiCad component placer.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 13,
+        "components": {
+          "U1": {
+            "kind": "ARDUINO_NANO",
+            "name": "Arduino Nano",
+            "at": [
+              52.07,
+              59.69
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "microcontroller_module",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "MCU_Module:Arduino_Nano_v3.x"
+          },
+          "D1": {
+            "kind": "LED_INDICATOR",
+            "name": "LED",
+            "at": [
+              118.11,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "indicator",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:LED"
+          },
+          "D2": {
+            "kind": "LED_INDICATOR",
+            "name": "LED",
+            "at": [
+              157.48,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "indicator",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:LED"
+          },
+          "D3": {
+            "kind": "LED_INDICATOR",
+            "name": "LED",
+            "at": [
+              198.12,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "indicator",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:LED"
+          },
+          "R1": {
+            "kind": "R_220",
+            "name": "220 ohm",
+            "at": [
+              27.94,
+              130.81
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "R2": {
+            "kind": "R_220",
+            "name": "220 ohm",
+            "at": [
+              71.12,
+              130.81
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "R3": {
+            "kind": "R_220",
+            "name": "220 ohm",
+            "at": [
+              113.03,
+              130.81
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "SW1": {
+            "kind": "PUSH_BUTTON",
+            "name": "Push Button",
+            "at": [
+              153.67,
+              133.35
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Switch:SW_Push"
+          },
+          "SW2": {
+            "kind": "PUSH_BUTTON",
+            "name": "Push Button",
+            "at": [
+              27.94,
+              179.07
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Switch:SW_Push"
+          },
+          "R4": {
+            "kind": "R_10K_PULLUP",
+            "name": "10k pulldown",
+            "at": [
+              69.85,
+              177.8
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "R5": {
+            "kind": "R_10K_PULLUP",
+            "name": "10k pulldown",
+            "at": [
+              111.76,
+              177.8
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "J1": {
+            "kind": "PIN_HEADER",
+            "name": "Power/IO Header 1x6",
+            "at": [
+              154.94,
+              177.8
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Generic:Conn_01x04"
+          },
+          "J2": {
+            "kind": "PIN_HEADER",
+            "name": "Extra IO Header 1x6",
+            "at": [
+              30.48,
+              223.52
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Generic:Conn_01x04"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "U1",
+            "left": 24.57,
+            "top": 29.69,
+            "right": 79.57,
+            "bottom": 89.69
+          },
+          {
+            "owner": "D1",
+            "left": 115.61,
+            "top": 30.52,
+            "right": 120.61,
+            "bottom": 35.52
+          },
+          {
+            "owner": "D2",
+            "left": 154.98,
+            "top": 30.52,
+            "right": 159.98,
+            "bottom": 35.52
+          },
+          {
+            "owner": "D3",
+            "left": 195.62,
+            "top": 30.52,
+            "right": 200.62,
+            "bottom": 35.52
+          },
+          {
+            "owner": "R1",
+            "left": 24.44,
+            "top": 129.56,
+            "right": 31.44,
+            "bottom": 132.06
+          },
+          {
+            "owner": "R2",
+            "left": 67.62,
+            "top": 129.56,
+            "right": 74.62,
+            "bottom": 132.06
+          },
+          {
+            "owner": "R3",
+            "left": 109.53,
+            "top": 129.56,
+            "right": 116.53,
+            "bottom": 132.06
+          },
+          {
+            "owner": "SW1",
+            "left": 150.67,
+            "top": 130.35,
+            "right": 156.67,
+            "bottom": 136.35
+          },
+          {
+            "owner": "SW2",
+            "left": 24.94,
+            "top": 176.07,
+            "right": 30.94,
+            "bottom": 182.07
+          },
+          {
+            "owner": "R4",
+            "left": 66.35,
+            "top": 176.55,
+            "right": 73.35,
+            "bottom": 179.05
+          },
+          {
+            "owner": "R5",
+            "left": 108.26,
+            "top": 176.55,
+            "right": 115.26,
+            "bottom": 179.05
+          },
+          {
+            "owner": "J1",
+            "left": 149.94,
+            "top": 176.3,
+            "right": 159.94,
+            "bottom": 179.3
+          },
+          {
+            "owner": "J2",
+            "left": 25.48,
+            "top": 222.02,
+            "right": 35.48,
+            "bottom": 225.02
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

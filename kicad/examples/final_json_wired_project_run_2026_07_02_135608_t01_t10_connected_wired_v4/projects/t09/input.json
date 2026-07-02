@@ -1,0 +1,1030 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "t09",
+    "title": "Full Maker Controller Board",
+    "purpose": "large integrated maker controller placement test",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "T09",
+  "circuit_name": "Full Maker Controller Board",
+  "purpose": "large integrated maker controller placement test",
+  "components": [
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "controller",
+      "block": "",
+      "pins": {
+        "5V": "+5V",
+        "A4": "I2C_SDA",
+        "A5": "I2C_SCL",
+        "D10": "SPI_CS_FLASH",
+        "D11": "SPI_MOSI",
+        "D12": "SPI_MISO",
+        "D13": "SPI_SCK",
+        "D2": "ARDUINO_TO_ESP_RX",
+        "D3": "ARDUINO_TO_ESP_TX",
+        "D4": "BUTTON_1",
+        "D5": "BUTTON_2",
+        "D6": "MOSFET1_GATE",
+        "D7": "MOSFET2_GATE",
+        "D8": "RELAY_CTRL",
+        "D9": "LED_STATUS_1",
+        "GND": "GND"
+      }
+    },
+    {
+      "id": "U2",
+      "ref": "U2",
+      "kind": "ESP32_WROOM",
+      "type": "ESP32_WROOM",
+      "value": "ESP32-WROOM",
+      "role": "wireless_coprocessor",
+      "block": "",
+      "pins": {
+        "3V3": "+3V3",
+        "EN": "ESP_EN",
+        "GND": "GND",
+        "IO0": "ESP_BOOT",
+        "IO2": "LED_STATUS_2",
+        "U0RXD": "ARDUINO_TO_ESP_RX",
+        "U0TXD": "ARDUINO_TO_ESP_TX"
+      }
+    },
+    {
+      "id": "U3",
+      "ref": "U3",
+      "kind": "BME280",
+      "type": "BME280",
+      "value": "BME280",
+      "role": "sensor",
+      "block": "",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "U4",
+      "ref": "U4",
+      "kind": "SSD1306_OLED",
+      "type": "SSD1306_OLED",
+      "value": "SSD1306 OLED",
+      "role": "display",
+      "block": "",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "U5",
+      "ref": "U5",
+      "kind": "DS3231",
+      "type": "DS3231",
+      "value": "DS3231 RTC",
+      "role": "rtc",
+      "block": "",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "U6",
+      "ref": "U6",
+      "kind": "W25Q64",
+      "type": "W25Q64",
+      "value": "W25Q64",
+      "role": "memory",
+      "block": "",
+      "pins": {
+        "CLK": "SPI_SCK",
+        "CS": "SPI_CS_FLASH",
+        "DI": "SPI_MOSI",
+        "DO": "SPI_MISO",
+        "GND": "GND",
+        "HOLD": "FLASH_WP_HOLD",
+        "VCC": "+3V3",
+        "WP": "FLASH_WP_HOLD"
+      }
+    },
+    {
+      "id": "Q1",
+      "ref": "Q1",
+      "kind": "IRLZ44N",
+      "type": "IRLZ44N",
+      "value": "IRLZ44N",
+      "role": "mosfet",
+      "block": "",
+      "pins": {
+        "D": "MOSFET1_LOAD_LOW",
+        "G": "MOSFET1_GATE_NODE",
+        "S": "GND"
+      }
+    },
+    {
+      "id": "Q2",
+      "ref": "Q2",
+      "kind": "IRLZ44N",
+      "type": "IRLZ44N",
+      "value": "IRLZ44N",
+      "role": "mosfet",
+      "block": "",
+      "pins": {
+        "D": "MOSFET2_LOAD_LOW",
+        "G": "MOSFET2_GATE_NODE",
+        "S": "GND"
+      }
+    },
+    {
+      "id": "Q3",
+      "ref": "Q3",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547",
+      "role": "bjt",
+      "block": "",
+      "pins": {
+        "B": "RELAY_BASE",
+        "C": "RELAY_COIL_LOW",
+        "E": "GND"
+      }
+    },
+    {
+      "id": "K1",
+      "ref": "K1",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V relay",
+      "role": "relay",
+      "block": "",
+      "pins": {
+        "COIL_MINUS": "RELAY_COIL_LOW",
+        "COIL_PLUS": "+5V",
+        "COM": "RELAY_CONTACT_COM",
+        "NO": "RELAY_CONTACT_NO"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "FLYBACK_DIODE",
+      "type": "FLYBACK_DIODE",
+      "value": "Flyback diode",
+      "role": "diode",
+      "block": "",
+      "pins": {
+        "A": "MOSFET1_LOAD_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "FLYBACK_DIODE",
+      "type": "FLYBACK_DIODE",
+      "value": "Flyback diode",
+      "role": "diode",
+      "block": "",
+      "pins": {
+        "A": "MOSFET2_LOAD_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "D3",
+      "ref": "D3",
+      "kind": "FLYBACK_DIODE",
+      "type": "FLYBACK_DIODE",
+      "value": "Flyback diode",
+      "role": "diode",
+      "block": "",
+      "pins": {
+        "A": "RELAY_COIL_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "D4",
+      "ref": "D4",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "Status LED",
+      "role": "indicator",
+      "block": "",
+      "pins": {
+        "A": "LED_STATUS_1_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "D5",
+      "ref": "D5",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "Status LED",
+      "role": "indicator",
+      "block": "",
+      "pins": {
+        "A": "LED_STATUS_2_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "I2C_SDA"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "I2C_SCL"
+      }
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "SPI_CS_FLASH"
+      }
+    },
+    {
+      "id": "R4",
+      "ref": "R4",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "FLASH_WP_HOLD"
+      }
+    },
+    {
+      "id": "R5",
+      "ref": "R5",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "ESP_EN"
+      }
+    },
+    {
+      "id": "R6",
+      "ref": "R6",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "ESP_BOOT"
+      }
+    },
+    {
+      "id": "R7",
+      "ref": "R7",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "BUTTON_1",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R8",
+      "ref": "R8",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "BUTTON_2",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R9",
+      "ref": "R9",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "MOSFET1_GATE",
+        "2": "MOSFET1_GATE_NODE"
+      }
+    },
+    {
+      "id": "R10",
+      "ref": "R10",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "MOSFET1_GATE_NODE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R11",
+      "ref": "R11",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "MOSFET2_GATE",
+        "2": "MOSFET2_GATE_NODE"
+      }
+    },
+    {
+      "id": "R12",
+      "ref": "R12",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "MOSFET2_GATE_NODE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R13",
+      "ref": "R13",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "RELAY_CTRL",
+        "2": "RELAY_BASE"
+      }
+    },
+    {
+      "id": "R14",
+      "ref": "R14",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "LED_STATUS_1",
+        "2": "LED_STATUS_1_A"
+      }
+    },
+    {
+      "id": "R15",
+      "ref": "R15",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "LED_STATUS_2",
+        "2": "LED_STATUS_2_A"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C3",
+      "ref": "C3",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C4",
+      "ref": "C4",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C5",
+      "ref": "C5",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C6",
+      "ref": "C6",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C7",
+      "ref": "C7",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C8",
+      "ref": "C8",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "",
+      "pins": {
+        "1": "ESP_EN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "SW2",
+      "ref": "SW2",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "",
+      "pins": {
+        "1": "ESP_BOOT",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "SW3",
+      "ref": "SW3",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "",
+      "pins": {
+        "1": "BUTTON_1",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "SW4",
+      "ref": "SW4",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "",
+      "pins": {
+        "1": "BUTTON_2",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "J_POWER",
+      "ref": "J_POWER",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Power header",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "J_3V3",
+      "ref": "J_3V3",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "3V3 header",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "J_I2C",
+      "ref": "J_I2C",
+      "kind": "I2C_HEADER",
+      "type": "I2C_HEADER",
+      "value": "I2C header",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "2": "I2C_SDA",
+        "3": "I2C_SCL",
+        "4": "GND"
+      }
+    },
+    {
+      "id": "J_SPI",
+      "ref": "J_SPI",
+      "kind": "SPI_HEADER_FLASH",
+      "type": "SPI_HEADER_FLASH",
+      "value": "SPI header",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "2": "SPI_CS_FLASH",
+        "3": "SPI_SCK",
+        "4": "SPI_MOSI",
+        "5": "SPI_MISO",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "J_LOAD1",
+      "ref": "J_LOAD1",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Load 1",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "MOSFET1_LOAD_LOW"
+      }
+    },
+    {
+      "id": "J_LOAD2",
+      "ref": "J_LOAD2",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Load 2",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "MOSFET2_LOAD_LOW"
+      }
+    },
+    {
+      "id": "J_RELAY",
+      "ref": "J_RELAY",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Relay contact",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "1": "RELAY_CONTACT_COM",
+        "2": "RELAY_CONTACT_NO"
+      }
+    },
+    {
+      "id": "TP1",
+      "ref": "TP1",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "I2C_SDA"
+      }
+    },
+    {
+      "id": "TP2",
+      "ref": "TP2",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "I2C_SCL"
+      }
+    },
+    {
+      "id": "TP3",
+      "ref": "TP3",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "SPI_MOSI"
+      }
+    },
+    {
+      "id": "TP4",
+      "ref": "TP4",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "SPI_MISO"
+      }
+    },
+    {
+      "id": "TP5",
+      "ref": "TP5",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "SPI_SCK"
+      }
+    },
+    {
+      "id": "TP6",
+      "ref": "TP6",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "+5V"
+      }
+    },
+    {
+      "id": "TP7",
+      "ref": "TP7",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "+3V3"
+      }
+    },
+    {
+      "id": "TP8",
+      "ref": "TP8",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "",
+      "pins": {
+        "1": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "U1.5V",
+      "K1.COIL_PLUS",
+      "J_POWER.1",
+      "SW3.2",
+      "SW4.2",
+      "J_LOAD1.1",
+      "J_LOAD2.1",
+      "D1.K",
+      "D2.K",
+      "D3.K",
+      "C1.1",
+      "C2.1",
+      "C3.1",
+      "TP6.1"
+    ],
+    "+3V3": [
+      "U2.3V3",
+      "U3.VCC",
+      "U4.VCC",
+      "U5.VCC",
+      "U6.VCC",
+      "J_3V3.1",
+      "R1.1",
+      "R2.1",
+      "R3.1",
+      "R4.1",
+      "R5.1",
+      "R6.1",
+      "C4.1",
+      "C5.1",
+      "C6.1",
+      "C7.1",
+      "C8.1",
+      "TP7.1"
+    ],
+    "GND": [
+      "U1.GND",
+      "U2.GND",
+      "U3.GND",
+      "U4.GND",
+      "U5.GND",
+      "U6.GND",
+      "J_POWER.2",
+      "J_3V3.2",
+      "J_I2C.4",
+      "J_SPI.6",
+      "Q1.S",
+      "Q2.S",
+      "Q3.E",
+      "SW1.2",
+      "SW2.2",
+      "R7.2",
+      "R8.2",
+      "R10.2",
+      "R12.2",
+      "D4.K",
+      "D5.K",
+      "C1.2",
+      "C2.2",
+      "C3.2",
+      "C4.2",
+      "C5.2",
+      "C6.2",
+      "C7.2",
+      "C8.2",
+      "TP8.1"
+    ],
+    "I2C_SDA": [
+      "U1.A4",
+      "U3.SDA",
+      "U4.SDA",
+      "U5.SDA",
+      "R1.2",
+      "J_I2C.2",
+      "TP1.1"
+    ],
+    "I2C_SCL": [
+      "U1.A5",
+      "U3.SCL",
+      "U4.SCL",
+      "U5.SCL",
+      "R2.2",
+      "J_I2C.3",
+      "TP2.1"
+    ],
+    "SPI_MOSI": [
+      "U1.D11",
+      "U6.DI",
+      "J_SPI.4",
+      "TP3.1"
+    ],
+    "SPI_MISO": [
+      "U1.D12",
+      "U6.DO",
+      "J_SPI.5",
+      "TP4.1"
+    ],
+    "SPI_SCK": [
+      "U1.D13",
+      "U6.CLK",
+      "J_SPI.3",
+      "TP5.1"
+    ],
+    "SPI_CS_FLASH": [
+      "U1.D10",
+      "U6.CS",
+      "R3.2",
+      "J_SPI.2"
+    ],
+    "FLASH_WP_HOLD": [
+      "U6.WP",
+      "U6.HOLD",
+      "R4.2"
+    ],
+    "ARDUINO_TO_ESP_RX": [
+      "U1.D2",
+      "U2.U0RXD"
+    ],
+    "ARDUINO_TO_ESP_TX": [
+      "U1.D3",
+      "U2.U0TXD"
+    ],
+    "ESP_EN": [
+      "U2.EN",
+      "R5.2",
+      "SW1.1"
+    ],
+    "ESP_BOOT": [
+      "U2.IO0",
+      "R6.2",
+      "SW2.1"
+    ],
+    "BUTTON_1": [
+      "U1.D4",
+      "SW3.1",
+      "R7.1"
+    ],
+    "BUTTON_2": [
+      "U1.D5",
+      "SW4.1",
+      "R8.1"
+    ],
+    "MOSFET1_GATE": [
+      "U1.D6",
+      "R9.1"
+    ],
+    "MOSFET1_GATE_NODE": [
+      "R9.2",
+      "Q1.G",
+      "R10.1"
+    ],
+    "MOSFET1_LOAD_LOW": [
+      "Q1.D",
+      "J_LOAD1.2",
+      "D1.A"
+    ],
+    "MOSFET2_GATE": [
+      "U1.D7",
+      "R11.1"
+    ],
+    "MOSFET2_GATE_NODE": [
+      "R11.2",
+      "Q2.G",
+      "R12.1"
+    ],
+    "MOSFET2_LOAD_LOW": [
+      "Q2.D",
+      "J_LOAD2.2",
+      "D2.A"
+    ],
+    "RELAY_CTRL": [
+      "U1.D8",
+      "R13.1"
+    ],
+    "RELAY_BASE": [
+      "R13.2",
+      "Q3.B"
+    ],
+    "RELAY_COIL_LOW": [
+      "Q3.C",
+      "K1.COIL_MINUS",
+      "D3.A"
+    ],
+    "RELAY_CONTACT_COM": [
+      "K1.COM",
+      "J_RELAY.1"
+    ],
+    "RELAY_CONTACT_NO": [
+      "K1.NO",
+      "J_RELAY.2"
+    ],
+    "LED_STATUS_1": [
+      "U1.D9",
+      "R14.1"
+    ],
+    "LED_STATUS_1_A": [
+      "R14.2",
+      "D4.A"
+    ],
+    "LED_STATUS_2": [
+      "U2.IO2",
+      "R15.1"
+    ],
+    "LED_STATUS_2_A": [
+      "R15.2",
+      "D5.A"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 57,
+    "net_count": 31,
+    "endpoint_count": 146,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

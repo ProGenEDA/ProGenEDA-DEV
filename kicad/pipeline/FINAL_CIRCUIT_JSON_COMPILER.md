@@ -93,6 +93,41 @@ Result:
 - Wire-plan reports are bounded. Fallback and crossing warnings are current
   wire-planner quality limits, not JSON compiler failures.
 
+Current KiCad projects generated from those final JSON files:
+
+```text
+kicad/examples/final_json_project_run_2026_07_02_133420_t01_t10_connected_projects_v1/
+```
+
+Result:
+
+- 10 KiCad project folders generated from final JSON.
+- 10/10 static schematic quality passed.
+- 430 components became 442 symbol instances because multi-unit symbols expand
+  into separate schematic units.
+- These KiCad schematics are placement outputs with real embedded symbols. The
+  full connected nets remain in `final_json/`; the newer wired run below draws
+  those connections into `.kicad_sch`.
+
+Current KiCad wired projects generated from those final JSON files:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/
+```
+
+Result:
+
+- 10 KiCad project folders generated from final JSON.
+- 10/10 static schematic quality passed with `--skip-erc`.
+- 430 components became 442 symbol instances.
+- 3357 KiCad wire objects and 530 net labels were written.
+- T01-T06 and T09 have zero unresolved pins.
+- T10 has zero unresolved pins and five deferred nets from the bounded route
+  cap.
+- The remaining 18 unresolved pins are recorded in project manifests and are
+  symbol-model gaps, not missing final JSON structure: T07 has two artificial
+  `LM358.BIAS` endpoints; T08 needs a better LED array/DIP-common symbol model.
+
 ## Upgrade Path
 
 Next compiler work should add these deterministic modules as real code, not

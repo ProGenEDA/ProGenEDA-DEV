@@ -51,13 +51,14 @@ def discover_schematics(target: Path) -> list[Path]:
     if target.is_dir():
         exact = sorted(target.glob("OPEN_THIS_PROJECT__*__PROJECT_FILE.kicad_sch"))
         exact.extend(sorted(target.glob("OPEN_THIS_PROJECT__*__PLACER.kicad_sch")))
+        exact.extend(sorted(target.glob("OPEN_THIS_PROJECT__*__WIRED.kicad_sch")))
         if exact:
             return exact
         return sorted(
             path
             for path in target.rglob("*.kicad_sch")
             if path.name.startswith("OPEN_THIS_PROJECT__")
-            and ("__PROJECT_FILE" in path.name or "__PLACER" in path.name)
+            and ("__PROJECT_FILE" in path.name or "__PLACER" in path.name or "__WIRED" in path.name)
         )
     raise FileNotFoundError(target)
 

@@ -1,9 +1,17 @@
 from __future__ import annotations
 
 import unittest
+import tempfile
+import json
+from pathlib import Path
 
 from kicad.pipeline.beautifier import apply_coordinate_edits
-from kicad.pipeline.final_circuit_builder import build_final_test_circuits, clean_prompt, placer_ready_circuit
+from kicad.pipeline.final_circuit_builder import (
+    build_final_test_circuits,
+    clean_prompt,
+    generate_projects_from_final_json,
+    placer_ready_circuit,
+)
 from kicad.pipeline.arrangement_decider import decide_arrangement
 from kicad.pipeline.placer_pipeline import run_placer_pipeline
 from kicad.pipeline.wire_planner import plan_wire_routes
@@ -61,6 +69,27 @@ class FinalCircuitBuilderTests(unittest.TestCase):
                 self.assertEqual(obstacle_overlap_pairs(beautified["obstacles"]), [])
                 self.assertGreater(wire_plan["metrics"]["net_count"], 0)
                 self.assertGreater(wire_plan["metrics"]["wired_route_count"], 0)
+
+    def test_final_json_project_run_writes_openable_placement_projects(self) -> None:
+        circuits = build_final_test_circuits()[:2]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "source_final_json"
+            source.mkdir()
+            for circuit in circuits:
+                (source / f"{circuit['circuit_id']}.json").write_text(json.dumps(circuit, indent=2), encoding="utf-8")
+            summary = generate_projects_from_final_json(
+                source,
+                examples_root=root,
+                label="unit_test_projects",
+                run_dir=root / "generated_projects",
+            )
+            self.assertEqual(summary["schema"], "progen-kicad-final-json-project-run/v0.1")
+            self.assertEqual(summary["project_count"], 2)
+            self.assertTrue(summary["all_projects_ok"])
+            for result in summary["results"]:
+                self.assertTrue((root / "generated_projects" / result["open_this"]).exists())
+                self.assertEqual(result["mode"], "placement_only")
 
 
 if __name__ == "__main__":

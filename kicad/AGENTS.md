@@ -45,8 +45,9 @@ Combination path:
 Decision -> Combination Decider -> Wire Planner <-> Beautifier loop -> Wire Maker -> Terminal Placer -> Terminal Validator -> Value Editor -> Value Validator -> Final Validator -> Output
 ```
 
-The active stage is the component placer. Keep later stages as independent
-placeholders until the previous stage is proven.
+The active proven stages are the component placer, arrangement decider,
+beautifier, wire planner, and first KiCad wire maker. Keep later stages as
+independent placeholders until the previous stage is proven.
 
 The first deterministic main-JSON compiler is:
 
@@ -109,6 +110,7 @@ The active post-placer stage files are:
 kicad/pipeline/arrangement_decider.py
 kicad/pipeline/beautifier.py
 kicad/pipeline/wire_planner.py
+kicad/pipeline/kicad_wire_maker.py
 ```
 
 `arrangement_decider.py` decides first-pass coordinates from topology,
@@ -126,8 +128,12 @@ wire_coordinate_plan.json
 wire_plan.json
 ```
 
-The wire planner must remain independent of KiCad/Proteus file formats. EDA
-specific drawing belongs to a later wire maker.
+The wire planner must remain independent of KiCad/Proteus file formats.
+
+`kicad_wire_maker.py` is the KiCad-specific drawing backend. It consumes final
+CircuitIR JSON, beautified placement JSON, and `wire_plan` JSON, then writes
+real KiCad wire, label, and junction objects while recording unresolved pin
+aliases and deferred route-limit nets in manifests.
 
 ## Generated Circuit Records
 

@@ -255,7 +255,9 @@ metrics:
 - stable placement after repeated passes
 
 The current implementation only creates the first JSON contracts. It does not
-yet run an automatic loop.
+yet run an automatic loop. The first KiCad wire maker consumes the current
+single-pass wire-plan JSON and records any route-cap or pin-resolution limits in
+project manifests.
 
 ## Wire Planner
 
@@ -340,10 +342,10 @@ Implemented behavior:
 
 Important current limitation:
 
-The wire planner is now bounded and testable, but it is not final-quality
-routing yet. Fallback warnings and nonzero `different_net_crossing_count` are
-expected evidence that the planner needs more routing intelligence before the
-EDA-specific wire maker should draw wires into KiCad.
+The wire planner is now bounded and testable, and the KiCad wire maker can draw
+its output, but routing is not final-quality yet. Fallback warnings, deferred
+route-cap nets, and nonzero `different_net_crossing_count` are expected evidence
+that the planner needs more routing intelligence.
 
 Wire-plan JSON shape:
 
@@ -405,6 +407,67 @@ Wire-plan JSON shape:
 }
 ```
 
+## KiCad Wire Maker
+
+File:
+
+```text
+kicad/pipeline/kicad_wire_maker.py
+```
+
+Purpose:
+
+The KiCad wire maker is the first EDA-specific drawing stage. It receives the
+same final CircuitIR JSON, the beautified placement, and the pure JSON
+`wire_plan`. It does not make routing decisions. It turns the route plan into
+actual KiCad schematic objects:
+
+1. Resolves each placed component to its real KiCad `lib_id`.
+2. Reads source-backed embedded symbol text through `KiCadSymbolLibrary`.
+3. Parses real pin numbers, names, units, and local pin coordinates.
+4. Resolves final-JSON pin names through explicit aliases where the logical name
+   differs from the KiCad symbol pin name.
+5. Converts local symbol pin coordinates to sheet coordinates.
+6. Draws KiCad `(wire ...)` objects for routed paths and local labels.
+7. Draws KiCad `(junction ...)` objects where three or more same-plan segments
+   meet.
+8. Draws KiCad label text objects for local-label strategy nets.
+9. Records unresolved pin aliases, fallback routes, deferred nets, and planner
+   warning counts in each `manifest.json`.
+
+This stage is KiCad-specific by design. Equivalent Proteus or future EDA
+backends should consume the same `wire_plan` JSON and implement their own file
+writer.
+
+Current generated evidence:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/
+```
+
+Result:
+
+- 10 KiCad wired project folders generated from connected final JSON.
+- Static schematic quality passed 10/10 with `--skip-erc`.
+- `kicad_cli` was not available to this checker run, so ERC was not executed.
+- 430 components became 442 symbol instances.
+- 3357 wire objects and 530 labels were written.
+- T01-T06 and T09 have zero unresolved pins.
+- T10 has zero unresolved pins and five deferred nets from the current bounded
+  route cap: `SPI_MISO`, `USB1_D_MINUS`, `USB1_D_PLUS`, `USB2_D_MINUS`,
+  `USB2_D_PLUS`.
+- The remaining 18 unresolved pins are known symbol-model gaps: two artificial
+  `LM358.BIAS` endpoints in T07, plus LED-array and DIP-common endpoints in T08
+  where the current selected KiCad symbols do not expose the requested logical
+  pins.
+
+Run:
+
+```bash
+python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v4
+PYTHONPATH=. python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4 --skip-erc
+```
+
 ## Routing Rules To Preserve
 
 The wire planner should keep these priorities:
@@ -435,6 +498,7 @@ The focused tests live in:
 
 ```text
 kicad/tests/test_placer_pipeline.py
+kicad/tests/test_kicad_wire_maker.py
 ```
 
 Current coverage:
@@ -448,6 +512,8 @@ Current coverage:
 7. Different-net crossing count is reported.
 8. Connected T01-T10 final JSON inputs compile, place, beautify without body
    overlaps, and produce bounded wire-plan reports.
+9. The KiCad wire maker emits real wire/label objects and can generate fresh
+   immutable wired project runs from final JSON.
 
 ## T01-T10 Evidence
 
@@ -481,11 +547,24 @@ Result:
 - The route reports include fallback/crossing warnings. These are current wire
   planner quality limits, not JSON or placement failures.
 
+The first accepted KiCad wired project run is recorded in:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/
+```
+
+Result:
+
+- 10/10 static schematic checks passed.
+- KiCad wire/label/junction objects are present in all 10 schematics.
+- Pin resolution is complete for T01-T06, T09, and T10.
+- Known gaps remain for T07/T08 symbol modeling and T10 route-cap deferrals.
+
 Run:
 
 ```bash
-python -m unittest kicad.tests.test_placer_pipeline -v
-python -m compileall -q kicad/pipeline kicad/tests
+PYTHONPATH=. python -m unittest kicad.tests.test_final_circuit_builder kicad.tests.test_kicad_wire_maker kicad.tests.test_placer_pipeline -v
+python -m compileall -q kicad/pipeline kicad/tests kicad/automation
 ```
 
 ## Not Implemented Yet
@@ -494,16 +573,15 @@ These are intentionally future work:
 
 1. Automatic wire-planner/beautifier iterative loop.
 2. Beautifier validator.
-3. EDA-specific wire maker.
-4. KiCad wire drawing.
-5. Terminal placer integration.
-6. Junction-dot generation.
-7. Net-label placement in KiCad.
-8. Bus routing.
-9. Pattern-template placement.
-10. Rotation optimization.
-11. Feedback-loop routing below the main path.
-12. Final netlist export and expected-net comparison.
+3. Terminal placer integration.
+4. Bus routing.
+5. Pattern-template placement.
+6. Rotation optimization.
+7. Feedback-loop routing below the main path.
+8. Better symbol models for LED arrays, DIP common pins, and artificial op-amp
+   bias nodes.
+9. Final netlist export and expected-net comparison.
+10. ERC-backed final validation report.
 
 ## Core Principle
 

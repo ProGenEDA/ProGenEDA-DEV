@@ -17,10 +17,13 @@ import argparse
 import datetime as dt
 import json
 import re
+import shutil
 from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
+
+from kicad.generator.kicad_json_to_project import slugify
 
 from .arrangement_decider import decide_arrangement
 from .beautifier import apply_coordinate_edits
@@ -1071,15 +1074,39 @@ def _overlap_pairs(obstacles: list[dict[str, Any]]) -> list[tuple[str, str]]:
     return pairs
 
 
-def _fresh_run_dir(examples_root: Path, label: str) -> Path:
+def _fresh_prefixed_run_dir(examples_root: Path, prefix: str, label: str) -> Path:
     stamp = dt.datetime.now().strftime("%Y_%m_%d_%H%M%S")
-    base = examples_root / f"final_json_run_{stamp}_{label}"
+    safe_label = slugify(label).lower()
+    base = examples_root / f"{prefix}_{stamp}_{safe_label}"
     candidate = base
     suffix = 2
     while candidate.exists():
         candidate = examples_root / f"{base.name}_{suffix}"
         suffix += 1
     return candidate
+
+
+def _fresh_run_dir(examples_root: Path, label: str) -> Path:
+    return _fresh_prefixed_run_dir(examples_root, "final_json_run", label)
+
+
+def _resolve_final_json_dir(source: Path) -> Path:
+    if source.is_dir() and source.name == "final_json":
+        return source
+    nested = source / "final_json"
+    if nested.is_dir():
+        return nested
+    if source.is_dir():
+        return source
+    raise FileNotFoundError(f"final JSON source does not exist or is not a directory: {source}")
+
+
+def _final_json_files(source: Path) -> list[Path]:
+    final_json_dir = _resolve_final_json_dir(source)
+    files = sorted(path for path in final_json_dir.glob("*.json") if path.name != "manifest.json")
+    if not files:
+        raise ValueError(f"No final JSON files found in {final_json_dir}")
+    return files
 
 
 def generate_final_json_run(*, examples_root: Path, label: str = "t01_t10_connected_v1", run_dir: Path | None = None) -> dict[str, Any]:
@@ -1159,16 +1186,118 @@ def generate_final_json_run(*, examples_root: Path, label: str = "t01_t10_connec
     return summary
 
 
+def generate_projects_from_final_json(
+    source: Path,
+    *,
+    examples_root: Path,
+    label: str = "t01_t10_connected_projects_v1",
+    run_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Generate real KiCad placement projects from canonical final JSON files."""
+    files = _final_json_files(source)
+    final_json_dir = _resolve_final_json_dir(source)
+    run_path = run_dir or _fresh_prefixed_run_dir(examples_root, "final_json_project_run", label)
+    if run_path.exists():
+        raise FileExistsError(f"Refusing to overwrite existing final JSON project run folder: {run_path}")
+
+    copied_final_json_dir = run_path / "final_json"
+    placement_input_dir = run_path / "placement_inputs"
+    projects_dir = run_path / "projects"
+    copied_final_json_dir.mkdir(parents=True)
+    placement_input_dir.mkdir()
+    projects_dir.mkdir()
+
+    results: list[dict[str, Any]] = []
+    for source_file in files:
+        circuit = json.loads(source_file.read_text(encoding="utf-8"))
+        if not isinstance(circuit, dict):
+            raise ValueError(f"{source_file} must contain a final CircuitIR object")
+        validation = circuit.get("validation", {})
+        if isinstance(validation, dict) and validation.get("status") != "pass":
+            raise ValueError(f"{source_file} final JSON validation is not pass: {validation}")
+
+        copied_final_json = copied_final_json_dir / source_file.name
+        shutil.copy2(source_file, copied_final_json)
+
+        stem = source_file.stem
+        placement_input = placer_ready_circuit(circuit)
+        placement_input_path = placement_input_dir / f"{stem}_placement_input.json"
+        placement_input_path.write_text(json.dumps(placement_input, indent=2), encoding="utf-8")
+
+        project_name = str(placement_input.get("project", {}).get("name") or stem)
+        project_dir = projects_dir / slugify(project_name).lower()
+        ctx = run_placer_pipeline(placement_input, out_dir=project_dir)
+        manifest_path = project_dir / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        results.append(
+            {
+                "circuit_id": circuit.get("circuit_id"),
+                "circuit_name": circuit.get("circuit_name"),
+                "final_json": str(copied_final_json.relative_to(run_path)),
+                "placement_input": str(placement_input_path.relative_to(run_path)),
+                "project_dir": str(project_dir.relative_to(run_path)),
+                "open_this": str((project_dir / manifest["open_this"]).relative_to(run_path)),
+                "schematic_file": str((project_dir / manifest["schematic_file"]).relative_to(run_path)),
+                "component_count": manifest["component_count"],
+                "symbol_instance_count": manifest["symbol_instance_count"],
+                "static_checks_ok": bool(manifest["static_checks"]["ok"]),
+                "placement_ok": ctx.pipeline_summary()["ok"],
+                "mode": manifest["mode"],
+                "note": "Project is generated from final JSON through the component placer only. Use kicad.pipeline.kicad_wire_maker for wired KiCad output.",
+            }
+        )
+
+    summary = {
+        "schema": "progen-kicad-final-json-project-run/v0.1",
+        "run_dir": str(run_path),
+        "source_final_json_dir": str(final_json_dir),
+        "label": label,
+        "input_count": len(files),
+        "project_count": len(results),
+        "all_projects_ok": all(item["placement_ok"] and item["static_checks_ok"] for item in results),
+        "total_components": sum(int(item["component_count"]) for item in results),
+        "total_symbol_instances": sum(int(item["symbol_instance_count"]) for item in results),
+        "wire_maker_status": "available_separately; this command intentionally writes placement schematics with real embedded symbols",
+        "results": results,
+    }
+    (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    (run_path / "README.md").write_text(
+        "# Final JSON To KiCad Project Run\n\n"
+        "This folder is an immutable generated record. It takes canonical connected final JSON files, "
+        "derives component-only placer input from each one, and writes openable KiCad projects using real "
+        "embedded KiCad symbols.\n\n"
+        "The final JSON files still contain the full connected net information. The `.kicad_sch` files in "
+        "`projects/` are placement schematics only by design; use `kicad.pipeline.kicad_wire_maker` for wired output. "
+        "Do not overwrite this folder; create a new `final_json_project_run_*` folder for any changed output.\n",
+        encoding="utf-8",
+    )
+    return summary
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate connected final CircuitIR JSON test circuits.")
     parser.add_argument("--examples-root", default="kicad/examples", help="Examples root for fresh final_json_run_* folders.")
     parser.add_argument("--label", default="t01_t10_connected_v1", help="Label suffix for the fresh generated folder.")
     parser.add_argument("--run-dir", help="Optional explicit fresh run directory.")
     parser.add_argument("--prompt", help="Optional prompt to clean/enhance and print instead of generating files.")
+    parser.add_argument(
+        "--project-run-from-final-json",
+        help="Final JSON folder or run folder containing final_json/; writes a fresh KiCad project run from those JSON files.",
+    )
     args = parser.parse_args()
 
     if args.prompt is not None:
         print(json.dumps(clean_prompt(args.prompt), indent=2))
+        return
+
+    if args.project_run_from_final_json is not None:
+        summary = generate_projects_from_final_json(
+            Path(args.project_run_from_final_json),
+            examples_root=Path(args.examples_root),
+            label=args.label,
+            run_dir=Path(args.run_dir) if args.run_dir else None,
+        )
+        print(json.dumps(summary, indent=2))
         return
 
     summary = generate_final_json_run(

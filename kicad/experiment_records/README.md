@@ -23,6 +23,11 @@ before, and what should happen next.
 | `../examples/placer_run_2026_07_01_baseline_c11_spacing_fix_v2` | Current baseline examples | Fresh immutable 20-circuit baseline with C11 spacing fixed. KiCad quality: 20 checked, 20 passed, 0 failed. |
 | `../examples/placer_run_2026_07_01_stress_limit_suite_v2` | Current stress examples | Fresh immutable stress/limit suite requested by user. KiCad quality: 22 checked, 22 passed, 0 failed. |
 | `../examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3` | Current connected JSON examples | Final JSON validation, placement conversion, arrangement, and beautifier passed 10/10. Wire planner produced bounded reports with recorded fallback/crossing warnings. |
+| `../examples/final_json_project_run_2026_07_02_133420_t01_t10_connected_projects_v1` | Current final-JSON placement projects | 10 KiCad placement projects generated from final JSON. Static quality: 10 checked, 10 passed, 0 failed. Kept as the pre-wire-maker project record. |
+| `../examples/final_json_wired_project_run_2026_07_02_134715_t01_t10_connected_wired_v1` | Superseded wired projects | First KiCad wire-maker run. It generated real wire/label objects but exposed unresolved pin-alias coverage and checker discovery gaps. |
+| `../examples/final_json_wired_project_run_2026_07_02_134931_t01_t10_connected_wired_v2` | Superseded wired projects | Second KiCad wire-maker run. Static quality passed after checker discovery was updated, but T10 still had avoidable Arduino/CH340 alias misses. |
+| `../examples/final_json_wired_project_run_2026_07_02_135207_t01_t10_connected_wired_v3` | Superseded wired projects | Third KiCad wire-maker run. It fixed avoidable T10 pin aliases but was superseded because the schematic sheet note still said placement-only. |
+| `../examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4` | Current wired projects | 10 KiCad wired projects generated from final JSON. Static quality: 10 checked, 10 passed, 0 failed. 3357 wire objects, 530 labels, 18 unresolved symbol-model pins, and 5 deferred T10 route-cap nets. |
 
 ## Current Baseline
 
@@ -38,6 +43,15 @@ The current supported placer baseline is:
 - Current stress evidence: 22 schematics checked, 22 passed, 0 failed.
 - Current connected JSON evidence: 10 final JSON circuits checked, 10 passed;
   T10 has 190 components, 153 nets, and 554 endpoints.
+- Current final-JSON project evidence: 10 KiCad placement schematics checked, 10
+  passed, 0 failed; total 430 components and 442 symbol instances.
+- Current wired project evidence: 10 KiCad wired schematics checked, 10 passed,
+  0 failed; total 430 components, 442 symbol instances, 3357 wire objects, and
+  530 labels.
+- Current known wired limits: `kicad_cli` was unavailable for ERC in the last
+  quality run; T07 has two artificial `LM358.BIAS` unresolved endpoints; T08
+  needs a better LED array/DIP-common symbol model; T10 has five deferred nets
+  from the bounded route cap.
 
 ## Rules For New Experiments
 
