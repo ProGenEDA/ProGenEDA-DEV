@@ -73,7 +73,7 @@ The current user test packs are:
 - `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
 - `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
-- `experiments/TERMINAL_PLACER_NATIVE_WIRE_V7_TEMP_2026_07_01.zip`
+- `experiments/TERMINAL_PLACER_STREAM_LINK_V9_TEMP_2026_07_02.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -201,18 +201,26 @@ active terminal suffix
     + component-adjacent donor WIRE records
 ```
 
-`MIXED/native-wire-v7-temp` is the active mixed experiment. It preserves
-original component order and emits the accepted per-family terminal/component/
-wire boundaries. DIODE, NPN, and 74HC08 remain byte-preserved and
-terminal-free. Three-component V7 output for each researched family is
-object-chunk byte-identical to that family's already accepted standalone
-writer.
+The user rejected V7 mixed cases N07-N09. Binary research found a concrete
+error in those files: every terminal/component link retained a family-local
+number even though Proteus links are derived from final WIRE addresses.
+Accepted RCL and mixed-analog files satisfy this formula for every attachment:
 
-The V7 pack contains six 3x family-oracle pairs and mixed all-family 1x/3x/15x
-cases with controls. All nine cases pass static validation. The 15x case has
-93 components, 180 active terminals, 180 WIRE records, unique suffixes, exactly
-two active copies of every suffix, complete terminal-to-wire-to-pin paths, and
-separate IC/non-IC layout bands. Mixed Proteus testing remains required.
+```text
+(ROOT.DSN object chunk absolute start + full \x7fWIRE marker offset - 24)
+    mod 65536
+```
+
+V7 N07 contains twelve mismatches. The V9 serializer changes only those active
+link fields: it preserves the beautified packet stream, encodes `$TERBIDIR`
+and 50-byte WIRE records directly from the Proteus 8.13 schema, builds
+ROOT.DSN, then rebases both copies of every link from its final WIRE address.
+No mixed circuit donor is selected or transplanted at runtime.
+
+The V9 pack repeats six 3x family cases plus mixed 1x/3x/15x cases with
+terminal-free DIODE, NPN, and 74HC08 controls. All cases pass structural,
+geometry, exact-link-address, and layout-band validation. Proteus testing
+remains required.
 
 The packet beautifier now places IC and non-IC families in separate vertical
 bands when they coexist. The lower band begins at least 5,080,000 internal
@@ -221,7 +229,10 @@ units below the maximum parsed IC coordinate. This corrects the reported
 
 ## Verification Baseline
 
-- focused component placer suite: 59 passed;
+- focused component placer suite: 63 passed;
+- repository `tests/`: 215 passed and 78 subtests passed; one unrelated KiCad
+  target-pack test fails on four Windows paths longer than the legacy path
+  limit;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
@@ -239,12 +250,14 @@ units below the maximum parsed IC coordinate. This corrects the reported
 - mixed wire-ablation V5: rejected with Bad Object Record.
 - mixed short-wire V6: user-rejected; Bad Object Record remained and wires did
   not render.
-- mixed native-wire V7: 9/9 static-valid; six 3x native outputs are byte-exact
-  with accepted family writers; mixed Proteus tests pending.
+- mixed native-wire V7: mixed N07-N09 user-rejected; links do not match final
+  WIRE addresses.
+- stream-link V9: schema-encoded, donor-independent terminal/WIRE output with
+  final-address rebasing; Proteus tests pending.
 - mixed IC/non-IC bands: focused static regression passed; pending visual test.
 
 ## Next Engineering Step
 
-Test V7 N01-N06 first, then N07-N09. Continue donor collection using
-`docs/complete_component_donor_request.md`; the next handler batch remains the
-unsupported two-pin families, with no cross-family pattern guessing.
+Test V9 S01-S06, then M07-M09. If mixed 1x passes, scale to 3x and 15x.
+Additional two-pin families remain unsupported until their pin/link fields can
+be represented by a verified family profile; do not add runtime circuit donors.

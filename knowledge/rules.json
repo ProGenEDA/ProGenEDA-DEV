@@ -3749,16 +3749,16 @@
     },
     {
       "id": "R_TERMINAL_NATIVE_WIRE_V7_STATIC_20260701",
-      "title": "V7 serializes complete native terminal/component/wire units",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.95,
+      "title": "V7 mixed files retained family-local link values",
+      "status": "mixed_rejected_by_user_proteus_test",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "mixed component placement",
         "$TERBIDIR",
         "component pin links",
         "WIRE",
-        "native object order"
+        "final WIRE addresses"
       ],
       "evidence": [
         "User report 2026-07-01: V6 Bad Object Record remained and no wires rendered",
@@ -3766,10 +3766,36 @@
         "Three-component V7 object chunks are byte-identical to accepted RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE writers",
         "TERMINAL_PLACER_NATIVE_WIRE_V7_TEMP_2026_07_01",
         "Mixed 1x, 3x, and 15x static validations",
-        "15x stress case: 93 components, 180 active terminals, 180 WIRE records, unique suffixes, two active copies per suffix"
+        "15x stress case: 93 components, 180 active terminals, 180 WIRE records, unique suffixes, two active copies per suffix",
+        "User report 2026-07-01: N07, N08, and N09 failed"
       ],
-      "rule": "Treat a Proteus attachment as one native unit: activate the terminal suffix, write the same active suffix into the matching component pin-link field, and serialize the donor-derived WIRE records immediately beside that patched component with the accepted family boundary rules. Preserve original component order and unsupported packets. RESISTOR uses 254000-unit contact-to-pin wires; CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE use their accepted pin-coincident donor wires. This V7 mixed composition remains pending Proteus acceptance.",
+      "rule": "Do not use V7 N07-N09. Their active terminal and component links are family-local values rather than the low 16 bits of the final byte immediately before each WIRE record. The files remain useful geometry and boundary evidence, but not valid final linked output.",
       "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_STREAM_LINK_V9_STATIC_20260702",
+      "title": "V9 allocates links from final ROOT.DSN WIRE addresses",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.98,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "$TERBIDIR",
+        "component pin links",
+        "WIRE",
+        "ROOT.DSN absolute offsets",
+        "donor-independent encoding"
+      ],
+      "evidence": [
+        "All 25 terminals in user-accepted fixtures/pdsprj/rcl_4x_t07_unit_donor.pdsprj satisfy the final-WIRE formula",
+        "All 21 terminals in user-accepted MIX_RCL_ANALOG_ONLY.pdsprj satisfy the same formula",
+        "All 12 links in rejected V7 N07 disagree with their final WIRE addresses",
+        "Canonical $TERBIDIR schema records reproduce the prior terminal templates byte-for-byte",
+        "Canonical 50-byte WIRE encoder reproduces accepted component-adjacent records",
+        "TERMINAL_PLACER_STREAM_LINK_V9_TEMP_2026_07_02"
+      ],
+      "rule": "Preserve the beautified component stream and do not select a mixed circuit donor at runtime. Encode terminal and WIRE records from the Proteus schema, serialize ROOT.DSN, then set both the terminal suffix and component pin-link field to (object_chunk_absolute_start + full_wire_marker_offset - 24) & 0xffff. Reject missing, duplicate, or geometry-ambiguous bindings instead of guessing.",
+      "date": "2026-07-02"
     },
     {
       "id": "R_ARCH_REPLACEABLE_PLACER_CONTRACT_20260701",

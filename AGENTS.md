@@ -73,9 +73,15 @@ no wires rendered. Never emit standalone wire geometry after an inactive
 terminal array. A native Proteus attachment unit requires all three together:
 an active terminal suffix, the same active suffix in the component pin-link
 field, and donor-derived WIRE records immediately beside that component in the
-object stream. The V7 mixed writer is static evidence pending Proteus testing;
-its six currently researched families are RESISTOR, CAP, CAP-ELEC, REALIND,
-VSOURCE, and CSOURCE.
+object stream. The user also rejected V7 mixed N07-N09. Do not solve that by
+selecting a new mixed donor or transplanting donor order at runtime. Accepted
+Proteus files prove that an active link is the low 16 bits of the absolute byte
+immediately before its WIRE record:
+`(object_chunk_absolute_start + full_wire_marker_offset - 24) & 0xffff`.
+The shared placer must encode terminals and WIRE records from the schema,
+preserve the beautified component stream, then allocate every terminal and
+component-pin link from the final ROOT.DSN addresses. The V9 address-rebased
+pack remains pending Proteus testing.
 
 From the restart prompt recorded in `context.md`, append every user message and
 every visible agent response to that file verbatim and in chronological order,

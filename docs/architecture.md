@@ -140,10 +140,14 @@ The generic all-family bounding-box experiment and the inactive-terminal plus
 trailing-wire V6 experiment were rejected. A Proteus wire is not standalone
 geometry: native attachment requires an active terminal suffix, the same
 active suffix in the component pin-link field, and component-adjacent
-donor-derived WIRE records with native boundaries. All researched family logic
-remains in `component_terminal_placer.py`. The V7 mixed serializer composes
-the accepted RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE native
-units while preserving component order and unsupported packets.
+WIRE records with native boundaries. All researched family logic remains in
+`component_terminal_placer.py`. V7 mixed N07-N09 was user-rejected because it
+kept family-local link numbers after final serialization. Accepted ordinary
+and bidirectional files prove that the link is the low 16 bits of the absolute
+byte immediately before the associated WIRE record. The shared route now
+encodes terminal and 50-byte WIRE records directly, preserves the beautified
+component order, and performs a second pass over final ROOT.DSN addresses. It
+does not select or transplant a mixed circuit donor at runtime.
 
 Every stage must eventually provide both a direct stage-output validator and a
 cumulative validator covering all accepted earlier stages. User-specification,
@@ -168,7 +172,7 @@ validation, fixture provenance checks, locked legacy circuit generators,
 removal-only mega-donor component placement, family-specific coordinate
 mutation, semantic project comparison, and result ingestion. Value editing is
 lightly tested. Focused terminal attachment is accepted for RESISTOR, CAP,
-REALIND, CAP-ELEC, VSOURCE, and CSOURCE. The unified V7 native-wire route is
-byte-equivalent to each accepted single-family writer and remains experimental
-until Proteus tests the mixed outputs. Formal placed-design and normalized-pin
-contracts are the next decoupling milestone after terminal placement.
+REALIND, CAP-ELEC, VSOURCE, and CSOURCE. V7 mixed output is rejected. The V9
+address-rebased shared route is statically verified and awaits Proteus testing.
+Formal placed-design and normalized-pin contracts remain the next decoupling
+milestone after terminal placement.

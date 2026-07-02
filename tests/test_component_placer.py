@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import struct
 
 import pytest
+import proteusgen.component_terminal_placer as terminal_placer
 
 from proteusgen.component_placer import (
     ComponentPlacerBlocked,
@@ -28,7 +30,7 @@ from proteusgen.component_beautifier import (
     MIXED_LAYOUT_BAND_GAP_Y,
     layout_coordinate_pairs,
 )
-from proteusgen.bidirectional import extract_bidir_records
+from proteusgen.bidirectional import extract_bidir_records, load_production_templates
 from proteusgen.component_terminal_placer import (
     CAP_ELEC_PIN_HALF_SPAN,
     CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
@@ -55,9 +57,99 @@ from proteusgen.component_terminal_placer import (
 from proteusgen.cdb import package_ref
 from proteusgen.pdsprj import read_internal_file
 from proteusgen.resistor_v9 import _extract_object_chunk
+from proteusgen.templates import FixtureRegistry
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _active_terminal_suffixes(chunk: bytes) -> list[int]:
+    suffixes: list[int] = []
+    for marker, length_offset, base_size in (
+        (b"$TERINPUT", 30, 101),
+        (b"$TEROUTPUT", 31, 102),
+        (b"$TERGROUND", 31, 102),
+        (b"$TERBIDIR", 30, 101),
+    ):
+        cursor = 0
+        while True:
+            marker_offset = chunk.find(marker, cursor)
+            if marker_offset < 0:
+                break
+            start = marker_offset - 14
+            size = base_size + chunk[start + length_offset]
+            suffixes.append(struct.unpack("<H", chunk[start + size - 4 : start + size - 2])[0])
+            cursor = marker_offset + len(marker)
+    return suffixes
+
+
+@pytest.mark.parametrize(
+    "project",
+    (
+        ROOT / "fixtures" / "pdsprj" / "rcl_4x_t07_unit_donor.pdsprj",
+        ROOT
+        / "proteus_ic"
+        / "donors"
+        / "mixed_ic_analog_batch1"
+        / "MIX_RCL_ANALOG_ONLY.pdsprj",
+    ),
+)
+def test_accepted_terminal_links_are_final_wire_addresses(project: Path) -> None:
+    dsn = read_internal_file(project, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    object_start = terminal_placer._object_chunk_absolute_start(dsn)
+    suffixes = _active_terminal_suffixes(chunk)
+    expected: list[int] = []
+    cursor = 0
+    while True:
+        marker = chunk.find(b"\x7fWIRE", cursor)
+        if marker < 0:
+            break
+        expected.append((object_start + marker - 24) & 0xFFFF)
+        cursor = marker + len(b"\x7fWIRE")
+
+    assert len(suffixes) == len(expected)
+    assert sorted(suffixes) == sorted(expected)
+    assert all(
+        chunk[marker - 23 : marker + 10] == terminal_placer.NATIVE_WIRE_PREFIX
+        for marker in (
+            index
+            for index in range(len(chunk))
+            if chunk.startswith(b"\x7fWIRE", index)
+        )
+    )
+
+
+def test_embedded_bidir_schema_matches_accepted_terminal_records() -> None:
+    accepted = load_production_templates(FixtureRegistry.load())
+
+    assert terminal_placer.NATIVE_BIDIR_TEMPLATES == accepted
+
+
+def test_rejected_v7_mixed_links_are_not_final_wire_addresses() -> None:
+    project = (
+        ROOT
+        / "experiments"
+        / "terminal_placer_native_wire_v7_temp_2026_07_01"
+        / "N07_MIXED_ALL_1X_WITH_CONTROLS"
+        / "N07_MIXED_ALL_1X_WITH_CONTROLS.pdsprj"
+    )
+    dsn = read_internal_file(project, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    object_start = terminal_placer._object_chunk_absolute_start(dsn)
+    actual = set(_active_terminal_suffixes(chunk))
+    expected: set[int] = set()
+    cursor = 0
+    while True:
+        marker = chunk.find(b"\x7fWIRE", cursor)
+        if marker < 0:
+            break
+        expected.add((object_start + marker - 24) & 0xFFFF)
+        cursor = marker + len(b"\x7fWIRE")
+
+    assert len(actual) == len(expected) == 12
+    assert actual.isdisjoint(expected)
+
 
 def test_component_placer_prefers_ic_wise_donor_for_small_request() -> None:
     selection = select_removal_only_donor({"7490": 3})
@@ -978,7 +1070,9 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
     cursor = 1
     wire_coordinates: list[tuple[int, int, int, int]] = []
     component_sizes: list[int] = []
-    for index, pair in enumerate(report["terminal_pairs"]):
+    pairs = report["family_reports"][0]["terminal_pairs"]
+    right_wire_sizes: list[int] = []
+    for index, pair in enumerate(pairs):
         left_record = bidir_records[index * 2]
         right_record = bidir_records[index * 2 + 1]
         assert chunk[cursor : cursor + len(left_record)] == left_record
@@ -1000,7 +1094,8 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
         cursor = wire_start
         left_wire = chunk[cursor : cursor + 50]
         cursor += 50
-        right_size = 50 if index == len(report["terminal_pairs"]) - 1 else 49
+        right_size = 50 if index == len(pairs) - 1 else 49
+        right_wire_sizes.append(right_size)
         right_wire = chunk[cursor : cursor + right_size]
         cursor += right_size
         for wire in (left_wire, right_wire):
@@ -1018,9 +1113,10 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
             )
 
     assert report["valid"] is True
-    assert report["family_handler"] == "REALIND/v2"
+    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
     assert report["object_order"] == (
-        "repeated_left_bidir_right_bidir_realind_left_wire_right_wire"
+        "native_leading_terminal_arrays_then_original_component_order_with_"
+        "family_profile_terminal_component_wire_units"
     )
     assert report["terminal_count_added"] == 30
     assert report["wire_count_added"] == 30
@@ -1028,14 +1124,10 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
     assert chunk.count(b"\x7fWIRE") == 30
     assert labels == [
         label
-        for pair in report["terminal_pairs"]
+        for pair in pairs
         for label in (pair["left"]["label"], pair["right"]["label"])
     ]
-    assert [item["right_wire_size"] for item in report["group_records"]] == [
-        *([49] * 14),
-        50,
-    ]
-    assert all(item["left_wire_size"] == 50 for item in report["group_records"])
+    assert right_wire_sizes == [*([49] * 14), 50]
     assert component_sizes[-2:] == [375, 375]
     assert all(x1 == x2 and y1 == y2 for x1, y1, x2, y2 in wire_coordinates)
     assert cursor == len(chunk)
@@ -1111,7 +1203,9 @@ def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
     component_sizes: list[int] = []
     wire_coordinates: list[tuple[int, int, int, int]] = []
     expected_wire_coordinates: list[tuple[int, int, int, int]] = []
-    for index, pair in enumerate(report["terminal_pairs"]):
+    pairs = report["family_reports"][0]["terminal_pairs"]
+    right_wire_sizes: list[int] = []
+    for index, pair in enumerate(pairs):
         right_record = bidir_records[index * 2]
         left_record = bidir_records[index * 2 + 1]
         assert chunk[cursor : cursor + len(right_record)] == right_record
@@ -1135,7 +1229,8 @@ def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
 
         left_wire = chunk[cursor : cursor + 50]
         cursor += 50
-        right_size = 50 if index == len(report["terminal_pairs"]) - 1 else 49
+        right_size = 50 if index == len(pairs) - 1 else 49
+        right_wire_sizes.append(right_size)
         right_wire = chunk[cursor : cursor + right_size]
         cursor += right_size
         for wire in (left_wire, right_wire):
@@ -1169,9 +1264,10 @@ def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
         )
 
     assert report["valid"] is True
-    assert report["family_handler"] == "CAP-ELEC/v3"
+    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
     assert report["object_order"] == (
-        "repeated_right_bidir_left_bidir_cap_elec_left_wire_right_wire"
+        "native_leading_terminal_arrays_then_original_component_order_with_"
+        "family_profile_terminal_component_wire_units"
     )
     assert report["terminal_count_added"] == 30
     assert report["wire_count_added"] == 30
@@ -1179,14 +1275,10 @@ def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
     assert chunk.count(b"\x7fWIRE") == 30
     assert labels == [
         label
-        for pair in report["terminal_pairs"]
+        for pair in pairs
         for label in (pair["right"]["label"], pair["left"]["label"])
     ]
-    assert [item["right_wire_size"] for item in report["group_records"]] == [
-        *([49] * 14),
-        50,
-    ]
-    assert all(item["left_wire_size"] == 50 for item in report["group_records"])
+    assert right_wire_sizes == [*([49] * 14), 50]
     assert component_sizes == [380] * 15
     assert wire_coordinates == expected_wire_coordinates
     assert cursor == len(chunk)
@@ -1378,7 +1470,9 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
 
     report = attach_component_bidir_terminals_to_project(base, output, result.selected_groups)
 
-    assert report["family_handler"] == "CAP/v2"
+    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
+    assert report["runtime_circuit_donor_dependency"] is False
+    assert report["link_allocation"]["valid"] is True
     assert report["terminal_count_added"] == 2
 
 
@@ -1466,7 +1560,7 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     assert result.valid
     assert result.layout_plan["binary_coordinate_mutation"]["visible_translated_count"] == 9
     assert report["valid"] is True
-    assert report["family_handler"] == "MIXED/native-wire-v7-temp"
+    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
     assert report["eligible_families"] == [
         "RESISTOR",
         "CAP",
@@ -1504,6 +1598,10 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     assert report["wire_path_contacts_valid"] is True
     assert report["allow_unlinked_short_wires"] is False
     assert report["expected_active_suffix_copies"] == 2
+    assert report["component_record_order_mutation"] is False
+    assert report["runtime_circuit_donor_dependency"] is False
+    assert report["link_allocation"]["method"] == "final_root_dsn_wire_address"
+    assert report["link_allocation"]["valid"] is True
     assert report["terminal_suffixes_unique"] is True
     assert report["terminal_suffix_links_valid"] is True
     assert (
@@ -1564,7 +1662,7 @@ def test_mixed_native_writer_matches_accepted_single_family_bytes(
     assert accepted_report["valid"] is True
     assert native_report["valid"] is True
     assert native_report["single_family_oracle_policy"] == (
-        "byte_exact_accepted_writer_grammar"
+        "same_shared_schema_encoder"
     )
     assert native_chunk == accepted_chunk
 

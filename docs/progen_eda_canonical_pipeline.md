@@ -103,7 +103,7 @@ first, then terminals are attached to the remaining selected pins.
 | Wire Planner | Partial intent only | `component_pipeline.py` |
 | Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
-| Terminal Placer | Six accepted families; V7 native-unit mixed candidate | `component_terminal_placer.py` |
+| Terminal Placer | Six profiles; V9 schema encoder and final-address linker | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
 | Value Editor | Lightly tested | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |
@@ -137,16 +137,18 @@ the final terminal record must remain complete before a separate final `FF`
 sentinel. The generated terminal-only control now matches that saved object
 chunk exactly.
 
-V6 was rejected: Bad Object Record remained and none of its standalone trailing
-wire records rendered. V7 therefore serializes the complete accepted native
-attachment state: active terminal suffix, the same active component pin-link
-suffix, and donor-derived WIRE records immediately beside the patched
-component. It preserves original component order and keeps unsupported packets
-byte-identical and terminal-free. RESISTOR wires bridge 254,000 internal units
-from terminal contact to pin. CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE
-preserve their accepted pin-coincident donor wires. Each V7 3x family output is
-byte-identical to its accepted standalone writer; mixed outputs remain pending
-Proteus acceptance.
+V6 was rejected because standalone trailing wires did not render. V7 proved
+the complete active terminal/component-link/WIRE unit for all six families,
+but mixed N07-N09 failed because family-local link numbers were not rebased
+after final serialization.
+
+V9 keeps the beautified component order and uses no runtime circuit donor.
+`$TERBIDIR` and 50-byte WIRE records are schema-encoded. After ROOT.DSN is
+built, each terminal and component pin receives the low 16 bits of the absolute
+byte immediately before its associated WIRE record. RESISTOR wires bridge
+254,000 internal units from terminal contact to pin. CAP, REALIND, CAP-ELEC,
+VSOURCE, and CSOURCE keep their accepted pin-coincident geometry. V9 remains
+pending Proteus acceptance.
 
 When IC and non-IC packets coexist, the packet beautifier uses separate
 vertical bands with at least 5,080,000 internal units between the parsed IC

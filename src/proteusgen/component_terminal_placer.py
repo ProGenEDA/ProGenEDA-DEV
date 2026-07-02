@@ -1,12 +1,13 @@
 """Bidirectional terminal placement for component-placer output.
 
-This stage appends complete donor-derived `$TERBIDIR` records to an already
-generated component-placement project.
+This stage adds schema-encoded `$TERBIDIR` and short-WIRE records to an already
+generated, beautified component-placement project.
 
-Terminal attachment is family-specific. The rejected V2 bounding-box helper is
-retained for diagnostic compatibility, but production experiments must use a
-researched family handler that patches pin-link suffixes and emits any
-donor-proven short-wire records required by that family.
+Terminal attachment is family-profile specific. The rejected V2 bounding-box
+helper is retained for diagnostic compatibility, but the shared production
+route consumes placed component packets, patches their pin-link fields, emits
+generic terminal/WIRE records, and allocates links from final ROOT.DSN
+addresses. It does not select a circuit donor at runtime.
 
 The rejected V6 mixed route is retained only for reproducing its terminal-only
 Ctrl+S control. Production mixed attachment uses the same active terminal
@@ -22,7 +23,12 @@ import shutil
 import struct
 from typing import Any, Iterable
 
-from .bidirectional import BIDIR_MARKER, build_bidir_record, load_production_templates
+from .bidirectional import (
+    BIDIR_MARKER,
+    BidirTemplates,
+    build_bidir_record,
+    load_production_templates,
+)
 from .component_beautifier import coordinate_bbox, layout_coordinate_pairs
 from .pdsprj import read_internal_file, write_project_from_parts
 from .mixed_passive import _load_manual_cap_templates, _manual_cap_suffixes
@@ -75,6 +81,24 @@ ACCEPTED_TERMINAL_FAMILY_ORDER = (
     "CAP-ELEC",
     "REALIND",
     "RESISTOR",
+)
+NATIVE_WIRE_PREFIX = bytes.fromhex(
+    "1d00000000c09e00000040000001ffffff00ffffff00027f"
+    "574952450000000200"
+)
+NATIVE_BIDIR_TEMPLATES = BidirTemplates(
+    zero=bytes.fromhex(
+        "10d01cbeffc0800f0000000000092454455242494449520c0000000000ff"
+        "05626964657218edc3ffc0800f000000000008003400000030e00300c019"
+        "0300000000000120ff0144656661756c7420466f6e74005445524d494e41"
+        "4c204c4142454c000000000000000000"
+    ),
+    one_eighty=bytes.fromhex(
+        "1080fba2ffc0800f0008070000092454455242494449520c0000000000ff"
+        "086269646572313830382b9dffc0800f000000000009003400000030e003"
+        "00c0190300000000000120ff0144656661756c7420466f6e74005445524d"
+        "494e414c204c4142454c000000000000000000"
+    ),
 )
 INDUCTOR_INPUT_RECORD_SIZE = 103
 INDUCTOR_OUTPUT_RECORD_SIZE = 104
@@ -1032,6 +1056,24 @@ def _wire_coordinates(record: bytes) -> tuple[int, int, int, int]:
     if coordinate_start + 16 > len(record):
         raise ValueError("Donor wire record ends before its coordinate fields.")
     return struct.unpack("<iiii", record[coordinate_start : coordinate_start + 16])
+
+
+def _build_native_short_wire(
+    x1: int,
+    y1: int,
+    x2: int,
+    y2: int,
+) -> bytes:
+    """Encode one canonical 50-byte Proteus WIRE record.
+
+    The prefix is invariant across the accepted R/C/L and mixed-analog corpus;
+    coordinates occupy bytes 33..48 and byte 49 is the stream separator.
+    """
+
+    record = NATIVE_WIRE_PREFIX + struct.pack("<iiii", x1, y1, x2, y2) + b"\x00"
+    if len(record) != 50 or record.find(b"\x7fWIRE") != 23:
+        raise AssertionError("Canonical short-WIRE encoder produced an invalid record.")
+    return record
 
 
 def _load_six_inductor_templates(project: Path) -> InductorDonorTemplates:
@@ -2330,167 +2372,59 @@ def _mixed_overlay_family_parts(
 
     if family == "RESISTOR":
         pairs = plan_attached_resistor_terminals(groups)
-        fixture = FixtureRegistry.load().get("r21_v9_resistor_terminal_donor")
-        donor_templates = _load_resistor_templates(
-            read_internal_file(fixture.path, "ROOT.DSN"),
-            fixture.path,
-        )
         terminals = [
             *(pair.left for pair in pairs),
             *(pair.right for pair in pairs),
         ]
-        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+        for group, pair in zip(groups, pairs, strict=True):
             patched_by_id[id(group)] = _patch_resistor_terminal_links(
                 bytes(group.data),
                 pair,
             )
-            _component, left_template, right_template = donor_templates.groups[
-                index % len(donor_templates.groups)
-            ]
-            wire_pairs.append(
-                (
-                    _patch_wire(
-                        left_template,
-                        pair.left_wire_start_x,
-                        pair.left_wire_start_y,
-                        pair.left_pin_x,
-                        pair.left_pin_y,
-                    ),
-                    _patch_wire(
-                        right_template,
-                        pair.right_wire_start_x,
-                        pair.right_wire_start_y,
-                        pair.right_pin_x,
-                        pair.right_pin_y,
-                    ),
-                )
-            )
     elif family == "CAP":
         pairs = plan_attached_capacitor_terminals(groups)
-        fixture = FixtureRegistry.load().get("cap2_with_terminals_manual")
-        donor_templates = _load_manual_cap_templates(fixture.path)
         terminals = [
             *(pair.right for pair in pairs),
             *(pair.left for pair in pairs),
         ]
-        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+        for group, pair in zip(groups, pairs, strict=True):
             patched_by_id[id(group)] = _patch_capacitor_terminal_links(
                 bytes(group.data),
                 pair,
             )
-            template_index = index % len(donor_templates.wire_lefts)
-            wire_pairs.append(
-                (
-                    _patch_wire(
-                        donor_templates.wire_rights[template_index],
-                        pair.left_pin_x,
-                        pair.left_pin_y,
-                        pair.left_pin_x,
-                        pair.left_pin_y,
-                    ),
-                    _patch_wire(
-                        donor_templates.wire_lefts[template_index],
-                        pair.right_pin_x,
-                        pair.right_pin_y,
-                        pair.right_pin_x,
-                        pair.right_pin_y,
-                    ),
-                )
-            )
     elif family == "REALIND":
         pairs = plan_attached_inductor_terminals(groups)
-        fixture = FixtureRegistry.load().get("inductor_05_six_terminal")
-        donor_templates = _load_six_inductor_templates(fixture.path)
         terminals = [
             terminal
             for pair in pairs
             for terminal in (pair.left, pair.right)
         ]
-        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+        for group, pair in zip(groups, pairs, strict=True):
             patched_by_id[id(group)] = _patch_inductor_terminal_links(
                 bytes(group.data),
                 pair,
             )
-            template_index = index % len(donor_templates.wire_lefts)
-            right_template = donor_templates.wire_rights[template_index]
-            if len(right_template) == INDUCTOR_TRIMMED_WIRE_RECORD_SIZE:
-                right_template += b"\x00"
-            wire_pairs.append(
-                (
-                    _patch_wire(
-                        donor_templates.wire_lefts[template_index],
-                        pair.left_pin_x,
-                        pair.left_pin_y,
-                        pair.left_pin_x,
-                        pair.left_pin_y,
-                    ),
-                    _patch_wire(
-                        right_template,
-                        pair.right_pin_x,
-                        pair.right_pin_y,
-                        pair.right_pin_x,
-                        pair.right_pin_y,
-                    ),
-                )
-            )
     elif family == "CAP-ELEC":
         pairs = plan_attached_electrolytic_capacitor_terminals(groups)
-        donor_path = (
-            repository_root()
-            / "proteus_ic"
-            / "donors"
-            / "analog_misc_batch1"
-            / "8ELEC-CAP.pdsprj"
-        )
-        donor_templates = _load_eight_cap_elec_templates(donor_path)
         terminals = [
             terminal
             for pair in pairs
             for terminal in (pair.right, pair.left)
         ]
-        for index, (group, pair) in enumerate(zip(groups, pairs, strict=True)):
+        for group, pair in zip(groups, pairs, strict=True):
             patched_by_id[id(group)] = _patch_cap_elec_terminal_links(
                 bytes(group.data),
                 pair,
-            )
-            template_index = index % len(donor_templates.wire_lefts)
-            right_template = donor_templates.wire_rights[template_index]
-            if len(right_template) == CAP_ELEC_TRIMMED_WIRE_RECORD_SIZE:
-                right_template += b"\x00"
-            wire_pairs.append(
-                (
-                    _patch_wire(
-                        donor_templates.wire_lefts[template_index],
-                        pair.left_pin_x,
-                        pair.left_pin_y,
-                        pair.left_pin_x,
-                        pair.left_pin_y,
-                    ),
-                    _patch_wire(
-                        right_template,
-                        pair.right_pin_x,
-                        pair.right_pin_y,
-                        pair.right_pin_x,
-                        pair.right_pin_y,
-                    ),
-                )
             )
     elif family in SOURCE_COMPONENT_BARE_BASE_SIZES:
         pairs = plan_attached_source_terminals(
             groups,
             source_index_start=source_index_start,
         )
-        registry = FixtureRegistry.load()
         if family == "VSOURCE":
-            donor_templates = _load_vsource_templates(
-                registry.get("bidirectional_dcv_source_donor").path
-            )
             terminal_order = ("output", "input")
             wire_order = ("output", "input")
         else:
-            donor_templates = _load_csource_templates(
-                registry.get("source_dc_mixed_v15_donor").path
-            )
             terminal_order = ("input", "output")
             wire_order = ("input", "output")
         terminals = [
@@ -2503,37 +2437,40 @@ def _mixed_overlay_family_parts(
                 bytes(group.data),
                 pair,
             )
+    else:
+        raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
+
+    for pair in pairs:
+        if isinstance(pair, SourceTerminalPair):
             pins = {
                 "input": (pair.input_pin_x, pair.input_pin_y),
                 "output": (pair.output_pin_x, pair.output_pin_y),
             }
-            templates = {
-                "input": donor_templates.input_wire,
-                "output": donor_templates.output_wire,
-            }
-            first_role, second_role = wire_order
-            first_pin = pins[first_role]
-            second_pin = pins[second_role]
+            first_pin = pins[wire_order[0]]
+            second_pin = pins[wire_order[1]]
             wire_pairs.append(
                 (
-                    _patch_wire(
-                        templates[first_role],
-                        first_pin[0],
-                        first_pin[1],
-                        first_pin[0],
-                        first_pin[1],
+                    _build_native_short_wire(*first_pin, *first_pin),
+                    _build_native_short_wire(*second_pin, *second_pin),
+                )
+            )
+        else:
+            wire_pairs.append(
+                (
+                    _build_native_short_wire(
+                        pair.left_wire_start_x,
+                        pair.left_wire_start_y,
+                        pair.left_pin_x,
+                        pair.left_pin_y,
                     ),
-                    _patch_wire(
-                        templates[second_role],
-                        second_pin[0],
-                        second_pin[1],
-                        second_pin[0],
-                        second_pin[1],
+                    _build_native_short_wire(
+                        pair.right_wire_start_x,
+                        pair.right_wire_start_y,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
                     ),
                 )
             )
-    else:
-        raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
 
     terminal_records.extend(
         _overlay_terminal_record(
@@ -2890,12 +2827,14 @@ def attach_mixed_native_bidir_terminals_to_project(
     *,
     terminal_families: Iterable[str] | None = None,
 ) -> dict[str, Any]:
-    """Attach researched families with their accepted native wire grammar.
+    """Attach researched families to the beautified component stream.
 
     Proteus wires are serialized as part of an active attachment unit, not as
     a trailing geometry overlay. The unit consists of active terminal records,
-    matching component pin-link suffixes, and two donor-derived WIRE records
-    immediately following the patched component. Component order is preserved.
+    matching component pin-link fields, and two schema-encoded WIRE records
+    immediately following the patched component. The component placer's order
+    is preserved; final link values are normalized by the public stage after
+    ROOT.DSN serialization.
     """
 
     groups = tuple(selected_groups)
@@ -2922,7 +2861,6 @@ def attach_mixed_native_bidir_terminals_to_project(
         raise ValueError(
             "Native mixed attachment requires at least one researched terminal family."
         )
-
     source = Path(project)
     destination = Path(output)
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -2932,7 +2870,7 @@ def attach_mixed_native_bidir_terminals_to_project(
         raise ValueError("Native mixed attachment requires a bare component-placer project.")
     ordered_groups = _covered_bare_component_stream(original_chunk, groups)
 
-    terminal_templates = load_production_templates(FixtureRegistry.load())
+    terminal_templates = NATIVE_BIDIR_TEMPLATES
     family_parts: dict[
         str,
         tuple[
@@ -3081,21 +3019,26 @@ def attach_mixed_native_bidir_terminals_to_project(
         for group in ordered_groups
         if str(getattr(group, "family", "")) not in requested
     )
-    return {
+    report = {
         "stage": "terminal_placer",
-        "family_handler": "MIXED/native-wire-v7-temp",
+        "family_handler": "MIXED/native-wire-v7-address-rebase",
         "status": "temporary_pending_proteus",
-        "attachment_policy": "accepted_active_links_and_component_adjacent_short_wires",
+        "attachment_policy": (
+            "beautified_stream_active_links_and_component_adjacent_short_wires"
+        ),
         "object_order": (
             "native_leading_terminal_arrays_then_original_component_order_with_"
-            "family_native_terminal_component_wire_units"
+            "family_profile_terminal_component_wire_units"
         ),
         "historical_basis": (
-            "accepted_single_family_native_writers_and_user_rejection_of_"
-            "append_after_terminal_wire_overlay"
+            "accepted_single_family_geometry_plus_absolute_wire_link_rule_"
+            "decoded_from_user_accepted_mixed_and_scaled_projects"
         ),
         "wire_requirement_basis": "user_confirmed_terminal_to_pin_wires_are_mandatory",
-        "terminal_array_order_policy": "accepted_family_native_order",
+        "terminal_array_order_policy": "family_profile_order",
+        "runtime_circuit_donor_dependency": False,
+        "terminal_record_encoder": "embedded_proteus_813_schema",
+        "wire_record_encoder": "canonical_50_byte_schema",
         "terminal_family_order": list(requested),
         "eligible_families": list(requested),
         "available_accepted_families": [
@@ -3117,7 +3060,7 @@ def attach_mixed_native_bidir_terminals_to_project(
         "expected_active_suffix_copies": 2,
         "base_component_stream_covered": True,
         "component_record_order_mutation": False,
-        "single_family_oracle_policy": "byte_exact_accepted_writer_grammar",
+        "single_family_oracle_policy": "same_shared_schema_encoder",
         "terminal_pin_contacts_valid": all(
             row["coincident"]
             for row in _terminal_pin_contact_checks(family_reports)
@@ -3151,6 +3094,219 @@ def attach_mixed_native_bidir_terminals_to_project(
             and final_chunk.endswith(b"\xff")
         ),
     }
+    return _rebase_terminal_links_to_final_wire_addresses(destination, report)
+
+
+def _object_chunk_absolute_start(dsn: bytes) -> int:
+    first = dsn.find(b"ISIS CIRCUIT FILE")
+    object_marker = dsn.find(b"OBJECT DATA", first)
+    second = dsn.find(b"ISIS CIRCUIT FILE", first + 1)
+    if first < 0 or object_marker < 0 or second < 0:
+        raise ValueError("ROOT.DSN does not contain the expected object-data sections.")
+    start = object_marker + len(b"OBJECT DATA")
+    if start >= second:
+        raise ValueError("ROOT.DSN object-data boundaries are reversed.")
+    return start
+
+
+def _terminal_wire_bindings(report: dict[str, Any]) -> list[dict[str, Any]]:
+    family_reports = report.get("family_reports")
+    reports = family_reports if isinstance(family_reports, list) else [report]
+    bindings: list[dict[str, Any]] = []
+    for family_report in reports:
+        for pair in family_report.get("terminal_pairs", []):
+            roles = ("left", "right") if "left" in pair else ("input", "output")
+            wires = pair.get("short_wires", {})
+            for role in roles:
+                terminal = pair.get(role)
+                wire = wires.get(role)
+                if not isinstance(terminal, dict) or not isinstance(wire, dict):
+                    raise ValueError(
+                        "Terminal report lacks the terminal/WIRE geometry required "
+                        "for final link allocation."
+                    )
+                start = wire.get("start", {})
+                end = wire.get("end", {})
+                bindings.append(
+                    {
+                        "component_key": pair.get("component_key"),
+                        "component_family": pair.get("component_family"),
+                        "role": role,
+                        "old_suffix": int(terminal["suffix"], 16),
+                        "coordinates": (
+                            int(start["x"]),
+                            int(start["y"]),
+                            int(end["x"]),
+                            int(end["y"]),
+                        ),
+                        "terminal": terminal,
+                    }
+                )
+    return bindings
+
+
+def _rebase_terminal_links_to_final_wire_addresses(
+    output: str | Path,
+    report: dict[str, Any],
+) -> dict[str, Any]:
+    """Allocate active terminal links from final WIRE addresses.
+
+    Proteus 8.13 stores the low 16 bits of the absolute byte immediately before
+    the linked 50-byte WIRE record. Since ``\x7fWIRE`` begins at record byte 23,
+    the link is ``absolute_object_start + marker_offset - 24``.
+    """
+
+    destination = Path(output)
+    dsn = read_internal_file(destination, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    chunk_start = _object_chunk_absolute_start(dsn)
+    bindings = _terminal_wire_bindings(report)
+
+    wire_rows: list[dict[str, Any]] = []
+    cursor = 0
+    while True:
+        marker = chunk.find(b"\x7fWIRE", cursor)
+        if marker < 0:
+            break
+        coordinate_start = marker + 10
+        if coordinate_start + 16 > len(chunk):
+            raise ValueError(f"WIRE at object offset {marker} is truncated.")
+        wire_rows.append(
+            {
+                "marker_offset": marker,
+                "coordinates": struct.unpack(
+                    "<iiii",
+                    chunk[coordinate_start : coordinate_start + 16],
+                ),
+            }
+        )
+        cursor = marker + len(b"\x7fWIRE")
+    if len(wire_rows) != len(bindings):
+        raise ValueError(
+            f"Terminal/WIRE count mismatch: {len(bindings)} bindings for "
+            f"{len(wire_rows)} WIRE records."
+        )
+
+    available_by_coordinates: dict[
+        tuple[int, int, int, int],
+        list[dict[str, Any]],
+    ] = {}
+    for row in wire_rows:
+        available_by_coordinates.setdefault(row["coordinates"], []).append(row)
+
+    old_suffixes = [binding["old_suffix"] for binding in bindings]
+    if len(old_suffixes) != len(set(old_suffixes)):
+        raise ValueError("Family-local terminal suffixes collide before final rebasing.")
+
+    allocations: list[dict[str, Any]] = []
+    for binding in bindings:
+        candidates = available_by_coordinates.get(binding["coordinates"], [])
+        if not candidates:
+            raise ValueError(
+                "No emitted WIRE matches terminal geometry for "
+                f"{binding['component_family']} {binding['component_key']} "
+                f"{binding['role']}: {binding['coordinates']}."
+            )
+        wire = candidates.pop(0)
+        new_suffix = (
+            chunk_start + int(wire["marker_offset"]) - 24
+        ) & 0xFFFF
+        allocations.append(
+            {
+                **binding,
+                "wire_marker_offset": wire["marker_offset"],
+                "wire_absolute_marker": chunk_start + wire["marker_offset"],
+                "new_suffix": new_suffix,
+            }
+        )
+    unused_wires = sum(len(rows) for rows in available_by_coordinates.values())
+    if unused_wires:
+        raise ValueError(f"{unused_wires} emitted WIRE records were not allocated.")
+    new_suffixes = [allocation["new_suffix"] for allocation in allocations]
+    if len(new_suffixes) != len(set(new_suffixes)):
+        raise ValueError("Final WIRE-address terminal suffixes are not unique.")
+
+    patch_positions: dict[int, tuple[int, int]] = {}
+    for allocation in allocations:
+        old_suffix = allocation["old_suffix"]
+        pattern = struct.pack("<H", old_suffix) + b"\x01\x00"
+        positions: list[int] = []
+        cursor = 0
+        while True:
+            position = chunk.find(pattern, cursor)
+            if position < 0:
+                break
+            positions.append(position)
+            cursor = position + 1
+        if len(positions) != 2:
+            raise ValueError(
+                f"Active link {old_suffix:04x} has {len(positions)} copies; "
+                "expected terminal plus component pin."
+            )
+        patch_positions[old_suffix] = (positions[0], positions[1])
+
+    rebased = bytearray(chunk)
+    for allocation in allocations:
+        new_value = struct.pack("<H", allocation["new_suffix"])
+        for position in patch_positions[allocation["old_suffix"]]:
+            rebased[position : position + 2] = new_value
+        allocation["terminal"]["suffix"] = f"{allocation['new_suffix']:04x}"
+
+    rebased_chunk = bytes(rebased)
+    dsn_chunk_start = _object_chunk_absolute_start(dsn)
+    dsn_chunk_end = dsn_chunk_start + len(chunk)
+    if dsn[dsn_chunk_start:dsn_chunk_end] != chunk:
+        raise ValueError("ROOT.DSN object chunk is not at the decoded absolute offset.")
+    rebased_dsn = (
+        dsn[:dsn_chunk_start]
+        + rebased_chunk
+        + dsn[dsn_chunk_end:]
+    )
+    write_project_from_parts(
+        destination,
+        destination,
+        {"ROOT.DSN": rebased_dsn},
+    )
+    written_dsn = read_internal_file(destination, "ROOT.DSN")
+    written_chunk = _extract_object_chunk(written_dsn)
+    if written_chunk != rebased_chunk:
+        raise ValueError("Written ROOT.DSN differs from the rebased object stream.")
+
+    report["terminal_suffixes"] = [
+        f"{suffix:04x}"
+        for suffix in new_suffixes
+    ]
+    report["terminal_suffixes_unique"] = True
+    report["terminal_suffix_links_valid"] = all(
+        written_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
+        for suffix in new_suffixes
+    )
+    report["link_allocation"] = {
+        "method": "final_root_dsn_wire_address",
+        "formula": "(absolute_object_start + wire_marker_offset - 24) & 0xffff",
+        "object_chunk_absolute_start": chunk_start,
+        "runtime_donor_dependency": False,
+        "allocation_count": len(allocations),
+        "allocations": [
+            {
+                "component_key": allocation["component_key"],
+                "component_family": allocation["component_family"],
+                "role": allocation["role"],
+                "old_suffix": f"{allocation['old_suffix']:04x}",
+                "suffix": f"{allocation['new_suffix']:04x}",
+                "wire_marker_offset": allocation["wire_marker_offset"],
+                "wire_absolute_marker": allocation["wire_absolute_marker"],
+                "coordinates": list(allocation["coordinates"]),
+            }
+            for allocation in allocations
+        ],
+        "valid": report["terminal_suffix_links_valid"],
+    }
+    report["valid"] = bool(
+        report.get("valid", False)
+        and report["terminal_suffix_links_valid"]
+    )
+    return report
 
 
 def attach_component_bidir_terminals_to_project(
@@ -3164,9 +3320,9 @@ def attach_component_bidir_terminals_to_project(
 ) -> dict[str, Any]:
     """Attach accepted families and preserve every unsupported mixed packet.
 
-    Single-family calls retain the exact accepted family writer. Mixed calls
-    serialize the same native active-link/component/WIRE units in original
-    component order; unsupported packets remain byte-identical and terminal-free.
+    The same schema encoder handles single and mixed calls. It consumes the
+    beautified packets in their supplied order, then rebases terminal links
+    from the final ROOT.DSN WIRE addresses.
     """
 
     groups = tuple(selected_groups)
@@ -3216,13 +3372,23 @@ def attach_component_bidir_terminals_to_project(
     )
 
     if len(families) == 1 and eligible_families:
-        return _attach_single_family_bidir_terminals_to_project(
-            project,
-            output,
-            groups,
-            label_prefix=label_prefix,
-            suffix_start=suffix_start,
-        )
+        if label_prefix is not None or suffix_start is not None:
+            report = _attach_single_family_bidir_terminals_to_project(
+                project,
+                output,
+                groups,
+                label_prefix=label_prefix,
+                suffix_start=suffix_start,
+            )
+        else:
+            report = attach_mixed_native_bidir_terminals_to_project(
+                project,
+                output,
+                groups,
+                terminal_families=eligible_families,
+            )
+            return report
+        return _rebase_terminal_links_to_final_wire_addresses(output, report)
     if label_prefix is not None or suffix_start is not None:
         raise ValueError(
             "label_prefix and suffix_start are single-family overrides; "

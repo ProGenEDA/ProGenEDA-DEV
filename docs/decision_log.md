@@ -472,6 +472,28 @@ Evidence:
 - V7 mixed 1x/3x/15x static checks pass with DIODE, NPN, and 74HC08 preserved
   and terminal-free. Mixed Proteus acceptance remains pending.
 
+## D032: Rebase terminal links from final WIRE addresses
+
+Decision: reject V7 mixed N07-N09 and do not replace them with a new runtime
+donor/order. Preserve the beautified component stream. Encode terminal and
+WIRE records from the known Proteus schema, serialize ROOT.DSN, and then write
+both copies of every active link from the final WIRE address:
+
+```text
+(object_chunk_absolute_start + full_wire_marker_offset - 24) & 0xffff
+```
+
+Evidence:
+
+- The user reported V7 N07, N08, and N09 failed.
+- All 25 terminals in the accepted 4x RCL file and all 21 terminals in the
+  accepted mixed-analog file satisfy the formula exactly.
+- V7 N07 has twelve terminal/component suffix pairs and all twelve disagree
+  with their final WIRE addresses.
+- Regenerating N07 with the shared schema encoder changes only active link
+  bytes; component packets, coordinates, WIRE geometry, and object length stay
+  unchanged.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.
