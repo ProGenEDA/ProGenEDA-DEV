@@ -1,4 +1,4 @@
-# Current Status - 2026-06-29
+# Current Status - 2026-07-01
 
 ## Active Architecture
 
@@ -40,17 +40,24 @@ validated request
   inductor, potentiometer, DC voltage, and DC current.
 - Shared `$TERBIDIR` placement now has:
   - accepted `RESISTOR/v3` attachment with donor-derived short wires;
-  - static-valid `CAP/v1` attachment with family-specific tail-link patching
-    and short-wire emission;
-  - static-valid `REALIND/v1` attachment derived independently from the bare
-    and two-terminal manual inductor donors;
+  - accepted `CAP/v2` attachment using the accepted capacitor-native object
+    order, suffix progression, pin geometry, and wire-record lengths;
+  - accepted `REALIND/v2` attachment using the accepted sequential
+    six-inductor donor structure;
+  - accepted `CAP-ELEC/v3` attachment using the accepted sequential
+    eight-electrolytic-capacitor donor structure;
+  - accepted `VSOURCE/v4` and `CSOURCE/v4` attachment using the accepted
+    bidirectional V3 source roles, body links, and wire geometry;
+  - a temporary short-wire-only mixed candidate that keeps the beautified
+    component stream and Ctrl+S-normalized T01 terminal order intact, adds
+    family-derived wires, and preserves unsupported component packets;
   - rejected old V2 bounding-box side-anchor logic retained only as negative
     evidence.
 - Logical wiring plans and same-net groups.
 
 ## Not Yet Promoted
 
-- Electrically attached generated bidirectional terminals.
+- Mixed-family append-overlay ordering pending Proteus acceptance.
 - Donor-derived short-wire emission for every family/pin.
 - Arbitrary Proteus wiring and junction synthesis.
 - General power/ground terminal placement on the unified component route.
@@ -63,8 +70,10 @@ The current user test packs are:
 
 - `experiments/VALUE_CHANGER_PROBE_V2_SAFE_VALUES_TEMP_2026_06_26.zip`
 - `experiments/TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip`
-- `experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip`
-- `experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29.zip`
+- `experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_STREAM_LINK_V9_TEMP_2026_07_02.zip`
 
 The terminal V2 pack was rejected by user testing on 2026-06-29: its
 bounding-box side anchors were not correctly placed or electrically attached.
@@ -77,33 +86,199 @@ wires. Its 1x/3x/15x pack passed Proteus testing on 2026-06-29 and is locked.
 See
 `experiments/terminal_placer_resistor_attachment_v3_temp_2026_06_29/README.md`.
 
-The next focused family is `CAP/v1`. It uses the same shared terminal module,
-but with capacitor-specific body-center pin derivation and dynamic tail-link
-offsets so longer refs such as `C14` still patch correctly. Its static pack is
-ready for manual Proteus testing:
-`experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V1_TEMP_2026_06_29.zip`.
+The old `CAP/v1` pack is invalidated. It used resistor-style terminal ordering,
+placed terminal symbols 508000 units beyond the pins, emitted 254000-length
+wires, and did not preserve the accepted capacitor right-wire trimming.
 
-`REALIND/v1` now follows the same shared entrypoint with independently proven
-inductor geometry: pins are 762000 units either side of the REALIND body
-center, active link suffixes are patched at body-relative offsets `+25/+29`,
-and the short-wire record templates come from
-`inductor_02_two_terminal.pdsprj`. The 1x/3x/15x static pack is ready for
-manual Proteus testing:
-`experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29.zip`.
+`CAP/v2` is the accepted capacitor handler. It preserves the accepted
+manual capacitor route: right-terminal array first; repeated left-terminal,
+component, left-wire, and right-wire groups; donor-native suffix progression;
+pins 508000 units from the body; terminal symbols another 254000 units outward;
+zero-length attachment records at the pins; 49-byte non-final right wires; and
+a 50-byte final right wire. The user confirmed its 1x/3x/15x Proteus pack
+worked on 2026-06-30:
+`experiments/TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30.zip`.
+
+`REALIND/v1` is rejected. The user reported the generated inductor output was
+faulty. It remains negative evidence and must not be restored.
+
+`REALIND/v2` was re-researched from the accepted six-inductor donor. It emits
+sequential left-terminal/right-terminal/component/left-wire/right-wire groups,
+uses pins 762000 units from the body, places terminal symbols another 254000
+units outward, patches the donor-native suffix progression, emits zero-length
+pin records, and preserves 49-byte non-final and 50-byte final right wires. The
+user confirmed its 1x/3x/15x Proteus pack worked on 2026-06-30:
+`experiments/TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30.zip`.
+
+The old generic CAP-ELEC terminal probes are rejected because their terminals
+were visible but unattached. `CAP-ELEC/v3` instead follows the accepted
+eight-component donor: repeated right-terminal/left-terminal/component/
+left-wire/right-wire groups; pins 508000 units from the body; terminal symbols
+another 254000 units outward; donor-native suffix progression; zero-length
+records at both pins; 49-byte non-final right wires; and a 50-byte final right
+wire. The user confirmed its 1x/3x/15x pack worked on 2026-06-30:
+`experiments/TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30.zip`.
+
+`VSOURCE/v4` and `CSOURCE/v4` reuse the manually accepted bidirectional V3
+source method: input roles use 180 degrees, output roles use 0 degrees, source
+body link fields are patched with the same endpoint suffixes, and two
+zero-length source-native wire records end at the actual pins. VSOURCE
+preserves output/input order; CSOURCE preserves input/output order. Both use
+the accepted `0x0080` per-source suffix step and handle dynamic reference
+lengths such as `I9` to `I10`. The user confirmed both 1x/3x/15x packs worked
+on 2026-06-30:
+
+- `experiments/TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+- `experiments/TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30.zip`
+
+Repository-wide donor scanning did not find terminalized attachment evidence
+for DIODE, the named diode variants, LED-RED, FUSE, or VPULSE. VSINE has an
+accepted special single non-final source unit, but not a proven general
+1x/3x/15x ordering. These families remain unsupported in the shared terminal
+dispatcher; no passive/source pattern is guessed for them.
+
+`MIXED/selective-v1` is rejected. The user reported that its mixed pack failed
+in Proteus. It rebuilt independently accepted family blocks and therefore did
+not preserve the object order of the older all-family files.
+
+The user clarified that the older V2 all-family files did open and render:
+their terminals were present beside components but floated because no
+attachment links or wires were emitted. That establishes one useful ordering
+constraint without establishing attachment:
+
+```text
+beautified component stream -> appended terminals
+```
+
+`MIXED/append-overlay-v3-temp` retains that component-first ordering. It
+patches accepted family link fields in the existing component packets, then
+appends terminal records and donor-derived zero-length attachment wires. The
+learned RESISTOR/v3, CAP/v2, REALIND/v2, CAP-ELEC/v3, VSOURCE/v4, and
+CSOURCE/v4 geometry/suffix rules are reused inside the one shared terminal
+module. DIODE, NPN, and 74HC08 remain byte-identical and receive no terminals.
+
+The V3 diagnostic pack contains:
+
+- T00: exact-copy bare control with separated IC/non-IC layout bands;
+- T01: historical opening-order control with 12 floating appended terminals;
+- T02: full six-family attachment overlay with 12 terminals and 12 wires;
+- T03: passive-only attachment overlay with 8 terminals and 8 wires;
+- T04: source-only attachment overlay with 4 terminals and 4 wires.
+
+The user rejected V3 as a mixed attachment method. T02-T04 were described as
+terrible. T01 was the only close case: its component-first append-only order
+placed terminals correctly near the pins, but the resistor remained
+unattached. The user then clarified the missing invariant: Proteus requires a
+small `WIRE` record between each terminal and component pin. Direct coordinate
+contact without a wire is not attachment.
+
+The T01/V3 comparison also exposes two independent differences:
+
+- T01 retains RESISTOR/CAP/REALIND/CAP-ELEC/VSOURCE/CSOURCE terminal order;
+- rejected T02 reordered the array source-first and simultaneously changed
+  component links, terminal active flags, and wire presence.
+
+V5 confirmed the short-wire geometry but still produced Bad Object Record.
+The user supplied a Proteus Ctrl+S repair of its isolated resistor case. The
+binary diff proves two exact writer faults:
+
+- inactive appended terminal suffix/link tails must be `00 00 00 00`;
+- a terminal-only stream keeps the full last terminal record and appends a
+  separate final `FF` sentinel.
+
+Proteus Ctrl+S also removed both old resistor wire records. The repaired
+terminal-only output generated with these rules is now object-chunk identical
+to the supplied Ctrl+S project.
+
+The user rejected `MIXED/short-wire-v6-temp`: Bad Object Record remained and
+none of its appended wire records rendered. V6 proved that wire coordinates
+alone are insufficient. Proteus attachment state must be serialized as a
+complete native unit:
+
+```text
+active terminal suffix
+    + matching active component pin-link suffix
+    + component-adjacent donor WIRE records
+```
+
+The user rejected V7 mixed cases N07-N09. Binary research found a concrete
+error in those files: every terminal/component link retained a family-local
+number even though Proteus links are derived from final WIRE addresses.
+Accepted RCL and mixed-analog files satisfy this formula for every attachment:
+
+```text
+(ROOT.DSN object chunk absolute start + full \x7fWIRE marker offset - 24)
+    mod 65536
+```
+
+V7 N07 contains twelve mismatches. The V9 serializer changes only those active
+link fields: it preserves the beautified packet stream, encodes `$TERBIDIR`
+and 50-byte WIRE records directly from the Proteus 8.13 schema, builds
+ROOT.DSN, then rebases both copies of every link from its final WIRE address.
+No mixed circuit donor is selected or transplanted at runtime.
+
+The V9 pack repeats six 3x family cases plus mixed 1x/3x/15x cases with
+terminal-free DIODE, NPN, and 74HC08 controls. All cases pass structural,
+geometry, exact-link-address, and layout-band validation, but user Proteus
+testing rejected all mixed cases. The user then demonstrated the missing
+geometry constraint: Proteus terminals sit on the `254000`-unit schematic
+grid, while beautified component pins can be off-grid. Copying an off-grid pin
+coordinate into a terminal record is invalid even when the active-link bytes
+are correct.
+
+V10 keeps every component coordinate unchanged. It snaps each terminal contact
+to the nearest `254000 x 254000` grid intersection and emits a short WIRE from
+that contact to the exact parsed pin coordinate. Both terminal symbols and
+their contacts are grid-aligned; WIRE ends remain pin-exact. V10 is generated
+only from the unchanged `new_components_5x_mega.pdsprj` mega donor containing
+FUSE and POT-HG, hash-locked as
+`1222561d29622193d4eaa34aa830a341dee47abe376d1b971390dd6baad7958c`.
+That donor is only a component-placer test input: terminal placement and
+beautification do not inspect its path or packet origin.
+
+The V10 pack has six 3x researched-family cases and mixed 1x/3x/15x cases.
+All 9 are statically valid. FUSE is included and byte-preserved as a same-donor
+control. Proteus testing remains required.
+
+The packet beautifier now places IC and non-IC families in separate vertical
+bands when they coexist. The lower band begins at least 5,080,000 internal
+units below the maximum parsed IC coordinate. This corrects the reported
+74HC08/non-IC visual overlap; Proteus confirmation remains pending.
 
 ## Verification Baseline
 
-- focused component placer suite: 43 passed;
+- focused component placer suite: 63 passed;
+- repository `tests/`: 215 passed and 78 subtests passed; one unrelated KiCad
+  target-pack test fails on four Windows paths longer than the legacy path
+  limit;
 - compileall: passed;
 - value V2: 7/7 static-valid;
 - terminal V2: 3/3 marker-valid but rejected as unattached in Proteus;
 - resistor-specific V3 attachment: Proteus-accepted and locked.
-- capacitor-specific V1 attachment: static-valid, pending user Proteus test.
-- inductor-specific V1 attachment: static-valid, pending user Proteus test.
+- capacitor-specific V1 attachment: invalidated by donor audit.
+- capacitor-specific V2 attachment: Proteus-accepted and locked.
+- inductor-specific V1 attachment: user-rejected and disabled.
+- inductor-specific V2 attachment: Proteus-accepted and locked.
+- electrolytic-capacitor-specific V3 attachment: Proteus-accepted and locked.
+- DC-voltage-source-specific V4 attachment: Proteus-accepted and locked.
+- DC-current-source-specific V4 attachment: Proteus-accepted and locked.
+- mixed selective V1: user-rejected.
+- mixed append-overlay V3: rejected; only T01 supplied useful placement/order
+  evidence.
+- mixed wire-ablation V5: rejected with Bad Object Record.
+- mixed short-wire V6: user-rejected; Bad Object Record remained and wires did
+  not render.
+- mixed native-wire V7: mixed N07-N09 user-rejected; links do not match final
+  WIRE addresses.
+- stream-link V9: user-rejected in all mixed cases; terminals were assigned
+  off-grid contact coordinates.
+- grid-wire V10: grid-snapped contacts, short wires to exact untouched pins,
+  fixed mega-donor test input, and donor-independent downstream logic; 9/9
+  static-valid, Proteus tests pending.
+- mixed IC/non-IC bands: focused static regression passed; pending visual test.
 
 ## Next Engineering Step
 
-Use accepted terminalized donors to learn per-family pin anchors and complete
-terminal-plus-short-wire fragments. Start with two-pin passives, then sources,
-controls/transistors, displays, combinational packages, and native IC packages.
-Do not infer all pin anchors from a component bounding box.
+Test V10_01-V10_06, then V10_07-V10_09.
+Additional two-pin families remain unsupported until their pin/link fields can
+be represented by a verified family profile; do not add runtime circuit donors.

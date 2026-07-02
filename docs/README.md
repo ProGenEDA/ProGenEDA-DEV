@@ -15,6 +15,10 @@ the documents below in order when deciding current behavior.
    removal-only pipeline contract.
 5. [`active_working_memory_2026_06_23.md`](active_working_memory_2026_06_23.md)
    - chronological continuation memory; newest entries are authoritative.
+6. [`progen_eda_canonical_pipeline.md`](progen_eda_canonical_pipeline.md) -
+   owner-defined stage order and current implementation map.
+7. [`complete_component_donor_request.md`](complete_component_donor_request.md)
+   - complete current-catalog IC/non-IC donor suite request and delivery order.
 
 ## Architecture And Validation
 

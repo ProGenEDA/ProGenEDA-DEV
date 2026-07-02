@@ -103,7 +103,7 @@ first, then terminals are attached to the remaining selected pins.
 | Wire Planner | Partial intent only | `component_pipeline.py` |
 | Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
-| Terminal Placer | Experimental, family-by-family | `component_terminal_placer.py` |
+| Terminal Placer | Six profiles; V9 schema encoder and final-address linker | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
 | Value Editor | Lightly tested | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |
@@ -117,8 +117,56 @@ first, then terminals are attached to the remaining selected pins.
 matched terminal suffixes, resistor pin-link fields, and donor-derived short
 wires.
 
-All other families remain unaccepted until their own focused pack passes
-Proteus. A visible `$TERBIDIR` beside a component is not attachment proof.
+`CAP/v2` passed user Proteus testing on 2026-06-30 and is locked. `CAP/v1` was
+invalidated by donor comparison. `REALIND/v1` was rejected by user testing;
+its donor-researched `REALIND/v2` replacement passed user Proteus testing on
+2026-06-30 and is locked. `CAP-ELEC/v3`, `VSOURCE/v4`, and `CSOURCE/v4` also
+passed their 1x/3x/15x Proteus tests on 2026-06-30.
+
+The first mixed selective candidate is rejected because it rebuilt
+independently accepted family blocks. V3 retained the complete beautified
+component stream, but the user rejected its full attachment cases. Only its
+T01 no-wire case supplied useful evidence: the component-first stream and
+RESISTOR/CAP/REALIND/CAP-ELEC/VSOURCE/CSOURCE terminal order opened and placed
+terminals correctly. The user confirmed that terminal-to-pin attachment still
+requires a Proteus `WIRE` record.
+
+V5 still produced Bad Object Record. A user-supplied Proteus Ctrl+S repair
+proved that inactive appended terminal suffix/link tails must be zero and that
+the final terminal record must remain complete before a separate final `FF`
+sentinel. The generated terminal-only control now matches that saved object
+chunk exactly.
+
+V6 was rejected because standalone trailing wires did not render. V7 proved
+the complete active terminal/component-link/WIRE unit for all six families,
+but mixed N07-N09 failed because family-local link numbers were not rebased
+after final serialization.
+
+V9 kept the beautified component order and used no runtime circuit donor.
+`$TERBIDIR` and 50-byte WIRE records are schema-encoded. After ROOT.DSN is
+built, each terminal and component pin receives the low 16 bits of the absolute
+byte immediately before its associated WIRE record. The user rejected every
+mixed V9 case because the terminal coordinates copied beautified off-grid pin
+coordinates.
+
+V10 preserves the final-address rule and changes only endpoint geometry:
+terminal contacts snap to the nearest Proteus `254000`-unit grid intersection,
+and a short WIRE runs from the grid contact to the exact component pin.
+Components remain at their beautified coordinates. This rule is a Proteus
+backend profile; the stage still consumes placed packets and pin descriptors,
+not donor identity.
+
+When IC and non-IC packets coexist, the packet beautifier uses separate
+vertical bands with at least 5,080,000 internal units between the parsed IC
+maximum Y and non-IC minimum Y. This is a static correction for the reported
+mixed visual overlap and remains pending Proteus inspection.
+
+DIODE variants, LED-RED, FUSE, and VPULSE lack terminalized attachment donors;
+VSINE lacks a proven general multi-unit ordering. They remain unsupported
+rather than inheriting another family's byte pattern. All other families
+remain unaccepted until their own focused pack passes Proteus. A visible
+`$TERBIDIR` beside a component is not attachment proof. The complete donor
+request is `docs/complete_component_donor_request.md`.
 
 ## Non-Negotiable Rules
 
@@ -133,3 +181,21 @@ Proteus. A visible `$TERBIDIR` beside a component is not attachment proof.
    binary-format validation.
 7. Results go into the experiment README and `knowledge/test_results.jsonl`;
    confirmed behavior is promoted to `knowledge/rules.json`.
+8. Mixed dispatch must use an explicit family allowlist. Unsupported
+   components must remain byte-identical and receive zero terminal records.
+9. A mixed terminal route must preserve the component-placer stream order;
+   independently rebuilding and concatenating accepted family-native blocks is
+   rejected evidence.
+10. A terminal touching a pin geometrically is not attachment proof. Every
+    accepted terminal endpoint requires its family-derived `WIRE` record, even
+    when that record has zero geometric length.
+11. Mixed terminal-family order must follow the opening T01 component/terminal
+    stream; do not silently reorder accepted families through dispatcher
+    priority.
+12. The component placer is replaceable. Every placer must emit the stable
+    placed-design contract documented in `docs/architecture.md`; downstream
+    stages must not depend on mega-donor filenames, donor slots, or fixed
+    template coordinates.
+13. IC pin meaning comes from normalized backend pin metadata, not geometry.
+    Terminal/wire stages consume pin number, name, role, electrical type, and
+    connection coordinates from the placed-design contract.

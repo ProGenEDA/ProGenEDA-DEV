@@ -31,6 +31,7 @@ VISIBLE_LAYOUT_COLUMNS = 10
 VISIBLE_LAYOUT_MARGIN_X = 1_270_000
 VISIBLE_LAYOUT_MARGIN_Y = 1_270_000
 VISIBLE_LAYOUT_SHELF_WIDTH = VISIBLE_LAYOUT_SLOT_X * 16
+MIXED_LAYOUT_BAND_GAP_Y = 5_080_000
 SCAN_COORD_LIMIT = 30_000_000
 MIN_COORD_ABS = 50_000
 SAFE_PACKET_COORD_LIMIT = 700_000_000
@@ -110,6 +111,7 @@ PARSED_IC_LAYOUT_FAMILIES = {
     "LM741",
     "NE555",
 }
+IC_LAYOUT_FAMILY_RE = re.compile(r"^(?:74HC\d+|\d{4})$")
 DISPLAY_LAYOUT_FAMILIES = {
     "7SEG-COM-AN-BLUE",
     "7SEG-COM-CAT-BLUE",
@@ -150,6 +152,14 @@ def coordinate_plan_for_family(family: str) -> tuple[tuple[int, int], ...]:
         return LINKED_COORDINATE_PLANS[family]
     except KeyError as exc:
         raise ValueError(f"No packet coordinate plan is proven for {family}.") from exc
+
+
+def is_ic_layout_family(family: str) -> bool:
+    """Return whether a family belongs on the IC-only beautifier band."""
+
+    return family in PARSED_IC_LAYOUT_FAMILIES or bool(
+        IC_LAYOUT_FAMILY_RE.fullmatch(family)
+    )
 
 
 def _validate_pair_bounds(data: bytes, family: str, pairs: tuple[tuple[int, int], ...]) -> None:

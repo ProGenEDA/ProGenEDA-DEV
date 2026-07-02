@@ -3512,9 +3512,9 @@
     },
     {
       "id": "R_TERMINAL_REALIND_V1_STATIC_20260629",
-      "title": "Inductor terminal attachment uses independent donor geometry",
-      "status": "static_verified_pending_user_proteus",
-      "confidence": 0.94,
+      "title": "Rejected REALIND V1 must not be generated",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
       "applies_to": [
         "component_terminal_placer",
         "REALIND",
@@ -3524,10 +3524,300 @@
         "fixtures/pdsprj/inductor_01_single_free.pdsprj",
         "fixtures/pdsprj/inductor_02_two_terminal.pdsprj",
         "TERMINAL_PLACER_REALIND_ATTACHMENT_V1_TEMP_2026_06_29",
-        "tests/test_component_placer.py => 43 passed"
+        "User report 2026-06-29/30: latest generated inductor is faulty",
+        "CAP restart audit from trusted RESISTOR/v3 checkpoint a6deb648"
       ],
-      "rule": "Attach horizontal REALIND bidirectional terminals only through REALIND/v1: derive the center from the final REALIND body marker, use pins at center +/- 762000, patch active input/output suffixes at body-relative offsets +25 and +29, orient the left terminal 1800 and right terminal 0, and emit the two 50-byte short-wire templates proven by the manual two-terminal inductor donor. Three-character refs require the REALIND-specific body-anchor fallback.",
-      "date": "2026-06-29"
+      "rule": "Do not generate REALIND through REALIND/v1. Static marker counts and guessed geometry did not establish Proteus correctness. Preserve V1 only as negative evidence; any active successor must be independently researched from accepted donor-native object ordering, component boundaries, suffix progression, and final/non-final wire lengths.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_CAP_V2_STATIC_20260630",
+      "title": "CAP V2 is the accepted capacitor terminal handler",
+      "status": "user_confirmed",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "CAP",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "fixtures/pdsprj/cap2_with_terminals_manual.pdsprj",
+        "src/proteusgen/mixed_passive.py accepted capacitor route",
+        "TERMINAL_PLACER_CAPACITOR_ATTACHMENT_V2_TEMP_2026_06_30",
+        "tests/test_component_placer.py => 42 passed",
+        "Independent object-stream cursor, link-suffix, and zero-length-wire audit",
+        "User report 2026-06-30: CAP V2 worked"
+      ],
+      "rule": "CAP/v2 is the accepted capacitor terminal handler. Preserve the capacitor-native right-terminal array followed by left-terminal/component/left-wire/right-wire groups; use donor suffix step 0x0238; place pins at body +/-508000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_REALIND_V2_STATIC_20260630",
+      "title": "REALIND V2 is the accepted inductor terminal handler",
+      "status": "user_confirmed",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "REALIND",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "fixtures/pdsprj/inductor_05_six_terminal.pdsprj",
+        "User-accepted INDUCTOR_V8 sequential donor route",
+        "Locked mixed_rcl bidirectional-terminal conversion",
+        "TERMINAL_PLACER_REALIND_ATTACHMENT_V2_TEMP_2026_06_30",
+        "tests/test_component_placer.py => 43 passed",
+        "Independent 1x/3x/15x cursor, suffix-link, boundary, and zero-length-wire audit",
+        "User report 2026-06-30: REALIND V2 1x/3x/15x pack worked"
+      ],
+      "rule": "REALIND/v2 is the accepted inductor terminal handler. Preserve repeated left-terminal/right-terminal/component/left-wire/right-wire groups; use donor suffix step 0x02A8 from 0x01B2/0x01E4; place pins at body +/-762000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_CAP_ELEC_V3_STATIC_20260630",
+      "title": "CAP-ELEC V3 preserves the accepted sequential donor structure",
+      "status": "user_confirmed",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "CAP-ELEC",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "proteus_ic/donors/analog_misc_batch1/8ELEC-CAP.pdsprj",
+        "ANALOG_MISC_BATCH1_SOLO_USER_ACCEPTANCE_20260609",
+        "Accepted donor-native CAP-ELEC terminal-label mutation controls",
+        "TERMINAL_PLACER_CAP_ELEC_ATTACHMENT_V3_TEMP_2026_06_30",
+        "tests/test_component_placer.py => 49 passed",
+        "Independent 1x/3x/15x right-left order, cursor, suffix-link, boundary, and pin-endpoint audit",
+        "User report 2026-06-30: CAP-ELEC V3 1x/3x/15x pack worked"
+      ],
+      "rule": "CAP-ELEC/v3 is the accepted electrolytic-capacitor terminal handler. Preserve repeated right-terminal/left-terminal/component/left-wire/right-wire groups; use donor suffix step 0x02A8 from left/right 0x0120/0x0152; place pins at body +/-508000 and terminal symbols another 254000 outward; emit zero-length attachment records at the pins; replace donor blank labels with compact non-empty labels; trim every non-final right wire to 49 bytes and keep the final right wire at 50 bytes ending FF.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_DC_SOURCES_V4_STATIC_20260630",
+      "title": "DC source V4 handlers preserve accepted role-specific source units",
+      "status": "user_confirmed",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "VSOURCE",
+        "CSOURCE",
+        "$TERBIDIR"
+      ],
+      "evidence": [
+        "BIDIRECTIONAL_V3_USER_ACCEPTANCE_20260607",
+        "fixtures/pdsprj/bidirectional_dcv_source_donor.pdsprj",
+        "fixtures/pdsprj/source_dc_mixed_v15_donor.pdsprj",
+        "Accepted three-DCV sequential source boundary evidence",
+        "TERMINAL_PLACER_VSOURCE_ATTACHMENT_V4_TEMP_2026_06_30",
+        "TERMINAL_PLACER_CSOURCE_ATTACHMENT_V4_TEMP_2026_06_30",
+        "tests/test_component_placer.py => 49 passed",
+        "Independent 1x/3x/15x role-order, cursor, suffix-link, endpoint, reference-length, and boundary audits",
+        "User report 2026-06-30: VSOURCE V4 and CSOURCE V4 1x/3x/15x packs worked"
+      ],
+      "rule": "VSOURCE/v4 and CSOURCE/v4 are the accepted component-placer DC source terminal handlers. Preserve input=1800 and output=0 role orientation, the accepted output/input VSOURCE order and input/output CSOURCE order, family-specific upper/lower pin roles, source-body endpoint links, zero-length source-native wire records, output suffix 0x7000 with input at +0x0032, and a per-source step of 0x0080. Packet length must be validated as the donor-derived base plus reference length so I9/I10 transitions remain intact. Keep the second wire at 49 bytes for non-final groups and 50 bytes ending FF for the final group.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_REMAINING_TWO_PIN_BLOCKED_20260630",
+      "title": "Remaining two-pin families need terminalized attachment evidence",
+      "status": "blocked_by_missing_donor_evidence",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "DIODE",
+        "named diode variants",
+        "LED-RED",
+        "FUSE",
+        "VSINE",
+        "VPULSE"
+      ],
+      "evidence": [
+        "Repository-wide ROOT.DSN object-chunk donor scan 2026-06-30",
+        "Bare new-component mega placement donors",
+        "Accepted VSINE route limited to a special single non-final unit",
+        "No terminalized 1x/3x/15x attachment donor found for these families"
+      ],
+      "rule": "Do not dispatch DIODE, named diode variants, LED-RED, FUSE, VSINE, or VPULSE through a resistor, capacitor, inductor, CAP-ELEC, or DC-source terminal pattern. Bare two-pin placement does not prove terminal order, endpoint link fields, pin geometry, or final/non-final wire boundaries. Add a handler only after terminalized donor evidence proves the complete family shape; VSINE additionally needs a general multi-unit ordering rather than its accepted special single non-final source block.",
+      "date": "2026-06-30"
+    },
+    {
+      "id": "R_TERMINAL_MIXED_SELECTIVE_V1_REJECTED_20260701",
+      "title": "Independent family-block composition is rejected for mixed terminals",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "terminal eligibility",
+        "unsupported component preservation"
+      ],
+      "evidence": [
+        "TERMINAL_PLACER_MIXED_SELECTIVE_V1_TEMP_2026_06_30",
+        "T01 one of every accepted family plus DIODE/NPN/74HC08 controls",
+        "T02 three of every accepted family plus repeated controls",
+        "T03 control-only exact-copy negative control",
+        "tests/test_component_placer.py => 51 passed",
+        "Independent archive, required-file, suffix-link, marker-count, final-FF, and byte-preservation audit",
+        "User report 2026-07-01: mixed selective pack failed"
+      ],
+      "rule": "Do not rebuild and concatenate independently accepted family-native object blocks for a mixed component-placer stream. MIXED/selective-v1 passed static checks but failed Proteus and is negative evidence. Keep the explicit accepted-family allowlist and unsupported-packet preservation requirements, but use a mixed ordering supported by opening evidence.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_MIXED_APPEND_OVERLAY_V3_STATIC_20260701",
+      "title": "V3 mixed append overlay is rejected but T01 preserves useful order evidence",
+      "status": "rejected_with_partial_order_evidence",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "component_beautifier",
+        "mixed component placement",
+        "terminal eligibility",
+        "unsupported component preservation"
+      ],
+      "evidence": [
+        "User clarification 2026-07-01: older all-family appended-terminal files opened and rendered, but terminals floated",
+        "TERMINAL_PLACER_MIXED_OVERLAY_V3_TEMP_2026_07_01",
+        "T00 exact-copy bare control",
+        "T01 12-terminal opening-order control without attachment",
+        "T02 full six-family 12-terminal/12-wire overlay",
+        "T03 passive-only 8-terminal/8-wire overlay",
+        "T04 source-only 4-terminal/4-wire overlay",
+        "Focused family attachment and mixed-dispatch tests",
+        "Independent component-prefix, suffix-link, marker-count, unsupported-packet, and layout-band audit",
+        "User report 2026-07-01: V3 was terrible; only T01 came close",
+        "User report 2026-07-01: T01 terminals were positioned correctly but resistor was unattached"
+      ],
+      "rule": "Do not use V3 T02-T04 as a mixed attachment method. Retain only T01 evidence: keep the complete beautified component stream first and preserve its RESISTOR/CAP/REALIND/CAP-ELEC/VSOURCE/CSOURCE terminal order. T01 does not prove attachment because it has no WIRE records. Rejected T02 also reordered terminals source-first while changing component links, terminal active flags, and wires simultaneously.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_MIXED_WIRE_V5_STATIC_20260701",
+      "title": "Mixed V5 is rejected by Bad Object Record",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "terminal WIRE records",
+        "terminal eligibility",
+        "unsupported component preservation"
+      ],
+      "evidence": [
+        "User clarification 2026-07-01: small wires are mandatory in Proteus",
+        "TERMINAL_PLACER_MIXED_WIRE_V5_TEMP_2026_07_01",
+        "T00 exact known-close V3 T01 reproduction",
+        "T01 preserves T00 component and terminal streams then adds 12 family-derived wires only",
+        "T02/T03 independently ablate terminal active flags and component link patches",
+        "T04 exactly reproduces rejected V3 T02",
+        "T05 component move-away/move-back restores the exact T01 object chunk",
+        "T06 isolates resistor plus its two 254000-unit wires and unsupported controls",
+        "All emitted wire starts match terminal contacts and wire ends match component pins",
+        "User report 2026-07-01: V5 has Bad Object Record, also present in terminal-only T01",
+        "User supplied Ctrl+S repair of isolated resistor T06"
+      ],
+      "rule": "Do not use V5 output. Although its planned wire geometry was correct, inactive terminal records retained nonzero suffixes and the terminal-only writer overwrote the last terminal tail byte with the final FF. Proteus reported Bad Object Record. Ctrl+S zeroed the inactive suffixes, restored a separate final sentinel, and removed the invalid old wire records.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_SHORT_WIRE_V6_STATIC_20260701",
+      "title": "V6 inactive terminals plus trailing wires are rejected",
+      "status": "rejected_by_user_proteus_test",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "$TERBIDIR",
+        "WIRE",
+        "Ctrl+S normalization"
+      ],
+      "evidence": [
+        "fixtures/pdsprj/t06_resistor_ctrl_s_repair_20260701.pdsprj",
+        "User-supplied Ctrl+S repair SHA256 a81bd7a5fa0fb23bd9eeccd43b86813ec67510980bcc87af0a158cbf3080f068",
+        "Generated terminal-only control object chunk exactly matches the Ctrl+S repair",
+        "TERMINAL_PLACER_SHORT_WIRE_V6_TEMP_2026_07_01",
+        "Resistor short-wire cases at 1x, 3x, and 15x",
+        "Mixed accepted-family short-wire cases at 1x, 3x, and 15x",
+        "Static terminal-tail, final-sentinel, orientation, wire-coordinate, unsupported-packet, and layout audits",
+        "User report 2026-07-01: Bad Object Record remained and no wires rendered"
+      ],
+      "rule": "Do not use the V6 mixed output. The Ctrl+S-normalized terminal-only stream remains useful repair evidence, but appending standalone donor wire geometry after inactive terminals is invalid: Proteus retained Bad Object Record and rendered no wires. Wire coordinates alone do not encode attachment.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_NATIVE_WIRE_V7_STATIC_20260701",
+      "title": "V7 mixed files retained family-local link values",
+      "status": "mixed_rejected_by_user_proteus_test",
+      "confidence": 1.0,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "$TERBIDIR",
+        "component pin links",
+        "WIRE",
+        "final WIRE addresses"
+      ],
+      "evidence": [
+        "User report 2026-07-01: V6 Bad Object Record remained and no wires rendered",
+        "Accepted RESISTOR/v3 component-adjacent wire stream",
+        "Three-component V7 object chunks are byte-identical to accepted RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE writers",
+        "TERMINAL_PLACER_NATIVE_WIRE_V7_TEMP_2026_07_01",
+        "Mixed 1x, 3x, and 15x static validations",
+        "15x stress case: 93 components, 180 active terminals, 180 WIRE records, unique suffixes, two active copies per suffix",
+        "User report 2026-07-01: N07, N08, and N09 failed"
+      ],
+      "rule": "Do not use V7 N07-N09. Their active terminal and component links are family-local values rather than the low 16 bits of the final byte immediately before each WIRE record. The files remain useful geometry and boundary evidence, but not valid final linked output.",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "R_TERMINAL_STREAM_LINK_V9_STATIC_20260702",
+      "title": "V9 allocates links from final ROOT.DSN WIRE addresses",
+      "status": "static_verified_pending_user_proteus",
+      "confidence": 0.98,
+      "applies_to": [
+        "component_terminal_placer",
+        "mixed component placement",
+        "$TERBIDIR",
+        "component pin links",
+        "WIRE",
+        "ROOT.DSN absolute offsets",
+        "donor-independent encoding"
+      ],
+      "evidence": [
+        "All 25 terminals in user-accepted fixtures/pdsprj/rcl_4x_t07_unit_donor.pdsprj satisfy the final-WIRE formula",
+        "All 21 terminals in user-accepted MIX_RCL_ANALOG_ONLY.pdsprj satisfy the same formula",
+        "All 12 links in rejected V7 N07 disagree with their final WIRE addresses",
+        "Canonical $TERBIDIR schema records reproduce the prior terminal templates byte-for-byte",
+        "Canonical 50-byte WIRE encoder reproduces accepted component-adjacent records",
+        "TERMINAL_PLACER_STREAM_LINK_V9_TEMP_2026_07_02"
+      ],
+      "rule": "Preserve the beautified component stream and do not select a mixed circuit donor at runtime. Encode terminal and WIRE records from the Proteus schema, serialize ROOT.DSN, then set both the terminal suffix and component pin-link field to (object_chunk_absolute_start + full_wire_marker_offset - 24) & 0xffff. Reject missing, duplicate, or geometry-ambiguous bindings instead of guessing.",
+      "date": "2026-07-02"
+    },
+    {
+      "id": "R_ARCH_REPLACEABLE_PLACER_CONTRACT_20260701",
+      "title": "Downstream stages consume a replaceable placed-design contract",
+      "status": "owner_directive",
+      "confidence": 1.0,
+      "applies_to": [
+        "component placer",
+        "beautifier",
+        "terminal placer",
+        "wire planner",
+        "value editor",
+        "backend adapters"
+      ],
+      "evidence": [
+        "Owner architecture directive 2026-07-01",
+        "AGENTS.md Replaceable Stage Contracts",
+        "docs/architecture.md Replaceable placer contract",
+        "docs/progen_eda_canonical_pipeline.md non-negotiable rules"
+      ],
+      "rule": "A deletion-based mega-donor placer and a future byte-forming placer must be interchangeable when they emit the same placed-design contract. Downstream stages may consume ordered component identity/family/reference/native packet, bounds, transform, normalized pin descriptors, backend profile IDs, and project output. They must not depend on a giant donor filename, donor slot, fixed template coordinate, global hardcoded component ID, or incidental removal-only object order. IC pin number/name/role/electrical type/coordinates come from backend symbol/device metadata or accepted donor/library parsers, never visual guessing. Shared IR remains backend-neutral for Proteus, KiCad, PSpice, and Altium adapters.",
+      "date": "2026-07-01"
     }
   ]
 }

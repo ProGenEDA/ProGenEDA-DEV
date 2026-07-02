@@ -118,7 +118,17 @@ Current rules:
 - passive/discrete/source families use proven parsed or linked coordinate paths;
 - each IC family must pass an independent packet-profile survey before
   registration;
+- mixed IC/non-IC selections use separate vertical bands; the non-IC band
+  starts at least `5080000` internal units below the maximum parsed IC Y
+  coordinate;
+- packet emission order remains the original component-placer order even when
+  the visual layout is partitioned into bands;
 - broad `component_text_or_body` scanning is rejected for production output;
 - `SWITCH` and `POT-HG` use exact requested counts;
 - D20 display infrastructure is immutable and retains donor coordinates;
 - terminals and wires are not emitted by the component placer.
+
+The mixed-band rule was added after the user reported that ICs were visually
+on top of non-IC components in the mixed selective pack. Its coordinate,
+clearance, reference-preservation, and generated-output checks pass
+statically; visual Proteus confirmation remains pending.

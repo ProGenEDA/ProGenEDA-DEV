@@ -453,6 +453,69 @@ Evidence:
   15-input AND/OR gate JSON through the main CLI with zero static issues; the
   AND/OR object and CDB hashes match the earlier accepted expression packs.
 
+## D031: Reject standalone mixed wires and require native attachment units
+
+Decision: reject `MIXED/short-wire-v6-temp`. Mixed terminal attachment must
+serialize each wire as part of the accepted native attachment unit: active
+terminal suffix, matching active component pin-link suffix, and donor-derived
+WIRE records immediately beside the patched component. Keep all six researched
+families in the shared terminal placer.
+
+Evidence:
+
+- The user reported V6 still raised Bad Object Record and rendered no wires.
+- The accepted `RESISTOR/v3` stream proves that its patched component is
+  immediately followed by two 50-byte wire records; the terminal and component
+  carry the same active suffix.
+- V7 reproduces the accepted three-component object chunk byte-for-byte for
+  RESISTOR, CAP, CAP-ELEC, REALIND, VSOURCE, and CSOURCE.
+- V7 mixed 1x/3x/15x static checks pass with DIODE, NPN, and 74HC08 preserved
+  and terminal-free. Mixed Proteus acceptance remains pending.
+
+## D032: Rebase terminal links from final WIRE addresses
+
+Decision: reject V7 mixed N07-N09 and do not replace them with a new runtime
+donor/order. Preserve the beautified component stream. Encode terminal and
+WIRE records from the known Proteus schema, serialize ROOT.DSN, and then write
+both copies of every active link from the final WIRE address:
+
+```text
+(object_chunk_absolute_start + full_wire_marker_offset - 24) & 0xffff
+```
+
+Evidence:
+
+- The user reported V7 N07, N08, and N09 failed.
+- All 25 terminals in the accepted 4x RCL file and all 21 terminals in the
+  accepted mixed-analog file satisfy the formula exactly.
+- V7 N07 has twelve terminal/component suffix pairs and all twelve disagree
+  with their final WIRE addresses.
+- Regenerating N07 with the shared schema encoder changes only active link
+  bytes; component packets, coordinates, WIRE geometry, and object length stay
+  unchanged.
+
+## D033: Snap terminal contacts to the Proteus grid
+
+Decision: reject mixed V9. Preserve the component and its exact pin
+coordinates, snap each terminal contact to the nearest `254000 x 254000`
+Proteus grid intersection, and emit a short WIRE from the snapped contact to
+the exact pin. Do not make beautification place components for the terminal
+stage.
+
+Evidence:
+
+- The user reported every mixed V9 case failed.
+- Manual placement showed that a terminal can be placed on the nearby grid and
+  connected to an off-grid resistor/source pin with a short wire.
+- Every terminal coordinate in accepted bidirectional source and mixed-analog
+  files is divisible by `254000`; terminal contact is one grid unit from the
+  stored terminal symbol coordinate.
+- V10 keeps component packets in their beautified stream and validates every
+  terminal symbol/contact grid coordinate and every contact-to-exact-pin WIRE.
+- All V10 cases use the unchanged FUSE/POT-HG mega donor as component-placer
+  input. The shared terminal placer and beautifier have no runtime donor-path
+  dependency.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.
