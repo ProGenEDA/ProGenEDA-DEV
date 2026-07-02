@@ -34,6 +34,7 @@ class Body:
     top: float
     right: float
     bottom: float
+    component_ref: str | None = None
 
     @property
     def center(self) -> Point:
@@ -54,6 +55,7 @@ DEFAULT_WIRE_CONFIG: dict[str, float] = {
     "wire_spacing": 2.54,
     "turn_penalty": 0.15,
     "near_wire_penalty": 1.25,
+    "block_existing_wires": 1.0,
     "max_astar_expansions": 50_000.0,
     "max_wired_routes": 10_000.0,
 }
@@ -71,12 +73,14 @@ def _bodies(placement: dict[str, Any]) -> dict[str, Body]:
     bodies: dict[str, Body] = {}
     for item in placement.get("obstacles", []):
         if isinstance(item, dict) and item.get("owner"):
-            bodies[str(item["owner"])] = Body(
-                str(item["owner"]),
+            owner = str(item["owner"])
+            bodies[owner] = Body(
+                owner,
                 float(item.get("left", 0.0)),
                 float(item.get("top", 0.0)),
                 float(item.get("right", 0.0)),
                 float(item.get("bottom", 0.0)),
+                str(item.get("component_ref") or owner),
             )
     components = placement.get("components", {})
     if isinstance(components, dict):
@@ -90,7 +94,7 @@ def _bodies(placement: dict[str, Any]) -> dict[str, Body]:
             height = float(component.get("height", 8.0))
             x = float(at[0])
             y = float(at[1])
-            bodies[str(ref)] = Body(str(ref), x - width / 2, y - height / 2, x + width / 2, y + height / 2)
+            bodies[str(ref)] = Body(str(ref), x - width / 2, y - height / 2, x + width / 2, y + height / 2, str(ref))
     return bodies
 
 
@@ -100,14 +104,93 @@ def _sheet_bounds(bodies: dict[str, Body], cfg: dict[str, float]) -> tuple[float
     return (max(cfg["sheet_width"], max_right + cfg["margin"]), max(cfg["sheet_height"], max_bottom + cfg["margin"]))
 
 
+def _body_for_component(ref: str, bodies: dict[str, Body], point: Point | None = None) -> Body | None:
+    candidates = [body for body in bodies.values() if body.ref == ref or body.component_ref == ref]
+    if not candidates:
+        return None
+    if point is None:
+        return candidates[0]
+    return min(
+        candidates,
+        key=lambda body: (
+            0 if body.contains(point, 0.001) else 1,
+            abs(body.center[0] - point[0]) + abs(body.center[1] - point[1]),
+        ),
+    )
+
+
+def _body_center_x(ref: str, bodies: dict[str, Body]) -> float | None:
+    body = _body_for_component(ref, bodies)
+    return body.center[0] if body else None
+
+
+def _side_from_pin_point(point: Point, body: Body | None, net: str) -> str:
+    upper = net.upper()
+    if upper in POWER_NETS:
+        return "top"
+    if upper in GROUND_NETS:
+        return "bottom"
+    if body is None:
+        return "right"
+    if point[0] < body.left:
+        return "left"
+    if point[0] > body.right:
+        return "right"
+    if point[1] < body.top:
+        return "top"
+    if point[1] > body.bottom:
+        return "bottom"
+    distances = {
+        "left": abs(point[0] - body.left),
+        "right": abs(point[0] - body.right),
+        "top": abs(point[1] - body.top),
+        "bottom": abs(point[1] - body.bottom),
+    }
+    return min(distances.items(), key=lambda item: item[1])[0]
+
+
+def _pin_point_lookup(placement: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any]]:
+    raw = placement.get("pin_points") or {}
+    out: dict[tuple[str, str], dict[str, Any]] = {}
+    if isinstance(raw, dict):
+        for ref, pins in raw.items():
+            if not isinstance(pins, dict):
+                continue
+            for pin, data in pins.items():
+                if not isinstance(data, dict):
+                    continue
+                point = data.get("point")
+                if isinstance(point, (list, tuple)) and len(point) >= 2:
+                    key = (str(ref), str(pin))
+                    item = dict(data)
+                    item["point"] = [float(point[0]), float(point[1])]
+                    out[key] = item
+                    out[(key[0], key[1].upper())] = item
+    elif isinstance(raw, list):
+        for data in raw:
+            if not isinstance(data, dict):
+                continue
+            ref = str(data.get("ref") or "")
+            pin = str(data.get("pin") or "")
+            point = data.get("point")
+            if ref and pin and isinstance(point, (list, tuple)) and len(point) >= 2:
+                item = dict(data)
+                item["point"] = [float(point[0]), float(point[1])]
+                out[(ref, pin)] = item
+                out[(ref, pin.upper())] = item
+    return out
+
+
 def _side_for_endpoint(net: str, ref: str, refs: list[str], bodies: dict[str, Body]) -> str:
     upper = net.upper()
     if upper in POWER_NETS:
         return "top"
     if upper in GROUND_NETS:
         return "bottom"
-    body = bodies[ref]
-    others = [bodies[other].center[0] for other in refs if other in bodies and other != ref]
+    body = _body_for_component(ref, bodies)
+    if body is None:
+        return "right"
+    others = [center_x for other in refs if other != ref and (center_x := _body_center_x(other, bodies)) is not None]
     if not others:
         return "right"
     return "right" if sum(others) / len(others) >= body.center[0] else "left"
@@ -115,46 +198,65 @@ def _side_for_endpoint(net: str, ref: str, refs: list[str], bodies: dict[str, Bo
 
 def _endpoint_points(placement: dict[str, Any], circuit: dict[str, Any], cfg: dict[str, float]) -> dict[str, list[dict[str, Any]]]:
     bodies = _bodies(placement)
+    pin_points = _pin_point_lookup(placement)
     nets = extract_connection_nets(circuit)
     side_buckets: dict[tuple[str, str], list[tuple[str, str]]] = defaultdict(list)
     endpoint_meta: dict[tuple[str, str, str], str] = {}
     for net, endpoints in nets.items():
-        refs = sorted({endpoint.ref for endpoint in endpoints if endpoint.ref in bodies})
+        refs = sorted({endpoint.ref for endpoint in endpoints if _body_for_component(endpoint.ref, bodies) is not None or (endpoint.ref, endpoint.pin) in pin_points})
         for endpoint in endpoints:
-            if endpoint.ref not in bodies:
+            exact = pin_points.get((endpoint.ref, endpoint.pin)) or pin_points.get((endpoint.ref, endpoint.pin.upper()))
+            body = _body_for_component(endpoint.ref, bodies)
+            if body is None and exact is None:
                 continue
-            side = _side_for_endpoint(net, endpoint.ref, refs, bodies)
+            if exact:
+                raw_point = exact["point"]
+                point = (float(raw_point[0]), float(raw_point[1]))
+                side = str(exact.get("side") or _side_from_pin_point(point, _body_for_component(endpoint.ref, bodies, point), net))
+            else:
+                side = _side_for_endpoint(net, endpoint.ref, refs, bodies)
             key = (endpoint.ref, side)
             side_buckets[key].append((net, endpoint.pin))
             endpoint_meta[(net, endpoint.ref, endpoint.pin)] = side
 
     out: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for net, endpoints in nets.items():
-        refs = sorted({endpoint.ref for endpoint in endpoints if endpoint.ref in bodies})
+        refs = sorted({endpoint.ref for endpoint in endpoints if _body_for_component(endpoint.ref, bodies) is not None or (endpoint.ref, endpoint.pin) in pin_points})
         for endpoint in endpoints:
-            if endpoint.ref not in bodies:
+            exact = pin_points.get((endpoint.ref, endpoint.pin)) or pin_points.get((endpoint.ref, endpoint.pin.upper()))
+            body = _body_for_component(endpoint.ref, bodies)
+            if body is None and exact is None:
                 continue
-            body = bodies[endpoint.ref]
             side = endpoint_meta[(net, endpoint.ref, endpoint.pin)]
-            bucket = sorted(side_buckets[(endpoint.ref, side)])
-            index = bucket.index((net, endpoint.pin))
-            count = len(bucket)
-            offset = (index - (count - 1) / 2) * cfg["wire_spacing"]
-            if side == "left":
-                point = (body.left - cfg["pin_stub"], body.center[1] + offset)
-            elif side == "right":
-                point = (body.right + cfg["pin_stub"], body.center[1] + offset)
-            elif side == "top":
-                point = (body.center[0] + offset, body.top - cfg["pin_stub"])
+            if exact:
+                raw_point = exact["point"]
+                point = (_snap(float(raw_point[0]), cfg["grid"]), _snap(float(raw_point[1]), cfg["grid"]))
+                exact_source = str(exact.get("source") or "exact_pin_point")
             else:
-                point = (body.center[0] + offset, body.bottom + cfg["pin_stub"])
-            point = (_snap(point[0], cfg["grid"]), _snap(point[1], cfg["grid"]))
+                if body is None:
+                    continue
+                bucket = sorted(side_buckets[(endpoint.ref, side)])
+                index = bucket.index((net, endpoint.pin))
+                count = len(bucket)
+                offset = (index - (count - 1) / 2) * cfg["wire_spacing"]
+                if side == "left":
+                    point = (body.left - cfg["pin_stub"], body.center[1] + offset)
+                elif side == "right":
+                    point = (body.right + cfg["pin_stub"], body.center[1] + offset)
+                elif side == "top":
+                    point = (body.center[0] + offset, body.top - cfg["pin_stub"])
+                else:
+                    point = (body.center[0] + offset, body.bottom + cfg["pin_stub"])
+                point = (_snap(point[0], cfg["grid"]), _snap(point[1], cfg["grid"]))
+                exact_source = ""
             out[net].append(
                 {
                     "ref": endpoint.ref,
                     "pin": endpoint.pin,
                     "side": side,
                     "point": [point[0], point[1]],
+                    "exact": bool(exact),
+                    "source": exact_source or "estimated_component_edge",
                 }
             )
     return dict(sorted(out.items()))
@@ -178,7 +280,7 @@ def _blocked_cells(
     clearance = cfg["clearance"]
     blocked: set[GridPoint] = set()
     for ref, body in bodies.items():
-        if ref in ignore_refs:
+        if ref in ignore_refs or (body.component_ref and body.component_ref in ignore_refs):
             continue
         left = round((body.left - clearance) / grid)
         right = round((body.right + clearance) / grid)
@@ -188,6 +290,46 @@ def _blocked_cells(
             for y in range(top, bottom + 1):
                 blocked.add((x, y))
     return blocked
+
+
+def _open_pin_portals(
+    blocked: set[GridPoint],
+    bodies: dict[str, Body],
+    portals: list[tuple[str, Point, str]],
+    cfg: dict[str, float],
+) -> None:
+    grid = cfg["grid"]
+    steps = max(3, int(round((cfg["clearance"] + cfg["pin_stub"]) / grid)) + 1)
+    directions = {
+        "left": (-1, 0),
+        "right": (1, 0),
+        "top": (0, -1),
+        "bottom": (0, 1),
+    }
+    def touches_other_body(ref: str, cell: GridPoint) -> bool:
+        point = _from_grid(cell, grid)
+        for body in bodies.values():
+            if body.ref == ref or body.component_ref == ref:
+                continue
+            if body.contains(point, 0.0):
+                return True
+        return False
+
+    for ref, point, side in portals:
+        dx, dy = directions.get(side, (1, 0))
+        start = _to_grid(point, grid)
+        for step in range(steps + 1):
+            cell = (start[0] + dx * step, start[1] + dy * step)
+            if not touches_other_body(ref, cell):
+                blocked.discard(cell)
+            if dx:
+                for adjacent in ((cell[0], cell[1] - 1), (cell[0], cell[1] + 1)):
+                    if not touches_other_body(ref, adjacent):
+                        blocked.discard(adjacent)
+            else:
+                for adjacent in ((cell[0] - 1, cell[1]), (cell[0] + 1, cell[1])):
+                    if not touches_other_body(ref, adjacent):
+                        blocked.discard(adjacent)
 
 
 def _neighbors(point: GridPoint) -> tuple[GridPoint, GridPoint, GridPoint, GridPoint]:
@@ -214,6 +356,7 @@ def _astar(
     *,
     net: str,
     ignore_refs: set[str],
+    portals: list[tuple[str, Point, str]] | None = None,
 ) -> tuple[list[Point], list[str]]:
     grid = cfg["grid"]
     width, height = _sheet_bounds(bodies, cfg)
@@ -224,6 +367,7 @@ def _astar(
     blocked = _blocked_cells(bodies, cfg, ignore_refs=ignore_refs)
     blocked.discard(start_cell)
     blocked.discard(goal_cell)
+    _open_pin_portals(blocked, bodies, portals or [], cfg)
 
     def heuristic(cell: GridPoint) -> float:
         return abs(cell[0] - goal_cell[0]) + abs(cell[1] - goal_cell[1])
@@ -240,12 +384,8 @@ def _astar(
         _priority, cost, cell, direction = heapq.heappop(queue)
         expansions += 1
         if expansions > max_expansions:
-            warnings.append(f"astar_fallback_expansion_limit: {net} exceeded {max_expansions} explored grid states.")
-            return [
-                _round_point(start),
-                _round_point((goal[0], start[1])),
-                _round_point(goal),
-            ], warnings
+            warnings.append(f"astar_unroutable_expansion_limit: {net} exceeded {max_expansions} explored grid states.")
+            return [], warnings
         if cell == goal_cell:
             end_state = (cell, direction)
             break
@@ -259,8 +399,11 @@ def _astar(
             if direction and nxt_direction != direction:
                 step_cost += cfg["turn_penalty"]
             owner = occupied.get(nxt)
-            if owner and owner != net:
-                step_cost += 50.0
+            if owner:
+                if cfg.get("block_existing_wires", 1.0) >= 1.0 and nxt not in {start_cell, goal_cell}:
+                    continue
+                if owner != net:
+                    step_cost += 50.0
             for adjacent in _neighbors(nxt):
                 adjacent_owner = occupied.get(adjacent)
                 if adjacent_owner and adjacent_owner != net:
@@ -273,12 +416,8 @@ def _astar(
                 heapq.heappush(queue, (new_cost + heuristic(nxt), new_cost, nxt, nxt_direction))
 
     if end_state is None:
-        warnings.append(f"astar_fallback_manhattan: no clear route found for {net}.")
-        return [
-            _round_point(start),
-            _round_point((goal[0], start[1])),
-            _round_point(goal),
-        ], warnings
+        warnings.append(f"astar_unroutable_no_clear_route: no clear route found for {net}.")
+        return [], warnings
 
     cells: list[GridPoint] = []
     state = end_state
@@ -382,6 +521,18 @@ def plan_wire_routes(
 
     bodies = _bodies(placement)
     endpoints_by_net = _endpoint_points(placement, circuit, cfg)
+    reserved_pin_occupied: dict[GridPoint, str] = {}
+    for net, endpoints in endpoints_by_net.items():
+        for endpoint in endpoints:
+            if not endpoint.get("exact"):
+                continue
+            point = (float(endpoint["point"][0]), float(endpoint["point"][1]))
+            cell = _to_grid(point, cfg["grid"])
+            owner = reserved_pin_occupied.get(cell)
+            if owner and owner != net:
+                reserved_pin_occupied[cell] = f"{owner}|{net}"
+            else:
+                reserved_pin_occupied[cell] = net
     occupied: dict[GridPoint, str] = {}
     routes: list[dict[str, Any]] = []
     nets_out: dict[str, Any] = {}
@@ -411,28 +562,80 @@ def plan_wire_routes(
 
         endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
         net_routes: list[dict[str, Any]] = []
+        net_occupied: dict[GridPoint, str] = {}
+        net_failed = False
+        net_failure_warnings: list[str] = []
         root = endpoints[0]
         for target in endpoints[1:]:
-            if len(routes) >= max_wired_routes:
+            if len(routes) + len(net_routes) >= max_wired_routes:
                 warnings.append(f"wire_route_limit_deferred: remaining endpoints of {net} skipped after {max_wired_routes} routed connections.")
+                net_failed = True
+                net_failure_warnings.append("wire_route_limit_deferred")
                 break
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))
-            ignore_refs = {str(root["ref"]), str(target["ref"])}
-            raw_path, route_warnings = _astar(start, goal, bodies, cfg, occupied, net=net, ignore_refs=ignore_refs)
+            ignore_refs = set()
+            if not root.get("exact"):
+                ignore_refs.add(str(root["ref"]))
+            if not target.get("exact"):
+                ignore_refs.add(str(target["ref"]))
+            routed_occupied = dict(reserved_pin_occupied)
+            routed_occupied.update(occupied)
+            routed_occupied.update(net_occupied)
+            portals = []
+            if root.get("exact"):
+                portals.append((str(root["ref"]), start, str(root.get("side") or "right")))
+            if target.get("exact"):
+                portals.append((str(target["ref"]), goal, str(target.get("side") or "right")))
+            raw_path, route_warnings = _astar(
+                start,
+                goal,
+                bodies,
+                cfg,
+                routed_occupied,
+                net=net,
+                ignore_refs=ignore_refs,
+                portals=portals,
+            )
             warnings.extend(route_warnings)
+            if not raw_path:
+                net_failed = True
+                net_failure_warnings.extend(route_warnings or [f"unroutable: {net}"])
+                break
             path = _compress_path(raw_path)
             for point in raw_path:
-                occupied[_to_grid(point, cfg["grid"])] = net
+                net_occupied[_to_grid(point, cfg["grid"])] = net
             route = {
                 "net": net,
-                "from": {"ref": root["ref"], "pin": root["pin"], "point": root["point"]},
-                "to": {"ref": target["ref"], "pin": target["pin"], "point": target["point"]},
+                "from": {
+                    "ref": root["ref"],
+                    "pin": root["pin"],
+                    "point": root["point"],
+                    "exact": bool(root.get("exact")),
+                    "source": root.get("source"),
+                },
+                "to": {
+                    "ref": target["ref"],
+                    "pin": target["pin"],
+                    "point": target["point"],
+                    "exact": bool(target.get("exact")),
+                    "source": target.get("source"),
+                },
                 "path": [[point[0], point[1]] for point in path],
                 "segments": _segments(path),
             }
-            routes.append(route)
             net_routes.append(route)
+        if net_failed:
+            warnings.append(f"wire_net_label_fallback: {net} converted to local labels after router failure.")
+            nets_out[net] = {
+                "strategy": "local_labels_after_router_failure",
+                "endpoints": endpoints,
+                "routes": [],
+                "failure_warnings": net_failure_warnings[:20],
+            }
+            continue
+        occupied.update(net_occupied)
+        routes.extend(net_routes)
         nets_out[net] = {"strategy": "wire", "endpoints": endpoints, "routes": net_routes}
 
     crossing_count = _count_crossings(routes)
@@ -451,7 +654,10 @@ def plan_wire_routes(
             "router": "grid_astar_orthogonal",
             "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
             "component_avoidance": "inflated_obstacle_grid",
-            "wire_collision_policy": "different-net existing wires receive high cost plus adjacency penalty",
+            "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+            "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+            "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+            "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges",
         },
         "sheet": {"width": width, "height": height, "grid": cfg["grid"], "clearance": cfg["clearance"]},
         "nets": nets_out,

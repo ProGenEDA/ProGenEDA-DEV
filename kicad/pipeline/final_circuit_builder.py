@@ -40,9 +40,10 @@ POWER_NET_PRIORITY = ("GND", "+5V", "+3V3", "VCC", "VDD", "VIN", "VBUS", "VBAT")
 POWER_NETS = set(POWER_NET_PRIORITY)
 NO_CONNECT = {"NC", "N/C", "NO_CONNECT", "UNCONNECTED"}
 STAGE_REPORT_WIRE_CONFIG = {
-    "grid": 5.08,
-    "wire_spacing": 5.08,
-    "max_astar_expansions": 1_500.0,
+    "grid": 1.27,
+    "wire_spacing": 2.54,
+    "clearance": 1.27,
+    "max_astar_expansions": 50_000.0,
     "max_wired_routes": 180.0,
 }
 

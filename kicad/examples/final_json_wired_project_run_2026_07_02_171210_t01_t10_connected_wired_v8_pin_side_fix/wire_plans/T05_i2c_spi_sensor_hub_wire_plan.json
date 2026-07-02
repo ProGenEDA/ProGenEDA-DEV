@@ -1,0 +1,1521 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 780.58,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "SPI_SCK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J5",
+          "pin": "3",
+          "side": "top",
+          "point": [
+            129.54,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "TP6",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            170.18,
+            154.94
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        },
+        {
+          "ref": "U4",
+          "pin": "CLK",
+          "side": "left",
+          "point": [
+            690.88,
+            142.24
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPI_SCK",
+          "from": {
+            "ref": "J5",
+            "pin": "3",
+            "point": [
+              129.54,
+              144.78
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "TP6",
+            "pin": "1",
+            "point": [
+              170.18,
+              154.94
+            ],
+            "exact": true,
+            "source": "Connector:TestPoint:unit1:pin1"
+          },
+          "path": [
+            [
+              129.54,
+              144.78
+            ],
+            [
+              129.54,
+              135.89
+            ],
+            [
+              163.83,
+              135.89
+            ],
+            [
+              163.83,
+              154.94
+            ],
+            [
+              170.18,
+              154.94
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                129.54,
+                144.78
+              ],
+              "end": [
+                129.54,
+                135.89
+              ],
+              "direction": "up",
+              "length": 8.89
+            },
+            {
+              "start": [
+                129.54,
+                135.89
+              ],
+              "end": [
+                163.83,
+                135.89
+              ],
+              "direction": "right",
+              "length": 34.29
+            },
+            {
+              "start": [
+                163.83,
+                135.89
+              ],
+              "end": [
+                163.83,
+                154.94
+              ],
+              "direction": "down",
+              "length": 19.05
+            },
+            {
+              "start": [
+                163.83,
+                154.94
+              ],
+              "end": [
+                170.18,
+                154.94
+              ],
+              "direction": "right",
+              "length": 6.35
+            }
+          ]
+        },
+        {
+          "net": "SPI_SCK",
+          "from": {
+            "ref": "J5",
+            "pin": "3",
+            "point": [
+              129.54,
+              144.78
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U4",
+            "pin": "CLK",
+            "point": [
+              690.88,
+              142.24
+            ],
+            "exact": true,
+            "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+          },
+          "path": [
+            [
+              129.54,
+              144.78
+            ],
+            [
+              128.27,
+              144.78
+            ],
+            [
+              128.27,
+              128.27
+            ],
+            [
+              687.07,
+              128.27
+            ],
+            [
+              687.07,
+              142.24
+            ],
+            [
+              690.88,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                129.54,
+                144.78
+              ],
+              "end": [
+                128.27,
+                144.78
+              ],
+              "direction": "left",
+              "length": 1.27
+            },
+            {
+              "start": [
+                128.27,
+                144.78
+              ],
+              "end": [
+                128.27,
+                128.27
+              ],
+              "direction": "up",
+              "length": 16.51
+            },
+            {
+              "start": [
+                128.27,
+                128.27
+              ],
+              "end": [
+                687.07,
+                128.27
+              ],
+              "direction": "right",
+              "length": 558.8
+            },
+            {
+              "start": [
+                687.07,
+                128.27
+              ],
+              "end": [
+                687.07,
+                142.24
+              ],
+              "direction": "down",
+              "length": 13.97
+            },
+            {
+              "start": [
+                687.07,
+                142.24
+              ],
+              "end": [
+                690.88,
+                142.24
+              ],
+              "direction": "right",
+              "length": 3.81
+            }
+          ]
+        }
+      ]
+    },
+    "FLASH_WP_HOLD": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            477.52,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U4",
+          "pin": "WP",
+          "side": "left",
+          "point": [
+            690.88,
+            149.86
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin3"
+        },
+        {
+          "ref": "U4",
+          "pin": "HOLD",
+          "side": "left",
+          "point": [
+            690.88,
+            152.4
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: FLASH_WP_HOLD exceeded 50000 explored grid states."
+      ]
+    },
+    "RTC_VBAT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "VBAT",
+          "side": "top",
+          "point": [
+            607.06,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin14"
+        },
+        {
+          "ref": "BT1",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            655.32,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Battery_Cell:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RTC_VBAT."
+      ]
+    },
+    "SPI_CS_FLASH": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J5",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            129.54,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            416.56,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "TP5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            447.04,
+            154.94
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        },
+        {
+          "ref": "U4",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            690.88,
+            139.7
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_CS_FLASH."
+      ]
+    },
+    "SPI_MISO": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J5",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            129.54,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U4",
+          "pin": "DO",
+          "side": "left",
+          "point": [
+            690.88,
+            147.32
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPI_MISO",
+          "from": {
+            "ref": "J5",
+            "pin": "5",
+            "point": [
+              129.54,
+              149.86
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+          },
+          "to": {
+            "ref": "U4",
+            "pin": "DO",
+            "point": [
+              690.88,
+              147.32
+            ],
+            "exact": true,
+            "source": "Memory_Flash:W25Q32JVSS:unit1:pin2"
+          },
+          "path": [
+            [
+              129.54,
+              149.86
+            ],
+            [
+              129.54,
+              166.37
+            ],
+            [
+              687.07,
+              166.37
+            ],
+            [
+              687.07,
+              147.32
+            ],
+            [
+              690.88,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                129.54,
+                149.86
+              ],
+              "end": [
+                129.54,
+                166.37
+              ],
+              "direction": "down",
+              "length": 16.51
+            },
+            {
+              "start": [
+                129.54,
+                166.37
+              ],
+              "end": [
+                687.07,
+                166.37
+              ],
+              "direction": "right",
+              "length": 557.53
+            },
+            {
+              "start": [
+                687.07,
+                166.37
+              ],
+              "end": [
+                687.07,
+                147.32
+              ],
+              "direction": "up",
+              "length": 19.05
+            },
+            {
+              "start": [
+                687.07,
+                147.32
+              ],
+              "end": [
+                690.88,
+                147.32
+              ],
+              "direction": "right",
+              "length": 3.81
+            }
+          ]
+        }
+      ]
+    },
+    "SPI_MOSI": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J5",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            129.54,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U4",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            690.88,
+            144.78
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: SPI_MOSI exceeded 50000 explored grid states."
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "CSB",
+          "side": "top",
+          "point": [
+            553.72,
+            154.94
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            541.02,
+            132.08
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin8"
+        },
+        {
+          "ref": "U2",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            754.38,
+            109.22
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin28"
+        },
+        {
+          "ref": "U3",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            604.52,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin2"
+        },
+        {
+          "ref": "U4",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            701.04,
+            134.62
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin8"
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            261.62,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            353.06,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            416.56,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            477.52,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            203.2,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            294.64,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            383.54,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            447.04,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            231.14,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            322.58,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            93.98,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin1"
+        },
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            165.1,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin1"
+        },
+        {
+          "ref": "J3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin1"
+        },
+        {
+          "ref": "J4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            60.96,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin1"
+        },
+        {
+          "ref": "J5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            129.54,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "TP1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            508.0,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            535.94,
+            162.56
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "SDO",
+          "side": "bottom",
+          "point": [
+            553.72,
+            139.7
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin5"
+        },
+        {
+          "ref": "U2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            749.3,
+            185.42
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            607.06,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin10"
+        },
+        {
+          "ref": "U4",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            701.04,
+            160.02
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin4"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            203.2,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            294.64,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            383.54,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            447.04,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            231.14,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            322.58,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            93.98,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin2"
+        },
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            165.1,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin2"
+        },
+        {
+          "ref": "J3",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            25.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin4"
+        },
+        {
+          "ref": "J4",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            60.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin4"
+        },
+        {
+          "ref": "J5",
+          "pin": "6",
+          "side": "bottom",
+          "point": [
+            129.54,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        },
+        {
+          "ref": "BT1",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            655.32,
+            149.86
+          ],
+          "exact": true,
+          "source": "Device:Battery_Cell:unit1:pin2"
+        },
+        {
+          "ref": "TP2",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            568.96,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "I2C_SCL": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            553.72,
+            144.78
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin4"
+        },
+        {
+          "ref": "U2",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            739.14,
+            152.4
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin18"
+        },
+        {
+          "ref": "U3",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            594.36,
+            142.24
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin16"
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            353.06,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "J1",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            93.98,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin4"
+        },
+        {
+          "ref": "J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            165.1,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin4"
+        },
+        {
+          "ref": "J3",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            25.4,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin3"
+        },
+        {
+          "ref": "J4",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            60.96,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin3"
+        },
+        {
+          "ref": "TP4",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            568.96,
+            157.48
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "I2C_SDA": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            553.72,
+            149.86
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin3"
+        },
+        {
+          "ref": "U2",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            739.14,
+            154.94
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin19"
+        },
+        {
+          "ref": "U3",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            594.36,
+            144.78
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin15"
+        },
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            261.62,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "J1",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            93.98,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin3"
+        },
+        {
+          "ref": "J2",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            165.1,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin3"
+        },
+        {
+          "ref": "J3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin2"
+        },
+        {
+          "ref": "J4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            60.96,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin2"
+        },
+        {
+          "ref": "TP3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            568.96,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "SPI_SCK",
+      "from": {
+        "ref": "J5",
+        "pin": "3",
+        "point": [
+          129.54,
+          144.78
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "TP6",
+        "pin": "1",
+        "point": [
+          170.18,
+          154.94
+        ],
+        "exact": true,
+        "source": "Connector:TestPoint:unit1:pin1"
+      },
+      "path": [
+        [
+          129.54,
+          144.78
+        ],
+        [
+          129.54,
+          135.89
+        ],
+        [
+          163.83,
+          135.89
+        ],
+        [
+          163.83,
+          154.94
+        ],
+        [
+          170.18,
+          154.94
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            129.54,
+            144.78
+          ],
+          "end": [
+            129.54,
+            135.89
+          ],
+          "direction": "up",
+          "length": 8.89
+        },
+        {
+          "start": [
+            129.54,
+            135.89
+          ],
+          "end": [
+            163.83,
+            135.89
+          ],
+          "direction": "right",
+          "length": 34.29
+        },
+        {
+          "start": [
+            163.83,
+            135.89
+          ],
+          "end": [
+            163.83,
+            154.94
+          ],
+          "direction": "down",
+          "length": 19.05
+        },
+        {
+          "start": [
+            163.83,
+            154.94
+          ],
+          "end": [
+            170.18,
+            154.94
+          ],
+          "direction": "right",
+          "length": 6.35
+        }
+      ]
+    },
+    {
+      "net": "SPI_SCK",
+      "from": {
+        "ref": "J5",
+        "pin": "3",
+        "point": [
+          129.54,
+          144.78
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U4",
+        "pin": "CLK",
+        "point": [
+          690.88,
+          142.24
+        ],
+        "exact": true,
+        "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+      },
+      "path": [
+        [
+          129.54,
+          144.78
+        ],
+        [
+          128.27,
+          144.78
+        ],
+        [
+          128.27,
+          128.27
+        ],
+        [
+          687.07,
+          128.27
+        ],
+        [
+          687.07,
+          142.24
+        ],
+        [
+          690.88,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            129.54,
+            144.78
+          ],
+          "end": [
+            128.27,
+            144.78
+          ],
+          "direction": "left",
+          "length": 1.27
+        },
+        {
+          "start": [
+            128.27,
+            144.78
+          ],
+          "end": [
+            128.27,
+            128.27
+          ],
+          "direction": "up",
+          "length": 16.51
+        },
+        {
+          "start": [
+            128.27,
+            128.27
+          ],
+          "end": [
+            687.07,
+            128.27
+          ],
+          "direction": "right",
+          "length": 558.8
+        },
+        {
+          "start": [
+            687.07,
+            128.27
+          ],
+          "end": [
+            687.07,
+            142.24
+          ],
+          "direction": "down",
+          "length": 13.97
+        },
+        {
+          "start": [
+            687.07,
+            142.24
+          ],
+          "end": [
+            690.88,
+            142.24
+          ],
+          "direction": "right",
+          "length": 3.81
+        }
+      ]
+    },
+    {
+      "net": "SPI_MISO",
+      "from": {
+        "ref": "J5",
+        "pin": "5",
+        "point": [
+          129.54,
+          149.86
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+      },
+      "to": {
+        "ref": "U4",
+        "pin": "DO",
+        "point": [
+          690.88,
+          147.32
+        ],
+        "exact": true,
+        "source": "Memory_Flash:W25Q32JVSS:unit1:pin2"
+      },
+      "path": [
+        [
+          129.54,
+          149.86
+        ],
+        [
+          129.54,
+          166.37
+        ],
+        [
+          687.07,
+          166.37
+        ],
+        [
+          687.07,
+          147.32
+        ],
+        [
+          690.88,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            129.54,
+            149.86
+          ],
+          "end": [
+            129.54,
+            166.37
+          ],
+          "direction": "down",
+          "length": 16.51
+        },
+        {
+          "start": [
+            129.54,
+            166.37
+          ],
+          "end": [
+            687.07,
+            166.37
+          ],
+          "direction": "right",
+          "length": 557.53
+        },
+        {
+          "start": [
+            687.07,
+            166.37
+          ],
+          "end": [
+            687.07,
+            147.32
+          ],
+          "direction": "up",
+          "length": 19.05
+        },
+        {
+          "start": [
+            687.07,
+            147.32
+          ],
+          "end": [
+            690.88,
+            147.32
+          ],
+          "direction": "right",
+          "length": 3.81
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 10,
+    "wired_route_count": 3,
+    "segment_count": 13,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_expansion_limit: FLASH_WP_HOLD exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: FLASH_WP_HOLD converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RTC_VBAT.",
+    "wire_net_label_fallback: RTC_VBAT converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_CS_FLASH.",
+    "wire_net_label_fallback: SPI_CS_FLASH converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: SPI_MOSI exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: SPI_MOSI converted to local labels after router failure."
+  ]
+}

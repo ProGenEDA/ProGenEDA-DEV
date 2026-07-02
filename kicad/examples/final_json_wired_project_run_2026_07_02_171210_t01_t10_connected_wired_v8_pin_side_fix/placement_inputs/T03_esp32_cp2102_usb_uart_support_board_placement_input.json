@@ -1,0 +1,318 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "t03",
+    "title": "ESP32 CP2102 USB-UART Support Board",
+    "purpose": "module plus support parts with many nets",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "T03",
+  "circuit_name": "ESP32 CP2102 USB-UART Support Board",
+  "purpose": "module plus support parts with many nets",
+  "components": [
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "ESP32_WROOM",
+      "value": "ESP32-WROOM"
+    },
+    {
+      "id": "U2",
+      "ref": "U2",
+      "kind": "CP2102",
+      "value": "CP2102"
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "USB_C_CONNECTOR",
+      "value": "USB Type-C"
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "EN_PUSH_BUTTON",
+      "value": "EN"
+    },
+    {
+      "id": "SW2",
+      "ref": "SW2",
+      "kind": "BOOT_PUSH_BUTTON",
+      "value": "BOOT"
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R_10K_PULLUP",
+      "value": "10k pullup"
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "R_10K_PULLUP",
+      "value": "10k pullup"
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "RESISTOR",
+      "value": "10k LED resistor"
+    },
+    {
+      "id": "R4",
+      "ref": "R4",
+      "kind": "RESISTOR",
+      "value": "10k LED resistor"
+    },
+    {
+      "id": "R5",
+      "ref": "R5",
+      "kind": "RESISTOR",
+      "value": "5.1k CC pulldown"
+    },
+    {
+      "id": "R6",
+      "ref": "R6",
+      "kind": "RESISTOR",
+      "value": "5.1k CC pulldown"
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C3",
+      "ref": "C3",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C4",
+      "ref": "C4",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C5",
+      "ref": "C5",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "J3",
+      "ref": "J3",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "J4",
+      "ref": "J4",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "J5",
+      "ref": "J5",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    }
+  ],
+  "nets": {
+    "USB_VBUS": [
+      "J1.VBUS",
+      "U2.VBUS"
+    ],
+    "USB_GND": [
+      "J1.GND",
+      "U2.GND",
+      "U1.GND",
+      "C1.2",
+      "C2.2",
+      "C3.2",
+      "C4.2",
+      "C5.2",
+      "SW1.2",
+      "SW2.2",
+      "D1.K",
+      "D2.K",
+      "R5.2",
+      "R6.2",
+      "J2.2",
+      "J3.2",
+      "J4.2",
+      "J5.2"
+    ],
+    "USB_D_PLUS": [
+      "J1.D+",
+      "U2.D+"
+    ],
+    "USB_D_MINUS": [
+      "J1.D-",
+      "U2.D-"
+    ],
+    "USB_CC1": [
+      "J1.CC1",
+      "R5.1"
+    ],
+    "USB_CC2": [
+      "J1.CC2",
+      "R6.1"
+    ],
+    "+3V3": [
+      "U1.3V3",
+      "U2.VDD",
+      "R1.1",
+      "R2.1",
+      "R3.1",
+      "R4.1",
+      "C1.1",
+      "C2.1",
+      "C3.1",
+      "C4.1",
+      "C5.1",
+      "J2.1",
+      "J3.1",
+      "J4.1",
+      "J5.1"
+    ],
+    "ESP_EN": [
+      "U1.EN",
+      "R1.2",
+      "SW1.1"
+    ],
+    "ESP_BOOT_IO0": [
+      "U1.IO0",
+      "R2.2",
+      "SW2.1"
+    ],
+    "UART_TX_TO_ESP_RX": [
+      "U2.TXD",
+      "U1.U0RXD",
+      "J4.3"
+    ],
+    "UART_RX_FROM_ESP_TX": [
+      "U2.RXD",
+      "U1.U0TXD",
+      "J4.4"
+    ],
+    "ESP_LED1": [
+      "U1.IO2",
+      "R3.2",
+      "D1.A"
+    ],
+    "ESP_LED2": [
+      "U1.IO4",
+      "R4.2",
+      "D2.A"
+    ],
+    "ESP_IO5": [
+      "U1.IO5",
+      "J2.3"
+    ],
+    "ESP_IO18": [
+      "U1.IO18",
+      "J2.4"
+    ],
+    "ESP_IO19": [
+      "U1.IO19",
+      "J2.5"
+    ],
+    "ESP_IO21": [
+      "U1.IO21",
+      "J3.3"
+    ],
+    "ESP_IO22": [
+      "U1.IO22",
+      "J3.4"
+    ],
+    "ESP_IO23": [
+      "U1.IO23",
+      "J3.5"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "ESP_LED1_A",
+        "to": "ESP_LED1",
+        "endpoint": "R3.2"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "ESP_LED2_A",
+        "to": "ESP_LED2",
+        "endpoint": "R4.2"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "ESP_RX_HEADER",
+        "to": "UART_TX_TO_ESP_RX",
+        "endpoint": "U1.U0RXD"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "ESP_TX_HEADER",
+        "to": "UART_RX_FROM_ESP_TX",
+        "endpoint": "U1.U0TXD"
+      }
+    ],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 22,
+    "net_count": 19,
+    "endpoint_count": 73,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

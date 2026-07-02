@@ -7,10 +7,12 @@ from pathlib import Path
 
 from kicad.automation.generate_practical_placer_examples import CIRCUITS, build_circuit, build_count_circuit, suite_specs
 from kicad.generator.kicad_json_to_project import plan_placement
+from kicad.pipeline.arrangement_decider import extract_connection_nets
 from kicad.pipeline import (
     PipelineError,
     apply_coordinate_edits,
     decide_arrangement,
+    plan_wire_routes,
     plan_wiring,
     run_placer_pipeline,
     validate_placement_input,
@@ -73,6 +75,14 @@ def obstacle_overlap_pairs(obstacles: list[dict[str, object]]) -> list[tuple[str
 
 
 class PlacerPipelineTests(unittest.TestCase):
+    def test_connection_net_extractor_accepts_dot_pin_endpoint_notation(self) -> None:
+        circuit = {
+            "components": [{"id": "U1", "kind": "IC", "pins": {"A": "SIG"}}],
+            "nets": {"SIG": ["U1.A"]},
+        }
+        nets = extract_connection_nets(circuit)
+        self.assertEqual([(endpoint.ref, endpoint.pin) for endpoint in nets["SIG"]], [("U1", "A")])
+
     def test_plan_placement_is_deterministic_and_does_not_route(self) -> None:
         first = plan_placement(vdc_resistor()).as_dict()
         second = plan_placement(vdc_resistor()).as_dict()
@@ -269,6 +279,34 @@ class PlacerPipelineTests(unittest.TestCase):
                     if ref in {route["from"]["ref"], route["to"]["ref"]}:
                         continue
                     self.assertFalse(segment_crosses_body(segment, body), f"{route['net']} crosses {ref}")
+
+    def test_wire_planner_prefers_exact_pin_points_when_provided(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "U1", "kind": "IC", "pins": {"A": "SIG"}},
+                {"id": "U2", "kind": "IC", "pins": {"B": "SIG"}},
+            ]
+        }
+        placement = {
+            "components": {
+                "U1": {"at": [10.0, 20.0], "width": 10.0, "height": 8.0},
+                "U2": {"at": [50.0, 20.0], "width": 10.0, "height": 8.0},
+            },
+            "obstacles": [
+                {"owner": "U1::body1", "component_ref": "U1", "left": 5.0, "top": 16.0, "right": 15.0, "bottom": 24.0},
+                {"owner": "U2::body1", "component_ref": "U2", "left": 45.0, "top": 16.0, "right": 55.0, "bottom": 24.0},
+            ],
+            "pin_points": {
+                "U1": {"A": {"point": [16.0, 20.0], "source": "unit_test_pin"}},
+                "U2": {"B": {"point": [44.0, 20.0], "source": "unit_test_pin"}},
+            },
+        }
+        wire_plan = plan_wire_routes(placement, circuit, config={"grid": 1.0, "clearance": 1.0})
+        route = wire_plan["routes"][0]
+        self.assertEqual(route["from"]["point"], [16.0, 20.0])
+        self.assertEqual(route["to"]["point"], [44.0, 20.0])
+        self.assertTrue(route["from"]["exact"])
+        self.assertEqual(wire_plan["nets"]["SIG"]["endpoints"][0]["source"], "unit_test_pin")
 
     def test_arrangement_and_beautifier_handle_t01_to_t10_stress_without_overlaps(self) -> None:
         stress = [spec for spec in suite_specs("stress") if spec[0].startswith("T")]

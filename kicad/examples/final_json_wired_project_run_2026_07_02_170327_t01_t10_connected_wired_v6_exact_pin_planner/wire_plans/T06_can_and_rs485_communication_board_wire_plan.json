@@ -1,0 +1,5007 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 544.4,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "CAN_SPI_SCK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "U1",
+          "pin": "SCK",
+          "side": "left",
+          "point": [
+            406.4,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_SPI_SCK",
+          "from": {
+            "ref": "J3",
+            "pin": "3",
+            "point": [
+              25.4,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "SCK",
+            "point": [
+              406.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+          },
+          "path": [
+            [
+              25.4,
+              142.24
+            ],
+            [
+              406.4,
+              142.24
+            ],
+            [
+              406.4,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                142.24
+              ],
+              "end": [
+                406.4,
+                142.24
+              ],
+              "direction": "right",
+              "length": 381.0
+            },
+            {
+              "start": [
+                406.4,
+                142.24
+              ],
+              "end": [
+                406.4,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "MCP_OSC1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            132.08,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "Y1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            223.52,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Crystal:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "OSC1",
+          "side": "left",
+          "point": [
+            406.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin8"
+        }
+      ],
+      "routes": [
+        {
+          "net": "MCP_OSC1",
+          "from": {
+            "ref": "C1",
+            "pin": "1",
+            "point": [
+              132.08,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "Y1",
+            "pin": "1",
+            "point": [
+              223.52,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:Crystal:unit1:pin1"
+          },
+          "path": [
+            [
+              132.08,
+              142.24
+            ],
+            [
+              223.52,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                132.08,
+                142.24
+              ],
+              "end": [
+                223.52,
+                142.24
+              ],
+              "direction": "right",
+              "length": 91.44
+            }
+          ]
+        },
+        {
+          "net": "MCP_OSC1",
+          "from": {
+            "ref": "C1",
+            "pin": "1",
+            "point": [
+              132.08,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "OSC1",
+            "point": [
+              406.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin8"
+          },
+          "path": [
+            [
+              132.08,
+              142.24
+            ],
+            [
+              132.08,
+              132.08
+            ],
+            [
+              396.24,
+              132.08
+            ],
+            [
+              396.24,
+              152.4
+            ],
+            [
+              406.4,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                132.08,
+                142.24
+              ],
+              "end": [
+                132.08,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                132.08,
+                132.08
+              ],
+              "end": [
+                396.24,
+                132.08
+              ],
+              "direction": "right",
+              "length": 264.16
+            },
+            {
+              "start": [
+                396.24,
+                132.08
+              ],
+              "end": [
+                396.24,
+                152.4
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                396.24,
+                152.4
+              ],
+              "end": [
+                406.4,
+                152.4
+              ],
+              "direction": "right",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "MCP_OSC2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            193.04,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "Y1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            228.6,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Crystal:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "OSC2",
+          "side": "left",
+          "point": [
+            406.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "MCP_OSC2",
+          "from": {
+            "ref": "C2",
+            "pin": "1",
+            "point": [
+              193.04,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "Y1",
+            "pin": "2",
+            "point": [
+              228.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:Crystal:unit1:pin2"
+          },
+          "path": [
+            [
+              193.04,
+              142.24
+            ],
+            [
+              228.6,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                193.04,
+                142.24
+              ],
+              "end": [
+                228.6,
+                142.24
+              ],
+              "direction": "right",
+              "length": 35.56
+            }
+          ]
+        },
+        {
+          "net": "MCP_OSC2",
+          "from": {
+            "ref": "C2",
+            "pin": "1",
+            "point": [
+              193.04,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "OSC2",
+            "point": [
+              406.4,
+              147.32
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin7"
+          },
+          "path": [
+            [
+              193.04,
+              142.24
+            ],
+            [
+              406.4,
+              142.24
+            ],
+            [
+              406.4,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                193.04,
+                142.24
+              ],
+              "end": [
+                406.4,
+                142.24
+              ],
+              "direction": "right",
+              "length": 213.36
+            },
+            {
+              "start": [
+                406.4,
+                142.24
+              ],
+              "end": [
+                406.4,
+                147.32
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "CANH": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+        },
+        {
+          "ref": "D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            254.0,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin1"
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            381.0,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "JP1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            416.56,
+            172.72
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin1"
+        },
+        {
+          "ref": "U2",
+          "pin": "CANH",
+          "side": "right",
+          "point": [
+            482.6,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CANH",
+          "from": {
+            "ref": "J1",
+            "pin": "1",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "1",
+            "point": [
+              254.0,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:D_TVS:unit1:pin1"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              20.32,
+              132.08
+            ],
+            [
+              20.32,
+              121.92
+            ],
+            [
+              116.84,
+              121.92
+            ],
+            [
+              116.84,
+              162.56
+            ],
+            [
+              248.92,
+              162.56
+            ],
+            [
+              248.92,
+              147.32
+            ],
+            [
+              254.0,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                20.32,
+                132.08
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                20.32,
+                132.08
+              ],
+              "end": [
+                20.32,
+                121.92
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                20.32,
+                121.92
+              ],
+              "end": [
+                116.84,
+                121.92
+              ],
+              "direction": "right",
+              "length": 96.52
+            },
+            {
+              "start": [
+                116.84,
+                121.92
+              ],
+              "end": [
+                116.84,
+                162.56
+              ],
+              "direction": "down",
+              "length": 40.64
+            },
+            {
+              "start": [
+                116.84,
+                162.56
+              ],
+              "end": [
+                248.92,
+                162.56
+              ],
+              "direction": "right",
+              "length": 132.08
+            },
+            {
+              "start": [
+                248.92,
+                162.56
+              ],
+              "end": [
+                248.92,
+                147.32
+              ],
+              "direction": "up",
+              "length": 15.24
+            },
+            {
+              "start": [
+                248.92,
+                147.32
+              ],
+              "end": [
+                254.0,
+                147.32
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "CANH",
+          "from": {
+            "ref": "J1",
+            "pin": "1",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+          },
+          "to": {
+            "ref": "R1",
+            "pin": "1",
+            "point": [
+              381.0,
+              152.4
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              381.0,
+              132.08
+            ],
+            [
+              381.0,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                381.0,
+                132.08
+              ],
+              "direction": "right",
+              "length": 355.6
+            },
+            {
+              "start": [
+                381.0,
+                132.08
+              ],
+              "end": [
+                381.0,
+                152.4
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "CANH",
+          "from": {
+            "ref": "J1",
+            "pin": "1",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+          },
+          "to": {
+            "ref": "JP1",
+            "pin": "1",
+            "point": [
+              416.56,
+              172.72
+            ],
+            "exact": true,
+            "source": "Jumper:Jumper_2_Open:unit1:pin1"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              416.56,
+              132.08
+            ],
+            [
+              416.56,
+              172.72
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                416.56,
+                132.08
+              ],
+              "direction": "right",
+              "length": 391.16
+            },
+            {
+              "start": [
+                416.56,
+                132.08
+              ],
+              "end": [
+                416.56,
+                172.72
+              ],
+              "direction": "down",
+              "length": 40.64
+            }
+          ]
+        },
+        {
+          "net": "CANH",
+          "from": {
+            "ref": "J1",
+            "pin": "1",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "CANH",
+            "point": [
+              482.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin7"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              482.6,
+              132.08
+            ],
+            [
+              482.6,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                482.6,
+                132.08
+              ],
+              "direction": "right",
+              "length": 457.2
+            },
+            {
+              "start": [
+                482.6,
+                132.08
+              ],
+              "end": [
+                482.6,
+                142.24
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "CANL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            345.44,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin1"
+        },
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            381.0,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "JP1",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            426.72,
+            172.72
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin2"
+        },
+        {
+          "ref": "U2",
+          "pin": "CANL",
+          "side": "right",
+          "point": [
+            482.6,
+            152.4
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin6"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CANL",
+          "from": {
+            "ref": "J1",
+            "pin": "2",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "1",
+            "point": [
+              345.44,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:D_TVS:unit1:pin1"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              345.44,
+              132.08
+            ],
+            [
+              345.44,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                345.44,
+                132.08
+              ],
+              "direction": "right",
+              "length": 320.04
+            },
+            {
+              "start": [
+                345.44,
+                132.08
+              ],
+              "end": [
+                345.44,
+                147.32
+              ],
+              "direction": "down",
+              "length": 15.24
+            }
+          ]
+        },
+        {
+          "net": "CANL",
+          "from": {
+            "ref": "J1",
+            "pin": "2",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+          },
+          "to": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              381.0,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              381.0,
+              132.08
+            ],
+            [
+              381.0,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                381.0,
+                132.08
+              ],
+              "direction": "right",
+              "length": 355.6
+            },
+            {
+              "start": [
+                381.0,
+                132.08
+              ],
+              "end": [
+                381.0,
+                157.48
+              ],
+              "direction": "down",
+              "length": 25.4
+            }
+          ]
+        },
+        {
+          "net": "CANL",
+          "from": {
+            "ref": "J1",
+            "pin": "2",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+          },
+          "to": {
+            "ref": "JP1",
+            "pin": "2",
+            "point": [
+              426.72,
+              172.72
+            ],
+            "exact": true,
+            "source": "Jumper:Jumper_2_Open:unit1:pin2"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              426.72,
+              132.08
+            ],
+            [
+              426.72,
+              172.72
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                426.72,
+                132.08
+              ],
+              "direction": "right",
+              "length": 401.32
+            },
+            {
+              "start": [
+                426.72,
+                132.08
+              ],
+              "end": [
+                426.72,
+                172.72
+              ],
+              "direction": "down",
+              "length": 40.64
+            }
+          ]
+        },
+        {
+          "net": "CANL",
+          "from": {
+            "ref": "J1",
+            "pin": "2",
+            "point": [
+              25.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "CANL",
+            "point": [
+              482.6,
+              152.4
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin6"
+          },
+          "path": [
+            [
+              25.4,
+              132.08
+            ],
+            [
+              482.6,
+              132.08
+            ],
+            [
+              482.6,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                132.08
+              ],
+              "end": [
+                482.6,
+                132.08
+              ],
+              "direction": "right",
+              "length": 457.2
+            },
+            {
+              "start": [
+                482.6,
+                132.08
+              ],
+              "end": [
+                482.6,
+                152.4
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_INT": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "7",
+          "side": "left",
+          "point": [
+            25.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin7"
+        },
+        {
+          "ref": "U1",
+          "pin": "INT",
+          "side": "right",
+          "point": [
+            436.88,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_INT",
+          "from": {
+            "ref": "J3",
+            "pin": "7",
+            "point": [
+              25.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin7"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "INT",
+            "point": [
+              436.88,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+          },
+          "path": [
+            [
+              25.4,
+              152.4
+            ],
+            [
+              436.88,
+              152.4
+            ],
+            [
+              436.88,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                152.4
+              ],
+              "end": [
+                436.88,
+                152.4
+              ],
+              "direction": "right",
+              "length": 411.48
+            },
+            {
+              "start": [
+                436.88,
+                152.4
+              ],
+              "end": [
+                436.88,
+                142.24
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_RXD": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "RXCAN",
+          "side": "top",
+          "point": [
+            436.88,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+        },
+        {
+          "ref": "U2",
+          "pin": "RXD",
+          "side": "left",
+          "point": [
+            457.2,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_RXD",
+          "from": {
+            "ref": "U1",
+            "pin": "RXCAN",
+            "point": [
+              436.88,
+              127.0
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "RXD",
+            "point": [
+              457.2,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+          },
+          "path": [
+            [
+              436.88,
+              127.0
+            ],
+            [
+              452.12,
+              127.0
+            ],
+            [
+              452.12,
+              142.24
+            ],
+            [
+              457.2,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                436.88,
+                127.0
+              ],
+              "end": [
+                452.12,
+                127.0
+              ],
+              "direction": "right",
+              "length": 15.24
+            },
+            {
+              "start": [
+                452.12,
+                127.0
+              ],
+              "end": [
+                452.12,
+                142.24
+              ],
+              "direction": "down",
+              "length": 15.24
+            },
+            {
+              "start": [
+                452.12,
+                142.24
+              ],
+              "end": [
+                457.2,
+                142.24
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_SPI_CS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            406.4,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin16"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_SPI_CS",
+          "from": {
+            "ref": "J3",
+            "pin": "2",
+            "point": [
+              25.4,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "CS",
+            "point": [
+              406.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin16"
+          },
+          "path": [
+            [
+              25.4,
+              142.24
+            ],
+            [
+              406.4,
+              142.24
+            ],
+            [
+              406.4,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                142.24
+              ],
+              "end": [
+                406.4,
+                142.24
+              ],
+              "direction": "right",
+              "length": 381.0
+            },
+            {
+              "start": [
+                406.4,
+                142.24
+              ],
+              "end": [
+                406.4,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_SPI_MISO": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            25.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "SO",
+          "side": "left",
+          "point": [
+            406.4,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin15"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_SPI_MISO",
+          "from": {
+            "ref": "J3",
+            "pin": "5",
+            "point": [
+              25.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "SO",
+            "point": [
+              406.4,
+              127.0
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin15"
+          },
+          "path": [
+            [
+              25.4,
+              152.4
+            ],
+            [
+              406.4,
+              152.4
+            ],
+            [
+              406.4,
+              127.0
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                152.4
+              ],
+              "end": [
+                406.4,
+                152.4
+              ],
+              "direction": "right",
+              "length": 381.0
+            },
+            {
+              "start": [
+                406.4,
+                152.4
+              ],
+              "end": [
+                406.4,
+                127.0
+              ],
+              "direction": "up",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_SPI_MOSI": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            25.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U1",
+          "pin": "SI",
+          "side": "top",
+          "point": [
+            406.4,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin14"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_SPI_MOSI",
+          "from": {
+            "ref": "J3",
+            "pin": "4",
+            "point": [
+              25.4,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "SI",
+            "point": [
+              406.4,
+              127.0
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin14"
+          },
+          "path": [
+            [
+              25.4,
+              147.32
+            ],
+            [
+              406.4,
+              147.32
+            ],
+            [
+              406.4,
+              127.0
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                147.32
+              ],
+              "end": [
+                406.4,
+                147.32
+              ],
+              "direction": "right",
+              "length": 381.0
+            },
+            {
+              "start": [
+                406.4,
+                147.32
+              ],
+              "end": [
+                406.4,
+                127.0
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_TXD": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "TXCAN",
+          "side": "right",
+          "point": [
+            436.88,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin1"
+        },
+        {
+          "ref": "U2",
+          "pin": "TXD",
+          "side": "left",
+          "point": [
+            457.2,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_TXD",
+          "from": {
+            "ref": "U1",
+            "pin": "TXCAN",
+            "point": [
+              436.88,
+              127.0
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin1"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "TXD",
+            "point": [
+              457.2,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin1"
+          },
+          "path": [
+            [
+              436.88,
+              127.0
+            ],
+            [
+              457.2,
+              127.0
+            ],
+            [
+              457.2,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                436.88,
+                127.0
+              ],
+              "end": [
+                457.2,
+                127.0
+              ],
+              "direction": "right",
+              "length": 20.32
+            },
+            {
+              "start": [
+                457.2,
+                127.0
+              ],
+              "end": [
+                457.2,
+                142.24
+              ],
+              "direction": "down",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            71.12,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "JP2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            147.32
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            528.32,
+            137.16
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin6"
+        }
+      ],
+      "routes": [
+        {
+          "net": "RS485_A",
+          "from": {
+            "ref": "J2",
+            "pin": "1",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "1",
+            "point": [
+              71.12,
+              152.4
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              71.12,
+              162.56
+            ],
+            [
+              71.12,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                71.12,
+                162.56
+              ],
+              "direction": "right",
+              "length": 45.72
+            },
+            {
+              "start": [
+                71.12,
+                162.56
+              ],
+              "end": [
+                71.12,
+                152.4
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        },
+        {
+          "net": "RS485_A",
+          "from": {
+            "ref": "J2",
+            "pin": "1",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+          },
+          "to": {
+            "ref": "JP2",
+            "pin": "1",
+            "point": [
+              101.6,
+              147.32
+            ],
+            "exact": true,
+            "source": "Jumper:Jumper_2_Open:unit1:pin1"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              20.32,
+              162.56
+            ],
+            [
+              20.32,
+              172.72
+            ],
+            [
+              96.52,
+              172.72
+            ],
+            [
+              96.52,
+              147.32
+            ],
+            [
+              101.6,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                20.32,
+                162.56
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                20.32,
+                162.56
+              ],
+              "end": [
+                20.32,
+                172.72
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                20.32,
+                172.72
+              ],
+              "end": [
+                96.52,
+                172.72
+              ],
+              "direction": "right",
+              "length": 76.2
+            },
+            {
+              "start": [
+                96.52,
+                172.72
+              ],
+              "end": [
+                96.52,
+                147.32
+              ],
+              "direction": "up",
+              "length": 25.4
+            },
+            {
+              "start": [
+                96.52,
+                147.32
+              ],
+              "end": [
+                101.6,
+                147.32
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "RS485_A",
+          "from": {
+            "ref": "J2",
+            "pin": "1",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "A",
+            "point": [
+              528.32,
+              137.16
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin6"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              528.32,
+              162.56
+            ],
+            [
+              528.32,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                528.32,
+                162.56
+              ],
+              "direction": "right",
+              "length": 502.92
+            },
+            {
+              "start": [
+                528.32,
+                162.56
+              ],
+              "end": [
+                528.32,
+                137.16
+              ],
+              "direction": "up",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_B": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            71.12,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "JP2",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            111.76,
+            147.32
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "B",
+          "side": "right",
+          "point": [
+            528.32,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "RS485_B",
+          "from": {
+            "ref": "J2",
+            "pin": "2",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "2",
+            "point": [
+              71.12,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              71.12,
+              162.56
+            ],
+            [
+              71.12,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                71.12,
+                162.56
+              ],
+              "direction": "right",
+              "length": 45.72
+            },
+            {
+              "start": [
+                71.12,
+                162.56
+              ],
+              "end": [
+                71.12,
+                157.48
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "RS485_B",
+          "from": {
+            "ref": "J2",
+            "pin": "2",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+          },
+          "to": {
+            "ref": "JP2",
+            "pin": "2",
+            "point": [
+              111.76,
+              147.32
+            ],
+            "exact": true,
+            "source": "Jumper:Jumper_2_Open:unit1:pin2"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              111.76,
+              162.56
+            ],
+            [
+              111.76,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                111.76,
+                162.56
+              ],
+              "direction": "right",
+              "length": 86.36
+            },
+            {
+              "start": [
+                111.76,
+                162.56
+              ],
+              "end": [
+                111.76,
+                147.32
+              ],
+              "direction": "up",
+              "length": 15.24
+            }
+          ]
+        },
+        {
+          "net": "RS485_B",
+          "from": {
+            "ref": "J2",
+            "pin": "2",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "B",
+            "point": [
+              528.32,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin7"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              528.32,
+              162.56
+            ],
+            [
+              528.32,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                528.32,
+                162.56
+              ],
+              "direction": "right",
+              "length": 502.92
+            },
+            {
+              "start": [
+                528.32,
+                162.56
+              ],
+              "end": [
+                528.32,
+                142.24
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_DE_RE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            60.96,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+        },
+        {
+          "ref": "JP3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            162.56
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "RE",
+          "side": "left",
+          "point": [
+            508.0,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "DE",
+          "side": "left",
+          "point": [
+            508.0,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin3"
+        }
+      ],
+      "routes": [
+        {
+          "net": "RS485_DE_RE",
+          "from": {
+            "ref": "J4",
+            "pin": "3",
+            "point": [
+              60.96,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+          },
+          "to": {
+            "ref": "JP3",
+            "pin": "1",
+            "point": [
+              101.6,
+              162.56
+            ],
+            "exact": true,
+            "source": "Jumper:Jumper_2_Open:unit1:pin1"
+          },
+          "path": [
+            [
+              60.96,
+              142.24
+            ],
+            [
+              101.6,
+              142.24
+            ],
+            [
+              101.6,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                142.24
+              ],
+              "end": [
+                101.6,
+                142.24
+              ],
+              "direction": "right",
+              "length": 40.64
+            },
+            {
+              "start": [
+                101.6,
+                142.24
+              ],
+              "end": [
+                101.6,
+                162.56
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "RS485_DE_RE",
+          "from": {
+            "ref": "J4",
+            "pin": "3",
+            "point": [
+              60.96,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "RE",
+            "point": [
+              508.0,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin2"
+          },
+          "path": [
+            [
+              60.96,
+              142.24
+            ],
+            [
+              508.0,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                142.24
+              ],
+              "end": [
+                508.0,
+                142.24
+              ],
+              "direction": "right",
+              "length": 447.04
+            }
+          ]
+        },
+        {
+          "net": "RS485_DE_RE",
+          "from": {
+            "ref": "J4",
+            "pin": "3",
+            "point": [
+              60.96,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "DE",
+            "point": [
+              508.0,
+              147.32
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin3"
+          },
+          "path": [
+            [
+              60.96,
+              142.24
+            ],
+            [
+              508.0,
+              142.24
+            ],
+            [
+              508.0,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                142.24
+              ],
+              "end": [
+                508.0,
+                142.24
+              ],
+              "direction": "right",
+              "length": 447.04
+            },
+            {
+              "start": [
+                508.0,
+                142.24
+              ],
+              "end": [
+                508.0,
+                147.32
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_DI": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            60.96,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            508.0,
+            152.4
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin4"
+        }
+      ],
+      "routes": [
+        {
+          "net": "RS485_DI",
+          "from": {
+            "ref": "J4",
+            "pin": "2",
+            "point": [
+              60.96,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x05:unit1:pin2"
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "DI",
+            "point": [
+              508.0,
+              152.4
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin4"
+          },
+          "path": [
+            [
+              60.96,
+              142.24
+            ],
+            [
+              508.0,
+              142.24
+            ],
+            [
+              508.0,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                142.24
+              ],
+              "end": [
+                508.0,
+                142.24
+              ],
+              "direction": "right",
+              "length": 447.04
+            },
+            {
+              "start": [
+                508.0,
+                142.24
+              ],
+              "end": [
+                508.0,
+                152.4
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_RO": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            60.96,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "RO",
+          "side": "left",
+          "point": [
+            508.0,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "RS485_RO",
+          "from": {
+            "ref": "J4",
+            "pin": "1",
+            "point": [
+              60.96,
+              137.16
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x05:unit1:pin1"
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "RO",
+            "point": [
+              508.0,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin1"
+          },
+          "path": [
+            [
+              60.96,
+              137.16
+            ],
+            [
+              508.0,
+              137.16
+            ],
+            [
+              508.0,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                137.16
+              ],
+              "end": [
+                508.0,
+                137.16
+              ],
+              "direction": "right",
+              "length": 447.04
+            },
+            {
+              "start": [
+                508.0,
+                137.16
+              ],
+              "end": [
+                508.0,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            421.64,
+            121.92
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin18"
+        },
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            289.56,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "J3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U2",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            467.36,
+            137.16
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin3"
+        },
+        {
+          "ref": "U3",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            518.16,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin8"
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            381.0,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            162.56,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            223.52,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            314.96,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "J5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            127.0
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "VSS",
+          "side": "bottom",
+          "point": [
+            421.64,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin9"
+        },
+        {
+          "ref": "U2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            467.36,
+            157.48
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            518.16,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin5"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            132.08,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            193.04,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            289.56,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            381.0,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            162.56,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            223.52,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            314.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            264.16,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            350.52,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin2"
+        },
+        {
+          "ref": "J3",
+          "pin": "6",
+          "side": "bottom",
+          "point": [
+            25.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        },
+        {
+          "ref": "J4",
+          "pin": "5",
+          "side": "bottom",
+          "point": [
+            60.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin5"
+        },
+        {
+          "ref": "J5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "CAN_SPI_SCK",
+      "from": {
+        "ref": "J3",
+        "pin": "3",
+        "point": [
+          25.4,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "SCK",
+        "point": [
+          406.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+      },
+      "path": [
+        [
+          25.4,
+          142.24
+        ],
+        [
+          406.4,
+          142.24
+        ],
+        [
+          406.4,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            142.24
+          ],
+          "end": [
+            406.4,
+            142.24
+          ],
+          "direction": "right",
+          "length": 381.0
+        },
+        {
+          "start": [
+            406.4,
+            142.24
+          ],
+          "end": [
+            406.4,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "MCP_OSC1",
+      "from": {
+        "ref": "C1",
+        "pin": "1",
+        "point": [
+          132.08,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "Y1",
+        "pin": "1",
+        "point": [
+          223.52,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:Crystal:unit1:pin1"
+      },
+      "path": [
+        [
+          132.08,
+          142.24
+        ],
+        [
+          223.52,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            132.08,
+            142.24
+          ],
+          "end": [
+            223.52,
+            142.24
+          ],
+          "direction": "right",
+          "length": 91.44
+        }
+      ]
+    },
+    {
+      "net": "MCP_OSC1",
+      "from": {
+        "ref": "C1",
+        "pin": "1",
+        "point": [
+          132.08,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "OSC1",
+        "point": [
+          406.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin8"
+      },
+      "path": [
+        [
+          132.08,
+          142.24
+        ],
+        [
+          132.08,
+          132.08
+        ],
+        [
+          396.24,
+          132.08
+        ],
+        [
+          396.24,
+          152.4
+        ],
+        [
+          406.4,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            132.08,
+            142.24
+          ],
+          "end": [
+            132.08,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            132.08,
+            132.08
+          ],
+          "end": [
+            396.24,
+            132.08
+          ],
+          "direction": "right",
+          "length": 264.16
+        },
+        {
+          "start": [
+            396.24,
+            132.08
+          ],
+          "end": [
+            396.24,
+            152.4
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            396.24,
+            152.4
+          ],
+          "end": [
+            406.4,
+            152.4
+          ],
+          "direction": "right",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "MCP_OSC2",
+      "from": {
+        "ref": "C2",
+        "pin": "1",
+        "point": [
+          193.04,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "Y1",
+        "pin": "2",
+        "point": [
+          228.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:Crystal:unit1:pin2"
+      },
+      "path": [
+        [
+          193.04,
+          142.24
+        ],
+        [
+          228.6,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            193.04,
+            142.24
+          ],
+          "end": [
+            228.6,
+            142.24
+          ],
+          "direction": "right",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "MCP_OSC2",
+      "from": {
+        "ref": "C2",
+        "pin": "1",
+        "point": [
+          193.04,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "OSC2",
+        "point": [
+          406.4,
+          147.32
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin7"
+      },
+      "path": [
+        [
+          193.04,
+          142.24
+        ],
+        [
+          406.4,
+          142.24
+        ],
+        [
+          406.4,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            193.04,
+            142.24
+          ],
+          "end": [
+            406.4,
+            142.24
+          ],
+          "direction": "right",
+          "length": 213.36
+        },
+        {
+          "start": [
+            406.4,
+            142.24
+          ],
+          "end": [
+            406.4,
+            147.32
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "CANH",
+      "from": {
+        "ref": "J1",
+        "pin": "1",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "1",
+        "point": [
+          254.0,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:D_TVS:unit1:pin1"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          20.32,
+          132.08
+        ],
+        [
+          20.32,
+          121.92
+        ],
+        [
+          116.84,
+          121.92
+        ],
+        [
+          116.84,
+          162.56
+        ],
+        [
+          248.92,
+          162.56
+        ],
+        [
+          248.92,
+          147.32
+        ],
+        [
+          254.0,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            20.32,
+            132.08
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            20.32,
+            132.08
+          ],
+          "end": [
+            20.32,
+            121.92
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            20.32,
+            121.92
+          ],
+          "end": [
+            116.84,
+            121.92
+          ],
+          "direction": "right",
+          "length": 96.52
+        },
+        {
+          "start": [
+            116.84,
+            121.92
+          ],
+          "end": [
+            116.84,
+            162.56
+          ],
+          "direction": "down",
+          "length": 40.64
+        },
+        {
+          "start": [
+            116.84,
+            162.56
+          ],
+          "end": [
+            248.92,
+            162.56
+          ],
+          "direction": "right",
+          "length": 132.08
+        },
+        {
+          "start": [
+            248.92,
+            162.56
+          ],
+          "end": [
+            248.92,
+            147.32
+          ],
+          "direction": "up",
+          "length": 15.24
+        },
+        {
+          "start": [
+            248.92,
+            147.32
+          ],
+          "end": [
+            254.0,
+            147.32
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "CANH",
+      "from": {
+        "ref": "J1",
+        "pin": "1",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+      },
+      "to": {
+        "ref": "R1",
+        "pin": "1",
+        "point": [
+          381.0,
+          152.4
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          381.0,
+          132.08
+        ],
+        [
+          381.0,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            381.0,
+            132.08
+          ],
+          "direction": "right",
+          "length": 355.6
+        },
+        {
+          "start": [
+            381.0,
+            132.08
+          ],
+          "end": [
+            381.0,
+            152.4
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "CANH",
+      "from": {
+        "ref": "J1",
+        "pin": "1",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+      },
+      "to": {
+        "ref": "JP1",
+        "pin": "1",
+        "point": [
+          416.56,
+          172.72
+        ],
+        "exact": true,
+        "source": "Jumper:Jumper_2_Open:unit1:pin1"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          416.56,
+          132.08
+        ],
+        [
+          416.56,
+          172.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            416.56,
+            132.08
+          ],
+          "direction": "right",
+          "length": 391.16
+        },
+        {
+          "start": [
+            416.56,
+            132.08
+          ],
+          "end": [
+            416.56,
+            172.72
+          ],
+          "direction": "down",
+          "length": 40.64
+        }
+      ]
+    },
+    {
+      "net": "CANH",
+      "from": {
+        "ref": "J1",
+        "pin": "1",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "CANH",
+        "point": [
+          482.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin7"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          482.6,
+          132.08
+        ],
+        [
+          482.6,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            482.6,
+            132.08
+          ],
+          "direction": "right",
+          "length": 457.2
+        },
+        {
+          "start": [
+            482.6,
+            132.08
+          ],
+          "end": [
+            482.6,
+            142.24
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "CANL",
+      "from": {
+        "ref": "J1",
+        "pin": "2",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "1",
+        "point": [
+          345.44,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:D_TVS:unit1:pin1"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          345.44,
+          132.08
+        ],
+        [
+          345.44,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            345.44,
+            132.08
+          ],
+          "direction": "right",
+          "length": 320.04
+        },
+        {
+          "start": [
+            345.44,
+            132.08
+          ],
+          "end": [
+            345.44,
+            147.32
+          ],
+          "direction": "down",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "CANL",
+      "from": {
+        "ref": "J1",
+        "pin": "2",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+      },
+      "to": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          381.0,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          381.0,
+          132.08
+        ],
+        [
+          381.0,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            381.0,
+            132.08
+          ],
+          "direction": "right",
+          "length": 355.6
+        },
+        {
+          "start": [
+            381.0,
+            132.08
+          ],
+          "end": [
+            381.0,
+            157.48
+          ],
+          "direction": "down",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "CANL",
+      "from": {
+        "ref": "J1",
+        "pin": "2",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+      },
+      "to": {
+        "ref": "JP1",
+        "pin": "2",
+        "point": [
+          426.72,
+          172.72
+        ],
+        "exact": true,
+        "source": "Jumper:Jumper_2_Open:unit1:pin2"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          426.72,
+          132.08
+        ],
+        [
+          426.72,
+          172.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            426.72,
+            132.08
+          ],
+          "direction": "right",
+          "length": 401.32
+        },
+        {
+          "start": [
+            426.72,
+            132.08
+          ],
+          "end": [
+            426.72,
+            172.72
+          ],
+          "direction": "down",
+          "length": 40.64
+        }
+      ]
+    },
+    {
+      "net": "CANL",
+      "from": {
+        "ref": "J1",
+        "pin": "2",
+        "point": [
+          25.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "CANL",
+        "point": [
+          482.6,
+          152.4
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin6"
+      },
+      "path": [
+        [
+          25.4,
+          132.08
+        ],
+        [
+          482.6,
+          132.08
+        ],
+        [
+          482.6,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            132.08
+          ],
+          "end": [
+            482.6,
+            132.08
+          ],
+          "direction": "right",
+          "length": 457.2
+        },
+        {
+          "start": [
+            482.6,
+            132.08
+          ],
+          "end": [
+            482.6,
+            152.4
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "CAN_INT",
+      "from": {
+        "ref": "J3",
+        "pin": "7",
+        "point": [
+          25.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin7"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "INT",
+        "point": [
+          436.88,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+      },
+      "path": [
+        [
+          25.4,
+          152.4
+        ],
+        [
+          436.88,
+          152.4
+        ],
+        [
+          436.88,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            152.4
+          ],
+          "end": [
+            436.88,
+            152.4
+          ],
+          "direction": "right",
+          "length": 411.48
+        },
+        {
+          "start": [
+            436.88,
+            152.4
+          ],
+          "end": [
+            436.88,
+            142.24
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "CAN_RXD",
+      "from": {
+        "ref": "U1",
+        "pin": "RXCAN",
+        "point": [
+          436.88,
+          127.0
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "RXD",
+        "point": [
+          457.2,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+      },
+      "path": [
+        [
+          436.88,
+          127.0
+        ],
+        [
+          452.12,
+          127.0
+        ],
+        [
+          452.12,
+          142.24
+        ],
+        [
+          457.2,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            436.88,
+            127.0
+          ],
+          "end": [
+            452.12,
+            127.0
+          ],
+          "direction": "right",
+          "length": 15.24
+        },
+        {
+          "start": [
+            452.12,
+            127.0
+          ],
+          "end": [
+            452.12,
+            142.24
+          ],
+          "direction": "down",
+          "length": 15.24
+        },
+        {
+          "start": [
+            452.12,
+            142.24
+          ],
+          "end": [
+            457.2,
+            142.24
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "CAN_SPI_CS",
+      "from": {
+        "ref": "J3",
+        "pin": "2",
+        "point": [
+          25.4,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "CS",
+        "point": [
+          406.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin16"
+      },
+      "path": [
+        [
+          25.4,
+          142.24
+        ],
+        [
+          406.4,
+          142.24
+        ],
+        [
+          406.4,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            142.24
+          ],
+          "end": [
+            406.4,
+            142.24
+          ],
+          "direction": "right",
+          "length": 381.0
+        },
+        {
+          "start": [
+            406.4,
+            142.24
+          ],
+          "end": [
+            406.4,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "CAN_SPI_MISO",
+      "from": {
+        "ref": "J3",
+        "pin": "5",
+        "point": [
+          25.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "SO",
+        "point": [
+          406.4,
+          127.0
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin15"
+      },
+      "path": [
+        [
+          25.4,
+          152.4
+        ],
+        [
+          406.4,
+          152.4
+        ],
+        [
+          406.4,
+          127.0
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            152.4
+          ],
+          "end": [
+            406.4,
+            152.4
+          ],
+          "direction": "right",
+          "length": 381.0
+        },
+        {
+          "start": [
+            406.4,
+            152.4
+          ],
+          "end": [
+            406.4,
+            127.0
+          ],
+          "direction": "up",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "CAN_SPI_MOSI",
+      "from": {
+        "ref": "J3",
+        "pin": "4",
+        "point": [
+          25.4,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "SI",
+        "point": [
+          406.4,
+          127.0
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin14"
+      },
+      "path": [
+        [
+          25.4,
+          147.32
+        ],
+        [
+          406.4,
+          147.32
+        ],
+        [
+          406.4,
+          127.0
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            147.32
+          ],
+          "end": [
+            406.4,
+            147.32
+          ],
+          "direction": "right",
+          "length": 381.0
+        },
+        {
+          "start": [
+            406.4,
+            147.32
+          ],
+          "end": [
+            406.4,
+            127.0
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "CAN_TXD",
+      "from": {
+        "ref": "U1",
+        "pin": "TXCAN",
+        "point": [
+          436.88,
+          127.0
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin1"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "TXD",
+        "point": [
+          457.2,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin1"
+      },
+      "path": [
+        [
+          436.88,
+          127.0
+        ],
+        [
+          457.2,
+          127.0
+        ],
+        [
+          457.2,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            436.88,
+            127.0
+          ],
+          "end": [
+            457.2,
+            127.0
+          ],
+          "direction": "right",
+          "length": 20.32
+        },
+        {
+          "start": [
+            457.2,
+            127.0
+          ],
+          "end": [
+            457.2,
+            142.24
+          ],
+          "direction": "down",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "RS485_A",
+      "from": {
+        "ref": "J2",
+        "pin": "1",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "1",
+        "point": [
+          71.12,
+          152.4
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          71.12,
+          162.56
+        ],
+        [
+          71.12,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            71.12,
+            162.56
+          ],
+          "direction": "right",
+          "length": 45.72
+        },
+        {
+          "start": [
+            71.12,
+            162.56
+          ],
+          "end": [
+            71.12,
+            152.4
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "RS485_A",
+      "from": {
+        "ref": "J2",
+        "pin": "1",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+      },
+      "to": {
+        "ref": "JP2",
+        "pin": "1",
+        "point": [
+          101.6,
+          147.32
+        ],
+        "exact": true,
+        "source": "Jumper:Jumper_2_Open:unit1:pin1"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          20.32,
+          162.56
+        ],
+        [
+          20.32,
+          172.72
+        ],
+        [
+          96.52,
+          172.72
+        ],
+        [
+          96.52,
+          147.32
+        ],
+        [
+          101.6,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            20.32,
+            162.56
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            20.32,
+            162.56
+          ],
+          "end": [
+            20.32,
+            172.72
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            20.32,
+            172.72
+          ],
+          "end": [
+            96.52,
+            172.72
+          ],
+          "direction": "right",
+          "length": 76.2
+        },
+        {
+          "start": [
+            96.52,
+            172.72
+          ],
+          "end": [
+            96.52,
+            147.32
+          ],
+          "direction": "up",
+          "length": 25.4
+        },
+        {
+          "start": [
+            96.52,
+            147.32
+          ],
+          "end": [
+            101.6,
+            147.32
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "RS485_A",
+      "from": {
+        "ref": "J2",
+        "pin": "1",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "A",
+        "point": [
+          528.32,
+          137.16
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin6"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          528.32,
+          162.56
+        ],
+        [
+          528.32,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            528.32,
+            162.56
+          ],
+          "direction": "right",
+          "length": 502.92
+        },
+        {
+          "start": [
+            528.32,
+            162.56
+          ],
+          "end": [
+            528.32,
+            137.16
+          ],
+          "direction": "up",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "RS485_B",
+      "from": {
+        "ref": "J2",
+        "pin": "2",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "2",
+        "point": [
+          71.12,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          71.12,
+          162.56
+        ],
+        [
+          71.12,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            71.12,
+            162.56
+          ],
+          "direction": "right",
+          "length": 45.72
+        },
+        {
+          "start": [
+            71.12,
+            162.56
+          ],
+          "end": [
+            71.12,
+            157.48
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "RS485_B",
+      "from": {
+        "ref": "J2",
+        "pin": "2",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+      },
+      "to": {
+        "ref": "JP2",
+        "pin": "2",
+        "point": [
+          111.76,
+          147.32
+        ],
+        "exact": true,
+        "source": "Jumper:Jumper_2_Open:unit1:pin2"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          111.76,
+          162.56
+        ],
+        [
+          111.76,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            111.76,
+            162.56
+          ],
+          "direction": "right",
+          "length": 86.36
+        },
+        {
+          "start": [
+            111.76,
+            162.56
+          ],
+          "end": [
+            111.76,
+            147.32
+          ],
+          "direction": "up",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "RS485_B",
+      "from": {
+        "ref": "J2",
+        "pin": "2",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "B",
+        "point": [
+          528.32,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin7"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          528.32,
+          162.56
+        ],
+        [
+          528.32,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            528.32,
+            162.56
+          ],
+          "direction": "right",
+          "length": 502.92
+        },
+        {
+          "start": [
+            528.32,
+            162.56
+          ],
+          "end": [
+            528.32,
+            142.24
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "RS485_DE_RE",
+      "from": {
+        "ref": "J4",
+        "pin": "3",
+        "point": [
+          60.96,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+      },
+      "to": {
+        "ref": "JP3",
+        "pin": "1",
+        "point": [
+          101.6,
+          162.56
+        ],
+        "exact": true,
+        "source": "Jumper:Jumper_2_Open:unit1:pin1"
+      },
+      "path": [
+        [
+          60.96,
+          142.24
+        ],
+        [
+          101.6,
+          142.24
+        ],
+        [
+          101.6,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            142.24
+          ],
+          "end": [
+            101.6,
+            142.24
+          ],
+          "direction": "right",
+          "length": 40.64
+        },
+        {
+          "start": [
+            101.6,
+            142.24
+          ],
+          "end": [
+            101.6,
+            162.56
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "RS485_DE_RE",
+      "from": {
+        "ref": "J4",
+        "pin": "3",
+        "point": [
+          60.96,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "RE",
+        "point": [
+          508.0,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin2"
+      },
+      "path": [
+        [
+          60.96,
+          142.24
+        ],
+        [
+          508.0,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            142.24
+          ],
+          "end": [
+            508.0,
+            142.24
+          ],
+          "direction": "right",
+          "length": 447.04
+        }
+      ]
+    },
+    {
+      "net": "RS485_DE_RE",
+      "from": {
+        "ref": "J4",
+        "pin": "3",
+        "point": [
+          60.96,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "DE",
+        "point": [
+          508.0,
+          147.32
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin3"
+      },
+      "path": [
+        [
+          60.96,
+          142.24
+        ],
+        [
+          508.0,
+          142.24
+        ],
+        [
+          508.0,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            142.24
+          ],
+          "end": [
+            508.0,
+            142.24
+          ],
+          "direction": "right",
+          "length": 447.04
+        },
+        {
+          "start": [
+            508.0,
+            142.24
+          ],
+          "end": [
+            508.0,
+            147.32
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "RS485_DI",
+      "from": {
+        "ref": "J4",
+        "pin": "2",
+        "point": [
+          60.96,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x05:unit1:pin2"
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "DI",
+        "point": [
+          508.0,
+          152.4
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin4"
+      },
+      "path": [
+        [
+          60.96,
+          142.24
+        ],
+        [
+          508.0,
+          142.24
+        ],
+        [
+          508.0,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            142.24
+          ],
+          "end": [
+            508.0,
+            142.24
+          ],
+          "direction": "right",
+          "length": 447.04
+        },
+        {
+          "start": [
+            508.0,
+            142.24
+          ],
+          "end": [
+            508.0,
+            152.4
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "RS485_RO",
+      "from": {
+        "ref": "J4",
+        "pin": "1",
+        "point": [
+          60.96,
+          137.16
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x05:unit1:pin1"
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "RO",
+        "point": [
+          508.0,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin1"
+      },
+      "path": [
+        [
+          60.96,
+          137.16
+        ],
+        [
+          508.0,
+          137.16
+        ],
+        [
+          508.0,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            137.16
+          ],
+          "end": [
+            508.0,
+            137.16
+          ],
+          "direction": "right",
+          "length": 447.04
+        },
+        {
+          "start": [
+            508.0,
+            137.16
+          ],
+          "end": [
+            508.0,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 19,
+    "wired_route_count": 30,
+    "segment_count": 68,
+    "different_net_crossing_count": 101
+  },
+  "warnings": [
+    "astar_fallback_manhattan: no clear route found for CAN_SPI_SCK.",
+    "astar_fallback_expansion_limit: MCP_OSC1 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MCP_OSC2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MCP_OSC2 exceeded 1500 explored grid states.",
+    "astar_fallback_manhattan: no clear route found for CANH.",
+    "astar_fallback_manhattan: no clear route found for CANH.",
+    "astar_fallback_manhattan: no clear route found for CANH.",
+    "astar_fallback_manhattan: no clear route found for CANL.",
+    "astar_fallback_manhattan: no clear route found for CANL.",
+    "astar_fallback_manhattan: no clear route found for CANL.",
+    "astar_fallback_manhattan: no clear route found for CANL.",
+    "astar_fallback_manhattan: no clear route found for CAN_INT.",
+    "astar_fallback_manhattan: no clear route found for CAN_SPI_CS.",
+    "astar_fallback_manhattan: no clear route found for CAN_SPI_MISO.",
+    "astar_fallback_manhattan: no clear route found for CAN_SPI_MOSI.",
+    "astar_fallback_manhattan: no clear route found for CAN_TXD.",
+    "astar_fallback_expansion_limit: RS485_A exceeded 1500 explored grid states.",
+    "astar_fallback_manhattan: no clear route found for RS485_A.",
+    "astar_fallback_manhattan: no clear route found for RS485_B.",
+    "astar_fallback_manhattan: no clear route found for RS485_B.",
+    "astar_fallback_manhattan: no clear route found for RS485_B.",
+    "astar_fallback_manhattan: no clear route found for RS485_DE_RE.",
+    "astar_fallback_manhattan: no clear route found for RS485_DE_RE.",
+    "astar_fallback_manhattan: no clear route found for RS485_DE_RE.",
+    "astar_fallback_manhattan: no clear route found for RS485_DI.",
+    "astar_fallback_manhattan: no clear route found for RS485_RO.",
+    "different_net_crossings_detected: 101"
+  ]
+}

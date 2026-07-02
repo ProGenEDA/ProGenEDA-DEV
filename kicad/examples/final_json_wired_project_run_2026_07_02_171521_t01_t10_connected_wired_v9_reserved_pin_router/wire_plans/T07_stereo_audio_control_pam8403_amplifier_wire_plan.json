@@ -1,0 +1,4341 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 612.1,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "LM358_L_FEEDBACK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            130.81
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1A",
+          "pin": "IN_MINUS",
+          "side": "left",
+          "point": [
+            424.18,
+            149.86
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin2"
+        },
+        {
+          "ref": "U1A",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            439.42,
+            147.32
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LM358_L_FEEDBACK",
+          "from": {
+            "ref": "C3",
+            "pin": "1",
+            "point": [
+              30.48,
+              161.29
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "1",
+            "point": [
+              66.04,
+              130.81
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              30.48,
+              161.29
+            ],
+            [
+              57.15,
+              161.29
+            ],
+            [
+              57.15,
+              129.54
+            ],
+            [
+              66.04,
+              129.54
+            ],
+            [
+              66.04,
+              130.81
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                161.29
+              ],
+              "end": [
+                57.15,
+                161.29
+              ],
+              "direction": "right",
+              "length": 26.67
+            },
+            {
+              "start": [
+                57.15,
+                161.29
+              ],
+              "end": [
+                57.15,
+                129.54
+              ],
+              "direction": "up",
+              "length": 31.75
+            },
+            {
+              "start": [
+                57.15,
+                129.54
+              ],
+              "end": [
+                66.04,
+                129.54
+              ],
+              "direction": "right",
+              "length": 8.89
+            },
+            {
+              "start": [
+                66.04,
+                129.54
+              ],
+              "end": [
+                66.04,
+                130.81
+              ],
+              "direction": "down",
+              "length": 1.27
+            }
+          ]
+        },
+        {
+          "net": "LM358_L_FEEDBACK",
+          "from": {
+            "ref": "C3",
+            "pin": "1",
+            "point": [
+              30.48,
+              161.29
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1A",
+            "pin": "IN_MINUS",
+            "point": [
+              424.18,
+              149.86
+            ],
+            "exact": true,
+            "source": "Amplifier_Operational:LM358:unit1:pin2"
+          },
+          "path": [
+            [
+              30.48,
+              161.29
+            ],
+            [
+              25.4,
+              161.29
+            ],
+            [
+              25.4,
+              170.18
+            ],
+            [
+              417.83,
+              170.18
+            ],
+            [
+              417.83,
+              149.86
+            ],
+            [
+              424.18,
+              149.86
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                161.29
+              ],
+              "end": [
+                25.4,
+                161.29
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                25.4,
+                161.29
+              ],
+              "end": [
+                25.4,
+                170.18
+              ],
+              "direction": "down",
+              "length": 8.89
+            },
+            {
+              "start": [
+                25.4,
+                170.18
+              ],
+              "end": [
+                417.83,
+                170.18
+              ],
+              "direction": "right",
+              "length": 392.43
+            },
+            {
+              "start": [
+                417.83,
+                170.18
+              ],
+              "end": [
+                417.83,
+                149.86
+              ],
+              "direction": "up",
+              "length": 20.32
+            },
+            {
+              "start": [
+                417.83,
+                149.86
+              ],
+              "end": [
+                424.18,
+                149.86
+              ],
+              "direction": "right",
+              "length": 6.35
+            }
+          ]
+        },
+        {
+          "net": "LM358_L_FEEDBACK",
+          "from": {
+            "ref": "C3",
+            "pin": "1",
+            "point": [
+              30.48,
+              161.29
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1A",
+            "pin": "OUT",
+            "point": [
+              439.42,
+              147.32
+            ],
+            "exact": true,
+            "source": "Amplifier_Operational:LM358:unit1:pin1"
+          },
+          "path": [
+            [
+              30.48,
+              161.29
+            ],
+            [
+              30.48,
+              160.02
+            ],
+            [
+              24.13,
+              160.02
+            ],
+            [
+              24.13,
+              171.45
+            ],
+            [
+              445.77,
+              171.45
+            ],
+            [
+              445.77,
+              147.32
+            ],
+            [
+              439.42,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                161.29
+              ],
+              "end": [
+                30.48,
+                160.02
+              ],
+              "direction": "up",
+              "length": 1.27
+            },
+            {
+              "start": [
+                30.48,
+                160.02
+              ],
+              "end": [
+                24.13,
+                160.02
+              ],
+              "direction": "left",
+              "length": 6.35
+            },
+            {
+              "start": [
+                24.13,
+                160.02
+              ],
+              "end": [
+                24.13,
+                171.45
+              ],
+              "direction": "down",
+              "length": 11.43
+            },
+            {
+              "start": [
+                24.13,
+                171.45
+              ],
+              "end": [
+                445.77,
+                171.45
+              ],
+              "direction": "right",
+              "length": 421.64
+            },
+            {
+              "start": [
+                445.77,
+                171.45
+              ],
+              "end": [
+                445.77,
+                147.32
+              ],
+              "direction": "up",
+              "length": 24.13
+            },
+            {
+              "start": [
+                445.77,
+                147.32
+              ],
+              "end": [
+                439.42,
+                147.32
+              ],
+              "direction": "left",
+              "length": 6.35
+            }
+          ]
+        }
+      ]
+    },
+    "LM358_R_FEEDBACK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            173.99
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1B",
+          "pin": "IN_MINUS",
+          "side": "left",
+          "point": [
+            469.9,
+            162.56
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit2:pin6"
+        },
+        {
+          "ref": "U1B",
+          "pin": "OUT",
+          "side": "bottom",
+          "point": [
+            485.14,
+            160.02
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit2:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LM358_R_FEEDBACK",
+          "from": {
+            "ref": "C4",
+            "pin": "1",
+            "point": [
+              30.48,
+              173.99
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "R4",
+            "pin": "1",
+            "point": [
+              66.04,
+              140.97
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              30.48,
+              173.99
+            ],
+            [
+              21.59,
+              173.99
+            ],
+            [
+              21.59,
+              129.54
+            ],
+            [
+              45.72,
+              129.54
+            ],
+            [
+              45.72,
+              127.0
+            ],
+            [
+              72.39,
+              127.0
+            ],
+            [
+              72.39,
+              139.7
+            ],
+            [
+              66.04,
+              139.7
+            ],
+            [
+              66.04,
+              140.97
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                173.99
+              ],
+              "end": [
+                21.59,
+                173.99
+              ],
+              "direction": "left",
+              "length": 8.89
+            },
+            {
+              "start": [
+                21.59,
+                173.99
+              ],
+              "end": [
+                21.59,
+                129.54
+              ],
+              "direction": "up",
+              "length": 44.45
+            },
+            {
+              "start": [
+                21.59,
+                129.54
+              ],
+              "end": [
+                45.72,
+                129.54
+              ],
+              "direction": "right",
+              "length": 24.13
+            },
+            {
+              "start": [
+                45.72,
+                129.54
+              ],
+              "end": [
+                45.72,
+                127.0
+              ],
+              "direction": "up",
+              "length": 2.54
+            },
+            {
+              "start": [
+                45.72,
+                127.0
+              ],
+              "end": [
+                72.39,
+                127.0
+              ],
+              "direction": "right",
+              "length": 26.67
+            },
+            {
+              "start": [
+                72.39,
+                127.0
+              ],
+              "end": [
+                72.39,
+                139.7
+              ],
+              "direction": "down",
+              "length": 12.7
+            },
+            {
+              "start": [
+                72.39,
+                139.7
+              ],
+              "end": [
+                66.04,
+                139.7
+              ],
+              "direction": "left",
+              "length": 6.35
+            },
+            {
+              "start": [
+                66.04,
+                139.7
+              ],
+              "end": [
+                66.04,
+                140.97
+              ],
+              "direction": "down",
+              "length": 1.27
+            }
+          ]
+        },
+        {
+          "net": "LM358_R_FEEDBACK",
+          "from": {
+            "ref": "C4",
+            "pin": "1",
+            "point": [
+              30.48,
+              173.99
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1B",
+            "pin": "IN_MINUS",
+            "point": [
+              469.9,
+              162.56
+            ],
+            "exact": true,
+            "source": "Amplifier_Operational:LM358:unit2:pin6"
+          },
+          "path": [
+            [
+              30.48,
+              173.99
+            ],
+            [
+              469.9,
+              173.99
+            ],
+            [
+              469.9,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                173.99
+              ],
+              "end": [
+                469.9,
+                173.99
+              ],
+              "direction": "right",
+              "length": 439.42
+            },
+            {
+              "start": [
+                469.9,
+                173.99
+              ],
+              "end": [
+                469.9,
+                162.56
+              ],
+              "direction": "up",
+              "length": 11.43
+            }
+          ]
+        },
+        {
+          "net": "LM358_R_FEEDBACK",
+          "from": {
+            "ref": "C4",
+            "pin": "1",
+            "point": [
+              30.48,
+              173.99
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1B",
+            "pin": "OUT",
+            "point": [
+              485.14,
+              160.02
+            ],
+            "exact": true,
+            "source": "Amplifier_Operational:LM358:unit2:pin7"
+          },
+          "path": [
+            [
+              30.48,
+              173.99
+            ],
+            [
+              30.48,
+              172.72
+            ],
+            [
+              463.55,
+              172.72
+            ],
+            [
+              463.55,
+              129.54
+            ],
+            [
+              491.49,
+              129.54
+            ],
+            [
+              491.49,
+              165.1
+            ],
+            [
+              485.14,
+              165.1
+            ],
+            [
+              485.14,
+              160.02
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                173.99
+              ],
+              "end": [
+                30.48,
+                172.72
+              ],
+              "direction": "up",
+              "length": 1.27
+            },
+            {
+              "start": [
+                30.48,
+                172.72
+              ],
+              "end": [
+                463.55,
+                172.72
+              ],
+              "direction": "right",
+              "length": 433.07
+            },
+            {
+              "start": [
+                463.55,
+                172.72
+              ],
+              "end": [
+                463.55,
+                129.54
+              ],
+              "direction": "up",
+              "length": 43.18
+            },
+            {
+              "start": [
+                463.55,
+                129.54
+              ],
+              "end": [
+                491.49,
+                129.54
+              ],
+              "direction": "right",
+              "length": 27.94
+            },
+            {
+              "start": [
+                491.49,
+                129.54
+              ],
+              "end": [
+                491.49,
+                165.1
+              ],
+              "direction": "down",
+              "length": 35.56
+            },
+            {
+              "start": [
+                491.49,
+                165.1
+              ],
+              "end": [
+                485.14,
+                165.1
+              ],
+              "direction": "left",
+              "length": 6.35
+            },
+            {
+              "start": [
+                485.14,
+                165.1
+              ],
+              "end": [
+                485.14,
+                160.02
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_AC": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "RV1",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            391.16,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin3"
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_L_AC",
+          "from": {
+            "ref": "C1",
+            "pin": "2",
+            "point": [
+              101.6,
+              146.05
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin2"
+          },
+          "to": {
+            "ref": "RV1",
+            "pin": "3",
+            "point": [
+              391.16,
+              151.13
+            ],
+            "exact": true,
+            "source": "Device:R_Potentiometer:unit1:pin3"
+          },
+          "path": [
+            [
+              101.6,
+              146.05
+            ],
+            [
+              124.46,
+              146.05
+            ],
+            [
+              124.46,
+              160.02
+            ],
+            [
+              391.16,
+              160.02
+            ],
+            [
+              391.16,
+              151.13
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                101.6,
+                146.05
+              ],
+              "end": [
+                124.46,
+                146.05
+              ],
+              "direction": "right",
+              "length": 22.86
+            },
+            {
+              "start": [
+                124.46,
+                146.05
+              ],
+              "end": [
+                124.46,
+                160.02
+              ],
+              "direction": "down",
+              "length": 13.97
+            },
+            {
+              "start": [
+                124.46,
+                160.02
+              ],
+              "end": [
+                391.16,
+                160.02
+              ],
+              "direction": "right",
+              "length": 266.7
+            },
+            {
+              "start": [
+                391.16,
+                160.02
+              ],
+              "end": [
+                391.16,
+                151.13
+              ],
+              "direction": "up",
+              "length": 8.89
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_BIAS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            294.64,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "R6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            358.14,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1A",
+          "pin": "BIAS",
+          "side": "left",
+          "point": [
+            421.64,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_L_BIAS",
+          "from": {
+            "ref": "R5",
+            "pin": "2",
+            "point": [
+              294.64,
+              151.13
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "R6",
+            "pin": "1",
+            "point": [
+              358.14,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              294.64,
+              151.13
+            ],
+            [
+              294.64,
+              152.4
+            ],
+            [
+              351.79,
+              152.4
+            ],
+            [
+              351.79,
+              142.24
+            ],
+            [
+              358.14,
+              142.24
+            ],
+            [
+              358.14,
+              143.51
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                294.64,
+                151.13
+              ],
+              "end": [
+                294.64,
+                152.4
+              ],
+              "direction": "down",
+              "length": 1.27
+            },
+            {
+              "start": [
+                294.64,
+                152.4
+              ],
+              "end": [
+                351.79,
+                152.4
+              ],
+              "direction": "right",
+              "length": 57.15
+            },
+            {
+              "start": [
+                351.79,
+                152.4
+              ],
+              "end": [
+                351.79,
+                142.24
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                351.79,
+                142.24
+              ],
+              "end": [
+                358.14,
+                142.24
+              ],
+              "direction": "right",
+              "length": 6.35
+            },
+            {
+              "start": [
+                358.14,
+                142.24
+              ],
+              "end": [
+                358.14,
+                143.51
+              ],
+              "direction": "down",
+              "length": 1.27
+            }
+          ]
+        },
+        {
+          "net": "AUDIO_L_BIAS",
+          "from": {
+            "ref": "R5",
+            "pin": "2",
+            "point": [
+              294.64,
+              151.13
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "U1A",
+            "pin": "BIAS",
+            "point": [
+              421.64,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              294.64,
+              151.13
+            ],
+            [
+              293.37,
+              151.13
+            ],
+            [
+              293.37,
+              153.67
+            ],
+            [
+              368.3,
+              153.67
+            ],
+            [
+              368.3,
+              139.7
+            ],
+            [
+              421.64,
+              139.7
+            ],
+            [
+              421.64,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                294.64,
+                151.13
+              ],
+              "end": [
+                293.37,
+                151.13
+              ],
+              "direction": "left",
+              "length": 1.27
+            },
+            {
+              "start": [
+                293.37,
+                151.13
+              ],
+              "end": [
+                293.37,
+                153.67
+              ],
+              "direction": "down",
+              "length": 2.54
+            },
+            {
+              "start": [
+                293.37,
+                153.67
+              ],
+              "end": [
+                368.3,
+                153.67
+              ],
+              "direction": "right",
+              "length": 74.93
+            },
+            {
+              "start": [
+                368.3,
+                153.67
+              ],
+              "end": [
+                368.3,
+                139.7
+              ],
+              "direction": "up",
+              "length": 13.97
+            },
+            {
+              "start": [
+                368.3,
+                139.7
+              ],
+              "end": [
+                421.64,
+                139.7
+              ],
+              "direction": "right",
+              "length": 53.34
+            },
+            {
+              "start": [
+                421.64,
+                139.7
+              ],
+              "end": [
+                421.64,
+                144.78
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_IN_RAW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "LEFT",
+          "side": "right",
+          "point": [
+            71.12,
+            160.02
+          ],
+          "exact": true,
+          "source": "Connector_Audio:AudioJack3:unit1:pinT"
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_L_IN_RAW",
+          "from": {
+            "ref": "J1",
+            "pin": "LEFT",
+            "point": [
+              71.12,
+              160.02
+            ],
+            "exact": true,
+            "source": "Connector_Audio:AudioJack3:unit1:pinT"
+          },
+          "to": {
+            "ref": "C1",
+            "pin": "1",
+            "point": [
+              101.6,
+              138.43
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "path": [
+            [
+              71.12,
+              160.02
+            ],
+            [
+              96.52,
+              160.02
+            ],
+            [
+              96.52,
+              138.43
+            ],
+            [
+              101.6,
+              138.43
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                71.12,
+                160.02
+              ],
+              "end": [
+                96.52,
+                160.02
+              ],
+              "direction": "right",
+              "length": 25.4
+            },
+            {
+              "start": [
+                96.52,
+                160.02
+              ],
+              "end": [
+                96.52,
+                138.43
+              ],
+              "direction": "up",
+              "length": 21.59
+            },
+            {
+              "start": [
+                96.52,
+                138.43
+              ],
+              "end": [
+                101.6,
+                138.43
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_VOL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            130.81
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "RV1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            394.97,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for AUDIO_L_VOL."
+      ]
+    },
+    "AUDIO_R_AC": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "RV2",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            132.08,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin3"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            165.1,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_R_AC",
+          "from": {
+            "ref": "RV2",
+            "pin": "3",
+            "point": [
+              132.08,
+              151.13
+            ],
+            "exact": true,
+            "source": "Device:R_Potentiometer:unit1:pin3"
+          },
+          "to": {
+            "ref": "C2",
+            "pin": "2",
+            "point": [
+              165.1,
+              158.75
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin2"
+          },
+          "path": [
+            [
+              132.08,
+              151.13
+            ],
+            [
+              132.08,
+              157.48
+            ],
+            [
+              160.02,
+              157.48
+            ],
+            [
+              160.02,
+              158.75
+            ],
+            [
+              165.1,
+              158.75
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                132.08,
+                151.13
+              ],
+              "end": [
+                132.08,
+                157.48
+              ],
+              "direction": "down",
+              "length": 6.35
+            },
+            {
+              "start": [
+                132.08,
+                157.48
+              ],
+              "end": [
+                160.02,
+                157.48
+              ],
+              "direction": "right",
+              "length": 27.94
+            },
+            {
+              "start": [
+                160.02,
+                157.48
+              ],
+              "end": [
+                160.02,
+                158.75
+              ],
+              "direction": "down",
+              "length": 1.27
+            },
+            {
+              "start": [
+                160.02,
+                158.75
+              ],
+              "end": [
+                165.1,
+                158.75
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_R_BIAS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "R8",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            198.12,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1B",
+          "pin": "BIAS",
+          "side": "left",
+          "point": [
+            467.36,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for AUDIO_R_BIAS."
+      ]
+    },
+    "AUDIO_R_IN_RAW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "RIGHT",
+          "side": "right",
+          "point": [
+            71.12,
+            157.48
+          ],
+          "exact": true,
+          "source": "Connector_Audio:AudioJack3:unit1:pinR"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            165.1,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_R_IN_RAW",
+          "from": {
+            "ref": "J1",
+            "pin": "RIGHT",
+            "point": [
+              71.12,
+              157.48
+            ],
+            "exact": true,
+            "source": "Connector_Audio:AudioJack3:unit1:pinR"
+          },
+          "to": {
+            "ref": "C2",
+            "pin": "1",
+            "point": [
+              165.1,
+              151.13
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "path": [
+            [
+              71.12,
+              157.48
+            ],
+            [
+              93.98,
+              157.48
+            ],
+            [
+              93.98,
+              135.89
+            ],
+            [
+              160.02,
+              135.89
+            ],
+            [
+              160.02,
+              151.13
+            ],
+            [
+              165.1,
+              151.13
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                71.12,
+                157.48
+              ],
+              "end": [
+                93.98,
+                157.48
+              ],
+              "direction": "right",
+              "length": 22.86
+            },
+            {
+              "start": [
+                93.98,
+                157.48
+              ],
+              "end": [
+                93.98,
+                135.89
+              ],
+              "direction": "up",
+              "length": 21.59
+            },
+            {
+              "start": [
+                93.98,
+                135.89
+              ],
+              "end": [
+                160.02,
+                135.89
+              ],
+              "direction": "right",
+              "length": 66.04
+            },
+            {
+              "start": [
+                160.02,
+                135.89
+              ],
+              "end": [
+                160.02,
+                151.13
+              ],
+              "direction": "down",
+              "length": 15.24
+            },
+            {
+              "start": [
+                160.02,
+                151.13
+              ],
+              "end": [
+                165.1,
+                151.13
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_R_VOL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "RV2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            135.89,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for AUDIO_R_VOL."
+      ]
+    },
+    "LM358_L_IN": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U1A",
+          "pin": "IN_PLUS",
+          "side": "left",
+          "point": [
+            424.18,
+            144.78
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for LM358_L_IN."
+      ]
+    },
+    "LM358_R_IN": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U1B",
+          "pin": "IN_PLUS",
+          "side": "left",
+          "point": [
+            469.9,
+            157.48
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit2:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for LM358_R_IN."
+      ]
+    },
+    "MASTER_CTRL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "RIGHT",
+          "side": "right",
+          "point": [
+            35.56,
+            121.92
+          ],
+          "exact": true,
+          "source": "Connector_Audio:AudioJack3:unit1:pinR"
+        },
+        {
+          "ref": "J2",
+          "pin": "LEFT",
+          "side": "right",
+          "point": [
+            35.56,
+            124.46
+          ],
+          "exact": true,
+          "source": "Connector_Audio:AudioJack3:unit1:pinT"
+        },
+        {
+          "ref": "RV3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            234.95,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "MASTER_CTRL",
+          "from": {
+            "ref": "J2",
+            "pin": "RIGHT",
+            "point": [
+              35.56,
+              121.92
+            ],
+            "exact": true,
+            "source": "Connector_Audio:AudioJack3:unit1:pinR"
+          },
+          "to": {
+            "ref": "J2",
+            "pin": "LEFT",
+            "point": [
+              35.56,
+              124.46
+            ],
+            "exact": true,
+            "source": "Connector_Audio:AudioJack3:unit1:pinT"
+          },
+          "path": [
+            [
+              35.56,
+              121.92
+            ],
+            [
+              35.56,
+              124.46
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                121.92
+              ],
+              "end": [
+                35.56,
+                124.46
+              ],
+              "direction": "down",
+              "length": 2.54
+            }
+          ]
+        },
+        {
+          "net": "MASTER_CTRL",
+          "from": {
+            "ref": "J2",
+            "pin": "RIGHT",
+            "point": [
+              35.56,
+              121.92
+            ],
+            "exact": true,
+            "source": "Connector_Audio:AudioJack3:unit1:pinR"
+          },
+          "to": {
+            "ref": "RV3",
+            "pin": "2",
+            "point": [
+              234.95,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R_Potentiometer:unit1:pin2"
+          },
+          "path": [
+            [
+              35.56,
+              121.92
+            ],
+            [
+              238.76,
+              121.92
+            ],
+            [
+              238.76,
+              147.32
+            ],
+            [
+              234.95,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                121.92
+              ],
+              "end": [
+                238.76,
+                121.92
+              ],
+              "direction": "right",
+              "length": 203.2
+            },
+            {
+              "start": [
+                238.76,
+                121.92
+              ],
+              "end": [
+                238.76,
+                147.32
+              ],
+              "direction": "down",
+              "length": 25.4
+            },
+            {
+              "start": [
+                238.76,
+                147.32
+              ],
+              "end": [
+                234.95,
+                147.32
+              ],
+              "direction": "left",
+              "length": 3.81
+            }
+          ]
+        }
+      ]
+    },
+    "PAM_L_IN": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            168.91
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "LIN",
+          "side": "left",
+          "point": [
+            508.0,
+            137.16
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for PAM_L_IN."
+      ]
+    },
+    "PAM_R_IN": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            181.61
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C8",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            165.1,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "RIN",
+          "side": "left",
+          "point": [
+            508.0,
+            147.32
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin10"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: PAM_R_IN exceeded 50000 explored grid states."
+      ]
+    },
+    "SPK_L_MINUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "LOUT_MINUS",
+          "side": "right",
+          "point": [
+            533.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin3"
+        },
+        {
+          "ref": "SPK1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            553.72,
+            144.78
+          ],
+          "exact": true,
+          "source": "Device:Speaker:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPK_L_MINUS",
+          "from": {
+            "ref": "U3",
+            "pin": "LOUT_MINUS",
+            "point": [
+              533.4,
+              142.24
+            ],
+            "exact": true,
+            "source": "Amplifier_Audio:PAM8403D:unit1:pin3"
+          },
+          "to": {
+            "ref": "SPK1",
+            "pin": "2",
+            "point": [
+              553.72,
+              144.78
+            ],
+            "exact": true,
+            "source": "Device:Speaker:unit1:pin2"
+          },
+          "path": [
+            [
+              533.4,
+              142.24
+            ],
+            [
+              533.4,
+              144.78
+            ],
+            [
+              553.72,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                533.4,
+                142.24
+              ],
+              "end": [
+                533.4,
+                144.78
+              ],
+              "direction": "down",
+              "length": 2.54
+            },
+            {
+              "start": [
+                533.4,
+                144.78
+              ],
+              "end": [
+                553.72,
+                144.78
+              ],
+              "direction": "right",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "SPK_L_PLUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "LOUT_PLUS",
+          "side": "right",
+          "point": [
+            533.4,
+            139.7
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin1"
+        },
+        {
+          "ref": "SPK1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            553.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Speaker:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPK_L_PLUS",
+          "from": {
+            "ref": "U3",
+            "pin": "LOUT_PLUS",
+            "point": [
+              533.4,
+              139.7
+            ],
+            "exact": true,
+            "source": "Amplifier_Audio:PAM8403D:unit1:pin1"
+          },
+          "to": {
+            "ref": "SPK1",
+            "pin": "1",
+            "point": [
+              553.72,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:Speaker:unit1:pin1"
+          },
+          "path": [
+            [
+              533.4,
+              139.7
+            ],
+            [
+              547.37,
+              139.7
+            ],
+            [
+              547.37,
+              142.24
+            ],
+            [
+              553.72,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                533.4,
+                139.7
+              ],
+              "end": [
+                547.37,
+                139.7
+              ],
+              "direction": "right",
+              "length": 13.97
+            },
+            {
+              "start": [
+                547.37,
+                139.7
+              ],
+              "end": [
+                547.37,
+                142.24
+              ],
+              "direction": "down",
+              "length": 2.54
+            },
+            {
+              "start": [
+                547.37,
+                142.24
+              ],
+              "end": [
+                553.72,
+                142.24
+              ],
+              "direction": "right",
+              "length": 6.35
+            }
+          ]
+        }
+      ]
+    },
+    "SPK_R_MINUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "ROUT_MINUS",
+          "side": "right",
+          "point": [
+            533.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin14"
+        },
+        {
+          "ref": "SPK2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            553.72,
+            170.18
+          ],
+          "exact": true,
+          "source": "Device:Speaker:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPK_R_MINUS",
+          "from": {
+            "ref": "U3",
+            "pin": "ROUT_MINUS",
+            "point": [
+              533.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "Amplifier_Audio:PAM8403D:unit1:pin14"
+          },
+          "to": {
+            "ref": "SPK2",
+            "pin": "2",
+            "point": [
+              553.72,
+              170.18
+            ],
+            "exact": true,
+            "source": "Device:Speaker:unit1:pin2"
+          },
+          "path": [
+            [
+              533.4,
+              152.4
+            ],
+            [
+              547.37,
+              152.4
+            ],
+            [
+              547.37,
+              170.18
+            ],
+            [
+              553.72,
+              170.18
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                533.4,
+                152.4
+              ],
+              "end": [
+                547.37,
+                152.4
+              ],
+              "direction": "right",
+              "length": 13.97
+            },
+            {
+              "start": [
+                547.37,
+                152.4
+              ],
+              "end": [
+                547.37,
+                170.18
+              ],
+              "direction": "down",
+              "length": 17.78
+            },
+            {
+              "start": [
+                547.37,
+                170.18
+              ],
+              "end": [
+                553.72,
+                170.18
+              ],
+              "direction": "right",
+              "length": 6.35
+            }
+          ]
+        }
+      ]
+    },
+    "SPK_R_PLUS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "ROUT_PLUS",
+          "side": "right",
+          "point": [
+            533.4,
+            154.94
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin16"
+        },
+        {
+          "ref": "SPK2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            553.72,
+            167.64
+          ],
+          "exact": true,
+          "source": "Device:Speaker:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: SPK_R_PLUS exceeded 50000 explored grid states."
+      ]
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1A",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            429.26,
+            165.1
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin8"
+        },
+        {
+          "ref": "U1B",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            474.98,
+            165.1
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin8"
+        },
+        {
+          "ref": "U3",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            518.16,
+            132.08
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin6"
+        },
+        {
+          "ref": "RV3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            231.14,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin1"
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            261.62,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            325.12,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            294.64,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "top",
+          "point": [
+            562.61,
+            121.92
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "top",
+          "point": [
+            598.17,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1A",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            429.26,
+            180.34
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin4"
+        },
+        {
+          "ref": "U1B",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            474.98,
+            180.34
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin4"
+        },
+        {
+          "ref": "U3",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            518.16,
+            162.56
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin11"
+        },
+        {
+          "ref": "J1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            71.12,
+            154.94
+          ],
+          "exact": true,
+          "source": "Connector_Audio:AudioJack3:unit1:pinS"
+        },
+        {
+          "ref": "J2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            35.56,
+            119.38
+          ],
+          "exact": true,
+          "source": "Connector_Audio:AudioJack3:unit1:pinS"
+        },
+        {
+          "ref": "RV1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            391.16,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin1"
+        },
+        {
+          "ref": "RV2",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            132.08,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin1"
+        },
+        {
+          "ref": "RV3",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            231.14,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R_Potentiometer:unit1:pin3"
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            261.62,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            325.12,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            165.1,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "R6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            358.14,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "R8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            198.12,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            554.99,
+            121.92
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            590.55,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "LM358_L_FEEDBACK",
+      "from": {
+        "ref": "C3",
+        "pin": "1",
+        "point": [
+          30.48,
+          161.29
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "1",
+        "point": [
+          66.04,
+          130.81
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          30.48,
+          161.29
+        ],
+        [
+          57.15,
+          161.29
+        ],
+        [
+          57.15,
+          129.54
+        ],
+        [
+          66.04,
+          129.54
+        ],
+        [
+          66.04,
+          130.81
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            161.29
+          ],
+          "end": [
+            57.15,
+            161.29
+          ],
+          "direction": "right",
+          "length": 26.67
+        },
+        {
+          "start": [
+            57.15,
+            161.29
+          ],
+          "end": [
+            57.15,
+            129.54
+          ],
+          "direction": "up",
+          "length": 31.75
+        },
+        {
+          "start": [
+            57.15,
+            129.54
+          ],
+          "end": [
+            66.04,
+            129.54
+          ],
+          "direction": "right",
+          "length": 8.89
+        },
+        {
+          "start": [
+            66.04,
+            129.54
+          ],
+          "end": [
+            66.04,
+            130.81
+          ],
+          "direction": "down",
+          "length": 1.27
+        }
+      ]
+    },
+    {
+      "net": "LM358_L_FEEDBACK",
+      "from": {
+        "ref": "C3",
+        "pin": "1",
+        "point": [
+          30.48,
+          161.29
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1A",
+        "pin": "IN_MINUS",
+        "point": [
+          424.18,
+          149.86
+        ],
+        "exact": true,
+        "source": "Amplifier_Operational:LM358:unit1:pin2"
+      },
+      "path": [
+        [
+          30.48,
+          161.29
+        ],
+        [
+          25.4,
+          161.29
+        ],
+        [
+          25.4,
+          170.18
+        ],
+        [
+          417.83,
+          170.18
+        ],
+        [
+          417.83,
+          149.86
+        ],
+        [
+          424.18,
+          149.86
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            161.29
+          ],
+          "end": [
+            25.4,
+            161.29
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            25.4,
+            161.29
+          ],
+          "end": [
+            25.4,
+            170.18
+          ],
+          "direction": "down",
+          "length": 8.89
+        },
+        {
+          "start": [
+            25.4,
+            170.18
+          ],
+          "end": [
+            417.83,
+            170.18
+          ],
+          "direction": "right",
+          "length": 392.43
+        },
+        {
+          "start": [
+            417.83,
+            170.18
+          ],
+          "end": [
+            417.83,
+            149.86
+          ],
+          "direction": "up",
+          "length": 20.32
+        },
+        {
+          "start": [
+            417.83,
+            149.86
+          ],
+          "end": [
+            424.18,
+            149.86
+          ],
+          "direction": "right",
+          "length": 6.35
+        }
+      ]
+    },
+    {
+      "net": "LM358_L_FEEDBACK",
+      "from": {
+        "ref": "C3",
+        "pin": "1",
+        "point": [
+          30.48,
+          161.29
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1A",
+        "pin": "OUT",
+        "point": [
+          439.42,
+          147.32
+        ],
+        "exact": true,
+        "source": "Amplifier_Operational:LM358:unit1:pin1"
+      },
+      "path": [
+        [
+          30.48,
+          161.29
+        ],
+        [
+          30.48,
+          160.02
+        ],
+        [
+          24.13,
+          160.02
+        ],
+        [
+          24.13,
+          171.45
+        ],
+        [
+          445.77,
+          171.45
+        ],
+        [
+          445.77,
+          147.32
+        ],
+        [
+          439.42,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            161.29
+          ],
+          "end": [
+            30.48,
+            160.02
+          ],
+          "direction": "up",
+          "length": 1.27
+        },
+        {
+          "start": [
+            30.48,
+            160.02
+          ],
+          "end": [
+            24.13,
+            160.02
+          ],
+          "direction": "left",
+          "length": 6.35
+        },
+        {
+          "start": [
+            24.13,
+            160.02
+          ],
+          "end": [
+            24.13,
+            171.45
+          ],
+          "direction": "down",
+          "length": 11.43
+        },
+        {
+          "start": [
+            24.13,
+            171.45
+          ],
+          "end": [
+            445.77,
+            171.45
+          ],
+          "direction": "right",
+          "length": 421.64
+        },
+        {
+          "start": [
+            445.77,
+            171.45
+          ],
+          "end": [
+            445.77,
+            147.32
+          ],
+          "direction": "up",
+          "length": 24.13
+        },
+        {
+          "start": [
+            445.77,
+            147.32
+          ],
+          "end": [
+            439.42,
+            147.32
+          ],
+          "direction": "left",
+          "length": 6.35
+        }
+      ]
+    },
+    {
+      "net": "LM358_R_FEEDBACK",
+      "from": {
+        "ref": "C4",
+        "pin": "1",
+        "point": [
+          30.48,
+          173.99
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "R4",
+        "pin": "1",
+        "point": [
+          66.04,
+          140.97
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          30.48,
+          173.99
+        ],
+        [
+          21.59,
+          173.99
+        ],
+        [
+          21.59,
+          129.54
+        ],
+        [
+          45.72,
+          129.54
+        ],
+        [
+          45.72,
+          127.0
+        ],
+        [
+          72.39,
+          127.0
+        ],
+        [
+          72.39,
+          139.7
+        ],
+        [
+          66.04,
+          139.7
+        ],
+        [
+          66.04,
+          140.97
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            173.99
+          ],
+          "end": [
+            21.59,
+            173.99
+          ],
+          "direction": "left",
+          "length": 8.89
+        },
+        {
+          "start": [
+            21.59,
+            173.99
+          ],
+          "end": [
+            21.59,
+            129.54
+          ],
+          "direction": "up",
+          "length": 44.45
+        },
+        {
+          "start": [
+            21.59,
+            129.54
+          ],
+          "end": [
+            45.72,
+            129.54
+          ],
+          "direction": "right",
+          "length": 24.13
+        },
+        {
+          "start": [
+            45.72,
+            129.54
+          ],
+          "end": [
+            45.72,
+            127.0
+          ],
+          "direction": "up",
+          "length": 2.54
+        },
+        {
+          "start": [
+            45.72,
+            127.0
+          ],
+          "end": [
+            72.39,
+            127.0
+          ],
+          "direction": "right",
+          "length": 26.67
+        },
+        {
+          "start": [
+            72.39,
+            127.0
+          ],
+          "end": [
+            72.39,
+            139.7
+          ],
+          "direction": "down",
+          "length": 12.7
+        },
+        {
+          "start": [
+            72.39,
+            139.7
+          ],
+          "end": [
+            66.04,
+            139.7
+          ],
+          "direction": "left",
+          "length": 6.35
+        },
+        {
+          "start": [
+            66.04,
+            139.7
+          ],
+          "end": [
+            66.04,
+            140.97
+          ],
+          "direction": "down",
+          "length": 1.27
+        }
+      ]
+    },
+    {
+      "net": "LM358_R_FEEDBACK",
+      "from": {
+        "ref": "C4",
+        "pin": "1",
+        "point": [
+          30.48,
+          173.99
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1B",
+        "pin": "IN_MINUS",
+        "point": [
+          469.9,
+          162.56
+        ],
+        "exact": true,
+        "source": "Amplifier_Operational:LM358:unit2:pin6"
+      },
+      "path": [
+        [
+          30.48,
+          173.99
+        ],
+        [
+          469.9,
+          173.99
+        ],
+        [
+          469.9,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            173.99
+          ],
+          "end": [
+            469.9,
+            173.99
+          ],
+          "direction": "right",
+          "length": 439.42
+        },
+        {
+          "start": [
+            469.9,
+            173.99
+          ],
+          "end": [
+            469.9,
+            162.56
+          ],
+          "direction": "up",
+          "length": 11.43
+        }
+      ]
+    },
+    {
+      "net": "LM358_R_FEEDBACK",
+      "from": {
+        "ref": "C4",
+        "pin": "1",
+        "point": [
+          30.48,
+          173.99
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1B",
+        "pin": "OUT",
+        "point": [
+          485.14,
+          160.02
+        ],
+        "exact": true,
+        "source": "Amplifier_Operational:LM358:unit2:pin7"
+      },
+      "path": [
+        [
+          30.48,
+          173.99
+        ],
+        [
+          30.48,
+          172.72
+        ],
+        [
+          463.55,
+          172.72
+        ],
+        [
+          463.55,
+          129.54
+        ],
+        [
+          491.49,
+          129.54
+        ],
+        [
+          491.49,
+          165.1
+        ],
+        [
+          485.14,
+          165.1
+        ],
+        [
+          485.14,
+          160.02
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            173.99
+          ],
+          "end": [
+            30.48,
+            172.72
+          ],
+          "direction": "up",
+          "length": 1.27
+        },
+        {
+          "start": [
+            30.48,
+            172.72
+          ],
+          "end": [
+            463.55,
+            172.72
+          ],
+          "direction": "right",
+          "length": 433.07
+        },
+        {
+          "start": [
+            463.55,
+            172.72
+          ],
+          "end": [
+            463.55,
+            129.54
+          ],
+          "direction": "up",
+          "length": 43.18
+        },
+        {
+          "start": [
+            463.55,
+            129.54
+          ],
+          "end": [
+            491.49,
+            129.54
+          ],
+          "direction": "right",
+          "length": 27.94
+        },
+        {
+          "start": [
+            491.49,
+            129.54
+          ],
+          "end": [
+            491.49,
+            165.1
+          ],
+          "direction": "down",
+          "length": 35.56
+        },
+        {
+          "start": [
+            491.49,
+            165.1
+          ],
+          "end": [
+            485.14,
+            165.1
+          ],
+          "direction": "left",
+          "length": 6.35
+        },
+        {
+          "start": [
+            485.14,
+            165.1
+          ],
+          "end": [
+            485.14,
+            160.02
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_AC",
+      "from": {
+        "ref": "C1",
+        "pin": "2",
+        "point": [
+          101.6,
+          146.05
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin2"
+      },
+      "to": {
+        "ref": "RV1",
+        "pin": "3",
+        "point": [
+          391.16,
+          151.13
+        ],
+        "exact": true,
+        "source": "Device:R_Potentiometer:unit1:pin3"
+      },
+      "path": [
+        [
+          101.6,
+          146.05
+        ],
+        [
+          124.46,
+          146.05
+        ],
+        [
+          124.46,
+          160.02
+        ],
+        [
+          391.16,
+          160.02
+        ],
+        [
+          391.16,
+          151.13
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            101.6,
+            146.05
+          ],
+          "end": [
+            124.46,
+            146.05
+          ],
+          "direction": "right",
+          "length": 22.86
+        },
+        {
+          "start": [
+            124.46,
+            146.05
+          ],
+          "end": [
+            124.46,
+            160.02
+          ],
+          "direction": "down",
+          "length": 13.97
+        },
+        {
+          "start": [
+            124.46,
+            160.02
+          ],
+          "end": [
+            391.16,
+            160.02
+          ],
+          "direction": "right",
+          "length": 266.7
+        },
+        {
+          "start": [
+            391.16,
+            160.02
+          ],
+          "end": [
+            391.16,
+            151.13
+          ],
+          "direction": "up",
+          "length": 8.89
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_BIAS",
+      "from": {
+        "ref": "R5",
+        "pin": "2",
+        "point": [
+          294.64,
+          151.13
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "R6",
+        "pin": "1",
+        "point": [
+          358.14,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          294.64,
+          151.13
+        ],
+        [
+          294.64,
+          152.4
+        ],
+        [
+          351.79,
+          152.4
+        ],
+        [
+          351.79,
+          142.24
+        ],
+        [
+          358.14,
+          142.24
+        ],
+        [
+          358.14,
+          143.51
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            294.64,
+            151.13
+          ],
+          "end": [
+            294.64,
+            152.4
+          ],
+          "direction": "down",
+          "length": 1.27
+        },
+        {
+          "start": [
+            294.64,
+            152.4
+          ],
+          "end": [
+            351.79,
+            152.4
+          ],
+          "direction": "right",
+          "length": 57.15
+        },
+        {
+          "start": [
+            351.79,
+            152.4
+          ],
+          "end": [
+            351.79,
+            142.24
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            351.79,
+            142.24
+          ],
+          "end": [
+            358.14,
+            142.24
+          ],
+          "direction": "right",
+          "length": 6.35
+        },
+        {
+          "start": [
+            358.14,
+            142.24
+          ],
+          "end": [
+            358.14,
+            143.51
+          ],
+          "direction": "down",
+          "length": 1.27
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_BIAS",
+      "from": {
+        "ref": "R5",
+        "pin": "2",
+        "point": [
+          294.64,
+          151.13
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "U1A",
+        "pin": "BIAS",
+        "point": [
+          421.64,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          294.64,
+          151.13
+        ],
+        [
+          293.37,
+          151.13
+        ],
+        [
+          293.37,
+          153.67
+        ],
+        [
+          368.3,
+          153.67
+        ],
+        [
+          368.3,
+          139.7
+        ],
+        [
+          421.64,
+          139.7
+        ],
+        [
+          421.64,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            294.64,
+            151.13
+          ],
+          "end": [
+            293.37,
+            151.13
+          ],
+          "direction": "left",
+          "length": 1.27
+        },
+        {
+          "start": [
+            293.37,
+            151.13
+          ],
+          "end": [
+            293.37,
+            153.67
+          ],
+          "direction": "down",
+          "length": 2.54
+        },
+        {
+          "start": [
+            293.37,
+            153.67
+          ],
+          "end": [
+            368.3,
+            153.67
+          ],
+          "direction": "right",
+          "length": 74.93
+        },
+        {
+          "start": [
+            368.3,
+            153.67
+          ],
+          "end": [
+            368.3,
+            139.7
+          ],
+          "direction": "up",
+          "length": 13.97
+        },
+        {
+          "start": [
+            368.3,
+            139.7
+          ],
+          "end": [
+            421.64,
+            139.7
+          ],
+          "direction": "right",
+          "length": 53.34
+        },
+        {
+          "start": [
+            421.64,
+            139.7
+          ],
+          "end": [
+            421.64,
+            144.78
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_IN_RAW",
+      "from": {
+        "ref": "J1",
+        "pin": "LEFT",
+        "point": [
+          71.12,
+          160.02
+        ],
+        "exact": true,
+        "source": "Connector_Audio:AudioJack3:unit1:pinT"
+      },
+      "to": {
+        "ref": "C1",
+        "pin": "1",
+        "point": [
+          101.6,
+          138.43
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "path": [
+        [
+          71.12,
+          160.02
+        ],
+        [
+          96.52,
+          160.02
+        ],
+        [
+          96.52,
+          138.43
+        ],
+        [
+          101.6,
+          138.43
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            71.12,
+            160.02
+          ],
+          "end": [
+            96.52,
+            160.02
+          ],
+          "direction": "right",
+          "length": 25.4
+        },
+        {
+          "start": [
+            96.52,
+            160.02
+          ],
+          "end": [
+            96.52,
+            138.43
+          ],
+          "direction": "up",
+          "length": 21.59
+        },
+        {
+          "start": [
+            96.52,
+            138.43
+          ],
+          "end": [
+            101.6,
+            138.43
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_R_AC",
+      "from": {
+        "ref": "RV2",
+        "pin": "3",
+        "point": [
+          132.08,
+          151.13
+        ],
+        "exact": true,
+        "source": "Device:R_Potentiometer:unit1:pin3"
+      },
+      "to": {
+        "ref": "C2",
+        "pin": "2",
+        "point": [
+          165.1,
+          158.75
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin2"
+      },
+      "path": [
+        [
+          132.08,
+          151.13
+        ],
+        [
+          132.08,
+          157.48
+        ],
+        [
+          160.02,
+          157.48
+        ],
+        [
+          160.02,
+          158.75
+        ],
+        [
+          165.1,
+          158.75
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            132.08,
+            151.13
+          ],
+          "end": [
+            132.08,
+            157.48
+          ],
+          "direction": "down",
+          "length": 6.35
+        },
+        {
+          "start": [
+            132.08,
+            157.48
+          ],
+          "end": [
+            160.02,
+            157.48
+          ],
+          "direction": "right",
+          "length": 27.94
+        },
+        {
+          "start": [
+            160.02,
+            157.48
+          ],
+          "end": [
+            160.02,
+            158.75
+          ],
+          "direction": "down",
+          "length": 1.27
+        },
+        {
+          "start": [
+            160.02,
+            158.75
+          ],
+          "end": [
+            165.1,
+            158.75
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_R_IN_RAW",
+      "from": {
+        "ref": "J1",
+        "pin": "RIGHT",
+        "point": [
+          71.12,
+          157.48
+        ],
+        "exact": true,
+        "source": "Connector_Audio:AudioJack3:unit1:pinR"
+      },
+      "to": {
+        "ref": "C2",
+        "pin": "1",
+        "point": [
+          165.1,
+          151.13
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "path": [
+        [
+          71.12,
+          157.48
+        ],
+        [
+          93.98,
+          157.48
+        ],
+        [
+          93.98,
+          135.89
+        ],
+        [
+          160.02,
+          135.89
+        ],
+        [
+          160.02,
+          151.13
+        ],
+        [
+          165.1,
+          151.13
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            71.12,
+            157.48
+          ],
+          "end": [
+            93.98,
+            157.48
+          ],
+          "direction": "right",
+          "length": 22.86
+        },
+        {
+          "start": [
+            93.98,
+            157.48
+          ],
+          "end": [
+            93.98,
+            135.89
+          ],
+          "direction": "up",
+          "length": 21.59
+        },
+        {
+          "start": [
+            93.98,
+            135.89
+          ],
+          "end": [
+            160.02,
+            135.89
+          ],
+          "direction": "right",
+          "length": 66.04
+        },
+        {
+          "start": [
+            160.02,
+            135.89
+          ],
+          "end": [
+            160.02,
+            151.13
+          ],
+          "direction": "down",
+          "length": 15.24
+        },
+        {
+          "start": [
+            160.02,
+            151.13
+          ],
+          "end": [
+            165.1,
+            151.13
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "MASTER_CTRL",
+      "from": {
+        "ref": "J2",
+        "pin": "RIGHT",
+        "point": [
+          35.56,
+          121.92
+        ],
+        "exact": true,
+        "source": "Connector_Audio:AudioJack3:unit1:pinR"
+      },
+      "to": {
+        "ref": "J2",
+        "pin": "LEFT",
+        "point": [
+          35.56,
+          124.46
+        ],
+        "exact": true,
+        "source": "Connector_Audio:AudioJack3:unit1:pinT"
+      },
+      "path": [
+        [
+          35.56,
+          121.92
+        ],
+        [
+          35.56,
+          124.46
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            121.92
+          ],
+          "end": [
+            35.56,
+            124.46
+          ],
+          "direction": "down",
+          "length": 2.54
+        }
+      ]
+    },
+    {
+      "net": "MASTER_CTRL",
+      "from": {
+        "ref": "J2",
+        "pin": "RIGHT",
+        "point": [
+          35.56,
+          121.92
+        ],
+        "exact": true,
+        "source": "Connector_Audio:AudioJack3:unit1:pinR"
+      },
+      "to": {
+        "ref": "RV3",
+        "pin": "2",
+        "point": [
+          234.95,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R_Potentiometer:unit1:pin2"
+      },
+      "path": [
+        [
+          35.56,
+          121.92
+        ],
+        [
+          238.76,
+          121.92
+        ],
+        [
+          238.76,
+          147.32
+        ],
+        [
+          234.95,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            121.92
+          ],
+          "end": [
+            238.76,
+            121.92
+          ],
+          "direction": "right",
+          "length": 203.2
+        },
+        {
+          "start": [
+            238.76,
+            121.92
+          ],
+          "end": [
+            238.76,
+            147.32
+          ],
+          "direction": "down",
+          "length": 25.4
+        },
+        {
+          "start": [
+            238.76,
+            147.32
+          ],
+          "end": [
+            234.95,
+            147.32
+          ],
+          "direction": "left",
+          "length": 3.81
+        }
+      ]
+    },
+    {
+      "net": "SPK_L_MINUS",
+      "from": {
+        "ref": "U3",
+        "pin": "LOUT_MINUS",
+        "point": [
+          533.4,
+          142.24
+        ],
+        "exact": true,
+        "source": "Amplifier_Audio:PAM8403D:unit1:pin3"
+      },
+      "to": {
+        "ref": "SPK1",
+        "pin": "2",
+        "point": [
+          553.72,
+          144.78
+        ],
+        "exact": true,
+        "source": "Device:Speaker:unit1:pin2"
+      },
+      "path": [
+        [
+          533.4,
+          142.24
+        ],
+        [
+          533.4,
+          144.78
+        ],
+        [
+          553.72,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            533.4,
+            142.24
+          ],
+          "end": [
+            533.4,
+            144.78
+          ],
+          "direction": "down",
+          "length": 2.54
+        },
+        {
+          "start": [
+            533.4,
+            144.78
+          ],
+          "end": [
+            553.72,
+            144.78
+          ],
+          "direction": "right",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "SPK_L_PLUS",
+      "from": {
+        "ref": "U3",
+        "pin": "LOUT_PLUS",
+        "point": [
+          533.4,
+          139.7
+        ],
+        "exact": true,
+        "source": "Amplifier_Audio:PAM8403D:unit1:pin1"
+      },
+      "to": {
+        "ref": "SPK1",
+        "pin": "1",
+        "point": [
+          553.72,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:Speaker:unit1:pin1"
+      },
+      "path": [
+        [
+          533.4,
+          139.7
+        ],
+        [
+          547.37,
+          139.7
+        ],
+        [
+          547.37,
+          142.24
+        ],
+        [
+          553.72,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            533.4,
+            139.7
+          ],
+          "end": [
+            547.37,
+            139.7
+          ],
+          "direction": "right",
+          "length": 13.97
+        },
+        {
+          "start": [
+            547.37,
+            139.7
+          ],
+          "end": [
+            547.37,
+            142.24
+          ],
+          "direction": "down",
+          "length": 2.54
+        },
+        {
+          "start": [
+            547.37,
+            142.24
+          ],
+          "end": [
+            553.72,
+            142.24
+          ],
+          "direction": "right",
+          "length": 6.35
+        }
+      ]
+    },
+    {
+      "net": "SPK_R_MINUS",
+      "from": {
+        "ref": "U3",
+        "pin": "ROUT_MINUS",
+        "point": [
+          533.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "Amplifier_Audio:PAM8403D:unit1:pin14"
+      },
+      "to": {
+        "ref": "SPK2",
+        "pin": "2",
+        "point": [
+          553.72,
+          170.18
+        ],
+        "exact": true,
+        "source": "Device:Speaker:unit1:pin2"
+      },
+      "path": [
+        [
+          533.4,
+          152.4
+        ],
+        [
+          547.37,
+          152.4
+        ],
+        [
+          547.37,
+          170.18
+        ],
+        [
+          553.72,
+          170.18
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            533.4,
+            152.4
+          ],
+          "end": [
+            547.37,
+            152.4
+          ],
+          "direction": "right",
+          "length": 13.97
+        },
+        {
+          "start": [
+            547.37,
+            152.4
+          ],
+          "end": [
+            547.37,
+            170.18
+          ],
+          "direction": "down",
+          "length": 17.78
+        },
+        {
+          "start": [
+            547.37,
+            170.18
+          ],
+          "end": [
+            553.72,
+            170.18
+          ],
+          "direction": "right",
+          "length": 6.35
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 21,
+    "wired_route_count": 17,
+    "segment_count": 71,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_no_clear_route: no clear route found for AUDIO_L_VOL.",
+    "wire_net_label_fallback: AUDIO_L_VOL converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for AUDIO_R_BIAS.",
+    "wire_net_label_fallback: AUDIO_R_BIAS converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for AUDIO_R_VOL.",
+    "wire_net_label_fallback: AUDIO_R_VOL converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for LM358_L_IN.",
+    "wire_net_label_fallback: LM358_L_IN converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for LM358_R_IN.",
+    "wire_net_label_fallback: LM358_R_IN converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for PAM_L_IN.",
+    "wire_net_label_fallback: PAM_L_IN converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: PAM_R_IN exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: PAM_R_IN converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: SPK_R_PLUS exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: SPK_R_PLUS converted to local labels after router failure."
+  ]
+}

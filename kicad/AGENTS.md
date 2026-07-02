@@ -143,9 +143,10 @@ wire_plan.json
 The wire planner must remain independent of KiCad/Proteus file formats.
 
 `kicad_wire_maker.py` is the KiCad-specific drawing backend. It consumes final
-CircuitIR JSON, beautified placement JSON, and `wire_plan` JSON, then writes
-real KiCad wire, label, and junction objects while recording unresolved pin
-aliases and deferred route-limit nets in manifests.
+CircuitIR JSON and beautified placement JSON, resolves source-backed KiCad
+symbol pin/body geometry into `routing_inputs/`, feeds that pure JSON to
+`wire_planner.py`, then writes real KiCad wire, label, and junction objects
+while recording unresolved pin aliases and route fallback nets in manifests.
 
 `wire_geometry_validator.py` validates the actual wire segments emitted by the
 wire maker against wire-crossing and wire/body-contact rules. It is a validator,

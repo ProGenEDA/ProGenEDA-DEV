@@ -1,0 +1,2007 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 544.4,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "CAN_SPI_SCK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            25.4,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "U1",
+          "pin": "SCK",
+          "side": "left",
+          "point": [
+            406.4,
+            134.62
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_SPI_SCK",
+          "from": {
+            "ref": "J3",
+            "pin": "3",
+            "point": [
+              25.4,
+              144.78
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "SCK",
+            "point": [
+              406.4,
+              134.62
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+          },
+          "path": [
+            [
+              25.4,
+              144.78
+            ],
+            [
+              22.86,
+              144.78
+            ],
+            [
+              22.86,
+              125.73
+            ],
+            [
+              406.4,
+              125.73
+            ],
+            [
+              406.4,
+              134.62
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                144.78
+              ],
+              "end": [
+                22.86,
+                144.78
+              ],
+              "direction": "left",
+              "length": 2.54
+            },
+            {
+              "start": [
+                22.86,
+                144.78
+              ],
+              "end": [
+                22.86,
+                125.73
+              ],
+              "direction": "up",
+              "length": 19.05
+            },
+            {
+              "start": [
+                22.86,
+                125.73
+              ],
+              "end": [
+                406.4,
+                125.73
+              ],
+              "direction": "right",
+              "length": 383.54
+            },
+            {
+              "start": [
+                406.4,
+                125.73
+              ],
+              "end": [
+                406.4,
+                134.62
+              ],
+              "direction": "down",
+              "length": 8.89
+            }
+          ]
+        }
+      ]
+    },
+    "MCP_OSC1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            134.62,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "Y1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            222.25,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Crystal:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "OSC1",
+          "side": "left",
+          "point": [
+            406.4,
+            149.86
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin8"
+        }
+      ],
+      "routes": [
+        {
+          "net": "MCP_OSC1",
+          "from": {
+            "ref": "C1",
+            "pin": "1",
+            "point": [
+              134.62,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "Y1",
+            "pin": "1",
+            "point": [
+              222.25,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:Crystal:unit1:pin1"
+          },
+          "path": [
+            [
+              134.62,
+              143.51
+            ],
+            [
+              134.62,
+              142.24
+            ],
+            [
+              222.25,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                134.62,
+                143.51
+              ],
+              "end": [
+                134.62,
+                142.24
+              ],
+              "direction": "up",
+              "length": 1.27
+            },
+            {
+              "start": [
+                134.62,
+                142.24
+              ],
+              "end": [
+                222.25,
+                142.24
+              ],
+              "direction": "right",
+              "length": 87.63
+            }
+          ]
+        },
+        {
+          "net": "MCP_OSC1",
+          "from": {
+            "ref": "C1",
+            "pin": "1",
+            "point": [
+              134.62,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "OSC1",
+            "point": [
+              406.4,
+              149.86
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin8"
+          },
+          "path": [
+            [
+              134.62,
+              143.51
+            ],
+            [
+              207.01,
+              143.51
+            ],
+            [
+              207.01,
+              151.13
+            ],
+            [
+              254.0,
+              151.13
+            ],
+            [
+              254.0,
+              152.4
+            ],
+            [
+              374.65,
+              152.4
+            ],
+            [
+              374.65,
+              149.86
+            ],
+            [
+              406.4,
+              149.86
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                134.62,
+                143.51
+              ],
+              "end": [
+                207.01,
+                143.51
+              ],
+              "direction": "right",
+              "length": 72.39
+            },
+            {
+              "start": [
+                207.01,
+                143.51
+              ],
+              "end": [
+                207.01,
+                151.13
+              ],
+              "direction": "down",
+              "length": 7.62
+            },
+            {
+              "start": [
+                207.01,
+                151.13
+              ],
+              "end": [
+                254.0,
+                151.13
+              ],
+              "direction": "right",
+              "length": 46.99
+            },
+            {
+              "start": [
+                254.0,
+                151.13
+              ],
+              "end": [
+                254.0,
+                152.4
+              ],
+              "direction": "down",
+              "length": 1.27
+            },
+            {
+              "start": [
+                254.0,
+                152.4
+              ],
+              "end": [
+                374.65,
+                152.4
+              ],
+              "direction": "right",
+              "length": 120.65
+            },
+            {
+              "start": [
+                374.65,
+                152.4
+              ],
+              "end": [
+                374.65,
+                149.86
+              ],
+              "direction": "up",
+              "length": 2.54
+            },
+            {
+              "start": [
+                374.65,
+                149.86
+              ],
+              "end": [
+                406.4,
+                149.86
+              ],
+              "direction": "right",
+              "length": 31.75
+            }
+          ]
+        }
+      ]
+    },
+    "MCP_OSC2": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            195.58,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "Y1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            229.87,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Crystal:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "OSC2",
+          "side": "left",
+          "point": [
+            406.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for MCP_OSC2."
+      ]
+    },
+    "CANH": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+        },
+        {
+          "ref": "D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            255.27,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin1"
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            381.0,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "JP1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            416.56,
+            170.18
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin1"
+        },
+        {
+          "ref": "U2",
+          "pin": "CANH",
+          "side": "right",
+          "point": [
+            482.6,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for CANH."
+      ]
+    },
+    "CANL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            134.62
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            344.17,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin1"
+        },
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            381.0,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "JP1",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            426.72,
+            170.18
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin2"
+        },
+        {
+          "ref": "U2",
+          "pin": "CANL",
+          "side": "right",
+          "point": [
+            482.6,
+            149.86
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for CANL."
+      ]
+    },
+    "CAN_INT": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "7",
+          "side": "left",
+          "point": [
+            25.4,
+            154.94
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin7"
+        },
+        {
+          "ref": "U1",
+          "pin": "INT",
+          "side": "right",
+          "point": [
+            436.88,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_INT",
+          "from": {
+            "ref": "J3",
+            "pin": "7",
+            "point": [
+              25.4,
+              154.94
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin7"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "INT",
+            "point": [
+              436.88,
+              142.24
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+          },
+          "path": [
+            [
+              25.4,
+              154.94
+            ],
+            [
+              22.86,
+              154.94
+            ],
+            [
+              22.86,
+              168.91
+            ],
+            [
+              416.56,
+              168.91
+            ],
+            [
+              416.56,
+              162.56
+            ],
+            [
+              436.88,
+              162.56
+            ],
+            [
+              436.88,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                154.94
+              ],
+              "end": [
+                22.86,
+                154.94
+              ],
+              "direction": "left",
+              "length": 2.54
+            },
+            {
+              "start": [
+                22.86,
+                154.94
+              ],
+              "end": [
+                22.86,
+                168.91
+              ],
+              "direction": "down",
+              "length": 13.97
+            },
+            {
+              "start": [
+                22.86,
+                168.91
+              ],
+              "end": [
+                416.56,
+                168.91
+              ],
+              "direction": "right",
+              "length": 393.7
+            },
+            {
+              "start": [
+                416.56,
+                168.91
+              ],
+              "end": [
+                416.56,
+                162.56
+              ],
+              "direction": "up",
+              "length": 6.35
+            },
+            {
+              "start": [
+                416.56,
+                162.56
+              ],
+              "end": [
+                436.88,
+                162.56
+              ],
+              "direction": "right",
+              "length": 20.32
+            },
+            {
+              "start": [
+                436.88,
+                162.56
+              ],
+              "end": [
+                436.88,
+                142.24
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_RXD": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "RXCAN",
+          "side": "top",
+          "point": [
+            436.88,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+        },
+        {
+          "ref": "U2",
+          "pin": "RXD",
+          "side": "left",
+          "point": [
+            457.2,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+        }
+      ],
+      "routes": [
+        {
+          "net": "CAN_RXD",
+          "from": {
+            "ref": "U1",
+            "pin": "RXCAN",
+            "point": [
+              436.88,
+              127.0
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "RXD",
+            "point": [
+              457.2,
+              144.78
+            ],
+            "exact": true,
+            "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+          },
+          "path": [
+            [
+              436.88,
+              127.0
+            ],
+            [
+              455.93,
+              127.0
+            ],
+            [
+              455.93,
+              144.78
+            ],
+            [
+              457.2,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                436.88,
+                127.0
+              ],
+              "end": [
+                455.93,
+                127.0
+              ],
+              "direction": "right",
+              "length": 19.05
+            },
+            {
+              "start": [
+                455.93,
+                127.0
+              ],
+              "end": [
+                455.93,
+                144.78
+              ],
+              "direction": "down",
+              "length": 17.78
+            },
+            {
+              "start": [
+                455.93,
+                144.78
+              ],
+              "end": [
+                457.2,
+                144.78
+              ],
+              "direction": "right",
+              "length": 1.27
+            }
+          ]
+        }
+      ]
+    },
+    "CAN_SPI_CS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            406.4,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin16"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for CAN_SPI_CS."
+      ]
+    },
+    "CAN_SPI_MISO": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            25.4,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "SO",
+          "side": "left",
+          "point": [
+            406.4,
+            129.54
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin15"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: CAN_SPI_MISO exceeded 50000 explored grid states."
+      ]
+    },
+    "CAN_SPI_MOSI": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            25.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U1",
+          "pin": "SI",
+          "side": "top",
+          "point": [
+            406.4,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin14"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: CAN_SPI_MOSI exceeded 50000 explored grid states."
+      ]
+    },
+    "CAN_TXD": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "TXCAN",
+          "side": "right",
+          "point": [
+            436.88,
+            129.54
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin1"
+        },
+        {
+          "ref": "U2",
+          "pin": "TXD",
+          "side": "left",
+          "point": [
+            457.2,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: CAN_TXD exceeded 50000 explored grid states."
+      ]
+    },
+    "RS485_A": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            160.02
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            68.58,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "JP2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            528.32,
+            139.7
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: RS485_A exceeded 50000 explored grid states."
+      ]
+    },
+    "RS485_B": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x03:unit1:pin2"
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            68.58,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "JP2",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            109.22,
+            147.32
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "B",
+          "side": "right",
+          "point": [
+            528.32,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RS485_B."
+      ]
+    },
+    "RS485_DE_RE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            63.5,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin3"
+        },
+        {
+          "ref": "JP3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            160.02
+          ],
+          "exact": true,
+          "source": "Jumper:Jumper_2_Open:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "RE",
+          "side": "left",
+          "point": [
+            508.0,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "DE",
+          "side": "left",
+          "point": [
+            508.0,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RS485_DE_RE."
+      ]
+    },
+    "RS485_DI": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            63.5,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            508.0,
+            152.4
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RS485_DI."
+      ]
+    },
+    "RS485_RO": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            63.5,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin1"
+        },
+        {
+          "ref": "U3",
+          "pin": "RO",
+          "side": "left",
+          "point": [
+            508.0,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RS485_RO."
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            421.64,
+            121.92
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin18"
+        },
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            289.56,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "J3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U2",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            469.9,
+            137.16
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin3"
+        },
+        {
+          "ref": "U3",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            518.16,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin8"
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            381.0,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            165.1,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            226.06,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            317.5,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "J5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            129.54
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "VSS",
+          "side": "bottom",
+          "point": [
+            421.64,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin9"
+        },
+        {
+          "ref": "U2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            469.9,
+            157.48
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin2"
+        },
+        {
+          "ref": "U3",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            518.16,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin5"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            134.62,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            195.58,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            289.56,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            381.0,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            165.1,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            226.06,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            317.5,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            262.89,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            351.79,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_TVS:unit1:pin2"
+        },
+        {
+          "ref": "J3",
+          "pin": "6",
+          "side": "bottom",
+          "point": [
+            25.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        },
+        {
+          "ref": "J4",
+          "pin": "5",
+          "side": "bottom",
+          "point": [
+            63.5,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x05:unit1:pin5"
+        },
+        {
+          "ref": "J5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            99.06,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "CAN_SPI_SCK",
+      "from": {
+        "ref": "J3",
+        "pin": "3",
+        "point": [
+          25.4,
+          144.78
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "SCK",
+        "point": [
+          406.4,
+          134.62
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+      },
+      "path": [
+        [
+          25.4,
+          144.78
+        ],
+        [
+          22.86,
+          144.78
+        ],
+        [
+          22.86,
+          125.73
+        ],
+        [
+          406.4,
+          125.73
+        ],
+        [
+          406.4,
+          134.62
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            144.78
+          ],
+          "end": [
+            22.86,
+            144.78
+          ],
+          "direction": "left",
+          "length": 2.54
+        },
+        {
+          "start": [
+            22.86,
+            144.78
+          ],
+          "end": [
+            22.86,
+            125.73
+          ],
+          "direction": "up",
+          "length": 19.05
+        },
+        {
+          "start": [
+            22.86,
+            125.73
+          ],
+          "end": [
+            406.4,
+            125.73
+          ],
+          "direction": "right",
+          "length": 383.54
+        },
+        {
+          "start": [
+            406.4,
+            125.73
+          ],
+          "end": [
+            406.4,
+            134.62
+          ],
+          "direction": "down",
+          "length": 8.89
+        }
+      ]
+    },
+    {
+      "net": "MCP_OSC1",
+      "from": {
+        "ref": "C1",
+        "pin": "1",
+        "point": [
+          134.62,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "Y1",
+        "pin": "1",
+        "point": [
+          222.25,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:Crystal:unit1:pin1"
+      },
+      "path": [
+        [
+          134.62,
+          143.51
+        ],
+        [
+          134.62,
+          142.24
+        ],
+        [
+          222.25,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            134.62,
+            143.51
+          ],
+          "end": [
+            134.62,
+            142.24
+          ],
+          "direction": "up",
+          "length": 1.27
+        },
+        {
+          "start": [
+            134.62,
+            142.24
+          ],
+          "end": [
+            222.25,
+            142.24
+          ],
+          "direction": "right",
+          "length": 87.63
+        }
+      ]
+    },
+    {
+      "net": "MCP_OSC1",
+      "from": {
+        "ref": "C1",
+        "pin": "1",
+        "point": [
+          134.62,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "OSC1",
+        "point": [
+          406.4,
+          149.86
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin8"
+      },
+      "path": [
+        [
+          134.62,
+          143.51
+        ],
+        [
+          207.01,
+          143.51
+        ],
+        [
+          207.01,
+          151.13
+        ],
+        [
+          254.0,
+          151.13
+        ],
+        [
+          254.0,
+          152.4
+        ],
+        [
+          374.65,
+          152.4
+        ],
+        [
+          374.65,
+          149.86
+        ],
+        [
+          406.4,
+          149.86
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            134.62,
+            143.51
+          ],
+          "end": [
+            207.01,
+            143.51
+          ],
+          "direction": "right",
+          "length": 72.39
+        },
+        {
+          "start": [
+            207.01,
+            143.51
+          ],
+          "end": [
+            207.01,
+            151.13
+          ],
+          "direction": "down",
+          "length": 7.62
+        },
+        {
+          "start": [
+            207.01,
+            151.13
+          ],
+          "end": [
+            254.0,
+            151.13
+          ],
+          "direction": "right",
+          "length": 46.99
+        },
+        {
+          "start": [
+            254.0,
+            151.13
+          ],
+          "end": [
+            254.0,
+            152.4
+          ],
+          "direction": "down",
+          "length": 1.27
+        },
+        {
+          "start": [
+            254.0,
+            152.4
+          ],
+          "end": [
+            374.65,
+            152.4
+          ],
+          "direction": "right",
+          "length": 120.65
+        },
+        {
+          "start": [
+            374.65,
+            152.4
+          ],
+          "end": [
+            374.65,
+            149.86
+          ],
+          "direction": "up",
+          "length": 2.54
+        },
+        {
+          "start": [
+            374.65,
+            149.86
+          ],
+          "end": [
+            406.4,
+            149.86
+          ],
+          "direction": "right",
+          "length": 31.75
+        }
+      ]
+    },
+    {
+      "net": "CAN_INT",
+      "from": {
+        "ref": "J3",
+        "pin": "7",
+        "point": [
+          25.4,
+          154.94
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin7"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "INT",
+        "point": [
+          436.88,
+          142.24
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+      },
+      "path": [
+        [
+          25.4,
+          154.94
+        ],
+        [
+          22.86,
+          154.94
+        ],
+        [
+          22.86,
+          168.91
+        ],
+        [
+          416.56,
+          168.91
+        ],
+        [
+          416.56,
+          162.56
+        ],
+        [
+          436.88,
+          162.56
+        ],
+        [
+          436.88,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            154.94
+          ],
+          "end": [
+            22.86,
+            154.94
+          ],
+          "direction": "left",
+          "length": 2.54
+        },
+        {
+          "start": [
+            22.86,
+            154.94
+          ],
+          "end": [
+            22.86,
+            168.91
+          ],
+          "direction": "down",
+          "length": 13.97
+        },
+        {
+          "start": [
+            22.86,
+            168.91
+          ],
+          "end": [
+            416.56,
+            168.91
+          ],
+          "direction": "right",
+          "length": 393.7
+        },
+        {
+          "start": [
+            416.56,
+            168.91
+          ],
+          "end": [
+            416.56,
+            162.56
+          ],
+          "direction": "up",
+          "length": 6.35
+        },
+        {
+          "start": [
+            416.56,
+            162.56
+          ],
+          "end": [
+            436.88,
+            162.56
+          ],
+          "direction": "right",
+          "length": 20.32
+        },
+        {
+          "start": [
+            436.88,
+            162.56
+          ],
+          "end": [
+            436.88,
+            142.24
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "CAN_RXD",
+      "from": {
+        "ref": "U1",
+        "pin": "RXCAN",
+        "point": [
+          436.88,
+          127.0
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "RXD",
+        "point": [
+          457.2,
+          144.78
+        ],
+        "exact": true,
+        "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+      },
+      "path": [
+        [
+          436.88,
+          127.0
+        ],
+        [
+          455.93,
+          127.0
+        ],
+        [
+          455.93,
+          144.78
+        ],
+        [
+          457.2,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            436.88,
+            127.0
+          ],
+          "end": [
+            455.93,
+            127.0
+          ],
+          "direction": "right",
+          "length": 19.05
+        },
+        {
+          "start": [
+            455.93,
+            127.0
+          ],
+          "end": [
+            455.93,
+            144.78
+          ],
+          "direction": "down",
+          "length": 17.78
+        },
+        {
+          "start": [
+            455.93,
+            144.78
+          ],
+          "end": [
+            457.2,
+            144.78
+          ],
+          "direction": "right",
+          "length": 1.27
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 19,
+    "wired_route_count": 5,
+    "segment_count": 22,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_no_clear_route: no clear route found for MCP_OSC2.",
+    "wire_net_label_fallback: MCP_OSC2 converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for CANH.",
+    "wire_net_label_fallback: CANH converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for CANL.",
+    "wire_net_label_fallback: CANL converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for CAN_SPI_CS.",
+    "wire_net_label_fallback: CAN_SPI_CS converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: CAN_SPI_MISO exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: CAN_SPI_MISO converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: CAN_SPI_MOSI exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: CAN_SPI_MOSI converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: CAN_TXD exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: CAN_TXD converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: RS485_A exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: RS485_A converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RS485_B.",
+    "wire_net_label_fallback: RS485_B converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RS485_DE_RE.",
+    "wire_net_label_fallback: RS485_DE_RE converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RS485_DI.",
+    "wire_net_label_fallback: RS485_DI converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RS485_RO.",
+    "wire_net_label_fallback: RS485_RO converted to local labels after router failure."
+  ]
+}

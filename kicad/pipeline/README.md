@@ -60,8 +60,9 @@ The post-placer stages remain independent:
   emits route-plan JSON for drawing backends.
 - `kicad_wire_maker.py`
   is the first EDA-specific drawing backend. It does not plan routes. It
-  resolves KiCad symbol pin geometry, draws actual wire/label/junction
-  S-expressions, and records unresolved pin aliases in each manifest.
+  resolves KiCad symbol pin/body geometry into `routing_inputs/`, feeds that
+  pure JSON to the wire planner, draws actual wire/label/junction S-expressions,
+  and records unresolved pin aliases in each manifest.
 
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.
@@ -185,22 +186,23 @@ the connected final JSON is preserved for wiring evidence.
 Generate KiCad wired projects directly from connected final JSON with:
 
 ```text
-python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v4
+python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v9_reserved_pin_router
 ```
 
 Current generated wired run:
 
 ```text
-kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/
+kicad/examples/final_json_wired_project_run_2026_07_02_171521_t01_t10_connected_wired_v9_reserved_pin_router/
 ```
 
 That run has 10 KiCad project folders with real embedded symbols plus KiCad
-wire, label, and junction objects. Static schematic quality passed 10/10. It
-contains 430 components, 442 symbol instances, 3357 wire objects, and 530 net
-labels. T01-T06 and T09 have zero unresolved pins; T10 has zero unresolved pins
-and five deferred nets from the bounded route cap. The remaining 18 unresolved
-pins are recorded model gaps: T07 has two artificial `LM358.BIAS` endpoints,
-and T08 needs a better LED array/DIP-common symbol model.
+wire, label, and junction objects. Static schematic quality passed 10/10,
+KiCad netlist export passed 10/10, and strict geometry validation passed 10/10
+with 0 violations. It contains 430 components, 442 symbol instances, 360 wire
+objects, and 1128 labels. The remaining 18 unresolved pins are recorded model
+gaps: T07 has two artificial `LM358.BIAS` endpoints, and T08 needs a better LED
+array/DIP-common symbol model. ERC quality currently passes 5/10, so this is
+geometry-clean routing evidence, not final electrical acceptance.
 
 The first strict wire-geometry validation run is:
 
@@ -212,7 +214,7 @@ That run adds hard checks that wires must not cross/touch other nets and must
 not touch component bodies except at intended pins. Result: static schematic
 quality passed 10/10, KiCad netlist export passed 10/10, but ERC quality passed
 only 1/10 and geometry validation passed 0/10. Treat it as failure evidence for
-the current router, not as accepted final wiring.
+the old router, not as accepted final wiring.
 
 ## Not Active Yet
 

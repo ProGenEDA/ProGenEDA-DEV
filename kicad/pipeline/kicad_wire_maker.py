@@ -22,7 +22,7 @@ from typing import Any
 from kicad.generator.kicad_json_to_project import junction_obj, num, slugify, text_obj, uid, validate_schematic, wire_obj
 from kicad.generator.orthogonal_router import Obstacle
 
-from .arrangement_decider import decide_arrangement
+from .arrangement_decider import decide_arrangement, extract_connection_nets
 from .beautifier import apply_coordinate_edits
 from .final_circuit_builder import STAGE_REPORT_WIRE_CONFIG, _final_json_files, placer_ready_circuit
 from .kicad_symbol_library import KiCadSymbolLibrary, _balanced_block, _child_head, _direct_child_blocks
@@ -339,6 +339,31 @@ def _component_lookup(placement: CatalogPlacementPlan) -> dict[str, PlacedCatalo
     return {component.ref: component for component in placement.components}
 
 
+def _resolve_component_pin_point(
+    *,
+    ref: str,
+    pin: str,
+    component: PlacedCatalogComponent | None,
+    library: KiCadSymbolLibrary,
+    pin_cache: dict[str, tuple[PinGeometry, ...]],
+    unit_count_cache: dict[str, int],
+) -> tuple[tuple[float, float] | None, str, PinGeometry | None]:
+    if component is None or not component.spec.lib_id:
+        return None, "component_or_lib_id_missing", None
+    lib_id = component.spec.lib_id
+    geometries = pin_cache.get(lib_id)
+    if geometries is None:
+        symbol = library.load(lib_id)
+        geometries = _pin_geometries(symbol.text)
+        pin_cache[lib_id] = geometries
+        unit_pins = symbol.unit_pin_numbers
+        unit_count_cache[lib_id] = len(unit_pins) if unit_pins else 1
+    geometry, status = _resolve_pin_geometry(ref=ref, kind=component.kind, pin=pin, geometries=geometries)
+    if geometry is None:
+        return None, status, None
+    return _pin_world(component, geometry, unit_count_cache.get(lib_id, 1)), "resolved", geometry
+
+
 def _catalog_plan_from_placement_dict(circuit: dict[str, Any], placement: dict[str, Any]) -> CatalogPlacementPlan:
     requested: dict[str, dict[str, Any]] = {}
     for component in circuit.get("components", []):
@@ -483,6 +508,83 @@ def _component_bodies(
     return tuple(bodies)
 
 
+def _catalog_plan_as_routing_placement(circuit: dict[str, Any], placement: CatalogPlacementPlan) -> dict[str, Any]:
+    """Build a pure-JSON routing input with KiCad-resolved pins and bodies."""
+    library = KiCadSymbolLibrary()
+    components = _component_lookup(placement)
+    pin_cache: dict[str, tuple[PinGeometry, ...]] = {}
+    unit_count_cache: dict[str, int] = {}
+    pin_points: dict[str, dict[str, dict[str, Any]]] = {}
+    unresolved: list[dict[str, Any]] = []
+    resolved_count = 0
+
+    for _net, endpoints in extract_connection_nets(circuit).items():
+        for endpoint in endpoints:
+            ref = str(endpoint.ref)
+            pin = str(endpoint.pin)
+            point, status, geometry = _resolve_component_pin_point(
+                ref=ref,
+                pin=pin,
+                component=components.get(ref),
+                library=library,
+                pin_cache=pin_cache,
+                unit_count_cache=unit_count_cache,
+            )
+            if point is None:
+                unresolved.append({"ref": ref, "pin": pin, "reason": status})
+                continue
+            component = components[ref]
+            source = f"{component.spec.lib_id}:unit{geometry.unit}:pin{geometry.number}" if geometry else "kicad_symbol_pin"
+            pin_points.setdefault(ref, {})[pin] = {
+                "point": [round(point[0], 3), round(point[1], 3)],
+                "source": source,
+                "resolved_pin_number": geometry.number if geometry else "",
+                "resolved_pin_name": geometry.name if geometry else "",
+            }
+            resolved_count += 1
+
+    body_items = []
+    for index, body in enumerate(_component_bodies(placement, library), 1):
+        body_items.append(
+            {
+                "owner": f"{body.ref}::body{index}",
+                "component_ref": body.ref,
+                "left": body.left,
+                "top": body.top,
+                "right": body.right,
+                "bottom": body.bottom,
+                "source": body.source,
+            }
+        )
+
+    component_items = {
+        component.ref: {
+            "kind": component.kind,
+            "name": component.name,
+            "at": [component.at[0], component.at[1]],
+            "rotation": component.rotation,
+            "width": component.spec.width,
+            "height": component.spec.height,
+        }
+        for component in placement.components
+    }
+    return {
+        "schema": "progen-kicad-routing-placement/v0.1",
+        "stage": "kicad_routing_input_builder",
+        "components": component_items,
+        "obstacles": body_items,
+        "pin_points": pin_points,
+        "routing_metadata": {
+            "pin_point_source": "KiCad embedded/source symbol library pin coordinates",
+            "body_source": "KiCad symbol graphics bounds with fallback placement specs",
+            "pin_resolved_count": resolved_count,
+            "unresolved_pin_count": len(unresolved),
+            "unresolved_pins": unresolved[:200],
+            "unresolved_pin_report_truncated": len(unresolved) > 200,
+        },
+    }
+
+
 def _orthogonal_points(start: tuple[float, float], end: tuple[float, float]) -> list[tuple[float, float]]:
     if start == end:
         return [start]
@@ -544,26 +646,25 @@ def make_kicad_wires(
         nonlocal resolved_count
         ref = str(endpoint.get("ref") or "")
         pin = str(endpoint.get("pin") or "")
-        component = components.get(ref)
-        if component is None or not component.spec.lib_id:
+        point, status, _geometry = _resolve_component_pin_point(
+            ref=ref,
+            pin=pin,
+            component=components.get(ref),
+            library=library,
+            pin_cache=pin_cache,
+            unit_count_cache=unit_count_cache,
+        )
+        if point is None:
             unresolved.append({"ref": ref, "pin": pin, "reason": "component_or_lib_id_missing", "fallback_point": endpoint.get("point")})
-            raw_point = endpoint.get("point", [0.0, 0.0])
-            return (round(float(raw_point[0]), 3), round(float(raw_point[1]), 3))
-        lib_id = component.spec.lib_id
-        geometries = pin_cache.get(lib_id)
-        if geometries is None:
-            symbol = library.load(lib_id)
-            geometries = _pin_geometries(symbol.text)
-            pin_cache[lib_id] = geometries
-            unit_pins = symbol.unit_pin_numbers
-            unit_count_cache[lib_id] = len(unit_pins) if unit_pins else 1
-        geometry, status = _resolve_pin_geometry(ref=ref, kind=component.kind, pin=pin, geometries=geometries)
-        if geometry is None:
-            unresolved.append({"ref": ref, "kind": component.kind, "pin": pin, "reason": status, "fallback_point": endpoint.get("point")})
+            if status != "component_or_lib_id_missing":
+                unresolved[-1]["reason"] = status
+                component = components.get(ref)
+                if component is not None:
+                    unresolved[-1]["kind"] = component.kind
             raw_point = endpoint.get("point", [0.0, 0.0])
             return (round(float(raw_point[0]), 3), round(float(raw_point[1]), 3))
         resolved_count += 1
-        return _pin_world(component, geometry, unit_count_cache.get(lib_id, 1))
+        return point
 
     segments: list[tuple[tuple[float, float], tuple[float, float]]] = []
     geometry_segments: list[WireGeometrySegment] = []
@@ -600,7 +701,7 @@ def make_kicad_wires(
         if strategy == "deferred_after_route_limit":
             deferred_nets.append(net_name)
             continue
-        if strategy in {"local_labels", "single_endpoint_label"}:
+        if strategy in {"local_labels", "single_endpoint_label", "local_labels_after_router_failure"}:
             for endpoint in endpoints:
                 pin_point = endpoint_point(endpoint)
                 raw_label = endpoint.get("point", [pin_point[0] + 5.08, pin_point[1]])
@@ -723,10 +824,12 @@ def generate_wired_projects_from_final_json(
     final_json_dir = run_path / "final_json"
     placement_input_dir = run_path / "placement_inputs"
     projects_dir = run_path / "projects"
+    routing_input_dir = run_path / "routing_inputs"
     wire_plan_dir = run_path / "wire_plans"
     final_json_dir.mkdir(parents=True)
     placement_input_dir.mkdir()
     projects_dir.mkdir()
+    routing_input_dir.mkdir()
     wire_plan_dir.mkdir()
 
     cfg = dict(STAGE_REPORT_WIRE_CONFIG)
@@ -750,9 +853,11 @@ def generate_wired_projects_from_final_json(
         placement_dict = ctx.placement_plan.as_dict()
         coordinate_plan = decide_arrangement(placement_dict, circuit)
         beautified = apply_coordinate_edits(placement_dict, coordinate_plan)
-        wire_plan = plan_wire_routes(beautified, circuit, config=cfg)
-        (wire_plan_dir / f"{stem}_wire_plan.json").write_text(json.dumps(wire_plan, indent=2), encoding="utf-8")
         placement = _catalog_plan_from_placement_dict(circuit, beautified)
+        routing_placement = _catalog_plan_as_routing_placement(circuit, placement)
+        (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
+        wire_plan = plan_wire_routes(routing_placement, circuit, config=cfg)
+        (wire_plan_dir / f"{stem}_wire_plan.json").write_text(json.dumps(wire_plan, indent=2), encoding="utf-8")
 
         project_dir = projects_dir / slugify(cid).lower()
         manifest = write_wired_project(circuit, placement, wire_plan, project_dir)
@@ -768,6 +873,8 @@ def generate_wired_projects_from_final_json(
                 "wire_object_count": manifest["wire_maker"]["wire_object_count"],
                 "label_count": manifest["wire_maker"]["label_count"],
                 "unresolved_pin_count": manifest["wire_maker"]["unresolved_pin_count"],
+                "routing_pin_resolved_count": routing_placement["routing_metadata"]["pin_resolved_count"],
+                "routing_unresolved_pin_count": routing_placement["routing_metadata"]["unresolved_pin_count"],
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
                 "geometry_ok": bool(manifest["wire_maker"]["geometry_ok"]),
                 "geometry_violation_count": manifest["wire_maker"]["geometry_violation_count"],
@@ -787,6 +894,8 @@ def generate_wired_projects_from_final_json(
         "total_wire_objects": sum(int(item["wire_object_count"]) for item in results),
         "total_labels": sum(int(item["label_count"]) for item in results),
         "total_unresolved_pins": sum(int(item["unresolved_pin_count"]) for item in results),
+        "total_routing_pin_resolved": sum(int(item["routing_pin_resolved_count"]) for item in results),
+        "total_routing_unresolved_pins": sum(int(item["routing_unresolved_pin_count"]) for item in results),
         "total_deferred_nets": sum(int(item["deferred_net_count"]) for item in results),
         "all_geometry_ok": all(item["geometry_ok"] for item in results),
         "total_geometry_violations": sum(int(item["geometry_violation_count"]) for item in results),
@@ -799,7 +908,9 @@ def generate_wired_projects_from_final_json(
         "This folder is an immutable generated record. It takes connected final JSON files, "
         "runs the arrangement decider, beautifier, wire planner, and KiCad wire maker, then "
         "writes openable KiCad projects with real embedded symbols plus wire/label objects.\n\n"
-        "The wire maker uses source-backed KiCad pin geometry when possible. Any unresolved "
+        "The wire planner is fed exact KiCad source-symbol pin points through `routing_inputs/` "
+        "when those pins can be resolved. The wire maker uses the same source-backed KiCad pin "
+        "geometry when possible. Any unresolved "
         "pin aliases, deferred route-limit nets, wire crossings, and wire/component body "
         "contacts are recorded in each project manifest.\n",
         encoding="utf-8",

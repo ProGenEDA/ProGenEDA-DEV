@@ -83,6 +83,10 @@ def _ref_from_endpoint(raw: Any) -> tuple[str, str] | None:
         if ":" in text:
             ref, pin = text.split(":", 1)
             return (ref.strip(), pin.strip())
+        if "." in text:
+            ref, pin = text.split(".", 1)
+            if ref.strip() and pin.strip():
+                return (ref.strip(), pin.strip())
         return (text, "")
     if isinstance(raw, dict):
         ref = str(raw.get("ref") or raw.get("component") or raw.get("id") or "").strip()

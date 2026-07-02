@@ -1,0 +1,3856 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 632.42,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "ESP_BOOT_IO0": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "SW2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            228.6,
+            142.24
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            355.6,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO0",
+          "side": "right",
+          "point": [
+            518.16,
+            116.84
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_BOOT_IO0",
+          "from": {
+            "ref": "SW2",
+            "pin": "1",
+            "point": [
+              228.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "2",
+            "point": [
+              355.6,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "path": [
+            [
+              228.6,
+              142.24
+            ],
+            [
+              355.6,
+              142.24
+            ],
+            [
+              355.6,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                228.6,
+                142.24
+              ],
+              "end": [
+                355.6,
+                142.24
+              ],
+              "direction": "right",
+              "length": 127.0
+            },
+            {
+              "start": [
+                355.6,
+                142.24
+              ],
+              "end": [
+                355.6,
+                147.32
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "ESP_BOOT_IO0",
+          "from": {
+            "ref": "SW2",
+            "pin": "1",
+            "point": [
+              228.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO0",
+            "point": [
+              518.16,
+              116.84
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+          },
+          "path": [
+            [
+              228.6,
+              142.24
+            ],
+            [
+              518.16,
+              142.24
+            ],
+            [
+              518.16,
+              116.84
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                228.6,
+                142.24
+              ],
+              "end": [
+                518.16,
+                142.24
+              ],
+              "direction": "right",
+              "length": 289.56
+            },
+            {
+              "start": [
+                518.16,
+                142.24
+              ],
+              "end": [
+                518.16,
+                116.84
+              ],
+              "direction": "up",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_EN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            294.64,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            447.04,
+            142.24
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "EN",
+          "side": "top",
+          "point": [
+            487.68,
+            116.84
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_EN",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              294.64,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "SW1",
+            "pin": "1",
+            "point": [
+              447.04,
+              142.24
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "path": [
+            [
+              294.64,
+              147.32
+            ],
+            [
+              447.04,
+              147.32
+            ],
+            [
+              447.04,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                294.64,
+                147.32
+              ],
+              "end": [
+                447.04,
+                147.32
+              ],
+              "direction": "right",
+              "length": 152.4
+            },
+            {
+              "start": [
+                447.04,
+                147.32
+              ],
+              "end": [
+                447.04,
+                142.24
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "ESP_EN",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              294.64,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "EN",
+            "point": [
+              487.68,
+              116.84
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+          },
+          "path": [
+            [
+              294.64,
+              147.32
+            ],
+            [
+              487.68,
+              147.32
+            ],
+            [
+              487.68,
+              116.84
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                294.64,
+                147.32
+              ],
+              "end": [
+                487.68,
+                147.32
+              ],
+              "direction": "right",
+              "length": 193.04
+            },
+            {
+              "start": [
+                487.68,
+                147.32
+              ],
+              "end": [
+                487.68,
+                116.84
+              ],
+              "direction": "up",
+              "length": 30.48
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO18": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            96.52,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO18",
+          "side": "right",
+          "point": [
+            518.16,
+            147.32
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin30"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO18",
+          "from": {
+            "ref": "J2",
+            "pin": "4",
+            "point": [
+              96.52,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO18",
+            "point": [
+              518.16,
+              147.32
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin30"
+          },
+          "path": [
+            [
+              96.52,
+              147.32
+            ],
+            [
+              518.16,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                96.52,
+                147.32
+              ],
+              "end": [
+                518.16,
+                147.32
+              ],
+              "direction": "right",
+              "length": 421.64
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO19": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            96.52,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO19",
+          "side": "right",
+          "point": [
+            518.16,
+            152.4
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin31"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO19",
+          "from": {
+            "ref": "J2",
+            "pin": "5",
+            "point": [
+              96.52,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO19",
+            "point": [
+              518.16,
+              152.4
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin31"
+          },
+          "path": [
+            [
+              96.52,
+              152.4
+            ],
+            [
+              518.16,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                96.52,
+                152.4
+              ],
+              "end": [
+                518.16,
+                152.4
+              ],
+              "direction": "right",
+              "length": 421.64
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO21": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            162.56,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO21",
+          "side": "right",
+          "point": [
+            518.16,
+            152.4
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin33"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO21",
+          "from": {
+            "ref": "J3",
+            "pin": "3",
+            "point": [
+              162.56,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO21",
+            "point": [
+              518.16,
+              152.4
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin33"
+          },
+          "path": [
+            [
+              162.56,
+              142.24
+            ],
+            [
+              518.16,
+              142.24
+            ],
+            [
+              518.16,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                162.56,
+                142.24
+              ],
+              "end": [
+                518.16,
+                142.24
+              ],
+              "direction": "right",
+              "length": 355.6
+            },
+            {
+              "start": [
+                518.16,
+                142.24
+              ],
+              "end": [
+                518.16,
+                152.4
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO22": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            162.56,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO22",
+          "side": "right",
+          "point": [
+            518.16,
+            152.4
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin36"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO22",
+          "from": {
+            "ref": "J3",
+            "pin": "4",
+            "point": [
+              162.56,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO22",
+            "point": [
+              518.16,
+              152.4
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin36"
+          },
+          "path": [
+            [
+              162.56,
+              147.32
+            ],
+            [
+              518.16,
+              147.32
+            ],
+            [
+              518.16,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                162.56,
+                147.32
+              ],
+              "end": [
+                518.16,
+                147.32
+              ],
+              "direction": "right",
+              "length": 355.6
+            },
+            {
+              "start": [
+                518.16,
+                147.32
+              ],
+              "end": [
+                518.16,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO23": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J3",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            162.56,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO23",
+          "side": "right",
+          "point": [
+            518.16,
+            157.48
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO23",
+          "from": {
+            "ref": "J3",
+            "pin": "5",
+            "point": [
+              162.56,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO23",
+            "point": [
+              518.16,
+              157.48
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+          },
+          "path": [
+            [
+              162.56,
+              152.4
+            ],
+            [
+              518.16,
+              152.4
+            ],
+            [
+              518.16,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                162.56,
+                152.4
+              ],
+              "end": [
+                518.16,
+                152.4
+              ],
+              "direction": "right",
+              "length": 355.6
+            },
+            {
+              "start": [
+                518.16,
+                152.4
+              ],
+              "end": [
+                518.16,
+                157.48
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_IO5": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            96.52,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO5",
+          "side": "right",
+          "point": [
+            518.16,
+            127.0
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin29"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_IO5",
+          "from": {
+            "ref": "J2",
+            "pin": "3",
+            "point": [
+              96.52,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO5",
+            "point": [
+              518.16,
+              127.0
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin29"
+          },
+          "path": [
+            [
+              96.52,
+              142.24
+            ],
+            [
+              518.16,
+              142.24
+            ],
+            [
+              518.16,
+              127.0
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                96.52,
+                142.24
+              ],
+              "end": [
+                518.16,
+                142.24
+              ],
+              "direction": "right",
+              "length": 421.64
+            },
+            {
+              "start": [
+                518.16,
+                142.24
+              ],
+              "end": [
+                518.16,
+                127.0
+              ],
+              "direction": "up",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_LED1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            447.04,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO2",
+          "side": "top",
+          "point": [
+            518.16,
+            121.92
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin24"
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            589.28,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_LED1",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              447.04,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO2",
+            "point": [
+              518.16,
+              121.92
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin24"
+          },
+          "path": [
+            [
+              447.04,
+              157.48
+            ],
+            [
+              518.16,
+              157.48
+            ],
+            [
+              518.16,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                447.04,
+                157.48
+              ],
+              "end": [
+                518.16,
+                157.48
+              ],
+              "direction": "right",
+              "length": 71.12
+            },
+            {
+              "start": [
+                518.16,
+                157.48
+              ],
+              "end": [
+                518.16,
+                121.92
+              ],
+              "direction": "up",
+              "length": 35.56
+            }
+          ]
+        },
+        {
+          "net": "ESP_LED1",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              447.04,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "A",
+            "point": [
+              589.28,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              447.04,
+              157.48
+            ],
+            [
+              447.04,
+              187.96
+            ],
+            [
+              594.36,
+              187.96
+            ],
+            [
+              594.36,
+              147.32
+            ],
+            [
+              589.28,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                447.04,
+                157.48
+              ],
+              "end": [
+                447.04,
+                187.96
+              ],
+              "direction": "down",
+              "length": 30.48
+            },
+            {
+              "start": [
+                447.04,
+                187.96
+              ],
+              "end": [
+                594.36,
+                187.96
+              ],
+              "direction": "right",
+              "length": 147.32
+            },
+            {
+              "start": [
+                594.36,
+                187.96
+              ],
+              "end": [
+                594.36,
+                147.32
+              ],
+              "direction": "up",
+              "length": 40.64
+            },
+            {
+              "start": [
+                594.36,
+                147.32
+              ],
+              "end": [
+                589.28,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_LED2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R4",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            233.68,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "IO4",
+          "side": "top",
+          "point": [
+            518.16,
+            127.0
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin26"
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            619.76,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_LED2",
+          "from": {
+            "ref": "R4",
+            "pin": "2",
+            "point": [
+              233.68,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IO4",
+            "point": [
+              518.16,
+              127.0
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin26"
+          },
+          "path": [
+            [
+              233.68,
+              157.48
+            ],
+            [
+              518.16,
+              157.48
+            ],
+            [
+              518.16,
+              127.0
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                233.68,
+                157.48
+              ],
+              "end": [
+                518.16,
+                157.48
+              ],
+              "direction": "right",
+              "length": 284.48
+            },
+            {
+              "start": [
+                518.16,
+                157.48
+              ],
+              "end": [
+                518.16,
+                127.0
+              ],
+              "direction": "up",
+              "length": 30.48
+            }
+          ]
+        },
+        {
+          "net": "ESP_LED2",
+          "from": {
+            "ref": "R4",
+            "pin": "2",
+            "point": [
+              233.68,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "A",
+            "point": [
+              619.76,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              233.68,
+              157.48
+            ],
+            [
+              619.76,
+              157.48
+            ],
+            [
+              619.76,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                233.68,
+                157.48
+              ],
+              "end": [
+                619.76,
+                157.48
+              ],
+              "direction": "right",
+              "length": 386.08
+            },
+            {
+              "start": [
+                619.76,
+                157.48
+              ],
+              "end": [
+                619.76,
+                147.32
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "UART_RX_FROM_ESP_TX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            25.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U1",
+          "pin": "U0TXD",
+          "side": "right",
+          "point": [
+            518.16,
+            121.92
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin35"
+        },
+        {
+          "ref": "U2",
+          "pin": "RXD",
+          "side": "right",
+          "point": [
+            563.88,
+            121.92
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin25"
+        }
+      ],
+      "routes": [
+        {
+          "net": "UART_RX_FROM_ESP_TX",
+          "from": {
+            "ref": "J4",
+            "pin": "4",
+            "point": [
+              25.4,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "U0TXD",
+            "point": [
+              518.16,
+              121.92
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin35"
+          },
+          "path": [
+            [
+              25.4,
+              147.32
+            ],
+            [
+              518.16,
+              147.32
+            ],
+            [
+              518.16,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                147.32
+              ],
+              "end": [
+                518.16,
+                147.32
+              ],
+              "direction": "right",
+              "length": 492.76
+            },
+            {
+              "start": [
+                518.16,
+                147.32
+              ],
+              "end": [
+                518.16,
+                121.92
+              ],
+              "direction": "up",
+              "length": 25.4
+            }
+          ]
+        },
+        {
+          "net": "UART_RX_FROM_ESP_TX",
+          "from": {
+            "ref": "J4",
+            "pin": "4",
+            "point": [
+              25.4,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "RXD",
+            "point": [
+              563.88,
+              121.92
+            ],
+            "exact": true,
+            "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin25"
+          },
+          "path": [
+            [
+              25.4,
+              147.32
+            ],
+            [
+              563.88,
+              147.32
+            ],
+            [
+              563.88,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                147.32
+              ],
+              "end": [
+                563.88,
+                147.32
+              ],
+              "direction": "right",
+              "length": 538.48
+            },
+            {
+              "start": [
+                563.88,
+                147.32
+              ],
+              "end": [
+                563.88,
+                121.92
+              ],
+              "direction": "up",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "UART_TX_TO_ESP_RX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J4",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "U1",
+          "pin": "U0RXD",
+          "side": "top",
+          "point": [
+            518.16,
+            121.92
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin34"
+        },
+        {
+          "ref": "U2",
+          "pin": "TXD",
+          "side": "right",
+          "point": [
+            563.88,
+            121.92
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin26"
+        }
+      ],
+      "routes": [
+        {
+          "net": "UART_TX_TO_ESP_RX",
+          "from": {
+            "ref": "J4",
+            "pin": "3",
+            "point": [
+              25.4,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "U0RXD",
+            "point": [
+              518.16,
+              121.92
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin34"
+          },
+          "path": [
+            [
+              25.4,
+              142.24
+            ],
+            [
+              518.16,
+              142.24
+            ],
+            [
+              518.16,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                142.24
+              ],
+              "end": [
+                518.16,
+                142.24
+              ],
+              "direction": "right",
+              "length": 492.76
+            },
+            {
+              "start": [
+                518.16,
+                142.24
+              ],
+              "end": [
+                518.16,
+                121.92
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "UART_TX_TO_ESP_RX",
+          "from": {
+            "ref": "J4",
+            "pin": "3",
+            "point": [
+              25.4,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "TXD",
+            "point": [
+              563.88,
+              121.92
+            ],
+            "exact": true,
+            "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin26"
+          },
+          "path": [
+            [
+              25.4,
+              142.24
+            ],
+            [
+              563.88,
+              142.24
+            ],
+            [
+              563.88,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                142.24
+              ],
+              "end": [
+                563.88,
+                142.24
+              ],
+              "direction": "right",
+              "length": 538.48
+            },
+            {
+              "start": [
+                563.88,
+                142.24
+              ],
+              "end": [
+                563.88,
+                121.92
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "USB_CC1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "CC1",
+          "side": "right",
+          "point": [
+            152.4,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA5"
+        },
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            294.64,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_CC1",
+          "from": {
+            "ref": "J1",
+            "pin": "CC1",
+            "point": [
+              152.4,
+              137.16
+            ],
+            "exact": true,
+            "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA5"
+          },
+          "to": {
+            "ref": "R5",
+            "pin": "1",
+            "point": [
+              294.64,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              152.4,
+              137.16
+            ],
+            [
+              294.64,
+              137.16
+            ],
+            [
+              294.64,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                152.4,
+                137.16
+              ],
+              "end": [
+                294.64,
+                137.16
+              ],
+              "direction": "right",
+              "length": 142.24
+            },
+            {
+              "start": [
+                294.64,
+                137.16
+              ],
+              "end": [
+                294.64,
+                147.32
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "USB_CC2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "CC2",
+          "side": "right",
+          "point": [
+            152.4,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+        },
+        {
+          "ref": "R6",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            355.6,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_CC2",
+          "from": {
+            "ref": "J1",
+            "pin": "CC2",
+            "point": [
+              152.4,
+              137.16
+            ],
+            "exact": true,
+            "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+          },
+          "to": {
+            "ref": "R6",
+            "pin": "1",
+            "point": [
+              355.6,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              152.4,
+              137.16
+            ],
+            [
+              355.6,
+              137.16
+            ],
+            [
+              355.6,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                152.4,
+                137.16
+              ],
+              "end": [
+                355.6,
+                137.16
+              ],
+              "direction": "right",
+              "length": 203.2
+            },
+            {
+              "start": [
+                355.6,
+                137.16
+              ],
+              "end": [
+                355.6,
+                147.32
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "USB_D_MINUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "D-",
+          "side": "right",
+          "point": [
+            152.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA7"
+        },
+        {
+          "ref": "U2",
+          "pin": "D-",
+          "side": "left",
+          "point": [
+            538.48,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin5"
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_D_MINUS",
+          "from": {
+            "ref": "J1",
+            "pin": "D-",
+            "point": [
+              152.4,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA7"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "D-",
+            "point": [
+              538.48,
+              132.08
+            ],
+            "exact": true,
+            "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin5"
+          },
+          "path": [
+            [
+              152.4,
+              142.24
+            ],
+            [
+              538.48,
+              142.24
+            ],
+            [
+              538.48,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                152.4,
+                142.24
+              ],
+              "end": [
+                538.48,
+                142.24
+              ],
+              "direction": "right",
+              "length": 386.08
+            },
+            {
+              "start": [
+                538.48,
+                142.24
+              ],
+              "end": [
+                538.48,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "USB_D_PLUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "D+",
+          "side": "right",
+          "point": [
+            152.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA6"
+        },
+        {
+          "ref": "U2",
+          "pin": "D+",
+          "side": "top",
+          "point": [
+            538.48,
+            137.16
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin4"
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_D_PLUS",
+          "from": {
+            "ref": "J1",
+            "pin": "D+",
+            "point": [
+              152.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA6"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "D+",
+            "point": [
+              538.48,
+              137.16
+            ],
+            "exact": true,
+            "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin4"
+          },
+          "path": [
+            [
+              152.4,
+              152.4
+            ],
+            [
+              538.48,
+              152.4
+            ],
+            [
+              538.48,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                152.4,
+                152.4
+              ],
+              "end": [
+                538.48,
+                152.4
+              ],
+              "direction": "right",
+              "length": 386.08
+            },
+            {
+              "start": [
+                538.48,
+                152.4
+              ],
+              "end": [
+                538.48,
+                137.16
+              ],
+              "direction": "up",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "USB_VBUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "VBUS",
+          "side": "top",
+          "point": [
+            152.4,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+        },
+        {
+          "ref": "U2",
+          "pin": "VBUS",
+          "side": "left",
+          "point": [
+            538.48,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin8"
+        }
+      ],
+      "routes": [
+        {
+          "net": "USB_VBUS",
+          "from": {
+            "ref": "J1",
+            "pin": "VBUS",
+            "point": [
+              152.4,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "VBUS",
+            "point": [
+              538.48,
+              132.08
+            ],
+            "exact": true,
+            "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin8"
+          },
+          "path": [
+            [
+              152.4,
+              132.08
+            ],
+            [
+              538.48,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                152.4,
+                132.08
+              ],
+              "end": [
+                538.48,
+                132.08
+              ],
+              "direction": "right",
+              "length": 386.08
+            }
+          ]
+        }
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            497.84,
+            111.76
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin2"
+        },
+        {
+          "ref": "U2",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            548.64,
+            111.76
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin6"
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            294.64,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            355.6,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            447.04,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            233.68,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            416.56,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            203.2,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            264.16,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            325.12,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            386.08,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            96.52,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "J3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            162.56,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "J4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            25.4,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "J5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            60.96,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "USB_GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            497.84,
+            182.88
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin1"
+        },
+        {
+          "ref": "U2",
+          "pin": "GND",
+          "side": "left",
+          "point": [
+            548.64,
+            182.88
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin29"
+        },
+        {
+          "ref": "J1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            137.16,
+            172.72
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA1"
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            457.2,
+            142.24
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "SW2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            238.76,
+            142.24
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            294.64,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "R6",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            355.6,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            416.56,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            203.2,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            264.16,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            325.12,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            386.08,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            579.12,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            609.6,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            96.52,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "J3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            162.56,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "J4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "J5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            60.96,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "ESP_BOOT_IO0",
+      "from": {
+        "ref": "SW2",
+        "pin": "1",
+        "point": [
+          228.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "2",
+        "point": [
+          355.6,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "path": [
+        [
+          228.6,
+          142.24
+        ],
+        [
+          355.6,
+          142.24
+        ],
+        [
+          355.6,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            228.6,
+            142.24
+          ],
+          "end": [
+            355.6,
+            142.24
+          ],
+          "direction": "right",
+          "length": 127.0
+        },
+        {
+          "start": [
+            355.6,
+            142.24
+          ],
+          "end": [
+            355.6,
+            147.32
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_BOOT_IO0",
+      "from": {
+        "ref": "SW2",
+        "pin": "1",
+        "point": [
+          228.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO0",
+        "point": [
+          518.16,
+          116.84
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+      },
+      "path": [
+        [
+          228.6,
+          142.24
+        ],
+        [
+          518.16,
+          142.24
+        ],
+        [
+          518.16,
+          116.84
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            228.6,
+            142.24
+          ],
+          "end": [
+            518.16,
+            142.24
+          ],
+          "direction": "right",
+          "length": 289.56
+        },
+        {
+          "start": [
+            518.16,
+            142.24
+          ],
+          "end": [
+            518.16,
+            116.84
+          ],
+          "direction": "up",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "ESP_EN",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          294.64,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "SW1",
+        "pin": "1",
+        "point": [
+          447.04,
+          142.24
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "path": [
+        [
+          294.64,
+          147.32
+        ],
+        [
+          447.04,
+          147.32
+        ],
+        [
+          447.04,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            294.64,
+            147.32
+          ],
+          "end": [
+            447.04,
+            147.32
+          ],
+          "direction": "right",
+          "length": 152.4
+        },
+        {
+          "start": [
+            447.04,
+            147.32
+          ],
+          "end": [
+            447.04,
+            142.24
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_EN",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          294.64,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "EN",
+        "point": [
+          487.68,
+          116.84
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+      },
+      "path": [
+        [
+          294.64,
+          147.32
+        ],
+        [
+          487.68,
+          147.32
+        ],
+        [
+          487.68,
+          116.84
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            294.64,
+            147.32
+          ],
+          "end": [
+            487.68,
+            147.32
+          ],
+          "direction": "right",
+          "length": 193.04
+        },
+        {
+          "start": [
+            487.68,
+            147.32
+          ],
+          "end": [
+            487.68,
+            116.84
+          ],
+          "direction": "up",
+          "length": 30.48
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO18",
+      "from": {
+        "ref": "J2",
+        "pin": "4",
+        "point": [
+          96.52,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO18",
+        "point": [
+          518.16,
+          147.32
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin30"
+      },
+      "path": [
+        [
+          96.52,
+          147.32
+        ],
+        [
+          518.16,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            96.52,
+            147.32
+          ],
+          "end": [
+            518.16,
+            147.32
+          ],
+          "direction": "right",
+          "length": 421.64
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO19",
+      "from": {
+        "ref": "J2",
+        "pin": "5",
+        "point": [
+          96.52,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO19",
+        "point": [
+          518.16,
+          152.4
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin31"
+      },
+      "path": [
+        [
+          96.52,
+          152.4
+        ],
+        [
+          518.16,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            96.52,
+            152.4
+          ],
+          "end": [
+            518.16,
+            152.4
+          ],
+          "direction": "right",
+          "length": 421.64
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO21",
+      "from": {
+        "ref": "J3",
+        "pin": "3",
+        "point": [
+          162.56,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO21",
+        "point": [
+          518.16,
+          152.4
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin33"
+      },
+      "path": [
+        [
+          162.56,
+          142.24
+        ],
+        [
+          518.16,
+          142.24
+        ],
+        [
+          518.16,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            162.56,
+            142.24
+          ],
+          "end": [
+            518.16,
+            142.24
+          ],
+          "direction": "right",
+          "length": 355.6
+        },
+        {
+          "start": [
+            518.16,
+            142.24
+          ],
+          "end": [
+            518.16,
+            152.4
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO22",
+      "from": {
+        "ref": "J3",
+        "pin": "4",
+        "point": [
+          162.56,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO22",
+        "point": [
+          518.16,
+          152.4
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin36"
+      },
+      "path": [
+        [
+          162.56,
+          147.32
+        ],
+        [
+          518.16,
+          147.32
+        ],
+        [
+          518.16,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            162.56,
+            147.32
+          ],
+          "end": [
+            518.16,
+            147.32
+          ],
+          "direction": "right",
+          "length": 355.6
+        },
+        {
+          "start": [
+            518.16,
+            147.32
+          ],
+          "end": [
+            518.16,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO23",
+      "from": {
+        "ref": "J3",
+        "pin": "5",
+        "point": [
+          162.56,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO23",
+        "point": [
+          518.16,
+          157.48
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+      },
+      "path": [
+        [
+          162.56,
+          152.4
+        ],
+        [
+          518.16,
+          152.4
+        ],
+        [
+          518.16,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            162.56,
+            152.4
+          ],
+          "end": [
+            518.16,
+            152.4
+          ],
+          "direction": "right",
+          "length": 355.6
+        },
+        {
+          "start": [
+            518.16,
+            152.4
+          ],
+          "end": [
+            518.16,
+            157.48
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_IO5",
+      "from": {
+        "ref": "J2",
+        "pin": "3",
+        "point": [
+          96.52,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO5",
+        "point": [
+          518.16,
+          127.0
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin29"
+      },
+      "path": [
+        [
+          96.52,
+          142.24
+        ],
+        [
+          518.16,
+          142.24
+        ],
+        [
+          518.16,
+          127.0
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            96.52,
+            142.24
+          ],
+          "end": [
+            518.16,
+            142.24
+          ],
+          "direction": "right",
+          "length": 421.64
+        },
+        {
+          "start": [
+            518.16,
+            142.24
+          ],
+          "end": [
+            518.16,
+            127.0
+          ],
+          "direction": "up",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED1",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          447.04,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO2",
+        "point": [
+          518.16,
+          121.92
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin24"
+      },
+      "path": [
+        [
+          447.04,
+          157.48
+        ],
+        [
+          518.16,
+          157.48
+        ],
+        [
+          518.16,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            447.04,
+            157.48
+          ],
+          "end": [
+            518.16,
+            157.48
+          ],
+          "direction": "right",
+          "length": 71.12
+        },
+        {
+          "start": [
+            518.16,
+            157.48
+          ],
+          "end": [
+            518.16,
+            121.92
+          ],
+          "direction": "up",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED1",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          447.04,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "A",
+        "point": [
+          589.28,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          447.04,
+          157.48
+        ],
+        [
+          447.04,
+          187.96
+        ],
+        [
+          594.36,
+          187.96
+        ],
+        [
+          594.36,
+          147.32
+        ],
+        [
+          589.28,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            447.04,
+            157.48
+          ],
+          "end": [
+            447.04,
+            187.96
+          ],
+          "direction": "down",
+          "length": 30.48
+        },
+        {
+          "start": [
+            447.04,
+            187.96
+          ],
+          "end": [
+            594.36,
+            187.96
+          ],
+          "direction": "right",
+          "length": 147.32
+        },
+        {
+          "start": [
+            594.36,
+            187.96
+          ],
+          "end": [
+            594.36,
+            147.32
+          ],
+          "direction": "up",
+          "length": 40.64
+        },
+        {
+          "start": [
+            594.36,
+            147.32
+          ],
+          "end": [
+            589.28,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED2",
+      "from": {
+        "ref": "R4",
+        "pin": "2",
+        "point": [
+          233.68,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IO4",
+        "point": [
+          518.16,
+          127.0
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin26"
+      },
+      "path": [
+        [
+          233.68,
+          157.48
+        ],
+        [
+          518.16,
+          157.48
+        ],
+        [
+          518.16,
+          127.0
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            233.68,
+            157.48
+          ],
+          "end": [
+            518.16,
+            157.48
+          ],
+          "direction": "right",
+          "length": 284.48
+        },
+        {
+          "start": [
+            518.16,
+            157.48
+          ],
+          "end": [
+            518.16,
+            127.0
+          ],
+          "direction": "up",
+          "length": 30.48
+        }
+      ]
+    },
+    {
+      "net": "ESP_LED2",
+      "from": {
+        "ref": "R4",
+        "pin": "2",
+        "point": [
+          233.68,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "A",
+        "point": [
+          619.76,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          233.68,
+          157.48
+        ],
+        [
+          619.76,
+          157.48
+        ],
+        [
+          619.76,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            233.68,
+            157.48
+          ],
+          "end": [
+            619.76,
+            157.48
+          ],
+          "direction": "right",
+          "length": 386.08
+        },
+        {
+          "start": [
+            619.76,
+            157.48
+          ],
+          "end": [
+            619.76,
+            147.32
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "UART_RX_FROM_ESP_TX",
+      "from": {
+        "ref": "J4",
+        "pin": "4",
+        "point": [
+          25.4,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "U0TXD",
+        "point": [
+          518.16,
+          121.92
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin35"
+      },
+      "path": [
+        [
+          25.4,
+          147.32
+        ],
+        [
+          518.16,
+          147.32
+        ],
+        [
+          518.16,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            147.32
+          ],
+          "end": [
+            518.16,
+            147.32
+          ],
+          "direction": "right",
+          "length": 492.76
+        },
+        {
+          "start": [
+            518.16,
+            147.32
+          ],
+          "end": [
+            518.16,
+            121.92
+          ],
+          "direction": "up",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "UART_RX_FROM_ESP_TX",
+      "from": {
+        "ref": "J4",
+        "pin": "4",
+        "point": [
+          25.4,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "RXD",
+        "point": [
+          563.88,
+          121.92
+        ],
+        "exact": true,
+        "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin25"
+      },
+      "path": [
+        [
+          25.4,
+          147.32
+        ],
+        [
+          563.88,
+          147.32
+        ],
+        [
+          563.88,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            147.32
+          ],
+          "end": [
+            563.88,
+            147.32
+          ],
+          "direction": "right",
+          "length": 538.48
+        },
+        {
+          "start": [
+            563.88,
+            147.32
+          ],
+          "end": [
+            563.88,
+            121.92
+          ],
+          "direction": "up",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "UART_TX_TO_ESP_RX",
+      "from": {
+        "ref": "J4",
+        "pin": "3",
+        "point": [
+          25.4,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "U0RXD",
+        "point": [
+          518.16,
+          121.92
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin34"
+      },
+      "path": [
+        [
+          25.4,
+          142.24
+        ],
+        [
+          518.16,
+          142.24
+        ],
+        [
+          518.16,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            142.24
+          ],
+          "end": [
+            518.16,
+            142.24
+          ],
+          "direction": "right",
+          "length": 492.76
+        },
+        {
+          "start": [
+            518.16,
+            142.24
+          ],
+          "end": [
+            518.16,
+            121.92
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "UART_TX_TO_ESP_RX",
+      "from": {
+        "ref": "J4",
+        "pin": "3",
+        "point": [
+          25.4,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "TXD",
+        "point": [
+          563.88,
+          121.92
+        ],
+        "exact": true,
+        "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin26"
+      },
+      "path": [
+        [
+          25.4,
+          142.24
+        ],
+        [
+          563.88,
+          142.24
+        ],
+        [
+          563.88,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            142.24
+          ],
+          "end": [
+            563.88,
+            142.24
+          ],
+          "direction": "right",
+          "length": 538.48
+        },
+        {
+          "start": [
+            563.88,
+            142.24
+          ],
+          "end": [
+            563.88,
+            121.92
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "USB_CC1",
+      "from": {
+        "ref": "J1",
+        "pin": "CC1",
+        "point": [
+          152.4,
+          137.16
+        ],
+        "exact": true,
+        "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA5"
+      },
+      "to": {
+        "ref": "R5",
+        "pin": "1",
+        "point": [
+          294.64,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          152.4,
+          137.16
+        ],
+        [
+          294.64,
+          137.16
+        ],
+        [
+          294.64,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            152.4,
+            137.16
+          ],
+          "end": [
+            294.64,
+            137.16
+          ],
+          "direction": "right",
+          "length": 142.24
+        },
+        {
+          "start": [
+            294.64,
+            137.16
+          ],
+          "end": [
+            294.64,
+            147.32
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "USB_CC2",
+      "from": {
+        "ref": "J1",
+        "pin": "CC2",
+        "point": [
+          152.4,
+          137.16
+        ],
+        "exact": true,
+        "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+      },
+      "to": {
+        "ref": "R6",
+        "pin": "1",
+        "point": [
+          355.6,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          152.4,
+          137.16
+        ],
+        [
+          355.6,
+          137.16
+        ],
+        [
+          355.6,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            152.4,
+            137.16
+          ],
+          "end": [
+            355.6,
+            137.16
+          ],
+          "direction": "right",
+          "length": 203.2
+        },
+        {
+          "start": [
+            355.6,
+            137.16
+          ],
+          "end": [
+            355.6,
+            147.32
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "USB_D_MINUS",
+      "from": {
+        "ref": "J1",
+        "pin": "D-",
+        "point": [
+          152.4,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA7"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "D-",
+        "point": [
+          538.48,
+          132.08
+        ],
+        "exact": true,
+        "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin5"
+      },
+      "path": [
+        [
+          152.4,
+          142.24
+        ],
+        [
+          538.48,
+          142.24
+        ],
+        [
+          538.48,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            152.4,
+            142.24
+          ],
+          "end": [
+            538.48,
+            142.24
+          ],
+          "direction": "right",
+          "length": 386.08
+        },
+        {
+          "start": [
+            538.48,
+            142.24
+          ],
+          "end": [
+            538.48,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "USB_D_PLUS",
+      "from": {
+        "ref": "J1",
+        "pin": "D+",
+        "point": [
+          152.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA6"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "D+",
+        "point": [
+          538.48,
+          137.16
+        ],
+        "exact": true,
+        "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin4"
+      },
+      "path": [
+        [
+          152.4,
+          152.4
+        ],
+        [
+          538.48,
+          152.4
+        ],
+        [
+          538.48,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            152.4,
+            152.4
+          ],
+          "end": [
+            538.48,
+            152.4
+          ],
+          "direction": "right",
+          "length": 386.08
+        },
+        {
+          "start": [
+            538.48,
+            152.4
+          ],
+          "end": [
+            538.48,
+            137.16
+          ],
+          "direction": "up",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "USB_VBUS",
+      "from": {
+        "ref": "J1",
+        "pin": "VBUS",
+        "point": [
+          152.4,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "VBUS",
+        "point": [
+          538.48,
+          132.08
+        ],
+        "exact": true,
+        "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin8"
+      },
+      "path": [
+        [
+          152.4,
+          132.08
+        ],
+        [
+          538.48,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            152.4,
+            132.08
+          ],
+          "end": [
+            538.48,
+            132.08
+          ],
+          "direction": "right",
+          "length": 386.08
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 19,
+    "wired_route_count": 23,
+    "segment_count": 45,
+    "different_net_crossing_count": 40
+  },
+  "warnings": [
+    "astar_fallback_expansion_limit: ESP_BOOT_IO0 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_BOOT_IO0 exceeded 1500 explored grid states.",
+    "astar_fallback_manhattan: no clear route found for ESP_EN.",
+    "astar_fallback_manhattan: no clear route found for ESP_EN.",
+    "astar_fallback_expansion_limit: ESP_IO18 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO19 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO21 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO22 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO23 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_IO5 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_LED1 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_LED2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_LED2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_RX_FROM_ESP_TX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_RX_FROM_ESP_TX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_TX_TO_ESP_RX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: UART_TX_TO_ESP_RX exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_CC1 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_CC2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_D_MINUS exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_D_PLUS exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: USB_VBUS exceeded 1500 explored grid states.",
+    "different_net_crossings_detected: 40"
+  ]
+}

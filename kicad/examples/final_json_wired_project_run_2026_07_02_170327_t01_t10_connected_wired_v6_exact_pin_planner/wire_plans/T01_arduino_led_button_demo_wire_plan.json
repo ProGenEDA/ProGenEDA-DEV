@@ -1,0 +1,2749 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 420.0,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "BTN1_NET": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            60.96,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            101.6,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            137.16,
+            142.24
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "D5",
+          "side": "left",
+          "point": [
+            172.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin8"
+        }
+      ],
+      "routes": [
+        {
+          "net": "BTN1_NET",
+          "from": {
+            "ref": "J1",
+            "pin": "3",
+            "point": [
+              60.96,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "R4",
+            "pin": "1",
+            "point": [
+              101.6,
+              137.16
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              60.96,
+              142.24
+            ],
+            [
+              55.88,
+              142.24
+            ],
+            [
+              55.88,
+              132.08
+            ],
+            [
+              101.6,
+              132.08
+            ],
+            [
+              101.6,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                142.24
+              ],
+              "end": [
+                55.88,
+                142.24
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                55.88,
+                142.24
+              ],
+              "end": [
+                55.88,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                55.88,
+                132.08
+              ],
+              "end": [
+                101.6,
+                132.08
+              ],
+              "direction": "right",
+              "length": 45.72
+            },
+            {
+              "start": [
+                101.6,
+                132.08
+              ],
+              "end": [
+                101.6,
+                137.16
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "BTN1_NET",
+          "from": {
+            "ref": "J1",
+            "pin": "3",
+            "point": [
+              60.96,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "SW1",
+            "pin": "2",
+            "point": [
+              137.16,
+              142.24
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin2"
+          },
+          "path": [
+            [
+              60.96,
+              142.24
+            ],
+            [
+              137.16,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                142.24
+              ],
+              "end": [
+                137.16,
+                142.24
+              ],
+              "direction": "right",
+              "length": 76.2
+            }
+          ]
+        },
+        {
+          "net": "BTN1_NET",
+          "from": {
+            "ref": "J1",
+            "pin": "3",
+            "point": [
+              60.96,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D5",
+            "point": [
+              172.72,
+              142.24
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin8"
+          },
+          "path": [
+            [
+              60.96,
+              142.24
+            ],
+            [
+              172.72,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                142.24
+              ],
+              "end": [
+                172.72,
+                142.24
+              ],
+              "direction": "right",
+              "length": 111.76
+            }
+          ]
+        }
+      ]
+    },
+    "BTN2_NET": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            60.96,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "SW2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            101.6,
+            152.4
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            132.08,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D6",
+          "side": "left",
+          "point": [
+            172.72,
+            147.32
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin9"
+        }
+      ],
+      "routes": [
+        {
+          "net": "BTN2_NET",
+          "from": {
+            "ref": "J1",
+            "pin": "4",
+            "point": [
+              60.96,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "SW2",
+            "pin": "2",
+            "point": [
+              101.6,
+              152.4
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin2"
+          },
+          "path": [
+            [
+              60.96,
+              147.32
+            ],
+            [
+              101.6,
+              147.32
+            ],
+            [
+              101.6,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                147.32
+              ],
+              "end": [
+                101.6,
+                147.32
+              ],
+              "direction": "right",
+              "length": 40.64
+            },
+            {
+              "start": [
+                101.6,
+                147.32
+              ],
+              "end": [
+                101.6,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "BTN2_NET",
+          "from": {
+            "ref": "J1",
+            "pin": "4",
+            "point": [
+              60.96,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "R5",
+            "pin": "1",
+            "point": [
+              132.08,
+              152.4
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              60.96,
+              147.32
+            ],
+            [
+              132.08,
+              147.32
+            ],
+            [
+              132.08,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                147.32
+              ],
+              "end": [
+                132.08,
+                147.32
+              ],
+              "direction": "right",
+              "length": 71.12
+            },
+            {
+              "start": [
+                132.08,
+                147.32
+              ],
+              "end": [
+                132.08,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "BTN2_NET",
+          "from": {
+            "ref": "J1",
+            "pin": "4",
+            "point": [
+              60.96,
+              147.32
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D6",
+            "point": [
+              172.72,
+              147.32
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin9"
+          },
+          "path": [
+            [
+              60.96,
+              147.32
+            ],
+            [
+              172.72,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                147.32
+              ],
+              "end": [
+                172.72,
+                147.32
+              ],
+              "direction": "right",
+              "length": 111.76
+            }
+          ]
+        }
+      ]
+    },
+    "IO_D10": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            157.48
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "D10",
+          "side": "left",
+          "point": [
+            172.72,
+            157.48
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+        }
+      ],
+      "routes": [
+        {
+          "net": "IO_D10",
+          "from": {
+            "ref": "J2",
+            "pin": "2",
+            "point": [
+              25.4,
+              157.48
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D10",
+            "point": [
+              172.72,
+              157.48
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+          },
+          "path": [
+            [
+              25.4,
+              157.48
+            ],
+            [
+              172.72,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                157.48
+              ],
+              "end": [
+                172.72,
+                157.48
+              ],
+              "direction": "right",
+              "length": 147.32
+            }
+          ]
+        }
+      ]
+    },
+    "IO_D11": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            25.4,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "U1",
+          "pin": "D11",
+          "side": "left",
+          "point": [
+            172.72,
+            162.56
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+        }
+      ],
+      "routes": [
+        {
+          "net": "IO_D11",
+          "from": {
+            "ref": "J2",
+            "pin": "3",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D11",
+            "point": [
+              172.72,
+              162.56
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              172.72,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                172.72,
+                162.56
+              ],
+              "direction": "right",
+              "length": 147.32
+            }
+          ]
+        }
+      ]
+    },
+    "IO_D12": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            25.4,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U1",
+          "pin": "D12",
+          "side": "bottom",
+          "point": [
+            172.72,
+            162.56
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+        }
+      ],
+      "routes": [
+        {
+          "net": "IO_D12",
+          "from": {
+            "ref": "J2",
+            "pin": "4",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D12",
+            "point": [
+              172.72,
+              162.56
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              172.72,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                172.72,
+                162.56
+              ],
+              "direction": "right",
+              "length": 147.32
+            }
+          ]
+        }
+      ]
+    },
+    "IO_D13": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            25.4,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "D13",
+          "side": "bottom",
+          "point": [
+            172.72,
+            162.56
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+        }
+      ],
+      "routes": [
+        {
+          "net": "IO_D13",
+          "from": {
+            "ref": "J2",
+            "pin": "5",
+            "point": [
+              25.4,
+              162.56
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D13",
+            "point": [
+              172.72,
+              162.56
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+          },
+          "path": [
+            [
+              25.4,
+              162.56
+            ],
+            [
+              172.72,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                162.56
+              ],
+              "end": [
+                172.72,
+                162.56
+              ],
+              "direction": "right",
+              "length": 147.32
+            }
+          ]
+        }
+      ]
+    },
+    "IO_D7": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            60.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "D7",
+          "side": "left",
+          "point": [
+            172.72,
+            152.4
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin10"
+        }
+      ],
+      "routes": [
+        {
+          "net": "IO_D7",
+          "from": {
+            "ref": "J1",
+            "pin": "5",
+            "point": [
+              60.96,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D7",
+            "point": [
+              172.72,
+              152.4
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin10"
+          },
+          "path": [
+            [
+              60.96,
+              152.4
+            ],
+            [
+              172.72,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                152.4
+              ],
+              "end": [
+                172.72,
+                152.4
+              ],
+              "direction": "right",
+              "length": 111.76
+            }
+          ]
+        }
+      ]
+    },
+    "IO_D8": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "6",
+          "side": "left",
+          "point": [
+            60.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        },
+        {
+          "ref": "U1",
+          "pin": "D8",
+          "side": "left",
+          "point": [
+            172.72,
+            152.4
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin11"
+        }
+      ],
+      "routes": [
+        {
+          "net": "IO_D8",
+          "from": {
+            "ref": "J1",
+            "pin": "6",
+            "point": [
+              60.96,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D8",
+            "point": [
+              172.72,
+              152.4
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin11"
+          },
+          "path": [
+            [
+              60.96,
+              152.4
+            ],
+            [
+              172.72,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                60.96,
+                152.4
+              ],
+              "end": [
+                172.72,
+                152.4
+              ],
+              "direction": "right",
+              "length": 111.76
+            }
+          ]
+        }
+      ]
+    },
+    "IO_D9": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D9",
+          "side": "left",
+          "point": [
+            172.72,
+            152.4
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin12"
+        }
+      ],
+      "routes": [
+        {
+          "net": "IO_D9",
+          "from": {
+            "ref": "J2",
+            "pin": "1",
+            "point": [
+              25.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D9",
+            "point": [
+              172.72,
+              152.4
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin12"
+          },
+          "path": [
+            [
+              25.4,
+              152.4
+            ],
+            [
+              172.72,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                152.4
+              ],
+              "end": [
+                172.72,
+                152.4
+              ],
+              "direction": "right",
+              "length": 147.32
+            }
+          ]
+        }
+      ]
+    },
+    "LED1_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            248.92,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED1_A",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              30.48,
+              137.16
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "A",
+            "point": [
+              248.92,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              30.48,
+              137.16
+            ],
+            [
+              248.92,
+              137.16
+            ],
+            [
+              248.92,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                137.16
+              ],
+              "end": [
+                248.92,
+                137.16
+              ],
+              "direction": "right",
+              "length": 218.44
+            },
+            {
+              "start": [
+                248.92,
+                137.16
+              ],
+              "end": [
+                248.92,
+                147.32
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "LED1_NET": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            30.48,
+            127.0
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D2",
+          "side": "left",
+          "point": [
+            172.72,
+            137.16
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED1_NET",
+          "from": {
+            "ref": "R1",
+            "pin": "1",
+            "point": [
+              30.48,
+              127.0
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D2",
+            "point": [
+              172.72,
+              137.16
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+          },
+          "path": [
+            [
+              30.48,
+              127.0
+            ],
+            [
+              172.72,
+              127.0
+            ],
+            [
+              172.72,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                127.0
+              ],
+              "end": [
+                172.72,
+                127.0
+              ],
+              "direction": "right",
+              "length": 142.24
+            },
+            {
+              "start": [
+                172.72,
+                127.0
+              ],
+              "end": [
+                172.72,
+                137.16
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "LED2_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            30.48,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            279.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED2_A",
+          "from": {
+            "ref": "R2",
+            "pin": "2",
+            "point": [
+              30.48,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "A",
+            "point": [
+              279.4,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              30.48,
+              147.32
+            ],
+            [
+              279.4,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                147.32
+              ],
+              "end": [
+                279.4,
+                147.32
+              ],
+              "direction": "right",
+              "length": 248.92
+            }
+          ]
+        }
+      ]
+    },
+    "LED2_NET": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            30.48,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D3",
+          "side": "left",
+          "point": [
+            172.72,
+            137.16
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED2_NET",
+          "from": {
+            "ref": "R2",
+            "pin": "1",
+            "point": [
+              30.48,
+              137.16
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D3",
+            "point": [
+              172.72,
+              137.16
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+          },
+          "path": [
+            [
+              30.48,
+              137.16
+            ],
+            [
+              172.72,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                137.16
+              ],
+              "end": [
+                172.72,
+                137.16
+              ],
+              "direction": "right",
+              "length": 142.24
+            }
+          ]
+        }
+      ]
+    },
+    "LED3_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            30.48,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D3",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            309.88,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED3_A",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              30.48,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D3",
+            "pin": "A",
+            "point": [
+              309.88,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              30.48,
+              157.48
+            ],
+            [
+              309.88,
+              157.48
+            ],
+            [
+              309.88,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                157.48
+              ],
+              "end": [
+                309.88,
+                157.48
+              ],
+              "direction": "right",
+              "length": 279.4
+            },
+            {
+              "start": [
+                309.88,
+                157.48
+              ],
+              "end": [
+                309.88,
+                147.32
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "LED3_NET": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            30.48,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D4",
+          "side": "left",
+          "point": [
+            172.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED3_NET",
+          "from": {
+            "ref": "R3",
+            "pin": "1",
+            "point": [
+              30.48,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D4",
+            "point": [
+              172.72,
+              142.24
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin7"
+          },
+          "path": [
+            [
+              30.48,
+              147.32
+            ],
+            [
+              172.72,
+              147.32
+            ],
+            [
+              172.72,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                147.32
+              ],
+              "end": [
+                172.72,
+                147.32
+              ],
+              "direction": "right",
+              "length": 142.24
+            },
+            {
+              "start": [
+                172.72,
+                147.32
+              ],
+              "end": [
+                172.72,
+                142.24
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            193.04,
+            121.92
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin27"
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            127.0,
+            142.24
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "SW2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            91.44,
+            152.4
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            60.96,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            193.04,
+            172.72
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin29"
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            238.76,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            269.24,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "D3",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            299.72,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            132.08,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            60.96,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "J2",
+          "pin": "6",
+          "side": "bottom",
+          "point": [
+            25.4,
+            167.64
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "BTN1_NET",
+      "from": {
+        "ref": "J1",
+        "pin": "3",
+        "point": [
+          60.96,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "R4",
+        "pin": "1",
+        "point": [
+          101.6,
+          137.16
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          60.96,
+          142.24
+        ],
+        [
+          55.88,
+          142.24
+        ],
+        [
+          55.88,
+          132.08
+        ],
+        [
+          101.6,
+          132.08
+        ],
+        [
+          101.6,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            142.24
+          ],
+          "end": [
+            55.88,
+            142.24
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            55.88,
+            142.24
+          ],
+          "end": [
+            55.88,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            55.88,
+            132.08
+          ],
+          "end": [
+            101.6,
+            132.08
+          ],
+          "direction": "right",
+          "length": 45.72
+        },
+        {
+          "start": [
+            101.6,
+            132.08
+          ],
+          "end": [
+            101.6,
+            137.16
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "BTN1_NET",
+      "from": {
+        "ref": "J1",
+        "pin": "3",
+        "point": [
+          60.96,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "SW1",
+        "pin": "2",
+        "point": [
+          137.16,
+          142.24
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin2"
+      },
+      "path": [
+        [
+          60.96,
+          142.24
+        ],
+        [
+          137.16,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            142.24
+          ],
+          "end": [
+            137.16,
+            142.24
+          ],
+          "direction": "right",
+          "length": 76.2
+        }
+      ]
+    },
+    {
+      "net": "BTN1_NET",
+      "from": {
+        "ref": "J1",
+        "pin": "3",
+        "point": [
+          60.96,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D5",
+        "point": [
+          172.72,
+          142.24
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin8"
+      },
+      "path": [
+        [
+          60.96,
+          142.24
+        ],
+        [
+          172.72,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            142.24
+          ],
+          "end": [
+            172.72,
+            142.24
+          ],
+          "direction": "right",
+          "length": 111.76
+        }
+      ]
+    },
+    {
+      "net": "BTN2_NET",
+      "from": {
+        "ref": "J1",
+        "pin": "4",
+        "point": [
+          60.96,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "SW2",
+        "pin": "2",
+        "point": [
+          101.6,
+          152.4
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin2"
+      },
+      "path": [
+        [
+          60.96,
+          147.32
+        ],
+        [
+          101.6,
+          147.32
+        ],
+        [
+          101.6,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            147.32
+          ],
+          "end": [
+            101.6,
+            147.32
+          ],
+          "direction": "right",
+          "length": 40.64
+        },
+        {
+          "start": [
+            101.6,
+            147.32
+          ],
+          "end": [
+            101.6,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "BTN2_NET",
+      "from": {
+        "ref": "J1",
+        "pin": "4",
+        "point": [
+          60.96,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "R5",
+        "pin": "1",
+        "point": [
+          132.08,
+          152.4
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          60.96,
+          147.32
+        ],
+        [
+          132.08,
+          147.32
+        ],
+        [
+          132.08,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            147.32
+          ],
+          "end": [
+            132.08,
+            147.32
+          ],
+          "direction": "right",
+          "length": 71.12
+        },
+        {
+          "start": [
+            132.08,
+            147.32
+          ],
+          "end": [
+            132.08,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "BTN2_NET",
+      "from": {
+        "ref": "J1",
+        "pin": "4",
+        "point": [
+          60.96,
+          147.32
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D6",
+        "point": [
+          172.72,
+          147.32
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin9"
+      },
+      "path": [
+        [
+          60.96,
+          147.32
+        ],
+        [
+          172.72,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            147.32
+          ],
+          "end": [
+            172.72,
+            147.32
+          ],
+          "direction": "right",
+          "length": 111.76
+        }
+      ]
+    },
+    {
+      "net": "IO_D10",
+      "from": {
+        "ref": "J2",
+        "pin": "2",
+        "point": [
+          25.4,
+          157.48
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D10",
+        "point": [
+          172.72,
+          157.48
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+      },
+      "path": [
+        [
+          25.4,
+          157.48
+        ],
+        [
+          172.72,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            157.48
+          ],
+          "end": [
+            172.72,
+            157.48
+          ],
+          "direction": "right",
+          "length": 147.32
+        }
+      ]
+    },
+    {
+      "net": "IO_D11",
+      "from": {
+        "ref": "J2",
+        "pin": "3",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D11",
+        "point": [
+          172.72,
+          162.56
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          172.72,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            172.72,
+            162.56
+          ],
+          "direction": "right",
+          "length": 147.32
+        }
+      ]
+    },
+    {
+      "net": "IO_D12",
+      "from": {
+        "ref": "J2",
+        "pin": "4",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D12",
+        "point": [
+          172.72,
+          162.56
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          172.72,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            172.72,
+            162.56
+          ],
+          "direction": "right",
+          "length": 147.32
+        }
+      ]
+    },
+    {
+      "net": "IO_D13",
+      "from": {
+        "ref": "J2",
+        "pin": "5",
+        "point": [
+          25.4,
+          162.56
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D13",
+        "point": [
+          172.72,
+          162.56
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+      },
+      "path": [
+        [
+          25.4,
+          162.56
+        ],
+        [
+          172.72,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            162.56
+          ],
+          "end": [
+            172.72,
+            162.56
+          ],
+          "direction": "right",
+          "length": 147.32
+        }
+      ]
+    },
+    {
+      "net": "IO_D7",
+      "from": {
+        "ref": "J1",
+        "pin": "5",
+        "point": [
+          60.96,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D7",
+        "point": [
+          172.72,
+          152.4
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin10"
+      },
+      "path": [
+        [
+          60.96,
+          152.4
+        ],
+        [
+          172.72,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            152.4
+          ],
+          "end": [
+            172.72,
+            152.4
+          ],
+          "direction": "right",
+          "length": 111.76
+        }
+      ]
+    },
+    {
+      "net": "IO_D8",
+      "from": {
+        "ref": "J1",
+        "pin": "6",
+        "point": [
+          60.96,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D8",
+        "point": [
+          172.72,
+          152.4
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin11"
+      },
+      "path": [
+        [
+          60.96,
+          152.4
+        ],
+        [
+          172.72,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            60.96,
+            152.4
+          ],
+          "end": [
+            172.72,
+            152.4
+          ],
+          "direction": "right",
+          "length": 111.76
+        }
+      ]
+    },
+    {
+      "net": "IO_D9",
+      "from": {
+        "ref": "J2",
+        "pin": "1",
+        "point": [
+          25.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D9",
+        "point": [
+          172.72,
+          152.4
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin12"
+      },
+      "path": [
+        [
+          25.4,
+          152.4
+        ],
+        [
+          172.72,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            152.4
+          ],
+          "end": [
+            172.72,
+            152.4
+          ],
+          "direction": "right",
+          "length": 147.32
+        }
+      ]
+    },
+    {
+      "net": "LED1_A",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          30.48,
+          137.16
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "A",
+        "point": [
+          248.92,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          30.48,
+          137.16
+        ],
+        [
+          248.92,
+          137.16
+        ],
+        [
+          248.92,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            137.16
+          ],
+          "end": [
+            248.92,
+            137.16
+          ],
+          "direction": "right",
+          "length": 218.44
+        },
+        {
+          "start": [
+            248.92,
+            137.16
+          ],
+          "end": [
+            248.92,
+            147.32
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "LED1_NET",
+      "from": {
+        "ref": "R1",
+        "pin": "1",
+        "point": [
+          30.48,
+          127.0
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D2",
+        "point": [
+          172.72,
+          137.16
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+      },
+      "path": [
+        [
+          30.48,
+          127.0
+        ],
+        [
+          172.72,
+          127.0
+        ],
+        [
+          172.72,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            127.0
+          ],
+          "end": [
+            172.72,
+            127.0
+          ],
+          "direction": "right",
+          "length": 142.24
+        },
+        {
+          "start": [
+            172.72,
+            127.0
+          ],
+          "end": [
+            172.72,
+            137.16
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "LED2_A",
+      "from": {
+        "ref": "R2",
+        "pin": "2",
+        "point": [
+          30.48,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "A",
+        "point": [
+          279.4,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          30.48,
+          147.32
+        ],
+        [
+          279.4,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            147.32
+          ],
+          "end": [
+            279.4,
+            147.32
+          ],
+          "direction": "right",
+          "length": 248.92
+        }
+      ]
+    },
+    {
+      "net": "LED2_NET",
+      "from": {
+        "ref": "R2",
+        "pin": "1",
+        "point": [
+          30.48,
+          137.16
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D3",
+        "point": [
+          172.72,
+          137.16
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+      },
+      "path": [
+        [
+          30.48,
+          137.16
+        ],
+        [
+          172.72,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            137.16
+          ],
+          "end": [
+            172.72,
+            137.16
+          ],
+          "direction": "right",
+          "length": 142.24
+        }
+      ]
+    },
+    {
+      "net": "LED3_A",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          30.48,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D3",
+        "pin": "A",
+        "point": [
+          309.88,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          30.48,
+          157.48
+        ],
+        [
+          309.88,
+          157.48
+        ],
+        [
+          309.88,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            157.48
+          ],
+          "end": [
+            309.88,
+            157.48
+          ],
+          "direction": "right",
+          "length": 279.4
+        },
+        {
+          "start": [
+            309.88,
+            157.48
+          ],
+          "end": [
+            309.88,
+            147.32
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "LED3_NET",
+      "from": {
+        "ref": "R3",
+        "pin": "1",
+        "point": [
+          30.48,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D4",
+        "point": [
+          172.72,
+          142.24
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin7"
+      },
+      "path": [
+        [
+          30.48,
+          147.32
+        ],
+        [
+          172.72,
+          147.32
+        ],
+        [
+          172.72,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            147.32
+          ],
+          "end": [
+            172.72,
+            147.32
+          ],
+          "direction": "right",
+          "length": 142.24
+        },
+        {
+          "start": [
+            172.72,
+            147.32
+          ],
+          "end": [
+            172.72,
+            142.24
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 17,
+    "wired_route_count": 19,
+    "segment_count": 28,
+    "different_net_crossing_count": 2
+  },
+  "warnings": [
+    "astar_fallback_manhattan: no clear route found for BTN1_NET.",
+    "astar_fallback_manhattan: no clear route found for BTN1_NET.",
+    "astar_fallback_expansion_limit: BTN2_NET exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: BTN2_NET exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: BTN2_NET exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: IO_D10 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: IO_D11 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: IO_D12 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: IO_D13 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: IO_D7 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: IO_D8 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: IO_D9 exceeded 1500 explored grid states.",
+    "astar_fallback_manhattan: no clear route found for LED1_A.",
+    "astar_fallback_expansion_limit: LED1_NET exceeded 1500 explored grid states.",
+    "astar_fallback_manhattan: no clear route found for LED2_A.",
+    "astar_fallback_manhattan: no clear route found for LED2_NET.",
+    "astar_fallback_manhattan: no clear route found for LED3_A.",
+    "astar_fallback_manhattan: no clear route found for LED3_NET.",
+    "different_net_crossings_detected: 2"
+  ]
+}

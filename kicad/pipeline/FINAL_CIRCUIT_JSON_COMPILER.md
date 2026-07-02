@@ -142,6 +142,23 @@ Result:
 - This proves the final JSON is usable for generation/export, but the current
   routing output is not accepted as final-correct wiring.
 
+Current strict-router evidence from the same final JSON:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_171521_t01_t10_connected_wired_v9_reserved_pin_router/
+```
+
+Result:
+
+- Exact KiCad pin/body routing inputs were written under `routing_inputs/`.
+- Static schematic quality passed 10/10.
+- KiCad netlist export succeeded 10/10.
+- Wire-geometry validation passed 10/10 with 0 violations.
+- ERC quality gate passed 5/10. Remaining failures are mostly label-heavy
+  fallback/logical-symbol issues (`multiple_net_names`, `label_dangling`,
+  `unconnected_wire_endpoint`, and a small number of `pin_to_pin` reports), so
+  this is geometry-clean routing evidence, not final electrical acceptance.
+
 ## Upgrade Path
 
 Next compiler work should add these deterministic modules as real code, not
@@ -160,4 +177,5 @@ only docs:
    - relay base resistor/flyback/contact isolation
    - regulator input/output caps
 7. Repair planner with bounded patch iterations.
-8. Final netlist/ERC validator after KiCad wire maker exists.
+8. Expected-net comparison against exported KiCad netlists.
+9. ERC repair rules for label-heavy fallbacks and symbol-model gaps.

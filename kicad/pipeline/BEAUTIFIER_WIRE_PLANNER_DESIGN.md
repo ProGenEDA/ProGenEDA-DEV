@@ -487,7 +487,7 @@ Result:
 Current geometry-rule evidence:
 
 ```text
-kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules/
+kicad/examples/final_json_wired_project_run_2026_07_02_171521_t01_t10_connected_wired_v9_reserved_pin_router/
 ```
 
 Result:
@@ -495,12 +495,31 @@ Result:
 - Static schematic quality passed 10/10.
 - Bundled KiCad CLI loaded all 10 schematics.
 - KiCad netlist export succeeded 10/10.
-- KiCad ERC quality gate passed 1/10; T01 and T03-T10 failed with blocking ERC
-  issues such as `label_multiple_wires`, `multiple_net_names`, and `pin_to_pin`.
-- Geometry rule gate passed 0/10.
-- Total geometry violations: 21268.
-- Therefore the current wire planner/maker output is openable evidence, but not
-  accepted final wiring.
+- KiCad ERC quality gate passed 5/10. Remaining blocking issues are logical
+  and symbol-model issues, not wire-geometry issues: mostly `multiple_net_names`,
+  `label_dangling`, `unconnected_wire_endpoint`, and a few `pin_to_pin` reports.
+- Geometry rule gate passed 10/10.
+- Total geometry violations: 0.
+- Therefore the current wire planner/maker output is geometry-clean and
+  openable/exportable, but still not final electrical acceptance until expected
+  netlist comparison and ERC repair are implemented.
+
+Failure and improvement records:
+
+- `final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules`
+  added the strict validator and correctly rejected the old router: 21268
+  geometry violations, ERC gate 1/10.
+- `final_json_wired_project_run_2026_07_02_170327_t01_t10_connected_wired_v6_exact_pin_planner`
+  fed source-backed KiCad pin/body JSON to the pure planner and reduced
+  violations to 14587.
+- `final_json_wired_project_run_2026_07_02_170940_t01_t10_connected_wired_v7_strict_router`
+  removed speculative Manhattan fallback wires, added 1.27 mm routing, and
+  reduced violations to 9.
+- `final_json_wired_project_run_2026_07_02_171210_t01_t10_connected_wired_v8_pin_side_fix`
+  fixed outside-pin side detection and reduced violations to 2.
+- `final_json_wired_project_run_2026_07_02_171521_t01_t10_connected_wired_v9_reserved_pin_router`
+  reserves exact pin cells and restricts pin corridors to the endpoint
+  component, reaching 0 geometry violations.
 
 Run:
 
@@ -509,6 +528,8 @@ python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_
 PYTHONPATH=. python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4 --skip-erc
 python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v5_geometry_rules
 PYTHONPATH=. python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules --export-netlist
+python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/final_json --examples-root kicad/examples --label t01_t10_connected_wired_v9_reserved_pin_router
+PYTHONPATH=. python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_02_171521_t01_t10_connected_wired_v9_reserved_pin_router --export-netlist
 ```
 
 ## Routing Rules To Preserve
@@ -557,6 +578,11 @@ Current coverage:
    overlaps, and produce bounded wire-plan reports.
 9. The KiCad wire maker emits real wire/label objects and can generate fresh
    immutable wired project runs from final JSON.
+10. The net extractor accepts both `ref:pin` and `ref.pin` endpoint notation.
+11. The wire planner prefers supplied exact pin points over estimated component
+    edge stubs.
+12. The wire-geometry validator rejects different-net crossings and component
+    body touches away from intended pins.
 
 ## T01-T10 Evidence
 
@@ -615,6 +641,21 @@ Result:
 - KiCad netlist export succeeds, so KiCad can parse/export the files.
 - ERC confirms these are not final-correct schematics yet.
 
+The current strict router run is recorded in:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_02_171521_t01_t10_connected_wired_v9_reserved_pin_router/
+```
+
+Result:
+
+- Static schematic quality passed 10/10.
+- KiCad netlist export passed 10/10.
+- Geometry validation passed 10/10 with 0 violations.
+- ERC quality passed 5/10. Remaining failures are the next work item and are
+  mainly caused by label-heavy fallback nets and unresolved logical symbol
+  models, not by wires crossing or touching bodies.
+
 Run:
 
 ```bash
@@ -636,9 +677,9 @@ These are intentionally future work:
 7. Feedback-loop routing below the main path.
 8. Better symbol models for LED arrays, DIP common pins, and artificial op-amp
    bias nodes.
-9. Router enforcement of the wire-geometry validator rules.
-10. Final netlist export and expected-net comparison.
-11. ERC-backed final validation report.
+9. Expected-net comparison against exported KiCad netlists.
+10. ERC-backed repair for label-heavy fallback nets.
+11. Final validation report.
 
 ## Core Principle
 
