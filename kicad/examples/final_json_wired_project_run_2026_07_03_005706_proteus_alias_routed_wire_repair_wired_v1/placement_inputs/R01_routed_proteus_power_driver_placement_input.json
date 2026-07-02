@@ -1,0 +1,214 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "r01",
+    "title": "Routed Proteus Power Driver",
+    "purpose": "wire-heavy old/new alias demo with short power-driver nets",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "R01",
+  "circuit_name": "Routed Proteus Power Driver",
+  "purpose": "wire-heavy old/new alias demo with short power-driver nets",
+  "components": [
+    {
+      "id": "G1",
+      "ref": "G1",
+      "kind": "GROUND",
+      "value": "GND"
+    },
+    {
+      "id": "V1",
+      "ref": "V1",
+      "kind": "VDC",
+      "value": "12V DC source"
+    },
+    {
+      "id": "F1",
+      "ref": "F1",
+      "kind": "FUSE",
+      "value": "Fuse"
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "SWITCH",
+      "value": "Power switch"
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "1N4007",
+      "value": "1N4007"
+    },
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "LM317",
+      "value": "LM317"
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RES",
+      "value": "240 ohm"
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "RES",
+      "value": "1.2k"
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "CAP",
+      "value": "100nF"
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "CAP-ELEC",
+      "value": "100uF"
+    },
+    {
+      "id": "L1",
+      "ref": "L1",
+      "kind": "REALIND",
+      "value": "47uH"
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "DIODE",
+      "value": "Clamp diode"
+    },
+    {
+      "id": "LED1",
+      "ref": "LED1",
+      "kind": "LED",
+      "value": "Power LED"
+    },
+    {
+      "id": "Q1",
+      "ref": "Q1",
+      "kind": "2N7000",
+      "value": "2N7000"
+    },
+    {
+      "id": "Q2",
+      "ref": "Q2",
+      "kind": "BS170",
+      "value": "BS170"
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "TERMINAL",
+      "value": "Load terminal"
+    }
+  ],
+  "nets": {
+    "GND": [
+      "G1.1",
+      "V1.2",
+      "C1.2",
+      "C2.2",
+      "Q1.3",
+      "Q2.3",
+      "J1.2"
+    ],
+    "VIN": [
+      "V1.1",
+      "F1.1"
+    ],
+    "VIN_FUSED": [
+      "F1.2",
+      "SW1.1"
+    ],
+    "VIN_SWITCHED": [
+      "SW1.2",
+      "D1.1"
+    ],
+    "REG_IN": [
+      "D1.2",
+      "U1.3",
+      "C2.1"
+    ],
+    "REG_OUT": [
+      "U1.2",
+      "L1.1",
+      "R1.1",
+      "R3.1"
+    ],
+    "LC_OUT": [
+      "L1.2",
+      "C1.1",
+      "D2.1"
+    ],
+    "ADJ": [
+      "U1.1",
+      "R1.2",
+      "R2.1"
+    ],
+    "ADJ_RETURN": [
+      "R2.2",
+      "D2.2"
+    ],
+    "LED_A": [
+      "R3.2",
+      "LED1.1"
+    ],
+    "LED_K": [
+      "LED1.2",
+      "Q1.2"
+    ],
+    "DRIVE_GATE": [
+      "Q1.1",
+      "Q2.1"
+    ],
+    "LOAD_OUT": [
+      "Q2.2",
+      "J1.1"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 17,
+    "net_count": 13,
+    "endpoint_count": 36,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

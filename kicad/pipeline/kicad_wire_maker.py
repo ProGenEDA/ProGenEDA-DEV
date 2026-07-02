@@ -556,6 +556,7 @@ def _catalog_plan_as_routing_placement(circuit: dict[str, Any], placement: Catal
                 "source": body.source,
             }
         )
+    overlap_report = component_body_overlap_report(body_items)
 
     component_items = {
         component.ref: {
@@ -581,6 +582,9 @@ def _catalog_plan_as_routing_placement(circuit: dict[str, Any], placement: Catal
             "unresolved_pin_count": len(unresolved),
             "unresolved_pins": unresolved[:200],
             "unresolved_pin_report_truncated": len(unresolved) > 200,
+            "component_body_overlap_ok": bool(overlap_report["ok"]),
+            "component_body_overlap_count": int(overlap_report["overlap_count"]),
+            "component_body_overlaps": overlap_report["overlaps"],
         },
     }
 
@@ -595,6 +599,234 @@ def _orthogonal_points(start: tuple[float, float], end: tuple[float, float]) -> 
 
 def _segments_from_points(points: list[tuple[float, float]]) -> list[tuple[tuple[float, float], tuple[float, float]]]:
     return [(a, b) for a, b in zip(points, points[1:]) if a != b]
+
+
+def _segment_axis(segment: WireGeometrySegment, eps: float = 0.001) -> tuple[str, float, float, float] | None:
+    if abs(segment.start[1] - segment.end[1]) <= eps:
+        low, high = sorted((segment.start[0], segment.end[0]))
+        return ("h", round(segment.start[1], 3), round(low, 3), round(high, 3))
+    if abs(segment.start[0] - segment.end[0]) <= eps:
+        low, high = sorted((segment.start[1], segment.end[1]))
+        return ("v", round(segment.start[0], 3), round(low, 3), round(high, 3))
+    return None
+
+
+def _unique_allowed_touches(items: list[AllowedTouch]) -> tuple[AllowedTouch, ...]:
+    seen: set[tuple[str, tuple[float, float]]] = set()
+    out: list[AllowedTouch] = []
+    for item in items:
+        key = (item.ref, (round(item.point[0], 3), round(item.point[1], 3)))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(item)
+    return tuple(out)
+
+
+def _merged_segment(
+    *,
+    net: str,
+    orientation: str,
+    fixed: float,
+    low: float,
+    high: float,
+    allowed_touches: tuple[AllowedTouch, ...],
+    source: str,
+) -> WireGeometrySegment:
+    if orientation == "h":
+        start = (round(low, 3), fixed)
+        end = (round(high, 3), fixed)
+    else:
+        start = (fixed, round(low, 3))
+        end = (fixed, round(high, 3))
+    return WireGeometrySegment(net=net, start=start, end=end, allowed_touches=allowed_touches, source=source)
+
+
+def _merge_same_net_collinear_segments(segments: list[WireGeometrySegment]) -> list[WireGeometrySegment]:
+    buckets: dict[tuple[str, str, float], list[tuple[float, float, WireGeometrySegment]]] = {}
+    passthrough: list[WireGeometrySegment] = []
+    for segment in segments:
+        axis = _segment_axis(segment)
+        if axis is None:
+            passthrough.append(segment)
+            continue
+        orientation, fixed, low, high = axis
+        if abs(high - low) <= 0.001:
+            continue
+        buckets.setdefault((segment.net, orientation, fixed), []).append((low, high, segment))
+
+    merged = list(passthrough)
+    for (net, orientation, fixed), records in sorted(buckets.items(), key=lambda item: item[0]):
+        records.sort(key=lambda item: (item[0], item[1], item[2].source))
+        current_low: float | None = None
+        current_high: float | None = None
+        current_touches: list[AllowedTouch] = []
+        current_sources: list[str] = []
+
+        def flush() -> None:
+            if current_low is None or current_high is None:
+                return
+            source = current_sources[0] if len(set(current_sources)) == 1 else "merged_same_net_collinear"
+            merged.append(
+                _merged_segment(
+                    net=net,
+                    orientation=orientation,
+                    fixed=fixed,
+                    low=current_low,
+                    high=current_high,
+                    allowed_touches=_unique_allowed_touches(current_touches),
+                    source=source,
+                )
+            )
+
+        for low, high, segment in records:
+            if current_low is None or current_high is None:
+                current_low = low
+                current_high = high
+                current_touches = list(segment.allowed_touches)
+                current_sources = [segment.source]
+                continue
+            if low < current_high - 0.001:
+                current_high = max(current_high, high)
+                current_touches.extend(segment.allowed_touches)
+                current_sources.append(segment.source)
+                continue
+            flush()
+            current_low = low
+            current_high = high
+            current_touches = list(segment.allowed_touches)
+            current_sources = [segment.source]
+        flush()
+    return sorted(merged, key=lambda item: (item.net, item.start[1], item.start[0], item.end[1], item.end[0], item.source))
+
+
+def _point_on_wire_segment(point: tuple[float, float], segment: WireGeometrySegment, eps: float = 0.001) -> bool:
+    if abs(segment.start[1] - segment.end[1]) <= eps:
+        low, high = sorted((segment.start[0], segment.end[0]))
+        return abs(point[1] - segment.start[1]) <= eps and low - eps <= point[0] <= high + eps
+    if abs(segment.start[0] - segment.end[0]) <= eps:
+        low, high = sorted((segment.start[1], segment.end[1]))
+        return abs(point[0] - segment.start[0]) <= eps and low - eps <= point[1] <= high + eps
+    return False
+
+
+def _point_distance_on_segment(origin: tuple[float, float], point: tuple[float, float]) -> float:
+    return abs(origin[0] - point[0]) + abs(origin[1] - point[1])
+
+
+def _trim_dangling_wire_tails(
+    segments: list[WireGeometrySegment],
+    protected_points: set[tuple[float, float]],
+) -> tuple[list[WireGeometrySegment], int]:
+    trimmed: list[WireGeometrySegment] = []
+    trim_count = 0
+    rounded_protected = {(round(point[0], 3), round(point[1], 3)) for point in protected_points}
+
+    def is_protected(point: tuple[float, float]) -> bool:
+        return (round(point[0], 3), round(point[1], 3)) in rounded_protected
+
+    for index, segment in enumerate(segments):
+        start = segment.start
+        end = segment.end
+        for endpoint_name in ("start", "end"):
+            endpoint = start if endpoint_name == "start" else end
+            if is_protected(endpoint):
+                continue
+            touches_other = any(
+                other_index != index
+                and other.net == segment.net
+                and _point_on_wire_segment(endpoint, other)
+                for other_index, other in enumerate(segments)
+            )
+            if touches_other:
+                continue
+            candidates: set[tuple[float, float]] = set()
+            for other_index, other in enumerate(segments):
+                if other_index == index or other.net != segment.net:
+                    continue
+                for point in (other.start, other.end):
+                    rounded = (round(point[0], 3), round(point[1], 3))
+                    if rounded != endpoint and _point_on_wire_segment(rounded, segment):
+                        candidates.add(rounded)
+            for point in rounded_protected:
+                if point != endpoint and _point_on_wire_segment(point, segment):
+                    candidates.add(point)
+            if not candidates:
+                continue
+            replacement = min(candidates, key=lambda point: _point_distance_on_segment(endpoint, point))
+            if endpoint_name == "start":
+                start = replacement
+            else:
+                end = replacement
+            trim_count += 1
+        if start != end:
+            trimmed.append(
+                WireGeometrySegment(
+                    net=segment.net,
+                    start=start,
+                    end=end,
+                    allowed_touches=segment.allowed_touches,
+                    source=segment.source,
+                )
+            )
+    return trimmed, trim_count
+
+
+def component_body_overlap_report(
+    obstacles: list[dict[str, Any]] | tuple[dict[str, Any], ...],
+    *,
+    clearance: float = 0.0,
+) -> dict[str, Any]:
+    """Report cross-component body overlaps from placement/routing obstacle JSON."""
+    pairs: list[dict[str, Any]] = []
+    normalized: list[dict[str, Any]] = []
+    for item in obstacles:
+        if not isinstance(item, dict):
+            continue
+        owner = str(item.get("owner") or "")
+        ref = str(item.get("component_ref") or owner)
+        if "::" in ref:
+            ref = ref.split("::", 1)[0]
+        if not owner or not ref:
+            continue
+        normalized.append(
+            {
+                "owner": owner,
+                "component_ref": ref,
+                "left": float(item.get("left", 0.0)) - clearance,
+                "top": float(item.get("top", 0.0)) - clearance,
+                "right": float(item.get("right", 0.0)) + clearance,
+                "bottom": float(item.get("bottom", 0.0)) + clearance,
+            }
+        )
+
+    for index, left in enumerate(normalized):
+        for right in normalized[index + 1 :]:
+            if left["component_ref"] == right["component_ref"]:
+                continue
+            if (
+                left["left"] < right["right"]
+                and left["right"] > right["left"]
+                and left["top"] < right["bottom"]
+                and left["bottom"] > right["top"]
+            ):
+                pairs.append(
+                    {
+                        "left": left["owner"],
+                        "right": right["owner"],
+                        "left_component": left["component_ref"],
+                        "right_component": right["component_ref"],
+                    }
+                )
+    return {
+        "schema": "progen-kicad-component-body-overlap-report/v0.1",
+        "ok": not pairs,
+        "clearance": clearance,
+        "body_count": len(normalized),
+        "overlap_count": len(pairs),
+        "overlaps": pairs[:200],
+        "overlaps_truncated": len(pairs) > 200,
+    }
 
 
 def _path_with_actual_ends(
@@ -699,12 +931,40 @@ def _reserved_label_point(
     return raw_label, False
 
 
+def _point_on_visual_segment(point: tuple[float, float], segment: tuple[tuple[float, float], tuple[float, float]]) -> bool:
+    a, b = segment
+    if abs(a[1] - b[1]) <= 0.001:
+        low, high = sorted((a[0], b[0]))
+        return abs(point[1] - a[1]) <= 0.001 and low - 0.001 <= point[0] <= high + 0.001
+    if abs(a[0] - b[0]) <= 0.001:
+        low, high = sorted((a[1], b[1]))
+        return abs(point[0] - a[0]) <= 0.001 and low - 0.001 <= point[1] <= high + 0.001
+    return False
+
+
 def _insert_junctions(segments: list[tuple[tuple[float, float], tuple[float, float]]]) -> list[tuple[float, float]]:
-    counts: dict[tuple[float, float], int] = {}
+    endpoint_counts: dict[tuple[float, float], int] = {}
+    endpoints: set[tuple[float, float]] = set()
     for a, b in segments:
-        counts[a] = counts.get(a, 0) + 1
-        counts[b] = counts.get(b, 0) + 1
-    return sorted((point for point, count in counts.items() if count >= 3), key=lambda item: (item[1], item[0]))
+        endpoint_counts[a] = endpoint_counts.get(a, 0) + 1
+        endpoint_counts[b] = endpoint_counts.get(b, 0) + 1
+        endpoints.add(a)
+        endpoints.add(b)
+
+    junctions: set[tuple[float, float]] = set()
+    for point in endpoints:
+        touching_count = 0
+        interior_touch = False
+        for segment in segments:
+            if not _point_on_visual_segment(point, segment):
+                continue
+            touching_count += 1
+            a, b = segment
+            if point != a and point != b:
+                interior_touch = True
+        if endpoint_counts.get(point, 0) >= 3 or touching_count >= 3 or interior_touch:
+            junctions.add(point)
+    return sorted(junctions, key=lambda item: (item[1], item[0]))
 
 
 def make_kicad_wires(
@@ -831,6 +1091,18 @@ def make_kicad_wires(
                 if start != planned_start or end != planned_end:
                     fallback_route_count += 1
 
+    raw_segment_count = len(geometry_segments)
+    geometry_segments = _merge_same_net_collinear_segments(geometry_segments)
+    protected_points = {
+        (round(allowed.point[0], 3), round(allowed.point[1], 3))
+        for segment in geometry_segments
+        for allowed in segment.allowed_touches
+    }
+    protected_points.update((round(float(label["at"][0]), 3), round(float(label["at"][1]), 3)) for label in labels)
+    geometry_segments, trimmed_wire_tail_count = _trim_dangling_wire_tails(geometry_segments, protected_points)
+    geometry_segments = _merge_same_net_collinear_segments(geometry_segments)
+    segments = [(segment.start, segment.end) for segment in geometry_segments]
+    merged_segment_count = raw_segment_count - len(geometry_segments)
     junctions = _insert_junctions(segments)
     geometry_report = validate_wire_geometry(geometry_segments, component_bodies)
     project_name = str(circuit.get("project", {}).get("name") or circuit.get("circuit_id") or "wired")
@@ -847,6 +1119,9 @@ def make_kicad_wires(
         "stage": "kicad_wire_maker",
         "version": WIRE_MAKER_VERSION,
         "wire_object_count": len(segments),
+        "raw_wire_segment_count": raw_segment_count,
+        "merged_wire_segment_count": merged_segment_count,
+        "trimmed_wire_tail_count": trimmed_wire_tail_count,
         "label_count": len(labels),
         "junction_count": len(junctions),
         "routed_connection_count": route_count,
@@ -867,16 +1142,35 @@ def make_kicad_wires(
     return WireMakerResult("".join(objects), report)
 
 
-def _geometry_violation_nets(report: dict[str, Any]) -> set[str]:
-    nets: set[str] = set()
+def _geometry_violation_net_sets(report: dict[str, Any]) -> list[set[str]]:
+    groups: list[set[str]] = []
     for violation in report.get("wire_geometry_validator", {}).get("violations", []):
         if not isinstance(violation, dict):
             continue
+        nets: set[str] = set()
         for key in ("segment", "left", "right"):
             segment = violation.get(key)
             if isinstance(segment, dict) and segment.get("net"):
                 nets.add(str(segment["net"]))
-    return nets
+        if nets:
+            groups.append(nets)
+    return groups
+
+
+def _geometry_violation_nets(report: dict[str, Any]) -> set[str]:
+    remaining = _geometry_violation_net_sets(report)
+    chosen: set[str] = set()
+    while remaining:
+        counts: dict[str, int] = {}
+        for group in remaining:
+            for net in group:
+                counts[net] = counts.get(net, 0) + 1
+        if not counts:
+            break
+        best = sorted(counts, key=lambda net: (-counts[net], net))[0]
+        chosen.add(best)
+        remaining = [group for group in remaining if best not in group]
+    return chosen
 
 
 def _wire_plan_with_geometry_fallbacks(wire_plan: dict[str, Any], fallback_nets: set[str]) -> dict[str, Any]:
@@ -943,6 +1237,52 @@ def repair_wire_plan_geometry(
     result.report["geometry_repair_passes"] = repair_passes
     result.report["geometry_repair_fallback_nets"] = sorted(already_fallback)
     return repaired_plan, result
+
+
+def _settle_actual_symbol_body_placement(
+    circuit: dict[str, Any],
+    placement_dict: dict[str, Any],
+    *,
+    max_passes: int = 4,
+) -> tuple[dict[str, Any], CatalogPlacementPlan, dict[str, Any], dict[str, Any]]:
+    current = deepcopy(placement_dict)
+    passes: list[dict[str, Any]] = []
+    final_placement = _catalog_plan_from_placement_dict(circuit, current)
+    final_routing_placement = _catalog_plan_as_routing_placement(circuit, final_placement)
+    final_report = component_body_overlap_report(final_routing_placement.get("obstacles", []))
+
+    for pass_index in range(1, max_passes + 1):
+        final_placement = _catalog_plan_from_placement_dict(circuit, current)
+        final_routing_placement = _catalog_plan_as_routing_placement(circuit, final_placement)
+        final_report = component_body_overlap_report(final_routing_placement.get("obstacles", []))
+        passes.append(
+            {
+                "pass": pass_index,
+                "component_body_overlap_count": final_report["overlap_count"],
+                "component_body_overlaps": final_report["overlaps"],
+            }
+        )
+        if final_report["ok"]:
+            break
+
+        coordinate_plan = decide_arrangement(
+            final_routing_placement,
+            circuit,
+            config={"component_clearance": 25.4, "column_gap": 35.56, "row_gap": 20.32},
+        )
+        if not coordinate_plan.get("coordinate_edits"):
+            break
+        current = apply_coordinate_edits(current, coordinate_plan)
+
+    report = {
+        "schema": "progen-kicad-actual-symbol-body-placement-report/v0.1",
+        "ok": bool(final_report["ok"]),
+        "pass_count": len(passes),
+        "component_body_overlap_count": int(final_report["overlap_count"]),
+        "component_body_overlaps": final_report["overlaps"],
+        "passes": passes,
+    }
+    return current, final_placement, final_routing_placement, report
 
 
 def write_wired_project(
@@ -1027,8 +1367,7 @@ def generate_wired_projects_from_final_json(
         placement_dict = ctx.placement_plan.as_dict()
         coordinate_plan = decide_arrangement(placement_dict, circuit)
         beautified = apply_coordinate_edits(placement_dict, coordinate_plan)
-        placement = _catalog_plan_from_placement_dict(circuit, beautified)
-        routing_placement = _catalog_plan_as_routing_placement(circuit, placement)
+        beautified, placement, routing_placement, body_overlap_report = _settle_actual_symbol_body_placement(circuit, beautified)
         (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
         wire_plan = plan_wire_routes(routing_placement, circuit, config=cfg)
         wire_plan, wire_result = repair_wire_plan_geometry(circuit, placement, wire_plan)
@@ -1050,6 +1389,9 @@ def generate_wired_projects_from_final_json(
                 "unresolved_pin_count": manifest["wire_maker"]["unresolved_pin_count"],
                 "routing_pin_resolved_count": routing_placement["routing_metadata"]["pin_resolved_count"],
                 "routing_unresolved_pin_count": routing_placement["routing_metadata"]["unresolved_pin_count"],
+                "component_body_overlap_ok": bool(body_overlap_report["ok"]),
+                "component_body_overlap_count": body_overlap_report["component_body_overlap_count"],
+                "component_body_overlap_pass_count": body_overlap_report["pass_count"],
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
                 "geometry_ok": bool(manifest["wire_maker"]["geometry_ok"]),
                 "geometry_violation_count": manifest["wire_maker"]["geometry_violation_count"],
@@ -1071,6 +1413,8 @@ def generate_wired_projects_from_final_json(
         "total_unresolved_pins": sum(int(item["unresolved_pin_count"]) for item in results),
         "total_routing_pin_resolved": sum(int(item["routing_pin_resolved_count"]) for item in results),
         "total_routing_unresolved_pins": sum(int(item["routing_unresolved_pin_count"]) for item in results),
+        "all_component_body_overlap_ok": all(item["component_body_overlap_ok"] for item in results),
+        "total_component_body_overlaps": sum(int(item["component_body_overlap_count"]) for item in results),
         "total_deferred_nets": sum(int(item["deferred_net_count"]) for item in results),
         "all_geometry_ok": all(item["geometry_ok"] for item in results),
         "total_geometry_violations": sum(int(item["geometry_violation_count"]) for item in results),

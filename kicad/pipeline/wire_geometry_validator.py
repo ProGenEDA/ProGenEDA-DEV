@@ -18,6 +18,7 @@ from typing import Any
 
 
 Point = tuple[float, float]
+PIN_BODY_ENTRY_ALLOWANCE = 2.54
 
 
 @dataclass(frozen=True)
@@ -189,12 +190,22 @@ def _body_dict(body: ComponentBody) -> dict[str, Any]:
     }
 
 
+def _contact_length(contact: Contact) -> float:
+    if contact.kind != "overlap" or contact.start is None or contact.end is None:
+        return 0.0
+    return abs(contact.start[0] - contact.end[0]) + abs(contact.start[1] - contact.end[1])
+
+
 def _allowed_component_touch(segment: WireGeometrySegment, body: ComponentBody, contact: Contact, eps: float) -> bool:
-    if contact.kind != "point" or contact.point is None:
-        return False
     for allowed in segment.allowed_touches:
-        if allowed.ref == body.ref and _same_point(contact.point, allowed.point, eps):
+        if allowed.ref != body.ref:
+            continue
+        if contact.kind == "point" and contact.point is not None and _same_point(contact.point, allowed.point, eps):
             return True
+        if contact.kind == "overlap" and contact.start is not None and contact.end is not None:
+            touches_pin_entry = _same_point(contact.start, allowed.point, eps) or _same_point(contact.end, allowed.point, eps)
+            if touches_pin_entry and _contact_length(contact) <= PIN_BODY_ENTRY_ALLOWANCE + eps:
+                return True
     return False
 
 

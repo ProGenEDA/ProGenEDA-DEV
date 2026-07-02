@@ -1,0 +1,1696 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 540.98,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "SPI_SCK": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "SCK",
+          "side": "bottom",
+          "point": [
+            238.76,
+            165.1
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "CLK",
+          "side": "left",
+          "point": [
+            304.8,
+            142.24
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_SCK."
+      ]
+    },
+    "BUTTON_NET": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            104.14,
+            139.7
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin2"
+        },
+        {
+          "ref": "MCU",
+          "pin": "D2",
+          "side": "left",
+          "point": [
+            238.76,
+            137.16
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: BUTTON_NET exceeded 50000 explored grid states."
+      ]
+    },
+    "BUTTON_RETURN": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            62.23,
+            127.0
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "I2C_SCL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "BME",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            210.82,
+            137.16
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin4"
+        },
+        {
+          "ref": "MCU",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            264.16,
+            160.02
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin24"
+        },
+        {
+          "ref": "OLED",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            469.9,
+            152.4
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin18"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: I2C_SCL exceeded 50000 explored grid states."
+      ]
+    },
+    "I2C_SDA": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "BME",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            210.82,
+            142.24
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin3"
+        },
+        {
+          "ref": "MCU",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            264.16,
+            157.48
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin23"
+        },
+        {
+          "ref": "OLED",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            469.9,
+            154.94
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin19"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: I2C_SDA exceeded 50000 explored grid states."
+      ]
+    },
+    "PROTECT_OUT": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "D1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            69.85,
+            127.0
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin2"
+        },
+        {
+          "ref": "DZ1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            156.21,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin1"
+        },
+        {
+          "ref": "TP1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            195.58,
+            160.02
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "PROTECT_OUT",
+          "from": {
+            "ref": "D1",
+            "pin": "2",
+            "point": [
+              69.85,
+              127.0
+            ],
+            "exact": true,
+            "source": "Diode:1N4148:unit1:pin2"
+          },
+          "to": {
+            "ref": "DZ1",
+            "pin": "1",
+            "point": [
+              156.21,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:D_Zener:unit1:pin1"
+          },
+          "path": [
+            [
+              74.93,
+              127.0
+            ],
+            [
+              151.13,
+              127.0
+            ],
+            [
+              151.13,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                74.93,
+                127.0
+              ],
+              "end": [
+                151.13,
+                127.0
+              ],
+              "direction": "right",
+              "length": 76.2
+            },
+            {
+              "start": [
+                151.13,
+                127.0
+              ],
+              "end": [
+                151.13,
+                147.32
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "PROTECT_OUT",
+          "from": {
+            "ref": "D1",
+            "pin": "2",
+            "point": [
+              69.85,
+              127.0
+            ],
+            "exact": true,
+            "source": "Diode:1N4148:unit1:pin2"
+          },
+          "to": {
+            "ref": "TP1",
+            "pin": "1",
+            "point": [
+              195.58,
+              160.02
+            ],
+            "exact": true,
+            "source": "Connector:TestPoint:unit1:pin1"
+          },
+          "path": [
+            [
+              74.93,
+              127.0
+            ],
+            [
+              74.93,
+              151.13
+            ],
+            [
+              120.65,
+              151.13
+            ],
+            [
+              120.65,
+              160.02
+            ],
+            [
+              190.5,
+              160.02
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                74.93,
+                127.0
+              ],
+              "end": [
+                74.93,
+                151.13
+              ],
+              "direction": "down",
+              "length": 24.13
+            },
+            {
+              "start": [
+                74.93,
+                151.13
+              ],
+              "end": [
+                120.65,
+                151.13
+              ],
+              "direction": "right",
+              "length": 45.72
+            },
+            {
+              "start": [
+                120.65,
+                151.13
+              ],
+              "end": [
+                120.65,
+                160.02
+              ],
+              "direction": "down",
+              "length": 8.89
+            },
+            {
+              "start": [
+                120.65,
+                160.02
+              ],
+              "end": [
+                190.5,
+                160.02
+              ],
+              "direction": "right",
+              "length": 69.85
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "RS485",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            373.38,
+            139.7
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin6"
+        }
+      ],
+      "routes": [
+        {
+          "net": "RS485_A",
+          "from": {
+            "ref": "J1",
+            "pin": "1",
+            "point": [
+              25.4,
+              139.7
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "1",
+            "point": [
+              66.04,
+              140.97
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              20.32,
+              139.7
+            ],
+            [
+              20.32,
+              125.73
+            ],
+            [
+              59.69,
+              125.73
+            ],
+            [
+              59.69,
+              135.89
+            ],
+            [
+              66.04,
+              135.89
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                20.32,
+                139.7
+              ],
+              "end": [
+                20.32,
+                125.73
+              ],
+              "direction": "up",
+              "length": 13.97
+            },
+            {
+              "start": [
+                20.32,
+                125.73
+              ],
+              "end": [
+                59.69,
+                125.73
+              ],
+              "direction": "right",
+              "length": 39.37
+            },
+            {
+              "start": [
+                59.69,
+                125.73
+              ],
+              "end": [
+                59.69,
+                135.89
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                59.69,
+                135.89
+              ],
+              "end": [
+                66.04,
+                135.89
+              ],
+              "direction": "right",
+              "length": 6.35
+            }
+          ]
+        },
+        {
+          "net": "RS485_A",
+          "from": {
+            "ref": "J1",
+            "pin": "1",
+            "point": [
+              25.4,
+              139.7
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+          },
+          "to": {
+            "ref": "RS485",
+            "pin": "A",
+            "point": [
+              373.38,
+              139.7
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin6"
+          },
+          "path": [
+            [
+              20.32,
+              139.7
+            ],
+            [
+              19.05,
+              139.7
+            ],
+            [
+              19.05,
+              114.3
+            ],
+            [
+              378.46,
+              114.3
+            ],
+            [
+              378.46,
+              139.7
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                20.32,
+                139.7
+              ],
+              "end": [
+                19.05,
+                139.7
+              ],
+              "direction": "left",
+              "length": 1.27
+            },
+            {
+              "start": [
+                19.05,
+                139.7
+              ],
+              "end": [
+                19.05,
+                114.3
+              ],
+              "direction": "up",
+              "length": 25.4
+            },
+            {
+              "start": [
+                19.05,
+                114.3
+              ],
+              "end": [
+                378.46,
+                114.3
+              ],
+              "direction": "right",
+              "length": 359.41
+            },
+            {
+              "start": [
+                378.46,
+                114.3
+              ],
+              "end": [
+                378.46,
+                139.7
+              ],
+              "direction": "down",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_B": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RS485",
+          "pin": "B",
+          "side": "right",
+          "point": [
+            373.38,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "RS485_B",
+          "from": {
+            "ref": "R2",
+            "pin": "2",
+            "point": [
+              66.04,
+              148.59
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "RS485",
+            "pin": "B",
+            "point": [
+              373.38,
+              144.78
+            ],
+            "exact": true,
+            "source": "Interface_UART:MAX485E:unit1:pin7"
+          },
+          "path": [
+            [
+              66.04,
+              153.67
+            ],
+            [
+              93.98,
+              153.67
+            ],
+            [
+              93.98,
+              180.34
+            ],
+            [
+              378.46,
+              180.34
+            ],
+            [
+              378.46,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                66.04,
+                153.67
+              ],
+              "end": [
+                93.98,
+                153.67
+              ],
+              "direction": "right",
+              "length": 27.94
+            },
+            {
+              "start": [
+                93.98,
+                153.67
+              ],
+              "end": [
+                93.98,
+                180.34
+              ],
+              "direction": "down",
+              "length": 26.67
+            },
+            {
+              "start": [
+                93.98,
+                180.34
+              ],
+              "end": [
+                378.46,
+                180.34
+              ],
+              "direction": "right",
+              "length": 284.48
+            },
+            {
+              "start": [
+                378.46,
+                180.34
+              ],
+              "end": [
+                378.46,
+                144.78
+              ],
+              "direction": "up",
+              "length": 35.56
+            }
+          ]
+        }
+      ]
+    },
+    "RS485_DE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "RS485",
+          "pin": "RE",
+          "side": "left",
+          "point": [
+            353.06,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin2"
+        },
+        {
+          "ref": "RS485",
+          "pin": "DE",
+          "side": "left",
+          "point": [
+            353.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin3"
+        },
+        {
+          "ref": "ESP",
+          "pin": "IO23",
+          "side": "right",
+          "point": [
+            436.88,
+            157.48
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: RS485_DE exceeded 50000 explored grid states."
+      ]
+    },
+    "SPI_CS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "D10",
+          "side": "left",
+          "point": [
+            238.76,
+            157.48
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            304.8,
+            139.7
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_CS."
+      ]
+    },
+    "SPI_MISO": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "MISO",
+          "side": "bottom",
+          "point": [
+            238.76,
+            162.56
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "DO",
+          "side": "left",
+          "point": [
+            304.8,
+            147.32
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_MISO."
+      ]
+    },
+    "SPI_MOSI": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "MOSI",
+          "side": "left",
+          "point": [
+            238.76,
+            160.02
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            304.8,
+            144.78
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_MOSI."
+      ]
+    },
+    "UART_RX": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "RX0",
+          "side": "top",
+          "point": [
+            238.76,
+            132.08
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin2"
+        },
+        {
+          "ref": "RS485",
+          "pin": "RO",
+          "side": "left",
+          "point": [
+            353.06,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for UART_RX."
+      ]
+    },
+    "UART_TX": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "TX0",
+          "side": "left",
+          "point": [
+            238.76,
+            134.62
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin1"
+        },
+        {
+          "ref": "RS485",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            353.06,
+            152.4
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for UART_TX."
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "ESP",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            421.64,
+            111.76
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin2"
+        },
+        {
+          "ref": "BME",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            198.12,
+            124.46
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin8"
+        },
+        {
+          "ref": "OLED",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            485.14,
+            109.22
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin28"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            314.96,
+            134.62
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin8"
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            129.54,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "V1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            162.56
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "MCU",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            256.54,
+            121.92
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin27"
+        },
+        {
+          "ref": "RS485",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            363.22,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin8"
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            93.98,
+            139.7
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "G1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            523.24,
+            276.86
+          ],
+          "exact": true,
+          "source": "power:GND:unit1:pin1"
+        },
+        {
+          "ref": "V1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            172.72
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "MCU",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            254.0,
+            172.72
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin29"
+        },
+        {
+          "ref": "ESP",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            421.64,
+            182.88
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin1"
+        },
+        {
+          "ref": "BME",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            193.04,
+            154.94
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin1"
+        },
+        {
+          "ref": "OLED",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            480.06,
+            185.42
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin1"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            314.96,
+            160.02
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin4"
+        },
+        {
+          "ref": "RS485",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            363.22,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin5"
+        },
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        },
+        {
+          "ref": "DZ1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            163.83,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin2"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            99.06,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            129.54,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "PROTECT_OUT",
+      "from": {
+        "ref": "D1",
+        "pin": "2",
+        "point": [
+          69.85,
+          127.0
+        ],
+        "exact": true,
+        "source": "Diode:1N4148:unit1:pin2"
+      },
+      "to": {
+        "ref": "DZ1",
+        "pin": "1",
+        "point": [
+          156.21,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:D_Zener:unit1:pin1"
+      },
+      "path": [
+        [
+          74.93,
+          127.0
+        ],
+        [
+          151.13,
+          127.0
+        ],
+        [
+          151.13,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            74.93,
+            127.0
+          ],
+          "end": [
+            151.13,
+            127.0
+          ],
+          "direction": "right",
+          "length": 76.2
+        },
+        {
+          "start": [
+            151.13,
+            127.0
+          ],
+          "end": [
+            151.13,
+            147.32
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "PROTECT_OUT",
+      "from": {
+        "ref": "D1",
+        "pin": "2",
+        "point": [
+          69.85,
+          127.0
+        ],
+        "exact": true,
+        "source": "Diode:1N4148:unit1:pin2"
+      },
+      "to": {
+        "ref": "TP1",
+        "pin": "1",
+        "point": [
+          195.58,
+          160.02
+        ],
+        "exact": true,
+        "source": "Connector:TestPoint:unit1:pin1"
+      },
+      "path": [
+        [
+          74.93,
+          127.0
+        ],
+        [
+          74.93,
+          151.13
+        ],
+        [
+          120.65,
+          151.13
+        ],
+        [
+          120.65,
+          160.02
+        ],
+        [
+          190.5,
+          160.02
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            74.93,
+            127.0
+          ],
+          "end": [
+            74.93,
+            151.13
+          ],
+          "direction": "down",
+          "length": 24.13
+        },
+        {
+          "start": [
+            74.93,
+            151.13
+          ],
+          "end": [
+            120.65,
+            151.13
+          ],
+          "direction": "right",
+          "length": 45.72
+        },
+        {
+          "start": [
+            120.65,
+            151.13
+          ],
+          "end": [
+            120.65,
+            160.02
+          ],
+          "direction": "down",
+          "length": 8.89
+        },
+        {
+          "start": [
+            120.65,
+            160.02
+          ],
+          "end": [
+            190.5,
+            160.02
+          ],
+          "direction": "right",
+          "length": 69.85
+        }
+      ]
+    },
+    {
+      "net": "RS485_A",
+      "from": {
+        "ref": "J1",
+        "pin": "1",
+        "point": [
+          25.4,
+          139.7
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "1",
+        "point": [
+          66.04,
+          140.97
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          20.32,
+          139.7
+        ],
+        [
+          20.32,
+          125.73
+        ],
+        [
+          59.69,
+          125.73
+        ],
+        [
+          59.69,
+          135.89
+        ],
+        [
+          66.04,
+          135.89
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            20.32,
+            139.7
+          ],
+          "end": [
+            20.32,
+            125.73
+          ],
+          "direction": "up",
+          "length": 13.97
+        },
+        {
+          "start": [
+            20.32,
+            125.73
+          ],
+          "end": [
+            59.69,
+            125.73
+          ],
+          "direction": "right",
+          "length": 39.37
+        },
+        {
+          "start": [
+            59.69,
+            125.73
+          ],
+          "end": [
+            59.69,
+            135.89
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            59.69,
+            135.89
+          ],
+          "end": [
+            66.04,
+            135.89
+          ],
+          "direction": "right",
+          "length": 6.35
+        }
+      ]
+    },
+    {
+      "net": "RS485_A",
+      "from": {
+        "ref": "J1",
+        "pin": "1",
+        "point": [
+          25.4,
+          139.7
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+      },
+      "to": {
+        "ref": "RS485",
+        "pin": "A",
+        "point": [
+          373.38,
+          139.7
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin6"
+      },
+      "path": [
+        [
+          20.32,
+          139.7
+        ],
+        [
+          19.05,
+          139.7
+        ],
+        [
+          19.05,
+          114.3
+        ],
+        [
+          378.46,
+          114.3
+        ],
+        [
+          378.46,
+          139.7
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            20.32,
+            139.7
+          ],
+          "end": [
+            19.05,
+            139.7
+          ],
+          "direction": "left",
+          "length": 1.27
+        },
+        {
+          "start": [
+            19.05,
+            139.7
+          ],
+          "end": [
+            19.05,
+            114.3
+          ],
+          "direction": "up",
+          "length": 25.4
+        },
+        {
+          "start": [
+            19.05,
+            114.3
+          ],
+          "end": [
+            378.46,
+            114.3
+          ],
+          "direction": "right",
+          "length": 359.41
+        },
+        {
+          "start": [
+            378.46,
+            114.3
+          ],
+          "end": [
+            378.46,
+            139.7
+          ],
+          "direction": "down",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "RS485_B",
+      "from": {
+        "ref": "R2",
+        "pin": "2",
+        "point": [
+          66.04,
+          148.59
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "RS485",
+        "pin": "B",
+        "point": [
+          373.38,
+          144.78
+        ],
+        "exact": true,
+        "source": "Interface_UART:MAX485E:unit1:pin7"
+      },
+      "path": [
+        [
+          66.04,
+          153.67
+        ],
+        [
+          93.98,
+          153.67
+        ],
+        [
+          93.98,
+          180.34
+        ],
+        [
+          378.46,
+          180.34
+        ],
+        [
+          378.46,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            66.04,
+            153.67
+          ],
+          "end": [
+            93.98,
+            153.67
+          ],
+          "direction": "right",
+          "length": 27.94
+        },
+        {
+          "start": [
+            93.98,
+            153.67
+          ],
+          "end": [
+            93.98,
+            180.34
+          ],
+          "direction": "down",
+          "length": 26.67
+        },
+        {
+          "start": [
+            93.98,
+            180.34
+          ],
+          "end": [
+            378.46,
+            180.34
+          ],
+          "direction": "right",
+          "length": 284.48
+        },
+        {
+          "start": [
+            378.46,
+            180.34
+          ],
+          "end": [
+            378.46,
+            144.78
+          ],
+          "direction": "up",
+          "length": 35.56
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 17,
+    "wired_route_count": 5,
+    "segment_count": 18,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_no_clear_route: no clear route found for SPI_SCK.",
+    "wire_net_label_fallback: SPI_SCK converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: BUTTON_NET exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: BUTTON_NET converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: I2C_SCL exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: I2C_SCL converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: I2C_SDA exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: I2C_SDA converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: RS485_DE exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: RS485_DE converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_CS.",
+    "wire_net_label_fallback: SPI_CS converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_MISO.",
+    "wire_net_label_fallback: SPI_MISO converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_MOSI.",
+    "wire_net_label_fallback: SPI_MOSI converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for UART_RX.",
+    "wire_net_label_fallback: UART_RX converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for UART_TX.",
+    "wire_net_label_fallback: UART_TX converted to local labels after router failure.",
+    "geometry_repair_fallback: converted nets to local labels: BUTTON_RETURN"
+  ]
+}

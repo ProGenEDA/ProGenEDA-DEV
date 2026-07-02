@@ -37,6 +37,7 @@ PROMPT_CLEANER_VERSION = "progeneda-prompt-cleaner/v0.1"
 COMPILER_VERSION = "progeneda-final-circuit-builder/v0.1"
 DEFAULT_FINAL_CIRCUIT_SUITE = "t01_t10"
 PROTEUS_ALIAS_MIXED_SUITE = "proteus_alias_mixed"
+PROTEUS_ALIAS_ROUTED_SUITE = "proteus_alias_routed"
 
 POWER_NET_PRIORITY = ("GND", "+5V", "+3V3", "VCC", "VDD", "VIN", "VBUS", "VBAT")
 POWER_NETS = set(POWER_NET_PRIORITY)
@@ -405,7 +406,7 @@ def compile_raw_circuit(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 def available_final_circuit_suites() -> tuple[str, ...]:
-    return (DEFAULT_FINAL_CIRCUIT_SUITE, PROTEUS_ALIAS_MIXED_SUITE)
+    return (DEFAULT_FINAL_CIRCUIT_SUITE, PROTEUS_ALIAS_MIXED_SUITE, PROTEUS_ALIAS_ROUTED_SUITE)
 
 
 def _raw_specs_for_suite(suite: str) -> list[dict[str, Any]]:
@@ -413,6 +414,8 @@ def _raw_specs_for_suite(suite: str) -> list[dict[str, Any]]:
         return _build_raw_test_specs()
     if suite == PROTEUS_ALIAS_MIXED_SUITE:
         return _build_raw_proteus_alias_mixed_specs()
+    if suite == PROTEUS_ALIAS_ROUTED_SUITE:
+        return _build_raw_proteus_alias_routed_specs()
     known = ", ".join(available_final_circuit_suites())
     raise ValueError(f"Unknown final circuit suite {suite!r}; expected one of: {known}")
 
@@ -427,6 +430,10 @@ def build_final_test_circuits() -> list[dict[str, Any]]:
 
 def build_proteus_alias_mixed_circuits() -> list[dict[str, Any]]:
     return build_final_circuits(PROTEUS_ALIAS_MIXED_SUITE)
+
+
+def build_proteus_alias_routed_circuits() -> list[dict[str, Any]]:
+    return build_final_circuits(PROTEUS_ALIAS_ROUTED_SUITE)
 
 
 def placer_ready_circuit(circuit: dict[str, Any]) -> dict[str, Any]:
@@ -1438,6 +1445,156 @@ def _m03() -> dict[str, Any]:
 
 def _build_raw_proteus_alias_mixed_specs() -> list[dict[str, Any]]:
     return [_m01(), _m02(), _m03()]
+
+
+def _r01() -> dict[str, Any]:
+    components = [
+        _c("G1", "GROUND", "GND", "reference", "power"),
+        _c("V1", "VDC", "12V DC source", "source", "power"),
+        _c("F1", "FUSE", "Fuse", "protection", "power"),
+        _c("SW1", "SWITCH", "Power switch", "switch", "power"),
+        _c("D1", "1N4007", "1N4007", "diode", "power"),
+        _c("U1", "LM317", "LM317", "regulator", "power"),
+        _c("R1", "RES", "240 ohm", "resistor", "power"),
+        _c("R2", "RES", "1.2k", "resistor", "power"),
+        _c("R3", "R_220", "220 ohm", "resistor", "indicator"),
+        _c("C1", "CAP", "100nF", "capacitor", "power"),
+        _c("C2", "CAP-ELEC", "100uF", "capacitor", "power"),
+        _c("L1", "REALIND", "47uH", "inductor", "power"),
+        _c("D2", "DIODE", "Clamp diode", "diode", "protection"),
+        _c("LED1", "LED", "Power LED", "indicator", "power"),
+        _c("Q1", "2N7000", "2N7000", "mosfet", "driver"),
+        _c("Q2", "BS170", "BS170", "mosfet", "driver"),
+        _c("J1", "TERMINAL", "Load terminal", "connector", "power"),
+    ]
+    nets = {
+        "GND": ["G1.1", "V1.2", "C1.2", "C2.2", "Q1.3", "Q2.3", "J1.2"],
+        "VIN": ["V1.1", "F1.1"],
+        "VIN_FUSED": ["F1.2", "SW1.1"],
+        "VIN_SWITCHED": ["SW1.2", "D1.1"],
+        "REG_IN": ["D1.2", "U1.3", "C2.1"],
+        "REG_OUT": ["U1.2", "L1.1", "R1.1", "R3.1"],
+        "LC_OUT": ["L1.2", "C1.1", "D2.1"],
+        "ADJ": ["U1.1", "R1.2", "R2.1"],
+        "ADJ_RETURN": ["R2.2", "D2.2"],
+        "LED_A": ["R3.2", "LED1.1"],
+        "LED_K": ["LED1.2", "Q1.2"],
+        "DRIVE_GATE": ["Q1.1", "Q2.1"],
+        "LOAD_OUT": ["Q2.2", "J1.1"],
+    }
+    return _raw_spec(
+        "R01",
+        "Routed Proteus Power Driver",
+        "wire-heavy old/new alias demo with short power-driver nets",
+        components,
+        nets,
+    )
+
+
+def _r02() -> dict[str, Any]:
+    components = [
+        _c("G1", "GROUND", "GND", "reference", "logic"),
+        _c("V1", "VDC", "5V logic source", "source", "logic"),
+        _c("J1", "PROGRAMMING_HEADER", "Logic input header", "connector", "logic"),
+        _c("U1", "74HC00", "74HC00", "logic_ic", "logic"),
+        _c("U2", "74HC04", "74HC04", "logic_ic", "logic"),
+        _c("U3", "74HC08", "74HC08", "logic_ic", "logic"),
+        _c("U4", "74HC32", "74HC32", "logic_ic", "logic"),
+        _c("U5", "74HC86", "74HC86", "logic_ic", "logic"),
+        _c("U6", "74HC74", "74HC74", "logic_ic", "logic"),
+        _c("U7", "4027", "CD4027", "logic_ic", "logic"),
+        _c("U8", "4511", "CD4511", "decoder", "display"),
+        _c("DS1", "7SEGCOMK", "Common-cathode display", "display", "display"),
+        _c("RN1", "RESISTOR_NETWORK", "Pull network", "resistor", "logic"),
+        _c("R1", "R_220", "220 ohm", "resistor", "indicator"),
+        _c("LED1", "LED", "Logic LED", "indicator", "display"),
+    ]
+    nets = {
+        "+5V": ["V1.1", "J1.1", "U1.14", "U2.14", "U3.14", "U4.14", "U5.14", "U6.14", "U7.16", "U8.16", "RN1.COM"],
+        "GND": ["G1.1", "V1.2", "J1.2", "U1.7", "U2.7", "U3.7", "U4.7", "U5.7", "U6.7", "U7.8", "U8.8", "DS1.10", "LED1.2"],
+        "IN_A": ["J1.3", "U1.1", "U3.1", "RN1.2"],
+        "IN_B": ["J1.4", "U1.2", "U3.2", "RN1.3"],
+        "NAND_OUT": ["U1.3", "U2.1"],
+        "INV_OUT": ["U2.2", "U4.1"],
+        "AND_OUT": ["U3.3", "U4.2"],
+        "OR_OUT": ["U4.3", "U5.1"],
+        "XOR_IN_B": ["J1.5", "U5.2"],
+        "XOR_OUT": ["U5.3", "U6.2"],
+        "CLK": ["J1.6", "U6.3", "U7.3"],
+        "FF_Q": ["U6.5", "U7.5"],
+        "JK_Q": ["U7.1", "R1.1"],
+        "LED_A": ["R1.2", "LED1.1"],
+        "BCD_A": ["J1.7", "U8.7"],
+        "BCD_B": ["J1.8", "U8.1"],
+        "BCD_C": ["J1.9", "U8.2"],
+        "BCD_D": ["J1.10", "U8.6"],
+        "SEG_A": ["U8.13", "DS1.1"],
+        "SEG_B": ["U8.12", "DS1.2"],
+        "SEG_C": ["U8.11", "DS1.3"],
+        "SEG_D": ["U8.10", "DS1.4"],
+        "SEG_E": ["U8.9", "DS1.5"],
+        "SEG_F": ["U8.15", "DS1.6"],
+        "SEG_G": ["U8.14", "DS1.7"],
+    }
+    return _raw_spec(
+        "R02",
+        "Routed Proteus Logic Display Chain",
+        "wire-heavy logic chain using new Proteus-style logic aliases and existing display/passive parts",
+        components,
+        nets,
+    )
+
+
+def _r03() -> dict[str, Any]:
+    components = [
+        _c("G1", "GROUND", "GND", "reference", "embedded"),
+        _c("V1", "VDC", "5V source", "source", "embedded"),
+        _c("MCU", "ARDUINO_NANO", "Arduino Nano", "controller", "embedded"),
+        _c("ESP", "ESP32_WROOM", "ESP32-WROOM", "wireless_controller", "embedded"),
+        _c("BME", "BME280", "BME280", "sensor", "i2c"),
+        _c("OLED", "SSD1306_OLED", "SSD1306 OLED", "display", "i2c"),
+        _c("FLASH", "W25Q64", "W25Q64", "memory", "spi"),
+        _c("RS485", "MAX485", "MAX485", "rs485_transceiver", "comm"),
+        _c("J1", "TERMINAL", "RS485 terminal", "connector", "comm"),
+        _c("SW1", "SWITCH", "Input switch", "switch", "control"),
+        _c("D1", "1N4148", "1N4148", "diode", "protection"),
+        _c("DZ1", "BZX55C5", "5.1V zener", "zener", "protection"),
+        _c("R1", "RES", "10k", "resistor", "control"),
+        _c("R2", "RESISTOR", "120 ohm", "resistor", "comm"),
+        _c("C1", "CAP", "100nF", "capacitor", "embedded"),
+        _c("C2", "C_100NF_CERAMIC", "100nF", "capacitor", "embedded"),
+        _c("TP1", "TEST_POINT", "Debug point", "testpoint", "embedded"),
+    ]
+    nets = {
+        "+5V": ["V1.1", "MCU.5V", "RS485.VCC", "SW1.1"],
+        "+3V3": ["ESP.3V3", "BME.VCC", "OLED.VCC", "FLASH.VCC", "C1.1", "C2.1"],
+        "GND": ["G1.1", "V1.2", "MCU.GND", "ESP.GND", "BME.GND", "OLED.GND", "FLASH.GND", "RS485.GND", "J1.2", "C1.2", "C2.2", "DZ1.2"],
+        "I2C_SDA": ["MCU.SDA", "BME.SDA", "OLED.SDA"],
+        "I2C_SCL": ["MCU.SCL", "BME.SCL", "OLED.SCL"],
+        "SPI_MOSI": ["MCU.MOSI", "FLASH.DI"],
+        "SPI_MISO": ["MCU.MISO", "FLASH.DO"],
+        "SPI_SCK": ["MCU.SCK", "FLASH.CLK"],
+        "SPI_CS": ["MCU.D10", "FLASH.CS"],
+        "UART_TX": ["MCU.TX0", "RS485.DI"],
+        "UART_RX": ["MCU.RX0", "RS485.RO"],
+        "RS485_DE": ["ESP.IO23", "RS485.DE", "RS485.RE"],
+        "RS485_A": ["RS485.A", "J1.1", "R2.1"],
+        "RS485_B": ["RS485.B", "R2.2"],
+        "BUTTON_NET": ["MCU.D2", "SW1.2", "R1.1"],
+        "BUTTON_RETURN": ["R1.2", "D1.1"],
+        "PROTECT_OUT": ["D1.2", "DZ1.1", "TP1.1"],
+    }
+    return _raw_spec(
+        "R03",
+        "Routed Old-New Embedded Mini Board",
+        "wire-heavy embedded mini-board using old supported parts plus new protection aliases",
+        components,
+        nets,
+    )
+
+
+def _build_raw_proteus_alias_routed_specs() -> list[dict[str, Any]]:
+    return [_r01(), _r02(), _r03()]
 
 
 def _overlap_pairs(obstacles: list[dict[str, Any]]) -> list[tuple[str, str]]:

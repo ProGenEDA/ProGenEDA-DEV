@@ -11,6 +11,7 @@ from kicad.pipeline.final_circuit_builder import (
     STAGE_REPORT_WIRE_CONFIG,
     build_final_test_circuits,
     build_proteus_alias_mixed_circuits,
+    build_proteus_alias_routed_circuits,
     placer_ready_circuit,
 )
 from kicad.pipeline.kicad_wire_maker import generate_wired_projects_from_final_json, make_kicad_wires
@@ -48,6 +49,8 @@ class KiCadWireMakerTests(unittest.TestCase):
             )
             self.assertEqual(summary["project_count"], 2)
             self.assertTrue(summary["all_static_checks_ok"])
+            self.assertTrue(summary["all_component_body_overlap_ok"])
+            self.assertEqual(summary["total_component_body_overlaps"], 0)
             self.assertGreater(summary["total_wire_objects"], 0)
             for result in summary["results"]:
                 schematic = root / "wired_run" / result["schematic_file"]
@@ -71,12 +74,40 @@ class KiCadWireMakerTests(unittest.TestCase):
             )
             self.assertEqual(summary["project_count"], 2)
             self.assertTrue(summary["all_static_checks_ok"])
+            self.assertTrue(summary["all_component_body_overlap_ok"])
+            self.assertEqual(summary["total_component_body_overlaps"], 0)
             self.assertTrue(summary["all_geometry_ok"])
             self.assertEqual(summary["total_geometry_violations"], 0)
             self.assertGreater(summary["total_wire_objects"], 0)
             for result in summary["results"]:
                 self.assertTrue(result["geometry_ok"])
                 self.assertEqual(result["geometry_violation_count"], 0)
+
+    def test_proteus_alias_routed_projects_have_real_wires_and_clean_geometry(self) -> None:
+        circuits = build_proteus_alias_routed_circuits()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "final_json"
+            source.mkdir()
+            for circuit in circuits:
+                (source / f"{circuit['circuit_id']}.json").write_text(json.dumps(circuit, indent=2), encoding="utf-8")
+            summary = generate_wired_projects_from_final_json(
+                source,
+                examples_root=root,
+                label="unit_test_proteus_alias_routed",
+                run_dir=root / "wired_run",
+            )
+            self.assertEqual(summary["project_count"], 3)
+            self.assertTrue(summary["all_static_checks_ok"])
+            self.assertTrue(summary["all_component_body_overlap_ok"])
+            self.assertEqual(summary["total_component_body_overlaps"], 0)
+            self.assertTrue(summary["all_geometry_ok"])
+            self.assertEqual(summary["total_geometry_violations"], 0)
+            self.assertGreaterEqual(summary["total_wire_objects"], 45)
+            for result in summary["results"]:
+                self.assertTrue(result["geometry_ok"])
+                self.assertEqual(result["geometry_violation_count"], 0)
+                self.assertGreater(result["wire_object_count"], 0)
 
 
 if __name__ == "__main__":

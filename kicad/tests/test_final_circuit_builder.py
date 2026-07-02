@@ -8,10 +8,12 @@ from pathlib import Path
 from kicad.pipeline.beautifier import apply_coordinate_edits
 from kicad.pipeline.final_circuit_builder import (
     PROTEUS_ALIAS_MIXED_SUITE,
+    PROTEUS_ALIAS_ROUTED_SUITE,
     available_final_circuit_suites,
     build_final_circuits,
     build_final_test_circuits,
     build_proteus_alias_mixed_circuits,
+    build_proteus_alias_routed_circuits,
     clean_prompt,
     generate_projects_from_final_json,
     placer_ready_circuit,
@@ -82,6 +84,23 @@ class FinalCircuitBuilderTests(unittest.TestCase):
             "SSD1306_OLED",
             "MAX485",
         ):
+            self.assertIn(expected, kinds)
+
+        for circuit in circuits:
+            with self.subTest(cid=circuit["circuit_id"]):
+                self.assertEqual(circuit["validation"]["status"], "pass")
+                self.assertEqual(circuit["validation"]["errors"], [])
+                self.assertEqual(circuit["validation"]["warnings"], [])
+                self.assertTrue(all(component["pins"] for component in circuit["components"]))
+
+    def test_proteus_alias_routed_suite_compiles_wire_friendly_circuits(self) -> None:
+        self.assertIn(PROTEUS_ALIAS_ROUTED_SUITE, available_final_circuit_suites())
+        circuits = build_proteus_alias_routed_circuits()
+        self.assertEqual([circuit["circuit_id"] for circuit in circuits], ["R01", "R02", "R03"])
+        self.assertEqual(build_final_circuits(PROTEUS_ALIAS_ROUTED_SUITE), circuits)
+
+        kinds = {str(component["kind"]) for circuit in circuits for component in circuit["components"]}
+        for expected in ("VDC", "1N4007", "LM317", "74HC00", "4511", "ARDUINO_NANO", "ESP32_WROOM", "MAX485"):
             self.assertIn(expected, kinds)
 
         for circuit in circuits:

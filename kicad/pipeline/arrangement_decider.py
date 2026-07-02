@@ -185,6 +185,13 @@ def _role_rank(role: str) -> int:
     }.get(role, 3)
 
 
+def _obstacle_ref(item: dict[str, Any]) -> str:
+    raw = str(item.get("component_ref") or item.get("owner") or "").strip()
+    if "::" in raw:
+        raw = raw.split("::", 1)[0]
+    return raw
+
+
 def _components_from_placement(placement: dict[str, Any], circuit: dict[str, Any], nets: dict[str, list[NetEndpoint]]) -> dict[str, ComponentNode]:
     placement_components = placement.get("components", {})
     if not isinstance(placement_components, dict):
@@ -192,13 +199,24 @@ def _components_from_placement(placement: dict[str, Any], circuit: dict[str, Any
 
     obstacles: dict[str, dict[str, float]] = {}
     for item in placement.get("obstacles", []):
-        if isinstance(item, dict) and item.get("owner"):
-            obstacles[str(item["owner"])] = {
+        if isinstance(item, dict) and (item.get("owner") or item.get("component_ref")):
+            ref = _obstacle_ref(item)
+            if not ref:
+                continue
+            bounds = {
                 "left": float(item.get("left", 0.0)),
                 "right": float(item.get("right", 0.0)),
                 "top": float(item.get("top", 0.0)),
                 "bottom": float(item.get("bottom", 0.0)),
             }
+            existing = obstacles.get(ref)
+            if existing is None:
+                obstacles[ref] = bounds
+            else:
+                existing["left"] = min(existing["left"], bounds["left"])
+                existing["right"] = max(existing["right"], bounds["right"])
+                existing["top"] = min(existing["top"], bounds["top"])
+                existing["bottom"] = max(existing["bottom"], bounds["bottom"])
 
     degree: dict[str, int] = defaultdict(int)
     for endpoints in nets.values():

@@ -6219,3 +6219,249 @@ Current V10 tests proved binary attachment. Full node-name mapping is the next i
 
 - Required start-of-turn git check: local `HEAD`, upstream, and remote all matched `7cdacfb877395da28a668224db19850eea18480b`.
 - Confirmed remaining two-pin set directly from `proteusgen.component_terminal_placer.TWO_PIN_FAMILIES`.
+
+---
+
+## Turn - 2026-07-02T23:53:35+05:00 - KiCad Overlap Complaint
+
+### User Message
+
+~~~~markdown
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+## My request for Codex:
+some components were on top of each other
+~~~~
+
+### Visible Agent Responses So Far
+
+#### Response 01 - commentary
+
+~~~~markdown
+I’ll treat that as a real placement failure, not a “user perception” problem. First I’m checking the repo checkpoint and current generated-state files, then I’ll tighten the placer/beautifier validation so overlapping component bodies are caught before we generate another pack.
+~~~~
+
+#### Response 02 - commentary
+
+~~~~markdown
+Checkpoint is clean in the important sense: `main` tracks `origin/main`, and local `HEAD` matches remote `478b8c6`. There are existing dirty generated KiCad files plus my in-progress routed-suite/test edits; I’ll leave the user-touched generated files alone and only stage the fixes I make.
+~~~~
+
+#### Response 03 - commentary
+
+~~~~markdown
+The local KiCad rules already say overlaps are invalid, so the fix belongs in the pipeline rather than in a one-off generated pack. I’m also updating `context.md` now so this complaint and the corrective path are recorded in the repo before I touch the generator.
+~~~~
+
+### Files Edited
+
+- `context.md` - appended the current user complaint and visible progress updates.
+
+### Verification
+
+- Start-of-turn git check passed: local `HEAD` and `origin/main` both matched `478b8c687baefc81678ecf1df800799be06b3c61`.
+
+---
+
+## Turn - 2026-07-03T00:46:16+05:00 - Continue KiCad Overlap/Wiring Fix
+
+### User Message
+
+~~~~markdown
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+## My request for Codex:
+continue
+~~~~
+
+### Visible Agent Responses So Far
+
+#### Response 01 - commentary
+
+~~~~markdown
+Continuing. Because this is a new turn, I’m re-checking the branch/upstream checkpoint first, then I’ll carry on with the overlap and wiring fixes already in progress.
+~~~~
+
+#### Response 02 - commentary
+
+~~~~markdown
+The cached remote-tracking branch still matches local `HEAD` at `478b8c6`, and `main` is tracking `origin/main`. I’ll keep the three older generated-project edits out of my commit; they were already dirty and unrelated to the generator changes.
+~~~~
+
+#### Response 03 - commentary
+
+~~~~markdown
+I’m logging this continuation before the next edits. After that I’ll patch the actual-body overlap report and the wire-maker segment merging, then run the targeted tests.
+~~~~
+
+### Files Edited
+
+- `context.md` - appended the continue request and visible progress updates.
+
+### Verification
+
+- Start-of-turn git check used local `origin/main` because network access is restricted in the current environment. Local `HEAD` and `origin/main` both matched `478b8c687baefc81678ecf1df800799be06b3c61`.
+
+---
+
+## Turn - 2026-07-03T01:53:10+05:00 - Continue After v3 KiCad Quality Pass
+
+### User Message
+
+~~~~markdown
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+## My request for Codex:
+continue
+~~~~
+
+### Visible Agent Responses So Far
+
+#### Response 01 - commentary
+
+~~~~markdown
+Continuing from the v3 gate. I’ll re-check the GitHub checkpoint first because this is a fresh turn, then I’ll rerun the full test sweep and commit only the generator/test/generated-record files, leaving the older dirty v4 projects alone.
+~~~~
+
+#### Response 02 - commentary
+
+~~~~markdown
+GitHub is still aligned: local `HEAD` and remote `main` both point at `478b8c6`. I’m logging this continuation and then I’ll run the checks that were interrupted.
+~~~~
+
+### Files Edited
+
+- `context.md` - appended the continue request and visible progress updates.
+
+### Verification
+
+- Start-of-turn GitHub check passed: local `HEAD` and `origin/main` both matched `478b8c687baefc81678ecf1df800799be06b3c61`.
+
+#### Response 03 - commentary
+
+~~~~markdown
+I’m running compile plus the full unit test discovery now. The earlier targeted tests and v3 KiCad CLI check passed; this is the broader repo sanity pass before commit.
+~~~~
+
+#### Response 04 - commentary
+
+~~~~markdown
+Compile completed. The full unittest run is still going through the remaining tests; the slow routed-wire case has already passed inside discovery.
+~~~~
+
+#### Response 05 - commentary
+
+~~~~markdown
+Full tests are green: 35 tests passed, and compileall passed. I’m going to inspect the final diff/status now, then stage only the relevant files and generated run records.
+~~~~
+
+#### Response 06 - commentary
+
+~~~~markdown
+Status check shows the only unrelated dirty files are still the older v4 `t01/t03` projects; I won’t stage them. The v1/v2/v3 generated folders are all new records, and v3 includes the KiCad CLI ERC/netlist evidence.
+~~~~
+
+#### Response 07 - commentary
+
+~~~~markdown
+I’m updating the record log one more time before staging so another session can resume from the actual evidence: full tests passed, v3 passed KiCad CLI quality, and v1/v2 are preserved as superseded records.
+~~~~
+
+### Additional Files Edited
+
+- `kicad/pipeline/arrangement_decider.py` - allows real KiCad body obstacle owners with `component_ref`/`::body` names to feed arrangement sizing.
+- `kicad/pipeline/kicad_wire_maker.py` - added actual KiCad symbol-body overlap reporting/settling, segment merge, greedy geometry fallback, explicit junction handling, and dangling wire-tail trim.
+- `kicad/pipeline/wire_geometry_validator.py` - allowed short intended-pin body entry while preserving long body-crossing failures.
+- `kicad/pipeline/final_circuit_builder.py` - added the routed Proteus-alias suite.
+- `kicad/tests/test_final_circuit_builder.py`, `kicad/tests/test_kicad_wire_maker.py`, and `kicad/tests/test_wire_geometry_validator.py` - added routed-suite and geometry regression coverage.
+- `kicad/examples/final_json_run_2026_07_03_005645_proteus_alias_routed_wire_repair_v1/` - immutable final JSON record.
+- `kicad/examples/final_json_wired_project_run_2026_07_03_005706_proteus_alias_routed_wire_repair_wired_v1/` - superseded wired v1 record.
+- `kicad/examples/final_json_wired_project_run_2026_07_03_010006_proteus_alias_routed_wire_repair_wired_v2/` - superseded wired v2 record.
+- `kicad/examples/final_json_wired_project_run_2026_07_03_010333_proteus_alias_routed_wire_repair_wired_v3/` - current passing wired record with KiCad CLI ERC/netlist evidence.
+
+### Additional Verification
+
+- `python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_03_010333_proteus_alias_routed_wire_repair_wired_v3 --kicad-cli kicad/.local/bin/kicad-cli --export-netlist`: failure_count 0, 3 schematics checked, 3 netlists exported.
+- `python -m compileall -q kicad/pipeline kicad/tests kicad/automation`: pass.
+- `python -m unittest discover kicad/tests -v`: 35 tests passed.
+
+#### Response 08 - commentary
+
+~~~~markdown
+Now I’m staging the scoped change set. The old v4 generated files remain dirty in the worktree, but they’re intentionally excluded from this commit.
+~~~~
+
+#### Response 09 - commentary
+
+~~~~markdown
+The staged set excludes the older dirty v4 files. I noticed the diff stat reports a couple of v3 evidence files with zero “line” counts, so I’m checking byte sizes before committing to make sure no report/netlist file was captured while empty.
+~~~~
+
+#### Response 10 - commentary
+
+~~~~markdown
+Good catch: three v3 evidence files were zero bytes, likely from the interruption boundary around the quality run. I’m regenerating the v3 quality evidence and rewriting the v3 run record before commit; I’m glad the stat check caught that before it escaped.
+~~~~
+
+#### Response 11 - commentary
+
+~~~~markdown
+I’m rerunning the v3 KiCad CLI quality check now to replace the empty JSON/netlist outputs with real evidence.
+~~~~
+
+#### Response 12 - commentary
+
+~~~~markdown
+The rerun passed again and rewrote the quality evidence. I’m restoring the v3 `RUN_RECORD.md` content now, then I’ll re-check for zero-byte files.
+~~~~
+
+#### Response 13 - commentary
+
+~~~~markdown
+The record text is restored in the worktree; because that file was already staged as empty, I’ll restage it after verifying the byte sizes.
+~~~~
+
+#### Response 14 - commentary
+
+~~~~markdown
+All v3 evidence files are non-empty now, and the quality report says `failure_count=0`. I’m restaging the regenerated v3 evidence and checking all new run folders for zero-byte files.
+~~~~
+
+#### Response 15 - commentary
+
+~~~~markdown
+No zero-byte files remain in the new records. I’m doing one final staged-stat check, then I’ll commit and push.
+~~~~
+
+#### Response 16 - commentary
+
+~~~~markdown
+`git diff --check` reports whitespace warnings inside generated KiCad `.kicad_sch` embedded symbol blocks, not Python/source edits. I’m leaving those generated schematics intact because KiCad opened and validated them; I’ll record the warning rather than mechanically rewriting generated evidence.
+~~~~
+
+### Final Pre-Commit Notes
+
+- The zero-byte v3 evidence files were fixed by rerunning KiCad quality and rewriting `RUN_RECORD.md`.
+- `find` over the four new generated run folders reported no zero-byte files after the rerun.
+- `git diff --cached --check` reports generated KiCad schematic `space before tab in indent` warnings; these are in generated `.kicad_sch` embedded symbol text and were not rewritten.
+
+### Post-Commit Evidence Sync
+
+After the first commit attempt (`db7d8ae`), `git status` showed the KiCad CLI
+quality rerun had rewritten several v3 ERC/netlist evidence files. Those files
+were staged and folded into the same commit with `git commit --amend --no-edit`
+before pushing, so the pushed commit contains the latest quality evidence.

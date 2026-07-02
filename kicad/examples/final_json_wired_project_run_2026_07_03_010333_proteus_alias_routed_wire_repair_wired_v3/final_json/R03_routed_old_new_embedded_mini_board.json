@@ -1,0 +1,382 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "r03",
+    "title": "Routed Old-New Embedded Mini Board",
+    "purpose": "wire-heavy embedded mini-board using old supported parts plus new protection aliases",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "R03",
+  "circuit_name": "Routed Old-New Embedded Mini Board",
+  "purpose": "wire-heavy embedded mini-board using old supported parts plus new protection aliases",
+  "components": [
+    {
+      "id": "G1",
+      "ref": "G1",
+      "kind": "GROUND",
+      "type": "GROUND",
+      "value": "GND",
+      "role": "reference",
+      "block": "embedded",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "V1",
+      "ref": "V1",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "5V source",
+      "role": "source",
+      "block": "embedded",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "MCU",
+      "ref": "MCU",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "controller",
+      "block": "embedded",
+      "pins": {
+        "5V": "+5V",
+        "D10": "SPI_CS",
+        "D2": "BUTTON_NET",
+        "GND": "GND",
+        "MISO": "SPI_MISO",
+        "MOSI": "SPI_MOSI",
+        "RX0": "UART_RX",
+        "SCK": "SPI_SCK",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "TX0": "UART_TX"
+      }
+    },
+    {
+      "id": "ESP",
+      "ref": "ESP",
+      "kind": "ESP32_WROOM",
+      "type": "ESP32_WROOM",
+      "value": "ESP32-WROOM",
+      "role": "wireless_controller",
+      "block": "embedded",
+      "pins": {
+        "3V3": "+3V3",
+        "GND": "GND",
+        "IO23": "RS485_DE"
+      }
+    },
+    {
+      "id": "BME",
+      "ref": "BME",
+      "kind": "BME280",
+      "type": "BME280",
+      "value": "BME280",
+      "role": "sensor",
+      "block": "i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "OLED",
+      "ref": "OLED",
+      "kind": "SSD1306_OLED",
+      "type": "SSD1306_OLED",
+      "value": "SSD1306 OLED",
+      "role": "display",
+      "block": "i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "FLASH",
+      "ref": "FLASH",
+      "kind": "W25Q64",
+      "type": "W25Q64",
+      "value": "W25Q64",
+      "role": "memory",
+      "block": "spi",
+      "pins": {
+        "CLK": "SPI_SCK",
+        "CS": "SPI_CS",
+        "DI": "SPI_MOSI",
+        "DO": "SPI_MISO",
+        "GND": "GND",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "RS485",
+      "ref": "RS485",
+      "kind": "MAX485",
+      "type": "MAX485",
+      "value": "MAX485",
+      "role": "rs485_transceiver",
+      "block": "comm",
+      "pins": {
+        "A": "RS485_A",
+        "B": "RS485_B",
+        "DE": "RS485_DE",
+        "DI": "UART_TX",
+        "GND": "GND",
+        "RE": "RS485_DE",
+        "RO": "UART_RX",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "RS485 terminal",
+      "role": "connector",
+      "block": "comm",
+      "pins": {
+        "1": "RS485_A",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "SWITCH",
+      "type": "SWITCH",
+      "value": "Input switch",
+      "role": "switch",
+      "block": "control",
+      "pins": {
+        "1": "+5V",
+        "2": "BUTTON_NET"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "1N4148",
+      "type": "1N4148",
+      "value": "1N4148",
+      "role": "diode",
+      "block": "protection",
+      "pins": {
+        "1": "BUTTON_RETURN",
+        "2": "PROTECT_OUT"
+      }
+    },
+    {
+      "id": "DZ1",
+      "ref": "DZ1",
+      "kind": "BZX55C5",
+      "type": "BZX55C5",
+      "value": "5.1V zener",
+      "role": "zener",
+      "block": "protection",
+      "pins": {
+        "1": "PROTECT_OUT",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "control",
+      "pins": {
+        "1": "BUTTON_NET",
+        "2": "BUTTON_RETURN"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "120 ohm",
+      "role": "resistor",
+      "block": "comm",
+      "pins": {
+        "1": "RS485_A",
+        "2": "RS485_B"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "embedded",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "embedded",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "TP1",
+      "ref": "TP1",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Debug point",
+      "role": "testpoint",
+      "block": "embedded",
+      "pins": {
+        "1": "PROTECT_OUT"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "V1.1",
+      "MCU.5V",
+      "RS485.VCC",
+      "SW1.1"
+    ],
+    "+3V3": [
+      "ESP.3V3",
+      "BME.VCC",
+      "OLED.VCC",
+      "FLASH.VCC",
+      "C1.1",
+      "C2.1"
+    ],
+    "GND": [
+      "G1.1",
+      "V1.2",
+      "MCU.GND",
+      "ESP.GND",
+      "BME.GND",
+      "OLED.GND",
+      "FLASH.GND",
+      "RS485.GND",
+      "J1.2",
+      "C1.2",
+      "C2.2",
+      "DZ1.2"
+    ],
+    "I2C_SDA": [
+      "MCU.SDA",
+      "BME.SDA",
+      "OLED.SDA"
+    ],
+    "I2C_SCL": [
+      "MCU.SCL",
+      "BME.SCL",
+      "OLED.SCL"
+    ],
+    "SPI_MOSI": [
+      "MCU.MOSI",
+      "FLASH.DI"
+    ],
+    "SPI_MISO": [
+      "MCU.MISO",
+      "FLASH.DO"
+    ],
+    "SPI_SCK": [
+      "MCU.SCK",
+      "FLASH.CLK"
+    ],
+    "SPI_CS": [
+      "MCU.D10",
+      "FLASH.CS"
+    ],
+    "UART_TX": [
+      "MCU.TX0",
+      "RS485.DI"
+    ],
+    "UART_RX": [
+      "MCU.RX0",
+      "RS485.RO"
+    ],
+    "RS485_DE": [
+      "ESP.IO23",
+      "RS485.DE",
+      "RS485.RE"
+    ],
+    "RS485_A": [
+      "RS485.A",
+      "J1.1",
+      "R2.1"
+    ],
+    "RS485_B": [
+      "RS485.B",
+      "R2.2"
+    ],
+    "BUTTON_NET": [
+      "MCU.D2",
+      "SW1.2",
+      "R1.1"
+    ],
+    "BUTTON_RETURN": [
+      "R1.2",
+      "D1.1"
+    ],
+    "PROTECT_OUT": [
+      "D1.2",
+      "DZ1.1",
+      "TP1.1"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 17,
+    "net_count": 17,
+    "endpoint_count": 56,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}
