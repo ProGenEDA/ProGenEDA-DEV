@@ -61,6 +61,53 @@ Current result:
 - C11 spacing issue is fixed in the current baseline run.
 - Stress suite result: 22 schematics checked, 22 passed, 0 failed.
 
+## Proteus-Style Alias Expansion
+
+Added: 2026-07-02
+
+The component placer now accepts this Proteus-style test set directly through
+`kicad/pipeline/placement_catalog.py`:
+
+`GROUND`, `VDC`, `VSOURCE`, `CSOURCE`, `VSIN`, `VPULSE`, `RES`, `POT-HG`,
+`CAP`, `CAP-ELEC`, `REALIND`, `DIODE`, `1N4007`, `1N4148`, `1N60`, `BZX55C5`,
+`BZX79C5`, `LED`, `NPN`, `PNP`, `NMOS`, `2N7000`, `BS170`, `OPAMP`, `LM741`,
+`NE555`, `CD4007`, `LM317`, `TRANSFORMER`, `BRIDGE RECTIFIER`, `FUSE`,
+`SWITCH`, `TERMINAL`, `7SEGCOMA`, `7SEGCOMK`, `4027`, `4511`, `7447`, `7490`,
+`74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC74`, `74HC76`,
+`74HC85`, `74HC86`, `74HC151`, `74HC157`, `74HC160`, `74HC174`, `74HC192`,
+`74HC266`, and `74HC283`.
+
+All aliases map to real flattened KiCad symbols embedded into generated
+schematics. These entries are intentionally still placement support, not final
+SPICE-model support.
+
+Closest-substitute notes:
+
+| Requested kind | KiCad symbol used | Reason |
+| --- | --- | --- |
+| `1N60` | `Device:D` | KiCad 10.0.4 bundle does not ship an exact `1N60` symbol. |
+| `BZX55C5` | `Device:D_Zener` | Exact BZX55C5 symbol was not present in the bundled library. |
+| `BZX79C5` | `Device:D_Zener` | Exact BZX79C5 symbol was not present in the bundled library. |
+| `OPAMP` | `Amplifier_Operational:LM741` | Generic Proteus op-amp request uses the common LM741 test symbol. |
+| `CD4007` | `Transistor_FET:Q_Dual_NMOS_PMOS_G1S2G2D2S1D1` | KiCad 10.0.4 has no exact CD4007 CMOS array symbol. |
+| `4511` | `4xxx_IEEE:4511` | The non-IEEE `4xxx` folder does not include 4511 here. |
+| `7447` | `74xx_IEEE:7447` | Available in the IEEE TTL library. |
+| `7490` | `74xx_IEEE:7490` | Available in the IEEE TTL library. |
+| `74HC08` | `74xx:74LS08` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+| `74HC32` | `74xx:74LS32` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+| `74HC76` | `74xx:74LS76` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+| `74HC151` | `74xx:74LS151` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+| `74HC157` | `74xx:74LS157` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+| `74HC160` | `74xx:74LS160` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+| `74HC174` | `74xx:74LS174` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+| `74HC266` | `4xxx:4077` | Exact HC symbol was absent; CMOS quad XNOR avoids repeated-power-pin ERC issues in placement smoke projects. |
+| `74HC283` | `74xx:74LS283` | Exact HC symbol was absent; LS equivalent keeps pin-compatible layout. |
+
+Regression tests:
+
+- `test_proteus_style_component_kinds_resolve_to_real_kicad_symbols`
+- `test_proteus_style_component_kind_pack_writes_openable_project`
+
 ## Variations
 
 The current placer supports component kinds, not final values.

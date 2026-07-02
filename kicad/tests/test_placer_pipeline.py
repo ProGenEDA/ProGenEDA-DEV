@@ -7,6 +7,8 @@ from pathlib import Path
 
 from kicad.automation.generate_practical_placer_examples import CIRCUITS, build_circuit, build_count_circuit, suite_specs
 from kicad.generator.kicad_json_to_project import plan_placement
+from kicad.pipeline.kicad_symbol_library import KiCadSymbolLibrary
+from kicad.pipeline.placement_catalog import resolve_placement_spec
 from kicad.pipeline.arrangement_decider import extract_connection_nets
 from kicad.pipeline import (
     PipelineError,
@@ -16,6 +18,65 @@ from kicad.pipeline import (
     plan_wiring,
     run_placer_pipeline,
     validate_placement_input,
+)
+
+
+PROTEUS_STYLE_COMPONENT_KINDS = (
+    "GROUND",
+    "VDC",
+    "VSOURCE",
+    "CSOURCE",
+    "VSIN",
+    "VPULSE",
+    "RES",
+    "POT-HG",
+    "CAP",
+    "CAP-ELEC",
+    "REALIND",
+    "DIODE",
+    "1N4007",
+    "1N4148",
+    "1N60",
+    "BZX55C5",
+    "BZX79C5",
+    "LED",
+    "NPN",
+    "PNP",
+    "NMOS",
+    "2N7000",
+    "BS170",
+    "OPAMP",
+    "LM741",
+    "NE555",
+    "CD4007",
+    "LM317",
+    "TRANSFORMER",
+    "BRIDGE RECTIFIER",
+    "FUSE",
+    "SWITCH",
+    "TERMINAL",
+    "7SEGCOMA",
+    "7SEGCOMK",
+    "4027",
+    "4511",
+    "7447",
+    "7490",
+    "74HC00",
+    "74HC02",
+    "74HC04",
+    "74HC08",
+    "74HC32",
+    "74HC74",
+    "74HC76",
+    "74HC85",
+    "74HC86",
+    "74HC151",
+    "74HC157",
+    "74HC160",
+    "74HC174",
+    "74HC192",
+    "74HC266",
+    "74HC283",
 )
 
 
@@ -333,6 +394,53 @@ class PlacerPipelineTests(unittest.TestCase):
                 self.assertEqual(len(placement["components"]), 5)
                 self.assertEqual(ctx.placement_report["overlaps"], [])
                 self.assertTrue(ctx.pipeline_summary()["ok"])
+
+    def test_proteus_style_component_kinds_resolve_to_real_kicad_symbols(self) -> None:
+        symbol_library = KiCadSymbolLibrary(prefer_subset=False)
+        missing: list[str] = []
+        for kind in PROTEUS_STYLE_COMPONENT_KINDS:
+            spec = resolve_placement_spec(kind)
+            if spec is None or spec.lib_id is None:
+                missing.append(kind)
+                continue
+            symbol = symbol_library.flattened(spec.lib_id)
+            self.assertNotIn("ProgenPlace:", symbol.text)
+            self.assertNotIn("(extends ", symbol.text)
+            self.assertGreater(len(symbol.pin_numbers), 0, kind)
+        self.assertEqual(missing, [])
+
+    def test_proteus_style_component_kind_pack_writes_openable_project(self) -> None:
+        circuit = {
+            "schema_version": "progen-kicad-placer-ir/v0.2",
+            "compatible_schema": "progen-kicad-circuit-ir/v1",
+            "pipeline_stage": "component_placement",
+            "project": {
+                "name": "proteus_style_component_kind_smoke",
+                "title": "Proteus-style component kind smoke test",
+                "analysis": ["requested Proteus-style aliases mapped to real KiCad symbols"],
+            },
+            "components": [
+                {"id": f"X{index:02d}", "kind": kind, "value": kind}
+                for index, kind in enumerate(PROTEUS_STYLE_COMPONENT_KINDS, 1)
+            ],
+            "nets": {},
+            "constraints": {},
+            "notes": ["placement-only smoke circuit for expanded supported component aliases"],
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_dir = Path(temp_dir)
+            run_placer_pipeline(circuit, out_dir=out_dir)
+            manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+            schematic = (out_dir / manifest["schematic_file"]).read_text(encoding="utf-8")
+            self.assertTrue(manifest["static_checks"]["ok"])
+            self.assertEqual(manifest["component_count"], len(PROTEUS_STYLE_COMPONENT_KINDS))
+            self.assertGreaterEqual(manifest["symbol_instance_count"], len(PROTEUS_STYLE_COMPONENT_KINDS))
+            self.assertNotIn("ProgenPlace:", schematic)
+            self.assertNotIn("(extends ", schematic)
+            self.assertIn('(lib_id "Timer:NE555P")', schematic)
+            self.assertIn('(lib_id "4xxx_IEEE:4511")', schematic)
+            self.assertIn('(lib_id "74xx:74LS08")', schematic)
+            self.assertIn('(lib_id "4xxx:4077")', schematic)
 
 
 if __name__ == "__main__":
