@@ -35,7 +35,8 @@ contains `component_packet_validator` and `generated_output_validator`.
 ### Component checks
 
 - every component has unique `ref`
-- every component `part` exists in `knowledge/component_db.json`
+- every component `part` exists in the updateable catalogue
+  `knowledge/component_catalog_v0.json`
 - component status is generation-ready or explicitly experimental
 - resistor components require a `value`
 
@@ -50,8 +51,12 @@ contains `component_packet_validator` and `generated_output_validator`.
 ### Connection checks
 
 - every connection references an existing component ref
-- every pin exists for supported components
+- every pin exists for supported components through
+  `src/proteusgen/component_catalog.py`
 - for v0 resistor support, allowed pins are `1` and `2`
+- node-name mapping must normalize component aliases, pin aliases, hidden supply
+  pins, net kinds, and deterministic terminal labels before wire/terminal
+  emission consumes the design
 - each resistor should have exactly two terminal connections unless intentionally marked partial
 
 ### Scope checks
@@ -72,6 +77,25 @@ when donor material exists. Scope is route-specific:
 The generated-output validator must verify the selected route, donor policy,
 exact requested counts, packet references, CDB/device policy, coordinate parser
 policy, immutable display infrastructure, and overlap results.
+
+## Catalogue and node-name mapping
+
+`knowledge/component_catalog_v0.json` is the first shared catalogue source of
+truth. It records aliases, Proteus markers, pin descriptors, pin aliases,
+roles, electrical types, hidden pins, and terminal-support status. The
+catalogue intentionally allows `unknown` roles for multi-pin components whose
+pin semantics are not yet donor-verified.
+
+`src/proteusgen/node_name_mapping.py` consumes CircuitIR or lightweight payloads
+and emits a metadata-only map:
+
+- logical node name -> deterministic terminal label;
+- logical node name -> normalized component endpoints;
+- component.pin -> logical node;
+- visible vs hidden endpoint counts.
+
+This map is now included in component-placer pipeline metadata under
+`wiring_plan.node_name_mapping`. It does not emit Proteus wires yet.
 
 ## Warning examples
 

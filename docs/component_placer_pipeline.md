@@ -10,7 +10,7 @@ Pipeline order:
 2. Component placer donor-packet selection
 3. Component packet validation
 4. Value-change planning
-5. Wiring-intent planning
+5. Node-name mapping and wiring-intent planning
 6. Beautifier/layout planning
 7. Final `.pdsprj` binary emission
 
@@ -24,6 +24,11 @@ The post-placement stages are recorded in the sidecar manifest at
   syntax fails before binary mutation.
 - Wiring planning emits logical net intent only; Proteus wire records are not
   synthesized yet.
+- Node-name mapping is metadata-only. It normalizes component aliases and pin
+  aliases through `knowledge/component_catalog_v0.json`, groups endpoints by
+  logical net/node name, assigns deterministic terminal labels, and records
+  visible vs hidden endpoint counts. It handles both two-pin and multi-pin
+  catalogue entries, but does not yet terminalize IC pins.
 - `SWITCH` and `POT-HG` use the exact requested count. No dummy packet is
   generated or hidden. Under `layout.strategy=beautify`, every requested
   control is translated through its proven linked family coordinate plan.

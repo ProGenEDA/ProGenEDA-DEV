@@ -1,0 +1,236 @@
+{
+  "schema_version": "progen-component-catalog/v0.1",
+  "status": "updateable_foundation",
+  "update_policy": [
+    "Keep component aliases, pin names, pin aliases, roles, electrical types, backend markers, and terminal support notes in this catalogue instead of duplicating them across stages.",
+    "Use explicit pin roles only where donor evidence or stable package knowledge exists; otherwise keep role/electrical_type as unknown until researched.",
+    "Adding a family should normally mean updating this catalogue plus focused tests/evidence, not editing unrelated pipeline stages."
+  ],
+  "terminal_label_policy": {
+    "power_default": "V0",
+    "ground_default": "G0",
+    "long_or_colliding_nets": "deterministic N000/N001 labels"
+  },
+  "components": {
+    "RESISTOR": {
+      "aliases": ["RES", "R"],
+      "category": "passive",
+      "proteus_marker": "RESISTOR",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "role": "passive", "electrical_type": "passive"},
+          {"name": "2", "role": "passive", "electrical_type": "passive"}
+        ]
+      }
+    },
+    "CAP": {
+      "aliases": ["CAPACITOR", "C"],
+      "category": "passive",
+      "proteus_marker": "CAP",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "role": "passive", "electrical_type": "passive"},
+          {"name": "2", "role": "passive", "electrical_type": "passive"}
+        ]
+      }
+    },
+    "CAP-ELEC": {
+      "aliases": ["ELEC-CAP", "ELECTROLYTIC", "ELECTROLYTIC CAPACITOR"],
+      "category": "passive",
+      "proteus_marker": "CAP-ELEC",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "aliases": ["+", "POS", "POSITIVE"], "role": "positive", "electrical_type": "passive"},
+          {"name": "2", "aliases": ["-", "NEG", "NEGATIVE"], "role": "negative", "electrical_type": "passive"}
+        ]
+      }
+    },
+    "REALIND": {
+      "aliases": ["IND", "INDUCTOR", "L"],
+      "category": "passive",
+      "proteus_marker": "REALIND",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "role": "passive", "electrical_type": "passive"},
+          {"name": "2", "role": "passive", "electrical_type": "passive"}
+        ]
+      }
+    },
+    "DIODE": {
+      "aliases": ["D"],
+      "category": "diode",
+      "proteus_marker": "DIODE",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "aliases": ["A", "ANODE"], "role": "anode", "electrical_type": "passive"},
+          {"name": "2", "aliases": ["K", "CATHODE"], "role": "cathode", "electrical_type": "passive"}
+        ]
+      }
+    },
+    "1N4007": {"aliases": [], "category": "diode", "proteus_marker": "1N4007", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "1N4148": {"aliases": [], "category": "diode", "proteus_marker": "1N4148", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "1N4733A": {"aliases": [], "category": "diode", "proteus_marker": "1N4733A", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "1N6000B": {"aliases": ["1N60"], "category": "diode", "proteus_marker": "1N6000B", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "40EPS08": {"aliases": [], "category": "diode", "proteus_marker": "40EPS08", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "BZX55C5V1": {"aliases": ["BZX55C5"], "category": "diode", "proteus_marker": "BZX55C5V1", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "BZX79C5V1": {"aliases": ["BZX79C5"], "category": "diode", "proteus_marker": "BZX79C5V1", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "BZY88C": {"aliases": ["BZX88C"], "category": "diode", "proteus_marker": "BZY88C", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "LED-RED": {"aliases": ["LED", "REDLED"], "category": "diode", "proteus_marker": "LED-RED", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "DIODE"},
+    "FUSE": {
+      "aliases": ["FU"],
+      "category": "protection",
+      "proteus_marker": "FUSE",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "role": "passive", "electrical_type": "passive"},
+          {"name": "2", "role": "passive", "electrical_type": "passive"}
+        ]
+      }
+    },
+    "VSOURCE": {
+      "aliases": ["DCV", "VDC", "DC VOLTAGE SOURCE"],
+      "category": "source",
+      "proteus_marker": "VSOURCE",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "aliases": ["+", "POS", "OUT", "OUTPUT"], "role": "positive", "electrical_type": "power_source"},
+          {"name": "2", "aliases": ["-", "NEG", "IN", "INPUT"], "role": "negative", "electrical_type": "power_return"}
+        ]
+      }
+    },
+    "CSOURCE": {
+      "aliases": ["DCC", "IDC", "DC CURRENT SOURCE"],
+      "category": "source",
+      "proteus_marker": "CSOURCE",
+      "terminal_support": "accepted_two_pin_v12",
+      "pin_model": {
+        "pins": [
+          {"name": "1", "aliases": ["+", "POS", "IN", "INPUT"], "role": "positive", "electrical_type": "current_source"},
+          {"name": "2", "aliases": ["-", "NEG", "OUT", "OUTPUT"], "role": "negative", "electrical_type": "current_return"}
+        ]
+      }
+    },
+    "VSINE": {"aliases": ["ACV", "VSIN", "SINE SOURCE"], "category": "source", "proteus_marker": "VSINE", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "VSOURCE"},
+    "VPULSE": {"aliases": ["PULSE", "PULSE SOURCE"], "category": "source", "proteus_marker": "VPULSE", "terminal_support": "accepted_two_pin_v12", "inherits_pin_model": "VSOURCE"},
+    "LOGICSTATE": {
+      "aliases": ["LOGIC STATE"],
+      "category": "terminal",
+      "proteus_marker": "LOGICSTATE",
+      "terminal_support": "catalogue_only",
+      "pin_model": {"pins": [{"name": "1", "role": "output", "electrical_type": "digital"}]}
+    },
+    "LOGICPROBE": {
+      "aliases": ["LOGIC PROBE"],
+      "category": "terminal",
+      "proteus_marker": "LOGICPROBE",
+      "terminal_support": "catalogue_only",
+      "pin_model": {"pins": [{"name": "1", "role": "input", "electrical_type": "digital"}]}
+    },
+    "74HC08": {
+      "aliases": ["HC08"],
+      "category": "digital_ic",
+      "proteus_marker": "74HC08",
+      "package": "DIL14",
+      "terminal_support": "pin_catalogue_ready_terminalization_pending",
+      "pin_model": {
+        "pin_count": 14,
+        "hidden_pins": ["7", "14"],
+        "pin_aliases": {
+          "1A": "1", "G1A": "1", "GATE1A": "1",
+          "1B": "2", "G1B": "2", "GATE1B": "2",
+          "1Y": "3", "G1Y": "3", "GATE1OUT": "3",
+          "2A": "4", "2B": "5", "2Y": "6",
+          "GND": "7", "0V": "7", "VSS": "7",
+          "3Y": "8", "3A": "9", "3B": "10",
+          "4Y": "11", "4A": "12", "4B": "13",
+          "VCC": "14", "+5V": "14", "5V": "14", "VDD": "14"
+        },
+        "overrides": {
+          "1": {"role": "IN1", "electrical_type": "digital_input", "subpart": "A"},
+          "2": {"role": "IN2", "electrical_type": "digital_input", "subpart": "A"},
+          "3": {"role": "OUT", "electrical_type": "digital_output", "subpart": "A"},
+          "4": {"role": "IN1", "electrical_type": "digital_input", "subpart": "B"},
+          "5": {"role": "IN2", "electrical_type": "digital_input", "subpart": "B"},
+          "6": {"role": "OUT", "electrical_type": "digital_output", "subpart": "B"},
+          "7": {"role": "GND", "electrical_type": "power"},
+          "8": {"role": "OUT", "electrical_type": "digital_output", "subpart": "C"},
+          "9": {"role": "IN1", "electrical_type": "digital_input", "subpart": "C"},
+          "10": {"role": "IN2", "electrical_type": "digital_input", "subpart": "C"},
+          "11": {"role": "OUT", "electrical_type": "digital_output", "subpart": "D"},
+          "12": {"role": "IN1", "electrical_type": "digital_input", "subpart": "D"},
+          "13": {"role": "IN2", "electrical_type": "digital_input", "subpart": "D"},
+          "14": {"role": "VCC", "electrical_type": "power"}
+        }
+      }
+    },
+    "74HC00": {"aliases": ["HC00"], "category": "digital_ic", "proteus_marker": "74HC00", "package": "DIL14", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "74HC08"},
+    "74HC02": {"aliases": ["HC02"], "category": "digital_ic", "proteus_marker": "74HC02", "package": "DIL14", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "74HC08"},
+    "74HC32": {"aliases": ["HC32"], "category": "digital_ic", "proteus_marker": "74HC32", "package": "DIL14", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "74HC08"},
+    "74HC86": {"aliases": ["HC86"], "category": "digital_ic", "proteus_marker": "74HC86", "package": "DIL14", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "74HC08"},
+    "74HC266": {"aliases": ["HC266"], "category": "digital_ic", "proteus_marker": "74HC266", "package": "DIL14", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "74HC08"},
+    "74HC04": {
+      "aliases": ["HC04"],
+      "category": "digital_ic",
+      "proteus_marker": "74HC04",
+      "package": "DIL14",
+      "terminal_support": "pin_catalogue_ready_terminalization_pending",
+      "pin_model": {
+        "pin_count": 14,
+        "hidden_pins": ["7", "14"],
+        "overrides": {
+          "1": {"role": "IN", "electrical_type": "digital_input", "subpart": "A"},
+          "2": {"role": "OUT", "electrical_type": "digital_output", "subpart": "A"},
+          "3": {"role": "IN", "electrical_type": "digital_input", "subpart": "B"},
+          "4": {"role": "OUT", "electrical_type": "digital_output", "subpart": "B"},
+          "5": {"role": "IN", "electrical_type": "digital_input", "subpart": "C"},
+          "6": {"role": "OUT", "electrical_type": "digital_output", "subpart": "C"},
+          "7": {"role": "GND", "electrical_type": "power"},
+          "8": {"role": "OUT", "electrical_type": "digital_output", "subpart": "D"},
+          "9": {"role": "IN", "electrical_type": "digital_input", "subpart": "D"},
+          "10": {"role": "OUT", "electrical_type": "digital_output", "subpart": "E"},
+          "11": {"role": "IN", "electrical_type": "digital_input", "subpart": "E"},
+          "12": {"role": "OUT", "electrical_type": "digital_output", "subpart": "F"},
+          "13": {"role": "IN", "electrical_type": "digital_input", "subpart": "F"},
+          "14": {"role": "VCC", "electrical_type": "power"}
+        }
+      }
+    },
+    "74HC74": {"aliases": ["HC74"], "category": "digital_ic", "proteus_marker": "74HC74", "package": "DIL14", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 14, "hidden_pins": ["7", "14"]}},
+    "74HC76": {"aliases": ["HC76"], "category": "digital_ic", "proteus_marker": "74HC76", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "74HC85": {"aliases": ["HC85", "4063", "CD4063"], "category": "digital_ic", "proteus_marker": "74HC85", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "74HC151": {"aliases": ["HC151"], "category": "digital_ic", "proteus_marker": "74HC151", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "74HC157": {"aliases": ["HC157"], "category": "digital_ic", "proteus_marker": "74HC157", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "74HC160": {"aliases": ["HC160"], "category": "digital_ic", "proteus_marker": "74HC160", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "74HC174": {"aliases": ["74HC175", "HC174", "HC175"], "category": "digital_ic", "proteus_marker": "74HC174", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "74HC192": {"aliases": ["HC192"], "category": "digital_ic", "proteus_marker": "74HC192", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "74HC283": {"aliases": ["HC283", "4008", "CD4008"], "category": "digital_ic", "proteus_marker": "74HC283", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "4027": {"aliases": ["CD4027", "74HC4027"], "category": "digital_ic", "proteus_marker": "4027", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "4511": {"aliases": ["CD4511"], "category": "digital_ic", "proteus_marker": "4511", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "7447": {"aliases": ["74HC47", "HC47", "74LS47"], "category": "digital_ic", "proteus_marker": "7447", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16}},
+    "7490": {"aliases": ["74HC90", "HC90", "74LS90"], "category": "digital_ic", "proteus_marker": "7490", "package": "DIL14", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 14}},
+    "LM741": {"aliases": ["741", "UA741"], "category": "analog_ic", "proteus_marker": "LM741", "package": "DIL8", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 8}},
+    "NE555": {"aliases": ["555", "TIMER555"], "category": "analog_ic", "proteus_marker": "NE555", "package": "DIL8", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 8}},
+    "NPN": {"aliases": [], "category": "transistor", "proteus_marker": "NPN", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pins": [{"name": "B", "role": "base", "electrical_type": "control"}, {"name": "C", "role": "collector", "electrical_type": "passive"}, {"name": "E", "role": "emitter", "electrical_type": "passive"}]}},
+    "PNP": {"aliases": [], "category": "transistor", "proteus_marker": "PNP", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "NPN"},
+    "2N3904": {"aliases": [], "category": "transistor", "proteus_marker": "2N3904", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "NPN"},
+    "2N4401": {"aliases": [], "category": "transistor", "proteus_marker": "2N4401", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "NPN"},
+    "NMOSFET": {"aliases": ["NMOS"], "category": "transistor", "proteus_marker": "NMOSFET", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pins": [{"name": "G", "role": "gate", "electrical_type": "control"}, {"name": "D", "role": "drain", "electrical_type": "passive"}, {"name": "S", "role": "source", "electrical_type": "passive"}]}},
+    "2N7000": {"aliases": [], "category": "transistor", "proteus_marker": "2N7000", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "NMOSFET"},
+    "BS170": {"aliases": [], "category": "transistor", "proteus_marker": "BS170", "terminal_support": "pin_catalogue_ready_terminalization_pending", "inherits_pin_model": "NMOSFET"},
+    "BRIDGE": {"aliases": ["BRIDGE RECTIFIER"], "category": "rectifier", "proteus_marker": "BRIDGE", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 4}},
+    "LM317T": {"aliases": ["LM317"], "category": "regulator", "proteus_marker": "LM317T", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 3}},
+    "OPAMP": {"aliases": ["OP_AMP"], "category": "analog_ic", "proteus_marker": "OPAMP", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 5}},
+    "POT-HG": {"aliases": ["POTHG", "POT", "POTENTIOMETER"], "category": "control", "proteus_marker": "POT-HG", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 3}},
+    "SWITCH": {"aliases": [], "category": "control", "proteus_marker": "SWITCH", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 2}},
+    "TRAN-2P2S": {"aliases": ["TRANSFORMER", "TRAN2P2S"], "category": "transformer", "proteus_marker": "TRAN-2P2S", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 4}},
+    "7SEG-COM-AN-BLUE": {"aliases": ["7SEGCOMA", "7SEG-COM-ANODE"], "category": "display", "proteus_marker": "7SEG-COM-AN-BLUE", "terminal_support": "display_special_case", "pin_model": {"pin_count": 10}},
+    "7SEG-COM-CAT-BLUE": {"aliases": ["7SEGCOMK", "7SEG-COM-CATHODE"], "category": "display", "proteus_marker": "7SEG-COM-CAT-BLUE", "terminal_support": "display_special_case", "pin_model": {"pin_count": 10}}
+  }
+}

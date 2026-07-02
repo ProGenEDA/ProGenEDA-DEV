@@ -220,8 +220,13 @@ reported the V11 all-two-pin pack worked for every profiled two-pin family.
 V12 keeps the same shared terminal placer, improves LED-RED/40EPS08/FUSE visual
 spacing by moving their terminal contact one extra Proteus grid step outward,
 and adds a 20-each all-two-pin stress checkpoint with 380 components, 760
-bidirectional terminals, and 760 short WIRE records. V12 static validation
-passes locally, but Proteus open/render/simulation acceptance remains pending.
-V7 mixed output is rejected. Formal placed-design, normalized-pin, catalogue,
-node-name, and backend-neutral wire-plan contracts remain the next decoupling
-milestones before multi-pin/IC terminalization.
+bidirectional terminals, and 760 short WIRE records. The user reported that V12
+worked in Proteus. V7 mixed output is rejected.
+
+The next integration layer has started: `knowledge/component_catalog_v0.json`
+is the updateable component/pin source of truth, loaded through
+`src/proteusgen/component_catalog.py`. `src/proteusgen/node_name_mapping.py`
+normalizes two-pin and multi-pin component endpoints into logical node names,
+terminal labels, pin roles, hidden supply pins, and endpoint-to-node mappings.
+This is metadata-only for now; backend-neutral wire-plan contracts and
+multi-pin/IC terminalization still need binary emitter work.

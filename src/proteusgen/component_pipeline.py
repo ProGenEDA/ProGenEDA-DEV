@@ -12,6 +12,8 @@ from collections import Counter, defaultdict, deque
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 
+from .node_name_mapping import build_node_name_mapping
+
 VALUE_MUTATION_FAMILIES = {
     "RESISTOR",
     "CAP",
@@ -498,6 +500,8 @@ def build_component_pipeline_metadata(
     validation_report = build_component_packet_validation_report(selected, hidden)
     value_plan = build_value_plan(payload, selected, normalize_family)
     wiring_plan = build_wiring_plan(payload)
+    node_name_mapping = build_node_name_mapping(payload)
+    wiring_plan["node_name_mapping"] = node_name_mapping
     layout_plan = build_layout_plan(
         payload,
         selected,
@@ -536,6 +540,18 @@ def pipeline_errors(metadata: Mapping[str, Any]) -> list[dict[str, str]]:
                         f"Value mutation is not proven for {row.get('family')} target {row.get('target')}.",
                     )
                 )
+    wiring_plan = metadata.get("wiring_plan", {})
+    if isinstance(wiring_plan, Mapping):
+        node_name_mapping = wiring_plan.get("node_name_mapping", {})
+        if isinstance(node_name_mapping, Mapping) and not node_name_mapping.get("valid", True):
+            for row in node_name_mapping.get("errors", []):
+                if isinstance(row, Mapping):
+                    errors.append(
+                        _issue(
+                            str(row.get("code", "E_NODE_MAPPING")),
+                            str(row.get("message", "Node-name mapping failed.")),
+                        )
+                    )
     layout_plan = metadata.get("layout_plan", {})
     if isinstance(layout_plan, Mapping):
         errors.extend(layout_plan.get("errors", []))

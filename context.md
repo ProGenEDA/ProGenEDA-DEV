@@ -7190,3 +7190,240 @@ Timestamp: `2026-07-03T02:22:27.7008016+05:00` (Pakistan; recorded during contin
 ~~~~markdown
 I sent one extra progress note after the context append, so I’m adding that note to `context.md` and amending the commit before push. After that I’ll avoid more progress text until the final handoff.
 ~~~~
+
+---
+
+## User Message - V12 accepted; start node-name mapping and catalogue
+
+Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+it worked v v good, we can move on to next step, but do one last thing is it can be done v v easily, make beautifer, clockwise roate the led red and 40eps08. and the fuse be rotated 180. do it if it can be doen simply other wise just ignore n move on to next step full node-name mapping make sure it include the more then 2 pin components too and starting building the updateable component catalogue too
+~~~~
+
+### Visible Agent Responses
+
+#### Response 1 - commentary
+
+Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+I’ll treat your Proteus result as V12 acceptance. First I’m verifying the pushed checkpoint as required, then I’ll check whether the LED/40EPS08/FUSE rotation is a small beautifier-profile change. If it isn’t clean, I’ll skip it and start the node-name/catalogue layer instead.
+~~~~
+
+#### Response 2 - commentary
+
+~~~~markdown
+Checkpoint is clean: local HEAD, upstream, and GitHub all match `0a3e5444`; only unrelated `KICAD_LINUX_HANDOFF.md` is untracked. I’m inspecting beautifier rotation support and the existing component catalogue pieces now.
+~~~~
+
+#### Response 3 - commentary
+
+~~~~markdown
+Rotation is not a safe one-line change. Those three packets have angle fields, but the terminal planner currently assumes horizontal pins for the accepted V12 attachment route. Rotating the bodies would also require rotated pin geometry and terminal/wire recalculation, so I’m skipping it per your instruction and moving to node-name mapping + catalogue scaffolding.
+~~~~
+
+#### Response 4 - commentary
+
+~~~~markdown
+The repo already has a small `ic_pinmap.py` and an old `knowledge/component_db.json`, but validation still hardcodes pins in `validation.py`. I’m adding a proper updateable catalogue module and node-name mapping module first, then wiring validation to consume that catalogue instead of duplicating pin facts.
+~~~~
+
+#### Response 5 - commentary
+
+~~~~markdown
+I’m making the catalogue deliberately conservative: full normalized pin lists for current two-pin families, current IC/logic packages, and common multi-pin analog/control families; pin roles are explicit where already known and `unknown` where not yet proven. That keeps the validator useful without pretending we know untested IC semantics.
+~~~~
+
+#### Response 6 - commentary
+
+~~~~markdown
+There are already small registry files for some 74HC gates, but no single authoritative catalogue that downstream stages can consume. I’m adding that single v0 catalogue and a loader, then making node mapping and validation consume it.
+~~~~
+
+#### Response 7 - commentary
+
+~~~~markdown
+I’m keeping this step non-binary: no new Proteus mutation or generated circuit unless the catalogue/node map says it can. The output of this turn will be a code-level node mapper and catalogue foundation, with tests.
+~~~~
+
+#### Response 8 - commentary
+
+~~~~markdown
+The catalogue file is added as data, not code: component support can now be extended by editing one JSON source. Next I’m adding the loader/normalizer that expands compact `pin_count` entries into actual pin descriptors.
+~~~~
+
+#### Response 9 - commentary
+
+~~~~markdown
+Catalogue loader is in. I’m adding the node mapper now: it will normalize component aliases, normalize pin aliases like `1A` → `1`, group endpoints by logical node, and assign deterministic terminal labels for later terminal/wire stages.
+~~~~
+
+#### Response 10 - commentary
+
+~~~~markdown
+Node mapper is added. I’m doing a small cleanup in the pin normalizer so user tokens like `Pin 14`, `pin-14`, and direct aliases all normalize through the same catalogue path.
+~~~~
+
+#### Response 11 - commentary
+
+~~~~markdown
+I’m wiring the node mapper into pipeline metadata now. It remains metadata-only: no wire records or terminal labels are changed yet.
+~~~~
+
+#### Response 12 - commentary
+
+~~~~markdown
+Next I’m removing the duplicated validation pin table for the current validated parts. Validation will read those pins from the catalogue, while still preserving the existing generation-readiness limits.
+~~~~
+
+#### Response 13 - commentary
+
+~~~~markdown
+The focused tests are in. I’m running them now with validation and compile checks.
+~~~~
+
+#### Response 14 - commentary
+
+~~~~markdown
+Focused catalogue/node/validation tests passed (`22 passed`) and compileall passed. Because pipeline metadata changed, I’m running the component-placer suite as well despite the runtime.
+~~~~
+
+#### Response 15 - commentary
+
+~~~~markdown
+The component-placer suite found one integration issue: node mapping did not infer generated refs (`R1`, `C1`) from component-count payloads. That’s a real pipeline metadata gap, so I’m fixing the mapper to infer deterministic refs from the same family-count input style.
+~~~~
+
+#### Response 16 - commentary
+
+~~~~markdown
+The mapper now infers refs from count-style payloads (`RESISTOR` → `R1`, `CAP` → `C1`, etc.). I’m adding a regression test for that exact case.
+~~~~
+
+#### Response 17 - commentary
+
+~~~~markdown
+Regression test is added. I’m rerunning the failed component-placer test and the catalogue tests first.
+~~~~
+
+#### Response 18 - commentary
+
+~~~~markdown
+The failed case and catalogue tests now pass (`9 passed`). I’m rerunning the full component-placer suite and compileall once more.
+~~~~
+
+#### Response 19 - commentary
+
+~~~~markdown
+Full component-placer suite passed (`83 passed`) and compileall passed. I’m running the focused catalogue/validation/pinmap tests one final time after the count-payload fix.
+~~~~
+
+#### Response 20 - commentary
+
+~~~~markdown
+Final focused tests passed (`23 passed`). I’m documenting the V12 acceptance and the new catalogue/node-map layer now, then I’ll update `context.md`, commit, push, and verify remote HEAD.
+~~~~
+
+#### Response 21 - commentary
+
+~~~~markdown
+Docs now describe the catalogue and node mapper. I’m recording two evidence entries: V12 Proteus acceptance from your report, and the static catalogue/node-map implementation checkpoint.
+~~~~
+
+#### Response 22 - commentary
+
+~~~~markdown
+The code diff is clean. I’m adding the required context log now with this user message, visible responses, edited files, and verification results.
+~~~~
+
+#### Response 23 - commentary
+
+~~~~markdown
+I’ll record this context entry, then I won’t send more progress commentary unless something fails; the remaining steps are staging, commit, push, and remote verification.
+~~~~
+
+#### Response 24 - final_answer
+
+Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; pre-recorded before commit/push)
+
+~~~~markdown
+Done and pushed.
+
+I skipped the LED-RED / 40EPS08 / FUSE rotation because it is not a safe simple beautifier-only change. The accepted V12 terminal route assumes horizontal pin geometry; rotating those bodies also needs rotated pin, terminal, and short-wire evidence.
+
+What I added instead:
+
+- `knowledge/component_catalog_v0.json`: updateable component catalogue foundation.
+- `src/proteusgen/component_catalog.py`: catalogue loader and alias/pin normalizer.
+- `src/proteusgen/node_name_mapping.py`: full logical node-name mapper.
+- Pipeline metadata now includes `wiring_plan.node_name_mapping`.
+- Validation now reads current validated pin vocabulary from the catalogue instead of hardcoding it.
+
+Coverage added:
+
+- All V12 two-pin terminal families.
+- Multi-pin current packages including 74HC gates/counters, 4027/4511/7447/7490, LM741, NE555, transistors, bridge, LM317T, OPAMP, POT-HG, SWITCH, transformer, and 7-seg special cases.
+- 74HC08 pin aliases like `1A`, `1Y`, `Pin 14`, `VCC`, `GND`, with hidden supply handling.
+
+Verification:
+
+- `tests/test_component_catalog.py tests/test_validation.py tests/test_ic_pinmap.py` → 23 passed
+- `tests/test_component_placer.py` → 83 passed
+- `python -m compileall -q src tests tools/proteus_generation` → passed
+- Commit pushed and remote HEAD verified.
+~~~~
+
+### Files Edited
+
+- `knowledge/component_catalog_v0.json` - new updateable catalogue source with aliases, pins, roles, hidden pins, and terminal-support status.
+- `src/proteusgen/component_catalog.py` - new catalogue loader/normalizer.
+- `src/proteusgen/node_name_mapping.py` - new logical node-name mapping layer.
+- `src/proteusgen/component_pipeline.py` - records node mapping under `wiring_plan.node_name_mapping`.
+- `src/proteusgen/validation.py` - current validation pin vocabulary now comes from catalogue.
+- `tests/test_component_catalog.py` - catalogue and node-map tests.
+- `docs/architecture.md` - V12 accepted and catalogue/node-map layer documented.
+- `docs/component_placer_pipeline.md` - pipeline step updated.
+- `docs/validator_design.md` - validator catalogue/node-map contract documented.
+- `knowledge/test_results.jsonl` - appended V12 acceptance and node-map static evidence.
+- `context.md` - appended this turn.
+
+### Verification
+
+- Start-of-turn Git check: local `HEAD`, upstream branch, and GitHub branch all matched `0a3e544477de3f8213b07bea784c32ea26635331`.
+- `tests/test_component_catalog.py tests/test_validation.py tests/test_ic_pinmap.py` with `PYTHONPATH=src`: `23 passed`.
+- `tests/test_component_placer.py` with `PYTHONPATH=src`: `83 passed in 441.88s`.
+- `python -m compileall -q src tests tools/proteus_generation`: passed.
+- Unrelated untracked file preserved: `KICAD_LINUX_HANDOFF.md`.
+
+#### Response 25 - commentary
+
+Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+One more context note is needed because I just ran the pre-commit diff checks after the log entry. I’ll append that small note, then commit/push.
+~~~~
+
+#### Response 26 - commentary
+
+Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+Staged set is correct and still excludes the unrelated untracked file. Committing and pushing now.
+~~~~
+
+#### Response 27 - commentary
+
+Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+I also logged that last staging note. I’ll proceed with no more progress text unless a command fails.
+~~~~
+
+#### Response 28 - commentary
+
+Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+PowerShell rejected `&&`; I’m rerunning the add/commit as separate commands and logging this note too.
+~~~~

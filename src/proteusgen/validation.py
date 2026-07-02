@@ -7,18 +7,19 @@ from dataclasses import dataclass
 from typing import Any
 
 from .circuit_ir import CircuitIR, Issue, parse_circuit_ir
+from .component_catalog import load_component_catalog
 
 REF_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 LABEL_RE = re.compile(r"^[A-Za-z0-9_+./-]+$")
 VALUE_RE = re.compile(r"^[0-9]+(?:\.[0-9]+)?(?:[kKmM])?$")
-COMPONENT_PINS = {
-    "RESISTOR": {"1", "2"},
-    "74HC08": {"1", "2", "3", "4", "5", "6", "8", "9", "10", "11", "12", "13"},
-    "LOGICSTATE": {"1"},
-    "LOGICPROBE": {"1"},
-}
-HC08_INPUT_PINS = {"1", "2", "4", "5", "9", "10", "12", "13"}
-HC08_OUTPUT_PINS = {"3", "6", "8", "11"}
+_VALIDATION_COMPONENT_PARTS = ("RESISTOR", "74HC08", "LOGICSTATE", "LOGICPROBE")
+_CATALOG = load_component_catalog()
+COMPONENT_PINS = _CATALOG.pin_vocabulary(_VALIDATION_COMPONENT_PARTS)
+_HC08_PROFILE = _CATALOG.profile("74HC08")
+HC08_INPUT_PINS = set(
+    _HC08_PROFILE.role_pins(("IN", "IN1", "IN2"))
+)
+HC08_OUTPUT_PINS = set(_HC08_PROFILE.role_pins(("OUT",)))
 NET_KINDS = {"power", "ground", "input", "output", "internal"}
 TERMINAL_KINDS = {"input", "output", "power", "ground", "default"}
 SUPPORTED_IR_VERSION = "0.2"
