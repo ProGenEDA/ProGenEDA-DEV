@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from kicad.automation.generate_practical_placer_examples import CIRCUITS, build_circuit, suite_specs
+from kicad.automation.generate_practical_placer_examples import CIRCUITS, build_circuit, build_count_circuit, suite_specs
 from kicad.generator.kicad_json_to_project import plan_placement
 from kicad.pipeline import (
     PipelineError,
@@ -56,6 +56,20 @@ def segment_crosses_body(segment: dict[str, object], body: dict[str, float]) -> 
         low, high = sorted((sx, ex))
         return body["top"] < sy < body["bottom"] and low < body["right"] and high > body["left"]
     return True
+
+
+def obstacle_overlap_pairs(obstacles: list[dict[str, object]]) -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for index, left in enumerate(obstacles):
+        for right in obstacles[index + 1 :]:
+            if (
+                float(left["left"]) < float(right["right"])
+                and float(left["right"]) > float(right["left"])
+                and float(left["top"]) < float(right["bottom"])
+                and float(left["bottom"]) > float(right["top"])
+            ):
+                pairs.append((str(left["owner"]), str(right["owner"])))
+    return pairs
 
 
 class PlacerPipelineTests(unittest.TestCase):
@@ -255,6 +269,22 @@ class PlacerPipelineTests(unittest.TestCase):
                     if ref in {route["from"]["ref"], route["to"]["ref"]}:
                         continue
                     self.assertFalse(segment_crosses_body(segment, body), f"{route['net']} crosses {ref}")
+
+    def test_arrangement_and_beautifier_handle_t01_to_t10_stress_without_overlaps(self) -> None:
+        stress = [spec for spec in suite_specs("stress") if spec[0].startswith("T")]
+        self.assertEqual(len(stress), 10)
+        for cid, title, purpose, components in stress:
+            with self.subTest(cid=cid):
+                circuit = build_count_circuit(cid, title, purpose, components)
+                ctx = run_placer_pipeline(circuit, write_trace=False)
+                placement = ctx.placement_plan.as_dict()
+                arrangement = decide_arrangement(placement, circuit)
+                beautified = apply_coordinate_edits(placement, arrangement)
+                wire_plan = plan_wiring(placement, circuit)["wire_plan"]
+                self.assertEqual(len(beautified["components"]), len(placement["components"]))
+                self.assertEqual(obstacle_overlap_pairs(beautified["obstacles"]), [])
+                self.assertEqual(wire_plan["metrics"]["net_count"], 0)
+                self.assertEqual(wire_plan["metrics"]["wired_route_count"], 0)
 
     def test_all_practical_pack_circuits_place_five_components_without_overlaps(self) -> None:
         for cid, title, components in CIRCUITS:

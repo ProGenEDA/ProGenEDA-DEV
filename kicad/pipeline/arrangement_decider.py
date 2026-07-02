@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 from dataclasses import dataclass
+from math import ceil
 from typing import Any
 
 
@@ -21,10 +22,11 @@ DEFAULT_ARRANGEMENT_CONFIG: dict[str, float] = {
     "sheet_width": 420.0,
     "sheet_height": 297.0,
     "margin": 25.4,
-    "column_gap": 45.72,
-    "row_gap": 25.4,
+    "column_gap": 25.4,
+    "row_gap": 12.7,
     "power_y": 17.78,
     "ground_margin": 17.78,
+    "component_clearance": 7.62,
 }
 
 
@@ -49,6 +51,10 @@ class ComponentNode:
 
 def _snap(value: float, grid: float) -> float:
     return round(round(value / grid) * grid, 3)
+
+
+def _snap_up(value: float, grid: float) -> float:
+    return round(ceil(value / grid) * grid, 3)
 
 
 def _point(value: Any, fallback: tuple[float, float] = (0.0, 0.0)) -> tuple[float, float]:
@@ -311,6 +317,60 @@ def _clock_nets(nets: dict[str, list[NetEndpoint]]) -> list[str]:
     return sorted(net for net in nets if any(token in net.upper() for token in CLOCK_TOKENS))
 
 
+def _packed_height(refs: list[str], components: dict[str, ComponentNode], clearance: float) -> float:
+    if not refs:
+        return 0.0
+    return sum(components[ref].height for ref in refs) + max(0, len(refs) - 1) * clearance
+
+
+def _layer_x_positions(
+    layer_map: dict[int, list[str]],
+    components: dict[str, ComponentNode],
+    cfg: dict[str, float],
+) -> tuple[dict[int, float], float]:
+    positions: dict[int, float] = {}
+    current_right = cfg["margin"]
+    for layer in sorted(layer_map):
+        refs = layer_map[layer]
+        max_width = max((components[ref].width for ref in refs), default=10.0)
+        half_width = max_width / 2
+        if positions:
+            current_right += cfg["column_gap"]
+        center = current_right + half_width
+        positions[layer] = _snap(center, cfg["grid"])
+        current_right = center + half_width
+    sheet_width = max(cfg["sheet_width"], current_right + cfg["margin"])
+    return positions, _snap_up(sheet_width, cfg["grid"])
+
+
+def _layer_y_positions(
+    refs: list[str],
+    components: dict[str, ComponentNode],
+    cfg: dict[str, float],
+    sheet_height: float,
+) -> dict[str, float]:
+    if not refs:
+        return {}
+    clearance = cfg["component_clearance"]
+    packed_height = _packed_height(refs, components, clearance)
+    roles = {components[ref].role for ref in refs}
+    if roles == {"power"}:
+        top = max(cfg["power_y"], cfg["margin"] / 2)
+        current = top
+    elif roles == {"ground"}:
+        current = max(cfg["margin"], sheet_height - cfg["ground_margin"] - packed_height)
+    else:
+        current = max(cfg["margin"], (sheet_height - packed_height) / 2)
+
+    out: dict[str, float] = {}
+    for ref in refs:
+        node = components[ref]
+        current += node.height / 2
+        out[ref] = _snap(current, cfg["grid"])
+        current += node.height / 2 + clearance
+    return out
+
+
 def decide_arrangement(
     placement: dict[str, Any],
     circuit: dict[str, Any],
@@ -328,26 +388,24 @@ def decide_arrangement(
     layers = _assign_layers(components, outgoing, incoming)
     layer_map = _ordered_layers(components, layers, outgoing, incoming)
 
-    max_layer = max(layer_map, default=0)
-    max_rows = max((len(refs) for refs in layer_map.values()), default=1)
-    sheet_width = max(cfg["sheet_width"], cfg["margin"] * 2 + (max_layer + 1) * cfg["column_gap"])
-    sheet_height = max(cfg["sheet_height"], cfg["margin"] * 2 + max_rows * cfg["row_gap"])
+    layer_x, sheet_width = _layer_x_positions(layer_map, components, cfg)
+    max_layer_height = max((_packed_height(refs, components, cfg["component_clearance"]) for refs in layer_map.values()), default=0.0)
+    sheet_height = _snap_up(max(cfg["sheet_height"], cfg["margin"] * 2 + max_layer_height), grid)
+    layer_y: dict[int, dict[str, float]] = {
+        layer: _layer_y_positions(refs, components, cfg, sheet_height) for layer, refs in layer_map.items()
+    }
 
     planned: dict[str, tuple[float, float]] = {}
     edits: list[dict[str, Any]] = []
     for layer, refs in layer_map.items():
-        group_height = max(0.0, (len(refs) - 1) * cfg["row_gap"])
-        start_y = max(cfg["margin"], (sheet_height - group_height) / 2)
-        x = _snap(cfg["margin"] + layer * cfg["column_gap"], grid)
+        x = layer_x[layer]
         for index, ref in enumerate(refs):
             node = components[ref]
-            y = _snap(start_y + index * cfg["row_gap"], grid)
+            y = layer_y[layer][ref]
             reasons = ["topology_depth_to_x", "barycenter_row_order"]
             if node.role == "power":
-                y = _snap(cfg["power_y"], grid)
                 reasons.append("power_symbols_above_signal_path")
             elif node.role == "ground":
-                y = _snap(sheet_height - cfg["ground_margin"], grid)
                 reasons.append("ground_symbols_below_signal_path")
             planned[ref] = (x, y)
             if (round(node.at[0], 3), round(node.at[1], 3)) != planned[ref]:

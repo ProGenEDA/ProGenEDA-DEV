@@ -435,6 +435,22 @@ Current coverage:
 6. Routed segments do not cross unrelated component bodies in the test circuit.
 7. Different-net crossing count is reported.
 
+## T01-T10 Evidence
+
+The first T01-T10 stress check is recorded in:
+
+```text
+kicad/experiment_records/runs/beautifier_wire_planner_t01_t10_2026_07_02/
+```
+
+Result:
+
+- Wire planner smoke test on connected VDC -> resistor -> LED -> GND passed.
+- T01-T10 arrangement/beautifier passed 10/10.
+- Post-beautifier overlap count was 0 for all 10.
+- T01-T10 wire route count was 0 because those stress inputs are still
+  placement-only and contain no `components[].pins` connection endpoints.
+
 Run:
 
 ```bash

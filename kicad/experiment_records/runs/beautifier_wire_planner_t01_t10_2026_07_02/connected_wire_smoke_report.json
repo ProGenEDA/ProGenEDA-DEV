@@ -1,0 +1,153 @@
+{
+  "circuit": {
+    "schema_version": "progen-kicad-circuit-ir/v1",
+    "project": {
+      "name": "wire_smoke_vdc_resistor_led",
+      "title": "Wire smoke VDC resistor LED"
+    },
+    "components": [
+      {
+        "id": "V1",
+        "kind": "VDC",
+        "value": "5V",
+        "pins": {
+          "1": "SRC",
+          "2": "GND"
+        }
+      },
+      {
+        "id": "R1",
+        "kind": "R",
+        "value": "220",
+        "pins": {
+          "1": "SRC",
+          "2": "LED_A"
+        }
+      },
+      {
+        "id": "D1",
+        "kind": "LED",
+        "value": "LED",
+        "pins": {
+          "1": "LED_A",
+          "2": "GND"
+        }
+      },
+      {
+        "id": "G1",
+        "kind": "GND",
+        "value": "GND",
+        "pins": {
+          "1": "GND"
+        }
+      }
+    ],
+    "nets": {
+      "SRC": "source signal",
+      "LED_A": "series node",
+      "GND": "return"
+    }
+  },
+  "placement_component_count": 4,
+  "wire_metrics": {
+    "net_count": 3,
+    "wired_route_count": 2,
+    "segment_count": 2,
+    "different_net_crossing_count": 0
+  },
+  "net_strategies": {
+    "LED_A": "wire",
+    "SRC": "wire",
+    "GND": "local_labels"
+  },
+  "routes": [
+    {
+      "net": "LED_A",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          81.28,
+          45.72
+        ]
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "1",
+        "point": [
+          91.44,
+          45.72
+        ]
+      },
+      "path": [
+        [
+          81.28,
+          45.72
+        ],
+        [
+          91.44,
+          45.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            81.28,
+            45.72
+          ],
+          "end": [
+            91.44,
+            45.72
+          ],
+          "direction": "right",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "SRC",
+      "from": {
+        "ref": "V1",
+        "pin": "1",
+        "point": [
+          30.48,
+          45.72
+        ]
+      },
+      "to": {
+        "ref": "R1",
+        "pin": "1",
+        "point": [
+          63.5,
+          45.72
+        ]
+      },
+      "path": [
+        [
+          30.48,
+          45.72
+        ],
+        [
+          63.5,
+          45.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            45.72
+          ],
+          "end": [
+            63.5,
+            45.72
+          ],
+          "direction": "right",
+          "length": 33.02
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "passed": true
+}

@@ -17,6 +17,7 @@ before, and what should happen next.
 | `runs/practical_placer_projects_placeholder_boxes_2026_07_01` | Historical failed direction | Old 20-project run that used `ProgenPlace:*` placeholder symbols. KiCad loaded it, but the symbols were boxes/names, not real components. |
 | `runs/practical_placer_projects_real_symbols_flattened_2026_07_01` | Passed | 20 generated projects using real embedded KiCad symbols, flattened derived symbols, and multi-unit expansion. |
 | `runs/practical_placer_projects_circuitir_inputs_real_symbols_2026_07_01` | Passed, superseded | Same fixed real-symbol projects regenerated from partial CircuitIR-shaped v0.2 inputs with `project`, `components`, `nets`, and component `id`/`kind`/`value`. Superseded by the immutable v2 examples runs. |
+| `runs/beautifier_wire_planner_t01_t10_2026_07_02` | Passed with expected wire limit | Wire planner smoke passed on a connected VDC/resistor/LED circuit. Arrangement and beautifier passed on T01-T10 stress circuits with zero post-beautifier overlaps. Wire routing on T01-T10 was correctly skipped because those inputs contain no pin/net connection endpoints. |
 | `../examples/placer_run_2026_07_01_baseline_c11_spacing_fix_v2` | Current baseline examples | Fresh immutable 20-circuit baseline with C11 spacing fixed. KiCad quality: 20 checked, 20 passed, 0 failed. |
 | `../examples/placer_run_2026_07_01_stress_limit_suite_v2` | Current stress examples | Fresh immutable stress/limit suite requested by user. KiCad quality: 22 checked, 22 passed, 0 failed. |
 
