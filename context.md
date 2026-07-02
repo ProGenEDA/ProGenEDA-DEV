@@ -6219,3 +6219,154 @@ Current V10 tests proved binary attachment. Full node-name mapping is the next i
 
 - Required start-of-turn git check: local `HEAD`, upstream, and remote all matched `7cdacfb877395da28a668224db19850eea18480b`.
 - Confirmed remaining two-pin set directly from `proteusgen.component_terminal_placer.TWO_PIN_FAMILIES`.
+
+
+## Live User Message 027
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+should this be done after or before supporting all the remaining 2 pinned components? Full node-name mapping is the next integration layer.
+and second question, what is our stragty for more then 2 pins, as then what is connected to what pin matters alot, each pin has a purpose, so where will u get that information from? do u have a source or will u need me to make it, by have a source i mean internal, does the bytes show which pin is which? if no then first look for donors, ull see alot of component specific terminalized circuits where terminals are named the pins they are attached too, u can use that too, in either case when testing their solo terminals u can name them the pin they are attached to so i can test.
+and look at kicad folder in repo memory, ull see some working there, from there ull later take teh wire planner.
+see other things u can learn from there which will be a great imporvement here, tell me and add them to a todo in archietecute.md
+for example a good thing will be a cateloge. a catelog of all the components with their pin and all the specific instructions they need for scripts and all their byte level information in comments.
+this can act as 1 json validator or a json enhancer. as well as an information source for scripts or future working. but mind u it must be easily updateable, add easily updatable as a future MUST DO policiy in ur agent.md as we have a long road ahead
+
+just answer rn to the point precise answers
+~~~~
+
+### User Correction
+
+~~~~text
+no local kicad, on github
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+I’ll do the required checkpoint verification, inspect the local KiCad/reference files and architecture/agent docs, then make the requested TODO/policy updates and keep the answer concise.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+Checkpoint verified at `3dc2f869`; remote matches local. I’m preserving the unrelated untracked `KICAD_LINUX_HANDOFF.md`.
+~~~~
+
+#### Response 03 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+Got it: I’ll inspect the GitHub remote, not rely on the local `kicad/` folder. I’ll keep this limited: pull only enough remote metadata/files to extract useful wire-planner/catalogue lessons, then update `AGENTS.md`, `docs/architecture.md`, and `context.md`.
+~~~~
+
+#### Response 04 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+Remote has `main` plus our working branch. I’m fetching `origin/main` read-only and inspecting `main:kicad`, since that is the GitHub-side reference you meant.
+~~~~
+
+#### Response 05 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+I found the remote GitHub `kicad/` tree. I’m reading only the high-signal docs/code around pipeline, planning, rules, and generator interfaces.
+~~~~
+
+#### Response 06 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+The GitHub KiCad tree has generated wired runs with explicit `wire_plans/*.json`, placement traces, final JSON, and quality reports. I’m reading those formats now to capture the reusable lessons into Proteus architecture TODOs.
+~~~~
+
+#### Response 07 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+The main reusable KiCad ideas are: deterministic final JSON compiler, source-backed pin alias resolution, backend-agnostic wire planner, backend-specific wire maker, route/geometry validators, and an updateable component catalogue. I’m adding these as Proteus TODO/policy notes now.
+~~~~
+
+#### Response 08 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+I’m adding only documentation/policy notes, not code: architecture TODOs for catalogue/pin models/wire planner import, and an AGENTS policy that component metadata must be updateable through one registry/catalogue.
+~~~~
+
+#### Response 09 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+`docs/architecture.md` now has the GitHub KiCad-derived TODOs and updated V10 maturity note. I’m adding the updateable-catalogue policy to `AGENTS.md`.
+~~~~
+
+#### Response 10 - commentary
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan)
+
+~~~~markdown
+I’m logging this turn now, then I’ll commit/push the doc updates and give the short direct answer.
+~~~~
+
+#### Response 11 - final_answer
+
+Timestamp: `2026-07-02T21:02:25.7988765+05:00` (Pakistan; pre-recorded before commit/push)
+
+~~~~markdown
+1. Do full node-name mapping after remaining simple 2-pin terminal support.
+
+Reason: for 2-pin families, terminal geometry is the current blocker. Once all simple 2-pin profiles attach correctly, node-name mapping can label them all consistently in one integration pass.
+
+2. More-than-2-pin strategy:
+
+- Do not guess from geometry.
+- First source: Proteus DSN/CDB/device bytes if they expose pin number/name/link fields.
+- Second source: accepted/user-made donor circuits where terminals are named by pin/function.
+- Third source: backend/library metadata, like the KiCad symbol-pin approach.
+- If none exists, you make a small donor with each pin terminalized and named by pin/function.
+
+For solo multi-pin tests, terminals should be named by pin/function, e.g. `RESET`, `CLK`, `VCC`, `GND`, `IN1`, `OUT1`, so testing tells us if pin mapping is correct.
+
+3. KiCad lessons added to architecture TODO:
+
+- deterministic final JSON compiler;
+- updateable component catalogue/profile registry;
+- source-backed pin alias resolver;
+- backend-neutral wire planner;
+- backend-specific wire maker;
+- route/geometry validators;
+- final netlist/ERC comparison later.
+
+4. Catalogue policy added to `AGENTS.md`:
+
+One updateable component catalogue must become the source of truth for aliases, values, pins, pin roles, electrical types, backend IDs, byte offsets/link fields, donor evidence, and family script notes.
+~~~~
+
+### Files Edited
+
+- `AGENTS.md` - added the future MUST DO policy that component support must be easily updateable through one catalogue/profile source of truth.
+- `docs/architecture.md` - added GitHub KiCad-derived TODOs for catalogue, deterministic final JSON, pin evidence, backend-neutral wire planner, wire maker, route validators, and immutable experiment evidence.
+- `context.md` - appended user message 027, correction, and visible responses.
+
+### Verification
+
+- Required start-of-turn git check: local `HEAD`, upstream, and remote all matched `3dc2f869e2a95bf1d96324416adf58b10fdbae4f`.
+- Inspected GitHub remote `origin/main:kicad` after `git fetch origin main`.

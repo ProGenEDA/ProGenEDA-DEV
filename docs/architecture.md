@@ -156,6 +156,42 @@ the exact pin coordinate from the placed-design packet. The component packet
 is never moved by the terminal stage. The test runner hash-locks one mega donor,
 but donor identity is not passed to terminal placement or beautification.
 
+### Backend-neutral catalogue and routing TODOs
+
+The GitHub `memory/main:kicad` pipeline provides useful patterns that should be
+ported into the Proteus architecture after the current terminal-placement
+checkpoint:
+
+1. Build one updateable component catalogue/profile registry. Each entry should
+   hold aliases, supported values, normalized pins, pin roles, electrical type,
+   backend symbol/device identifiers, packet offsets, byte-level constraints,
+   accepted donor evidence, and script/profile notes. Adding a component should
+   be data-entry plus focused validation, not edits across many unrelated
+   scripts.
+2. Make the catalogue the information source for JSON validation, JSON
+   enhancement, component selection, value editing, terminal placement, wiring,
+   and final validation.
+3. Add deterministic final-JSON compilation before backend emission:
+   prompt/intent -> component resolver -> block/net compiler -> validator ->
+   canonical CircuitIR. AI may suggest intent, but final refs, nets, endpoint
+   expansion, alias repair, and validation must be deterministic.
+4. Promote pin identity to catalogue/device evidence. For multi-pin parts, pin
+   number/name/function must come from Proteus DSN/CDB/device evidence,
+   accepted terminalized donors with pin-named terminals, or backend library
+   metadata. Do not infer reset, clock, enable, supply, input, or output only
+   from geometry.
+5. Import the KiCad wire-planner architecture later as backend-neutral JSON:
+   placement + CircuitIR nets -> coordinate-plan JSON for the beautifier plus
+   wire-plan JSON for the backend-specific wire maker. Proteus should get its
+   own wire maker that consumes the same plan and writes Proteus-native records.
+6. Add route and geometry validators equivalent to the KiCad work: no
+   unintended wire/body contact, no different-net crossings, same-net junctions
+   explicit, unresolved pin aliases reported, and final netlist/ERC comparison
+   when the backend supports it.
+7. Keep generated experiment folders as evidence records. New behavior should
+   create or regenerate an explicitly scoped checkpoint, with README/status and
+   `knowledge/test_results.jsonl` updates after Proteus testing.
+
 Every stage must eventually provide both a direct stage-output validator and a
 cumulative validator covering all accepted earlier stages. User-specification,
 information-completeness, and final whole-project validators surround that
@@ -178,8 +214,8 @@ The repository contains a deterministic CLI, CircuitIR parsing and readiness
 validation, fixture provenance checks, locked legacy circuit generators,
 removal-only mega-donor component placement, family-specific coordinate
 mutation, semantic project comparison, and result ingestion. Value editing is
-lightly tested. Focused terminal attachment is accepted for RESISTOR, CAP,
-REALIND, CAP-ELEC, VSOURCE, and CSOURCE. V7 mixed output is rejected. The V9
-address-rebased shared route is statically verified and awaits Proteus testing.
-Formal placed-design and normalized-pin contracts remain the next decoupling
-milestone after terminal placement.
+lightly tested. Grid-snapped short-wire terminal attachment is user-tested for
+RESISTOR, CAP, REALIND, CAP-ELEC, VSOURCE, and CSOURCE in V10. V7 mixed output
+is rejected. Formal placed-design, normalized-pin, catalogue, node-name, and
+backend-neutral wire-plan contracts remain the next decoupling milestones after
+the remaining simple two-pin terminal families.

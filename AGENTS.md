@@ -119,6 +119,16 @@ or supply roles from geometry. New component families should be added through
 one family/profile registry and focused evidence, not by editing many
 unrelated scripts.
 
+Future component support must be easily updateable. Maintain one component
+catalogue/profile source of truth for aliases, values, normalized pins, pin
+roles, electrical types, backend identifiers, byte offsets/link fields,
+accepted donor evidence, and family-specific script notes. JSON validation,
+JSON enhancement, component selection, terminal placement, wiring, value
+editing, and final validation should consume this catalogue instead of
+duplicating component facts. Adding a family should normally mean updating the
+catalogue/profile plus focused tests and evidence, not touching many unrelated
+pipeline stages.
+
 Shared logical IR and stage interfaces should remain backend-neutral enough
 for Proteus, KiCad, PSpice, and Altium adapters. Backend-specific binary or
 symbol details belong behind backend profiles and emitters.
