@@ -63,6 +63,25 @@ from proteusgen.templates import FixtureRegistry
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (0, 0),
+        (126_999, 0),
+        (127_000, 254_000),
+        (-126_999, 0),
+        (-127_000, -254_000),
+        (321_056, 254_000),
+        (3_210_560, 3_302_000),
+    ],
+)
+def test_terminal_grid_snap_is_nearest_with_deterministic_ties(
+    value: int,
+    expected: int,
+) -> None:
+    assert terminal_placer.snap_to_proteus_terminal_grid(value) == expected
+
+
 def _active_terminal_suffixes(chunk: bytes) -> list[int]:
     suffixes: list[int] = []
     for marker, length_offset, base_size in (
@@ -1113,7 +1132,7 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
             )
 
     assert report["valid"] is True
-    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
+    assert report["family_handler"] == "MIXED/native-wire-v10-grid-snapped"
     assert report["object_order"] == (
         "native_leading_terminal_arrays_then_original_component_order_with_"
         "family_profile_terminal_component_wire_units"
@@ -1129,7 +1148,18 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
     ]
     assert right_wire_sizes == [*([49] * 14), 50]
     assert component_sizes[-2:] == [375, 375]
-    assert all(x1 == x2 and y1 == y2 for x1, y1, x2, y2 in wire_coordinates)
+    expected_wire_coordinates = [
+        (
+            pair["short_wires"][role]["start"]["x"],
+            pair["short_wires"][role]["start"]["y"],
+            pair["short_wires"][role]["end"]["x"],
+            pair["short_wires"][role]["end"]["y"],
+        )
+        for pair in pairs
+        for role in ("left", "right")
+    ]
+    assert wire_coordinates == expected_wire_coordinates
+    assert report["terminal_grid_alignment_valid"] is True
     assert cursor == len(chunk)
     assert chunk.endswith(b"\xff")
 
@@ -1249,22 +1279,22 @@ def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
         expected_wire_coordinates.extend(
             (
                 (
-                    pair["pins"]["left"]["x"],
-                    pair["pins"]["left"]["y"],
-                    pair["pins"]["left"]["x"],
-                    pair["pins"]["left"]["y"],
+                    pair["short_wires"]["left"]["start"]["x"],
+                    pair["short_wires"]["left"]["start"]["y"],
+                    pair["short_wires"]["left"]["end"]["x"],
+                    pair["short_wires"]["left"]["end"]["y"],
                 ),
                 (
-                    pair["pins"]["right"]["x"],
-                    pair["pins"]["right"]["y"],
-                    pair["pins"]["right"]["x"],
-                    pair["pins"]["right"]["y"],
+                    pair["short_wires"]["right"]["start"]["x"],
+                    pair["short_wires"]["right"]["start"]["y"],
+                    pair["short_wires"]["right"]["end"]["x"],
+                    pair["short_wires"]["right"]["end"]["y"],
                 ),
             )
         )
 
     assert report["valid"] is True
-    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
+    assert report["family_handler"] == "MIXED/native-wire-v10-grid-snapped"
     assert report["object_order"] == (
         "native_leading_terminal_arrays_then_original_component_order_with_"
         "family_profile_terminal_component_wire_units"
@@ -1281,6 +1311,7 @@ def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
     assert right_wire_sizes == [*([49] * 14), 50]
     assert component_sizes == [380] * 15
     assert wire_coordinates == expected_wire_coordinates
+    assert report["terminal_grid_alignment_valid"] is True
     assert cursor == len(chunk)
     assert chunk.endswith(b"\xff")
 
@@ -1470,7 +1501,7 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
 
     report = attach_component_bidir_terminals_to_project(base, output, result.selected_groups)
 
-    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
+    assert report["family_handler"] == "MIXED/native-wire-v10-grid-snapped"
     assert report["runtime_circuit_donor_dependency"] is False
     assert report["link_allocation"]["valid"] is True
     assert report["terminal_count_added"] == 2
@@ -1560,7 +1591,7 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     assert result.valid
     assert result.layout_plan["binary_coordinate_mutation"]["visible_translated_count"] == 9
     assert report["valid"] is True
-    assert report["family_handler"] == "MIXED/native-wire-v7-address-rebase"
+    assert report["family_handler"] == "MIXED/native-wire-v10-grid-snapped"
     assert report["eligible_families"] == [
         "RESISTOR",
         "CAP",
@@ -1594,7 +1625,9 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     assert report["wire_count_added"] == 12
     assert report["patch_component_links"] is True
     assert report["active_terminal_links"] is True
-    assert report["terminal_pin_contacts_valid"] is False
+    assert report["terminal_pin_contacts_valid"] is True
+    assert report["terminal_direct_pin_contacts_valid"] is False
+    assert report["terminal_grid_alignment_valid"] is True
     assert report["wire_path_contacts_valid"] is True
     assert report["allow_unlinked_short_wires"] is False
     assert report["expected_active_suffix_copies"] == 2
@@ -1605,12 +1638,21 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     assert report["terminal_suffixes_unique"] is True
     assert report["terminal_suffix_links_valid"] is True
     assert (
-        resistor_pair["left"]["symbol_x"]
-        == resistor_pair["pins"]["left"]["x"] - TERMINAL_SYMBOL_TO_PIN
+        resistor_pair["left"]["symbol_x"] + TERMINAL_CONTACT_TO_PIN
+        == resistor_pair["short_wires"]["left"]["start"]["x"]
     )
     assert (
-        resistor_pair["right"]["symbol_x"]
-        == resistor_pair["pins"]["right"]["x"] + TERMINAL_SYMBOL_TO_PIN
+        resistor_pair["right"]["symbol_x"] - TERMINAL_CONTACT_TO_PIN
+        == resistor_pair["short_wires"]["right"]["start"]["x"]
+    )
+    assert all(
+        terminal[coordinate] % terminal_placer.PROTEUS_TERMINAL_GRID == 0
+        for family_report in report["family_reports"]
+        for pair in family_report["terminal_pairs"]
+        for role in ("left", "right", "input", "output")
+        if role in pair
+        for terminal in (pair[role],)
+        for coordinate in ("symbol_x", "symbol_y")
     )
     assert chunk.count(b"$TERBIDIR") == 12
     assert chunk.count(b"\x7fWIRE") == 12

@@ -17,7 +17,7 @@ record boundaries as the accepted single-family writers.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 import shutil
 import struct
@@ -43,6 +43,7 @@ from .templates import FixtureRegistry, repository_root
 
 TERMINAL_MARGIN = 0
 MAX_TERMINALS_PER_SIDE = 8
+PROTEUS_TERMINAL_GRID = 254_000
 LEFT_SIDE_ANGLE = 1800
 RIGHT_SIDE_ANGLE = 0
 RESISTOR_PIN_SPAN = 1_270_000
@@ -340,6 +341,100 @@ class SourceTerminalPair:
                 "output_link": self.output_link_offset,
             },
         }
+
+
+def snap_to_proteus_terminal_grid(
+    value: int,
+    *,
+    grid: int = PROTEUS_TERMINAL_GRID,
+) -> int:
+    """Snap one internal-unit coordinate to the nearest Proteus grid line.
+
+    Half-grid ties are rounded away from zero so the result is deterministic
+    for positive and negative schematic coordinates.
+    """
+
+    if grid <= 0:
+        raise ValueError("Proteus terminal grid must be positive.")
+    magnitude = abs(value)
+    snapped = ((magnitude + grid // 2) // grid) * grid
+    return snapped if value >= 0 else -snapped
+
+
+def _terminal_at_grid_contact(
+    terminal: TerminalSpec,
+    *,
+    pin_x: int,
+    pin_y: int,
+) -> tuple[TerminalSpec, int, int]:
+    contact_x = snap_to_proteus_terminal_grid(pin_x)
+    contact_y = snap_to_proteus_terminal_grid(pin_y)
+    if terminal.angle_tenths == LEFT_SIDE_ANGLE:
+        symbol_x = contact_x - TERMINAL_CONTACT_TO_PIN
+    elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
+        symbol_x = contact_x + TERMINAL_CONTACT_TO_PIN
+    else:
+        raise ValueError(
+            f"Grid terminal placement does not support angle "
+            f"{terminal.angle_tenths}."
+        )
+    return (
+        replace(
+            terminal,
+            symbol_x=symbol_x,
+            symbol_y=contact_y,
+            attachment_policy=(
+                "grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
+            ),
+        ),
+        contact_x,
+        contact_y,
+    )
+
+
+def _snap_terminal_pair_to_grid(
+    pair: ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair,
+) -> ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair:
+    if isinstance(pair, SourceTerminalPair):
+        input_terminal, input_x, input_y = _terminal_at_grid_contact(
+            pair.input,
+            pin_x=pair.input_pin_x,
+            pin_y=pair.input_pin_y,
+        )
+        output_terminal, output_x, output_y = _terminal_at_grid_contact(
+            pair.output,
+            pin_x=pair.output_pin_x,
+            pin_y=pair.output_pin_y,
+        )
+        return replace(
+            pair,
+            input=input_terminal,
+            output=output_terminal,
+            input_wire_start_x=input_x,
+            input_wire_start_y=input_y,
+            output_wire_start_x=output_x,
+            output_wire_start_y=output_y,
+        )
+
+    left_terminal, left_x, left_y = _terminal_at_grid_contact(
+        pair.left,
+        pin_x=pair.left_pin_x,
+        pin_y=pair.left_pin_y,
+    )
+    right_terminal, right_x, right_y = _terminal_at_grid_contact(
+        pair.right,
+        pin_x=pair.right_pin_x,
+        pin_y=pair.right_pin_y,
+    )
+    return replace(
+        pair,
+        left=left_terminal,
+        right=right_terminal,
+        left_wire_start_x=left_x,
+        left_wire_start_y=left_y,
+        right_wire_start_x=right_x,
+        right_wire_start_y=right_y,
+    )
 
 
 def _s32_at(data: bytes, offset: int) -> int:
@@ -2299,7 +2394,7 @@ def _terminal_suffixes(report: dict[str, Any]) -> tuple[int, ...]:
 def _terminal_pin_contact_checks(
     family_reports: Iterable[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Describe whether every appended terminal's triangle tip reaches its pin."""
+    """Describe terminal-grid and direct-pin contact for every attachment."""
 
     checks: list[dict[str, Any]] = []
     for family_report in family_reports:
@@ -2327,6 +2422,19 @@ def _terminal_pin_contact_checks(
                         "terminal_contact_y": terminal.get("symbol_y"),
                         "pin_x": pin.get("x"),
                         "pin_y": pin.get("y"),
+                        "terminal_symbol_grid_aligned": (
+                            terminal.get("symbol_x", 0) % PROTEUS_TERMINAL_GRID == 0
+                            and terminal.get("symbol_y", 0)
+                            % PROTEUS_TERMINAL_GRID
+                            == 0
+                        ),
+                        "terminal_contact_grid_aligned": (
+                            isinstance(contact_x, int)
+                            and contact_x % PROTEUS_TERMINAL_GRID == 0
+                            and terminal.get("symbol_y", 0)
+                            % PROTEUS_TERMINAL_GRID
+                            == 0
+                        ),
                         "coincident": (
                             contact_x == pin.get("x")
                             and terminal.get("symbol_y") == pin.get("y")
@@ -2360,6 +2468,7 @@ def _mixed_overlay_family_parts(
     terminal_templates: Any,
     source_index_start: int,
     active_links: bool,
+    snap_terminal_contacts_to_grid: bool = False,
 ) -> tuple[
     tuple[Any, ...],
     list[bytes],
@@ -2440,18 +2549,61 @@ def _mixed_overlay_family_parts(
     else:
         raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
 
+    if snap_terminal_contacts_to_grid:
+        pairs = tuple(_snap_terminal_pair_to_grid(pair) for pair in pairs)
+    if family == "RESISTOR":
+        terminals = [
+            *(pair.left for pair in pairs),
+            *(pair.right for pair in pairs),
+        ]
+    elif family == "CAP":
+        terminals = [
+            *(pair.right for pair in pairs),
+            *(pair.left for pair in pairs),
+        ]
+    elif family == "REALIND":
+        terminals = [
+            terminal
+            for pair in pairs
+            for terminal in (pair.left, pair.right)
+        ]
+    elif family == "CAP-ELEC":
+        terminals = [
+            terminal
+            for pair in pairs
+            for terminal in (pair.right, pair.left)
+        ]
+    else:
+        terminals = [
+            getattr(pair, role)
+            for pair in pairs
+            for role in terminal_order
+        ]
+
     for pair in pairs:
         if isinstance(pair, SourceTerminalPair):
             pins = {
                 "input": (pair.input_pin_x, pair.input_pin_y),
                 "output": (pair.output_pin_x, pair.output_pin_y),
             }
+            starts = {
+                "input": (
+                    pair.input_wire_start_x,
+                    pair.input_wire_start_y,
+                ),
+                "output": (
+                    pair.output_wire_start_x,
+                    pair.output_wire_start_y,
+                ),
+            }
+            first_start = starts[wire_order[0]]
             first_pin = pins[wire_order[0]]
+            second_start = starts[wire_order[1]]
             second_pin = pins[wire_order[1]]
             wire_pairs.append(
                 (
-                    _build_native_short_wire(*first_pin, *first_pin),
-                    _build_native_short_wire(*second_pin, *second_pin),
+                    _build_native_short_wire(*first_start, *first_pin),
+                    _build_native_short_wire(*second_start, *second_pin),
                 )
             )
         else:
@@ -2571,6 +2723,7 @@ def attach_mixed_overlay_bidir_terminals_to_project(
                 terminal_templates=terminal_templates,
                 source_index_start=source_index_start,
                 active_links=active_terminal_links,
+                snap_terminal_contacts_to_grid=False,
             )
         )
         if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
@@ -2782,7 +2935,7 @@ def _covered_bare_component_stream(
 def _wire_path_contact_checks(
     family_reports: Iterable[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Verify terminal tip -> donor wire -> parsed component pin continuity."""
+    """Verify grid terminal tip -> short wire -> exact component pin continuity."""
 
     checks: list[dict[str, Any]] = []
     for family_report in family_reports:
@@ -2807,14 +2960,34 @@ def _wire_path_contact_checks(
                     wire["end"]["x"] == pin["x"]
                     and wire["end"]["y"] == pin["y"]
                 )
+                symbol_grid_aligned = (
+                    terminal["symbol_x"] % PROTEUS_TERMINAL_GRID == 0
+                    and terminal["symbol_y"] % PROTEUS_TERMINAL_GRID == 0
+                )
+                contact_grid_aligned = (
+                    isinstance(contact_x, int)
+                    and contact_x % PROTEUS_TERMINAL_GRID == 0
+                    and terminal["symbol_y"] % PROTEUS_TERMINAL_GRID == 0
+                )
                 checks.append(
                     {
                         "component_key": pair["component_key"],
                         "component_family": pair["component_family"],
                         "role": role,
+                        "terminal_symbol_grid_aligned": symbol_grid_aligned,
+                        "terminal_contact_grid_aligned": contact_grid_aligned,
                         "terminal_to_wire": terminal_to_wire,
                         "wire_to_pin": wire_to_pin,
-                        "valid": terminal_to_wire and wire_to_pin,
+                        "wire_is_nonzero": (
+                            wire["start"]["x"] != wire["end"]["x"]
+                            or wire["start"]["y"] != wire["end"]["y"]
+                        ),
+                        "valid": (
+                            symbol_grid_aligned
+                            and contact_grid_aligned
+                            and terminal_to_wire
+                            and wire_to_pin
+                        ),
                     }
                 )
     return checks
@@ -2894,6 +3067,7 @@ def attach_mixed_native_bidir_terminals_to_project(
             terminal_templates=terminal_templates,
             source_index_start=source_index_start,
             active_links=True,
+            snap_terminal_contacts_to_grid=True,
         )
         if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
             source_index_start += len(family_groups)
@@ -3011,7 +3185,14 @@ def attach_mixed_native_bidir_terminals_to_project(
         final_chunk.count(struct.pack("<H", suffix) + b"\x01\x00") == 2
         for suffix in suffixes
     )
+    terminal_contact_checks = _terminal_pin_contact_checks(family_reports)
     wire_path_checks = _wire_path_contact_checks(family_reports)
+    terminal_grid_alignment_valid = all(
+        row["terminal_symbol_grid_aligned"]
+        and row["terminal_contact_grid_aligned"]
+        for row in terminal_contact_checks
+    )
+    wire_path_contacts_valid = all(row["valid"] for row in wire_path_checks)
     expected_terminals = sum(report["terminal_count"] for report in family_reports)
     expected_wires = sum(report["wire_count"] for report in family_reports)
     preserved_valid = all(
@@ -3021,10 +3202,10 @@ def attach_mixed_native_bidir_terminals_to_project(
     )
     report = {
         "stage": "terminal_placer",
-        "family_handler": "MIXED/native-wire-v7-address-rebase",
+        "family_handler": "MIXED/native-wire-v10-grid-snapped",
         "status": "temporary_pending_proteus",
         "attachment_policy": (
-            "beautified_stream_active_links_and_component_adjacent_short_wires"
+            "nearest_grid_terminal_contact_then_wire_to_untouched_exact_pin"
         ),
         "object_order": (
             "native_leading_terminal_arrays_then_original_component_order_with_"
@@ -3035,6 +3216,9 @@ def attach_mixed_native_bidir_terminals_to_project(
             "decoded_from_user_accepted_mixed_and_scaled_projects"
         ),
         "wire_requirement_basis": "user_confirmed_terminal_to_pin_wires_are_mandatory",
+        "terminal_grid_internal_units": PROTEUS_TERMINAL_GRID,
+        "terminal_grid_policy": "nearest_grid_intersection_ties_away_from_zero",
+        "component_coordinate_mutation": False,
         "terminal_array_order_policy": "family_profile_order",
         "runtime_circuit_donor_dependency": False,
         "terminal_record_encoder": "embedded_proteus_813_schema",
@@ -3061,11 +3245,15 @@ def attach_mixed_native_bidir_terminals_to_project(
         "base_component_stream_covered": True,
         "component_record_order_mutation": False,
         "single_family_oracle_policy": "same_shared_schema_encoder",
-        "terminal_pin_contacts_valid": all(
-            row["coincident"]
-            for row in _terminal_pin_contact_checks(family_reports)
+        "terminal_pin_contacts_valid": (
+            terminal_grid_alignment_valid and wire_path_contacts_valid
         ),
-        "wire_path_contacts_valid": all(row["valid"] for row in wire_path_checks),
+        "terminal_direct_pin_contacts_valid": all(
+            row["coincident"] for row in terminal_contact_checks
+        ),
+        "terminal_grid_alignment_valid": terminal_grid_alignment_valid,
+        "terminal_pin_contact_checks": terminal_contact_checks,
+        "wire_path_contacts_valid": wire_path_contacts_valid,
         "wire_path_contact_checks": wire_path_checks,
         "family_reports": family_reports,
         "terminal_suffixes": [f"{suffix:04x}" for suffix in suffixes],
@@ -3089,7 +3277,8 @@ def attach_mixed_native_bidir_terminals_to_project(
             and final_chunk.count(BIDIR_MARKER) == expected_terminals
             and final_chunk.count(b"\x7fWIRE") == expected_wires
             and suffix_links_valid
-            and all(row["valid"] for row in wire_path_checks)
+            and terminal_grid_alignment_valid
+            and wire_path_contacts_valid
             and preserved_valid
             and final_chunk.endswith(b"\xff")
         ),

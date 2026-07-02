@@ -494,6 +494,28 @@ Evidence:
   bytes; component packets, coordinates, WIRE geometry, and object length stay
   unchanged.
 
+## D033: Snap terminal contacts to the Proteus grid
+
+Decision: reject mixed V9. Preserve the component and its exact pin
+coordinates, snap each terminal contact to the nearest `254000 x 254000`
+Proteus grid intersection, and emit a short WIRE from the snapped contact to
+the exact pin. Do not make beautification place components for the terminal
+stage.
+
+Evidence:
+
+- The user reported every mixed V9 case failed.
+- Manual placement showed that a terminal can be placed on the nearby grid and
+  connected to an off-grid resistor/source pin with a short wire.
+- Every terminal coordinate in accepted bidirectional source and mixed-analog
+  files is divisible by `254000`; terminal contact is one grid unit from the
+  stored terminal symbol coordinate.
+- V10 keeps component packets in their beautified stream and validates every
+  terminal symbol/contact grid coordinate and every contact-to-exact-pin WIRE.
+- All V10 cases use the unchanged FUSE/POT-HG mega donor as component-placer
+  input. The shared terminal placer and beautifier have no runtime donor-path
+  dependency.
+
 ## Inactive / removed
 
 The earlier post-CEP decisions about large speculative Project 2 Level 1 packs, no-DLD packs, and big-leap circuit assembly have been removed from active memory. Rebuild that direction only with explicit user guidance.

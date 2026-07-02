@@ -5641,3 +5641,147 @@ Validation: 9/9 pack cases passed; focused tests `63 passed`; compileall passed.
 - `experiments/TERMINAL_PLACER_STREAM_LINK_V9_TEMP_2026_07_02.zip` - packaged the V9 checkpoint; SHA256 `afad34bf8065db820ad9e94ad1b2b50014dee71e67d05e0d2cc7812737525446`.
 
 <!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 4123 FINAL_PRE_RECORDED -->
+
+
+## Live User Message 020
+
+Timestamp: `2026-07-02T08:22:10.444Z` (UTC) / `2026-07-02 13:22:10.444 +05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+so here is what i think the problem is, well if u didnt know the mixed failed, all of them
+so i tired placing the terminal myself, as u can see in the image one, but since the beautfier, editted the components such that they are not placed precisely on blocks, but terminals seem to be only be placed on the grid block line, so only possible way i could find was the second one, plcing it in the box outline then using wire.
+so u have to do 2 things, 1 make sure componet placed is on the grid only, not where it pleases, use some maths formula for this.
+and second use wire and terminal to connect. obv, u can actually just fix the placing of terminals onto grid lines then use wire to attach, fix that, we dont really need the first one, fix that, we dont really need the first one.
+this is our fault fix this,
+~~~~
+
+Four Proteus screenshots were attached to this message: an off-grid resistor
+pin beside a terminal, the same resistor connected through a nearby grid point,
+a current-source pin connected by a vertical short wire, and a two-source
+comparison.
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-07-02T08:23:01.318Z` (UTC) / `2026-07-02 13:23:01.318 +05:00` (Pakistan)
+
+~~~~markdown
+The mixed pack failure is recorded. Your screenshots show the actual geometry bug: we placed terminal contacts relative to off-grid pins, but Proteus terminals snap to the schematic grid. The fix is to snap each terminal’s connection point to the nearest valid grid intersection, keep the beautified component where it is, and emit a short wire from that grid point to the exact pin.
+
+I’ll first verify the pushed checkpoint, then derive the precise terminal-coordinate/contact convention from accepted Proteus records before changing the shared placer.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-07-02T08:23:50.828Z` (UTC) / `2026-07-02 13:23:50.828 +05:00` (Pakistan)
+
+~~~~markdown
+The accepted-file check confirms the grid rule precisely: every accepted bidirectional terminal coordinate is a multiple of `254000`, and its wire begins exactly `254000` to the terminal’s contact side. Our beautifier produces pin coordinates such as `3210560`, so copying that off-grid value into the terminal record was invalid.
+
+I’m changing all six family profiles to one rule: snap the terminal contact to the nearest `254000 × 254000` grid intersection, derive the terminal symbol coordinate from that contact, and wire from the snapped contact to the untouched exact pin. Components will not be moved.
+~~~~
+
+
+## Live User Message 021
+
+Timestamp: `2026-07-02T08:25:03.294Z` (UTC) / `2026-07-02 13:25:03.294 +05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+n please tell me u are using the same excate donor that has fuse pothg, etc etc, all 58 component, so that u can test terminals on all 2 pined components. donot change teh bloody donor
+terimal placer should not care what circuit it recieved if it was human made or component placer placed, similarly beautifeir shouldnt also care
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-07-02T08:25:14.158Z` (UTC) / `2026-07-02 13:25:14.158 +05:00` (Pakistan)
+
+~~~~markdown
+Yes—the donor remains unchanged. I’m checking the configured donor identity now, but I will not substitute, reorder, or transplant another donor. The grid/wire fix is downstream-only.
+
+I’m also locking the stage boundary you restated: terminal placement and beautification must accept any valid placed-design packet stream, whether it came from the deletion-based component placer, a future byte-forming placer, or a human-made project. Donor identity cannot be an input to either stage.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-07-02T08:27:03.896Z` (UTC) / `2026-07-02 13:27:03.896 +05:00` (Pakistan)
+
+~~~~markdown
+The unchanged test donor is `new_components_5x_mega.pdsprj`, the mega donor containing `FUSE`, `POT-HG`, and the broader component set. I’ll use it only as the test input; neither the terminal placer nor beautifier will inspect or depend on that donor’s identity.
+~~~~
+
+
+## Live User Message 022
+
+Timestamp: `2026-07-02T11:43:32.840Z` (UTC) / `2026-07-02 16:43:32.840 +05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+continue
+~~~~
+
+### Agent Responses
+
+#### Response 01 - commentary
+
+Timestamp: `2026-07-02T11:43:39.472Z` (UTC) / `2026-07-02 16:43:39.472 +05:00` (Pakistan)
+
+~~~~markdown
+Continuing with that constraint enforced. The code now snaps only terminal contact points to Proteus’s `254000`-unit grid and draws the short wire to the exact component pin; it does not move components or branch on the mega-donor path. I’m validating the six researched attachment profiles first, then I’ll generate the checkpoint from the unchanged 58-component donor with every other family preserved.
+~~~~
+
+#### Response 02 - commentary
+
+Timestamp: `2026-07-02T11:51:06.943Z` (UTC) / `2026-07-02 16:51:06.943 +05:00` (Pakistan)
+
+~~~~markdown
+The unchanged mega donor is now hash-locked in the V10 runner (`1222561…7958c`). The pack uses that donor for every case, including a preserved FUSE control, while the shared terminal stage reports zero donor dependency and zero component-coordinate mutation. Static generation has passed for all 9 cases; I’m tightening the grid/path assertions and running the full regression suite now.
+~~~~
+
+#### Response 03 - final_answer
+
+Timestamp: `2026-07-02T12:09:24.649Z` (UTC) / `2026-07-02 17:09:24.649 +05:00` (Pakistan; pre-recorded before push)
+
+~~~~markdown
+Yes. Fixed and pushed.
+
+[V10 grid-wire test pack](C:/Users/Empty/Documents/Progentotal/protuesgen/experiments/TERMINAL_PLACER_GRID_WIRE_V10_TEMP_2026_07_02.zip)
+
+- Uses the exact unchanged `new_components_5x_mega.pdsprj` donor containing FUSE/POT-HG; SHA-256 `1222561…7958c`.
+- Components stay untouched. Terminal contacts snap to the `254000` grid, then short wires reach exact pins.
+- Terminal placer and beautifier do not depend on donor identity or whether input was human-made or placer-generated.
+- All 9 cases are static-valid; focused tests: `70 passed`.
+
+Important: V10 terminalizes the six researched families. FUSE and other unresearched two-pin families remain preserved controls until their binary pin fields are proved—I did not guess them.
+~~~~
+
+### Files Edited
+
+- `context.md` - appended user messages 020-022, all visible responses, timestamps, and this file manifest.
+- `docs/architecture.md` - documented the grid-contact rule and donor-independent downstream stage boundary.
+- `docs/current_status_2026_06_29.md` - recorded mixed V9 rejection, V10 root cause, fixed donor identity, and test order.
+- `docs/decision_log.md` - added D033 for grid-snapped terminal contacts and exact-pin short wires.
+- `docs/progen_eda_canonical_pipeline.md` - replaced the V9 endpoint geometry with the V10 grid-contact contract.
+- `knowledge/test_results.jsonl` - recorded mixed V9 rejection and V10 static evidence.
+- `src/proteusgen/component_terminal_placer.py` - added deterministic `254000` grid snapping, grid-aligned terminal construction, exact-pin short wires for every researched profile, and grid/path validation.
+- `tests/test_component_placer.py` - added grid-rounding and mixed terminal/contact/WIRE regressions.
+- `tools/proteus_generation/2026-07-02/generate_terminal_placer_grid_wire_v10_temp.py` - added the reproducible fixed-donor V10 runner.
+- `experiments/terminal_placer_grid_wire_v10_temp_2026_07_02/` - generated six researched-family 3x cases and mixed 1x/3x/15x cases from the unchanged mega donor.
+- `experiments/TERMINAL_PLACER_GRID_WIRE_V10_TEMP_2026_07_02.zip` - packaged the V10 checkpoint; SHA-256 `88e223bee30f9b0da758a266a1d8c0046d2fa35b6a90a33985ed3eb35a98fc90`.
+
+### Verification
+
+- `python -m pytest tests/test_component_placer.py -q`: `70 passed`.
+- `python -m pytest tests -q`: `223 passed`, `78 subtests passed`, one unrelated pre-existing KiCad Windows long-path target-pack failure (`51/55`).
+- repository-root `python -m pytest -q`: collection remains blocked by the pre-existing removed `proteusgen.inductor` import in a dated 2026-06-01 experimental test.
+- `python -m compileall -q src tests tools/proteus_generation`: passed.
+- V10 generated pack: `9/9` cases static-valid, grid-aligned, exact-pin WIRE paths valid, component coordinate mutation false.
+
+<!-- LIVE_LOG_SESSION 019f144c-7d0a-7a30-8f8b-d61dc87334e7 LAST_RESPONSE_LINE 4550 FINAL_PRE_RECORDED -->

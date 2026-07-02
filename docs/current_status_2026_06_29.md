@@ -219,8 +219,26 @@ No mixed circuit donor is selected or transplanted at runtime.
 
 The V9 pack repeats six 3x family cases plus mixed 1x/3x/15x cases with
 terminal-free DIODE, NPN, and 74HC08 controls. All cases pass structural,
-geometry, exact-link-address, and layout-band validation. Proteus testing
-remains required.
+geometry, exact-link-address, and layout-band validation, but user Proteus
+testing rejected all mixed cases. The user then demonstrated the missing
+geometry constraint: Proteus terminals sit on the `254000`-unit schematic
+grid, while beautified component pins can be off-grid. Copying an off-grid pin
+coordinate into a terminal record is invalid even when the active-link bytes
+are correct.
+
+V10 keeps every component coordinate unchanged. It snaps each terminal contact
+to the nearest `254000 x 254000` grid intersection and emits a short WIRE from
+that contact to the exact parsed pin coordinate. Both terminal symbols and
+their contacts are grid-aligned; WIRE ends remain pin-exact. V10 is generated
+only from the unchanged `new_components_5x_mega.pdsprj` mega donor containing
+FUSE and POT-HG, hash-locked as
+`1222561d29622193d4eaa34aa830a341dee47abe376d1b971390dd6baad7958c`.
+That donor is only a component-placer test input: terminal placement and
+beautification do not inspect its path or packet origin.
+
+The V10 pack has six 3x researched-family cases and mixed 1x/3x/15x cases.
+All 9 are statically valid. FUSE is included and byte-preserved as a same-donor
+control. Proteus testing remains required.
 
 The packet beautifier now places IC and non-IC families in separate vertical
 bands when they coexist. The lower band begins at least 5,080,000 internal
@@ -252,12 +270,15 @@ units below the maximum parsed IC coordinate. This corrects the reported
   not render.
 - mixed native-wire V7: mixed N07-N09 user-rejected; links do not match final
   WIRE addresses.
-- stream-link V9: schema-encoded, donor-independent terminal/WIRE output with
-  final-address rebasing; Proteus tests pending.
+- stream-link V9: user-rejected in all mixed cases; terminals were assigned
+  off-grid contact coordinates.
+- grid-wire V10: grid-snapped contacts, short wires to exact untouched pins,
+  fixed mega-donor test input, and donor-independent downstream logic; 9/9
+  static-valid, Proteus tests pending.
 - mixed IC/non-IC bands: focused static regression passed; pending visual test.
 
 ## Next Engineering Step
 
-Test V9 S01-S06, then M07-M09. If mixed 1x passes, scale to 3x and 15x.
+Test V10_01-V10_06, then V10_07-V10_09.
 Additional two-pin families remain unsupported until their pin/link fields can
 be represented by a verified family profile; do not add runtime circuit donors.

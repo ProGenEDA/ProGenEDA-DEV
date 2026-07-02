@@ -149,6 +149,13 @@ encodes terminal and 50-byte WIRE records directly, preserves the beautified
 component order, and performs a second pass over final ROOT.DSN addresses. It
 does not select or transplant a mixed circuit donor at runtime.
 
+The V10 attachment geometry adds a backend grid constraint without changing
+the stage boundary. Proteus terminal contacts are snapped to the nearest
+`254000`-unit grid intersection, then a short WIRE joins that grid contact to
+the exact pin coordinate from the placed-design packet. The component packet
+is never moved by the terminal stage. The test runner hash-locks one mega donor,
+but donor identity is not passed to terminal placement or beautification.
+
 Every stage must eventually provide both a direct stage-output validator and a
 cumulative validator covering all accepted earlier stages. User-specification,
 information-completeness, and final whole-project validators surround that

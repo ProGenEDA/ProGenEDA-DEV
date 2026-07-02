@@ -142,13 +142,19 @@ the complete active terminal/component-link/WIRE unit for all six families,
 but mixed N07-N09 failed because family-local link numbers were not rebased
 after final serialization.
 
-V9 keeps the beautified component order and uses no runtime circuit donor.
+V9 kept the beautified component order and used no runtime circuit donor.
 `$TERBIDIR` and 50-byte WIRE records are schema-encoded. After ROOT.DSN is
 built, each terminal and component pin receives the low 16 bits of the absolute
-byte immediately before its associated WIRE record. RESISTOR wires bridge
-254,000 internal units from terminal contact to pin. CAP, REALIND, CAP-ELEC,
-VSOURCE, and CSOURCE keep their accepted pin-coincident geometry. V9 remains
-pending Proteus acceptance.
+byte immediately before its associated WIRE record. The user rejected every
+mixed V9 case because the terminal coordinates copied beautified off-grid pin
+coordinates.
+
+V10 preserves the final-address rule and changes only endpoint geometry:
+terminal contacts snap to the nearest Proteus `254000`-unit grid intersection,
+and a short WIRE runs from the grid contact to the exact component pin.
+Components remain at their beautified coordinates. This rule is a Proteus
+backend profile; the stage still consumes placed packets and pin descriptors,
+not donor identity.
 
 When IC and non-IC packets coexist, the packet beautifier uses separate
 vertical bands with at least 5,080,000 internal units between the parsed IC
