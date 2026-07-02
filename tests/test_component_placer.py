@@ -36,6 +36,9 @@ from proteusgen.component_terminal_placer import (
     CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
     CAP_PIN_HALF_SPAN,
     CAP_TERMINAL_SYMBOL_TO_PIN,
+    GENERIC_TWO_PIN_HALF_SPAN,
+    GENERIC_TWO_PIN_PROFILES,
+    GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
     INDUCTOR_PIN_HALF_SPAN,
     INDUCTOR_TERMINAL_SYMBOL_TO_PIN,
     RESISTOR_PIN_SPAN,
@@ -49,6 +52,7 @@ from proteusgen.component_terminal_placer import (
     attach_resistor_bidir_terminals_to_project,
     plan_attached_capacitor_terminals,
     plan_attached_electrolytic_capacitor_terminals,
+    plan_attached_generic_two_pin_terminals,
     plan_attached_inductor_terminals,
     plan_attached_resistor_terminals,
     plan_attached_source_terminals,
@@ -1652,6 +1656,7 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
         "CAP-ELEC",
         "REALIND",
         "RESISTOR",
+        "DIODE",
     ]
     assert report["skipped_families"] == ["74HC08", "DIODE", "NPN"]
     assert report["preserved_component_count"] == 3
@@ -1706,6 +1711,134 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
         for record in extract_bidir_records(chunk)
     )
     assert sorted(actual_wire_coordinates) == expected_wire_coordinates
+
+
+@pytest.mark.parametrize("family", sorted(GENERIC_TWO_PIN_PROFILES))
+def test_generic_two_pin_terminal_profiles_attach_solo_components(
+    tmp_path: Path,
+    family: str,
+) -> None:
+    base = tmp_path / f"{family}_generic_two_pin_base.pdsprj"
+    output = tmp_path / f"{family}_generic_two_pin_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+
+    pairs = plan_attached_generic_two_pin_terminals(result.selected_groups)
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    assert result.valid
+    assert len(pairs) == 1
+    assert pairs[0].right_pin_x - pairs[0].left_pin_x == (
+        GENERIC_TWO_PIN_HALF_SPAN * 2
+    )
+    assert (
+        pairs[0].left.symbol_x
+        == pairs[0].left_pin_x - GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN
+    )
+    assert (
+        pairs[0].right.symbol_x
+        == pairs[0].right_pin_x + GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN
+    )
+    assert report["valid"] is True
+    assert report["runtime_circuit_donor_dependency"] is False
+    assert report["eligible_families"] == [family]
+    assert report["skipped_families"] == []
+    assert report["terminal_count_added"] == 2
+    assert report["wire_count_added"] == 2
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["link_allocation"]["valid"] is True
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert chunk.count(b"$TERBIDIR") == 2
+    assert chunk.count(b"\x7fWIRE") == 2
+
+
+def test_shared_terminal_dispatcher_terminalizes_all_two_pin_families(
+    tmp_path: Path,
+) -> None:
+    all_two_pin_families = [
+        "RESISTOR",
+        "CAP",
+        "DIODE",
+        "VSINE",
+        "VSOURCE",
+        "CSOURCE",
+        "VPULSE",
+        "LED-RED",
+        "1N4733A",
+        "40EPS08",
+        "BZY88C",
+        "1N4007",
+        "1N4148",
+        "1N6000B",
+        "BZX55C5V1",
+        "BZX79C5V1",
+        "FUSE",
+        "REALIND",
+        "CAP-ELEC",
+    ]
+    base = tmp_path / "all_two_pin_base.pdsprj"
+    output = tmp_path / "all_two_pin_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1 for family in all_two_pin_families},
+            "component_offsets": {"CAP-ELEC": 21},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    terminal_pair_families = {
+        pair["component_family"]
+        for family_report in report["family_reports"]
+        for pair in family_report["terminal_pairs"]
+    }
+
+    assert result.valid
+    assert [group.family for group in result.selected_groups] == all_two_pin_families
+    assert report["valid"] is True
+    assert report["runtime_circuit_donor_dependency"] is False
+    assert report["skipped_families"] == []
+    assert report["terminalized_component_count"] == len(all_two_pin_families)
+    assert report["preserved_component_count"] == 0
+    assert report["terminal_count_added"] == len(all_two_pin_families) * 2
+    assert report["wire_count_added"] == len(all_two_pin_families) * 2
+    assert report["terminal_suffixes_unique"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["link_allocation"]["allocation_count"] == (
+        len(all_two_pin_families) * 2
+    )
+    assert terminal_pair_families == set(all_two_pin_families)
+    assert chunk.count(b"$TERBIDIR") == len(all_two_pin_families) * 2
+    assert chunk.count(b"\x7fWIRE") == len(all_two_pin_families) * 2
 
 
 @pytest.mark.parametrize(
@@ -1809,7 +1942,7 @@ def test_shared_terminal_dispatcher_noneligible_selection_is_exact_copy(
     result = generate_component_placement_project(
         {
             "donor": "component_placer_main_15x_semimega_sources_20260618",
-            "components": {"DIODE": 2, "NPN": 1, "74HC08": 1},
+            "components": {"NPN": 1, "74HC08": 1},
             "layout": {"strategy": "beautify"},
         },
         base,
@@ -1826,7 +1959,7 @@ def test_shared_terminal_dispatcher_noneligible_selection_is_exact_copy(
     assert report["valid"] is True
     assert report["family_handler"] == "NONE/selective-copy-v1"
     assert report["eligible_families"] == []
-    assert report["skipped_families"] == ["74HC08", "DIODE", "NPN"]
+    assert report["skipped_families"] == ["74HC08", "NPN"]
     assert report["terminal_count_added"] == 0
     assert report["wire_count_added"] == 0
     assert base.read_bytes() == output.read_bytes()

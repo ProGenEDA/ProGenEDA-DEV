@@ -53,6 +53,8 @@ CAP_ELEC_PIN_HALF_SPAN = 508_000
 CAP_ELEC_TERMINAL_SYMBOL_TO_PIN = 254_000
 INDUCTOR_PIN_HALF_SPAN = 762_000
 INDUCTOR_TERMINAL_SYMBOL_TO_PIN = 254_000
+GENERIC_TWO_PIN_HALF_SPAN = 508_000
+GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN = 254_000
 TERMINAL_SYMBOL_TO_PIN = 508_000
 TERMINAL_CONTACT_TO_PIN = 254_000
 CAP_WIRE_RECORD_SIZE = 50
@@ -74,14 +76,108 @@ SOURCE_TERMINAL_SYMBOL_TO_PIN = 254_000
 SOURCE_COMPONENT_BARE_BASE_SIZES = {
     "VSOURCE": 340,
     "CSOURCE": 342,
+    "VSINE": 341,
+    "VPULSE": 344,
 }
+SOURCE_TERMINAL_LABEL_PREFIXES = {
+    "VSOURCE": "V",
+    "CSOURCE": "I",
+    "VSINE": "S",
+    "VPULSE": "P",
+}
+SOURCE_OUTPUT_UPPER_PIN_FAMILIES = {"VSOURCE", "VSINE", "VPULSE"}
+GENERIC_TWO_PIN_PROFILES = {
+    "DIODE": {
+        "label_prefix": "D",
+        "suffix_base": 0x5200,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "1N4007": {
+        "label_prefix": "A",
+        "suffix_base": 0x5400,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "1N4148": {
+        "label_prefix": "B",
+        "suffix_base": 0x5600,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "1N4733A": {
+        "label_prefix": "J",
+        "suffix_base": 0x5800,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "1N6000B": {
+        "label_prefix": "K",
+        "suffix_base": 0x5A00,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "40EPS08": {
+        "label_prefix": "M",
+        "suffix_base": 0x5C00,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "BZX55C5V1": {
+        "label_prefix": "N",
+        "suffix_base": 0x5E00,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "BZX79C5V1": {
+        "label_prefix": "O",
+        "suffix_base": 0x6000,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "BZY88C": {
+        "label_prefix": "Q",
+        "suffix_base": 0x6200,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "LED-RED": {
+        "label_prefix": "G",
+        "suffix_base": 0x6400,
+        "left_pin_hint": "anode/left_pin",
+        "right_pin_hint": "cathode/right_pin",
+    },
+    "FUSE": {
+        "label_prefix": "F",
+        "suffix_base": 0x6600,
+        "left_pin_hint": "pin:1",
+        "right_pin_hint": "pin:2",
+    },
+}
+# Dispatcher allow-list for the shared native terminal route.  The R/C/L/source
+# families are user-accepted checkpoints; the generic diode/fuse/LED/signal
+# source profiles added for V11 remain Proteus-pending until the generated pack
+# is opened and reported by the user.
 ACCEPTED_TERMINAL_FAMILY_ORDER = (
     "VSOURCE",
     "CSOURCE",
+    "VSINE",
+    "VPULSE",
     "CAP",
     "CAP-ELEC",
     "REALIND",
     "RESISTOR",
+    "DIODE",
+    "1N4007",
+    "1N4148",
+    "1N4733A",
+    "1N6000B",
+    "40EPS08",
+    "BZX55C5V1",
+    "BZX79C5V1",
+    "BZY88C",
+    "LED-RED",
+    "FUSE",
 )
 NATIVE_WIRE_PREFIX = bytes.fromhex(
     "1d00000000c09e00000040000001ffffff00ffffff00027f"
@@ -622,6 +718,36 @@ def _source_body_offsets(data: bytes, family: str) -> tuple[int, int]:
     return candidates[0]
 
 
+def _generic_two_pin_body_offsets(data: bytes, family: str) -> tuple[int, int]:
+    candidates = [
+        (x_offset, y_offset)
+        for x_offset, y_offset, reason in layout_coordinate_pairs(data, family)
+        if reason == f"marker_body:{family}"
+    ]
+    if not candidates:
+        marker_offset = data.rfind(family.encode("ascii"))
+        if marker_offset >= 0:
+            x_offset = marker_offset + len(family)
+            y_offset = x_offset + 4
+            if y_offset + 4 <= len(data):
+                x_value = _s32_at(data, x_offset)
+                y_value = _s32_at(data, y_offset)
+                if (
+                    -700_000_000 <= x_value <= 700_000_000
+                    and -700_000_000 <= y_value <= 700_000_000
+                    and x_value % 10 == 0
+                    and y_value % 10 == 0
+                    and not (x_value == 0 and y_value == 0)
+                ):
+                    candidates.append((x_offset, y_offset))
+    if len(candidates) != 1:
+        raise ValueError(
+            f"{family} terminal attachment needs exactly one parsed structural "
+            f"body anchor; found {len(candidates)}."
+        )
+    return candidates[0]
+
+
 def plan_attached_resistor_terminals(
     selected_groups: Iterable[Any],
     *,
@@ -936,6 +1062,105 @@ def plan_attached_electrolytic_capacitor_terminals(
     return tuple(pairs)
 
 
+def plan_attached_generic_two_pin_terminals(
+    selected_groups: Iterable[Any],
+    *,
+    label_prefix: str | None = None,
+    suffix_start: int | None = None,
+) -> tuple[CapacitorTerminalPair, ...]:
+    """Plan profile-based horizontal terminals for simple remaining 2-pin parts.
+
+    These families share the donor packet pattern decoded from the fixed
+    2026-06-18 new-component mega donor: one body anchor near the packet tail,
+    two clear endpoint-link fields at ``body_x_offset+25`` and ``+29``, and a
+    horizontal one-grid pin span on each side of the body.
+    """
+
+    groups = tuple(selected_groups)
+    families = {str(getattr(group, "family", "")) for group in groups}
+    if len(families) != 1 or next(iter(families), "") not in GENERIC_TWO_PIN_PROFILES:
+        raise ValueError(
+            "The generic two-pin terminal handler requires one profiled family; "
+            f"received {sorted(families)}."
+        )
+    family = next(iter(families))
+    profile = GENERIC_TWO_PIN_PROFILES[family]
+    prefix = label_prefix or str(profile["label_prefix"])
+    suffix_base = (
+        int(profile["suffix_base"]) if suffix_start is None else suffix_start
+    )
+
+    pairs: list[CapacitorTerminalPair] = []
+    for index, group in enumerate(groups, start=1):
+        key = str(getattr(group, "key", ""))
+        data = getattr(group, "data", b"")
+        if not isinstance(data, bytes):
+            data = bytes(data)
+        x_offset, y_offset = _generic_two_pin_body_offsets(data, family)
+        angle_tenths = _u32_at(data, x_offset + 8)
+        if angle_tenths != 0:
+            raise ValueError(
+                f"{family} {key} uses unproven orientation {angle_tenths}; "
+                "the V11 generic two-pin route accepts horizontal donor packets only."
+            )
+        input_link_offset = x_offset + 25
+        output_link_offset = x_offset + 29
+        if output_link_offset + 4 > len(data):
+            raise ValueError(
+                f"{family} {key} packet ends before its two endpoint-link fields."
+            )
+
+        body_x = _s32_at(data, x_offset)
+        body_y = _s32_at(data, y_offset)
+        left_pin_x = body_x - GENERIC_TWO_PIN_HALF_SPAN
+        right_pin_x = body_x + GENERIC_TWO_PIN_HALF_SPAN
+        left_suffix = (suffix_base + (index - 1) * 2 + 1) & 0xFFFF
+        right_suffix = (suffix_base + (index - 1) * 2 + 2) & 0xFFFF
+        left = TerminalSpec(
+            label=_compact_terminal_label(prefix, (index - 1) * 2),
+            symbol_x=left_pin_x - GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=body_y,
+            angle_tenths=LEFT_SIDE_ANGLE,
+            suffix=left_suffix,
+            component_key=key,
+            component_family=family,
+            pin_hint=str(profile["left_pin_hint"]),
+            attachment_policy="generic_two_pin_profile_link_suffix_and_short_wire",
+        )
+        right = TerminalSpec(
+            label=_compact_terminal_label(prefix, (index - 1) * 2 + 1),
+            symbol_x=right_pin_x + GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=body_y,
+            angle_tenths=RIGHT_SIDE_ANGLE,
+            suffix=right_suffix,
+            component_key=key,
+            component_family=family,
+            pin_hint=str(profile["right_pin_hint"]),
+            attachment_policy="generic_two_pin_profile_link_suffix_and_short_wire",
+        )
+        pairs.append(
+            CapacitorTerminalPair(
+                component_key=key,
+                component_family=family,
+                left=left,
+                right=right,
+                left_pin_x=left_pin_x,
+                left_pin_y=body_y,
+                right_pin_x=right_pin_x,
+                right_pin_y=body_y,
+                left_wire_start_x=left_pin_x,
+                left_wire_start_y=body_y,
+                right_wire_start_x=right_pin_x,
+                right_wire_start_y=body_y,
+                component_x_offset=x_offset,
+                component_y_offset=y_offset,
+                input_link_offset=input_link_offset,
+                output_link_offset=output_link_offset,
+            )
+        )
+    return tuple(pairs)
+
+
 def plan_attached_source_terminals(
     selected_groups: Iterable[Any],
     *,
@@ -951,11 +1176,11 @@ def plan_attached_source_terminals(
         or next(iter(families), "") not in SOURCE_COMPONENT_BARE_BASE_SIZES
     ):
         raise ValueError(
-            "The attached source-terminal handler requires one VSOURCE or CSOURCE family; "
+            "The attached source-terminal handler requires one profiled source family; "
             f"received {sorted(families)}."
         )
     family = next(iter(families))
-    prefix = label_prefix or ("V" if family == "VSOURCE" else "I")
+    prefix = label_prefix or SOURCE_TERMINAL_LABEL_PREFIXES[family]
     base_size = SOURCE_COMPONENT_BARE_BASE_SIZES[family]
     if source_index_start < 1:
         raise ValueError("source_index_start must be at least 1.")
@@ -992,7 +1217,7 @@ def plan_attached_source_terminals(
             body_y + SOURCE_LOWER_PIN_Y_FROM_BODY,
         )
         output_suffix, input_suffix = _source_suffixes(source_index)
-        if family == "VSOURCE":
+        if family in SOURCE_OUTPUT_UPPER_PIN_FAMILIES:
             output_pin = upper_pin
             input_pin = lower_pin
             output_label_index = (local_index - 1) * 2
@@ -1114,6 +1339,27 @@ def _patch_cap_elec_terminal_links(
         if offset + 4 > len(out):
             raise ValueError(
                 f"CAP-ELEC {pair.component_key} packet ends before its pin-link fields."
+            )
+        out[offset : offset + 2] = struct.pack("<H", terminal.suffix)
+        out[offset + 2] = 0x01
+        out[offset + 3] = 0x00
+    out[-1] = 0x00
+    return bytes(out)
+
+
+def _patch_generic_two_pin_terminal_links(
+    data: bytes,
+    pair: CapacitorTerminalPair,
+) -> bytes:
+    out = bytearray(data)
+    for offset, terminal in (
+        (pair.input_link_offset, pair.left),
+        (pair.output_link_offset, pair.right),
+    ):
+        if offset + 4 > len(out):
+            raise ValueError(
+                f"{pair.component_family} {pair.component_key} packet ends before "
+                "its two endpoint-link fields."
             )
         out[offset : offset + 2] = struct.pack("<H", terminal.suffix)
         out[offset + 2] = 0x01
@@ -2375,6 +2621,18 @@ def _attach_single_family_bidir_terminals_to_project(
             label_prefix=label_prefix,
             source_index_start=source_index_start,
         )
+    if family in GENERIC_TWO_PIN_PROFILES:
+        if label_prefix is not None or suffix_start is not None:
+            raise ValueError(
+                f"{family}/generic-v11 uses its family-safe profile defaults; "
+                "custom label_prefix and suffix_start are unsupported here."
+            )
+        return attach_mixed_native_bidir_terminals_to_project(
+            project,
+            output,
+            groups,
+            terminal_families=(family,),
+        )
     raise ValueError(
         "Shared terminal attachment has no accepted handler for "
         f"{family}. Add the family-specific logic to component_terminal_placer.py."
@@ -2525,12 +2783,24 @@ def _mixed_overlay_family_parts(
                 bytes(group.data),
                 pair,
             )
+    elif family in GENERIC_TWO_PIN_PROFILES:
+        pairs = plan_attached_generic_two_pin_terminals(groups)
+        terminals = [
+            terminal
+            for pair in pairs
+            for terminal in (pair.left, pair.right)
+        ]
+        for group, pair in zip(groups, pairs, strict=True):
+            patched_by_id[id(group)] = _patch_generic_two_pin_terminal_links(
+                bytes(group.data),
+                pair,
+            )
     elif family in SOURCE_COMPONENT_BARE_BASE_SIZES:
         pairs = plan_attached_source_terminals(
             groups,
             source_index_start=source_index_start,
         )
-        if family == "VSOURCE":
+        if family in SOURCE_OUTPUT_UPPER_PIN_FAMILIES:
             terminal_order = ("output", "input")
             wire_order = ("output", "input")
         else:
@@ -2573,12 +2843,20 @@ def _mixed_overlay_family_parts(
             for pair in pairs
             for terminal in (pair.right, pair.left)
         ]
-    else:
+    elif family in GENERIC_TWO_PIN_PROFILES:
+        terminals = [
+            terminal
+            for pair in pairs
+            for terminal in (pair.left, pair.right)
+        ]
+    elif family in SOURCE_COMPONENT_BARE_BASE_SIZES:
         terminals = [
             getattr(pair, role)
             for pair in pairs
             for role in terminal_order
         ]
+    else:
+        raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
 
     for pair in pairs:
         if isinstance(pair, SourceTerminalPair):
