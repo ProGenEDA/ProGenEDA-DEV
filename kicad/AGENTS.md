@@ -48,6 +48,23 @@ Decision -> Combination Decider -> Wire Planner <-> Beautifier loop -> Wire Make
 The active stage is the component placer. Keep later stages as independent
 placeholders until the previous stage is proven.
 
+The first deterministic main-JSON compiler is:
+
+```text
+kicad/pipeline/final_circuit_builder.py
+```
+
+It implements the non-AI portion of prompt-to-final-JSON generation:
+
+```text
+Prompt Cleaner -> raw/block circuit spec -> deterministic net compiler -> universal JSON validator -> final CircuitIR JSON
+```
+
+AI may be used later for intent extraction and block suggestions, but final
+component allocation, reference allocation, net alias repair, endpoint expansion,
+duplicate endpoint merging, validation, and final JSON acceptance must remain
+deterministic backend logic.
+
 ## Canonical Placer Module
 
 The canonical KiCad component placer implementation is:

@@ -8,6 +8,7 @@ Current useful runs:
 
 - `placer_run_2026_07_01_baseline_c11_spacing_fix_v2`: current 20-circuit baseline with the C11 spacing fix.
 - `placer_run_2026_07_01_stress_limit_suite_v2`: current stress and limit suite, 22 projects, 2747 requested components.
+- `final_json_run_2026_07_02_132530_t01_t10_connected_v3`: connected final JSON for T01-T10 plus placement inputs and bounded arrangement/beautifier/wire-planner reports.
 
 Historical folders:
 

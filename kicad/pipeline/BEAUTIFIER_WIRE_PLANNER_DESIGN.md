@@ -331,7 +331,19 @@ Implemented behavior:
 9. Routes clock-like nets before ordinary nets.
 10. Uses local labels instead of long wires for power, ground, and high-fanout
     nets.
-11. Reports route metrics and warnings.
+11. Bounds A* search with `max_astar_expansions`; difficult routes fall back to
+    a simple orthogonal Manhattan route and record
+    `astar_fallback_expansion_limit`.
+12. Batch/report runs may set `max_wired_routes`; remaining routes are marked
+    `deferred_after_route_limit` instead of blocking the whole run.
+13. Reports route metrics and warnings.
+
+Important current limitation:
+
+The wire planner is now bounded and testable, but it is not final-quality
+routing yet. Fallback warnings and nonzero `different_net_crossing_count` are
+expected evidence that the planner needs more routing intelligence before the
+EDA-specific wire maker should draw wires into KiCad.
 
 Wire-plan JSON shape:
 
@@ -434,6 +446,8 @@ Current coverage:
 5. Ordinary signal routes are orthogonal.
 6. Routed segments do not cross unrelated component bodies in the test circuit.
 7. Different-net crossing count is reported.
+8. Connected T01-T10 final JSON inputs compile, place, beautify without body
+   overlaps, and produce bounded wire-plan reports.
 
 ## T01-T10 Evidence
 
@@ -450,6 +464,22 @@ Result:
 - Post-beautifier overlap count was 0 for all 10.
 - T01-T10 wire route count was 0 because those stress inputs are still
   placement-only and contain no `components[].pins` connection endpoints.
+
+The first connected final-JSON run is recorded in:
+
+```text
+kicad/examples/final_json_run_2026_07_02_132530_t01_t10_connected_v3/
+```
+
+Result:
+
+- Final JSON validation passed 10/10.
+- Placer input conversion passed 10/10.
+- Arrangement and beautifier passed 10/10 with 0 post-beautifier body overlaps.
+- Bounded wire-plan reports were produced for all 10.
+- T10 compiled to 190 components, 153 nets, and 554 endpoints.
+- The route reports include fallback/crossing warnings. These are current wire
+  planner quality limits, not JSON or placement failures.
 
 Run:
 

@@ -54,6 +54,8 @@ DEFAULT_WIRE_CONFIG: dict[str, float] = {
     "wire_spacing": 2.54,
     "turn_penalty": 0.15,
     "near_wire_penalty": 1.25,
+    "max_astar_expansions": 50_000.0,
+    "max_wired_routes": 10_000.0,
 }
 
 
@@ -231,9 +233,19 @@ def _astar(
     best: dict[tuple[GridPoint, str], float] = {(start_cell, ""): 0.0}
     end_state: tuple[GridPoint, str] | None = None
     warnings: list[str] = []
+    expansions = 0
+    max_expansions = max(1, int(cfg.get("max_astar_expansions", 50_000.0)))
 
     while queue:
         _priority, cost, cell, direction = heapq.heappop(queue)
+        expansions += 1
+        if expansions > max_expansions:
+            warnings.append(f"astar_fallback_expansion_limit: {net} exceeded {max_expansions} explored grid states.")
+            return [
+                _round_point(start),
+                _round_point((goal[0], start[1])),
+                _round_point(goal),
+            ], warnings
         if cell == goal_cell:
             end_state = (cell, direction)
             break
@@ -374,6 +386,7 @@ def plan_wire_routes(
     routes: list[dict[str, Any]] = []
     nets_out: dict[str, Any] = {}
     warnings: list[str] = []
+    max_wired_routes = max(1, int(cfg.get("max_wired_routes", 10_000.0)))
 
     def net_priority(item: tuple[str, list[dict[str, Any]]]) -> tuple[int, str]:
         net, endpoints = item
@@ -391,11 +404,18 @@ def plan_wire_routes(
         if _local_label_net(net, endpoints):
             nets_out[net] = {"strategy": "local_labels", "endpoints": endpoints, "routes": []}
             continue
+        if len(routes) >= max_wired_routes:
+            warnings.append(f"wire_route_limit_deferred: {net} skipped after {max_wired_routes} routed connections.")
+            nets_out[net] = {"strategy": "deferred_after_route_limit", "endpoints": endpoints, "routes": []}
+            continue
 
         endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
         net_routes: list[dict[str, Any]] = []
         root = endpoints[0]
         for target in endpoints[1:]:
+            if len(routes) >= max_wired_routes:
+                warnings.append(f"wire_route_limit_deferred: remaining endpoints of {net} skipped after {max_wired_routes} routed connections.")
+                break
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))
             ignore_refs = {str(root["ref"]), str(target["ref"])}

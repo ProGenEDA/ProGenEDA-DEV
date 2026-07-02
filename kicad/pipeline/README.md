@@ -67,6 +67,57 @@ rules are recorded in:
 kicad/pipeline/BEAUTIFIER_WIRE_PLANNER_DESIGN.md
 ```
 
+## Final Circuit JSON Compiler
+
+The first deterministic prompt-to-main-JSON slice is:
+
+```text
+kicad/pipeline/final_circuit_builder.py
+```
+
+Detailed behavior and upgrade path are documented in:
+
+```text
+kicad/pipeline/FINAL_CIRCUIT_JSON_COMPILER.md
+```
+
+It implements the non-AI part of the requested architecture:
+
+```text
+Prompt Cleaner -> raw/block circuit spec -> deterministic net compiler -> universal JSON validator -> final CircuitIR JSON
+```
+
+The prompt cleaner normalizes the user prompt and extracts stable hints, but it
+does not invent components or nets. AI is only allowed later for intent
+extraction and block selection. Final component allocation, net alias repair,
+endpoint assignment expansion, duplicate endpoint merging, and final acceptance
+are deterministic Python logic.
+
+The compiler currently builds connected final JSON for the ten requested
+arrangement/beautifier/wire-planner tests. Generate a fresh immutable run with:
+
+```text
+python -m kicad.pipeline.final_circuit_builder --examples-root kicad/examples --label t01_t10_connected_v1
+```
+
+Each run writes:
+
+```text
+final_json/          canonical connected CircuitIR JSON
+placement_inputs/   component-only inputs derived from the final JSON for the placer
+stage_reports/      arrangement, beautifier, and wire-planner metrics
+run_manifest.json   aggregate evidence
+```
+
+The stage reports use bounded route-planning settings for batch evidence. If
+the current A* router cannot finish a path within the configured expansion
+limit, it emits a fallback route and records an
+`astar_fallback_expansion_limit` warning. If the stress report hits the route
+count cap, remaining nets are marked `deferred_after_route_limit`. These are
+wire-planner limitations to fix before the later EDA-specific wire maker stage.
+
+Old generated run folders remain immutable records.
+
 ## Practical Component Pack
 
 Historical early input packs live under:
