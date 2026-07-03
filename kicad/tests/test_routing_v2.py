@@ -10,6 +10,7 @@ from kicad.pipeline.routing.python import (
     rotate_point,
     rotate_side,
 )
+from kicad.pipeline.routing.python.routing_config import routing_v2_config
 
 
 def simple_vdc_resistor() -> dict[str, object]:
@@ -91,6 +92,66 @@ class RoutingV2Tests(unittest.TestCase):
         self.assertIn("arrangement_selection", planned)
         self.assertIn("validation_report", planned)
         self.assertEqual(planned["validation_report"]["schema"], "progen-routing-validation-report/v0.2")
+        self.assertEqual(planned["wire_plan"]["schema"], "progen-kicad-wire-plan/v0.2")
+        self.assertTrue(planned["wire_plan"]["algorithm"]["hanan_grid_lanes"])
+        self.assertTrue(planned["wire_plan"]["algorithm"]["rectilinear_mst_tree"])
+
+    def test_live_state_selects_weighted_pivot(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "U1", "kind": "74HC595", "pins": {"SER": "DATA", "SHCP": "CLK", "STCP": "LATCH", "Q0": "LED0"}},
+                {"id": "R1", "kind": "RES", "pins": {"1": "LED0", "2": "GND"}},
+                {"id": "D1", "kind": "LED", "pins": {"A": "LED0", "K": "GND"}},
+            ],
+            "nets": {
+                "DATA": ["U1.SER"],
+                "CLK": ["U1.SHCP"],
+                "LATCH": ["U1.STCP"],
+                "LED0": ["U1.Q0", "R1.1", "D1.A"],
+                "GND": ["R1.2", "D1.K"],
+            },
+        }
+        placement = {
+            "components": {
+                "U1": {"kind": "74HC595", "at": [80.0, 80.0]},
+                "R1": {"kind": "RES", "at": [120.0, 80.0]},
+                "D1": {"kind": "LED", "at": [140.0, 80.0]},
+            },
+            "obstacles": [],
+        }
+        state = build_live_routing_state(placement, circuit)
+        self.assertEqual(state.select_pivot(), "U1")
+
+    def test_locked_blocker_cannot_be_pushed(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "R1", "kind": "RES", "pins": {"1": "A", "2": "B"}},
+                {"id": "R2", "kind": "RES", "locked": True, "pins": {"1": "C", "2": "D"}},
+            ],
+            "nets": {"A": ["R1.1"], "B": ["R1.2"], "C": ["R2.1"], "D": ["R2.2"]},
+        }
+        placement = {
+            "components": {
+                "R1": {"kind": "RES", "at": [50.0, 50.0]},
+                "R2": {"kind": "RES", "at": [50.0, 50.0]},
+            },
+            "obstacles": [],
+        }
+        state = build_live_routing_state(placement, circuit)
+        candidate, report = state.legalize_candidate("R1", (50.8, 50.8), 0, routing_v2_config())
+        self.assertIsNone(candidate)
+        self.assertFalse(report["ok"])
+        self.assertIn("R2", report["failed"])
+
+    def test_beam_search_reports_cluster_growth_variants(self) -> None:
+        circuit = simple_vdc_resistor()
+        placement = plan_placement(circuit).as_dict()
+        state = build_live_routing_state(placement, circuit)
+        report = state.beam_search_cluster_growth(routing_v2_config({"placement": {"beam_width": 2, "deep_route_top_n": 2}}))
+        self.assertEqual(report["report"]["schema"], "progen-kicad-live-state-beam-search/v0.2")
+        self.assertTrue(report["report"]["pivot"])
+        self.assertGreaterEqual(len(report["final_states"]), 1)
+        self.assertLessEqual(len(report["final_states"]), 2)
 
 
 if __name__ == "__main__":

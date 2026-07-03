@@ -18,6 +18,8 @@ DEFAULT_ROUTING_V2_CONFIG: dict[str, Any] = {
         "deep_route_top_n": 4,
         "max_candidate_states_per_step": 128,
         "enable_python_live_state_placement": True,
+        "enable_cluster_growth_beam_search": True,
+        "user_primary_ref": "",
     },
     "legalization": {
         "max_depth": 3,

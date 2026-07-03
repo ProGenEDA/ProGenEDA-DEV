@@ -18,7 +18,7 @@ import json
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -72,6 +72,8 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "max_lane_candidates": 256.0,
     "crossing_penalty": 0.0,
     "forbidden_contact_penalty": 250_000.0,
+    "density_tile_size": 25.4,
+    "max_crossings_per_tile_soft": 6.0,
     "same_net_reuse_penalty": 0.05,
     "body_crossing_penalty": 100_000.0,
     "component_shadow_penalty": 80.0,
@@ -869,6 +871,7 @@ def _lane_values(
     goal: Point,
     bodies: dict[str, Body],
     cfg: dict[str, Any],
+    hanan_points: list[Point] | None = None,
 ) -> list[float]:
     width, height = _sheet_bounds(bodies, cfg)
     grid = float(cfg["grid"])
@@ -886,6 +889,8 @@ def _lane_values(
         (start[0] if axis == "x" else start[1]),
         (goal[0] if axis == "x" else goal[1]),
     }
+    for point in hanan_points or []:
+        anchor_values.add(point[0] if axis == "x" else point[1])
     values: set[float] = set(edge_values) | set(anchor_values) | {limit / 2}
     for body in bodies.values():
         if axis == "x":
@@ -924,6 +929,8 @@ def _candidate_lane_paths(
     goal: Point,
     bodies: dict[str, Body],
     cfg: dict[str, Any],
+    *,
+    hanan_points: list[Point] | None = None,
 ) -> list[list[Point]]:
     candidates: list[list[Point]] = []
     if start[0] == goal[0] or start[1] == goal[1]:
@@ -931,8 +938,8 @@ def _candidate_lane_paths(
     candidates.append(_dedupe_path([start, (goal[0], start[1]), goal]))
     candidates.append(_dedupe_path([start, (start[0], goal[1]), goal]))
 
-    y_lanes = _lane_values(axis="y", start=start, goal=goal, bodies=bodies, cfg=cfg)
-    x_lanes = _lane_values(axis="x", start=start, goal=goal, bodies=bodies, cfg=cfg)
+    y_lanes = _lane_values(axis="y", start=start, goal=goal, bodies=bodies, cfg=cfg, hanan_points=hanan_points)
+    x_lanes = _lane_values(axis="x", start=start, goal=goal, bodies=bodies, cfg=cfg, hanan_points=hanan_points)
     max_candidates = max(8, int(cfg.get("max_lane_candidates", 160.0)))
     single_budget = max(4, max_candidates // 4)
     pair_width = max(2, min(5, int((max_candidates / 4) ** 0.5) + 2))
@@ -966,6 +973,7 @@ def _root_candidate_routeability_score(
     cfg: dict[str, Any],
     *,
     net: str,
+    hanan_points: list[Point] | None = None,
 ) -> tuple[int, float, float, str, str]:
     start = (float(root["point"][0]), float(root["point"][1]))
     goal = (float(target["point"][0]), float(target["point"][1]))
@@ -980,7 +988,7 @@ def _root_candidate_routeability_score(
     best_hits: int | None = None
     best_length = float("inf")
     best_turns = float("inf")
-    for candidate in _candidate_lane_paths(start_route, goal_route, bodies, cfg):
+    for candidate in _candidate_lane_paths(start_route, goal_route, bodies, cfg, hanan_points=hanan_points):
         hits = _path_body_hit_count(candidate, bodies, cfg, ignore_refs=ignore_refs, blocked_cells=None)
         length = _path_length(candidate)
         turns = _path_turn_count(candidate)
@@ -1014,13 +1022,14 @@ def _best_lane_path(
     *,
     net: str,
     ignore_refs: set[str],
+    hanan_points: list[Point] | None = None,
 ) -> tuple[list[Point], dict[str, Any] | None]:
     best_path: list[Point] = []
     best_score: float | None = None
     best_report: dict[str, Any] | None = None
     candidate_count = 0
     rejected_body_count = 0
-    for candidate in _candidate_lane_paths(start, goal, bodies, cfg):
+    for candidate in _candidate_lane_paths(start, goal, bodies, cfg, hanan_points=hanan_points):
         candidate_count += 1
         score, report = _path_score(
             candidate,
@@ -1123,7 +1132,32 @@ def _root_endpoint_index(endpoints: list[dict[str, Any]], net: str) -> int:
     return min(range(len(endpoints)), key=score)
 
 
-def _count_crossings(routes: list[dict[str, Any]]) -> int:
+def _rectilinear_mst_edges(endpoints: list[dict[str, Any]]) -> list[tuple[int, int, float]]:
+    if len(endpoints) < 2:
+        return []
+    connected = {0}
+    remaining = set(range(1, len(endpoints)))
+    edges: list[tuple[int, int, float]] = []
+    while remaining:
+        best: tuple[float, int, int] | None = None
+        for left in connected:
+            left_point = (float(endpoints[left]["point"][0]), float(endpoints[left]["point"][1]))
+            for right in remaining:
+                right_point = (float(endpoints[right]["point"][0]), float(endpoints[right]["point"][1]))
+                distance = _manhattan(left_point, right_point)
+                candidate = (distance, left, right)
+                if best is None or candidate < best:
+                    best = candidate
+        if best is None:
+            break
+        distance, left, right = best
+        connected.add(right)
+        remaining.remove(right)
+        edges.append((left, right, round(distance, 3)))
+    return edges
+
+
+def _route_segments(routes: list[dict[str, Any]]) -> list[tuple[str, Point, Point]]:
     segments: list[tuple[str, Point, Point]] = []
     for route in routes:
         net = str(route["net"])
@@ -1131,14 +1165,68 @@ def _count_crossings(routes: list[dict[str, Any]]) -> int:
             start = tuple(segment["start"])  # type: ignore[arg-type]
             end = tuple(segment["end"])  # type: ignore[arg-type]
             segments.append((net, (float(start[0]), float(start[1])), (float(end[0]), float(end[1]))))
+    return segments
+
+
+def _count_crossings(routes: list[dict[str, Any]]) -> int:
+    segments = _route_segments(routes)
+    horizontal: dict[float, list[tuple[str, float, float]]] = defaultdict(list)
+    vertical: dict[float, list[tuple[str, float, float]]] = defaultdict(list)
+    for net, start, end in segments:
+        if start[1] == end[1]:
+            low, high = sorted((start[0], end[0]))
+            horizontal[start[1]].append((net, low, high))
+        elif start[0] == end[0]:
+            low, high = sorted((start[1], end[1]))
+            vertical[start[0]].append((net, low, high))
     count = 0
-    for index, left in enumerate(segments):
-        for right in segments[index + 1 :]:
-            if left[0] == right[0]:
-                continue
-            if _segments_cross(left[1], left[2], right[1], right[2]):
-                count += 1
+    for y, h_segments in horizontal.items():
+        for x, v_segments in vertical.items():
+            for h_net, h_low, h_high in h_segments:
+                if not _between(x, h_low, h_high):
+                    continue
+                for v_net, v_low, v_high in v_segments:
+                    if h_net == v_net:
+                        continue
+                    if _between(y, v_low, v_high):
+                        count += 1
     return count
+
+
+def _crossing_density_metrics(routes: list[dict[str, Any]], cfg: dict[str, Any]) -> dict[str, Any]:
+    tile_size = max(float(cfg.get("density_tile_size", 25.4)), float(cfg.get("grid", 2.54)))
+    max_soft = int(cfg.get("max_crossings_per_tile_soft", 6.0))
+    segments = _route_segments(routes)
+    horizontal: list[tuple[str, Point, Point]] = []
+    vertical: list[tuple[str, Point, Point]] = []
+    for item in segments:
+        if item[1][1] == item[2][1]:
+            horizontal.append(item)
+        elif item[1][0] == item[2][0]:
+            vertical.append(item)
+    by_tile: Counter[tuple[int, int]] = Counter()
+    near_pin_like_count = 0
+    for h_net, h_start, h_end in horizontal:
+        h_low, h_high = sorted((h_start[0], h_end[0]))
+        for v_net, v_start, v_end in vertical:
+            if h_net == v_net:
+                continue
+            x = v_start[0]
+            y = h_start[1]
+            v_low, v_high = sorted((v_start[1], v_end[1]))
+            if not (_between(x, h_low, h_high) and _between(y, v_low, v_high)):
+                continue
+            by_tile[(int(x // tile_size), int(y // tile_size))] += 1
+            if any(_manhattan((x, y), endpoint) <= float(cfg.get("pin_stub", 5.08)) for endpoint in (h_start, h_end, v_start, v_end)):
+                near_pin_like_count += 1
+    overflow = sum(max(0, count - max_soft) for count in by_tile.values())
+    return {
+        "crossing_density_tile_size": round(tile_size, 3),
+        "crossing_density_tile_count": len(by_tile),
+        "crossing_density_max_tile_crossings": max(by_tile.values(), default=0),
+        "crossing_density_overflow": overflow,
+        "near_endpoint_crossing_count": near_pin_like_count,
+    }
 
 
 def _between(value: float, a: float, b: float) -> bool:
@@ -1265,6 +1353,15 @@ def plan_wire_routes(
             continue
 
         endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
+        net_hanan_points = [
+            (
+                _snap(float(endpoint["point"][0]), cfg["grid"]),
+                _snap(float(endpoint["point"][1]), cfg["grid"]),
+            )
+            for endpoint in endpoints
+        ]
+        mst_edges = _rectilinear_mst_edges(endpoints)
+        mst_length = round(sum(edge[2] for edge in mst_edges), 3)
         root_index = _root_endpoint_index(endpoints, net)
         initial_root = endpoints[root_index]
         target_endpoints = [endpoint for index, endpoint in enumerate(endpoints) if index != root_index]
@@ -1329,7 +1426,7 @@ def plan_wire_routes(
             root_candidates = root_pool[: max(1, int(cfg.get("max_root_candidates_per_endpoint", 10.0)))]
             root = min(
                 root_candidates,
-                key=lambda item: _root_candidate_routeability_score(item, target, bodies, cfg, net=net),
+                key=lambda item: _root_candidate_routeability_score(item, target, bodies, cfg, net=net, hanan_points=net_hanan_points),
             )
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))
@@ -1366,6 +1463,7 @@ def plan_wire_routes(
                     shadow_blocked_cells,
                     net=net,
                     ignore_refs=ignore_refs,
+                    hanan_points=net_hanan_points,
                 )
                 if lane_path and lane_report:
                     route_candidates.append(("lane_candidate", lane_path, lane_report, []))
@@ -1632,6 +1730,7 @@ def plan_wire_routes(
                         "strategy": "partial_wire",
                         "endpoints": endpoints,
                         "routes": net_routes,
+                        "mst": {"edges": mst_edges, "length": mst_length},
                         "unrouted_endpoint_count": net_failed_endpoint_count,
                         "failure_warnings": net_failure_warnings[:20],
                     }
@@ -1641,6 +1740,7 @@ def plan_wire_routes(
                     "endpoints": endpoints,
                     "routes": [],
                     "partial_routes": net_routes,
+                    "mst": {"edges": mst_edges, "length": mst_length},
                     "failure_warnings": net_failure_warnings[:20],
                 }
             else:
@@ -1659,11 +1759,22 @@ def plan_wire_routes(
         astar_route_count += net_astar_route_count
         salvage_astar_route_count += net_salvage_astar_route_count
         crossing_risk_route_count += net_crossing_risk_route_count
-        nets_out[net] = {"strategy": "wire", "endpoints": endpoints, "routes": net_routes}
+        nets_out[net] = {"strategy": "wire", "endpoints": endpoints, "routes": net_routes, "mst": {"edges": mst_edges, "length": mst_length}}
 
     crossing_count = _count_crossings(routes)
+    crossing_density = _crossing_density_metrics(routes, cfg)
     if crossing_count:
         warnings.append(f"different_net_crossings_detected: {crossing_count}")
+    if crossing_density.get("crossing_density_overflow"):
+        warnings.append(f"crossing_density_overflow: {crossing_density['crossing_density_overflow']}")
+    mst_total_length = round(
+        sum(
+            float(item.get("mst", {}).get("length", 0.0))
+            for item in nets_out.values()
+            if isinstance(item, dict) and isinstance(item.get("mst"), dict)
+        ),
+        3,
+    )
 
     width, height = _sheet_bounds(bodies, cfg)
     return {
@@ -1676,8 +1787,14 @@ def plan_wire_routes(
         },
         "algorithm": {
             "router": "lane_candidates_then_grid_astar",
+            "routing_engine": "hanan_lane_candidates_rectilinear_mst_then_grid_astar",
+            "hanan_grid_lanes": True,
+            "rectilinear_mst_tree": True,
+            "astar_manhattan_fallback": True,
+            "segment_indexed_crossing_metrics": True,
             "dense_design_mode": dense_design,
-            "routing_order": "clock, bus-like/long-span nets, ordinary nets, then power/ground in strict wire mode; terminal/combination mode may label selected nets",
+            "routing_order": "clock/control, bus, local/ordinary, display, power, ground; terminal/combination mode may label selected nets",
+            "multi_terminal_policy": "rectilinear MST / nearest connected tree; each branch uses net-wide Hanan lanes plus A* fallback",
             "component_avoidance": "inflated_obstacle_grid",
             "wire_collision_policy": "wire-wire crossings are allowed; existing wire grid cells are congestion hints, not hard obstacles",
             "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
@@ -1698,6 +1815,8 @@ def plan_wire_routes(
             "dense_design_mode": dense_design,
             "segment_count": sum(len(route["segments"]) for route in routes),
             "different_net_crossing_count": crossing_count,
+            "mst_total_length": mst_total_length,
+            **crossing_density,
             "label_strategy_count": sum(1 for item in nets_out.values() if isinstance(item, dict) and item.get("strategy") in LABEL_STRATEGIES),
             "partial_wire_net_count": sum(
                 1 for item in nets_out.values() if isinstance(item, dict) and item.get("strategy") == "partial_wire"
@@ -2169,6 +2288,13 @@ def _estimate_variant_routeability(routing_placement: dict[str, Any], circuit: d
             blocked_endpoint_count += 1
             continue
         endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
+        net_hanan_points = [
+            (
+                _snap(float(endpoint["point"][0]), cfg["grid"]),
+                _snap(float(endpoint["point"][1]), cfg["grid"]),
+            )
+            for endpoint in endpoints
+        ]
         root_index = _root_endpoint_index(endpoints, net)
         initial_root = endpoints[root_index]
         targets = [endpoint for index, endpoint in enumerate(endpoints) if index != root_index]
@@ -2193,7 +2319,7 @@ def _estimate_variant_routeability(routing_placement: dict[str, Any], circuit: d
             root_candidates = root_pool[: max(1, int(cfg.get("max_root_candidates_per_endpoint", 10.0)))]
             root = min(
                 root_candidates,
-                key=lambda item: _root_candidate_routeability_score(item, target, bodies, cfg, net=net),
+                key=lambda item: _root_candidate_routeability_score(item, target, bodies, cfg, net=net, hanan_points=net_hanan_points),
             )
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))

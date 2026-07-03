@@ -179,7 +179,7 @@ def build_validation_report(
                 if isinstance(route, dict) and isinstance(route.get("route_quality"), dict)
             ),
             "different_net_crossing_count": int(wire_metrics.get("different_net_crossing_count", 0)),
-            "crossing_density_overflow": int(geometry.get("metrics", {}).get("crossing_density_overflow", 0)) if isinstance(geometry.get("metrics"), dict) else 0,
+            "crossing_density_overflow": int(wire_metrics.get("crossing_density_overflow", 0)),
             "unroutable_net_count": int(wire_metrics.get("unroutable_net_count", 0)),
             "partial_wire_net_count": int(wire_metrics.get("partial_wire_net_count", 0)),
             "body_hit_count": body_hit_count,

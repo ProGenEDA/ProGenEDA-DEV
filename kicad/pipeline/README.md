@@ -86,13 +86,22 @@ The extracted PDF plan is preserved at
 The v2 routing implementation lives under `kicad/pipeline/routing/` and adds:
 
 - permanent abstract catalogues in `kicad/pipeline/catelogues/`
-- a mathematical `LiveRoutingState`
+- a mathematical `LiveRoutingState` as the only optimization scratchpad
 - rotation-aware pin/body/keepout recomputation
+- weighted graph pivot selection, cluster-growth beam search, Pareto pruning,
+  branch pruning, and priority-aware legalization
+- deep routing of the original, rotation-baseline, and top beam variants before
+  selecting the final coordinate plan
+- Hanan-grid lane anchors, rectilinear MST metadata, Manhattan A* fallback,
+  indexed crossing counts, and tile-based crossing-density metrics
 - a v0.2 routing orchestrator and validation report
-- a Rust-core skeleton with the planned PyO3 JSON API
+- a Rust-core source boundary with the planned PyO3 JSON API; native compile is
+  pending because this machine does not provide `rustc`/`cargo`
 - stricter final KiCad wire validation and exact-pin path repair
 
-Existing planner contracts remain available while migration continues.
+Existing v0.1 planner contracts remain available for compatibility; v2 emits
+the PDF's `coordinate_plan`, `routing_placement`, `wire_plan`,
+`arrangement_selection`, metrics, warnings, and `validation_report` contract.
 
 The combined `wire_planner.plan_wiring()` contract is movement-first:
 

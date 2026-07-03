@@ -6222,6 +6222,200 @@ Current V10 tests proved binary attachment. Full node-name mapping is the next i
 
 ---
 
+## 2026-07-04 01:32:46 +0500 - Complete Routing Refactor PDF Behavior
+
+### User Message
+
+```text
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+## My request for Codex:
+implement the pdf to completion
+```
+
+### Visible Agent Responses
+
+```text
+Got it. I’ll treat “completion” as closing the remaining gaps between the extracted routing refactor plan and the current code, not just adding another wrapper. I’ll first do the required GitHub sync check, then I’ll audit the extracted PDF plan against the implementation and work through the missing pieces.
+
+Checkpoint is clean against GitHub at `3c2dd4d`; only the same old generated v4 files are dirty, so I’ll keep ignoring those. I’m going through the PDF’s phase list now and comparing it to the current v2 code so the next edits hit the real missing algorithms: Rust pin/geometry/legalization, Hanan/MST routing, beam search, and planner replacement.
+
+The machine has no `rustc` or `cargo`, so a compiled Rust extension cannot be built here. I’ll still complete the plan’s behavior by implementing the Rust-core algorithms in the Python fallback with the same JSON/API boundaries, and keep the Rust module files as the exact future native boundary rather than fake-compiling it.
+
+The current v2 fallback has rotation and overlap cleanup, but it does not yet own the full plan: cluster-growth placement, Pareto/branch-and-bound, Hanan/MST routing, segment indexing, and regression reporting are thin or missing. I’m opening those modules now and then I’ll add the missing deterministic engine pieces inside the v2 path.
+
+The PDF’s migration plan says “replace old planner internals” only after adding regression guardrails. I’m going to do that in a controlled way: add the missing v2 mathematical placement/route pieces, keep the external JSON contract stable, then test that the generated outputs still pass the existing KiCad/wire validations.
+
+I’m going to keep old `plan_wiring()` on v0.1 for compatibility, but v2 will now normalize its wire-plan output to v0.2. That way the PDF contract is complete for the new engine without breaking older tests that intentionally guard the old public API.
+
+I’ve got the shape now: the current code has the right files but not the full algorithmic depth. I’m adding the missing `LiveRoutingState` optimization methods first: graph weighting, pivot/next-component selection, candidate locations, rotation scoring, Pareto pruning, branch-and-bound style beam search, and richer score metrics.
+
+The helper math is in place. Next I’m putting the actual placement intelligence on the state object so optimization happens inside `LiveRoutingState`, matching the PDF’s “scratchpad owns optimization” rule.
+
+The beam-search methods are in `LiveRoutingState`; now I’m wiring catalogue routing hints into each component so the new pin-facing and bus-order scorers have the information the PDF expects.
+
+The state can now produce beam-search variants. I’m updating the v2 orchestrator so it actually deep-routes the top states, chooses the best validated output, and emits the PDF’s v0.2 contracts instead of just routing one lightly adjusted placement.
+
+The orchestrator now deep-routes the top beam states and picks by validation-aware score. I’m moving into the router internals next: Hanan lanes should use all terminals on the net, multi-terminal routing should expose its rectilinear MST skeleton, and crossing counts need indexed/density metrics.
+
+The lane generator now accepts net-wide Hanan anchor lines. I’m adding the MST and segment-index pieces so the metrics and route ordering reflect the plan, especially on multi-terminal nets and larger schematics.
+
+Indexed crossing metrics are added. I’m threading the Hanan/MST data through the actual route loop now so each net’s candidates use all endpoint lines, not only the current source/target pair.
+
+The router now carries MST information per routed net. I’m adding density metrics to the wire-plan output so crossings remain allowed but controlled, exactly like the PDF asks.
+
+The wire plan now reports Hanan/MST and density data. I’m updating the v2 validation report to read those routing metrics directly, because density is a quality metric, not a hard geometry violation.
+
+Core algorithm edits are in. I’m running compile and focused tests now; there may be a few integration nits because the new beam search touches more of the placement state than the first v2 foundation did.
+
+Focused tests pass. I’m adding regression tests for the new “completed plan” behaviors so this doesn’t silently collapse back into the old light wrapper: pivot selection, beam-search reporting, v0.2 wire-plan contract, Hanan/MST metadata, and the locked-blocker case.
+
+The tests now cover the completed v2 path more directly. I’m running them before the full suite, then I’ll fix whatever the new assertions expose.
+
+The focused routing-v2 suite is green. I’m checking the Rust boundary files now; even without a Rust toolchain here, the source should document and expose the same completed algorithm stages instead of looking like empty placeholders.
+
+The Rust files are still skeleton-only and cannot be compiled here because the toolchain is absent. I’m checking the adapter path now; the migration phase also requires old planner internals to be callable through v2 so callers can opt into the completed engine without changing exporters.
+
+The adapter phase is already present and points at `plan_wiring_v2`. I’m running the full test suite now; if the v2 changes destabilize any existing generated-project checks, I’ll fix the implementation rather than relaxing the validators.
+
+Full tests are still running. That’s expected because the suite generates and validates KiCad projects; I’ll let it finish and then use the failure details, if any, to tighten the new route/placement path.
+
+Still running, no failure output yet. The exact-wire checks can take a while after planner changes, so I’m holding the line until the suite exits.
+
+The only full-suite failure is an old v0.1 compatibility assertion: it expects the legacy router name string exactly. I’ll keep that string stable for old callers and expose the completed Hanan/MST behavior through new algorithm fields and v2 wrapping.
+
+That compatibility fix is in. I’m rerunning the failing test plus the v2 tests, then the full suite again if they’re green.
+
+The compatibility test and v2 tests are green. I’m running the full suite once more now; this is the pass that matters before I update docs/context and commit.
+
+Full suite is still working through the generated-project validations. No failure output yet; I’ll keep it running.
+
+Still running cleanly so far. The suite is slow here because it exercises routing and exact KiCad wire output, which is exactly the part we need confidence in.
+
+Full suite passes: 53 tests. I’m running the full compile check and a small v2 smoke with default cluster growth enabled, then I’ll update the routing docs to mark what is now complete and what is blocked only by the missing Rust toolchain.
+
+Compile is clean. My smoke input used `RES`, which the old V1 placer does not accept even though the new catalogue does; I’m rerunning the smoke with the placer’s accepted kind names so it tests routing, not input alias compatibility.
+
+The old V1 autoplace path also doesn’t know `74HC595`; that is separate from the new routing catalogue. I’ll use a direct placement JSON for this smoke so it exercises the completed v2 router with catalogue-backed parts.
+
+The direct v2 smoke worked but correctly marked three single-endpoint control nets as unroutable. I’m rerunning with a small header so every net has at least two endpoints and the validation report can prove a fully wired small case.
+
+The all-net smoke exposed a real useful case: the new planner reports failures instead of hiding them, but that small header circuit should be routable. I’m probing whether the issue comes from cluster movement or the route loop so I can improve the engine, not just pick an easier demo.
+
+The probe found the beam search can over-optimize HPWL into a harder-to-route placement. The PDF says deep-route top final states and pick the best, so I’m adding the original/baseline state as a mandatory final candidate; the engine will only move components when the routed validation score actually wins.
+
+Baseline routing is now part of final selection. I’m rerunning the same smoke to confirm v2 chooses the clean routed state instead of a merely pretty HPWL state.
+
+Baseline alone was not enough: it had no unroutable nets but still had forbidden contacts, while the earlier rotate-only pass was clean. I’m adding the rotate-only legalized state as another mandatory final candidate, so beam search competes against both “do nothing” and “cheap rotation improvement” before it wins.
+
+The rotate-only candidate is now part of the final route competition. I’m rerunning the same small all-net smoke; this should select the truly clean routed variant if it exists.
+
+Good, the v2 default smoke now selects a clean fully wired variant: no unroutable nets, no partial nets, and netlist-equivalence-ready is true. I’m rerunning focused checks, then full suite again after doc updates.
+
+Focused checks are still green. I’m updating the routing README so it reflects the completed v2 behavior: beam search, route-final-state competition, Hanan/MST routing, density metrics, and the Rust toolchain limitation.
+
+The dedicated routing README is updated. I’m adding a short top-level pipeline note too, so someone looking from the main pipeline docs sees that v2 is now the completed mathematical path, not just a foundation.
+
+The main README still described v2 as a skeleton/foundation. I’m tightening that wording to point at the completed fallback behavior and the remaining native-Rust build condition.
+
+Docs are updated. Since the orchestrator changed after the last full run, I’m doing the full compile/test pass again now.
+
+Compile is clean; the full suite is still running. I’ll wait for the generated-project checks to finish.
+
+Still running without failure output. I’m letting it finish rather than interrupting the slower wire-maker validations.
+
+Full suite passes again: 53 tests. I’m doing diff hygiene now, then I’ll write the required `context.md` log, stage only the intended files, commit, push, and verify the remote hash.
+
+Diff hygiene is clean, and I noticed one unused helper while scanning. I’m removing that tiny bit before the final context log so the patch stays tidy.
+
+That cleanup is done. I’m running a quick compile/focused test check after the edit, then I’ll write the log and stage.
+
+The quick compile/focused checks are clean. I’m appending the full turn record to `context.md` now, including the implementation notes, smoke findings, and verification results.
+
+The context entry is in place. I’m staging only the routing/docs/tests/context files now, leaving the old generated v4 KiCad files unstaged, then I’ll run the staged whitespace check.
+
+Staging is scoped correctly and the staged whitespace check is clean. I’m adding these final staging notes to `context.md`, then I’ll commit and push.
+
+Committed locally as `d04b05a`. I’m recording that commit note in `context.md`, amending it into the same commit, then I’ll push and verify local/remote hashes match.
+
+Push verified: local `HEAD` matches `origin/main` at `c16bb1d`, and only the old generated v4 KiCad files remain dirty. I’m adding that final verification note to `context.md` and amending once more so the record is complete.
+```
+
+### Implementation Notes
+
+- Completed the PDF-defined v2 mathematical fallback because this environment has no `rustc`/`cargo`.
+- Expanded `LiveRoutingState` with weighted component graph scoring, pivot selection, next-component selection, candidate location generation, rotation-aware location scoring, pin-facing scoring, bus-order scoring, power/ground side scoring, Pareto pruning, branch-and-bound style pruning, priority-aware candidate legalization, and cluster-growth beam search.
+- Updated v2 orchestration to deep-route multiple final states instead of trusting placement score alone.
+- Final v2 routing candidates now include:
+  - original/baseline state
+  - cheap rotation/legalization baseline
+  - top cluster-growth beam states
+- V2 now chooses the best validation-aware routed variant and normalizes the wire-plan schema to `progen-kicad-wire-plan/v0.2`.
+- Added net-wide Hanan lane anchors to the wire planner.
+- Added rectilinear MST metadata and total MST length metrics for multi-terminal nets.
+- Replaced crossing counting with orthogonal segment indexing and added crossing-density tile metrics.
+- Kept the legacy v0.1 router name string stable for old tests while exposing the completed v2 behavior via additional algorithm fields.
+- Updated validation reports to take crossing-density overflow from wire-plan metrics.
+- Added routing-v2 tests for pivot selection, locked-blocker behavior, beam-search reporting, v0.2 wire-plan contract, and Hanan/MST metadata.
+- Updated routing docs and the main pipeline README.
+
+### Smoke Findings
+
+- First smoke failed because old V1 autoplace does not accept catalogue aliases like `RES` and does not know `74HC595`; the v2 catalogue itself does.
+- Direct placement smoke with single-endpoint control nets correctly reported strict-wire unroutable nets.
+- Header-backed all-net smoke initially found that HPWL-only beam placement could make routes worse.
+- Fixed final selection by always deep-routing the original state and rotation/legalization baseline alongside top beam states.
+- Final all-net smoke selected a clean routed v2 variant:
+  - engine: `python_live_state_v0.2_full_math_router`
+  - wire-plan schema: `progen-kicad-wire-plan/v0.2`
+  - checks passed: component overlap, out-of-sheet, pin resolution, wire geometry, forbidden contacts
+  - `netlist_equivalence_ready`: true
+  - nets: 7
+  - wired routes: 9
+  - unroutable nets: 0
+  - partial-wire nets: 0
+  - crossing-density overflow: 0
+
+### Verification
+
+- Start checkpoint: local `HEAD` and `origin/main` both pointed to `3c2dd4db749a0972f4244933f16a1afafe1d3081`.
+- Upstream branch: `origin/main`.
+- `rustc --version` and `cargo --version`: unavailable in this environment.
+- `python3 -m unittest kicad.tests.test_routing_v2 -q`: 8 tests passed.
+- `python3 -m unittest kicad.tests.test_placer_pipeline.PlacerPipelineTests.test_wire_planner_emits_coordinate_and_lane_astar_wire_json -q`: passed after preserving the old router name.
+- `python3 -m unittest discover -s kicad/tests -q`: 53 tests passed in 94.304 s on the final full run.
+- `python3 -m compileall -q kicad`: passed.
+- `python3 -m compileall -q kicad/pipeline/routing kicad/pipeline/wire_planner.py kicad/tests/test_routing_v2.py`: passed after final cleanup.
+- `git diff --check`: passed.
+
+### Files Edited
+
+- `kicad/pipeline/README.md`
+- `kicad/pipeline/routing/README.md`
+- `kicad/pipeline/routing/python/live_routing_state.py`
+- `kicad/pipeline/routing/python/routing_config.py`
+- `kicad/pipeline/routing/python/routing_orchestrator.py`
+- `kicad/pipeline/routing/python/validation_report.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_routing_v2.py`
+- `context.md`
+
+### Notes
+
+- Native Rust completion remains toolchain-blocked on this machine; the Python v2 fallback now implements the PDF behavior using the same JSON/API boundary.
+- Commit after push verification: `c16bb1d5ab7a875d9fe6ad02e6ba6b77175c8cf6`.
+- Pre-existing dirty generated files were intentionally left untouched and must remain excluded from staging:
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
+
+---
+
 ## Turn - 2026-07-02T23:53:35+05:00 - KiCad Overlap Complaint
 
 ### User Message

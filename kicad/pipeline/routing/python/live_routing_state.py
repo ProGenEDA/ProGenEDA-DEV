@@ -8,6 +8,7 @@ routes, and metrics in a backend-neutral JSON shape.
 
 from __future__ import annotations
 
+from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
 from statistics import median
@@ -21,6 +22,12 @@ Point = tuple[float, float]
 SIDE_ORDER = ("left", "top", "right", "bottom")
 CLOCK_TOKENS = ("CLK", "CLOCK", "SHCP", "STCP", "RESET", "LATCH")
 BUS_TOKENS = ("SPI", "I2C", "UART", "SEG", "DATA", "ADDRESS", "SHIFT", "CAN", "RS485", "MOSI", "MISO", "SCK")
+SIDE_VECTORS: dict[str, Point] = {
+    "left": (-1.0, 0.0),
+    "right": (1.0, 0.0),
+    "top": (0.0, -1.0),
+    "bottom": (0.0, 1.0),
+}
 
 
 def snap(value: float, grid: float) -> float:
@@ -131,6 +138,31 @@ def _fallback_pin_def(pin_name: str, index: int, total: int, width: float, heigh
     y = 0.0 if rows == 1 else -height * 0.35 + (height * 0.7 * row / max(1, rows - 1))
     x = -width / 2 if side == "left" else width / 2
     return {"number": str(pin_name), "local": [round(x, 3), round(y, 3)], "side": side, "type": "passive", "roles": [net_class]}
+
+
+def _manhattan(left: Point, right: Point) -> float:
+    return abs(left[0] - right[0]) + abs(left[1] - right[1])
+
+
+def _side_faces_point(side: str, source: Point, target: Point) -> bool:
+    vector = SIDE_VECTORS.get(str(side).lower(), SIDE_VECTORS["right"])
+    delta = (target[0] - source[0], target[1] - source[1])
+    return vector[0] * delta[0] + vector[1] * delta[1] > 0.0
+
+
+def _bus_sort_key(pin: str) -> tuple[str, int, str]:
+    prefix = "".join(ch for ch in pin if not ch.isdigit())
+    digits = "".join(ch for ch in pin if ch.isdigit())
+    return (prefix, int(digits) if digits else 0, pin)
+
+
+def _inversion_count(values: list[float]) -> int:
+    inversions = 0
+    for index, left in enumerate(values):
+        for right in values[index + 1 :]:
+            if left > right:
+                inversions += 1
+    return inversions
 
 
 @dataclass
@@ -397,11 +429,419 @@ class LiveRoutingState:
             for net_name, net in self.nets.items()
             if len(net.get("endpoints", [])) >= 2
         }
+        score["pin_facing_penalty"] = round(self.score_pin_facing(), 3)
+        score["bus_order_penalty"] = round(self.score_bus_alignment(), 3)
+        score["power_ground_side_penalty"] = round(self.score_power_ground_sides(), 3)
+        score["score"] = round(
+            float(score["score"])
+            + score["pin_facing_penalty"] * 10.0
+            + score["bus_order_penalty"] * 25.0
+            + score["power_ground_side_penalty"] * 20.0,
+            3,
+        )
         return score
 
     def _net_median_center(self, net: dict[str, Any]) -> list[float]:
         points = [endpoint["point"] for endpoint in net.get("endpoints", []) if isinstance(endpoint.get("point"), list)]
         return [round(float(median(point[0] for point in points)), 3), round(float(median(point[1] for point in points)), 3)]
+
+    def build_component_graph(self) -> dict[str, dict[str, float]]:
+        graph: dict[str, dict[str, float]] = {ref: {} for ref in self.components}
+        for net_name, net in self.nets.items():
+            endpoints = net.get("endpoint_refs") or net.get("endpoints") or []
+            refs = sorted({str(endpoint.get("ref") or "") for endpoint in endpoints if isinstance(endpoint, dict) and endpoint.get("ref")})
+            if len(refs) < 2:
+                continue
+            weight = float(net.get("weight", net_weight(classify_net(net_name))))
+            fanout_discount = max(1.0, (len(refs) - 1) ** 0.5)
+            for index, left in enumerate(refs):
+                for right in refs[index + 1 :]:
+                    edge_weight = weight / fanout_discount
+                    graph.setdefault(left, {})[right] = graph.setdefault(left, {}).get(right, 0.0) + edge_weight
+                    graph.setdefault(right, {})[left] = graph.setdefault(right, {}).get(left, 0.0) + edge_weight
+        return graph
+
+    def select_pivot(self, *, user_primary_ref: str | None = None) -> str:
+        graph = self.build_component_graph()
+        scores: dict[str, float] = {}
+        for ref, component in self.components.items():
+            weighted_degree = sum(graph.get(ref, {}).values())
+            bus_endpoint_count = 0
+            clock_endpoint_count = 0
+            large_fanout_control_count = 0
+            power_only = True
+            for net_name, net in self.nets.items():
+                refs = {str(endpoint.get("ref") or "") for endpoint in net.get("endpoint_refs", []) if isinstance(endpoint, dict)}
+                if ref not in refs:
+                    continue
+                net_class = str(net.get("class") or classify_net(net_name))
+                if net_class not in {"power", "ground"}:
+                    power_only = False
+                if net_class == "bus":
+                    bus_endpoint_count += 1
+                if net_class == "clock_control":
+                    clock_endpoint_count += 1
+                    if int(net.get("fanout", 0)) >= 4:
+                        large_fanout_control_count += 1
+            score = (
+                weighted_degree * 10.0
+                + bus_endpoint_count * 6.0
+                + clock_endpoint_count * 8.0
+                + large_fanout_control_count * 5.0
+                + (40.0 if component.get("locked") else 0.0)
+                + (100.0 if user_primary_ref and ref == user_primary_ref else 0.0)
+                - (25.0 if power_only else 0.0)
+                + float(component.get("priority", 0.0)) * 0.1
+            )
+            scores[ref] = round(score, 3)
+        self.metrics["pivot_scores"] = dict(sorted(scores.items()))
+        if not scores:
+            return ""
+        return min(scores, key=lambda ref: (-scores[ref], ref))
+
+    def select_next_component(self, placed_refs: set[str]) -> str:
+        graph = self.build_component_graph()
+        candidates = sorted(set(self.components) - placed_refs)
+        if not candidates:
+            return ""
+
+        def score(ref: str) -> tuple[float, float, str]:
+            cluster_weight = sum(graph.get(ref, {}).get(placed, 0.0) for placed in placed_refs)
+            return (-cluster_weight, -float(self.components[ref].get("priority", 0.0)), ref)
+
+        return min(candidates, key=score)
+
+    def _connected_placed_points(self, ref: str, placed_refs: set[str]) -> list[Point]:
+        points: list[Point] = []
+        for net in self.nets.values():
+            endpoint_refs = net.get("endpoint_refs", [])
+            if not any(isinstance(endpoint, dict) and endpoint.get("ref") == ref for endpoint in endpoint_refs):
+                continue
+            for endpoint in endpoint_refs:
+                if not isinstance(endpoint, dict):
+                    continue
+                other_ref = str(endpoint.get("ref") or "")
+                if other_ref not in placed_refs:
+                    continue
+                pin_name = str(endpoint.get("pin") or "")
+                pin = self.components.get(other_ref, {}).get("pins", {}).get(pin_name)
+                if isinstance(pin, dict):
+                    points.append(_point_from_raw(pin.get("point"), self.component_center(other_ref)))
+                elif other_ref in self.components:
+                    points.append(self.component_center(other_ref))
+        return points
+
+    def generate_candidate_locations(self, ref: str, placed_refs: set[str], config: dict[str, Any]) -> list[Point]:
+        placement_cfg = config.get("placement", {}) if isinstance(config.get("placement"), dict) else {}
+        limit = max(1, int(placement_cfg.get("candidate_locations_per_component", 24)))
+        component = self.components[ref]
+        current = self.component_center(ref)
+        anchors = self._connected_placed_points(ref, placed_refs)
+        if not anchors and placed_refs:
+            anchors = [self.component_center(placed) for placed in sorted(placed_refs) if placed in self.components]
+        if not anchors:
+            anchors = [current]
+        center = (
+            snap(float(median(point[0] for point in anchors)), self.grid),
+            snap(float(median(point[1] for point in anchors)), self.grid),
+        )
+        body = component.get("catalogue_body", {})
+        spacing = float(component.get("placement_hints", {}).get("default_spacing", 10.16))
+        x_step = snap(float(body.get("width", 10.0)) + spacing, self.grid)
+        y_step = snap(float(body.get("height", 8.0)) + spacing, self.grid)
+        sheet_w = float(self.sheet.get("width", 420.0))
+        sheet_h = float(self.sheet.get("height", 297.0))
+        margin = float(self.sheet.get("margin", 15.24))
+        raw: list[Point] = [current, center]
+        seeds = [center, *anchors[: max(1, min(len(anchors), 6))]]
+        multipliers = (1.0, 1.5, 2.0)
+        directions = (
+            (1.0, 0.0),
+            (-1.0, 0.0),
+            (0.0, 1.0),
+            (0.0, -1.0),
+            (1.0, 1.0),
+            (1.0, -1.0),
+            (-1.0, 1.0),
+            (-1.0, -1.0),
+        )
+        for seed in seeds:
+            for multiplier in multipliers:
+                for dx, dy in directions:
+                    raw.append((snap(seed[0] + dx * x_step * multiplier, self.grid), snap(seed[1] + dy * y_step * multiplier, self.grid)))
+        seen: set[Point] = set()
+        candidates: list[Point] = []
+        for point in raw:
+            if point in seen:
+                continue
+            seen.add(point)
+            if margin <= point[0] <= sheet_w - margin and margin <= point[1] <= sheet_h - margin:
+                candidates.append(point)
+        candidates.sort(key=lambda point: (_manhattan(point, center), _manhattan(point, current), point[1], point[0]))
+        return candidates[:limit]
+
+    def score_pin_facing(self) -> float:
+        penalty = 0.0
+        for net_name, net in self.nets.items():
+            endpoints = [endpoint for endpoint in net.get("endpoints", []) if isinstance(endpoint, dict)]
+            if len(endpoints) < 2:
+                continue
+            weight = float(net.get("weight", net_weight(classify_net(net_name))))
+            for endpoint in endpoints:
+                point = _point_from_raw(endpoint.get("point"))
+                side = str(endpoint.get("side") or "right")
+                for other in endpoints:
+                    if endpoint is other:
+                        continue
+                    other_ref = str(other.get("ref") or "")
+                    if other_ref not in self.components:
+                        continue
+                    target = self.component_center(other_ref)
+                    if not _side_faces_point(side, point, target):
+                        penalty += weight
+        return penalty
+
+    def score_power_ground_sides(self) -> float:
+        penalty = 0.0
+        for component in self.components.values():
+            for pin in component.get("pins", {}).values():
+                if not isinstance(pin, dict):
+                    continue
+                roles = {str(role).lower() for role in pin.get("roles", [])}
+                pin_type = str(pin.get("type", "")).lower()
+                side = str(pin.get("side", ""))
+                if ("power" in roles or pin_type == "power") and side != "top":
+                    penalty += 1.0
+                if ("ground" in roles or pin_type == "ground") and side != "bottom":
+                    penalty += 1.0
+        return penalty
+
+    def score_bus_alignment(self) -> float:
+        penalty = 0.0
+        for ref, component in self.components.items():
+            hints = component.get("routing_hints", {})
+            bus_groups = hints.get("bus_groups", []) if isinstance(hints, dict) else []
+            if not isinstance(bus_groups, list):
+                continue
+            for group in bus_groups:
+                if not isinstance(group, dict):
+                    continue
+                pins = [str(pin) for pin in group.get("pins", []) if str(pin) in component.get("pins", {})]
+                if len(pins) < 2:
+                    continue
+                target_positions: list[tuple[str, float]] = []
+                for pin in sorted(pins, key=_bus_sort_key):
+                    for net in self.nets.values():
+                        endpoints = net.get("endpoints", [])
+                        if not any(isinstance(endpoint, dict) and endpoint.get("ref") == ref and endpoint.get("pin") == pin for endpoint in endpoints):
+                            continue
+                        others = [endpoint for endpoint in endpoints if isinstance(endpoint, dict) and endpoint.get("ref") != ref]
+                        if not others:
+                            continue
+                        axis_value = float(median(float(endpoint.get("point", [0.0, 0.0])[1]) for endpoint in others))
+                        target_positions.append((pin, axis_value))
+                        break
+                if len(target_positions) >= 2:
+                    penalty += _inversion_count([value for _pin, value in target_positions])
+        return penalty
+
+    def score_location_rotation(self, ref: str, location: Point, rotation: int | float) -> dict[str, Any]:
+        candidate = self.clone_state()
+        candidate.apply_move_rotation(ref, location[0], location[1], rotation)
+        fast = candidate.score_fast()
+        pin_facing = candidate.score_pin_facing()
+        bus_order = candidate.score_bus_alignment()
+        power_ground = candidate.score_power_ground_sides()
+        rotation_cost = 0.0 if int(rotation) % 360 == int(self.components[ref].get("rotation", 0)) % 360 else 1.0
+        lower_bound = (
+            float(fast["weighted_hpwl"])
+            + int(fast["component_overlap_count"]) * 1_000_000.0
+            + int(fast["out_of_sheet_count"]) * 1_000_000.0
+            + pin_facing * 10.0
+            + bus_order * 25.0
+            + power_ground * 20.0
+            + rotation_cost * 2.0
+        )
+        return {
+            "ref": ref,
+            "at": [location[0], location[1]],
+            "rotation": int(rotation) % 360,
+            "hpwl": fast["hpwl"],
+            "weighted_hpwl": fast["weighted_hpwl"],
+            "overlap_count": fast["component_overlap_count"],
+            "out_of_sheet": bool(fast["out_of_sheet_count"]),
+            "pin_facing_penalty": round(pin_facing, 3),
+            "bus_misalignment": round(bus_order, 3),
+            "power_ground_side_penalty": round(power_ground, 3),
+            "rotation_cost": rotation_cost,
+            "lower_bound_score": round(lower_bound, 3),
+        }
+
+    @staticmethod
+    def pareto_prune_candidates(candidates: list[dict[str, Any]], *, limit: int) -> list[dict[str, Any]]:
+        survivors: list[dict[str, Any]] = []
+        metrics = ("weighted_hpwl", "overlap_count", "pin_facing_penalty", "bus_misalignment", "power_ground_side_penalty")
+        for candidate in candidates:
+            dominated = False
+            for other in candidates:
+                if other is candidate:
+                    continue
+                no_worse = all(float(other.get(metric, 0.0)) <= float(candidate.get(metric, 0.0)) for metric in metrics)
+                strictly_better = any(float(other.get(metric, 0.0)) < float(candidate.get(metric, 0.0)) for metric in metrics)
+                if no_worse and strictly_better and not other.get("out_of_sheet", False):
+                    dominated = True
+                    break
+            if not dominated:
+                survivors.append(candidate)
+        survivors.sort(key=lambda item: (float(item.get("lower_bound_score", 1.0e99)), str(item.get("ref", "")), item.get("rotation", 0), item.get("at", [0, 0])))
+        return survivors[:limit]
+
+    def legalize_candidate(self, ref: str, location: Point, rotation: int | float, config: dict[str, Any]) -> tuple["LiveRoutingState | None", dict[str, Any]]:
+        legalization = config.get("legalization", {}) if isinstance(config.get("legalization"), dict) else {}
+        max_depth = int(legalization.get("max_depth", 3))
+        candidate = self.clone_state()
+        original_priority = float(candidate.components[ref].get("priority", 0.0))
+        boost = float(legalization.get("active_component_priority_boost", 1000.0))
+        candidate.components[ref]["priority"] = original_priority + boost
+        try:
+            candidate.apply_move_rotation(ref, location[0], location[1], rotation)
+            report = candidate.legalize_after_move(ref, max_depth=max_depth)
+        finally:
+            if ref in candidate.components:
+                candidate.components[ref]["priority"] = original_priority
+        failed = list(report.get("failed", []))
+        out_of_sheet = [item_ref for item_ref in candidate.components if candidate._component_out_of_sheet(item_ref)]
+        if failed or out_of_sheet or candidate.find_overlaps():
+            report = dict(report)
+            report["out_of_sheet"] = sorted(out_of_sheet)
+            report["ok"] = False
+            return None, report
+        report = dict(report)
+        report["ok"] = True
+        report["out_of_sheet"] = []
+        return candidate, report
+
+    def beam_search_cluster_growth(self, config: dict[str, Any]) -> dict[str, Any]:
+        placement_cfg = config.get("placement", {}) if isinstance(config.get("placement"), dict) else {}
+        component_count = len(self.components)
+        beam_width = max(1, int(placement_cfg.get("beam_width", 12)))
+        max_states = max(1, int(placement_cfg.get("max_candidate_states_per_step", 128)))
+        rotations_keep = max(1, int(placement_cfg.get("rotations_per_location_keep", 2)))
+        deep_route_top_n = max(1, int(placement_cfg.get("deep_route_top_n", 4)))
+        if component_count >= 90:
+            beam_width = min(beam_width, 4)
+            max_states = min(max_states, 48)
+            rotations_keep = min(rotations_keep, 1)
+
+        pivot = self.select_pivot(user_primary_ref=placement_cfg.get("user_primary_ref"))
+        if not pivot:
+            return {
+                "selected_state": self,
+                "final_states": [self],
+                "report": {"pivot": "", "order": [], "variants": [], "selected_variant": "empty_state"},
+            }
+        order = [pivot]
+        placed_for_order = {pivot}
+        while len(order) < len(self.components):
+            nxt = self.select_next_component(placed_for_order)
+            if not nxt:
+                break
+            order.append(nxt)
+            placed_for_order.add(nxt)
+
+        beam: list[LiveRoutingState] = [self.clone_state()]
+        placed_cluster: set[str] = {pivot}
+        best_full_score = float(self.score_routeability()["score"])
+        step_reports: list[dict[str, Any]] = []
+        for step_index, ref in enumerate(order[1:], start=1):
+            next_states: list[tuple[float, LiveRoutingState, dict[str, Any]]] = []
+            candidate_reports: list[dict[str, Any]] = []
+            for beam_index, state in enumerate(beam):
+                if state.components.get(ref, {}).get("locked"):
+                    score = float(state.score_routeability()["score"])
+                    next_states.append((score, state, {"ref": ref, "status": "locked_kept", "beam_index": beam_index}))
+                    continue
+                candidate_locations = state.generate_candidate_locations(ref, placed_cluster, config)
+                scored: list[dict[str, Any]] = []
+                legal_rotations = [int(rotation) for rotation in state.components[ref].get("legal_rotations", [0])]
+                for location in candidate_locations:
+                    rotation_scores = [state.score_location_rotation(ref, location, rotation) for rotation in legal_rotations]
+                    rotation_scores.sort(key=lambda item: (float(item["lower_bound_score"]), item["rotation"]))
+                    scored.extend(rotation_scores[:rotations_keep])
+                scored = state.pareto_prune_candidates(scored, limit=max_states)
+                for candidate in scored:
+                    if float(candidate["lower_bound_score"]) > best_full_score * 1.35 and len(next_states) >= beam_width:
+                        candidate_reports.append({**candidate, "status": "branch_bound_pruned"})
+                        continue
+                    candidate_state, legalization_report = state.legalize_candidate(
+                        ref,
+                        _point_from_raw(candidate["at"]),
+                        int(candidate["rotation"]),
+                        config,
+                    )
+                    if candidate_state is None:
+                        candidate_reports.append({**candidate, "status": "legalization_failed", "legalization": legalization_report})
+                        continue
+                    routeability = candidate_state.score_routeability()
+                    score = float(routeability["score"])
+                    best_full_score = min(best_full_score, score)
+                    next_states.append(
+                        (
+                            score,
+                            candidate_state,
+                            {
+                                **candidate,
+                                "status": "accepted",
+                                "routeability": routeability,
+                                "legalization": legalization_report,
+                                "beam_index": beam_index,
+                            },
+                        )
+                    )
+                    candidate_reports.append({**candidate, "status": "accepted", "score": round(score, 3)})
+            if not next_states:
+                beam = [state.clone_state() for state in beam[:beam_width]]
+                step_reports.append({"step": step_index, "ref": ref, "accepted_count": 0, "candidate_count": len(candidate_reports), "fallback": "kept_previous_beam"})
+            else:
+                next_states.sort(key=lambda item: (item[0], item[2].get("rotation", 0), str(item[2].get("ref", ""))))
+                beam = [item[1] for item in next_states[:beam_width]]
+                step_reports.append(
+                    {
+                        "step": step_index,
+                        "ref": ref,
+                        "accepted_count": len(next_states),
+                        "candidate_count": len(candidate_reports),
+                        "best_score": round(next_states[0][0], 3),
+                        "best_candidate": next_states[0][2],
+                    }
+                )
+            placed_cluster.add(ref)
+
+        beam.sort(key=lambda state: float(state.score_routeability()["score"]))
+        final_states = beam[:deep_route_top_n]
+        variants = [
+            {
+                "name": f"beam_state_{index}",
+                "score": state.score_routeability(),
+                "coordinate_edit_count": len(state.to_coordinate_plan().get("coordinate_edits", [])),
+            }
+            for index, state in enumerate(final_states)
+        ]
+        return {
+            "selected_state": final_states[0] if final_states else self,
+            "final_states": final_states or [self],
+            "report": {
+                "schema": "progen-kicad-live-state-beam-search/v0.2",
+                "strategy": "pivot_cluster_growth_rotation_aware_legalized_beam",
+                "pivot": pivot,
+                "order": order,
+                "beam_width": beam_width,
+                "deep_route_top_n": deep_route_top_n,
+                "step_reports": step_reports,
+                "selected_variant": "beam_state_0",
+                "variants": variants,
+            },
+        }
 
     def to_coordinate_plan(self) -> dict[str, Any]:
         edits: list[dict[str, Any]] = []
@@ -571,6 +1011,7 @@ def build_live_routing_state(
             "legal_rotations": list(type_def.get("legal_rotations", [0, 90, 180, 270])),
             "catalogue_body": deepcopy(body),
             "pin_defs": pin_defs,
+            "routing_hints": deepcopy(type_def.get("routing_hints", {})),
             "placement_hints": deepcopy(type_def.get("placement_hints", {})),
         }
         component["priority"] = _component_priority(component, connected_weight_by_ref.get(ref, 0.0))
