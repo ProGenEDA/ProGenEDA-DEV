@@ -3,8 +3,10 @@ from __future__ import annotations
 from proteusgen.component_placer import generate_component_placement_project, load_component_aliases
 from proteusgen.component_catalog import load_component_catalog
 from proteusgen.component_beautifier import translate_packet_by_delta
+from proteusgen.pdsprj import read_internal_file
 from proteusgen.component_terminal_placer import (
     PROTEUS_TERMINAL_GRID,
+    _extract_object_chunk,
     attach_catalogue_pin_bidir_terminals_to_project,
     analyse_terminalized_donor_pin_geometry,
     plan_catalogue_pin_bidir_terminals,
@@ -276,7 +278,11 @@ def test_catalogue_pin_emitter_attaches_4017_existing_wire_skeleton(tmp_path) ->
     assert report["wire_count_before"] == report["wire_count_after"] == 14
     assert report["terminal_suffix_links_valid"]
     assert report["link_allocation"]["valid"]
+    assert report["object_chunk_double_ff_valid"]
     assert all(row["wire_is_nonzero"] for row in report["wire_path_contact_checks"])
+    assert _extract_object_chunk(read_internal_file(output, "ROOT.DSN")).endswith(
+        b"\xff\xff"
+    )
 
 
 def test_catalogue_pin_emitter_strips_old_partial_terminals_before_74hc74(tmp_path) -> None:

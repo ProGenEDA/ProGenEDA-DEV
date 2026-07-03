@@ -26,12 +26,29 @@ current component body bbox plus catalogue component-relative pin offsets. The
 existing WIRE rows remain in use only for WIRE order, suffix/link patching, and
 record identity.
 
+User Proteus result on 2026-07-04: V3 still produced Bad Object Record errors
+across the pack. The user supplied a Proteus-saved no-error NE555 file as an
+oracle. Comparing generated V3 NE555 to that saved file showed the terminal,
+WIRE, and CDB data were byte-compatible; the saved file's ROOT.DSN object chunk
+was exactly the generated object chunk plus one final `FF` byte. Root cause:
+the emitter treated a last packet byte of `FF` as if it were already the
+object-stream terminator.
+
+V4 corrected pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v4_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V4_TEMP_2026_07_04.zip`
+
+V4 writes an explicit double-`FF` ROOT.DSN object-stream ending. The V4 NE555
+object chunk matches the user's Proteus-saved no-error NE555 object chunk
+byte-for-byte.
+
 All cases below were generated through catalogue-driven pin geometry plus the
 accepted terminal mechanics: grid-snapped bidirectional terminal contact,
 180 degrees for left-side pins, 0 degrees for right-side pins, short WIRE from
 terminal contact to exact pin, and final ROOT.DSN link rebasing.
 
-V3 static-valid, pending Proteus user testing:
+V4 static-valid, pending Proteus user testing:
 
 - `NPN`
 - `PNP`

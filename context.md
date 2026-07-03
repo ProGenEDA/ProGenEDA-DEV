@@ -7866,6 +7866,78 @@ Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
 
 ---
 
+## Restart Context Log - 2026-07-04T00:36:19.0541180+05:00
+
+### User Message 1
+
+Timestamp: `2026-07-04T00:36:19.0541180+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+all the circuits had a bad object record error, here this file doesnt have the error. see whats the issue
+~~~~
+
+Referenced file:
+
+- `experiments/multi_pin_catalogue_terminal_solo_v3_temp_2026_07_04/S03_NE555_1X_COORD_FRAME_FIX/S03_NE555_1X_COORD_FRAME_FIX_sa.pdsprj`
+
+### Visible Agent Responses During This Turn
+
+Timestamp: `2026-07-04T00:36:19.0541180+05:00` (Pakistan; recorded during turn)
+
+~~~~text
+I’ll verify the pushed checkpoint first, then compare the generated NE555 file against your Proteus-saved `_sa` file. I’ll focus on `ROOT.DSN` object structure, terminal/WIRE records, and any section/table fields Proteus rewrote when it removed the Bad Object Record error.
+Checkpoint matches remote. The only untracked file is your supplied `_sa.pdsprj`, so I’ll treat it as evidence and not modify it. Now I’m extracting comparable `ROOT.DSN` data from original vs saved.
+The import name I guessed was wrong; I’m locating the repo’s actual PDS internal-file helper and rerunning the comparison.
+That module doesn’t expose a list helper. I’ll use its reader plus Python’s zip-like inspection where applicable.
+Now using `inspect_pdsprj` plus direct internal file reads.
+The container and CDB are unchanged; Proteus only rewrote `ROOT.DSN` and `PROJECT.XML`. `ROOT.DSN` changed by one byte in length, so this is likely a DSN structure/separator problem, not component catalogue data. I’m comparing the object chunk boundaries and record stream now.
+The key difference is now clear: the saved no-error file’s object chunk is exactly the generated chunk plus one extra final `FF` byte. Terminals/WIRE records themselves are byte-identical. So the Bad Object Record is caused by the catalogue emitter ending the ROOT.DSN object stream with a single `FF`; Proteus save normalizes it to double `FF FF`. I’m checking the DSN builder and existing validators before patching this.
+This bad-record fix belongs in `attach_catalogue_pin_bidir_terminals_to_project`, not in catalogue data. I’ll patch only that shared emitter so catalogue-generated object chunks end with Proteus’ normalized double `FF FF` terminator, then regenerate at least NE555 and probably the whole V4 pack.
+Before editing the shared terminal placer again, I’m making the required timestamped backup.
+The bug is subtler than just “single vs double terminator”: the emitter checked `new_chunk.endswith(FF)` and skipped adding a real final terminator when the last component packet naturally ended in byte `FF`. Proteus then added the missing stream terminator on save. I’m changing catalogue emission to require an explicit `FF FF` object-stream ending.
+The catalogue emitter now always writes the explicit double-FF stream ending. I’m also making the rebase report preserve/check that fact.
+One guard: the final-link rebase function is shared with accepted two-pin terminalization. I’m keeping the double-FF requirement mandatory only for this catalogue multi-pin route, so I don’t accidentally invalidate the accepted V12 path.
+Regression added: catalogue-generated ROOT.DSN object chunks must now end with `FF FF`. I’m running focused tests, then I’ll regenerate a V4 pack.
+Focused tests pass. I’m generating a temporary NE555 with the patched emitter and comparing its object chunk to your Proteus-saved `_sa` file. If the diagnosis is right, the object chunk should now match `_sa` exactly.
+Confirmed: the patched NE555 object chunk is byte-for-byte identical to your no-error `_sa` object chunk. That proves the Bad Object Record issue is the missing explicit final `FF` terminator, not terminal geometry or CDB. I’m cleaning temporary files and regenerating the full corrected V4 pack.
+The supplied `_sa.pdsprj` remains untracked evidence and I’m not modifying it. Generating V4 now with the double-FF fix for all 26 cases.
+V4 generated: 26 cases, all static-valid, all with the explicit `FF FF` object-stream ending. I’m doing one direct NE555 comparison to your `_sa` file, then full tests.
+The V4 NE555 object chunk is byte-for-byte identical to your Proteus-saved no-error `_sa` object chunk. Running final compile/focused tests now.
+Tests passed. I’m updating the evidence docs: V3 had the coordinate fix but still had Bad Object Record due missing explicit final object-stream terminator; V4 fixes that and matches your saved NE555 object chunk.
+Architecture/status docs updated. I’m adding structured evidence records for the V3 Bad Object Record result and V4 static pass.
+Evidence records are updated. I’m appending this turn to `context.md`, then I’ll commit, push, and verify.
+~~~~
+
+### Files Edited By Agent In Response To These Messages
+
+- `backups/component_terminal_placer/component_terminal_placer_2026_07_04_003122_before_catalogue_double_ff_fix.py` - required backup before editing the shared terminal placer.
+- `src/proteusgen/component_terminal_placer.py` - added explicit double-`FF` object-stream terminator helper for catalogue multi-pin emission and records `object_chunk_double_ff_valid` in reports.
+- `tests/test_component_catalog.py` - added regression that catalogue-generated ROOT.DSN object chunks end with `FF FF`.
+- `experiments/multi_pin_catalogue_terminal_solo_v4_temp_2026_07_04/` - generated corrected 26-case V4 solo Proteus pack.
+- `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V4_TEMP_2026_07_04.zip` - zipped corrected V4 test pack.
+- `experiments/multi_pin_catalogue_terminal_solo_v3_temp_2026_07_04/S03_NE555_1X_COORD_FRAME_FIX/S03_NE555_1X_COORD_FRAME_FIX_sa.pdsprj` - user-supplied Proteus-saved no-error oracle, preserved as evidence.
+- `docs/architecture.md` - recorded the V3 Bad Object Record root cause and V4 double-FF correction.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V3 as Bad Object Record rejected and V4 as the current corrected checkpoint.
+- `knowledge/test_results.jsonl` - recorded V3 user rejection and V4 automated static pass.
+- `context.md` - appended this log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, local/upstream/GitHub matched `e729c7370ee7d0a6653128d9e72fec6bbaf34d8b`.
+- Original V3 NE555 generated object chunk length: `1684`.
+- User Proteus-saved no-error NE555 object chunk length: `1685`.
+- Saved no-error chunk equals generated V3 chunk plus one final `FF`.
+- Patched temporary NE555 output object chunk matched the saved no-error NE555 object chunk byte-for-byte.
+- V4 generated 26 cases; all reports had `valid_static true` and `object_chunk_double_ff_valid true`.
+- V4 NE555 object chunk matched user saved no-error NE555 object chunk byte-for-byte.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py -q` -> `21 passed`.
+- `python -m compileall -q src tests tools\proteus_generation` -> passed.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `36 passed`.
+- Focused D20/display guard tests -> `2 passed`.
+- Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
+---
+
 ## Restart Context Log - 2026-07-04T00:24:15.1453260+05:00
 
 ### User Message 1

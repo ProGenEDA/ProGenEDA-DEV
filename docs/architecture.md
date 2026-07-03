@@ -278,9 +278,20 @@ V3 decodes pin coordinates as current component body bbox plus catalogue
 component-relative pin offsets, while still using donor WIRE rows for WIRE
 order and suffix/link patching. The requested 3x/13x/23x pattern remains
 deliberately reduced to 1x per family because duplicated native packets do not
-yet preserve a verified per-copy pin-link table. Mixed multi-pin circuits are
-also blocked because the current mixed component placer path selects a mega
-donor whose bare component packets lack the donor WIRE/link skeleton required
-by the safe catalogue emitter. Solving those two cases requires
-component-placer contract work or new donor/link evidence, not a new
-terminal-placement script.
+yet preserve a verified per-copy pin-link table.
+
+The V3 checkpoint still produced Bad Object Record warnings in Proteus. A
+user-supplied Proteus-saved NE555 oracle showed that Proteus fixed the file by
+adding one final `FF` byte to the ROOT.DSN object stream. The shared catalogue
+emitter now writes an explicit double-`FF` object-stream ending because a
+component packet may naturally end in byte `FF` without that byte being the
+stream terminator. The corrected Bad Object Record checkpoint is
+`experiments/multi_pin_catalogue_terminal_solo_v4_temp_2026_07_04`, and its
+NE555 object chunk matches the user's no-error saved NE555 object chunk
+byte-for-byte.
+
+Mixed multi-pin circuits are also blocked because the current mixed component
+placer path selects a mega donor whose bare component packets lack the donor
+WIRE/link skeleton required by the safe catalogue emitter. Solving mixed and
+multi-copy cases requires component-placer contract work or new donor/link
+evidence, not a new terminal-placement script.

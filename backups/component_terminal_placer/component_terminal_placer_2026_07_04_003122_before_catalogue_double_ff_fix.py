@@ -1107,9 +1107,9 @@ def attach_catalogue_pin_bidir_terminals_to_project(
 
     if not family_reports:
         raise ValueError("No catalogue-backed terminalized component was emitted.")
-    new_chunk = _ensure_double_ff_object_stream_terminator(
-        original_chunk[:1] + b"".join(local_records)
-    )
+    new_chunk = original_chunk[:1] + b"".join(local_records)
+    if not new_chunk.endswith(b"\xff"):
+        new_chunk += b"\xff"
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
@@ -1190,7 +1190,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         ),
         "object_chunk_size_before": len(original_chunk),
         "object_chunk_size_after": len(final_chunk),
-        "object_chunk_double_ff_valid": final_chunk.endswith(b"\xff\xff"),
         "base_component_stream_covered": True,
     }
     return _rebase_terminal_links_to_final_wire_addresses(destination, report)
@@ -4514,23 +4513,6 @@ def _strip_bidir_records_from_chunk(chunk: bytes) -> bytes:
     return bytes(out)
 
 
-def _ensure_double_ff_object_stream_terminator(chunk: bytes) -> bytes:
-    """Return a Proteus object stream with an explicit final FF terminator.
-
-    A component packet may naturally end in byte ``0xff`` because its final
-    field is binary data.  That byte is not a reliable object-stream terminator.
-    Proteus normalizes the catalogue multi-pin output to an additional final
-    ``0xff`` on save, so the shared emitter must write the explicit ``ff ff``
-    ending itself to avoid the Bad Object Record warning.
-    """
-
-    if chunk.endswith(b"\xff\xff"):
-        return chunk
-    if chunk.endswith(b"\xff"):
-        return chunk + b"\xff"
-    return chunk + b"\xff\xff"
-
-
 def _pin_label_parts(label: str) -> tuple[str, str]:
     normalized = " ".join(label.replace("(", "").replace(")", "").split())
     match = struct_pin_label_match(normalized)
@@ -5000,7 +4982,6 @@ def _rebase_terminal_links_to_final_wire_addresses(
         "events": label_jitter_events,
     }
     report["object_chunk_size_after"] = len(written_chunk)
-    report["object_chunk_double_ff_valid"] = written_chunk.endswith(b"\xff\xff")
     report["bidir_count_after"] = written_chunk.count(BIDIR_MARKER)
     report["wire_count_after"] = written_chunk.count(b"\x7fWIRE")
     report["link_allocation"] = {
@@ -5032,7 +5013,6 @@ def _rebase_terminal_links_to_final_wire_addresses(
     expected_wire_count = report.get("wire_count_added")
     if not expected_wire_count and report.get("wire_count_rewritten") is not None:
         expected_wire_count = report.get("wire_count_rewritten")
-    require_double_ff = report.get("family_handler") == "CATALOGUE/existing-wire-v1"
     report["valid"] = bool(
         report["terminal_suffixes_unique"]
         and report["terminal_suffix_links_valid"]
@@ -5042,10 +5022,6 @@ def _rebase_terminal_links_to_final_wire_addresses(
         and report.get("bidir_count_after") == report.get("terminal_count_added")
         and report.get("wire_count_after") == expected_wire_count
         and written_chunk.endswith(b"\xff")
-        and (
-            not require_double_ff
-            or report.get("object_chunk_double_ff_valid", False)
-        )
     )
     return report
 
