@@ -30,7 +30,7 @@ from .placement_catalog import CatalogPlacementPlan, PlacedCatalogComponent, res
 from .placement_project_writer import write_placement_project
 from .placer_pipeline import run_placer_pipeline
 from .wire_geometry_validator import AllowedTouch, ComponentBody, WireGeometrySegment, validate_wire_geometry
-from .wire_planner import LABEL_STRATEGIES, normalize_routing_mode, plan_wire_routes
+from .wire_planner import LABEL_STRATEGIES, normalize_routing_mode, plan_wire_routes, plan_wiring
 
 
 WIRE_MAKER_VERSION = "progen-kicad-wire-maker/v0.1"
@@ -1593,11 +1593,12 @@ def generate_wired_projects_from_final_json(
 
         ctx = run_placer_pipeline(placement_input, write_trace=False)
         placement_dict = ctx.placement_plan.as_dict()
-        coordinate_plan = decide_arrangement(placement_dict, circuit)
-        beautified = apply_coordinate_edits(placement_dict, coordinate_plan)
+        planned = plan_wiring(placement_dict, circuit, wire_config=cfg)
+        beautified = planned["routing_placement"]
         beautified, placement, routing_placement, body_overlap_report = _settle_actual_symbol_body_placement(circuit, beautified)
         (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
         wire_plan = plan_wire_routes(routing_placement, circuit, config=cfg)
+        wire_plan["arrangement_selection"] = planned.get("arrangement_selection", {})
         wire_plan, wire_result = repair_wire_plan_geometry(circuit, placement, wire_plan)
         (wire_plan_dir / f"{stem}_wire_plan.json").write_text(json.dumps(wire_plan, indent=2), encoding="utf-8")
 

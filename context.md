@@ -6876,12 +6876,195 @@ The pipeline README has two stale spots: it still describes the maker as emittin
 ### Additional Visible Responses Before Commit
 
 ```text
+Context is updated. I’m doing whitespace/JSON checks, then I’ll stage only scoped files and leave the old generated v4 files untouched.
+
+Checks are clean. I’m staging the scoped files now and checking the staged diff before commit.
+
+Staged diff is scoped correctly; the old generated files are still unstaged. I’m adding a tiny final context note, then committing and pushing.
+```
+
+### Additional Visible Responses Before Commit
+
+```text
 Context is appended. I’m doing the final whitespace/JSON checks, then I’ll stage only the scoped files and commit.
 
 The scoped diff has no whitespace problems and the new JSON parses. I’m staging only this turn’s source/docs/tests/context/record files now.
 
 The staged diff is scoped correctly; old generated v4 files remain unstaged. I’m adding the final staging note to context, then I’ll commit and push.
 ```
+
+## 2026-07-03 19:27:12 PKT - Routeability Arrangement Variant Selector
+
+### User Message
+
+```text
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+## My request for Codex:
+i think the mistake is there not being a logicn with which wire planners choses the nwe cordiantes for compoents, add that make that intense logic, using the wireplanner and other logics that u find. add parallelism, and everything to reduce the time required i need it much more optimized
+```
+
+### Visible Agent Responses
+
+```text
+I’ll build this into the actual pipeline, not just document it. First I’m doing the required checkpoint check, then I’ll wire a routeability-aware coordinate search into the existing planner path with bounded parallel evaluation so it can choose component coordinates before final routing.
+
+Remote `main` matches local `HEAD` at `7890153`; only the same old generated v4 files are dirty. I found the current gap exactly: `plan_wiring()` moves once, but it does not search multiple coordinate choices or score them by routeability. I’m adding a bounded variant search inside `wire_planner.py`, with parallel route scoring when there is enough work to justify it.
+
+I’m going to keep the variant evaluator EDA-neutral: generate several coordinate plans, apply each through the beautifier, route each candidate placement, score routeability, then keep the best. For speed, the scoring path will run candidate variants in parallel when more than one worker is allowed.
+
+I’m adding the variant evaluator now. It will generate spacing/clearance/layout variants, run the existing wire planner on each moved placement, score by complete nets and body safety, and return the chosen coordinate plan plus a compact report of the alternatives.
+
+The selector is now in `wire_planner.py`: variants are generated, evaluated, scored, and the best one is returned with a report. I’m exporting it and then integrating it into the stage-report and wire-maker paths.
+
+The selector is exported. I’m now replacing direct single-arrangement calls in the final JSON stage report and KiCad wire maker with the same variant selector.
+
+Final JSON stage reports now use the routeability selector and record the arrangement selection. I’m cleaning unused imports later if the compiler points them out. Next is the KiCad wire maker.
+
+The KiCad wire maker now chooses a routeability-scored arrangement before settling real KiCad symbol bodies and doing the final exact-pin route. I’m removing stale imports and fixing the beautifier so moved placements also move exact `pin_points`.
+
+I caught a subtle but important movement bug: if a placement already has exact pin points, moving the component must move those pin points too. I’m fixing that now so routeability variants stay geometrically consistent.
+
+The beautifier now translates exact pin points with their component. I’m adding a test so that does not regress.
+
+Tests now cover pin-point translation and the arrangement selector report. I’m running focused checks before measuring T10 with variant search.
+
+Focused checks pass. I’m probing T10 through the new `plan_wiring()` variant selector now, so we can see which coordinate variant it chooses and whether it improves unroutable/partial nets.
+
+The T10 variant run is still active; this is expected because it is routing multiple candidate placements in parallel. I’m waiting for the selection metrics.
+
+This is too slow, so the first variant implementation is overdoing the expensive part. I’m stopping it and tightening the selector: fewer default variants, lighter A* budgets during candidate scoring, and no process overhead unless explicitly useful.
+
+The pool shutdown is still hanging, which is itself a useful finding: process pools are the wrong default here. I’m killing that probe session and switching the implementation to bounded thread-based evaluation plus a cheaper scoring config.
+
+I’m patching the selector to avoid that process-pool trap. The new plan is faster: score variants with a deliberately cheap router budget, evaluate them in threads, then reroute only the selected placement with the full wire config.
+
+The defaults are now tighter and the parallel backend is thread-based. I’m adding the cheap scoring profile and final reroute of the selected placement.
+
+Now each variant is scored cheaply, and the winning placement is rerouted once with the full config. I’m making the failure score JSON-safe before testing.
+
+The failure path is JSON-safe. I’m rerunning focused tests and then T10 with the optimized selector.
+
+Focused tests are green and fast. I’m running the T10 variant selector again; this should finish quickly now because candidate scoring uses a cheap budget and only the winner gets full routing.
+
+The optimized selector is still running past 30 seconds on T10. I’m giving it one more interval to see if it finishes; if not, the default variant count/budget still needs another cut.
+
+Still too slow. I’m stopping it and making the scoring phase much more aggressive: fewer variants and a tiny A* budget. The selector should be a quick preflight, not a second full router run.
+
+The right optimization is clearer now: do not fully route every variant. I’m replacing variant scoring with a fast geometric routeability estimate, then only the selected variant gets the full router. That gives the planner coordinate intelligence without multiplying route time.
+
+Variant scoring now uses a fast lane/body estimate instead of full routing. I’m rerunning focused checks and then the T10 selector again.
+
+Still past 30 seconds. The selector preflight should be cheap now, so the remaining long piece is likely the full route on the selected non-exact placement. I’m waiting a bit to confirm before changing the final route budget.
+
+It is still too slow, so I’m stopping it for a traceback. The selector cannot be allowed to pick a placement that makes the final route explode.
+
+The result actually finished and it’s a big improvement: T10 went from 48 unroutable + 16 partial to 0 unroutable + 1 partial, but it took 72 seconds. The slow part is the preflight estimator using the full lane-candidate generator. I’m replacing that with a constant-size fast estimator, which should preserve the coordinate win without spending 40 seconds scoring variants.
+
+The estimator now checks a fixed set of direct, midline, and edge-channel paths instead of generating the full lane set. I’m compiling and rerunning the T10 selector to measure the speedup.
+
+Still past 30 seconds, likely because the selected full route itself is heavy. I’m waiting for the variant timing breakdown.
+
+The preflight is still slow because the estimator is counting blocked grid cells along very long candidate wires. For arrangement choice we do not need grid precision; direct rectangle intersection is much faster. I’m switching the estimator to direct body checks.
+
+Estimator body checks are now rectangle-based instead of grid-cell-based. I’m rerunning T10; this should show whether the preflight is finally cheap.
+
+Still past 30 seconds, but this time the preflight should be cheap; I’m waiting for the variant timing breakdown.
+
+Good: preflight is now cheap, and T10 improves to 0 unroutable and 1 partial. The remaining 30 seconds is the one full final route. I’m going to tune dense lane candidates next, because final route is doing too much lane scoring for a crossing-allowed world.
+
+With 32 dense lane candidates, T10 keeps 0 unroutable / 1 partial and drops to about 27 seconds. I’m letting the 48/64 samples finish to choose the best default.
+
+32 candidates is the best of that batch with the same routeability. I’m testing 16 as a possible faster default; if it preserves 0 unroutable / 1 partial, I’ll use it.
+
+16 is faster but worse: it reintroduces 2 unroutable and 3 partial nets. I’m waiting for 24; it may be the better speed/quality point.
+
+24 is faster but loses quality. I’m setting the default dense lane candidate budget to 32 because it keeps the major improvement: 0 unroutable and 1 partial on T10.
+
+The default is updated. I’m doing one final default T10 probe so the record reflects the actual code path, not a one-off override.
+
+Default T10 is now much better and bounded: 26.13 seconds, 0 unroutable, 1 partial, 152 complete wire nets. I’m running the full tests now; after that I’ll record this as the new routeability-variant evidence.
+
+Compileall passed. The unittest suite is still running, likely because more paths now use arrangement variants. I’m letting it finish so we verify the integrated pipeline, not just the focused tests.
+
+Full suite passed: 38 tests in 53.658 seconds. I’m adding a new experiment record for the routeability variant selector and updating the docs with the actual T10 improvement.
+
+The new record folder is ready. I’m writing the result notes and machine-readable metrics now.
+
+The experiment record is written. I’m updating the experiment index and pipeline docs with the new selector behavior and the T10 result.
+
+Docs now describe the variant selector and the T10 improvement. I’m running JSON validation and the full tests one more time before the context log and commit.
+
+JSON and compileall passed. The full unittest suite is still running; I’m waiting for the integrated result.
+
+Full tests passed again: 38 tests in 51.961 seconds. I’m checking status/diff now, then I’ll append the required context entry and commit only the scoped files.
+
+The status still contains only the old generated v4 dirt outside this work. I’m appending the context log with the request, implementation notes, T10 metrics, and verification now.
+```
+
+### Files Edited
+
+- `kicad/AGENTS.md`
+- `kicad/experiment_records/README.md`
+- `kicad/experiment_records/runs/routeability_variant_selector_t10_2026_07_03/README.md`
+- `kicad/experiment_records/runs/routeability_variant_selector_t10_2026_07_03/results.json`
+- `kicad/pipeline/BEAUTIFIER_WIRE_PLANNER_DESIGN.md`
+- `kicad/pipeline/README.md`
+- `kicad/pipeline/__init__.py`
+- `kicad/pipeline/beautifier.py`
+- `kicad/pipeline/final_circuit_builder.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_placer_pipeline.py`
+- `context.md`
+
+### Implementation Notes
+
+- Added `select_routeable_arrangement()` to `wire_planner.py`.
+- `plan_wiring()` now generates arrangement variants, applies each through `beautifier.py`, scores routeability, and full-routes only the selected placement.
+- Variant profiles include base, wide columns, tall rows, loose grid, compact flow, plus dense escape profiles when needed.
+- Variant scoring uses a fast geometric lane/body estimator, not full routing.
+- Large designs score variants with bounded worker parallelism.
+- Final route uses the selected moved placement with full route config.
+- Dense route default was tuned to `dense_max_lane_candidates = 32` after T10 probes.
+- `beautifier.py` now moves `pin_points` along with component bodies and obstacles.
+- Final JSON stage reports and KiCad wire-maker generation now use the same routeability selector.
+
+### T10 Result
+
+- Circuit: `T10_near_limit_mixed_schematic`
+- Components: 190
+- Nets: 153
+- Selected variant: `compact_flow`
+- Arrangement variants scored: 5
+- Worker count: 4
+- Planner time: 26.13 s
+- Complete wire nets: 152
+- Partial-wire nets: 1
+- Totally unroutable nets: 0
+- Labels: 0
+- Planned route branches: 386
+- Planned segments: 903
+- Different-net crossing metric: 1622
+- Result: not final accepted; one partial-wire net remains.
+
+### Verification
+
+- `python -m json.tool kicad/experiment_records/runs/routeability_variant_selector_t10_2026_07_03/results.json >/dev/null`: passed.
+- `python -m compileall -q kicad`: passed.
+- `python -m unittest discover -s kicad/tests -q`: 38 tests passed in 51.961 s.
+
+### Notes
+
+- Pre-existing dirty generated files were intentionally left untouched:
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
 
 ### Additional Visible Responses Before Commit
 

@@ -308,6 +308,7 @@ class PlacerPipelineTests(unittest.TestCase):
         circuit = vdc_resistor_led()
         ctx = run_placer_pipeline(circuit, write_trace=False)
         placement = ctx.placement_plan.as_dict()
+        placement["pin_points"] = {"R1": {"1": {"point": [placement["components"]["R1"]["at"][0] + 1.0, placement["components"]["R1"]["at"][1]]}}}
         arrangement = decide_arrangement(placement, circuit)
         beautified = apply_coordinate_edits(placement, arrangement)
         self.assertEqual(beautified["schema"], "progen-kicad-beautified-placement/v0.1")
@@ -320,6 +321,12 @@ class PlacerPipelineTests(unittest.TestCase):
             old_width = old_obstacles[ref]["right"] - old_obstacles[ref]["left"]
             new_width = new_obstacles[ref]["right"] - new_obstacles[ref]["left"]
             self.assertAlmostEqual(old_width, new_width)
+        if "R1" in edit_by_ref:
+            delta = edit_by_ref["R1"]["delta"]
+            self.assertEqual(
+                beautified["pin_points"]["R1"]["1"]["point"],
+                [round(placement["pin_points"]["R1"]["1"]["point"][0] + delta[0], 3), round(placement["pin_points"]["R1"]["1"]["point"][1] + delta[1], 3)],
+            )
 
     def test_wire_planner_emits_coordinate_and_lane_astar_wire_json(self) -> None:
         circuit = vdc_resistor_led()
@@ -328,6 +335,8 @@ class PlacerPipelineTests(unittest.TestCase):
         self.assertEqual(planned["schema"], "progen-kicad-wire-planner-output/v0.1")
         self.assertEqual(planned["coordinate_plan"]["schema"], "progen-kicad-arrangement-decision/v0.1")
         self.assertEqual(planned["component_motion_policy"]["phase"], "before_route_search")
+        self.assertEqual(planned["arrangement_selection"]["stage"], "routeable_arrangement_selector")
+        self.assertGreaterEqual(planned["arrangement_selection"]["variant_count"], 1)
         expected_routing_placement = apply_coordinate_edits(ctx.placement_plan.as_dict(), planned["coordinate_plan"])
         self.assertEqual(planned["routing_placement"]["components"], expected_routing_placement["components"])
         self.assertGreater(len(planned["routing_placement"].get("applied_edits", [])), 0)

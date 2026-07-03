@@ -151,18 +151,20 @@ terminal helpers. In `terminal` mode, terminal/label behavior belongs to
 `terminal_placer.py`. In `combination` mode, the explicit combination path may
 use both wire and terminal plans.
 
-Component movement happens before route search. The combined planner must emit
-a coordinate plan, apply it through `beautifier.py`, and only then route the
-moved placement. This is also the future foundation for arrangement variations:
-multiple coordinate plans may be generated for the same circuit and scored by
+Component movement happens before route search. The combined planner must
+generate coordinate-plan variants, apply each through `beautifier.py`, score
+the moved placements by routeability, and only then full-route the selected
+placement. This is also the foundation for arrangement variations: multiple
+coordinate plans may be generated for the same circuit and scored by
 routeability.
 
-The active wire planner is lane-first, then bounded A*. It must keep routing
-logic EDA-neutral and report route quality per route. Dense designs use
-bounded lane candidates, cached obstacle grids, grid congestion scoring, and a
-limited failed-endpoint retry budget. Wire-wire crossings are allowed; do not
-spend router effort avoiding them. If a strict wire-mode net has some routed
-branches but not all endpoints, emit `partial_wire` with
+The active wire planner is routeability-variant selection first, then
+lane-first bounded routing. It must keep routing logic EDA-neutral and report
+route quality per route. Dense designs use bounded lane candidates, cached
+obstacle grids, fast preflight arrangement scoring, parallel variant scoring,
+and a limited failed-endpoint retry budget. Wire-wire crossings are allowed; do
+not spend router effort avoiding them. If a strict wire-mode net has some
+routed branches but not all endpoints, emit `partial_wire` with
 `unrouted_endpoint_count`; do not hide the missing endpoints with labels.
 
 `kicad_wire_maker.py` is the KiCad-specific drawing backend. It consumes final

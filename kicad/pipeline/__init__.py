@@ -7,7 +7,7 @@ from .placement_input_validator import validate_placement_input
 from .placement_validator import validate_placement
 from .placer_pipeline import run_placer_pipeline
 from .terminal_placer import place_terminals
-from .wire_planner import plan_wire_routes, plan_wiring, write_wire_planner_jsons
+from .wire_planner import plan_wire_routes, plan_wiring, select_routeable_arrangement, write_wire_planner_jsons
 
 
 def place_components(*args, **kwargs):
@@ -31,6 +31,7 @@ __all__ = [
     "place_terminals",
     "plan_wire_routes",
     "plan_wiring",
+    "select_routeable_arrangement",
     "run_placer_pipeline",
     "run_placer_pack",
     "validate_placement",

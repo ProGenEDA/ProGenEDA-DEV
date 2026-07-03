@@ -76,12 +76,13 @@ S-expressions or Proteus files.
 The combined `wire_planner.plan_wiring()` contract is movement-first:
 
 ```text
-placement -> arrangement_decider -> beautifier -> route the moved placement
+placement -> arrangement variant generator -> beautifier -> routeability score -> full-route selected placement
 ```
 
-This means component coordinates are chosen before route search. Future
-arrangement variations should produce multiple coordinate plans for the same
-circuit, route/score each moved placement, and keep the best routeable variant.
+This means component coordinates are chosen before final route search. The
+selector scores multiple moved placements with a fast routeability estimate and
+uses parallel workers on larger designs. Future arrangement variations can keep
+several high-scoring coordinate plans instead of only the best one.
 
 `routing_mode` is part of the final JSON and stage config:
 

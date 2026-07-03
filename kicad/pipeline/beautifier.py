@@ -68,6 +68,19 @@ def apply_coordinate_edits(placement: dict[str, Any], coordinate_plan: dict[str,
                 if key in obstacle:
                     obstacle[key] = round(float(obstacle[key]) + dy, 3)
 
+    pin_points = updated.get("pin_points")
+    if isinstance(pin_points, dict):
+        for ref, pins in pin_points.items():
+            if ref not in deltas or not isinstance(pins, dict):
+                continue
+            dx, dy = deltas[str(ref)]
+            for pin_data in pins.values():
+                if not isinstance(pin_data, dict):
+                    continue
+                point = pin_data.get("point")
+                if isinstance(point, (list, tuple)) and len(point) >= 2:
+                    pin_data["point"] = [round(float(point[0]) + dx, 3), round(float(point[1]) + dy, 3)]
+
     updated["schema"] = "progen-kicad-beautified-placement/v0.1"
     updated["stage"] = "beautifier"
     updated["applied_edits"] = applied

@@ -25,11 +25,9 @@ from typing import Any
 
 from kicad.generator.kicad_json_to_project import slugify
 
-from .arrangement_decider import decide_arrangement
-from .beautifier import apply_coordinate_edits
 from .placement_catalog import resolve_placement_spec
 from .placer_pipeline import run_placer_pipeline
-from .wire_planner import plan_wire_routes
+from .wire_planner import plan_wiring
 
 
 SCHEMA_VERSION = "progen-kicad-circuit-ir/v1"
@@ -1690,9 +1688,10 @@ def generate_final_json_run(
 
         ctx = run_placer_pipeline(placement_input, write_trace=False)
         placement = ctx.placement_plan.as_dict()
-        coordinate_plan = decide_arrangement(placement, circuit)
-        beautified = apply_coordinate_edits(placement, coordinate_plan)
-        wire_plan = plan_wire_routes(beautified, circuit, config=STAGE_REPORT_WIRE_CONFIG)
+        planned = plan_wiring(placement, circuit, wire_config=STAGE_REPORT_WIRE_CONFIG)
+        coordinate_plan = planned["coordinate_plan"]
+        beautified = planned["routing_placement"]
+        wire_plan = planned["wire_plan"]
         overlaps = _overlap_pairs(beautified.get("obstacles", []))
 
         report = {
@@ -1710,6 +1709,7 @@ def generate_final_json_run(
             "post_beautifier_overlaps": overlaps,
             "wire_metrics": wire_plan["metrics"],
             "wire_warnings": wire_plan["warnings"],
+            "arrangement_selection": planned["arrangement_selection"],
         }
         (stage_report_dir / f"{stem}_stage_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
         results.append(report)

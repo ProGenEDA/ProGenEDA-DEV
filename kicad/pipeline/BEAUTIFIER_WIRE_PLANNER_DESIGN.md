@@ -282,21 +282,35 @@ Current behavior:
 6. Routes multi-endpoint nets from the nearest already connected endpoint.
 7. Orders nets by clock, bus/long-span nets, ordinary nets, then power/ground
    in strict wire mode.
-8. Uses dense-design mode for large sheets:
+8. Generates and scores arrangement variants before final route search:
+   - base topology layout
+   - wider column spacing
+   - taller row spacing
+   - loose grid spacing
+   - compact flow spacing
+   - dense escape/channel profiles when needed
+9. Uses fast routeability scoring for variants:
+   - component body overlaps
+   - estimated blocked endpoints
+   - estimated wire/body hits
+   - estimated route length and turn count
+10. Evaluates variants in parallel when the design is large enough.
+11. Full-routes only the selected moved placement.
+12. Uses dense-design mode for large sheets:
    - component threshold: 90 bodies
    - bounded dense lane candidate budget
    - bounded dense A* expansion budget
    - cached obstacle grids
    - grid contact scoring instead of exact segment-pair scoring
    - failed endpoint retry budget before reporting a net incomplete
-9. Emits route-level quality metadata:
+13. Emits route-level quality metadata:
    - selected router
    - body hit count
    - component shadow count
    - different-net crossing/contact count as a metric only
    - same-net reuse count
    - length and turn count
-10. Emits `partial_wire` for strict wire-mode nets where some branches were
+14. Emits `partial_wire` for strict wire-mode nets where some branches were
     physically routed but one or more endpoints remain unrouted.
 
 Current limits:
@@ -313,15 +327,16 @@ Current limits:
    wire maker can draw successful physical branches while validators report the
    missing endpoints clearly.
 
-The next router upgrade should put component-motion planning ahead of route
-search. The planner should generate one or more coordinate plans, route each
-moved placement, and choose the variant with the fewest component-body contacts
-and incomplete nets. This is also the future "variation" feature: multiple
-valid arrangements of the same circuit can be kept as scored variants.
+The current router now puts component-motion planning ahead of final route
+search. It generates coordinate variants, scores moved placements with a fast
+routeability estimate, and full-routes the best variant. This is also the
+foundation for the future "variation" feature: multiple valid arrangements of
+the same circuit can be kept as scored variants.
 
-After movement-first routing exists, a rip-up/reroute pass can improve local
-failures by removing one incomplete net at a time, reserving the remaining
-routes, and retrying with expanded lane candidates or A* for the affected net.
+The next router upgrade should add targeted second-pass local movement for the
+remaining partial nets. It should identify the blocked endpoint/component pair,
+generate local nudges, re-score only those local variants, and full-route the
+best fix candidate.
 
 ## Wire Planner
 

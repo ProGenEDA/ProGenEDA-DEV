@@ -15,6 +15,9 @@ from __future__ import annotations
 
 import heapq
 import json
+import os
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -77,7 +80,7 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "exact_crossing_score_segment_limit": 80.0,
     "body_grid_score_component_limit": 80.0,
     "dense_design_component_limit": 90.0,
-    "dense_max_lane_candidates": 80.0,
+    "dense_max_lane_candidates": 32.0,
     "dense_max_astar_expansions": 1500.0,
     "max_failed_endpoints_per_net": 1000.0,
     "dense_max_failed_endpoints_per_net": 2.0,
@@ -85,6 +88,13 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "dense_skip_astar_when_lane_candidate": 1.0,
     "crossing_risk_astar": 0.0,
     "lane_zero_crossing_fast_accept": 1.0,
+    "arrangement_variant_search": 1.0,
+    "max_arrangement_variants": 5.0,
+    "arrangement_variant_workers": 0.0,
+    "arrangement_variant_parallel_min_components": 40.0,
+    "arrangement_variant_max_astar_expansions": 600.0,
+    "arrangement_variant_max_lane_candidates": 32.0,
+    "arrangement_variant_max_failed_endpoints_per_net": 1.0,
 }
 
 
@@ -1444,6 +1454,380 @@ def plan_wire_routes(
     }
 
 
+def _placement_component_count(placement: dict[str, Any], circuit: dict[str, Any]) -> int:
+    components = placement.get("components")
+    if isinstance(components, dict):
+        return len(components)
+    raw = circuit.get("components")
+    return len(raw) if isinstance(raw, list) else 0
+
+
+def _arrangement_base_config(config: dict[str, float] | None) -> dict[str, float]:
+    cfg = dict(DEFAULT_ARRANGEMENT_CONFIG)
+    if config:
+        cfg.update({key: float(value) for key, value in config.items()})
+    return cfg
+
+
+def _arrangement_variant_specs(
+    placement: dict[str, Any],
+    circuit: dict[str, Any],
+    *,
+    arrangement_config: dict[str, float] | None,
+    wire_cfg: dict[str, Any],
+) -> list[dict[str, Any]]:
+    base = _arrangement_base_config(arrangement_config)
+    component_count = _placement_component_count(placement, circuit)
+    nets = extract_connection_nets(circuit)
+    max_fanout = max((len(endpoints) for endpoints in nets.values()), default=0)
+    dense = component_count >= int(wire_cfg.get("dense_design_component_limit", 90.0)) or max_fanout >= 8
+    profiles: list[tuple[str, dict[str, float]]] = [
+        ("base", {}),
+        ("wide_columns", {"column_gap": 1.45, "row_gap": 1.0, "component_clearance": 1.15}),
+        ("tall_rows", {"column_gap": 1.0, "row_gap": 1.65, "component_clearance": 1.25}),
+        ("loose_grid", {"column_gap": 1.35, "row_gap": 1.45, "component_clearance": 1.6}),
+        ("compact_flow", {"column_gap": 1.15, "row_gap": 1.25, "component_clearance": 1.2}),
+    ]
+    if dense:
+        profiles.extend(
+            [
+                ("dense_escape_channels", {"column_gap": 1.75, "row_gap": 2.0, "component_clearance": 2.0}),
+                ("bus_corridors", {"column_gap": 1.35, "row_gap": 2.35, "component_clearance": 1.8}),
+                ("wide_dense_blocks", {"column_gap": 2.1, "row_gap": 1.55, "component_clearance": 1.9}),
+            ]
+        )
+
+    limit = max(1, int(wire_cfg.get("max_arrangement_variants", 8.0)))
+    specs: list[dict[str, Any]] = []
+    seen: set[tuple[float, float, float, float]] = set()
+    for name, multipliers in profiles:
+        cfg = dict(base)
+        for key in ("column_gap", "row_gap", "component_clearance", "margin"):
+            if key in cfg and key in multipliers:
+                cfg[key] = round(float(cfg[key]) * float(multipliers[key]), 3)
+        key = (
+            round(float(cfg.get("column_gap", 0.0)), 3),
+            round(float(cfg.get("row_gap", 0.0)), 3),
+            round(float(cfg.get("component_clearance", 0.0)), 3),
+            round(float(cfg.get("margin", 0.0)), 3),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        specs.append({"name": name, "arrangement_config": cfg})
+        if len(specs) >= limit:
+            break
+    return specs
+
+
+def _wire_plan_routeability_score(wire_plan: dict[str, Any]) -> dict[str, Any]:
+    metrics = wire_plan.get("metrics", {}) if isinstance(wire_plan.get("metrics"), dict) else {}
+    nets = wire_plan.get("nets", {}) if isinstance(wire_plan.get("nets"), dict) else {}
+    complete_wire_nets = sum(1 for item in nets.values() if isinstance(item, dict) and item.get("strategy") == "wire")
+    route_quality = [route.get("route_quality", {}) for route in wire_plan.get("routes", []) if isinstance(route, dict)]
+    body_hits = sum(int(item.get("body_hits", 0)) for item in route_quality if isinstance(item, dict))
+    component_shadows = sum(int(item.get("component_shadow_count", 0)) for item in route_quality if isinstance(item, dict))
+    route_length = sum(float(item.get("length", 0.0)) for item in route_quality if isinstance(item, dict))
+    turns = sum(int(item.get("turns", 0)) for item in route_quality if isinstance(item, dict))
+    unroutable = int(metrics.get("unroutable_net_count", 0))
+    partial = int(metrics.get("partial_wire_net_count", 0))
+    labels = int(metrics.get("label_strategy_count", 0))
+    crossing_metric = int(metrics.get("different_net_crossing_count", 0))
+    score = (
+        unroutable * 1_000_000_000
+        + partial * 100_000_000
+        + labels * 10_000_000
+        + body_hits * 1_000_000
+        + component_shadows * 10_000
+        - complete_wire_nets * 1_000
+        + turns * 10
+        + route_length
+        + crossing_metric * 0.001
+    )
+    return {
+        "score": round(score, 3),
+        "complete_wire_net_count": complete_wire_nets,
+        "unroutable_net_count": unroutable,
+        "partial_wire_net_count": partial,
+        "label_strategy_count": labels,
+        "route_body_hit_count": body_hits,
+        "component_shadow_count": component_shadows,
+        "route_turn_count": turns,
+        "route_length": round(route_length, 3),
+        "different_net_crossing_count": crossing_metric,
+    }
+
+
+def _variant_scoring_wire_config(wire_cfg: dict[str, Any]) -> dict[str, Any]:
+    cfg = dict(wire_cfg)
+    cfg["max_astar_expansions"] = min(
+        float(cfg.get("max_astar_expansions", 50_000.0)),
+        float(cfg.get("arrangement_variant_max_astar_expansions", 600.0)),
+    )
+    cfg["strict_fallback_max_astar_expansions"] = min(
+        float(cfg.get("strict_fallback_max_astar_expansions", cfg["max_astar_expansions"])),
+        float(cfg.get("arrangement_variant_max_astar_expansions", 600.0)),
+    )
+    cfg["dense_max_astar_expansions"] = min(
+        float(cfg.get("dense_max_astar_expansions", 1500.0)),
+        float(cfg.get("arrangement_variant_max_astar_expansions", 600.0)),
+    )
+    cfg["max_lane_candidates"] = min(
+        float(cfg.get("max_lane_candidates", 160.0)),
+        float(cfg.get("arrangement_variant_max_lane_candidates", 32.0)),
+    )
+    cfg["dense_max_lane_candidates"] = min(
+        float(cfg.get("dense_max_lane_candidates", 80.0)),
+        float(cfg.get("arrangement_variant_max_lane_candidates", 32.0)),
+    )
+    cfg["max_failed_endpoints_per_net"] = min(
+        float(cfg.get("max_failed_endpoints_per_net", 1000.0)),
+        float(cfg.get("arrangement_variant_max_failed_endpoints_per_net", 1.0)),
+    )
+    cfg["dense_max_failed_endpoints_per_net"] = min(
+        float(cfg.get("dense_max_failed_endpoints_per_net", 2.0)),
+        float(cfg.get("arrangement_variant_max_failed_endpoints_per_net", 1.0)),
+    )
+    cfg["crossing_risk_astar"] = 0.0
+    return cfg
+
+
+def _body_overlap_count(bodies: dict[str, Body]) -> int:
+    items = list(bodies.values())
+    count = 0
+    for index, left in enumerate(items):
+        for right in items[index + 1 :]:
+            left_ref = left.component_ref or left.ref
+            right_ref = right.component_ref or right.ref
+            if left_ref == right_ref:
+                continue
+            if left.right <= right.left or right.right <= left.left or left.bottom <= right.top or right.bottom <= left.top:
+                continue
+            count += 1
+    return count
+
+
+def _estimate_candidate_paths(start: Point, goal: Point, bodies: dict[str, Body], cfg: dict[str, Any]) -> list[list[Point]]:
+    width, height = _sheet_bounds(bodies, cfg)
+    margin = float(cfg["margin"])
+    grid = float(cfg["grid"])
+    x_mid = _snap((start[0] + goal[0]) / 2, grid)
+    y_mid = _snap((start[1] + goal[1]) / 2, grid)
+    left_lane = _snap(margin, grid)
+    right_lane = _snap(max(margin, width - margin), grid)
+    top_lane = _snap(margin, grid)
+    bottom_lane = _snap(max(margin, height - margin), grid)
+    candidates = [
+        [start, (goal[0], start[1]), goal],
+        [start, (start[0], goal[1]), goal],
+        [start, (x_mid, start[1]), (x_mid, goal[1]), goal],
+        [start, (start[0], y_mid), (goal[0], y_mid), goal],
+        [start, (left_lane, start[1]), (left_lane, goal[1]), goal],
+        [start, (right_lane, start[1]), (right_lane, goal[1]), goal],
+        [start, (start[0], top_lane), (goal[0], top_lane), goal],
+        [start, (start[0], bottom_lane), (goal[0], bottom_lane), goal],
+    ]
+    if start[0] == goal[0] or start[1] == goal[1]:
+        candidates.insert(0, [start, goal])
+    out: list[list[Point]] = []
+    seen: set[tuple[Point, ...]] = set()
+    for candidate in candidates:
+        compressed = _compress_path(_dedupe_path(candidate))
+        key = tuple(compressed)
+        if len(compressed) < 2 or key in seen:
+            continue
+        seen.add(key)
+        out.append(compressed)
+    return out
+
+
+def _estimate_variant_routeability(routing_placement: dict[str, Any], circuit: dict[str, Any], cfg: dict[str, Any]) -> dict[str, Any]:
+    bodies = _bodies(routing_placement)
+    endpoints_by_net = _endpoint_points(routing_placement, circuit, cfg)
+    blocked_endpoint_count = 0
+    routable_branch_count = 0
+    estimated_body_hits = 0
+    estimated_length = 0.0
+    estimated_turns = 0
+
+    for net, endpoints in endpoints_by_net.items():
+        if len(endpoints) < 2:
+            blocked_endpoint_count += 1
+            continue
+        endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
+        connected = [endpoints[0]]
+        for target in endpoints[1:]:
+            root = min(
+                connected,
+                key=lambda item: _manhattan(
+                    (float(item["point"][0]), float(item["point"][1])),
+                    (float(target["point"][0]), float(target["point"][1])),
+                ),
+            )
+            start = (float(root["point"][0]), float(root["point"][1]))
+            goal = (float(target["point"][0]), float(target["point"][1]))
+            start_route = _portal_point(start, str(root.get("side") or "right"), cfg) if root.get("exact") else start
+            goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg) if target.get("exact") else goal
+            ignore_refs: set[str] = set()
+            if not root.get("exact"):
+                ignore_refs.add(str(root["ref"]))
+            if not target.get("exact"):
+                ignore_refs.add(str(target["ref"]))
+            best_path: list[Point] = []
+            best_hits: int | None = None
+            best_score: tuple[int, int, float] | None = None
+            for candidate in _estimate_candidate_paths(start_route, goal_route, bodies, cfg):
+                body_hits = _path_body_hit_count(candidate, bodies, cfg, ignore_refs=ignore_refs, blocked_cells=None)
+                score = (body_hits, _path_turn_count(candidate), _path_length(candidate))
+                if best_score is None or score < best_score:
+                    best_score = score
+                    best_hits = body_hits
+                    best_path = candidate
+                if body_hits == 0:
+                    break
+            if not best_path or best_hits:
+                blocked_endpoint_count += 1
+                estimated_body_hits += int(best_hits or 1)
+                continue
+            routable_branch_count += 1
+            connected.append(target)
+            estimated_length += _path_length(best_path)
+            estimated_turns += _path_turn_count(best_path)
+
+    partial_like_nets = sum(1 for endpoints in endpoints_by_net.values() if len(endpoints) >= 2) - routable_branch_count
+    overlap_count = _body_overlap_count(bodies)
+    score = (
+        overlap_count * 10_000_000_000
+        + blocked_endpoint_count * 1_000_000_000
+        + estimated_body_hits * 1_000_000
+        + estimated_turns * 10
+        + estimated_length
+    )
+    return {
+        "score": round(score, 3),
+        "component_body_overlap_count": overlap_count,
+        "estimated_blocked_endpoint_count": blocked_endpoint_count,
+        "estimated_partial_pressure": max(0, partial_like_nets),
+        "estimated_body_hit_count": estimated_body_hits,
+        "estimated_routable_branch_count": routable_branch_count,
+        "estimated_turn_count": estimated_turns,
+        "estimated_route_length": round(estimated_length, 3),
+    }
+
+
+def _evaluate_arrangement_variant_task(args: tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]) -> dict[str, Any]:
+    placement, circuit, spec, wire_cfg = args
+    started = time.perf_counter()
+    try:
+        coordinate_plan = decide_arrangement(placement, circuit, config=spec["arrangement_config"])
+        routing_placement = apply_coordinate_edits(placement, coordinate_plan)
+        score = _estimate_variant_routeability(routing_placement, circuit, wire_cfg)
+        return {
+            "ok": True,
+            "name": spec["name"],
+            "coordinate_plan": coordinate_plan,
+            "routing_placement": routing_placement,
+            "wire_plan": {"schema": "progen-kicad-wire-plan/v0.1", "metrics": {}},
+            "score": score,
+            "elapsed_seconds": round(time.perf_counter() - started, 3),
+        }
+    except Exception as exc:  # pragma: no cover - defensive report path
+        return {
+            "ok": False,
+            "name": str(spec.get("name") or "unknown"),
+            "coordinate_plan": {},
+            "routing_placement": {},
+            "wire_plan": {"schema": "progen-kicad-wire-plan/v0.1", "metrics": {}},
+            "score": {"score": 1.0e99, "error": str(exc)},
+            "elapsed_seconds": round(time.perf_counter() - started, 3),
+            "error": str(exc),
+        }
+
+
+def _variant_workers(wire_cfg: dict[str, Any], variant_count: int, component_count: int) -> int:
+    if variant_count <= 1:
+        return 1
+    if component_count < int(wire_cfg.get("arrangement_variant_parallel_min_components", 40.0)):
+        return 1
+    configured = int(wire_cfg.get("arrangement_variant_workers", 0.0))
+    if configured > 0:
+        return max(1, min(configured, variant_count))
+    return max(1, min(variant_count, os.cpu_count() or 1, 4))
+
+
+def select_routeable_arrangement(
+    placement: dict[str, Any],
+    circuit: dict[str, Any],
+    *,
+    arrangement_config: dict[str, float] | None = None,
+    wire_config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    wire_cfg = _wire_config(wire_config, circuit)
+    scoring_wire_cfg = _variant_scoring_wire_config(wire_cfg)
+    specs = _arrangement_variant_specs(placement, circuit, arrangement_config=arrangement_config, wire_cfg=wire_cfg)
+    if wire_cfg.get("arrangement_variant_search", 1.0) < 1.0:
+        specs = specs[:1]
+    component_count = _placement_component_count(placement, circuit)
+    workers = _variant_workers(wire_cfg, len(specs), component_count)
+    tasks = [(placement, circuit, spec, scoring_wire_cfg) for spec in specs]
+
+    results: list[dict[str, Any]] = []
+    parallel_error = ""
+    if workers > 1:
+        try:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                future_map = {executor.submit(_evaluate_arrangement_variant_task, task): task[2]["name"] for task in tasks}
+                for future in as_completed(future_map):
+                    results.append(future.result())
+        except Exception as exc:  # pragma: no cover - environment-dependent fallback
+            parallel_error = str(exc)
+            results = []
+
+    if not results:
+        results = [_evaluate_arrangement_variant_task(task) for task in tasks]
+        workers = 1
+
+    results.sort(key=lambda item: (float(item.get("score", {}).get("score", 1.0e99)), str(item.get("name", ""))))
+    selected = results[0]
+    final_wire_plan = plan_wire_routes(selected["routing_placement"], circuit, config=wire_cfg)
+    variants = [
+        {
+            "name": item.get("name"),
+            "ok": bool(item.get("ok")),
+            "score": item.get("score", {}),
+            "elapsed_seconds": item.get("elapsed_seconds"),
+            "coordinate_edit_count": len(item.get("coordinate_plan", {}).get("coordinate_edits", []))
+            if isinstance(item.get("coordinate_plan"), dict)
+            else 0,
+            "error": item.get("error"),
+        }
+        for item in results
+    ]
+    report = {
+        "schema": "progen-kicad-routeable-arrangement-selection/v0.1",
+        "stage": "routeable_arrangement_selector",
+        "strategy": "parallel_variant_routeability_score",
+        "variant_count": len(results),
+        "worker_count": workers,
+        "parallel_error": parallel_error,
+        "scoring_wire_config": {
+            "max_astar_expansions": scoring_wire_cfg.get("max_astar_expansions"),
+            "max_lane_candidates": scoring_wire_cfg.get("max_lane_candidates"),
+            "max_failed_endpoints_per_net": scoring_wire_cfg.get("max_failed_endpoints_per_net"),
+        },
+        "selected_variant": selected.get("name"),
+        "selected_score": selected.get("score", {}),
+        "final_score": _wire_plan_routeability_score(final_wire_plan),
+        "variants": variants,
+    }
+    return {
+        "coordinate_plan": selected["coordinate_plan"],
+        "routing_placement": selected["routing_placement"],
+        "wire_plan": final_wire_plan,
+        "arrangement_selection": report,
+    }
+
+
 def plan_wiring(
     placement: dict[str, Any],
     circuit: dict[str, Any],
@@ -1451,17 +1835,19 @@ def plan_wiring(
     arrangement_config: dict[str, float] | None = None,
     wire_config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    coordinate_plan = decide_arrangement(placement, circuit, config=arrangement_config or DEFAULT_ARRANGEMENT_CONFIG)
-    routing_placement = apply_coordinate_edits(placement, coordinate_plan)
-    wire_plan = plan_wire_routes(routing_placement, circuit, config=wire_config)
+    selected = select_routeable_arrangement(placement, circuit, arrangement_config=arrangement_config, wire_config=wire_config)
+    coordinate_plan = selected["coordinate_plan"]
+    routing_placement = selected["routing_placement"]
+    wire_plan = selected["wire_plan"]
     return {
         "schema": "progen-kicad-wire-planner-output/v0.1",
         "component_motion_policy": {
             "phase": "before_route_search",
-            "coordinate_source": "arrangement_decider",
+            "coordinate_source": "routeability_scored_arrangement_variants",
             "applied_by": "beautifier",
             "purpose": "move components first so route planning starts from a wiring-aware placement",
         },
+        "arrangement_selection": selected["arrangement_selection"],
         "coordinate_plan": coordinate_plan,
         "routing_placement": routing_placement,
         "wire_plan": wire_plan,
@@ -1481,8 +1867,15 @@ def write_wire_planner_jsons(
     planned = plan_wiring(placement, circuit, arrangement_config=arrangement_config, wire_config=wire_config)
     coordinate_path = out_path / "wire_coordinate_plan.json"
     routing_placement_path = out_path / "wire_routing_placement.json"
+    arrangement_selection_path = out_path / "wire_arrangement_selection.json"
     wire_path = out_path / "wire_plan.json"
     coordinate_path.write_text(json.dumps(planned["coordinate_plan"], indent=2), encoding="utf-8")
     routing_placement_path.write_text(json.dumps(planned["routing_placement"], indent=2), encoding="utf-8")
+    arrangement_selection_path.write_text(json.dumps(planned["arrangement_selection"], indent=2), encoding="utf-8")
     wire_path.write_text(json.dumps(planned["wire_plan"], indent=2), encoding="utf-8")
-    return {"coordinate_plan": coordinate_path, "routing_placement": routing_placement_path, "wire_plan": wire_path}
+    return {
+        "coordinate_plan": coordinate_path,
+        "routing_placement": routing_placement_path,
+        "arrangement_selection": arrangement_selection_path,
+        "wire_plan": wire_path,
+    }
