@@ -60,15 +60,20 @@ The post-placer stages remain independent:
   applies only coordinate edits and returns a new placement JSON object.
 - `wire_planner.plan_wire_routes(placement, circuit)`
   emits route-plan JSON for drawing backends and honors `routing_mode`.
+- `wire_planner.plan_partial_route_component_moves(placement, wire_plan)`
+  emits a coordinate-plan JSON for failed partial routes. It moves only failed
+  endpoint components toward their nearest already-wired same-net neighbor and
+  leaves coordinate application to `beautifier.py`.
 - `terminal_placer.place_terminals(placement, circuit)`
   owns terminal/local-label connectivity plans.
 - `kicad_wire_maker.py`
   is the first EDA-specific drawing backend. It does not plan routes. It
   resolves KiCad symbol pin/body geometry into `routing_inputs/`, feeds that
-  pure JSON to the wire planner, draws actual wire/junction S-expressions in
-  strict wire mode, and records unresolved pin aliases, partial-wire nets,
-  unroutable nets, geometry validation, and strict-wire connectivity validation
-  in each manifest.
+  pure JSON to the wire planner, applies partial-route coordinate repair through
+  the same beautifier contract when strict wire mode reports partial nets, draws
+  actual wire/junction S-expressions, and records unresolved pin aliases,
+  partial-wire nets, unroutable nets, geometry validation, and strict-wire
+  connectivity validation in each manifest.
 
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.
@@ -233,6 +238,19 @@ geometry-clean routing evidence, not final electrical acceptance.
 
 After the 2026-07-03 routing-mode split, any run with local labels should be
 treated as terminal/combination evidence, not strict `wire` mode acceptance.
+
+Current exact strict-wire T10 evidence:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1/
+```
+
+That run generated the 190-component near-limit T10 schematic with 554 resolved
+routing pins, 1503 wire objects, 0 labels, 0 unresolved pins, 0 deferred nets,
+0 unrouted nets, 0 partial-wire nets, 0 geometry violations, and strict physical
+wire graph validation passed. KiCad netlist export also passed. KiCad ERC still
+reports symbol electrical-type issues (`pin_to_pin` and `ground_pin_not_ground`),
+so ERC cleanup remains a separate logical validation task.
 
 The first strict wire-geometry validation run is:
 

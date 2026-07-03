@@ -6873,6 +6873,159 @@ The pipeline README has two stale spots: it still describes the maker as emittin
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
 
+---
+
+## 2026-07-03 21:38:24 +0500
+
+### User Message
+
+```text
+fix the remaining partial route and verify the routes are electrically/geometrically correct, then optimize speed after routing is actually solid
+```
+
+### Visible Agent Responses
+
+```text
+I’m picking up from the compacted state and will first check the worktree plus the exact files already changed. Then I’ll update the run record and context log before committing, so we don’t lose the evidence trail.
+
+The current code is stronger but not yet “solid”: the exact KiCad T10 still has 6 partial nets while geometry is clean. I’m going to inspect those failing nets and the planner decisions directly now, because committing a known partial result as “fixed” would be fake progress.
+
+The failure shape is nicely narrowed now: no labels, no geometry violations, no unresolved pins, only six partially wired nets in dense driver/power groups. I’m reading the planner around endpoint ordering, obstacles, and arrangement selection so the next edit targets that instead of just turning knobs.
+
+I see the planner is still basically one-shot: it chooses a placement, routes, and reports partials. To truly fix the remaining six, I’m going to add a small feedback loop: detect partial exact nets, compute local movement pressure from their failed endpoints, move those component groups, and rerun strict routing.
+
+Before changing code, I’m running a focused exact T10 dump for those six nets. I need to see whether the missing endpoint is always one pin in the local driver block, or whether GND is failing because it is a huge fanout tree with bad root growth.
+
+The failing driver nets all show the same pattern: the components that should be local neighbors are hundreds or thousands of grid units apart, and exact pin escape through the component’s own clearance is too strict unless the route leaves the pin side cleanly. I’m testing whether better pin-escape candidates alone solve it before adding movement.
+
+Escape distance alone doesn’t clear it; moderate stubs improve some nets but regress others, and large stubs break geometry. Next I’m isolating the failing branches with a high A* budget to separate “router search budget” from “placement/candidate geometry.”
+
+The isolated check says two of the failure types are budget-sensitive, but `MOSFET1_GATE` still fails even with a very large A* budget. I’m checking root choice and local component grouping for that one now, because that’s likely the real remaining blocker.
+
+The fix is clear now: default root choice should consider the nearest few already-connected same-net points, and a high-budget A* should only fire as a salvage step after a branch actually fails. That gives the relay branches the search depth they need without turning the whole T10 route into a 100-second global A* pass.
+
+The planner now has a selective salvage A* path and root fanout default of 3. I’m running the exact T10 verifier again; the acceptance target is 0 partial, 0 unroutable, 0 labels, strict graph OK, and geometry OK.
+
+The new selective salvage cleared every exact T10 failure except `RELAY4_COIL_LOW`. Its failure remains because the existing pin/reserved-cell field blocks the long route, so I’m now testing a real local movement of the failed relay component near its driver transistor.
+
+We’ve got a clean exact T10 candidate: moving `K_RELAY_4` near the `Q_NPN_4` driver clears all partial/unroutable nets with clean geometry and strict connectivity. I’m stopping the rest of the sweep and encoding this as a generic partial-net local movement pass.
+
+Now I’m wiring that move-plan into the KiCad exact path. It will run after exact pin/body routing reports partial nets, apply only coordinate edits through `beautifier.py`, rebuild the KiCad placement from those coordinates, and reroute.
+
+Routing is now solid on exact T10. The obvious speed waste is earlier in the KiCad path: it computes a generic full wire plan only to throw it away after rebuilding exact KiCad symbol bodies. I’m adding a switch so KiCad generation can use the routeability-scored arrangement without doing that discarded generic route.
+
+The output is now correct, but total time is still about 100 seconds. The remaining cost is arrangement scoring, not final exact routing. I’m checking whether cheaper arrangement scoring keeps the same good exact result, so we optimize without weakening the router.
+
+I’m making the scorer cheaper without changing final routing: the arrangement estimator will score with one candidate root per endpoint, while the final exact router still uses root3 plus salvage. This keeps the route repair strength where it matters.
+
+The exact T10 run is clean and down to about 82.5 seconds. I’m taking one more conservative speed step in the KiCad generator: cap the pre-exact arrangement scan to 3 variants there. The variant machinery remains available, but exact KiCad routing no longer spends time on extra generic candidates before symbol bodies are known.
+
+The optimized exact T10 verifier passes. I’m adding a focused unit test for the new partial-route motion contract, then I’ll run compile/tests.
+
+The code-level verifier is clean. I’m going to generate one fresh immutable T10 exact wired project now, so there is a concrete KiCad artifact and manifest showing the fixed strict-wire result without touching older example folders.
+
+Fresh T10 generation passed the internal validators: 0 labels, 0 unresolved pins, 0 partial/unrouted nets, geometry OK, strict physical wire graph OK. I’m checking whether there’s an existing KiCad quality/ERC command for this project so the final record can include the strongest available verification.
+
+KiCad netlist export succeeded on the fresh T10 project. ERC still fails with symbol-electrical-type issues (`pin_to_pin` and `ground_pin_not_ground`), so I’m treating ERC as a separate logical-symbol-model blocker, not as a route-geometry failure. The strict expected-net graph and geometry validators are clean.
+
+I’m updating the experiment record now: the old exact-pin retry note becomes superseded, and the new T10 strict-wire motion-repair run gets its own entry with the internal validator pass plus the KiCad ERC caveat.
+
+The docs are updated. I changed code after the last test run, so I’m running compileall and the unittest suite one more time before recording/committing.
+```
+
+### Files Edited
+
+- `kicad/pipeline/__init__.py`
+- `kicad/pipeline/final_circuit_builder.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/pipeline/README.md`
+- `kicad/tests/test_kicad_wire_maker.py`
+- `kicad/tests/test_placer_pipeline.py`
+- `kicad/experiment_records/README.md`
+- `kicad/experiment_records/runs/exact_pin_retry_t10_2026_07_03/README.md`
+- `kicad/experiment_records/runs/strict_wire_motion_repair_t10_2026_07_03/README.md`
+- `kicad/examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1/`
+- `context.md`
+
+### Implementation Notes
+
+- Raised final-router root selection to consider up to 3 connected same-net roots per endpoint.
+- Added selective salvage A* routing that only runs after a branch actually fails under the bounded router.
+- Added `plan_partial_route_component_moves()` as a pure JSON coordinate-plan stage for partial-wire failures.
+- Added exact KiCad feedback in `kicad_wire_maker.py`: route exact symbol geometry, decide partial-route coordinate moves, apply them through `beautifier.py`, rebuild exact KiCad pin/body geometry, and reroute.
+- Added a generator speed switch so the KiCad exact path can skip a discarded generic final route during arrangement selection.
+- Made arrangement scoring cheaper by using 1 root candidate in variant scoring while preserving 3 root candidates for final exact routing.
+- Capped the KiCad exact path's pre-exact arrangement scan to 3 variants.
+- Exported `plan_partial_route_component_moves` from `kicad.pipeline`.
+- Added unit coverage for partial-route component movement.
+
+### Exact T10 Verification
+
+Direct exact verifier after optimization:
+
+- Circuit: `T10_near_limit_mixed_schematic`
+- Components: 190
+- Nets: 153
+- Routing pins resolved: 554
+- Arrangement phase: 23.312 s
+- Initial exact route: 25.655 s
+- Motion repair plus maker validation: 31.214 s
+- Total probe time: 80.181 s
+- Routed branches: 401
+- Lane routes: 394
+- Salvage A* routes: 7
+- Salvage A* attempts: 7
+- Labels: 0
+- Unresolved pins: 0
+- Partial-wire nets: 0
+- Unroutable nets: 0
+- Geometry violations: 0
+- Strict physical wire graph violations: 0
+- Motion repair passes: 1
+
+Fresh generated project:
+
+```text
+kicad/examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1/
+```
+
+Generated-project manifest:
+
+- Static checks: passed
+- Components: 190
+- Symbol instances: 198
+- Wire objects: 1503
+- Labels: 0
+- Routing pins resolved: 554
+- Routing unresolved pins: 0
+- Component body overlaps: 0
+- Deferred nets: 0
+- Unrouted nets: 0
+- Partial-wire nets: 0
+- Geometry violations: 0
+- Strict wire violations: 0
+
+KiCad CLI quality check:
+
+- `PYTHONPATH=. python -m kicad.automation.quality_check kicad/examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1 --export-netlist --kicad-cli kicad/.local/bin/kicad-cli`
+- Static schematic check: passed
+- KiCad netlist export: passed, 386221 bytes
+- ERC: failed with 90 blocking violations (`pin_to_pin`: 88, `ground_pin_not_ground`: 2)
+- Interpretation: ERC is now a separate logical/symbol electrical-type cleanup task, not a missing-wire or component-body geometry failure.
+
+### Verification Commands
+
+- `python -m compileall -q kicad`: passed.
+- `PYTHONPATH=. python -m unittest discover -s kicad/tests -q`: 41 tests passed in 34.268 s.
+
+### Notes
+
+- Pre-existing dirty generated files were intentionally left untouched and must remain excluded from the commit:
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
+
 ### Additional Visible Responses Before Commit
 
 ```text

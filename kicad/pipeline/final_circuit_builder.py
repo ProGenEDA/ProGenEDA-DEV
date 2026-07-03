@@ -45,7 +45,7 @@ STAGE_REPORT_WIRE_CONFIG = {
     "wire_spacing": 2.54,
     "clearance": 1.27,
     "max_astar_expansions": 50_000.0,
-    "max_wired_routes": 180.0,
+    "max_wired_routes": 10_000.0,
 }
 
 

@@ -69,7 +69,7 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "max_wired_routes": 10_000.0,
     "lane_router": 1.0,
     "lane_step": 7.62,
-    "max_lane_candidates": 160.0,
+    "max_lane_candidates": 256.0,
     "crossing_penalty": 0.0,
     "same_net_reuse_penalty": 0.05,
     "body_crossing_penalty": 100_000.0,
@@ -80,10 +80,10 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "exact_crossing_score_segment_limit": 80.0,
     "body_grid_score_component_limit": 80.0,
     "dense_design_component_limit": 90.0,
-    "dense_max_lane_candidates": 32.0,
+    "dense_max_lane_candidates": 256.0,
     "dense_max_astar_expansions": 1500.0,
     "max_failed_endpoints_per_net": 1000.0,
-    "dense_max_failed_endpoints_per_net": 2.0,
+    "dense_max_failed_endpoints_per_net": 1000.0,
     "dense_force_grid_contact_scoring": 1.0,
     "dense_skip_astar_when_lane_candidate": 1.0,
     "crossing_risk_astar": 0.0,
@@ -95,6 +95,16 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "arrangement_variant_max_astar_expansions": 600.0,
     "arrangement_variant_max_lane_candidates": 32.0,
     "arrangement_variant_max_failed_endpoints_per_net": 1.0,
+    "arrangement_variant_max_root_candidates": 1.0,
+    "arrangement_final_wire_route": 1.0,
+    "max_root_candidates_per_endpoint": 3.0,
+    "max_endpoint_retry_attempts": 4.0,
+    "salvage_astar_expansions": 200_000.0,
+    "max_salvage_astar_attempts": 12.0,
+    "max_partial_route_component_moves": 8.0,
+    "partial_route_move_search_steps": 14.0,
+    "partial_route_move_body_clearance": 0.0,
+    "partial_route_move_min_pin_gap": 10.16,
 }
 
 
@@ -149,7 +159,9 @@ def _bodies(placement: dict[str, Any]) -> dict[str, Body]:
     components = placement.get("components", {})
     if isinstance(components, dict):
         for ref, component in components.items():
-            if ref in bodies or not isinstance(component, dict):
+            if not isinstance(component, dict):
+                continue
+            if ref in bodies or any(body.component_ref == str(ref) for body in bodies.values()):
                 continue
             at = component.get("at", [0.0, 0.0])
             if not isinstance(at, (list, tuple)) or len(at) < 2:
@@ -189,11 +201,6 @@ def _body_center_x(ref: str, bodies: dict[str, Body]) -> float | None:
 
 
 def _side_from_pin_point(point: Point, body: Body | None, net: str) -> str:
-    upper = net.upper()
-    if upper in POWER_NETS:
-        return "top"
-    if upper in GROUND_NETS:
-        return "bottom"
     if body is None:
         return "right"
     if point[0] < body.left:
@@ -903,6 +910,49 @@ def _candidate_lane_paths(
     return out
 
 
+def _root_candidate_routeability_score(
+    root: dict[str, Any],
+    target: dict[str, Any],
+    bodies: dict[str, Body],
+    cfg: dict[str, Any],
+    *,
+    net: str,
+) -> tuple[int, float, float, str, str]:
+    start = (float(root["point"][0]), float(root["point"][1]))
+    goal = (float(target["point"][0]), float(target["point"][1]))
+    start_route = _portal_point(start, str(root.get("side") or "right"), cfg)
+    goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg)
+    ignore_refs: set[str] = set()
+    if not root.get("exact"):
+        ignore_refs.add(str(root["ref"]))
+    if not target.get("exact"):
+        ignore_refs.add(str(target["ref"]))
+
+    best_hits: int | None = None
+    best_length = float("inf")
+    best_turns = float("inf")
+    for candidate in _candidate_lane_paths(start_route, goal_route, bodies, cfg):
+        hits = _path_body_hit_count(candidate, bodies, cfg, ignore_refs=ignore_refs, blocked_cells=None)
+        length = _path_length(candidate)
+        turns = _path_turn_count(candidate)
+        score = (hits, length, turns)
+        if best_hits is None or score < (best_hits, best_length, best_turns):
+            best_hits = hits
+            best_length = length
+            best_turns = float(turns)
+            if hits == 0:
+                break
+    if best_hits is None:
+        best_hits = 1_000_000
+    return (
+        int(best_hits),
+        float(best_length),
+        float(best_turns),
+        str(root.get("ref") or ""),
+        str(root.get("pin") or ""),
+    )
+
+
 def _best_lane_path(
     start: Point,
     goal: Point,
@@ -995,6 +1045,35 @@ def _endpoint_span(endpoints: list[dict[str, Any]]) -> float:
     return (max(xs) - min(xs)) + (max(ys) - min(ys))
 
 
+def _root_endpoint_index(endpoints: list[dict[str, Any]], net: str) -> int:
+    if len(endpoints) <= 2:
+        return 0
+    xs = sorted(float(endpoint["point"][0]) for endpoint in endpoints)
+    ys = sorted(float(endpoint["point"][1]) for endpoint in endpoints)
+    median = (xs[len(xs) // 2], ys[len(ys) // 2])
+    upper = net.upper()
+    prefer_power_side = upper in POWER_NETS or upper in GROUND_NETS
+
+    def score(index: int) -> tuple[float, float, str, str]:
+        endpoint = endpoints[index]
+        point = (float(endpoint["point"][0]), float(endpoint["point"][1]))
+        side = str(endpoint.get("side") or "")
+        side_penalty = 0.0
+        if prefer_power_side:
+            if upper in POWER_NETS and side != "top":
+                side_penalty = 1_000.0
+            elif upper in GROUND_NETS and side != "bottom":
+                side_penalty = 1_000.0
+        return (
+            side_penalty + _manhattan(point, median),
+            _endpoint_span([endpoint]),
+            str(endpoint.get("ref") or ""),
+            str(endpoint.get("pin") or ""),
+        )
+
+    return min(range(len(endpoints)), key=score)
+
+
 def _count_crossings(routes: list[dict[str, Any]]) -> int:
     segments: list[tuple[str, Point, Point]] = []
     for route in routes:
@@ -1084,7 +1163,9 @@ def plan_wire_routes(
     max_failed_endpoints_per_net = max(1, int(cfg.get("max_failed_endpoints_per_net", 1000.0)))
     lane_route_count = 0
     astar_route_count = 0
+    salvage_astar_route_count = 0
     crossing_risk_route_count = 0
+    salvage_astar_attempt_count = 0
 
     def net_priority(item: tuple[str, list[dict[str, Any]]]) -> tuple[int, str]:
         net, endpoints = item
@@ -1135,42 +1216,76 @@ def plan_wire_routes(
             continue
 
         endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
+        root_index = _root_endpoint_index(endpoints, net)
+        initial_root = endpoints[root_index]
+        target_endpoints = [endpoint for index, endpoint in enumerate(endpoints) if index != root_index]
+        target_endpoints.sort(
+            key=lambda item: _manhattan(
+                (float(initial_root["point"][0]), float(initial_root["point"][1])),
+                (float(item["point"][0]), float(item["point"][1])),
+            )
+        )
         net_routes: list[dict[str, Any]] = []
         net_occupied: dict[GridPoint, str] = {}
         pending_net_segments: list[tuple[str, Point, Point]] = []
         net_lane_route_count = 0
         net_astar_route_count = 0
+        net_salvage_astar_route_count = 0
         net_crossing_risk_route_count = 0
         net_failed = False
         net_failed_endpoint_count = 0
         net_failure_warnings: list[str] = []
-        root = endpoints[0]
-        connected_endpoints = [root]
-        for target in endpoints[1:]:
+        connected_endpoints = [initial_root]
+        remaining_targets = list(target_endpoints)
+        deferred_targets: list[dict[str, Any]] = []
+        target_attempts: dict[tuple[str, str], int] = {}
+        target_index = 0
+        max_endpoint_retry_attempts = max(1, int(cfg.get("max_endpoint_retry_attempts", 4.0)))
+
+        def target_tree_distance(target_item: dict[str, Any]) -> float:
+            target_point = (float(target_item["point"][0]), float(target_item["point"][1]))
+            return min(
+                _manhattan((float(item["point"][0]), float(item["point"][1])), target_point)
+                for item in connected_endpoints
+            )
+
+        while remaining_targets:
+            target = min(
+                remaining_targets,
+                key=lambda item: (
+                    target_tree_distance(item),
+                    float(item["point"][0]),
+                    float(item["point"][1]),
+                    str(item.get("ref") or ""),
+                    str(item.get("pin") or ""),
+                ),
+            )
+            remaining_targets.remove(target)
+            target_index += 1
             if len(routes) + len(net_routes) >= max_wired_routes:
                 warnings.append(f"wire_route_limit_deferred: remaining endpoints of {net} skipped after {max_wired_routes} routed connections.")
                 net_failed = True
                 net_failure_warnings.append("wire_route_limit_deferred")
                 break
-            root = min(
-                connected_endpoints,
+            target_side = str(target.get("side") or "")
+            same_side_roots = [item for item in connected_endpoints if str(item.get("side") or "") == target_side]
+            root_pool = same_side_roots or connected_endpoints
+            root_pool = sorted(
+                root_pool,
                 key=lambda item: _manhattan(
                     (float(item["point"][0]), float(item["point"][1])),
                     (float(target["point"][0]), float(target["point"][1])),
                 ),
             )
+            root_candidates = root_pool[: max(1, int(cfg.get("max_root_candidates_per_endpoint", 10.0)))]
+            root = min(
+                root_candidates,
+                key=lambda item: _root_candidate_routeability_score(item, target, bodies, cfg, net=net),
+            )
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))
-            start_route = (
-                _portal_point(start, str(root.get("side") or "right"), cfg)
-                if root.get("exact")
-                else start
-            )
-            goal_route = (
-                _portal_point(goal, str(target.get("side") or "right"), cfg)
-                if target.get("exact")
-                else goal
-            )
+            start_route = _portal_point(start, str(root.get("side") or "right"), cfg)
+            goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg)
             ignore_refs = set()
             if not root.get("exact"):
                 ignore_refs.add(str(root["ref"]))
@@ -1296,9 +1411,9 @@ def plan_wire_routes(
             route_candidates = [candidate for candidate in route_candidates if not candidate[2].get("body_hits")]
             route_candidates.sort(
                 key=lambda item: (
-                    int(item[2].get("different_net_crossings", 0)),
                     float(item[2].get("score", 0.0)),
                     int(item[2].get("turns", 0)),
+                    int(item[2].get("different_net_crossings", 0)),
                     str(item[0]),
                 )
             )
@@ -1312,15 +1427,75 @@ def plan_wire_routes(
                     route_warnings.append(
                         f"minimum_crossing_route: {net} accepted {selected_report['different_net_crossings']} different-net crossing/touch risks."
                     )
+            if (
+                not raw_path
+                and routing_mode == "wire"
+                and salvage_astar_attempt_count < max(0, int(cfg.get("max_salvage_astar_attempts", 0.0)))
+                and float(cfg.get("salvage_astar_expansions", 0.0)) > float(cfg.get("max_astar_expansions", 0.0))
+            ):
+                salvage_astar_attempt_count += 1
+                salvage_cfg = dict(cfg)
+                salvage_cfg["max_astar_expansions"] = float(cfg.get("salvage_astar_expansions", cfg["max_astar_expansions"]))
+                salvage_cfg["block_existing_wires"] = 0.0
+                salvage_path, salvage_warnings = _astar(
+                    start_route,
+                    goal_route,
+                    bodies,
+                    salvage_cfg,
+                    routed_occupied,
+                    net=net,
+                    ignore_refs=ignore_refs,
+                    portals=portals,
+                )
+                if salvage_path:
+                    salvage_score, salvage_report = _path_score(
+                        salvage_path,
+                        bodies=bodies,
+                        existing_segments=scoring_segments,
+                        cfg=cfg,
+                        net=net,
+                        ignore_refs=ignore_refs,
+                        occupied=routed_occupied,
+                        hard_blocked_cells=hard_blocked_cells,
+                        shadow_blocked_cells=shadow_blocked_cells,
+                    )
+                    salvage_report["score"] = round(salvage_score, 3)
+                    if salvage_report.get("body_hits"):
+                        route_warnings.extend(
+                            [
+                                f"salvage_astar_rejected_body_hit: {net} still touched component bodies.",
+                                *salvage_warnings,
+                            ]
+                        )
+                    else:
+                        selected_algorithm = "salvage_grid_astar"
+                        raw_path = salvage_path
+                        selected_report = salvage_report
+                        route_warnings.append(
+                            f"salvage_astar_routed: {net} used {int(salvage_cfg['max_astar_expansions'])} expansion retry after bounded router failure."
+                        )
+                        route_warnings.extend(salvage_warnings)
+                elif salvage_warnings:
+                    route_warnings.extend(salvage_warnings)
             warnings.extend(route_warnings)
             if not raw_path:
+                target_key = (str(target.get("ref") or ""), str(target.get("pin") or ""))
+                target_attempts[target_key] = target_attempts.get(target_key, 0) + 1
+                if target_attempts[target_key] < max_endpoint_retry_attempts and (remaining_targets or deferred_targets):
+                    deferred_targets.append(target)
+                    if not remaining_targets:
+                        remaining_targets = deferred_targets
+                        deferred_targets = []
+                    continue
                 net_failed = True
                 net_failed_endpoint_count += 1
                 endpoint_name = f"{target.get('ref')}.{target.get('pin')}"
                 net_failure_warnings.extend(route_warnings or [f"unroutable_endpoint: {net} {endpoint_name}"])
                 if net_failed_endpoint_count >= max_failed_endpoints_per_net:
+                    remaining_endpoint_count = max(0, len(remaining_targets) + len(deferred_targets))
+                    net_failed_endpoint_count += remaining_endpoint_count
                     net_failure_warnings.append(
-                        f"endpoint_failure_budget_reached: stopped retrying {net} after {net_failed_endpoint_count} failed endpoints."
+                        f"endpoint_failure_budget_reached: stopped retrying {net} with {remaining_endpoint_count} endpoint(s) left unattempted."
                     )
                     break
                 continue
@@ -1338,6 +1513,9 @@ def plan_wire_routes(
                 net_lane_route_count += 1
             elif selected_algorithm == "crossing_risk_astar":
                 net_astar_route_count += 1
+            elif selected_algorithm == "salvage_grid_astar":
+                net_astar_route_count += 1
+                net_salvage_astar_route_count += 1
             else:
                 net_astar_route_count += 1
             if selected_report.get("different_net_crossings"):
@@ -1365,6 +1543,9 @@ def plan_wire_routes(
             }
             net_routes.append(route)
             connected_endpoints.append(target)
+            if not remaining_targets and deferred_targets:
+                remaining_targets = deferred_targets
+                deferred_targets = []
         if net_failed:
             if routing_mode == "wire":
                 warnings.append(f"strict_wire_unroutable: {net} could not be routed without labels.")
@@ -1374,6 +1555,7 @@ def plan_wire_routes(
                     routes.extend(net_routes)
                     lane_route_count += net_lane_route_count
                     astar_route_count += net_astar_route_count
+                    salvage_astar_route_count += net_salvage_astar_route_count
                     crossing_risk_route_count += net_crossing_risk_route_count
                     nets_out[net] = {
                         "strategy": "partial_wire",
@@ -1404,6 +1586,7 @@ def plan_wire_routes(
         routes.extend(net_routes)
         lane_route_count += net_lane_route_count
         astar_route_count += net_astar_route_count
+        salvage_astar_route_count += net_salvage_astar_route_count
         crossing_risk_route_count += net_crossing_risk_route_count
         nets_out[net] = {"strategy": "wire", "endpoints": endpoints, "routes": net_routes}
 
@@ -1438,6 +1621,8 @@ def plan_wire_routes(
             "wired_route_count": len(routes),
             "lane_route_count": lane_route_count,
             "astar_route_count": astar_route_count,
+            "salvage_astar_route_count": salvage_astar_route_count,
+            "salvage_astar_attempt_count": salvage_astar_attempt_count,
             "crossing_risk_route_count": crossing_risk_route_count,
             "dense_design_mode": dense_design,
             "segment_count": sum(len(route["segments"]) for route in routes),
@@ -1558,6 +1743,257 @@ def _wire_plan_routeability_score(wire_plan: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _component_body_groups(bodies: dict[str, Body]) -> dict[str, list[Body]]:
+    groups: dict[str, list[Body]] = defaultdict(list)
+    for body in bodies.values():
+        groups[body.component_ref or body.ref].append(body)
+    return groups
+
+
+def _translated_body(body: Body, dx: float, dy: float) -> Body:
+    return Body(
+        body.ref,
+        round(body.left + dx, 3),
+        round(body.top + dy, 3),
+        round(body.right + dx, 3),
+        round(body.bottom + dy, 3),
+        body.component_ref,
+    )
+
+
+def _bodies_overlap(left: Body, right: Body, clearance: float = 0.0) -> bool:
+    return (
+        left.left - clearance < right.right + clearance
+        and left.right + clearance > right.left - clearance
+        and left.top - clearance < right.bottom + clearance
+        and left.bottom + clearance > right.top - clearance
+    )
+
+
+def _component_move_overlaps(
+    *,
+    ref: str,
+    moved_bodies: list[Body],
+    bodies: dict[str, Body],
+    clearance: float,
+) -> bool:
+    for moved in moved_bodies:
+        for other in bodies.values():
+            other_ref = other.component_ref or other.ref
+            if other_ref == ref:
+                continue
+            if _bodies_overlap(moved, other, clearance):
+                return True
+    return False
+
+
+def _partial_route_move_candidates(
+    *,
+    current_at: Point,
+    pin_offset: Point,
+    anchor: Point,
+    grid: float,
+    search_steps: int,
+) -> list[Point]:
+    base = (_snap(anchor[0] - pin_offset[0], grid), _snap(anchor[1] - pin_offset[1], grid))
+    candidates: list[Point] = [base]
+    seen = {base}
+    directions = [
+        (1, 0),
+        (-1, 0),
+        (0, 1),
+        (0, -1),
+        (1, 1),
+        (1, -1),
+        (-1, 1),
+        (-1, -1),
+        (2, 0),
+        (-2, 0),
+        (0, 2),
+        (0, -2),
+    ]
+    for step in range(1, search_steps + 1):
+        for dx, dy in directions:
+            point = (_snap(base[0] + dx * step * grid, grid), _snap(base[1] + dy * step * grid, grid))
+            if point in seen:
+                continue
+            seen.add(point)
+            candidates.append(point)
+    candidates.sort(key=lambda point: (_manhattan(point, base), _manhattan(point, current_at), point[1], point[0]))
+    return candidates
+
+
+def plan_partial_route_component_moves(
+    placement: dict[str, Any],
+    wire_plan: dict[str, Any],
+    *,
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build coordinate edits that pull failed partial-route endpoints toward their wired neighbor.
+
+    This stays pure JSON: it reads the current routing placement and wire-plan
+    failure report, then emits coordinate edits for the beautifier. It does not
+    inspect or mutate an EDA file.
+    """
+
+    cfg = _wire_config(config)
+    grid = float(cfg["grid"])
+    bodies = _bodies(placement)
+    body_groups = _component_body_groups(bodies)
+    components = placement.get("components", {})
+    if not isinstance(components, dict):
+        components = {}
+    max_moves = max(0, int(cfg.get("max_partial_route_component_moves", 8.0)))
+    search_steps = max(2, int(cfg.get("partial_route_move_search_steps", 14.0)))
+    move_clearance = float(cfg.get("partial_route_move_body_clearance", 0.0))
+    min_pin_gap = float(cfg.get("partial_route_move_min_pin_gap", grid * 4))
+
+    coordinate_edits: list[dict[str, Any]] = []
+    move_records: list[dict[str, Any]] = []
+    moved_refs: set[str] = set()
+    working = json.loads(json.dumps(placement))
+
+    nets = wire_plan.get("nets", {})
+    if not isinstance(nets, dict):
+        nets = {}
+
+    for net, net_data in sorted(nets.items()):
+        if len(coordinate_edits) >= max_moves:
+            break
+        if not isinstance(net_data, dict) or net_data.get("strategy") != "partial_wire":
+            continue
+        endpoints = [item for item in net_data.get("endpoints", []) if isinstance(item, dict)]
+        routes = [item for item in net_data.get("routes", []) if isinstance(item, dict)]
+        routed_keys: set[tuple[str, str]] = set()
+        for route in routes:
+            for key in ("from", "to"):
+                endpoint = route.get(key)
+                if isinstance(endpoint, dict):
+                    routed_keys.add((str(endpoint.get("ref") or ""), str(endpoint.get("pin") or "")))
+        connected = [
+            endpoint
+            for endpoint in endpoints
+            if (str(endpoint.get("ref") or ""), str(endpoint.get("pin") or "")) in routed_keys
+        ]
+        if not connected:
+            connected = endpoints
+        for failed in endpoints:
+            if len(coordinate_edits) >= max_moves:
+                break
+            ref = str(failed.get("ref") or "")
+            pin = str(failed.get("pin") or "")
+            if not ref or ref in moved_refs or (ref, pin) in routed_keys:
+                continue
+            component = components.get(ref)
+            if not isinstance(component, dict):
+                continue
+            at_raw = component.get("at", [0.0, 0.0])
+            if not isinstance(at_raw, (list, tuple)) or len(at_raw) < 2:
+                continue
+            current_at = (float(at_raw[0]), float(at_raw[1]))
+            failed_point_raw = failed.get("point", current_at)
+            if not isinstance(failed_point_raw, (list, tuple)) or len(failed_point_raw) < 2:
+                continue
+            failed_point = (float(failed_point_raw[0]), float(failed_point_raw[1]))
+            anchors = []
+            for endpoint in connected:
+                point_raw = endpoint.get("point")
+                if isinstance(point_raw, (list, tuple)) and len(point_raw) >= 2:
+                    anchors.append((float(point_raw[0]), float(point_raw[1]), endpoint))
+            if not anchors:
+                continue
+            anchor_x, anchor_y, anchor_endpoint = min(
+                anchors,
+                key=lambda item: (_manhattan(failed_point, (item[0], item[1])), str(item[2].get("ref") or ""), str(item[2].get("pin") or "")),
+            )
+            anchor = (anchor_x, anchor_y)
+            pin_offset = (failed_point[0] - current_at[0], failed_point[1] - current_at[1])
+            ref_bodies = body_groups.get(ref)
+            if not ref_bodies:
+                continue
+
+            best: tuple[float, Point, list[Body]] | None = None
+            for candidate_at in _partial_route_move_candidates(
+                current_at=current_at,
+                pin_offset=pin_offset,
+                anchor=anchor,
+                grid=grid,
+                search_steps=search_steps,
+            ):
+                dx = round(candidate_at[0] - current_at[0], 3)
+                dy = round(candidate_at[1] - current_at[1], 3)
+                moved_bodies = [_translated_body(body, dx, dy) for body in ref_bodies]
+                if _component_move_overlaps(ref=ref, moved_bodies=moved_bodies, bodies=bodies, clearance=move_clearance):
+                    continue
+                moved_pin = (round(failed_point[0] + dx, 3), round(failed_point[1] + dy, 3))
+                pin_gap = _manhattan(moved_pin, anchor)
+                pin_gap_penalty = max(0.0, min_pin_gap - pin_gap) * 10_000.0
+                score = pin_gap_penalty + pin_gap + _manhattan(candidate_at, current_at) * 0.02
+                if best is None or score < best[0]:
+                    best = (score, candidate_at, moved_bodies)
+                    if pin_gap_penalty == 0.0 and pin_gap <= min_pin_gap + grid * 2:
+                        break
+            if best is None:
+                move_records.append(
+                    {
+                        "net": str(net),
+                        "ref": ref,
+                        "pin": pin,
+                        "status": "no_clear_candidate",
+                        "anchor": [anchor[0], anchor[1]],
+                    }
+                )
+                continue
+
+            _score, to_at, moved_bodies = best
+            edit = {
+                "ref": ref,
+                "from": [round(current_at[0], 3), round(current_at[1], 3)],
+                "to": [round(to_at[0], 3), round(to_at[1], 3)],
+                "delta": [round(to_at[0] - current_at[0], 3), round(to_at[1] - current_at[1], 3)],
+                "reason": "partial_wire_endpoint_local_move",
+                "net": str(net),
+                "pin": pin,
+                "anchor": {
+                    "ref": str(anchor_endpoint.get("ref") or ""),
+                    "pin": str(anchor_endpoint.get("pin") or ""),
+                    "point": [anchor[0], anchor[1]],
+                },
+            }
+            coordinate_edits.append(edit)
+            move_records.append(
+                {
+                    "net": str(net),
+                    "ref": ref,
+                    "pin": pin,
+                    "status": "moved",
+                    "from": edit["from"],
+                    "to": edit["to"],
+                    "anchor": edit["anchor"],
+                }
+            )
+            moved_refs.add(ref)
+            bodies = {key: body for key, body in bodies.items() if (body.component_ref or body.ref) != ref}
+            for moved_body in moved_bodies:
+                bodies[moved_body.ref] = moved_body
+            body_groups = _component_body_groups(bodies)
+            working = apply_coordinate_edits(working, {"coordinate_edits": [edit]})
+            components = working.get("components", {}) if isinstance(working.get("components"), dict) else components
+
+    return {
+        "schema": "progen-kicad-partial-route-component-motion/v0.1",
+        "stage": "partial_route_component_motion_decider",
+        "algorithm": {
+            "primary": "move_failed_partial_endpoint_toward_nearest_wired_same_net_endpoint",
+            "input_contract": "routing placement JSON plus wire_plan partial-wire net reports",
+            "output_contract": "coordinate edits for beautifier.py",
+        },
+        "coordinate_edits": coordinate_edits,
+        "move_count": len(coordinate_edits),
+        "moves": move_records,
+    }
+
+
 def _variant_scoring_wire_config(wire_cfg: dict[str, Any]) -> dict[str, Any]:
     cfg = dict(wire_cfg)
     cfg["max_astar_expansions"] = min(
@@ -1587,6 +2023,10 @@ def _variant_scoring_wire_config(wire_cfg: dict[str, Any]) -> dict[str, Any]:
     cfg["dense_max_failed_endpoints_per_net"] = min(
         float(cfg.get("dense_max_failed_endpoints_per_net", 2.0)),
         float(cfg.get("arrangement_variant_max_failed_endpoints_per_net", 1.0)),
+    )
+    cfg["max_root_candidates_per_endpoint"] = min(
+        float(cfg.get("max_root_candidates_per_endpoint", 3.0)),
+        float(cfg.get("arrangement_variant_max_root_candidates", 1.0)),
     )
     cfg["crossing_risk_astar"] = 0.0
     return cfg
@@ -1655,19 +2095,36 @@ def _estimate_variant_routeability(routing_placement: dict[str, Any], circuit: d
             blocked_endpoint_count += 1
             continue
         endpoints = sorted(endpoints, key=lambda item: (item["point"][0], item["point"][1], item["ref"], item["pin"]))
-        connected = [endpoints[0]]
-        for target in endpoints[1:]:
-            root = min(
-                connected,
+        root_index = _root_endpoint_index(endpoints, net)
+        initial_root = endpoints[root_index]
+        targets = [endpoint for index, endpoint in enumerate(endpoints) if index != root_index]
+        targets.sort(
+            key=lambda item: _manhattan(
+                (float(initial_root["point"][0]), float(initial_root["point"][1])),
+                (float(item["point"][0]), float(item["point"][1])),
+            )
+        )
+        connected = [initial_root]
+        for target in targets:
+            target_side = str(target.get("side") or "")
+            same_side_roots = [item for item in connected if str(item.get("side") or "") == target_side]
+            root_pool = same_side_roots or connected
+            root_pool = sorted(
+                root_pool,
                 key=lambda item: _manhattan(
                     (float(item["point"][0]), float(item["point"][1])),
                     (float(target["point"][0]), float(target["point"][1])),
                 ),
             )
+            root_candidates = root_pool[: max(1, int(cfg.get("max_root_candidates_per_endpoint", 10.0)))]
+            root = min(
+                root_candidates,
+                key=lambda item: _root_candidate_routeability_score(item, target, bodies, cfg, net=net),
+            )
             start = (float(root["point"][0]), float(root["point"][1]))
             goal = (float(target["point"][0]), float(target["point"][1]))
-            start_route = _portal_point(start, str(root.get("side") or "right"), cfg) if root.get("exact") else start
-            goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg) if target.get("exact") else goal
+            start_route = _portal_point(start, str(root.get("side") or "right"), cfg)
+            goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg)
             ignore_refs: set[str] = set()
             if not root.get("exact"):
                 ignore_refs.add(str(root["ref"]))
@@ -1789,7 +2246,48 @@ def select_routeable_arrangement(
 
     results.sort(key=lambda item: (float(item.get("score", {}).get("score", 1.0e99)), str(item.get("name", ""))))
     selected = results[0]
-    final_wire_plan = plan_wire_routes(selected["routing_placement"], circuit, config=wire_cfg)
+    if wire_cfg.get("arrangement_final_wire_route", 1.0) >= 1.0:
+        final_wire_plan = plan_wire_routes(selected["routing_placement"], circuit, config=wire_cfg)
+    else:
+        net_count = len(extract_connection_nets(circuit))
+        final_wire_plan = {
+            "schema": "progen-kicad-wire-plan/v0.1",
+            "stage": "wire_planner",
+            "routing_mode": str(wire_cfg["routing_mode"]),
+            "input_contract": {
+                "placement": "components plus obstacles JSON; no EDA file required",
+                "connections": "CircuitIR components[].pins and/or nets endpoint lists",
+            },
+            "algorithm": {
+                "router": "arrangement_route_skipped",
+                "reason": "caller requested routeability-scored arrangement only; backend exact routing will run after symbol body resolution",
+            },
+            "sheet": {
+                "width": wire_cfg["sheet_width"],
+                "height": wire_cfg["sheet_height"],
+                "grid": wire_cfg["grid"],
+                "clearance": wire_cfg["clearance"],
+            },
+            "nets": {},
+            "routes": [],
+            "metrics": {
+                "net_count": net_count,
+                "wired_route_count": 0,
+                "lane_route_count": 0,
+                "astar_route_count": 0,
+                "salvage_astar_route_count": 0,
+                "salvage_astar_attempt_count": 0,
+                "crossing_risk_route_count": 0,
+                "dense_design_mode": _placement_component_count(selected["routing_placement"], circuit)
+                >= int(wire_cfg.get("dense_design_component_limit", 90.0)),
+                "segment_count": 0,
+                "different_net_crossing_count": 0,
+                "label_strategy_count": 0,
+                "partial_wire_net_count": 0,
+                "unroutable_net_count": 0,
+            },
+            "warnings": ["arrangement_final_wire_route_skipped"],
+        }
     variants = [
         {
             "name": item.get("name"),

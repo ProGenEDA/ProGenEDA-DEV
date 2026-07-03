@@ -30,7 +30,7 @@ from .placement_catalog import CatalogPlacementPlan, PlacedCatalogComponent, res
 from .placement_project_writer import write_placement_project
 from .placer_pipeline import run_placer_pipeline
 from .wire_geometry_validator import AllowedTouch, ComponentBody, WireGeometrySegment, validate_wire_geometry
-from .wire_planner import LABEL_STRATEGIES, normalize_routing_mode, plan_wire_routes, plan_wiring
+from .wire_planner import LABEL_STRATEGIES, normalize_routing_mode, plan_partial_route_component_moves, plan_wire_routes, plan_wiring
 
 
 WIRE_MAKER_VERSION = "progen-kicad-wire-maker/v0.1"
@@ -439,6 +439,19 @@ def _pin_world(component: PlacedCatalogComponent, geometry: PinGeometry, unit_co
     return _local_point_to_world(component, (origin_x, origin_y), (geometry.x, geometry.y))
 
 
+def _pin_side_from_rotation(rotation: float) -> str:
+    angle = round(float(rotation)) % 360
+    if angle == 0:
+        return "left"
+    if angle == 90:
+        return "bottom"
+    if angle == 180:
+        return "right"
+    if angle == 270:
+        return "top"
+    return ""
+
+
 def _component_body_bounds_for_unit(raw_bounds: dict[int, BodyBounds], unit: int) -> BodyBounds | None:
     return _merge_bounds(raw_bounds.get(0), raw_bounds.get(unit))
 
@@ -539,6 +552,7 @@ def _catalog_plan_as_routing_placement(circuit: dict[str, Any], placement: Catal
             pin_points.setdefault(ref, {})[pin] = {
                 "point": [round(point[0], 3), round(point[1], 3)],
                 "source": source,
+                "side": _pin_side_from_rotation(geometry.rotation) if geometry else "",
                 "resolved_pin_number": geometry.number if geometry else "",
                 "resolved_pin_name": geometry.name if geometry else "",
             }
@@ -1352,6 +1366,7 @@ def make_kicad_wires(
         "strict_wire_ok": bool(strict_wire_report["ok"]) if routing_mode == "wire" else True,
         "strict_wire_violation_count": int(strict_wire_report["violation_count"]),
         "strict_wire_validator": strict_wire_report,
+        "partial_route_motion_repair": wire_plan.get("partial_route_motion_repair", {}),
         "wire_planner_metrics": wire_plan.get("metrics", {}),
         "wire_planner_warning_count": len(wire_plan.get("warnings", [])),
     }
@@ -1507,6 +1522,98 @@ def _settle_actual_symbol_body_placement(
     return current, final_placement, final_routing_placement, report
 
 
+def _incomplete_wire_net_count(wire_plan: dict[str, Any]) -> int:
+    metrics = wire_plan.get("metrics", {}) if isinstance(wire_plan.get("metrics"), dict) else {}
+    return int(metrics.get("partial_wire_net_count", 0)) + int(metrics.get("unroutable_net_count", 0))
+
+
+def _repair_strict_partial_routes_by_motion(
+    circuit: dict[str, Any],
+    routing_placement: dict[str, Any],
+    placement: CatalogPlacementPlan,
+    wire_plan: dict[str, Any],
+    cfg: dict[str, Any],
+    *,
+    max_passes: int = 3,
+) -> tuple[dict[str, Any], CatalogPlacementPlan, dict[str, Any], dict[str, Any]]:
+    routing_mode = _wire_plan_routing_mode(wire_plan)
+    passes: list[dict[str, Any]] = []
+    current_routing_placement = routing_placement
+    current_placement = placement
+    current_wire_plan = wire_plan
+
+    if routing_mode != "wire":
+        report = {
+            "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+            "stage": "partial_route_motion_repair",
+            "enabled": False,
+            "reason": "only strict wire mode uses partial-route component motion repair",
+            "pass_count": 0,
+            "passes": [],
+        }
+        current_wire_plan["partial_route_motion_repair"] = report
+        return current_wire_plan, current_placement, current_routing_placement, report
+
+    for pass_index in range(1, max_passes + 1):
+        before_metrics = current_wire_plan.get("metrics", {}) if isinstance(current_wire_plan.get("metrics"), dict) else {}
+        if _incomplete_wire_net_count(current_wire_plan) <= 0:
+            break
+        move_plan = plan_partial_route_component_moves(current_routing_placement, current_wire_plan, config=cfg)
+        if not move_plan.get("coordinate_edits"):
+            passes.append(
+                {
+                    "pass": pass_index,
+                    "status": "no_coordinate_edits",
+                    "metrics_before": before_metrics,
+                    "move_plan": move_plan,
+                }
+            )
+            break
+
+        moved_placement = apply_coordinate_edits(current_routing_placement, move_plan)
+        next_placement = _catalog_plan_from_placement_dict(circuit, moved_placement)
+        next_routing_placement = _catalog_plan_as_routing_placement(circuit, next_placement)
+        overlap_report = component_body_overlap_report(next_routing_placement.get("obstacles", []))
+        if not overlap_report["ok"]:
+            passes.append(
+                {
+                    "pass": pass_index,
+                    "status": "rejected_component_body_overlap",
+                    "metrics_before": before_metrics,
+                    "move_plan": move_plan,
+                    "component_body_overlap_report": overlap_report,
+                }
+            )
+            break
+
+        next_wire_plan = plan_wire_routes(next_routing_placement, circuit, config=cfg)
+        after_metrics = next_wire_plan.get("metrics", {}) if isinstance(next_wire_plan.get("metrics"), dict) else {}
+        passes.append(
+            {
+                "pass": pass_index,
+                "status": "rerouted_after_coordinate_edits",
+                "metrics_before": before_metrics,
+                "metrics_after": after_metrics,
+                "move_plan": move_plan,
+                "component_body_overlap_report": overlap_report,
+            }
+        )
+        current_placement = next_placement
+        current_routing_placement = next_routing_placement
+        current_wire_plan = next_wire_plan
+
+    report = {
+        "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+        "stage": "partial_route_motion_repair",
+        "enabled": True,
+        "pass_count": len(passes),
+        "passes": passes,
+        "final_metrics": current_wire_plan.get("metrics", {}),
+    }
+    current_wire_plan["partial_route_motion_repair"] = report
+    return current_wire_plan, current_placement, current_routing_placement, report
+
+
 def write_wired_project(
     circuit: dict[str, Any],
     placement: CatalogPlacementPlan,
@@ -1593,12 +1700,28 @@ def generate_wired_projects_from_final_json(
 
         ctx = run_placer_pipeline(placement_input, write_trace=False)
         placement_dict = ctx.placement_plan.as_dict()
-        planned = plan_wiring(placement_dict, circuit, wire_config=cfg)
+        arrangement_cfg = dict(cfg)
+        arrangement_cfg["arrangement_final_wire_route"] = 0.0
+        arrangement_cfg["max_arrangement_variants"] = min(float(arrangement_cfg.get("max_arrangement_variants", 5.0)), 3.0)
+        planned = plan_wiring(placement_dict, circuit, wire_config=arrangement_cfg)
         beautified = planned["routing_placement"]
         beautified, placement, routing_placement, body_overlap_report = _settle_actual_symbol_body_placement(circuit, beautified)
-        (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
         wire_plan = plan_wire_routes(routing_placement, circuit, config=cfg)
+        wire_plan, placement, routing_placement, partial_motion_report = _repair_strict_partial_routes_by_motion(
+            circuit,
+            routing_placement,
+            placement,
+            wire_plan,
+            cfg,
+        )
+        final_body_overlap_report = component_body_overlap_report(routing_placement.get("obstacles", []))
+        body_overlap_report = dict(body_overlap_report)
+        body_overlap_report["ok"] = bool(final_body_overlap_report["ok"])
+        body_overlap_report["component_body_overlap_count"] = int(final_body_overlap_report["overlap_count"])
+        body_overlap_report["component_body_overlaps"] = final_body_overlap_report["overlaps"]
+        (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
         wire_plan["arrangement_selection"] = planned.get("arrangement_selection", {})
+        wire_plan["partial_route_motion_repair"] = partial_motion_report
         wire_plan, wire_result = repair_wire_plan_geometry(circuit, placement, wire_plan)
         (wire_plan_dir / f"{stem}_wire_plan.json").write_text(json.dumps(wire_plan, indent=2), encoding="utf-8")
 
@@ -1624,6 +1747,11 @@ def generate_wired_projects_from_final_json(
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
                 "unrouted_net_count": manifest["wire_maker"]["unrouted_net_count"],
                 "partial_wire_net_count": manifest["wire_maker"]["partial_wire_net_count"],
+                "partial_route_motion_pass_count": int(
+                    manifest["wire_maker"].get("partial_route_motion_repair", {}).get("pass_count", 0)
+                )
+                if isinstance(manifest["wire_maker"].get("partial_route_motion_repair"), dict)
+                else 0,
                 "geometry_ok": bool(manifest["wire_maker"]["geometry_ok"]),
                 "geometry_violation_count": manifest["wire_maker"]["geometry_violation_count"],
                 "strict_wire_ok": bool(manifest["wire_maker"]["strict_wire_ok"]),
@@ -1651,6 +1779,7 @@ def generate_wired_projects_from_final_json(
         "total_deferred_nets": sum(int(item["deferred_net_count"]) for item in results),
         "total_unrouted_nets": sum(int(item["unrouted_net_count"]) for item in results),
         "total_partial_wire_nets": sum(int(item["partial_wire_net_count"]) for item in results),
+        "total_partial_route_motion_passes": sum(int(item["partial_route_motion_pass_count"]) for item in results),
         "all_geometry_ok": all(item["geometry_ok"] for item in results),
         "total_geometry_violations": sum(int(item["geometry_violation_count"]) for item in results),
         "all_strict_wire_ok": all(item["strict_wire_ok"] for item in results),

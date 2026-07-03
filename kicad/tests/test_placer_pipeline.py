@@ -15,6 +15,7 @@ from kicad.pipeline import (
     apply_coordinate_edits,
     decide_arrangement,
     place_terminals,
+    plan_partial_route_component_moves,
     plan_wire_routes,
     plan_wiring,
     run_placer_pipeline,
@@ -391,6 +392,97 @@ class PlacerPipelineTests(unittest.TestCase):
         self.assertEqual(route["to"]["point"], [44.0, 20.0])
         self.assertTrue(route["from"]["exact"])
         self.assertEqual(wire_plan["nets"]["SIG"]["endpoints"][0]["source"], "unit_test_pin")
+
+    def test_wire_planner_adds_side_escape_for_estimated_endpoint_points(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "U1", "kind": "IC", "pins": {"A": "SIG"}},
+                {"id": "U2", "kind": "IC", "pins": {"B": "SIG"}},
+            ]
+        }
+        placement = {
+            "components": {
+                "U1": {"at": [10.0, 20.0], "width": 10.0, "height": 8.0},
+                "U2": {"at": [60.0, 40.0], "width": 10.0, "height": 8.0},
+            },
+            "obstacles": [
+                {"owner": "U1::body1", "component_ref": "U1", "left": 5.0, "top": 16.0, "right": 15.0, "bottom": 24.0},
+                {"owner": "U2::body1", "component_ref": "U2", "left": 55.0, "top": 36.0, "right": 65.0, "bottom": 44.0},
+            ],
+        }
+        wire_plan = plan_wire_routes(placement, circuit, config={"grid": 1.0, "clearance": 1.0, "pin_stub": 5.0})
+        route = wire_plan["routes"][0]
+        self.assertFalse(route["from"]["exact"])
+        self.assertGreaterEqual(len(route["path"]), 4)
+        self.assertGreater(route["path"][1][0], route["path"][0][0])
+
+    def test_wire_planner_does_not_let_fallback_body_override_exact_obstacle_side(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "U1", "kind": "IC", "pins": {"A": "SIG"}},
+                {"id": "U2", "kind": "IC", "pins": {"B": "SIG"}},
+            ]
+        }
+        placement = {
+            "components": {
+                "U1": {"at": [10.0, 10.0], "width": 30.0, "height": 30.0},
+                "U2": {"at": [40.0, 10.0], "width": 10.0, "height": 8.0},
+            },
+            "obstacles": [
+                {"owner": "U1::body1", "component_ref": "U1", "left": 5.0, "top": 8.0, "right": 15.0, "bottom": 12.0},
+                {"owner": "U2::body1", "component_ref": "U2", "left": 35.0, "top": 6.0, "right": 45.0, "bottom": 14.0},
+            ],
+            "pin_points": {
+                "U1": {"A": {"point": [4.0, 10.0], "source": "unit_test_pin"}},
+                "U2": {"B": {"point": [46.0, 10.0], "source": "unit_test_pin"}},
+            },
+        }
+        wire_plan = plan_wire_routes(placement, circuit, config={"grid": 1.0, "clearance": 1.0, "pin_stub": 5.0})
+        route = wire_plan["routes"][0]
+        self.assertLess(route["path"][1][0], route["path"][0][0])
+
+    def test_partial_route_component_motion_moves_failed_endpoint_toward_wired_neighbor(self) -> None:
+        placement = {
+            "components": {
+                "A": {"at": [0.0, 0.0], "width": 6.0, "height": 6.0},
+                "B": {"at": [100.0, 0.0], "width": 6.0, "height": 6.0},
+                "C": {"at": [200.0, 0.0], "width": 6.0, "height": 6.0},
+            },
+            "obstacles": [
+                {"owner": "A::body", "component_ref": "A", "left": -3.0, "top": -3.0, "right": 3.0, "bottom": 3.0},
+                {"owner": "B::body", "component_ref": "B", "left": 97.0, "top": -3.0, "right": 103.0, "bottom": 3.0},
+                {"owner": "C::body", "component_ref": "C", "left": 197.0, "top": -3.0, "right": 203.0, "bottom": 3.0},
+            ],
+        }
+        wire_plan = {
+            "nets": {
+                "SIG": {
+                    "strategy": "partial_wire",
+                    "endpoints": [
+                        {"ref": "A", "pin": "1", "point": [0.0, 0.0]},
+                        {"ref": "B", "pin": "1", "point": [100.0, 0.0]},
+                        {"ref": "C", "pin": "1", "point": [200.0, 0.0]},
+                    ],
+                    "routes": [
+                        {
+                            "from": {"ref": "A", "pin": "1", "point": [0.0, 0.0]},
+                            "to": {"ref": "B", "pin": "1", "point": [100.0, 0.0]},
+                        }
+                    ],
+                }
+            }
+        }
+        move_plan = plan_partial_route_component_moves(
+            placement,
+            wire_plan,
+            config={"grid": 1.0, "partial_route_move_min_pin_gap": 8.0},
+        )
+        self.assertEqual(move_plan["stage"], "partial_route_component_motion_decider")
+        self.assertEqual(move_plan["move_count"], 1)
+        edit = move_plan["coordinate_edits"][0]
+        self.assertEqual(edit["ref"], "C")
+        self.assertLess(abs(edit["to"][0] - 100.0), abs(200.0 - 100.0))
+        self.assertGreaterEqual(abs(edit["to"][0] - 100.0) + abs(edit["to"][1]), 8.0)
 
     def test_arrangement_and_beautifier_handle_t01_to_t10_stress_without_overlaps(self) -> None:
         stress = [spec for spec in suite_specs("stress") if spec[0].startswith("T")]

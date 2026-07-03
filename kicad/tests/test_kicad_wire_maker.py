@@ -145,8 +145,9 @@ class KiCadWireMakerTests(unittest.TestCase):
             self.assertEqual(summary["project_count"], 1)
             self.assertEqual(summary["total_labels"], 0)
             self.assertGreater(summary["total_wire_objects"], 0)
-            self.assertGreater(summary["total_unrouted_nets"] + summary["total_partial_wire_nets"], 0)
-            self.assertFalse(summary["all_strict_wire_ok"])
+            self.assertEqual(summary["total_unrouted_nets"] + summary["total_partial_wire_nets"], 0)
+            self.assertTrue(summary["all_geometry_ok"])
+            self.assertTrue(summary["all_strict_wire_ok"])
 
 
 if __name__ == "__main__":
