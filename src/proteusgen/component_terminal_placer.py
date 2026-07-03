@@ -237,6 +237,30 @@ INFRASTRUCTURE_FAMILIES = {"DISPLAY_BRIDGE"}
 INFRASTRUCTURE_KEYS = {"D20", "DISPLAY_ANODE_SENTINEL"}
 
 
+def _group_family(group: Any) -> str:
+    return str(getattr(group, "family", ""))
+
+
+def _group_key(group: Any) -> str:
+    return str(getattr(group, "key", ""))
+
+
+def _is_terminal_infrastructure_group(group: Any) -> bool:
+    """Return true for placement infrastructure that must never get terminals."""
+
+    return (
+        _group_family(group) in INFRASTRUCTURE_FAMILIES
+        or _group_key(group) in INFRASTRUCTURE_KEYS
+    )
+
+
+def _terminal_eligible_family(group: Any, accepted: set[str]) -> str | None:
+    family = _group_family(group)
+    if family in accepted and not _is_terminal_infrastructure_group(group):
+        return family
+    return None
+
+
 @dataclass(frozen=True)
 class TerminalSpec:
     label: str
@@ -3016,9 +3040,10 @@ def attach_mixed_overlay_bidir_terminals_to_project(
     accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     available = tuple(
         dict.fromkeys(
-            str(getattr(group, "family", ""))
+            family
             for group in groups
-            if str(getattr(group, "family", "")) in accepted
+            for family in (_terminal_eligible_family(group, accepted),)
+            if family is not None
         )
     )
     requested = available if terminal_families is None else tuple(
@@ -3069,7 +3094,7 @@ def attach_mixed_overlay_bidir_terminals_to_project(
         family_groups = tuple(
             group
             for group in groups
-            if str(getattr(group, "family", "")) == family
+            if _terminal_eligible_family(group, {family}) == family
         )
         pairs, family_terminals, family_wires, family_patches = (
             _mixed_overlay_family_parts(
@@ -3179,8 +3204,8 @@ def attach_mixed_overlay_bidir_terminals_to_project(
         family_handler = "MIXED/append-overlay-v3-temp"
     preserved_rows = []
     for group in groups:
-        family = str(getattr(group, "family", ""))
-        if family in requested:
+        family = _group_family(group)
+        if _terminal_eligible_family(group, set(requested)) is not None:
             continue
         core = bytes(getattr(group, "data", b""))[:-1]
         preserved_rows.append(
@@ -3242,7 +3267,9 @@ def attach_mixed_overlay_bidir_terminals_to_project(
         "terminal_suffix_links_valid": suffix_links_valid,
         "terminal_count_added": expected_terminals,
         "wire_count_added": expected_wires,
-        "terminalized_component_count": len(groups) - len(preserved_rows),
+        "terminalized_component_count": sum(
+            report["component_count"] for report in family_reports
+        ),
         "preserved_component_count": len(preserved_rows),
         "preserved_groups": preserved_rows,
         "bidir_count_before": original_chunk.count(BIDIR_MARKER),
@@ -3269,22 +3296,40 @@ def _covered_bare_component_stream(
 ) -> tuple[Any, ...]:
     """Require the supplied groups to describe the complete bare object stream."""
 
-    ordered = tuple(sorted(groups, key=lambda group: int(getattr(group, "start", 0))))
-    if not ordered:
+    remaining = list(groups)
+    if not remaining:
         raise ValueError("Native mixed attachment requires at least one component group.")
-    prefix = original_chunk[:2]
-    data = [bytes(getattr(group, "data", b"")) for group in ordered]
-    candidates = (
-        prefix + b"".join(data),
-        prefix + b"".join(data[:-1]) + data[-1][:-1] + b"\xff",
-    )
-    if original_chunk not in candidates:
+    ordered: list[Any] = []
+    offset = 2
+    while remaining:
+        match: tuple[int, int] | None = None
+        for index, group in enumerate(remaining):
+            data = bytes(getattr(group, "data", b""))
+            if not data:
+                continue
+            if original_chunk.startswith(data, offset):
+                match = (index, len(data))
+                break
+            final_data = data[:-1] + b"\xff"
+            if (
+                final_data != data
+                and offset + len(final_data) == len(original_chunk)
+                and original_chunk.startswith(final_data, offset)
+            ):
+                match = (index, len(final_data))
+                break
+        if match is None:
+            break
+        index, span = match
+        ordered.append(remaining.pop(index))
+        offset += span
+    if remaining or offset != len(original_chunk):
         raise ValueError(
             "Native mixed attachment cannot account for the complete bare object "
             "stream from the supplied component groups. Pass every placed group; "
             "hidden or synthetic records must be exposed by the component placer."
         )
-    return ordered
+    return tuple(ordered)
 
 
 def _wire_path_contact_checks(
@@ -3371,9 +3416,10 @@ def attach_mixed_native_bidir_terminals_to_project(
     accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     available = tuple(
         dict.fromkeys(
-            str(getattr(group, "family", ""))
+            family
             for group in groups
-            if str(getattr(group, "family", "")) in accepted
+            for family in (_terminal_eligible_family(group, accepted),)
+            if family is not None
         )
     )
     requested = available if terminal_families is None else tuple(
@@ -3414,7 +3460,7 @@ def attach_mixed_native_bidir_terminals_to_project(
         family_groups = tuple(
             group
             for group in ordered_groups
-            if str(getattr(group, "family", "")) == family
+            if _terminal_eligible_family(group, {family}) == family
         )
         parts = _mixed_overlay_family_parts(
             family,
@@ -3446,7 +3492,7 @@ def attach_mixed_native_bidir_terminals_to_project(
         family_groups = tuple(
             group
             for group in ordered_groups
-            if str(getattr(group, "family", "")) == family
+            if _terminal_eligible_family(group, {family}) == family
         )
         _pairs, terminal_records, wire_pairs, patches = family_parts[family]
         patched_by_group_id.update(patches)
@@ -3483,8 +3529,8 @@ def attach_mixed_native_bidir_terminals_to_project(
     preserved_boundary_normalizations = 0
     for index, group in enumerate(ordered_groups):
         group_id = id(group)
-        family = str(getattr(group, "family", ""))
-        if family not in requested:
+        family = _group_family(group)
+        if _terminal_eligible_family(group, set(requested)) is None:
             data = bytes(getattr(group, "data", b""))
             next_starts_with_terminal = (
                 index + 1 < len(local_starts_with_terminal)
@@ -3571,7 +3617,7 @@ def attach_mixed_native_bidir_terminals_to_project(
     preserved_valid = all(
         final_chunk.count(bytes(getattr(group, "data", b""))[:-1]) == 1
         for group in ordered_groups
-        if str(getattr(group, "family", "")) not in requested
+        if _terminal_eligible_family(group, set(requested)) is None
     )
     report = {
         "stage": "terminal_placer",
@@ -4141,13 +4187,14 @@ def attach_component_bidir_terminals_to_project(
     groups = tuple(selected_groups)
     if not groups:
         raise ValueError("Shared terminal attachment requires selected component groups.")
-    families = {str(getattr(group, "family", "")) for group in groups}
+    families = {_group_family(group) for group in groups}
     accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     available_eligible_families = tuple(
         dict.fromkeys(
-            str(getattr(group, "family", ""))
+            family
             for group in groups
-            if str(getattr(group, "family", "")) in accepted
+            for family in (_terminal_eligible_family(group, accepted),)
+            if family is not None
         )
     )
     if terminal_families is None:
@@ -4178,13 +4225,13 @@ def attach_component_bidir_terminals_to_project(
             (
                 group
                 for group in groups
-                if str(getattr(group, "family", "")) not in eligible_families
+                if _terminal_eligible_family(group, set(eligible_families)) is None
             ),
             key=lambda group: int(getattr(group, "start", 0)),
         )
     )
 
-    if len(families) == 1 and eligible_families:
+    if len(families) == 1 and eligible_families and not preserved_groups:
         if label_prefix is not None or suffix_start is not None:
             report = _attach_single_family_bidir_terminals_to_project(
                 project,
@@ -4232,7 +4279,7 @@ def attach_component_bidir_terminals_to_project(
             "preserved_groups": [
                 {
                     "component_key": str(getattr(group, "key", "")),
-                    "component_family": str(getattr(group, "family", "")),
+                    "component_family": _group_family(group),
                     "packet_size": len(bytes(getattr(group, "data", b""))),
                     "byte_preserved": True,
                 }

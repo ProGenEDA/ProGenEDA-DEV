@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from proteusgen.component_placer import load_component_aliases
 from proteusgen.component_catalog import load_component_catalog
 from proteusgen.node_name_mapping import build_node_name_mapping, terminal_label_for_node
-from proteusgen.pin_terminal_planner import build_pin_terminal_plan
+from proteusgen.pin_terminal_planner import (
+    build_pin_terminal_plan,
+    pin_terminal_test_label,
+)
 from proteusgen.validation import COMPONENT_PINS, HC08_INPUT_PINS, HC08_OUTPUT_PINS
 
 
@@ -71,6 +75,25 @@ def test_catalog_has_no_empty_alias_tokens() -> None:
 
     for profile in catalog.components.values():
         assert "" not in profile.pin_aliases
+
+
+def test_catalog_covers_every_component_placer_family() -> None:
+    catalog = load_component_catalog()
+    placer_families = set(load_component_aliases().values())
+
+    assert sorted(placer_families - set(catalog.components)) == []
+
+
+def test_catalog_includes_donor_label_backed_ic_pin_aliases() -> None:
+    catalog = load_component_catalog()
+
+    assert catalog.profile("4017").normalize_pin("CLK").name == "14"
+    assert catalog.profile("4017").normalize_pin("CLK").role == "CLK"
+    assert catalog.profile("74HC595").normalize_pin("SH_CP").name == "11"
+    assert catalog.profile("74HC595").normalize_pin("SH_CP").role == "SH_CP"
+    assert catalog.profile("74HC151").normalize_pin("D7").name == "12"
+    assert catalog.profile("4511").normalize_pin("SEG_A").name == "13"
+    assert catalog.profile("7447").normalize_pin("BI/RBO").name == "5"
 
 
 def test_validation_pin_vocabulary_comes_from_catalogue() -> None:
@@ -228,3 +251,41 @@ def test_pin_terminal_plan_separates_two_pin_three_pin_and_ic_work() -> None:
     assert by_endpoint[("Q1", "B")]["pin_class"] == "three_pin"
     assert by_endpoint[("U1", "1")]["pin_class"] == "multi_pin"
     assert by_endpoint[("R1", "1")]["terminal_emit_ready"]
+    assert by_endpoint[("Q1", "B")]["test_terminal_label"] == "PINBBASE"
+    assert by_endpoint[("U1", "1")]["test_terminal_label"] == "PIN1IN1"
+
+
+def test_pin_terminal_test_labels_include_pin_and_role_when_known() -> None:
+    assert pin_terminal_test_label("2", "RESET") == "PIN2RESET"
+    assert pin_terminal_test_label("SH_CP", "clock") == "PINSHCPCLOCK"
+    assert pin_terminal_test_label("7", "unknown") == "PIN7"
+
+
+def test_pin_terminal_plan_can_classify_every_catalogue_family() -> None:
+    catalog = load_component_catalog()
+    components = []
+    connections = []
+    for index, (part, profile) in enumerate(catalog.components.items(), start=1):
+        visible_pins = profile.pin_names()
+        if not visible_pins:
+            continue
+        ref = f"X{index}"
+        components.append({"ref": ref, "part": part})
+        connections.append(
+            {
+                "net": f"N{index}",
+                "endpoints": [{"component": ref, "pin": visible_pins[0]}],
+            }
+        )
+
+    plan = build_pin_terminal_plan(
+        {
+            "components": components,
+            "connections": connections,
+        }
+    )
+
+    assert plan["valid"]
+    assert plan["visible_terminal_plan_count"] == len(connections)
+    assert plan["blocked_terminal_count"] > 0
+    assert all(row["test_terminal_label"].startswith("PIN") for row in plan["terminal_plans"])

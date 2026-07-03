@@ -9,6 +9,7 @@ need new backend pin-coordinate evidence.
 from __future__ import annotations
 
 from collections import Counter
+import re
 from typing import Any, Mapping
 
 from .component_catalog import ComponentCatalog, load_component_catalog
@@ -30,6 +31,16 @@ def _terminal_status(terminal_support: str, pin_class: str) -> tuple[bool, str]:
         False,
         "needs_backend_pin_coordinate_evidence_before_binary_terminal_emission",
     )
+
+
+def pin_terminal_test_label(pin: str, role: str) -> str:
+    """Return a deterministic human-test label such as PIN2RESET."""
+
+    pin_token = re.sub(r"[^A-Z0-9]", "", str(pin).upper()) or "X"
+    role_token = re.sub(r"[^A-Z0-9]", "", str(role).upper())
+    if not role_token or role_token == "UNKNOWN":
+        return f"PIN{pin_token}"
+    return f"PIN{pin_token}{role_token}"
 
 
 def build_pin_terminal_plan(
@@ -86,6 +97,10 @@ def build_pin_terminal_plan(
                 "terminal_emit_ready": terminal_ready,
                 "status": status,
             }
+            item["test_terminal_label"] = pin_terminal_test_label(
+                str(item["pin"]),
+                str(item["role"]),
+            )
             if item["hidden"]:
                 hidden.append(item)
             else:

@@ -464,6 +464,79 @@ def test_component_placement_display_bridge_is_immutable(tmp_path: Path) -> None
     assert "D20 movement request ignored" in hidden.cdb_policy
 
 
+def test_terminal_dispatcher_ignores_d20_display_bridge_when_display_only(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "display_only_terminal_base.pdsprj"
+    output = tmp_path / "display_only_terminal_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {
+                "7SEG-COM-AN-BLUE": 1,
+                "7SEG-COM-CAT-BLUE": 1,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+
+    assert result.valid
+    assert any(group.key == "D20" for group in result.selected_groups)
+    assert report["valid"] is True
+    assert report["eligible_families"] == []
+    assert report["terminalized_component_count"] == 0
+    assert report["terminal_count_added"] == 0
+    assert base.read_bytes() == output.read_bytes()
+
+
+def test_terminal_dispatcher_preserves_d20_when_real_diode_is_terminalized(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "display_diode_terminal_base.pdsprj"
+    output = tmp_path / "display_diode_terminal_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {
+                "DIODE": 1,
+                "7SEG-COM-AN-BLUE": 1,
+                "7SEG-COM-CAT-BLUE": 1,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+    )
+
+    assert result.valid
+    assert [group.key for group in result.selected_groups].count("D20") == 1
+    assert report["valid"] is True
+    assert report["eligible_families"] == ["DIODE"]
+    assert report["terminalized_component_count"] == 1
+    assert report["terminal_count_added"] == 2
+    assert report["wire_count_added"] == 2
+    assert any(row["component_key"] == "D20" for row in report["preserved_groups"])
+    terminalized_keys = {
+        pair["component_key"]
+        for family_report in report["family_reports"]
+        for pair in family_report["terminal_pairs"]
+    }
+    assert "D20" not in terminalized_keys
+    assert len(terminalized_keys) == 1
+
+
 def test_component_placement_beautifies_each_display_row_separately(tmp_path: Path) -> None:
     anode = generate_component_placement_project(
         {

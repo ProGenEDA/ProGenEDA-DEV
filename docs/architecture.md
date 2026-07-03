@@ -233,4 +233,10 @@ per-endpoint terminal work items and explicitly separates accepted two-pin V12
 terminal emission from three-pin and IC endpoints. This remains metadata-only
 for unproven families: multi-pin/IC terminalization must not emit Proteus binary
 records until backend pin-coordinate evidence and donor-derived attachment units
-exist in the component catalogue/profile data.
+exist in the component catalogue/profile data. The catalogue currently covers
+every family emitted by the component placer. Pin-terminal test labels are
+deterministic (`PIN<number><ROLE>`, falling back to `PIN<number>`), so IC and
+multi-pin solo checks can be inspected without guessing which pin a terminal
+targets. Seven-segment D20 bridge packets and display sentinels are Proteus
+infrastructure and must stay byte-preserved rather than being treated as normal
+diodes.

@@ -7748,3 +7748,118 @@ Timestamp: `2026-07-03T03:00:30.3160741+05:00` (Pakistan; recorded during turn)
 ~~~~markdown
 PowerShell rejected `&&`; I’m rerunning the add/commit as separate commands and logging this note too.
 ~~~~
+
+---
+
+## Restart Context Log - 2026-07-03T13:07:25.4686974+05:00
+
+### User Message 1
+
+Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+make sure all compoents are converd in terminal placer, see if any has been missed fix tehm, make sure the terminal placer also ignores the D20 bridge in 7segs. if pin numbers arent clear through byte deosnt matter, rn just place the pins, use named terminal donors for ics which are available for which they ar not rn just attach terminal ill build the donor for u to unerstand. also look up online if that helps for example if the pin numbre is clear but what taht pin does isnt use internet, and the names u give terminals fo testing make sure they are heir pin number plus what that pin is like like PIN2REST. ill test tehm n let yk tehn u can lock in pin information in terminal placer as well as the cateloge. keep self testing deeply
+~~~~
+
+### User Message 2
+
+Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+continue. u can push KICAD_LINUX too, and put it in ur agent.md to only work on proteus unles u are told specifically otherwise
+~~~~
+
+### Visible Agent Responses During This Turn
+
+Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
+
+~~~~text
+1. I’ll first verify the pushed checkpoint as required, then audit the Proteus terminal coverage against the catalogue and donor evidence. I’ll keep KiCad out of scope. For IC pin names/functions, I’ll use local named-terminal donors first; if a stable pin function is missing and online datasheets help, I’ll use them only for that catalogue metadata.
+2. Checkpoint is clean: local/upstream/GitHub all match `449f2df1`; only unrelated `KICAD_LINUX_HANDOFF.md` is untracked. Initial audit shows the terminal placer already has an infrastructure key concept (`D20`, display sentinel), but I’m checking whether every path actually applies it and whether catalogue coverage aligns with terminal behavior.
+3. The diagnostic side-terminal planner already skips `D20`/display sentinel. I’m checking the production attachment paths and the new pin-terminal planner next, because those are the places that can accidentally count/plan the D20 bridge.
+4. Found a concrete bug risk: production mixed terminal attachment filters by family only. Since the D20 display bridge is stored as family `DIODE` with key `D20`, it could become terminal-eligible. I’m fixing that so infrastructure keys are preserved and never terminalized, even if their family is accepted.
+5. Continuing Proteus-only. I’ll also add the repo rule you requested to `AGENTS.md` and include the previously untracked `KICAD_LINUX_HANDOFF.md` in the next push since you explicitly authorized it.
+6. I found `AGENTS.md` and the handoff file. I’m updating the agent rule in `AGENTS.md` exactly as a Proteus-default scope rule, while still allowing KiCad only when explicitly requested.
+7. I’m not going to lock guessed pin roles into the catalogue for unproven ICs yet. I’ll make the terminal planning/generation expose test labels from whatever pin identity we currently know, and keep catalogue roles updateable after your donor/test feedback.
+8. Coverage audit found real catalogue gaps: the placer knows 62 canonical families, but the catalogue only has 58. Missing catalogue rows include counters/registers (`4017`, `4020`, `4518`, `74HC161`, `74HC163`, `74HC165`, `74HC193`, `74HC273`, `74HC4024`, `74HC4040`, `74HC4060`, `74HC4520`, `74HC595`) and infrastructure terminals (`POWER`, `GROUND`, `TERMINAL`). I’m adding those as catalogue/profile entries so the planner can classify every placed component.
+9. For pin function names I’m going local-first. I’ll only browse datasheets if local donor/catalogue evidence does not provide enough stable names for the labels.
+10. Implementation fix is straightforward: add one internal eligibility helper and use it everywhere terminal families are discovered or matched. That prevents `D20` from being treated as a normal `DIODE` while preserving normal diodes.
+11. D20 production eligibility is now blocked by key, not just by family. I’m adding tests that fail on the old behavior: display-only should copy exactly, and display-plus-real-diode should terminalize only the real diode, never D20.
+12. My grep command used unescaped pipes in PowerShell; rerunning it safely.
+13. There’s one more native-report check using family-only logic for preservation; I’m switching that to the same infrastructure-aware helper so D20 is preserved even when real `DIODE` is terminalized.
+14. D20 preservation now affects both emission and validation. I’m adding coverage tests now.
+15. The test location differed from the snippet I expected; I found the exact display bridge block and am inserting the D20 terminal tests there.
+16. D20 tests are in place. Next I’m updating the catalogue to cover the families the placer can produce.
+17. Catalogue infrastructure terminals are now covered (`POWER`, `GROUND`, `TERMINAL`). I’m replacing the IC block with donor-label backed pin aliases where local donors expose them.
+18. The local donor-label extraction gives good coverage for many ICs, including 4017/4020/counters/shift registers/NE555. I’ll use those local labels in the catalogue and avoid pretending unsupported binary IC attachment is accepted.
+19. For the three ICs without local labels (`74HC151`, `4511`, `7447`), I checked TI datasheets. I’ll add only standard pin-function aliases, still with terminalization pending until Proteus donor evidence is accepted.
+20. Remaining unknown-role rows are displays and a few generic/special components (`BRIDGE`, `OPAMP`, `SWITCH`, `TRAN-2P2S`). I’ll keep uncertain package semantics conservative; the planner will still emit `PINn` test labels for those instead of lying about functions.
+21. Next I’m adding deterministic test labels in the pin-terminal planner: `PIN<number><ROLE>`, falling back to `PIN<number>` when the role is not known.
+22. Planner labels now expose pin-function test labels. I’m adding tests that prove catalogue coverage against the component placer and check representative IC pin labels.
+23. Continuing from the Proteus-only audit. I’m going to finish the D20/infrastructure eligibility fix, run the focused catalogue/terminal tests, update the running context log, then commit/push including `KICAD_LINUX_HANDOFF.md` as authorized.
+24. The branch is the expected `codex/generic-proteus-generator-v0`; current changes are the Proteus fixes/catalogue/tests plus the authorized KiCad handoff file. I’m checking the shared dispatcher now for the single-family D20 edge case before test execution.
+25. There is still a single-family path that could include an infrastructure object if it shares the same family as a real component. I’m patching that so any stream containing preserved infrastructure takes the mixed/preserve path instead of the all-terminalized path.
+26. Patched. Single-family terminalization now only runs when every selected object is actually terminal-eligible; otherwise it preserves infrastructure through the mixed path. Running focused tests next.
+27. Catalogue, validation, and IC pin-map tests pass: 29 passed. Now I’m running the focused D20 terminal dispatcher tests that specifically guard the 7-seg bridge behavior.
+28. Focused D20 tests exposed a real dispatcher gap, not just an assertion issue: display+real-diode mixed output is rejected because the native mixed writer demands complete object-stream coverage, but selected groups don’t currently account for every hidden/synthetic display record. I’m tracing that coverage gap now and will fix it in the shared path.
+29. The coverage failure is from ordering: some copied donor components keep donor-source offsets, while the emitted Proteus object stream has a different order. The mixed terminal writer was sorting by original donor offsets. I’m changing stream coverage to recover the actual order from `ROOT.DSN` bytes, which is the correct downstream contract.
+30. I’m replacing the offset sort with a byte-stream scanner: it walks `ROOT.DSN` from the object chunk prefix and selects whichever selected group actually starts at the current byte. That preserves the emitted Proteus order and still fails if hidden records are genuinely missing.
+31. Stream-order scanner is patched. Re-running the focused D20 tests.
+32. Focused D20 tests pass. I’m running compile checks and the component-placement suite next; that suite is slower, so I’ll start it in the background and poll it instead of blocking silently.
+33. Compile check passed. Starting the full component placer test file now.
+34. Full component placer suite is running as PID 6580. While it runs, I’m doing a quick coverage audit to confirm the catalogue, terminal placer accepted families, and component placer aliases are aligned.
+35. The audit script used the wrong loader name; the code uses `load_component_catalog`, not `load_catalog`. Rerunning with the correct API.
+36. The important alignment checks passed: no component-placer family is missing from the catalogue, and no terminal-placer accepted family is missing. I hit a field-name mismatch only in the optional unknown-role audit; checking the catalogue object shape now.
+37. The catalogue object uses `profile.pins`; rerunning the optional role audit with that field.
+38. Optional role audit result is conservative by design: displays/bridge/opamp/switch/TRAN-2P2S still have generic `PINn` labels until tested/donor-backed roles are available. Polling the full component placer suite now.
+39. The background run failed at collection because the child PowerShell command lost `PYTHONPATH`; no code failed. I’m restarting it with the environment set inside the child process correctly.
+40. Full component placer suite restarted as PID 8688. I’m reviewing the final diff while it runs.
+41. Diff shape is as expected: shared terminal eligibility, catalogue expansion, deterministic pin labels, tests, and the Proteus-default agent rule. I’m checking the terminal placer diff specifically for accidental broad behavior changes.
+42. The terminal placer diff is scoped. I’m making one style cleanup on the helper line, then I’ll continue test polling.
+43. Style cleanup done. Polling full component placer suite.
+44. The full component placer suite is still running. I’m checking whether there are separate terminal/catalogue tests that should be included in the focused run.
+45. There are no extra standalone terminal tests; relevant coverage is in `test_component_catalog.py`, `test_ic_pinmap.py`, and `test_component_placer.py`. I’m reviewing the authorized handoff file before staging it.
+46. `KICAD_LINUX_HANDOFF.md` is a documentation handoff only; I’ll stage it because you explicitly allowed pushing it. Temporary pytest log/pid files will be removed before commit. Polling the running suite now.
+47. The long suite is still active. I’ll wait/poll again shortly.
+48. Still running; no failures reported yet. Polling again.
+49. Progress is at 84% with passing dots so far. Continuing to poll.
+50. Full component placer suite passed: 85 passed in 5:30. I’m removing temporary logs, then running final quick tests/compile from the final working tree.
+51. Quick catalogue/validation/pin-map tests still pass. Running the D20 focused tests once more from the final tree, then full compile.
+52. D20 focused tests pass. Running repository compile check now.
+53. Compile check passed. I’m checking the final status/diff before appending `context.md` and committing.
+54. Final changed set is scoped and temporary files are gone. I’m appending the required chronological context log now, including this turn’s user messages, visible responses, edited files, and verification.
+55. The context entry will say commit/push is pending at the moment of logging; the final answer will report the actual pushed hash after verification.
+56. The context append anchor didn’t match because the file contains mojibake from earlier encoding. I’m grabbing the exact EOF bytes and will append using a safer end-of-file patch.
+57. I’ll anchor on the ASCII `#### Response 28 - commentary` block instead of the mojibake sentence.
+58. The exact-context patch is still failing because the file encoding doesn’t match the displayed text. I’m testing `apply_patch`’s EOF append form on a disposable file so I can still update `context.md` without shell-writing it.
+59. Probe file created; testing EOF append syntax on it, then I’ll delete it.
+60. EOF-less insertion syntax works; I’m checking where it inserted so I can use the safe form correctly.
+61. The safe append form appends at EOF. Deleting the probe file and then appending the real context section.
+62. Appending the real context section at EOF now.
+~~~~
+
+### Files Edited By Agent In Response To These Messages
+
+- `AGENTS.md` - added Proteus-default rule: do not inspect/test/patch/use KiCad as a blocker unless explicitly asked.
+- `docs/architecture.md` - documented catalogue coverage, deterministic pin terminal labels, and D20/display sentinel infrastructure preservation.
+- `docs/progen_eda_canonical_pipeline.md` - updated terminal placer status from old V9/six-profile wording to V12 accepted two-pin families and D20 infrastructure rules.
+- `knowledge/component_catalog_v0.json` - added missing component placer families and infrastructure terminal rows; expanded IC/counter/register pin aliases/roles from local donor labels and stable datasheet-backed pin functions where local labels were absent.
+- `src/proteusgen/component_terminal_placer.py` - added infrastructure-aware terminal eligibility, blocked D20/display sentinel terminalization, preserved infrastructure in mixed/native/overlay validation, and changed mixed stream coverage to derive actual object order from `ROOT.DSN` bytes instead of donor-source offsets.
+- `src/proteusgen/pin_terminal_planner.py` - added deterministic `PIN<number><ROLE>` / `PIN<number>` test terminal labels.
+- `tests/test_component_catalog.py` - added component-placer/catalogue coverage, donor-label-backed IC alias tests, terminal test-label tests, and all-catalogue planner classification coverage.
+- `tests/test_component_placer.py` - added display-only and display-plus-real-diode D20 dispatcher tests.
+- `KICAD_LINUX_HANDOFF.md` - previously untracked handoff file included for push because the user explicitly allowed it.
+- `context.md` - appended this restart context log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local/upstream/GitHub all matched `449f2df1ff00e7faa44464f70d647545d4e249a7` before implementation.
+- Catalogue alignment audit: `placer_not_catalog []`; `terminal_not_catalog []`; `catalog_accepted_not_terminal []`.
+- Conservative unknown-role rows left intentionally generic: `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`, `BRIDGE`, `OPAMP`, `SWITCH`, `TRAN-2P2S`.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `29 passed`.
+- Focused D20 tests initially exposed a real mixed stream ordering bug; after the fix, `test_terminal_dispatcher_ignores_d20_display_bridge_when_display_only` and `test_terminal_dispatcher_preserves_d20_when_real_diode_is_terminalized` passed.
+- `PYTHONPATH=src; python -m pytest tests\test_component_placer.py -q` -> `85 passed in 330.40s`.
+- Final rerun: `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `29 passed`.
+- Final rerun: focused D20 dispatcher tests -> `2 passed in 14.38s`.
+- `python -m compileall -q src tests tools\proteus_generation` -> passed.
+- Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.

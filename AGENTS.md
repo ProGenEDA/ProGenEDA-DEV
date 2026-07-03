@@ -57,6 +57,11 @@ remaining Proteus verification.
 
 ## Agent-Specific Rules
 
+Default to Proteus work in this repository. Do not inspect, test, patch, or use
+KiCad code as a blocker unless the user explicitly asks for KiCad work or says
+that KiCad should be used for the current task. KiCad docs may remain as
+learning material, but active implementation turns are Proteus-only by default.
+
 Preserve accepted donor-native routes. Never modify Proteus executables,
 bypass licensing, or replace the removal-only component placer with speculative
 record synthesis. Update the existing implementation and experiment notes

@@ -103,7 +103,7 @@ first, then terminals are attached to the remaining selected pins.
 | Wire Planner | Partial intent only | `component_pipeline.py` |
 | Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
-| Terminal Placer | Six profiles; V9 schema encoder and final-address linker | `component_terminal_placer.py` |
+| Terminal Placer | V12 accepted two-pin families; catalogue-driven multi-pin planner pending binary emission | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
 | Value Editor | Lightly tested | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |
@@ -161,12 +161,15 @@ vertical bands with at least 5,080,000 internal units between the parsed IC
 maximum Y and non-IC minimum Y. This is a static correction for the reported
 mixed visual overlap and remains pending Proteus inspection.
 
-DIODE variants, LED-RED, FUSE, and VPULSE lack terminalized attachment donors;
-VSINE lacks a proven general multi-unit ordering. They remain unsupported
-rather than inheriting another family's byte pattern. All other families
-remain unaccepted until their own focused pack passes Proteus. A visible
-`$TERBIDIR` beside a component is not attachment proof. The complete donor
-request is `docs/complete_component_donor_request.md`.
+V12 extends the shared native terminal route to 19 accepted two-pin families:
+VSOURCE, CSOURCE, VSINE, VPULSE, CAP, CAP-ELEC, REALIND, RESISTOR, DIODE,
+1N4007, 1N4148, 1N4733A, 1N6000B, 40EPS08, BZX55C5V1, BZX79C5V1, BZY88C,
+LED-RED, and FUSE. The terminal dispatcher must still preserve Proteus
+infrastructure records such as the seven-segment `D20` bridge and display
+sentinel packets byte-for-byte, even when their stored family resembles an
+accepted user component. A visible `$TERBIDIR` beside a component is not
+attachment proof. The complete donor request is
+`docs/complete_component_donor_request.md`.
 
 ## Non-Negotiable Rules
 
@@ -183,6 +186,8 @@ request is `docs/complete_component_donor_request.md`.
    confirmed behavior is promoted to `knowledge/rules.json`.
 8. Mixed dispatch must use an explicit family allowlist. Unsupported
    components must remain byte-identical and receive zero terminal records.
+   Infrastructure records such as the seven-segment D20 bridge are never
+   terminalized even if their internal family name matches an accepted family.
 9. A mixed terminal route must preserve the component-placer stream order;
    independently rebuilding and concatenating accepted family-native blocks is
    rejected evidence.
