@@ -48,7 +48,8 @@ Measured result from the final probe in this turn:
 - A* routes: 1
 - Labels: 0
 - Planned segments: 719
-- Different-net crossing count: 1257
+- Different-net crossing count: 1257, recorded as a metric under the old
+  crossing-minimization policy
 
 Candidate-budget probes showed that larger dense candidate budgets completed
 one more net but increased crossings, so the default stayed at 80 dense lane
@@ -60,8 +61,9 @@ without the extra work observed at budget 3+.
 Not accepted as final strict-wire output.
 
 The router is materially faster and more honest, and it draws more physical
-branches, but the crossing count and incomplete nets still fail the final
-strict-wire goal.
+branches, but incomplete nets still fail the final strict-wire goal. Under the
+current policy, wire-wire crossings are allowed and are not an acceptance
+blocker.
 
 ## Next Step
 
@@ -72,5 +74,5 @@ Add a real rip-up/reroute pass:
 3. Remove one high-conflict net at a time.
 4. Reserve the remaining wires.
 5. Retry the removed net with expanded lanes or A*.
-6. Keep the replacement only if exact crossings and incomplete endpoint counts
-   improve.
+6. Keep the replacement only if component-body contact and incomplete endpoint
+   counts improve.

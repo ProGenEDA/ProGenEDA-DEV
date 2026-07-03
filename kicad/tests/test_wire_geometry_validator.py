@@ -11,7 +11,7 @@ from kicad.pipeline.wire_geometry_validator import (
 
 
 class WireGeometryValidatorTests(unittest.TestCase):
-    def test_different_net_crossing_is_a_hard_violation(self) -> None:
+    def test_different_net_crossing_is_allowed(self) -> None:
         report = validate_wire_geometry(
             [
                 WireGeometrySegment("A", (0.0, 5.0), (10.0, 5.0)),
@@ -19,8 +19,8 @@ class WireGeometryValidatorTests(unittest.TestCase):
             ],
             [],
         )
-        self.assertFalse(report["ok"])
-        self.assertEqual(report["violations_by_rule"]["different_net_wires_must_not_touch_or_cross"], 1)
+        self.assertTrue(report["ok"])
+        self.assertTrue(report["rule_set"]["wire_wire_crossings_allowed"])
 
     def test_wire_touching_component_body_away_from_pin_is_a_violation(self) -> None:
         report = validate_wire_geometry(

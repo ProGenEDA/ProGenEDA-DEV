@@ -30,6 +30,7 @@ before, and what should happen next.
 | `../examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4` | Current wired projects | 10 KiCad wired projects generated from final JSON. Static quality: 10 checked, 10 passed, 0 failed. 3357 wire objects, 530 labels, 18 unresolved symbol-model pins, and 5 deferred T10 route-cap nets. |
 | `../examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules` | Current strict failure evidence | First run with hard wire-geometry validation. Static quality and KiCad netlist export passed 10/10, but ERC quality passed 1/10 and geometry validation passed 0/10. The current router is not accepted. |
 | `runs/router_lane_dense_t10_2026_07_03` | Current router stress evidence | Planner-only T10 strict-wire stress probe after lane routing and dense scoring. 190 components, 554 resolved pins, 0 body overlaps, 11.8 s planner time, 89 complete wire nets, 16 partial-wire nets, 48 unroutable nets, 0 labels, and 1257 different-net crossings. Not accepted as final strict-wire output. |
+| `runs/component_motion_first_crossing_allowed_t10_2026_07_03` | Current routing policy evidence | Planner-only T10 probe after making component movement happen before route search in `plan_wiring()` and allowing wire-wire crossings. 190 components, 554 resolved pins, 0 body overlaps, 7.87 s planner time, 89 complete wire nets, 16 partial-wire nets, 48 unroutable nets, and 0 labels. Not accepted because incomplete nets remain. |
 
 ## Current Baseline
 
@@ -54,15 +55,15 @@ The current supported placer baseline is:
   the bundled CLI was wired into the checker; T07 has two artificial
   `LM358.BIAS` unresolved endpoints; T08 needs a better LED array/DIP-common
   symbol model; T10 has five deferred nets from the bounded route cap.
-- Current strict geometry evidence: the bundled KiCad CLI can export netlists
-  for all 10 v5 schematics, but the current wire planner/maker fails the new
-  no-crossing/no-component-body-touch rules and fails ERC quality for 9 of 10
-  schematics.
+- Historical strict geometry evidence: the bundled KiCad CLI can export
+  netlists for all 10 v5 schematics, but that run used the older
+  no-crossing/no-component-body-touch rule set and failed ERC quality for 9 of
+  10 schematics.
 - Current router stress evidence: dense lane routing can finish the 190
   component T10 planner probe in bounded time with all 554 routing pins
   resolved and no component body overlaps, but it still leaves partial and
-  unroutable nets plus many crossings. The next accepted-output blocker is
-  exact rip-up/reroute against the strict geometry validator.
+  unroutable nets. The next accepted-output blocker is movement-first
+  routeability planning against the strict geometry/connectivity validators.
 
 ## Rules For New Experiments
 

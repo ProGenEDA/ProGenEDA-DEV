@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from .arrangement_decider import DEFAULT_ARRANGEMENT_CONFIG, GROUND_NETS, POWER_NETS, decide_arrangement, extract_connection_nets
+from .beautifier import apply_coordinate_edits
 
 
 Point = tuple[float, float]
@@ -58,15 +59,15 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "pin_stub": 5.08,
     "wire_spacing": 2.54,
     "turn_penalty": 0.15,
-    "near_wire_penalty": 1.25,
-    "block_existing_wires": 1.0,
+    "near_wire_penalty": 0.0,
+    "block_existing_wires": 0.0,
     "max_astar_expansions": 50_000.0,
     "strict_fallback_max_astar_expansions": 50_000.0,
     "max_wired_routes": 10_000.0,
     "lane_router": 1.0,
     "lane_step": 7.62,
     "max_lane_candidates": 160.0,
-    "crossing_penalty": 500.0,
+    "crossing_penalty": 0.0,
     "same_net_reuse_penalty": 0.05,
     "body_crossing_penalty": 100_000.0,
     "component_shadow_penalty": 80.0,
@@ -1414,7 +1415,7 @@ def plan_wire_routes(
             "dense_design_mode": dense_design,
             "routing_order": "clock, bus-like/long-span nets, ordinary nets, then power/ground in strict wire mode; terminal/combination mode may label selected nets",
             "component_avoidance": "inflated_obstacle_grid",
-            "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+            "wire_collision_policy": "wire-wire crossings are allowed; existing wire grid cells are congestion hints, not hard obstacles",
             "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
             "failure_policy": "wire mode records unroutable nets as failures; terminal/combination mode may convert selected failures to local-label terminal plans",
             "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges",
@@ -1451,10 +1452,18 @@ def plan_wiring(
     wire_config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     coordinate_plan = decide_arrangement(placement, circuit, config=arrangement_config or DEFAULT_ARRANGEMENT_CONFIG)
-    wire_plan = plan_wire_routes(placement, circuit, config=wire_config)
+    routing_placement = apply_coordinate_edits(placement, coordinate_plan)
+    wire_plan = plan_wire_routes(routing_placement, circuit, config=wire_config)
     return {
         "schema": "progen-kicad-wire-planner-output/v0.1",
+        "component_motion_policy": {
+            "phase": "before_route_search",
+            "coordinate_source": "arrangement_decider",
+            "applied_by": "beautifier",
+            "purpose": "move components first so route planning starts from a wiring-aware placement",
+        },
         "coordinate_plan": coordinate_plan,
+        "routing_placement": routing_placement,
         "wire_plan": wire_plan,
     }
 
@@ -1471,7 +1480,9 @@ def write_wire_planner_jsons(
     out_path.mkdir(parents=True, exist_ok=True)
     planned = plan_wiring(placement, circuit, arrangement_config=arrangement_config, wire_config=wire_config)
     coordinate_path = out_path / "wire_coordinate_plan.json"
+    routing_placement_path = out_path / "wire_routing_placement.json"
     wire_path = out_path / "wire_plan.json"
     coordinate_path.write_text(json.dumps(planned["coordinate_plan"], indent=2), encoding="utf-8")
+    routing_placement_path.write_text(json.dumps(planned["routing_placement"], indent=2), encoding="utf-8")
     wire_path.write_text(json.dumps(planned["wire_plan"], indent=2), encoding="utf-8")
-    return {"coordinate_plan": coordinate_path, "wire_plan": wire_path}
+    return {"coordinate_plan": coordinate_path, "routing_placement": routing_placement_path, "wire_plan": wire_path}

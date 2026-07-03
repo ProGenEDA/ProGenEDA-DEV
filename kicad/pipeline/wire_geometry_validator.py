@@ -4,8 +4,9 @@ This validator is EDA-neutral. It receives already-planned/drawn wire segments
 with net names plus component body rectangles, then checks hard schematic
 readability rules:
 
-1. Different nets must not touch or cross.
-2. Same-net wires must not form visual X crossings or overlaps.
+1. Wires must be orthogonal.
+2. Wires may cross or touch other wires; those contacts are routing-quality
+   metrics, not hard validation failures.
 3. Wires must not touch component bodies except at explicitly allowed pin
    points.
 """
@@ -230,53 +231,6 @@ def validate_wire_geometry(
                 }
             )
 
-    for left_index, left in enumerate(segments):
-        if left.start == left.end:
-            continue
-        for right_index in range(left_index + 1, len(segments)):
-            right = segments[right_index]
-            if right.start == right.end:
-                continue
-            contact = _segment_contact(left, right, eps)
-            if contact is None:
-                continue
-            if left.net != right.net:
-                violations.append(
-                    {
-                        "rule": "different_net_wires_must_not_touch_or_cross",
-                        "left_index": left_index,
-                        "right_index": right_index,
-                        "left": _segment_dict(left),
-                        "right": _segment_dict(right),
-                        "contact": _contact_dict(contact),
-                    }
-                )
-                continue
-            if contact.kind == "overlap":
-                violations.append(
-                    {
-                        "rule": "same_net_wires_must_not_overlap",
-                        "left_index": left_index,
-                        "right_index": right_index,
-                        "left": _segment_dict(left),
-                        "right": _segment_dict(right),
-                        "contact": _contact_dict(contact),
-                    }
-                )
-                continue
-            point = contact.point or (0.0, 0.0)
-            if _is_strict_interior(point, left, eps) and _is_strict_interior(point, right, eps):
-                violations.append(
-                    {
-                        "rule": "same_net_wires_must_not_visually_cross",
-                        "left_index": left_index,
-                        "right_index": right_index,
-                        "left": _segment_dict(left),
-                        "right": _segment_dict(right),
-                        "contact": _contact_dict(contact),
-                    }
-                )
-
     for segment_index, segment in enumerate(segments):
         if segment.start == segment.end:
             continue
@@ -301,9 +255,7 @@ def validate_wire_geometry(
         "schema": "progen-kicad-wire-geometry-validation/v0.1",
         "stage": "wire_geometry_validator",
         "rule_set": {
-            "different_net_wires_must_not_touch_or_cross": True,
-            "same_net_wires_must_not_visually_cross": True,
-            "same_net_wires_must_not_overlap": True,
+            "wire_wire_crossings_allowed": True,
             "wire_must_not_touch_component_except_intended_pin": True,
         },
         "ok": not violations,

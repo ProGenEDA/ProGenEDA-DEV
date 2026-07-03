@@ -106,9 +106,11 @@ The active wire-geometry validator must enforce these hard rules before a wired
 schematic can be called accepted:
 
 ```text
-1. Wires must not cross or touch wires from other nets.
-2. Same-net wires must not visually cross or overlap.
+1. Wires may cross or touch other wires; this is allowed schematic geometry.
+2. Wires must be horizontal/vertical.
 3. Wires must not touch component bodies except at the intended pin point.
+4. Every required wire-mode endpoint must be connected by the physical
+   wire/junction/pin graph.
 ```
 
 If these fail, the output may still be an openable KiCad record, but it is not a
@@ -127,8 +129,8 @@ kicad/pipeline/terminal_placer.py
 ```
 
 `arrangement_decider.py` decides first-pass coordinates from topology,
-signal-flow, power/ground, grouping, clock, density, and crossing-minimization
-rules.
+signal-flow, power/ground, grouping, clock, density, component-body clearance,
+and routeability rules.
 
 `beautifier.py` is only a coordinate editor. It applies coordinate-plan JSON and
 must not invent placement or routing logic.
@@ -149,10 +151,17 @@ terminal helpers. In `terminal` mode, terminal/label behavior belongs to
 `terminal_placer.py`. In `combination` mode, the explicit combination path may
 use both wire and terminal plans.
 
+Component movement happens before route search. The combined planner must emit
+a coordinate plan, apply it through `beautifier.py`, and only then route the
+moved placement. This is also the future foundation for arrangement variations:
+multiple coordinate plans may be generated for the same circuit and scored by
+routeability.
+
 The active wire planner is lane-first, then bounded A*. It must keep routing
 logic EDA-neutral and report route quality per route. Dense designs use
 bounded lane candidates, cached obstacle grids, grid congestion scoring, and a
-limited failed-endpoint retry budget. If a strict wire-mode net has some routed
+limited failed-endpoint retry budget. Wire-wire crossings are allowed; do not
+spend router effort avoiding them. If a strict wire-mode net has some routed
 branches but not all endpoints, emit `partial_wire` with
 `unrouted_endpoint_count`; do not hide the missing endpoints with labels.
 
@@ -169,8 +178,8 @@ connectivity. For KiCad its current backend is local labels with short pin
 stubs. Strict wire mode must not invoke it implicitly as a fallback.
 
 `wire_geometry_validator.py` validates the actual wire segments emitted by the
-wire maker against wire-crossing and wire/body-contact rules. It is a validator,
-not a router.
+wire maker against orthogonality and wire/body-contact rules. It is a
+validator, not a router.
 
 ## Generated Circuit Records
 

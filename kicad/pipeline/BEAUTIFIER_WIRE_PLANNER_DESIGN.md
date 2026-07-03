@@ -249,7 +249,7 @@ metrics:
 
 - no component overlaps
 - no wire through component bodies
-- minimal crossings
+- minimum unroutable/partial nets
 - acceptable wire length
 - acceptable corner count
 - stable placement after repeated passes
@@ -276,8 +276,9 @@ Current behavior:
    - direct orthogonal paths
    - one-lane doglegs
    - two-lane rectangular doglegs for pin escape plus bus-style channels
-5. Scores candidates by component body hits, component shadow clearance, wire
-   contacts/crossing risk, turns, and length.
+5. Scores candidates primarily by component body hits, component shadow
+   clearance, routeability, turns, and length. Wire-wire crossings are allowed
+   and are no longer a hard validation target.
 6. Routes multi-endpoint nets from the nearest already connected endpoint.
 7. Orders nets by clock, bus/long-span nets, ordinary nets, then power/ground
    in strict wire mode.
@@ -292,7 +293,7 @@ Current behavior:
    - selected router
    - body hit count
    - component shadow count
-   - different-net crossing/contact risk
+   - different-net crossing/contact count as a metric only
    - same-net reuse count
    - length and turn count
 10. Emits `partial_wire` for strict wire-mode nets where some branches were
@@ -300,20 +301,27 @@ Current behavior:
 
 Current limits:
 
-1. Dense large schematics can still produce many crossings.
-2. The planner does not yet rip up an already selected route and reroute it
+1. Dense large schematics can still leave partial or unroutable nets.
+2. The planner does not yet move components from route-failure feedback and
+   reroute the moved placement.
+3. The planner does not yet rip up an already selected route and reroute it
    after later congestion appears.
-3. Power/GND nets with very high fanout are intentionally still physical-wire
+4. Power/GND nets with very high fanout are intentionally still physical-wire
    attempts in strict wire mode; practical final schematics will likely use the
    terminal/combination path for those nets.
-4. `partial_wire` is a failure state for final validation. It exists so the
+5. `partial_wire` is a failure state for final validation. It exists so the
    wire maker can draw successful physical branches while validators report the
    missing endpoints clearly.
 
-The next router upgrade should add a real rip-up/reroute pass over the exact
-wire geometry validator output. The pass should identify the crossing-heavy
-nets, remove one candidate net at a time, reserve the remaining routes, and
-retry with expanded lane candidates or A* only for the affected net.
+The next router upgrade should put component-motion planning ahead of route
+search. The planner should generate one or more coordinate plans, route each
+moved placement, and choose the variant with the fewest component-body contacts
+and incomplete nets. This is also the future "variation" feature: multiple
+valid arrangements of the same circuit can be kept as scored variants.
+
+After movement-first routing exists, a rip-up/reroute pass can improve local
+failures by removing one incomplete net at a time, reserving the remaining
+routes, and retrying with expanded lane candidates or A* for the affected net.
 
 ## Wire Planner
 
@@ -355,12 +363,13 @@ progen-kicad-arrangement-decision/v0.1
 
 Future versions should include iterative route feedback, for example:
 
-- move component left/right to reduce crossings
+- move components before route search to avoid blocked pin escapes
 - increase vertical spacing for dense nets
 - move high-degree components toward the center of their block
 - split a large circuit into functional blocks
 - switch long high-fanout nets to labels
 - reserve channels for buses and clocks
+- generate arrangement variations and score them by routeability
 
 ### Output 2: Wire Plan
 
@@ -384,8 +393,8 @@ Implemented behavior:
 4. Routes ordinary nets with grid-based A*.
 5. Uses only orthogonal horizontal/vertical segments.
 6. Inflates component bodies as obstacles.
-7. Avoids existing different-net wires with a high cost.
-8. Adds adjacency penalty near existing different-net wires.
+7. Allows wire-wire crossings; existing wires are not hard obstacles.
+8. Keeps existing-wire contacts as metrics only.
 9. Routes clock-like nets before ordinary nets.
 10. Uses local labels instead of long wires for power, ground, and high-fanout
     nets.
@@ -399,9 +408,9 @@ Implemented behavior:
 Important current limitation:
 
 The wire planner is now bounded and testable, and the KiCad wire maker can draw
-its output, but routing is not final-quality yet. Fallback warnings, deferred
-route-cap nets, and nonzero `different_net_crossing_count` are expected evidence
-that the planner needs more routing intelligence.
+its output, but routing is not final-quality yet. `partial_wire` nets,
+unroutable nets, and wire/body contacts are evidence that the planner needs
+component-motion feedback before route search.
 
 Wire-plan JSON shape:
 
@@ -417,7 +426,7 @@ Wire-plan JSON shape:
     "router": "grid_astar_orthogonal",
     "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
     "component_avoidance": "inflated_obstacle_grid",
-    "wire_collision_policy": "different-net existing wires receive high cost plus adjacency penalty"
+    "wire_collision_policy": "wire-wire crossings are allowed; existing wires are congestion metrics only"
   },
   "sheet": {
     "width": 420.0,
@@ -510,8 +519,8 @@ It is independent of KiCad S-expressions and does not route anything.
 
 Hard rules:
 
-1. Different-net wires must not touch or cross.
-2. Same-net wires must not visually cross or overlap.
+1. Wires must be horizontal or vertical.
+2. Wires may cross or touch other wires.
 3. Wires must not touch component bodies except at the intended pin point.
 
 The KiCad wire maker records this validator under
@@ -595,21 +604,23 @@ The wire planner should keep these priorities:
 1. No overlapping components.
 2. Pin connections must be exact.
 3. Signal flow left to right.
-4. Minimize crossings.
-5. Minimize wire length.
-6. Keep wires horizontal or vertical.
-7. Avoid wire runs through component bodies.
-8. Avoid 4-way junctions.
-9. Route feedback below the main signal path.
-10. Route clock nets first.
-11. Use labels for long power/ground/high-fanout nets.
-12. Prefer fewer corners.
-13. Preserve readable labels and component values.
+4. Move components before route search when routeability needs it.
+5. Avoid wire runs through component bodies.
+6. Minimize unroutable and partial-wire nets.
+7. Keep wires horizontal or vertical.
+8. Minimize wire length after routeability is satisfied.
+9. Avoid 4-way junctions when easy.
+10. Route feedback below the main signal path.
+11. Route clock nets early.
+12. Use terminal/combination mode for long power/ground/high-fanout nets when
+    strict physical wire mode is not required.
+13. Prefer fewer corners.
+14. Preserve readable labels and component values.
 
 When rules conflict:
 
 ```text
-component/body validity > exact pins > signal flow > crossings > wire length > alignment
+component/body validity > exact pins > complete nets > signal flow > wire length > alignment > wire-wire crossings
 ```
 
 ## Current Tests
@@ -629,7 +640,7 @@ Current coverage:
 4. Power/ground nets become local labels.
 5. Ordinary signal routes are orthogonal.
 6. Routed segments do not cross unrelated component bodies in the test circuit.
-7. Different-net crossing count is reported.
+7. Different-net crossing count is reported as a quality metric only.
 8. Connected T01-T10 final JSON inputs compile, place, beautify without body
    overlaps, and produce bounded wire-plan reports.
 9. The KiCad wire maker emits real wire/label objects and can generate fresh
@@ -637,8 +648,8 @@ Current coverage:
 10. The net extractor accepts both `ref:pin` and `ref.pin` endpoint notation.
 11. The wire planner prefers supplied exact pin points over estimated component
     edge stubs.
-12. The wire-geometry validator rejects different-net crossings and component
-    body touches away from intended pins.
+12. The wire-geometry validator allows wire-wire crossings and rejects
+    component body touches away from intended pins.
 
 ## T01-T10 Evidence
 

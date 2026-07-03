@@ -327,14 +327,18 @@ class PlacerPipelineTests(unittest.TestCase):
         planned = plan_wiring(ctx.placement_plan.as_dict(), circuit)
         self.assertEqual(planned["schema"], "progen-kicad-wire-planner-output/v0.1")
         self.assertEqual(planned["coordinate_plan"]["schema"], "progen-kicad-arrangement-decision/v0.1")
+        self.assertEqual(planned["component_motion_policy"]["phase"], "before_route_search")
+        expected_routing_placement = apply_coordinate_edits(ctx.placement_plan.as_dict(), planned["coordinate_plan"])
+        self.assertEqual(planned["routing_placement"]["components"], expected_routing_placement["components"])
+        self.assertGreater(len(planned["routing_placement"].get("applied_edits", [])), 0)
         wire_plan = planned["wire_plan"]
         self.assertEqual(wire_plan["schema"], "progen-kicad-wire-plan/v0.1")
         self.assertEqual(wire_plan["algorithm"]["router"], "lane_candidates_then_grid_astar")
         self.assertEqual(wire_plan["routing_mode"], "wire")
         self.assertNotEqual(wire_plan["nets"]["GND"]["strategy"], "local_labels")
         self.assertGreaterEqual(wire_plan["metrics"]["wired_route_count"], 2)
-        self.assertEqual(wire_plan["metrics"]["different_net_crossing_count"], 0)
-        bodies = {item["owner"]: item for item in ctx.placement_plan.as_dict()["obstacles"]}
+        self.assertIn("wire-wire crossings are allowed", wire_plan["algorithm"]["wire_collision_policy"])
+        bodies = {item["owner"]: item for item in planned["routing_placement"]["obstacles"]}
         for route in wire_plan["routes"]:
             for segment in route["segments"]:
                 self.assertIn(segment["direction"], {"up", "down", "left", "right"})

@@ -6876,9 +6876,151 @@ The pipeline README has two stale spots: it still describes the maker as emittin
 ### Additional Visible Responses Before Commit
 
 ```text
+Context is appended. I’m doing the final whitespace/JSON checks, then I’ll stage only the scoped files and commit.
+
+The scoped diff has no whitespace problems and the new JSON parses. I’m staging only this turn’s source/docs/tests/context/record files now.
+
+The staged diff is scoped correctly; old generated v4 files remain unstaged. I’m adding the final staging note to context, then I’ll commit and push.
+```
+
+### Additional Visible Responses Before Commit
+
+```text
 The context log is appended. I’m running a quick final check on JSON/doc/source diffs, then I’ll stage only the scoped files and leave the old generated project dirt alone.
 
 The scoped diff has no whitespace errors and the stress result JSON parses cleanly. I’m staging only the source/docs/tests/context files and the new experiment record now.
 
 The old generated v4 project files are still unstaged as intended. I’m adding one small follow-up context note for the post-log staging/check messages, then I’ll commit.
 ```
+
+## 2026-07-03 13:48:53 PKT - Move Components Before Routing And Allow Wire Crossings
+
+### User Message
+
+```text
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+## My request for Codex:
+place component moving at top.
+if it frist figures out what component behvaiour will allow for perfect wirng that will save time on figuring out wiring then seeing if we need to change then chaging and rewirng
+and this will also allow for a future feature of "variation" where a circuit will have many variation through arrangement
+```
+
+### Visible Agent Responses
+
+```text
+Got it. I’m going to treat this as an architecture correction, not just a note: placement movement needs to happen before route search, with later variations possible. I’ll first check the repo state, then wire that idea into the existing stage contracts without making a fresh throwaway script.
+
+The repo checkpoint is clean against remote at `0588689`; only the old generated v4 files are dirty and I’ll leave them alone. I found an important mismatch: the helper `plan_wiring()` already emits a coordinate plan first, but it was still routing the original placement instead of the moved placement. I’m going to fix that contract and document “placement planning before routing” as the top-level router behavior.
+
+I’m reading the arrangement output shape now so the change uses the existing coordinate-plan/beautifier contract instead of inventing a new movement layer.
+
+There are two separate fixes here, and I’m going to make the small but important one now: any combined “plan wiring” call must apply component movement before route search. I’ll also update the policy docs so future router work optimizes component-body clearance/unroutable nets first, and treats wire-wire crossings as acceptable.
+
+I found the validator still enforces the old “wires may not cross wires” rule. Since you changed the priority, I’m changing that too: geometry validation will still block wire-through-component and non-orthogonal wires, but different-net wire crossings will no longer make a route invalid.
+
+I’m about to edit three contracts together: `plan_wiring()` will route the moved placement, the router will stop treating existing wires as hard obstacles, and the geometry validator will stop failing wire-wire crossings. Component-body contact stays hard.
+
+The combined planner now applies the coordinate plan before route search, and wire-wire crossings are no longer hard obstacles in the planner defaults. I’m updating the geometry validator so its hard failure matches your new rule: only components matter, not wire-wire crossings.
+
+The hard geometry validator now ignores wire-wire crossings. I’m updating tests so they prove crossings are allowed and component-body contact still fails.
+
+I’m adding a test for the “move first, route second” contract now. That gives us a guardrail so `plan_wiring()` cannot regress back into routing stale component coordinates.
+
+The test already has the beautifier helper imported, so I’m extending the existing planner contract test rather than adding a duplicate.
+
+The planner test now checks that component movement happens before route search and that body checks use the moved placement. I’m running focused tests before measuring the large circuit again.
+
+The focused failure is exactly from the old crossing expectation: after allowing wire-wire crossings, the simple route can report a crossing metric without being invalid. I’m updating that assertion to check the new policy instead.
+
+The test now matches the updated rule: wire crossings are a metric/policy, not a hard failure. I’m rerunning the focused checks.
+
+Focused checks pass. I’m measuring T10 again with wire crossings allowed, because the useful question now is whether unrouteable and partial nets improve while component-body clearance stays hard.
+
+T10 runs faster and wire crossings dropped, but unrouteable/partial counts did not improve yet. That confirms the remaining blocker is component placement/escape geometry, not wire-wire crossing policy. I’m documenting that and adding the “placement movement first, variation later” contract now.
+
+I’m scanning docs for old “wires must not cross” language. Anything that describes validation as crossing-forbidden needs to move to the new rule: crossings allowed, component bodies forbidden.
+
+There are several stale doc lines from the old rule. I’m updating the docs so future work does not chase crossing reduction anymore; the accepted hard goals are component avoidance and fewer unroutable/partial nets.
+
+I’m updating the top-level agent rules first, because that file guides future turns. The new hard validator policy will say wire-wire crossings are allowed; component bodies and missing endpoints are the real blockers.
+
+The agent rules now put component movement before route search and define variation as future multiple coordinate plans. I’m updating the pipeline README with the same stage contract.
+
+Now I’m updating the detailed design doc. This is the important handoff: route quality should be scored around component clearance and completed nets, not around making every wire crossing disappear.
+
+The main design priorities are updated. I’m checking for remaining stale “crossings are invalid” wording before moving on to tests.
+
+A few stale evidence notes remain. I’m marking older crossing-focused records as historical and making incomplete nets/component-body contact the current blocker.
+
+The old record is now labeled with the old crossing policy. I’m adding a new current-policy record for today’s T10 probe: crossings allowed, component bodies still hard, unrouteable counts unchanged.
+
+The current-policy probe has its own record now. I’m linking it from the experiment index.
+
+The new record is indexed. I’m running the stale-wording scan once more, then I’ll run the test suite.
+
+Only historical notes still mention the old no-crossing rule, and they explicitly say it is old evidence. JSON records parse cleanly. I’m running compileall and the full unittest suite now.
+
+All 38 tests pass and compileall is clean. I’m checking the diff/status now, then I’ll append the required context entry before committing.
+
+The status still includes the same old generated v4 files; I’ll exclude them again. I’m appending the context log with the architecture change, T10 metrics, edited files, and verification.
+```
+
+### Files Edited
+
+- `kicad/AGENTS.md`
+- `kicad/experiment_records/README.md`
+- `kicad/experiment_records/runs/router_lane_dense_t10_2026_07_03/README.md`
+- `kicad/experiment_records/runs/component_motion_first_crossing_allowed_t10_2026_07_03/README.md`
+- `kicad/experiment_records/runs/component_motion_first_crossing_allowed_t10_2026_07_03/results.json`
+- `kicad/pipeline/BEAUTIFIER_WIRE_PLANNER_DESIGN.md`
+- `kicad/pipeline/README.md`
+- `kicad/pipeline/wire_geometry_validator.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_placer_pipeline.py`
+- `kicad/tests/test_wire_geometry_validator.py`
+- `context.md`
+
+### Implementation Notes
+
+- `plan_wiring()` now applies the arrangement coordinate plan through `beautifier.py` before calling `plan_wire_routes()`.
+- `plan_wiring()` returns `component_motion_policy` and `routing_placement`, making the movement-before-routing contract visible to callers.
+- `write_wire_planner_jsons()` now writes `wire_routing_placement.json`.
+- Router defaults now allow wire-wire crossings: `block_existing_wires = 0`, `near_wire_penalty = 0`, and `crossing_penalty = 0`.
+- Geometry validation now allows wire-wire crossings and keeps component-body contact plus non-orthogonal wires as hard failures.
+- Tests now assert wire crossings are allowed, body contact still fails, and the combined planner routes the moved placement.
+- Docs now put component movement before routing and describe future arrangement variation as multiple coordinate plans scored by routeability.
+
+### T10 Probe
+
+- Circuit: `T10_near_limit_mixed_schematic`
+- Components: 190
+- Nets: 153
+- Routing pins resolved: 554
+- Routing pins unresolved: 0
+- Component body overlaps: 0
+- Prep time: 0.38 s
+- Planner time: 7.87 s
+- Complete wire nets: 89
+- Partial-wire nets: 16
+- Totally unroutable nets: 48
+- Labels: 0
+- Different-net crossing metric: 635
+- Result: not accepted; incomplete nets remain.
+
+### Verification
+
+- `python -m compileall -q kicad`: passed.
+- `python -m unittest discover -s kicad/tests -q`: 38 tests passed in 27.210 s.
+
+### Notes
+
+- Pre-existing dirty generated files were intentionally left untouched:
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`

@@ -73,11 +73,22 @@ The post-placer stages remain independent:
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.
 
+The combined `wire_planner.plan_wiring()` contract is movement-first:
+
+```text
+placement -> arrangement_decider -> beautifier -> route the moved placement
+```
+
+This means component coordinates are chosen before route search. Future
+arrangement variations should produce multiple coordinate plans for the same
+circuit, route/score each moved placement, and keep the best routeable variant.
+
 `routing_mode` is part of the final JSON and stage config:
 
 - `wire`: every compiled net endpoint must be connected by the physical
   wire/junction/pin graph. Local labels are forbidden. Unroutable nets are
-  reported as failures.
+  reported as failures. Wire-wire crossings are allowed; wires crossing
+  component bodies are not.
 - `terminal`: local labels/terminal stubs are allowed and are owned by
   `terminal_placer.py`.
 - `combination`: explicit mixed routing may use both wires and terminal plans.
@@ -228,11 +239,11 @@ The first strict wire-geometry validation run is:
 kicad/examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules/
 ```
 
-That run adds hard checks that wires must not cross/touch other nets and must
-not touch component bodies except at intended pins. Result: static schematic
-quality passed 10/10, KiCad netlist export passed 10/10, but ERC quality passed
-only 1/10 and geometry validation passed 0/10. Treat it as failure evidence for
-the old router, not as accepted final wiring.
+That run added hard checks that wires must not cross/touch other nets and must
+not touch component bodies except at intended pins. That older rule set is now
+superseded: wire-wire crossings are allowed, while component-body contact and
+missing physical endpoint connectivity remain hard blockers. Treat the run as
+failure evidence for the old router, not as accepted final wiring.
 
 ## Not Active Yet
 
