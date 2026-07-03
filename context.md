@@ -7360,3 +7360,64 @@ The status still includes the same old generated v4 files; I’ll exclude them a
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
+
+---
+
+## 2026-07-04 00:20:53 +0500 - Incoming Routing Refactor Note
+
+### User Message
+
+big changes are coming
+
+Mentioned file:
+
+- `/home/zaruka/Downloads/ProGenEDA_KiCad_Routing_Refactor_Plan.pdf`
+
+### Visible Agent Responses
+
+I’m ready for the big shift. I’ll first verify the repo checkpoint is still clean against GitHub, then I’ll peek at the routing refactor PDF so I know what kind of storm front we’re looking at.
+
+Checkpoint is good: local `HEAD` matches `origin/main` at `cb9a573`, with only the same old v4 generated files dirty. The usual PDF CLI tools aren’t installed here, so I’m trying Python PDF readers next.
+
+No Python PDF libraries are installed either. Since the PDF is ReportLab-generated and small, I’m doing a lightweight raw extraction pass to see if the text is readable without adding dependencies.
+
+The PDF is present and appears to be a 21-page ReportLab document, but its text streams are compressed and the local PDF extraction tools/libraries aren’t available. I’m logging this checkpoint now, then I’ll leave the repo ready for your actual refactor instruction.
+
+I’ve got the handoff state and I’m going to close the loop cleanly: re-check GitHub sync, log this “big changes” checkpoint into `context.md`, then push that tiny record so the repo doesn’t depend on chat memory.
+
+The sync check is still clean against `origin/main`, with only the known old generated v4 files dirty. I’m adding a small chronological record now, including the PDF extraction limitation, so the next refactor step has a clean breadcrumb.
+
+`context.md` is the only intentional edit for this turn. I’m committing just that file and leaving the old generated KiCad files out of the checkpoint.
+
+I noticed the diff landed in a way that repeats the old-dirty-file note around the new section. I’m going to tidy that log entry before committing so the record stays readable.
+
+The new entry landed above an older checkpoint because the file already has mixed separators near the end. I’m moving this turn’s record to the bottom now and adding the cleanup comments to the visible-response log too.
+
+The diff now has the right shape: prior checkpoint notes, separator, then this new note. I’m doing one last tail check with enough lines to see the actual end before I commit.
+
+That tail exposed an older ordering quirk in `context.md`: there’s another older section after the place I inserted. I’m going to make this simple and precise: remove today’s note from the middle and append it at true EOF.
+
+Now the entry is deliberately at true EOF. I’m checking the heading count and status, then I’ll commit only `context.md` and push.
+
+The final tail check is clean: this note is now the last section, and `git diff --check` is quiet. I’m adding that last status sentence into the same log entry, then I’ll stage/commit/push.
+
+### Checkpoint
+
+- Verified local `HEAD` and `origin/main` both pointed to `cb9a5735a92753f31b3b50c036bf0ecceaceaa9b` before making this log entry.
+- Upstream branch: `origin/main`.
+- The PDF exists at `/home/zaruka/Downloads/ProGenEDA_KiCad_Routing_Refactor_Plan.pdf`, size 45062 bytes.
+- Raw metadata visible from the PDF indicated title `ProGenEDA KiCad Routing Engine Refactor Plan`, author `OpenAI ChatGPT`, and 21 pages.
+- `pdfinfo` and `pdftotext` were unavailable.
+- Python PDF readers checked and unavailable: `pypdf`, `PyPDF2`, `fitz`, `pdfplumber`.
+- PDF content streams appear compressed, so the plan text was not extracted during this checkpoint without adding a dependency.
+
+### Files Edited
+
+- `context.md`
+
+### Notes
+
+- Pre-existing dirty generated files were intentionally left untouched:
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
