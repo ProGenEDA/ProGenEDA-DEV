@@ -21,6 +21,51 @@ class WireGeometryValidatorTests(unittest.TestCase):
         )
         self.assertTrue(report["ok"])
         self.assertTrue(report["rule_set"]["wire_wire_crossings_allowed"])
+        self.assertEqual(report["metrics"]["different_net_90_degree_crossing_count"], 1)
+
+    def test_different_net_collinear_overlap_is_forbidden(self) -> None:
+        report = validate_wire_geometry(
+            [
+                WireGeometrySegment("A", (0.0, 5.0), (10.0, 5.0)),
+                WireGeometrySegment("B", (4.0, 5.0), (12.0, 5.0)),
+            ],
+            [],
+        )
+        self.assertFalse(report["ok"])
+        self.assertEqual(report["violations_by_rule"]["different_net_collinear_overlap_forbidden"], 1)
+
+    def test_different_net_t_touch_is_forbidden(self) -> None:
+        report = validate_wire_geometry(
+            [
+                WireGeometrySegment("A", (0.0, 5.0), (10.0, 5.0)),
+                WireGeometrySegment("B", (5.0, 5.0), (5.0, 10.0)),
+            ],
+            [],
+        )
+        self.assertFalse(report["ok"])
+        self.assertEqual(report["violations_by_rule"]["different_net_t_touch_forbidden"], 1)
+
+    def test_different_net_endpoint_touch_is_forbidden(self) -> None:
+        report = validate_wire_geometry(
+            [
+                WireGeometrySegment("A", (0.0, 5.0), (5.0, 5.0)),
+                WireGeometrySegment("B", (5.0, 5.0), (10.0, 5.0)),
+            ],
+            [],
+        )
+        self.assertFalse(report["ok"])
+        self.assertEqual(report["violations_by_rule"]["different_net_endpoint_touch_forbidden"], 1)
+
+    def test_different_net_crossing_on_pin_point_is_forbidden(self) -> None:
+        report = validate_wire_geometry(
+            [
+                WireGeometrySegment("A", (0.0, 5.0), (10.0, 5.0), allowed_touches=(AllowedTouch("U1", (5.0, 5.0)),)),
+                WireGeometrySegment("B", (5.0, 0.0), (5.0, 10.0)),
+            ],
+            [],
+        )
+        self.assertFalse(report["ok"])
+        self.assertEqual(report["violations_by_rule"]["different_net_crossing_on_pin_forbidden"], 1)
 
     def test_wire_touching_component_body_away_from_pin_is_a_violation(self) -> None:
         report = validate_wire_geometry(

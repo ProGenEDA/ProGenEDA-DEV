@@ -1,0 +1,173 @@
+{
+  "schema": "progen-component-catalogue/v0.2",
+  "unit": "mm",
+  "grid": 2.54,
+  "components": {
+    "Resistor_Axial": {
+      "aliases": ["R", "RES", "RESISTOR", "R_220", "R_10K_PULLUP", "R_4K7_PULLUP", "R_120_CAN", "R_120_RS485", "FEEDBACK_RESISTOR", "SDA_PULLUP", "SCL_PULLUP"],
+      "category": "passive",
+      "body": {"width": 7.0, "height": 2.5, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"1": {"number": "1", "local": [-3.5, 0], "side": "left", "type": "passive", "roles": ["passive"]}, "2": {"number": "2", "local": [3.5, 0], "side": "right", "type": "passive", "roles": ["passive"]}}},
+      "routing_hints": {"input_side_preference": "left", "output_side_preference": "right"},
+      "placement_hints": {"role": "passive", "can_be_pushed": true, "push_priority": 25, "default_spacing": 7.62}
+    },
+    "Capacitor_Generic": {
+      "aliases": ["C", "CAP", "CAPACITOR", "C_100NF_CERAMIC", "DECOUPLING_CAPACITOR", "C_100NF_FLASH", "RESET_CAPACITOR", "INPUT_CAPACITOR", "OUTPUT_FILTER_CAPACITOR", "C_22PF_X1", "C_22PF_X2"],
+      "category": "passive",
+      "body": {"width": 4.0, "height": 3.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"1": {"number": "1", "local": [-2.0, 0], "side": "left", "type": "passive", "roles": ["passive"]}, "2": {"number": "2", "local": [2.0, 0], "side": "right", "type": "passive", "roles": ["passive"]}}},
+      "placement_hints": {"role": "passive", "can_be_pushed": true, "push_priority": 25, "default_spacing": 7.62}
+    },
+    "Capacitor_Electrolytic": {
+      "aliases": ["CAP_ELEC", "CAP-ELEC", "CP_100UF", "OUTPUT_CAPACITOR_BUCK", "INPUT_CAPACITOR_BUCK"],
+      "category": "passive",
+      "body": {"width": 6.0, "height": 6.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"POS": {"number": "1", "local": [-3.0, 0], "side": "left", "type": "passive", "roles": ["positive", "passive"]}, "NEG": {"number": "2", "local": [3.0, 0], "side": "right", "type": "passive", "roles": ["negative", "passive"]}}},
+      "placement_hints": {"role": "passive", "can_be_pushed": true, "push_priority": 25, "default_spacing": 10.16}
+    },
+    "Diode_Axial": {
+      "aliases": ["D", "DIODE", "1N4007", "D_1N4007", "1N4148", "1N60", "BZX55C5", "BZX79C5", "FLYBACK_DIODE", "RELAY_FLYBACK_DIODE", "SCHOTTKY_DIODE_BUCK", "TVS_DIODE_RS485"],
+      "category": "diode",
+      "body": {"width": 8.0, "height": 3.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"A": {"number": "1", "local": [-4.0, 0], "side": "left", "type": "passive", "roles": ["anode"]}, "K": {"number": "2", "local": [4.0, 0], "side": "right", "type": "passive", "roles": ["cathode"]}}},
+      "placement_hints": {"role": "passive", "can_be_pushed": true, "push_priority": 30, "default_spacing": 7.62}
+    },
+    "LED_Generic": {
+      "aliases": ["LED", "LED_INDICATOR", "RELAY_INDICATOR_LED", "CHARGING_LED", "POWER_LED"],
+      "category": "indicator",
+      "body": {"width": 5.0, "height": 5.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"A": {"number": "1", "local": [-2.5, 0], "side": "left", "type": "passive", "roles": ["anode", "load_input"]}, "K": {"number": "2", "local": [2.5, 0], "side": "right", "type": "passive", "roles": ["cathode", "load_return"]}}},
+      "placement_hints": {"role": "display_output", "can_be_pushed": true, "push_priority": 35, "default_spacing": 7.62}
+    },
+    "GND_Symbol": {
+      "aliases": ["GND", "GROUND", "GND_SYMBOL"],
+      "category": "power_symbol",
+      "body": {"width": 5.0, "height": 4.0, "origin": "center", "keepout": {"left": 1.27, "right": 1.27, "top": 1.27, "bottom": 1.27}},
+      "legal_rotations": [0, 180],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"1": {"number": "1", "local": [0, -2.0], "side": "top", "type": "ground", "roles": ["ground"]}}},
+      "routing_hints": {"ground_pins": ["1"], "ground_side_preference": "bottom"},
+      "placement_hints": {"role": "ground", "can_be_pushed": true, "push_priority": 10, "default_spacing": 5.08}
+    },
+    "Power_Symbol": {
+      "aliases": ["VCC", "VCC_SYMBOL", "PWR_5V", "PWR_3V3", "+5V", "+3V3"],
+      "category": "power_symbol",
+      "body": {"width": 5.0, "height": 4.0, "origin": "center", "keepout": {"left": 1.27, "right": 1.27, "top": 1.27, "bottom": 1.27}},
+      "legal_rotations": [0, 180],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"1": {"number": "1", "local": [0, 2.0], "side": "bottom", "type": "power", "roles": ["power"]}}},
+      "routing_hints": {"power_pins": ["1"], "power_side_preference": "top"},
+      "placement_hints": {"role": "source", "can_be_pushed": true, "push_priority": 10, "default_spacing": 5.08}
+    },
+    "VSource_DC": {
+      "aliases": ["VDC", "VSOURCE", "VSIN", "VPULSE", "CSOURCE"],
+      "category": "source",
+      "body": {"width": 10.0, "height": 12.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"1": {"number": "1", "local": [0, -6.0], "side": "top", "type": "power", "roles": ["positive", "source"]}, "2": {"number": "2", "local": [0, 6.0], "side": "bottom", "type": "ground", "roles": ["negative", "return"]}}},
+      "placement_hints": {"role": "source", "can_be_pushed": true, "push_priority": 45, "default_spacing": 12.7}
+    },
+    "74HC595_DIP16": {
+      "aliases": ["74HC595", "74HC595_SHIFT_REGISTER"],
+      "category": "logic_ic",
+      "body": {"width": 20.32, "height": 7.62, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"SER": {"number": "14", "local": [-10.16, -2.54], "side": "left", "type": "input", "roles": ["serial_data_in"]}, "SHCP": {"number": "11", "local": [-10.16, 0], "side": "left", "type": "input", "roles": ["clock", "shift_clock"]}, "STCP": {"number": "12", "local": [-10.16, 2.54], "side": "left", "type": "input", "roles": ["latch"]}, "Q0": {"number": "15", "local": [10.16, -3.81], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "Q1": {"number": "1", "local": [10.16, -2.54], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "Q2": {"number": "2", "local": [10.16, -1.27], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "Q3": {"number": "3", "local": [10.16, 0], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "Q4": {"number": "4", "local": [10.16, 1.27], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "Q5": {"number": "5", "local": [10.16, 2.54], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "Q6": {"number": "6", "local": [10.16, 3.81], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "Q7": {"number": "7", "local": [10.16, 5.08], "side": "right", "type": "output", "roles": ["parallel_output", "bus_output"]}, "VCC": {"number": "16", "local": [0, -3.81], "side": "top", "type": "power", "roles": ["power"]}, "GND": {"number": "8", "local": [0, 3.81], "side": "bottom", "type": "ground", "roles": ["ground"]}}},
+      "routing_hints": {"input_side_preference": "left", "output_side_preference": "right", "power_side_preference": "top", "ground_side_preference": "bottom", "bus_groups": [{"name": "parallel_outputs", "pins": ["Q0", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7"], "preferred_order": "preserve", "preferred_alignment": "vertical"}]},
+      "placement_hints": {"role": "middle_logic", "can_be_pushed": true, "push_priority": 50, "default_spacing": 10.16}
+    },
+    "LM358_DualOpAmp": {
+      "aliases": ["LM358", "OPAMP"],
+      "category": "opamp",
+      "body": {"width": 22.0, "height": 30.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"IN_PLUS": {"number": "3", "local": [-11.0, -5.08], "side": "left", "type": "input", "roles": ["analog_input"]}, "IN_MINUS": {"number": "2", "local": [-11.0, 5.08], "side": "left", "type": "input", "roles": ["feedback"]}, "OUT": {"number": "1", "local": [11.0, 0], "side": "right", "type": "output", "roles": ["analog_output"]}, "VCC": {"number": "8", "local": [0, -15.0], "side": "top", "type": "power", "roles": ["power"]}, "GND": {"number": "4", "local": [0, 15.0], "side": "bottom", "type": "ground", "roles": ["ground"]}}},
+      "placement_hints": {"role": "middle_logic", "can_be_pushed": true, "push_priority": 55, "default_spacing": 12.7}
+    },
+    "MAX485_SO8": {
+      "aliases": ["MAX485"],
+      "category": "interface_ic",
+      "body": {"width": 22.0, "height": 30.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"RO": {"number": "1", "local": [-11.0, -7.62], "side": "left", "type": "output", "roles": ["uart_rx"]}, "RE": {"number": "2", "local": [-11.0, -2.54], "side": "left", "type": "input", "roles": ["enable"]}, "DE": {"number": "3", "local": [-11.0, 2.54], "side": "left", "type": "input", "roles": ["enable"]}, "DI": {"number": "4", "local": [-11.0, 7.62], "side": "left", "type": "input", "roles": ["uart_tx"]}, "A": {"number": "6", "local": [11.0, -2.54], "side": "right", "type": "bidirectional", "roles": ["differential_bus"]}, "B": {"number": "7", "local": [11.0, 2.54], "side": "right", "type": "bidirectional", "roles": ["differential_bus"]}, "VCC": {"number": "8", "local": [0, -15.0], "side": "top", "type": "power", "roles": ["power"]}, "GND": {"number": "5", "local": [0, 15.0], "side": "bottom", "type": "ground", "roles": ["ground"]}}},
+      "placement_hints": {"role": "middle_logic", "can_be_pushed": true, "push_priority": 60, "default_spacing": 12.7}
+    },
+    "Regulator_3Pin": {
+      "aliases": ["LM7805", "LM317"],
+      "category": "regulator",
+      "body": {"width": 10.0, "height": 8.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"IN": {"number": "1", "local": [-5.0, -2.54], "side": "left", "type": "power", "roles": ["power_input"]}, "GND": {"number": "2", "local": [0, 4.0], "side": "bottom", "type": "ground", "roles": ["ground"]}, "OUT": {"number": "3", "local": [5.0, -2.54], "side": "right", "type": "power", "roles": ["power_output"]}}},
+      "placement_hints": {"role": "power_block", "can_be_pushed": true, "push_priority": 65, "default_spacing": 12.7}
+    },
+    "NMOS_3Pin": {
+      "aliases": ["NMOS", "MOSFET", "2N7000", "BS170", "IRLZ44N"],
+      "category": "mosfet",
+      "body": {"width": 7.0, "height": 6.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"G": {"number": "1", "local": [-3.5, 0], "side": "left", "type": "input", "roles": ["gate", "control"]}, "D": {"number": "2", "local": [3.5, -2.0], "side": "right", "type": "passive", "roles": ["drain", "load"]}, "S": {"number": "3", "local": [3.5, 2.0], "side": "right", "type": "passive", "roles": ["source", "return"]}}},
+      "placement_hints": {"role": "middle_logic", "can_be_pushed": true, "push_priority": 45, "default_spacing": 10.16}
+    },
+    "NPN_3Pin": {
+      "aliases": ["NPN", "BC547"],
+      "category": "bjt",
+      "body": {"width": 5.0, "height": 4.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"B": {"number": "1", "local": [-2.5, 0], "side": "left", "type": "input", "roles": ["base", "control"]}, "C": {"number": "2", "local": [2.5, -1.5], "side": "right", "type": "passive", "roles": ["collector", "load"]}, "E": {"number": "3", "local": [2.5, 1.5], "side": "right", "type": "passive", "roles": ["emitter", "return"]}}},
+      "placement_hints": {"role": "middle_logic", "can_be_pushed": true, "push_priority": 40, "default_spacing": 10.16}
+    },
+    "Connector_Generic": {
+      "aliases": ["TERMINAL", "TERMINAL_BLOCK", "SCREW_TERMINAL_2", "PIN_HEADER", "HEADER_CONNECTOR", "UART_HEADER", "I2C_HEADER", "PWM_HEADER", "JST_CONNECTOR", "CAN_TERMINAL", "RS485_TERMINAL"],
+      "category": "connector",
+      "body": {"width": 10.0, "height": 8.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"1": {"number": "1", "local": [-5.0, -2.54], "side": "left", "type": "passive", "roles": ["connector"]}, "2": {"number": "2", "local": [-5.0, 2.54], "side": "left", "type": "passive", "roles": ["connector"]}, "3": {"number": "3", "local": [5.0, -2.54], "side": "right", "type": "passive", "roles": ["connector"]}, "4": {"number": "4", "local": [5.0, 2.54], "side": "right", "type": "passive", "roles": ["connector"]}}},
+      "placement_hints": {"role": "connector", "can_be_pushed": true, "push_priority": 20, "default_spacing": 10.16}
+    },
+    "ArduinoNano_Module": {
+      "aliases": ["ARDUINO_NANO"],
+      "category": "microcontroller_module",
+      "body": {"width": 55.0, "height": 60.0, "origin": "center", "keepout": {"left": 5.08, "right": 5.08, "top": 5.08, "bottom": 5.08}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"5V": {"number": "27", "local": [0, -30.0], "side": "top", "type": "power", "roles": ["power"]}, "GND": {"number": "29", "local": [0, 30.0], "side": "bottom", "type": "ground", "roles": ["ground"]}, "D2": {"number": "5", "local": [-27.5, -15.24], "side": "left", "type": "bidirectional", "roles": ["gpio"]}, "D3": {"number": "6", "local": [-27.5, -10.16], "side": "left", "type": "bidirectional", "roles": ["gpio", "pwm"]}, "D4": {"number": "7", "local": [-27.5, -5.08], "side": "left", "type": "bidirectional", "roles": ["gpio"]}, "D5": {"number": "8", "local": [-27.5, 0], "side": "left", "type": "bidirectional", "roles": ["gpio"]}, "D6": {"number": "9", "local": [-27.5, 5.08], "side": "left", "type": "bidirectional", "roles": ["gpio"]}, "D13": {"number": "16", "local": [27.5, -10.16], "side": "right", "type": "bidirectional", "roles": ["gpio", "clock"]}, "SDA": {"number": "23", "local": [27.5, 10.16], "side": "right", "type": "bidirectional", "roles": ["i2c"]}, "SCL": {"number": "24", "local": [27.5, 15.24], "side": "right", "type": "bidirectional", "roles": ["i2c"]}}},
+      "placement_hints": {"role": "controller", "can_be_pushed": false, "push_priority": 90, "default_spacing": 20.32}
+    },
+    "ESP32_WROOM_Module": {
+      "aliases": ["ESP32_WROOM"],
+      "category": "wireless_module",
+      "body": {"width": 45.0, "height": 55.0, "origin": "center", "keepout": {"left": 5.08, "right": 5.08, "top": 5.08, "bottom": 5.08}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"3V3": {"number": "2", "local": [0, -27.5], "side": "top", "type": "power", "roles": ["power"]}, "GND": {"number": "1", "local": [0, 27.5], "side": "bottom", "type": "ground", "roles": ["ground"]}, "EN": {"number": "3", "local": [-22.5, -10.16], "side": "left", "type": "input", "roles": ["enable"]}, "IO0": {"number": "25", "local": [-22.5, 10.16], "side": "left", "type": "bidirectional", "roles": ["boot"]}, "TXD0": {"number": "35", "local": [22.5, -5.08], "side": "right", "type": "output", "roles": ["uart"]}, "RXD0": {"number": "34", "local": [22.5, 5.08], "side": "right", "type": "input", "roles": ["uart"]}}},
+      "placement_hints": {"role": "controller", "can_be_pushed": false, "push_priority": 90, "default_spacing": 20.32}
+    },
+    "W25Q64_SOIC8": {
+      "aliases": ["W25Q64"],
+      "category": "memory_ic",
+      "body": {"width": 22.0, "height": 28.0, "origin": "center", "keepout": {"left": 2.54, "right": 2.54, "top": 2.54, "bottom": 2.54}},
+      "legal_rotations": [0, 90, 180, 270],
+      "default_rotation": 0,
+      "pin_model": {"coordinate_system": "local_center_origin", "pins": {"CS": {"number": "1", "local": [-11.0, -7.62], "side": "left", "type": "input", "roles": ["chip_select"]}, "DO": {"number": "2", "local": [11.0, -2.54], "side": "right", "type": "output", "roles": ["spi"]}, "DI": {"number": "5", "local": [-11.0, 2.54], "side": "left", "type": "input", "roles": ["spi"]}, "SCK": {"number": "6", "local": [-11.0, 7.62], "side": "left", "type": "input", "roles": ["clock"]}, "VCC": {"number": "8", "local": [0, -14.0], "side": "top", "type": "power", "roles": ["power"]}, "GND": {"number": "4", "local": [0, 14.0], "side": "bottom", "type": "ground", "roles": ["ground"]}}},
+      "placement_hints": {"role": "middle_logic", "can_be_pushed": true, "push_priority": 55, "default_spacing": 12.7}
+    }
+  }
+}

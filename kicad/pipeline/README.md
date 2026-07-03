@@ -78,6 +78,22 @@ The post-placer stages remain independent:
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.
 
+## Routing V2 Refactor
+
+The extracted PDF plan is preserved at
+`kicad/pipeline/ROUTING_REFACTOR_PLAN_SOURCE.md`.
+
+The v2 routing implementation lives under `kicad/pipeline/routing/` and adds:
+
+- permanent abstract catalogues in `kicad/pipeline/catelogues/`
+- a mathematical `LiveRoutingState`
+- rotation-aware pin/body/keepout recomputation
+- a v0.2 routing orchestrator and validation report
+- a Rust-core skeleton with the planned PyO3 JSON API
+- stricter final KiCad wire validation and exact-pin path repair
+
+Existing planner contracts remain available while migration continues.
+
 The combined `wire_planner.plan_wiring()` contract is movement-first:
 
 ```text

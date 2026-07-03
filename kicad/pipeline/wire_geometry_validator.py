@@ -5,10 +5,12 @@ with net names plus component body rectangles, then checks hard schematic
 readability rules:
 
 1. Wires must be orthogonal.
-2. Wires may cross or touch other wires; those contacts are routing-quality
+2. Different-net 90-degree crossings in open space are allowed as quality
    metrics, not hard validation failures.
 3. Wires must not touch component bodies except at explicitly allowed pin
    points.
+4. Different-net collinear overlap, T-touch, endpoint touch, and crossing
+   exactly on an intended pin point are hard failures.
 """
 
 from __future__ import annotations
@@ -210,6 +212,18 @@ def _allowed_component_touch(segment: WireGeometrySegment, body: ComponentBody, 
     return False
 
 
+def _segment_pin_points(segment: WireGeometrySegment) -> set[Point]:
+    return {_round_point(allowed.point) for allowed in segment.allowed_touches}
+
+
+def _point_is_pin_touch(point: Point, left: WireGeometrySegment, right: WireGeometrySegment, eps: float) -> bool:
+    rounded = _round_point(point)
+    for pin_point in _segment_pin_points(left) | _segment_pin_points(right):
+        if _same_point(rounded, pin_point, eps):
+            return True
+    return False
+
+
 def validate_wire_geometry(
     segments: list[WireGeometrySegment] | tuple[WireGeometrySegment, ...],
     component_bodies: list[ComponentBody] | tuple[ComponentBody, ...],
@@ -218,6 +232,8 @@ def validate_wire_geometry(
     max_violations: int = 500,
 ) -> dict[str, Any]:
     violations: list[dict[str, Any]] = []
+    different_net_crossing_count = 0
+    same_net_contact_count = 0
 
     for index, segment in enumerate(segments):
         if segment.start == segment.end:
@@ -250,18 +266,101 @@ def validate_wire_geometry(
                 }
             )
 
+    for left_index, left in enumerate(segments):
+        if left.start == left.end:
+            continue
+        for right_index, right in enumerate(segments[left_index + 1 :], start=left_index + 1):
+            if right.start == right.end:
+                continue
+            contact = _segment_contact(left, right, eps)
+            if contact is None:
+                continue
+            if left.net == right.net:
+                same_net_contact_count += 1
+                continue
+            if contact.kind == "overlap":
+                violations.append(
+                    {
+                        "rule": "different_net_collinear_overlap_forbidden",
+                        "left_segment_index": left_index,
+                        "right_segment_index": right_index,
+                        "left_segment": _segment_dict(left),
+                        "right_segment": _segment_dict(right),
+                        "contact": _contact_dict(contact),
+                    }
+                )
+                continue
+            point = contact.point or (0.0, 0.0)
+            if _point_is_pin_touch(point, left, right, eps):
+                violations.append(
+                    {
+                        "rule": "different_net_crossing_on_pin_forbidden",
+                        "left_segment_index": left_index,
+                        "right_segment_index": right_index,
+                        "left_segment": _segment_dict(left),
+                        "right_segment": _segment_dict(right),
+                        "contact": _contact_dict(contact),
+                    }
+                )
+                continue
+            left_interior = _is_strict_interior(point, left, eps)
+            right_interior = _is_strict_interior(point, right, eps)
+            if left_interior and right_interior:
+                different_net_crossing_count += 1
+                continue
+            if left_interior != right_interior:
+                violations.append(
+                    {
+                        "rule": "different_net_t_touch_forbidden",
+                        "left_segment_index": left_index,
+                        "right_segment_index": right_index,
+                        "left_segment": _segment_dict(left),
+                        "right_segment": _segment_dict(right),
+                        "contact": _contact_dict(contact),
+                    }
+                )
+            else:
+                violations.append(
+                    {
+                        "rule": "different_net_endpoint_touch_forbidden",
+                        "left_segment_index": left_index,
+                        "right_segment_index": right_index,
+                        "left_segment": _segment_dict(left),
+                        "right_segment": _segment_dict(right),
+                        "contact": _contact_dict(contact),
+                    }
+                )
+
     by_rule = Counter(str(item["rule"]) for item in violations)
     return {
-        "schema": "progen-kicad-wire-geometry-validation/v0.1",
+        "schema": "progen-kicad-wire-geometry-validation/v0.2",
         "stage": "wire_geometry_validator",
         "rule_set": {
+            "different_net_90_degree_crossings_allowed": True,
             "wire_wire_crossings_allowed": True,
             "wire_must_not_touch_component_except_intended_pin": True,
+            "different_net_collinear_overlap_forbidden": True,
+            "different_net_t_touch_forbidden": True,
+            "different_net_endpoint_touch_forbidden": True,
+            "different_net_crossing_on_pin_forbidden": True,
         },
         "ok": not violations,
         "segment_count": len(segments),
         "component_body_count": len(component_bodies),
         "violation_count": len(violations),
+        "metrics": {
+            "different_net_90_degree_crossing_count": different_net_crossing_count,
+            "same_net_contact_count": same_net_contact_count,
+            "forbidden_contact_count": sum(
+                by_rule.get(rule, 0)
+                for rule in (
+                    "different_net_collinear_overlap_forbidden",
+                    "different_net_t_touch_forbidden",
+                    "different_net_endpoint_touch_forbidden",
+                    "different_net_crossing_on_pin_forbidden",
+                )
+            ),
+        },
         "violations_by_rule": dict(sorted(by_rule.items())),
         "violations": violations[:max_violations],
         "violations_truncated": len(violations) > max_violations,

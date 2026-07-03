@@ -7,6 +7,7 @@ name = "proteusgen"
 version = "0.1.0"
 description = "Deterministic, fixture-backed Proteus project generator research tool"
 requires-python = ">=3.11"
+dependencies = ["pypdf>=5.0"]
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]
@@ -19,4 +20,4 @@ where = ["src", "."]
 include = ["proteusgen*", "kicad*"]
 
 [tool.setuptools.package-data]
-kicad = ["source_pack/downloaded_zip/*.zip", "rules/*.json", "examples/json/*.json", "targets/*.md"]
+kicad = ["source_pack/downloaded_zip/*.zip", "rules/*.json", "examples/json/*.json", "targets/*.md", "pipeline/catelogues/*.json"]

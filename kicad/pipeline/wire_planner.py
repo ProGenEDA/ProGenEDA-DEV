@@ -71,6 +71,7 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "lane_step": 7.62,
     "max_lane_candidates": 256.0,
     "crossing_penalty": 0.0,
+    "forbidden_contact_penalty": 250_000.0,
     "same_net_reuse_penalty": 0.05,
     "body_crossing_penalty": 100_000.0,
     "component_shadow_penalty": 80.0,
@@ -565,14 +566,54 @@ def _point_on_segment(point: Point, start: Point, end: Point, eps: float = 0.001
     return False
 
 
-def _segment_touches_or_crosses(a1: Point, a2: Point, b1: Point, b2: Point) -> bool:
-    for point in (a1, a2):
-        if _point_on_segment(point, b1, b2):
-            return True
-    for point in (b1, b2):
-        if _point_on_segment(point, a1, a2):
-            return True
-    return _segments_cross(a1, a2, b1, b2)
+def _is_endpoint(point: Point, start: Point, end: Point, eps: float = 0.001) -> bool:
+    return abs(point[0] - start[0]) <= eps and abs(point[1] - start[1]) <= eps or abs(point[0] - end[0]) <= eps and abs(point[1] - end[1]) <= eps
+
+
+def _strict_between(value: float, left: float, right: float, eps: float = 0.001) -> bool:
+    low, high = sorted((left, right))
+    return low + eps < value < high - eps
+
+
+def _segment_contact_kind(a1: Point, a2: Point, b1: Point, b2: Point) -> str:
+    """Classify different-net wire contact for schematic routing.
+
+    Returns ``crossing`` for allowed open 90-degree crossings, ``forbidden`` for
+    collinear overlap/T-touch/endpoint touch, and ``none`` otherwise.
+    """
+    eps = 0.001
+    a_h = abs(a1[1] - a2[1]) <= eps
+    a_v = abs(a1[0] - a2[0]) <= eps
+    b_h = abs(b1[1] - b2[1]) <= eps
+    b_v = abs(b1[0] - b2[0]) <= eps
+    if not (a_h or a_v) or not (b_h or b_v):
+        return "forbidden"
+    if a_h and b_h:
+        if abs(a1[1] - b1[1]) > eps:
+            return "none"
+        low = max(min(a1[0], a2[0]), min(b1[0], b2[0]))
+        high = min(max(a1[0], a2[0]), max(b1[0], b2[0]))
+        if low > high + eps:
+            return "none"
+        return "forbidden"
+    if a_v and b_v:
+        if abs(a1[0] - b1[0]) > eps:
+            return "none"
+        low = max(min(a1[1], a2[1]), min(b1[1], b2[1]))
+        high = min(max(a1[1], a2[1]), max(b1[1], b2[1]))
+        if low > high + eps:
+            return "none"
+        return "forbidden"
+    horizontal = (a1, a2) if a_h else (b1, b2)
+    vertical = (b1, b2) if a_h else (a1, a2)
+    point = (vertical[0][0], horizontal[0][1])
+    if not _point_on_segment(point, horizontal[0], horizontal[1], eps) or not _point_on_segment(point, vertical[0], vertical[1], eps):
+        return "none"
+    horizontal_interior = _strict_between(point[0], horizontal[0][0], horizontal[1][0], eps)
+    vertical_interior = _strict_between(point[1], vertical[0][1], vertical[1][1], eps)
+    if horizontal_interior and vertical_interior:
+        return "crossing"
+    return "forbidden"
 
 
 def _segment_hits_body(start: Point, end: Point, body: Body, clearance: float) -> bool:
@@ -687,25 +728,30 @@ def _path_wire_contact_counts(
     net: str,
     cfg: dict[str, Any] | None = None,
     occupied: dict[GridPoint, str] | None = None,
-) -> tuple[int, int]:
+) -> tuple[int, int, int]:
     if (
         cfg is not None
         and occupied is not None
         and len(existing_segments) > int(cfg.get("exact_crossing_score_segment_limit", 700.0))
     ):
-        return _path_grid_contact_counts(path, occupied, net=net, grid=float(cfg["grid"]))
+        different, same = _path_grid_contact_counts(path, occupied, net=net, grid=float(cfg["grid"]))
+        return different, same, 0
 
-    different_net = 0
+    different_net_crossings = 0
     same_net = 0
+    forbidden_contacts = 0
     for start, end in zip(path, path[1:]):
         for other_net, other_start, other_end in existing_segments:
-            if not _segment_touches_or_crosses(start, end, other_start, other_end):
-                continue
             if other_net == net:
-                same_net += 1
+                if _point_on_segment(start, other_start, other_end) or _point_on_segment(end, other_start, other_end) or _segments_cross(start, end, other_start, other_end):
+                    same_net += 1
             else:
-                different_net += 1
-    return different_net, same_net
+                contact_kind = _segment_contact_kind(start, end, other_start, other_end)
+                if contact_kind == "crossing":
+                    different_net_crossings += 1
+                elif contact_kind == "forbidden":
+                    forbidden_contacts += 1
+    return different_net_crossings, same_net, forbidden_contacts
 
 
 def _grid_cells_for_segment(start: Point, end: Point, grid: float) -> list[GridPoint]:
@@ -770,6 +816,7 @@ def _path_score(
                 "component_shadow_count": 0,
                 "outer_channel_cost": 0.0,
                 "different_net_crossings": 0,
+                "forbidden_contacts": 0,
                 "same_net_contacts": 0,
                 "length": round(length, 3),
                 "turns": turns,
@@ -777,13 +824,14 @@ def _path_score(
         )
     body_shadows = _path_component_shadow_count(path, bodies, cfg, ignore_refs=ignore_refs, blocked_cells=shadow_blocked_cells)
     outer_channel_cost = _path_outer_channel_cost(path, bodies, cfg)
-    crossings, same_net_contacts = _path_wire_contact_counts(path, existing_segments, net=net, cfg=cfg, occupied=occupied)
+    crossings, same_net_contacts, forbidden_contacts = _path_wire_contact_counts(path, existing_segments, net=net, cfg=cfg, occupied=occupied)
     length = _path_length(path)
     turns = _path_turn_count(path)
     score = (
         body_hits * float(cfg["body_crossing_penalty"])
         + body_shadows * float(cfg["component_shadow_penalty"])
         + outer_channel_cost * float(cfg["long_lane_outer_penalty"])
+        + forbidden_contacts * float(cfg["forbidden_contact_penalty"])
         + crossings * float(cfg["crossing_penalty"])
         + turns * float(cfg["turn_penalty"])
         + length
@@ -796,6 +844,7 @@ def _path_score(
             "component_shadow_count": body_shadows,
             "outer_channel_cost": round(outer_channel_cost, 3),
             "different_net_crossings": crossings,
+            "forbidden_contacts": forbidden_contacts,
             "same_net_contacts": same_net_contacts,
             "length": round(length, 3),
             "turns": turns,
@@ -1322,7 +1371,9 @@ def plan_wire_routes(
                     route_candidates.append(("lane_candidate", lane_path, lane_report, []))
 
             clean_lane_available = any(
-                algorithm == "lane_candidate" and int(report.get("different_net_crossings", 0)) == 0
+                algorithm == "lane_candidate"
+                and int(report.get("forbidden_contacts", 0)) == 0
+                and int(report.get("different_net_crossings", 0)) == 0
                 for algorithm, _path, report, _warnings in route_candidates
             )
             lane_candidate_available = any(algorithm == "lane_candidate" for algorithm, _path, _report, _warnings in route_candidates)
@@ -1361,14 +1412,25 @@ def plan_wire_routes(
                     astar_report["score"] = round(astar_score, 3)
                     route_candidates.append(("grid_astar", astar_path, astar_report, astar_warnings))
 
+            best_preliminary_forbidden = min(
+                (int(candidate[2].get("forbidden_contacts", 0)) for candidate in route_candidates),
+                default=1_000_000,
+            )
             best_preliminary_crossings = min(
                 (int(candidate[2].get("different_net_crossings", 0)) for candidate in route_candidates),
                 default=1_000_000,
             )
-            if routing_mode == "wire" and best_preliminary_crossings > 0 and cfg.get("crossing_risk_astar", 0.0) >= 1.0:
+            if routing_mode == "wire" and (
+                best_preliminary_forbidden > 0
+                or (best_preliminary_crossings > 0 and cfg.get("crossing_risk_astar", 0.0) >= 1.0)
+            ):
                 fallback_cfg = dict(cfg)
-                fallback_cfg["block_existing_wires"] = 0.0
-                fallback_cfg["near_wire_penalty"] = max(float(cfg.get("near_wire_penalty", 1.25)), 10.0)
+                if best_preliminary_forbidden > 0:
+                    fallback_cfg["block_existing_wires"] = 1.0
+                    fallback_cfg["near_wire_penalty"] = max(float(cfg.get("near_wire_penalty", 1.25)), 50.0)
+                else:
+                    fallback_cfg["block_existing_wires"] = 0.0
+                    fallback_cfg["near_wire_penalty"] = max(float(cfg.get("near_wire_penalty", 1.25)), 10.0)
                 fallback_cfg["max_astar_expansions"] = float(
                     cfg.get("strict_fallback_max_astar_expansions", cfg.get("max_astar_expansions", 50_000.0))
                 )
@@ -1401,7 +1463,11 @@ def plan_wire_routes(
                             fallback_path,
                             fallback_report,
                             [
-                                "strict_crossing_risk_fallback: existing wires were treated as high-cost lanes instead of hard blocks.",
+                                (
+                                    "strict_forbidden_contact_fallback: existing different-net wire cells were treated as hard blocks."
+                                    if best_preliminary_forbidden > 0
+                                    else "strict_crossing_risk_fallback: existing wires were treated as high-cost lanes instead of hard blocks."
+                                ),
                                 *fallback_warnings,
                             ],
                         )
@@ -1411,6 +1477,7 @@ def plan_wire_routes(
             route_candidates = [candidate for candidate in route_candidates if not candidate[2].get("body_hits")]
             route_candidates.sort(
                 key=lambda item: (
+                    int(item[2].get("forbidden_contacts", 0)),
                     float(item[2].get("score", 0.0)),
                     int(item[2].get("turns", 0)),
                     int(item[2].get("different_net_crossings", 0)),
@@ -1423,6 +1490,10 @@ def plan_wire_routes(
             if route_candidates:
                 selected_algorithm, raw_path, selected_report, selected_warnings = route_candidates[0]
                 route_warnings.extend(selected_warnings)
+                if selected_report.get("forbidden_contacts"):
+                    route_warnings.append(
+                        f"minimum_forbidden_contact_route: {net} accepted {selected_report['forbidden_contacts']} forbidden wire contact risk(s)."
+                    )
                 if selected_report.get("different_net_crossings"):
                     route_warnings.append(
                         f"minimum_crossing_route: {net} accepted {selected_report['different_net_crossings']} different-net crossing/touch risks."
@@ -1711,6 +1782,7 @@ def _wire_plan_routeability_score(wire_plan: dict[str, Any]) -> dict[str, Any]:
     complete_wire_nets = sum(1 for item in nets.values() if isinstance(item, dict) and item.get("strategy") == "wire")
     route_quality = [route.get("route_quality", {}) for route in wire_plan.get("routes", []) if isinstance(route, dict)]
     body_hits = sum(int(item.get("body_hits", 0)) for item in route_quality if isinstance(item, dict))
+    forbidden_contacts = sum(int(item.get("forbidden_contacts", 0)) for item in route_quality if isinstance(item, dict))
     component_shadows = sum(int(item.get("component_shadow_count", 0)) for item in route_quality if isinstance(item, dict))
     route_length = sum(float(item.get("length", 0.0)) for item in route_quality if isinstance(item, dict))
     turns = sum(int(item.get("turns", 0)) for item in route_quality if isinstance(item, dict))
@@ -1723,6 +1795,7 @@ def _wire_plan_routeability_score(wire_plan: dict[str, Any]) -> dict[str, Any]:
         + partial * 100_000_000
         + labels * 10_000_000
         + body_hits * 1_000_000
+        + forbidden_contacts * 500_000
         + component_shadows * 10_000
         - complete_wire_nets * 1_000
         + turns * 10
@@ -1736,6 +1809,7 @@ def _wire_plan_routeability_score(wire_plan: dict[str, Any]) -> dict[str, Any]:
         "partial_wire_net_count": partial,
         "label_strategy_count": labels,
         "route_body_hit_count": body_hits,
+        "route_forbidden_contact_count": forbidden_contacts,
         "component_shadow_count": component_shadows,
         "route_turn_count": turns,
         "route_length": round(route_length, 3),

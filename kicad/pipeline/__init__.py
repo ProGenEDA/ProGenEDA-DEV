@@ -14,6 +14,14 @@ from .wire_planner import (
     select_routeable_arrangement,
     write_wire_planner_jsons,
 )
+from .routing.python import (
+    LiveRoutingState,
+    build_live_routing_state,
+    build_validation_report,
+    plan_wiring_v2,
+    rotate_point,
+    rotate_side,
+)
 
 
 def place_components(*args, **kwargs):
@@ -31,13 +39,19 @@ __all__ = [
     "PipelineContext",
     "PipelineError",
     "StageResult",
+    "LiveRoutingState",
     "apply_coordinate_edits",
+    "build_live_routing_state",
+    "build_validation_report",
     "decide_arrangement",
     "place_components",
     "place_terminals",
     "plan_partial_route_component_moves",
     "plan_wire_routes",
     "plan_wiring",
+    "plan_wiring_v2",
+    "rotate_point",
+    "rotate_side",
     "select_routeable_arrangement",
     "run_placer_pipeline",
     "run_placer_pack",
