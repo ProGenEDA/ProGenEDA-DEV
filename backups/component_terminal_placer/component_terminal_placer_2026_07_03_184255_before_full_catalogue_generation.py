@@ -582,40 +582,6 @@ def _catalogue_terminal_label(component_key: str, pin: str, role: str) -> str:
     return f"{key_token}PIN{pin_token}"[:60]
 
 
-def _component_body_bbox_for_catalogue(data: bytes, family: str) -> dict[str, int]:
-    """Return the bbox for the component packet without terminal/WIRE stubs.
-
-    Multi-pin native donors often keep zero-length WIRE records in the placed
-    component packet after `$TERBIDIR` records are removed.  Those wires are pin
-    evidence, but they are not the component body.  Catalogue offsets therefore
-    use the terminal/WIRE-stripped packet as their fallback coordinate frame.
-    """
-
-    component_data = _component_only_chunk_from_terminalized_chunk(data)
-    pairs = layout_coordinate_pairs(component_data, family)
-    if not pairs:
-        pairs = layout_coordinate_pairs(data, family)
-        component_data = data
-    if not pairs:
-        raise ValueError(f"{family} packet has no catalogue coordinate pairs.")
-    return coordinate_bbox(component_data, pairs)
-
-
-def _pin_coordinate_from_wire_row(
-    row: dict[str, Any],
-    *,
-    side: str,
-) -> tuple[int, int]:
-    x1, y1, x2, y2 = (int(value) for value in row["coordinates"])
-    if (x1, y1) == (x2, y2):
-        return x1, y1
-    if side == "left":
-        return ((x1, y1) if x1 >= x2 else (x2, y2))
-    if side == "right":
-        return ((x1, y1) if x1 <= x2 else (x2, y2))
-    return x2, y2
-
-
 def plan_catalogue_pin_bidir_terminals(
     selected_groups: Iterable[Any],
     *,
@@ -652,12 +618,11 @@ def plan_catalogue_pin_bidir_terminals(
             missing_geometry.append({"component_key": key, "component_family": family})
             continue
         data = bytes(getattr(group, "data", b""))
-        try:
-            bbox = _component_body_bbox_for_catalogue(data, family)
-        except ValueError:
+        pairs = layout_coordinate_pairs(data, family)
+        if not pairs:
             missing_geometry.append({"component_key": key, "component_family": family})
             continue
-        wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
+        bbox = coordinate_bbox(data, pairs)
         for pin in profile.pins:
             if pin.hidden:
                 continue
@@ -685,16 +650,8 @@ def plan_catalogue_pin_bidir_terminals(
                     }
                 )
                 continue
-            wire_order_index = raw_pin_geometry.get("wire_order_index")
-            existing_wire: dict[str, Any] | None = None
-            if isinstance(wire_order_index, int) and 0 <= wire_order_index < len(wire_rows):
-                existing_wire = wire_rows[wire_order_index]
-                pin_x, pin_y = _pin_coordinate_from_wire_row(existing_wire, side=side)
-                coordinate_source = "placed_packet_existing_wire_order"
-            else:
-                pin_x = int(bbox["min_x"]) + int(raw_pin_geometry["x_offset_from_component_bbox_min"])
-                pin_y = int(bbox["min_y"]) + int(raw_pin_geometry["y_offset_from_component_bbox_min"])
-                coordinate_source = "component_bbox_min_offset"
+            pin_x = int(bbox["min_x"]) + int(raw_pin_geometry["x_offset_from_component_bbox_min"])
+            pin_y = int(bbox["min_y"]) + int(raw_pin_geometry["y_offset_from_component_bbox_min"])
             terminal = TerminalSpec(
                 label=_catalogue_terminal_label(key, pin.name, pin.role),
                 symbol_x=pin_x,
@@ -710,9 +667,6 @@ def plan_catalogue_pin_bidir_terminals(
                 terminal,
                 pin_x=pin_x,
                 pin_y=pin_y,
-                outward_grid_steps=int(
-                    raw_pin_geometry.get("terminal_contact_outward_grid_steps", 1)
-                ),
             )
             terminal_plans.append(
                 {
@@ -737,16 +691,6 @@ def plan_catalogue_pin_bidir_terminals(
                     },
                     "catalogue_geometry": dict(raw_pin_geometry),
                     "component_bbox": dict(bbox),
-                    "coordinate_source": coordinate_source,
-                    "existing_wire": (
-                        {
-                            "wire_order_index": wire_order_index,
-                            "marker_offset": int(existing_wire["marker_offset"]),
-                            "coordinates": list(existing_wire["coordinates"]),
-                        }
-                        if existing_wire is not None
-                        else None
-                    ),
                 }
             )
             suffix += 1
@@ -764,427 +708,6 @@ def plan_catalogue_pin_bidir_terminals(
             ),
         },
     }
-
-
-def _patch_wire_record_coordinates(
-    data: bytes,
-    *,
-    marker_offset: int,
-    start_x: int,
-    start_y: int,
-    end_x: int,
-    end_y: int,
-) -> bytes:
-    if data[marker_offset : marker_offset + len(b"\x7fWIRE")] != b"\x7fWIRE":
-        raise ValueError(f"WIRE marker missing at offset {marker_offset}.")
-    coordinate_start = marker_offset + 10
-    if coordinate_start + 16 > len(data):
-        raise ValueError(f"WIRE coordinates at offset {marker_offset} are truncated.")
-    patched = bytearray(data)
-    patched[coordinate_start : coordinate_start + 16] = struct.pack(
-        "<iiii",
-        int(start_x),
-        int(start_y),
-        int(end_x),
-        int(end_y),
-    )
-    return bytes(patched)
-
-
-def _patch_component_link_suffix(
-    data: bytes,
-    *,
-    old_suffix: int,
-    new_suffix: int,
-    before_offset: int,
-    after_offset: int = 0,
-) -> tuple[bytes, int]:
-    pattern = struct.pack("<H", old_suffix & 0xFFFF) + b"\x01\x00"
-    candidates: list[int] = []
-    cursor = 0
-    while True:
-        position = data.find(pattern, cursor)
-        if position < 0:
-            break
-        if after_offset <= position < before_offset:
-            candidates.append(position)
-        cursor = position + 1
-    if not candidates:
-        raise ValueError(
-            f"Could not find component pin-link field {old_suffix:04x} before "
-            f"WIRE offset {before_offset}."
-        )
-    position = max(candidates)
-    patched = bytearray(data)
-    patched[position : position + 2] = struct.pack("<H", new_suffix & 0xFFFF)
-    return bytes(patched), position
-
-
-def _patch_component_link_before_wire(
-    data: bytes,
-    *,
-    new_suffix: int,
-    before_offset: int,
-    after_offset: int = 0,
-    preferred_old_suffix: int | None = None,
-    preferred_old_suffixes: Iterable[int] = (),
-) -> tuple[bytes, int, int]:
-    candidates_to_try = list(preferred_old_suffixes)
-    if preferred_old_suffix is not None:
-        candidates_to_try.insert(0, preferred_old_suffix)
-    for candidate_suffix in dict.fromkeys(int(item) for item in candidates_to_try):
-        try:
-            patched, position = _patch_component_link_suffix(
-                data,
-                old_suffix=candidate_suffix,
-                new_suffix=new_suffix,
-                before_offset=before_offset,
-            )
-            return patched, position, candidate_suffix & 0xFFFF
-        except ValueError:
-            continue
-
-    wire_spans = _wire_record_spans(data)
-    candidates: list[int] = []
-    cursor = 0
-    while True:
-        position = data.find(b"\x01\x00", cursor)
-        if position < 0:
-            break
-        suffix_position = position - 2
-        if (
-            suffix_position >= 0
-            and suffix_position >= after_offset
-            and suffix_position < before_offset
-            and not _position_in_spans(suffix_position, wire_spans)
-        ):
-            candidates.append(suffix_position)
-        cursor = position + 1
-    if not candidates:
-        raise ValueError(
-            f"Could not locate a component pin-link field before WIRE offset "
-            f"{before_offset}."
-        )
-    suffix_position = max(candidates)
-    old_suffix = struct.unpack("<H", data[suffix_position : suffix_position + 2])[0]
-    patched = bytearray(data)
-    patched[suffix_position : suffix_position + 2] = struct.pack(
-        "<H",
-        new_suffix & 0xFFFF,
-    )
-    return bytes(patched), suffix_position, old_suffix
-
-
-def _current_bidir_suffixes_by_pin(
-    data: bytes,
-    profile: Any,
-) -> dict[str, int]:
-    suffixes: dict[str, int] = {}
-    for record in _bidir_label_records(data):
-        raw_pin, signal = _pin_label_parts(str(record["label"]))
-        candidates = [value for value in (raw_pin, signal) if value]
-        for candidate in candidates:
-            try:
-                pin_name = profile.normalize_pin(candidate).name
-            except Exception:
-                continue
-            suffixes.setdefault(pin_name, int(record["suffix"]))
-            break
-    return suffixes
-
-
-def attach_catalogue_pin_bidir_terminals_to_project(
-    project: str | Path,
-    output: str | Path,
-    selected_groups: Iterable[Any],
-    *,
-    catalog: Any | None = None,
-    terminal_families: Iterable[str] | None = None,
-    suffix_start: int = 0x7300,
-) -> dict[str, Any]:
-    """Attach catalogue-backed multi-pin terminals using placed WIRE skeletons.
-
-    The component placer may emit multi-pin native packets that already contain
-    donor-derived component pin-link fields and zero-length WIRE records, but no
-    `$TERBIDIR` records.  This shared path rewrites those WIRE records into the
-    accepted grid-contact short-wire geometry, inserts active terminal records
-    immediately before each component packet, and then rebases both terminal and
-    component pin links from final ROOT.DSN WIRE addresses.
-    """
-
-    if catalog is None:
-        from .component_catalog import load_component_catalog
-
-        catalog = load_component_catalog()
-    groups = tuple(selected_groups)
-    if not groups:
-        raise ValueError("Catalogue terminal attachment requires selected groups.")
-    requested = (
-        None
-        if terminal_families is None
-        else set(dict.fromkeys(str(item) for item in terminal_families))
-    )
-    source = Path(project)
-    destination = Path(output)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    dsn = read_internal_file(source, "ROOT.DSN")
-    original_chunk = _extract_object_chunk(dsn)
-    ordered_groups = _covered_component_stream_with_optional_final_ff(
-        original_chunk,
-        groups,
-    )
-    terminal_templates = NATIVE_BIDIR_TEMPLATES
-
-    local_records: list[bytes] = []
-    family_reports: list[dict[str, Any]] = []
-    preserved_rows: list[dict[str, Any]] = []
-    suffix = suffix_start
-    terminalized_count = 0
-    for group in ordered_groups:
-        family = _group_family(group)
-        key = _group_key(group)
-        original_group_data = bytes(getattr(group, "data", b""))
-        data = _strip_bidir_records_from_chunk(original_group_data)
-        stripped_existing_terminals = (
-            original_group_data.count(BIDIR_MARKER) - data.count(BIDIR_MARKER)
-        )
-        if _is_terminal_infrastructure_group(group):
-            local_records.append(data)
-            preserved_rows.append(
-                {
-                    "component_key": key,
-                    "component_family": family,
-                    "reason": "terminal_infrastructure",
-                    "byte_preserved": True,
-                }
-            )
-            continue
-        if requested is not None and family not in requested:
-            local_records.append(data)
-            preserved_rows.append(
-                {
-                    "component_key": key,
-                    "component_family": family,
-                    "reason": "not_requested",
-                    "byte_preserved": True,
-                }
-            )
-            continue
-        profile = catalog.get_profile(family)
-        geometry = profile.proteus.get("pin_geometry", {}) if profile is not None else {}
-        pins = geometry.get("pins", {}) if isinstance(geometry, dict) else {}
-        if profile is None or not isinstance(pins, dict) or not pins:
-            local_records.append(data)
-            preserved_rows.append(
-                {
-                    "component_key": key,
-                    "component_family": family,
-                    "reason": "missing_catalogue_pin_geometry",
-                    "byte_preserved": True,
-                }
-            )
-            continue
-
-        current_suffix_by_pin = _current_bidir_suffixes_by_pin(
-            original_group_data,
-            profile,
-        )
-        planning_group = replace(group, data=data)
-        plan = plan_catalogue_pin_bidir_terminals(
-            [planning_group],
-            catalog=catalog,
-            suffix_start=suffix,
-        )
-        if not plan["valid"]:
-            raise ValueError(
-                f"Catalogue terminal plan for {family} {key} is incomplete: "
-                f"{plan['missing_geometry']}."
-            )
-        patched_data = data
-        data_wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
-        wire_marker_offsets = [
-            int(row["marker_offset"])
-            for row in sorted(data_wire_rows, key=lambda item: int(item["marker_offset"]))
-        ]
-        terminal_records: list[bytes] = []
-        terminal_pins: list[dict[str, Any]] = []
-        for row in plan["terminal_plans"]:
-            pin_name = str(row["pin"]["name"])
-            raw_geometry = pins[pin_name]
-            existing_wire = row.get("existing_wire")
-            if not isinstance(existing_wire, dict):
-                raise ValueError(
-                    f"{family} {key} pin {pin_name} lacks an existing WIRE anchor."
-                )
-            wire_order_index = int(existing_wire["wire_order_index"])
-            after_offset = (
-                0
-                if wire_order_index <= 0
-                else wire_marker_offsets[wire_order_index - 1] + 27
-            )
-            donor_old_suffix = int(raw_geometry.get("donor_terminal_suffix"))
-            preferred_old_suffix = current_suffix_by_pin.get(
-                pin_name,
-                donor_old_suffix,
-            )
-            temporary_suffix = suffix & 0xFFFF
-            suffix += 1
-            patched_data, component_link_position, old_suffix = (
-                _patch_component_link_before_wire(
-                patched_data,
-                new_suffix=temporary_suffix,
-                before_offset=int(existing_wire["marker_offset"]),
-                after_offset=after_offset,
-                preferred_old_suffix=preferred_old_suffix,
-                preferred_old_suffixes=(preferred_old_suffix, donor_old_suffix),
-            )
-            )
-            short_wire = row["short_wire"]
-            start = short_wire["start"]
-            end = short_wire["end"]
-            patched_data = _patch_wire_record_coordinates(
-                patched_data,
-                marker_offset=int(existing_wire["marker_offset"]),
-                start_x=int(start["x"]),
-                start_y=int(start["y"]),
-                end_x=int(end["x"]),
-                end_y=int(end["y"]),
-            )
-            terminal_dict = dict(row["terminal"])
-            terminal_dict["suffix"] = f"{temporary_suffix:04x}"
-            terminal_records.append(
-                build_bidir_record(
-                    terminal_templates,
-                    label=str(terminal_dict["label"]),
-                    symbol_x=int(terminal_dict["symbol_x"]),
-                    symbol_y=int(terminal_dict["symbol_y"]),
-                    angle_tenths=int(terminal_dict["angle_tenths"]),
-                    suffix=temporary_suffix,
-                    active_link=True,
-                )
-            )
-            terminal_pins.append(
-                {
-                    "component_key": key,
-                    "component_family": family,
-                    "pin": row["pin"],
-                    "terminal": terminal_dict,
-                    "short_wire": {
-                        "start": dict(start),
-                        "end": dict(end),
-                    },
-                    "old_suffix": f"{old_suffix:04x}",
-                    "temporary_suffix": f"{temporary_suffix:04x}",
-                    "component_link_position": component_link_position,
-                    "existing_wire_marker_offset": int(existing_wire["marker_offset"]),
-                    "coordinate_source": row["coordinate_source"],
-                }
-            )
-        local_records.extend(terminal_records)
-        local_records.append(b"\x00")
-        local_records.append(patched_data)
-        terminalized_count += 1
-        family_reports.append(
-            {
-                "family_handler": f"{family}/catalogue-existing-wire-v1",
-                "component_key": key,
-                "component_family": family,
-                "component_count": 1,
-                "terminal_count": len(terminal_records),
-                "wire_count": len(terminal_records),
-                "stripped_existing_terminal_count": stripped_existing_terminals,
-                "terminal_pins": terminal_pins,
-            }
-        )
-
-    if not family_reports:
-        raise ValueError("No catalogue-backed terminalized component was emitted.")
-    new_chunk = original_chunk[:1] + b"".join(local_records)
-    if not new_chunk.endswith(b"\xff"):
-        new_chunk += b"\xff"
-    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
-    final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
-
-    terminal_count = sum(report["terminal_count"] for report in family_reports)
-    wire_count = sum(report["wire_count"] for report in family_reports)
-    wire_path_checks: list[dict[str, Any]] = []
-    for report in family_reports:
-        for row in report["terminal_pins"]:
-            terminal = row["terminal"]
-            wire = row["short_wire"]
-            angle = int(terminal["angle_tenths"])
-            if angle == LEFT_SIDE_ANGLE:
-                contact_x = int(terminal["symbol_x"]) + TERMINAL_CONTACT_TO_PIN
-            elif angle == RIGHT_SIDE_ANGLE:
-                contact_x = int(terminal["symbol_x"]) - TERMINAL_CONTACT_TO_PIN
-            else:
-                contact_x = int(terminal["symbol_x"])
-            wire_path_checks.append(
-                {
-                    "component_key": row["component_key"],
-                    "component_family": row["component_family"],
-                    "pin": row["pin"]["name"],
-                    "terminal_contact_grid_aligned": (
-                        contact_x % PROTEUS_TERMINAL_GRID == 0
-                        and int(terminal["symbol_y"]) % PROTEUS_TERMINAL_GRID == 0
-                    ),
-                    "terminal_to_wire": (
-                        contact_x == int(wire["start"]["x"])
-                        and int(terminal["symbol_y"]) == int(wire["start"]["y"])
-                    ),
-                    "wire_to_pin": (
-                        int(wire["end"]["x"]) == int(row["pin"]["x"])
-                        and int(wire["end"]["y"]) == int(row["pin"]["y"])
-                    ),
-                    "wire_is_nonzero": (
-                        int(wire["start"]["x"]) != int(wire["end"]["x"])
-                        or int(wire["start"]["y"]) != int(wire["end"]["y"])
-                    ),
-                }
-            )
-    report = {
-        "stage": "terminal_placer",
-        "family_handler": "CATALOGUE/existing-wire-v1",
-        "status": "pending_proteus_user_acceptance",
-        "attachment_policy": (
-            "catalogue_pin_identity_existing_wire_anchor_grid_short_wire"
-        ),
-        "runtime_circuit_donor_dependency": False,
-        "component_coordinate_mutation": False,
-        "terminal_record_encoder": "embedded_proteus_813_schema",
-        "wire_record_encoder": "rewrite_existing_donor_wire_records",
-        "terminal_count_added": terminal_count,
-        "wire_count_added": 0,
-        "wire_count_rewritten": wire_count,
-        "terminalized_component_count": terminalized_count,
-        "preserved_component_count": len(preserved_rows),
-        "preserved_groups": preserved_rows,
-        "family_reports": family_reports,
-        "wire_path_contact_checks": wire_path_checks,
-        "wire_path_contacts_valid": all(
-            row["terminal_contact_grid_aligned"]
-            and row["terminal_to_wire"]
-            and row["wire_to_pin"]
-            and row["wire_is_nonzero"]
-            for row in wire_path_checks
-        ),
-        "terminal_grid_alignment_valid": all(
-            row["terminal_contact_grid_aligned"] for row in wire_path_checks
-        ),
-        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
-        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
-        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
-        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
-        "stripped_existing_terminal_count": sum(
-            report["stripped_existing_terminal_count"]
-            for report in family_reports
-        ),
-        "object_chunk_size_before": len(original_chunk),
-        "object_chunk_size_after": len(final_chunk),
-        "base_component_stream_covered": True,
-    }
-    return _rebase_terminal_links_to_final_wire_addresses(destination, report)
 
 
 def _s32_at(data: bytes, offset: int) -> int:
@@ -3948,48 +3471,6 @@ def _covered_bare_component_stream(
     return tuple(ordered)
 
 
-def _covered_component_stream_with_optional_final_ff(
-    original_chunk: bytes,
-    groups: tuple[Any, ...],
-) -> tuple[Any, ...]:
-    """Like `_covered_bare_component_stream`, but allow the final FF outside groups."""
-
-    remaining = list(groups)
-    if not remaining:
-        raise ValueError("Component stream coverage requires at least one group.")
-    ordered: list[Any] = []
-    offset = 2
-    while remaining:
-        match: tuple[int, int] | None = None
-        for index, group in enumerate(remaining):
-            data = bytes(getattr(group, "data", b""))
-            if data and original_chunk.startswith(data, offset):
-                match = (index, len(data))
-                break
-            final_data = data[:-1] + b"\xff"
-            if (
-                final_data != data
-                and offset + len(final_data) == len(original_chunk)
-                and original_chunk.startswith(final_data, offset)
-            ):
-                match = (index, len(final_data))
-                break
-        if match is None:
-            break
-        index, span = match
-        ordered.append(remaining.pop(index))
-        offset += span
-    covered = offset == len(original_chunk) or (
-        offset + 1 == len(original_chunk) and original_chunk[offset] == 0xFF
-    )
-    if remaining or not covered:
-        raise ValueError(
-            "Catalogue terminal attachment cannot account for the complete "
-            "component stream from the supplied groups."
-        )
-    return tuple(ordered)
-
-
 def _wire_path_contact_checks(
     family_reports: Iterable[dict[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -4487,24 +3968,6 @@ def _component_only_chunk_from_terminalized_chunk(chunk: bytes) -> bytes:
     return bytes(out)
 
 
-def _strip_bidir_records_from_chunk(chunk: bytes) -> bytes:
-    spans = [
-        (int(record["start"]), int(record["start"]) + 101 + int(record["label_length"]))
-        for record in _bidir_label_records(chunk)
-    ]
-    if not spans:
-        return chunk
-    out = bytearray()
-    cursor = 0
-    for start, end in sorted(spans):
-        if start < cursor:
-            continue
-        out.extend(chunk[cursor:start])
-        cursor = end
-    out.extend(chunk[cursor:])
-    return bytes(out)
-
-
 def _pin_label_parts(label: str) -> tuple[str, str]:
     normalized = " ".join(label.replace("(", "").replace(")", "").split())
     match = struct_pin_label_match(normalized)
@@ -4547,12 +4010,6 @@ def analyse_terminalized_donor_pin_geometry(
         x1, y1, x2, y2 = row["coordinates"]
         wires_by_endpoint.setdefault((int(x1), int(y1)), []).append(row)
         wires_by_endpoint.setdefault((int(x2), int(y2)), []).append(row)
-    wire_order_by_marker = {
-        int(row["marker_offset"]): index
-        for index, row in enumerate(
-            sorted(wire_rows, key=lambda item: int(item["marker_offset"]))
-        )
-    }
 
     component_chunk = _component_only_chunk_from_terminalized_chunk(chunk)
     pairs = layout_coordinate_pairs(component_chunk, family)
@@ -4595,12 +4052,10 @@ def analyse_terminalized_donor_pin_geometry(
             "x_offset_from_component_bbox_min": other[0] - int(bbox["min_x"]),
             "y_offset_from_component_bbox_min": other[1] - int(bbox["min_y"]),
             "terminal_label": str(terminal["label"]),
-            "donor_terminal_suffix": int(terminal["suffix"]),
             "terminal_contact_x": contact[0],
             "terminal_contact_y": contact[1],
             "wire_coordinates": [int(x1), int(y1), int(x2), int(y2)],
             "wire_marker_offset": int(wire["marker_offset"]),
-            "wire_order_index": wire_order_by_marker[int(wire["marker_offset"])],
             "evidence": "terminalized_donor_wire_endpoint",
         }
 
@@ -4764,30 +4219,6 @@ def _terminal_wire_bindings(report: dict[str, Any]) -> list[dict[str, Any]]:
     reports = family_reports if isinstance(family_reports, list) else [report]
     bindings: list[dict[str, Any]] = []
     for family_report in reports:
-        for row in family_report.get("terminal_pins", []):
-            terminal = row.get("terminal")
-            wire = row.get("short_wire")
-            if not isinstance(terminal, dict) or not isinstance(wire, dict):
-                raise ValueError(
-                    "Catalogue terminal report lacks terminal/WIRE geometry."
-                )
-            start = wire.get("start", {})
-            end = wire.get("end", {})
-            bindings.append(
-                {
-                    "component_key": row.get("component_key"),
-                    "component_family": row.get("component_family"),
-                    "role": row.get("pin", {}).get("name"),
-                    "old_suffix": int(terminal["suffix"], 16),
-                    "coordinates": (
-                        int(start["x"]),
-                        int(start["y"]),
-                        int(end["x"]),
-                        int(end["y"]),
-                    ),
-                    "terminal": terminal,
-                }
-            )
         for pair in family_report.get("terminal_pairs", []):
             roles = ("left", "right") if "left" in pair else ("input", "output")
             wires = pair.get("short_wires", {})
@@ -5002,9 +4433,6 @@ def _rebase_terminal_links_to_final_wire_addresses(
             and report["terminal_suffix_links_valid"]
         ),
     }
-    expected_wire_count = report.get("wire_count_added")
-    if not expected_wire_count and report.get("wire_count_rewritten") is not None:
-        expected_wire_count = report.get("wire_count_rewritten")
     report["valid"] = bool(
         report["terminal_suffixes_unique"]
         and report["terminal_suffix_links_valid"]
@@ -5012,7 +4440,7 @@ def _rebase_terminal_links_to_final_wire_addresses(
         and report.get("wire_path_contacts_valid", True)
         and report.get("base_component_stream_covered", True)
         and report.get("bidir_count_after") == report.get("terminal_count_added")
-        and report.get("wire_count_after") == expected_wire_count
+        and report.get("wire_count_after") == report.get("wire_count_added")
         and written_chunk.endswith(b"\xff")
     )
     return report

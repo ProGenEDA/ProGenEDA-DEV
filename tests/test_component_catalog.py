@@ -5,6 +5,7 @@ from proteusgen.component_catalog import load_component_catalog
 from proteusgen.component_beautifier import translate_packet_by_delta
 from proteusgen.component_terminal_placer import (
     PROTEUS_TERMINAL_GRID,
+    attach_catalogue_pin_bidir_terminals_to_project,
     analyse_terminalized_donor_pin_geometry,
     plan_catalogue_pin_bidir_terminals,
 )
@@ -211,6 +212,61 @@ def test_catalogue_pin_planner_coordinates_are_component_relative(tmp_path) -> N
         assert moved_row["pin"]["y"] == original_row["pin"]["y"] + dy
         assert moved_row["short_wire"]["end"]["x"] == original_row["short_wire"]["end"]["x"] + dx
         assert moved_row["short_wire"]["end"]["y"] == original_row["short_wire"]["end"]["y"] + dy
+
+
+def test_catalogue_pin_emitter_attaches_4017_existing_wire_skeleton(tmp_path) -> None:
+    source = tmp_path / "catalogue_4017_bare.pdsprj"
+    output = tmp_path / "catalogue_4017_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {"4017": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        source,
+        full_cdb=True,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["4017"],
+    )
+
+    assert report["valid"]
+    assert report["terminal_count_added"] == 14
+    assert report["wire_count_added"] == 0
+    assert report["wire_count_rewritten"] == 14
+    assert report["wire_count_before"] == report["wire_count_after"] == 14
+    assert report["terminal_suffix_links_valid"]
+    assert report["link_allocation"]["valid"]
+    assert all(row["wire_is_nonzero"] for row in report["wire_path_contact_checks"])
+
+
+def test_catalogue_pin_emitter_strips_old_partial_terminals_before_74hc74(tmp_path) -> None:
+    source = tmp_path / "catalogue_74hc74_bare.pdsprj"
+    output = tmp_path / "catalogue_74hc74_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {"74HC74": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        source,
+        full_cdb=True,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["74HC74"],
+    )
+
+    assert report["valid"]
+    assert report["stripped_existing_terminal_count"] == 6
+    assert report["terminal_count_added"] == 12
+    assert report["bidir_count_after"] == 12
+    assert report["wire_count_before"] == report["wire_count_after"] == 12
 
 
 def test_validation_pin_vocabulary_comes_from_catalogue() -> None:

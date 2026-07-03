@@ -251,14 +251,26 @@ Future multi-pin work must proceed only through
 `src/proteusgen/component_terminal_placer.py` and
 `knowledge/component_catalog_v0.json`.
 
-The first corrected multi-pin foundation is catalogue-backed pin geometry for
-4017. `component_terminal_placer.analyse_terminalized_donor_pin_geometry()`
-extracts pin coordinates from terminalized donor WIRE endpoints, strips the
-terminal/WIRE records, and stores offsets relative to the component packet's
-parsed bounding-box minimum. `plan_catalogue_pin_bidir_terminals()` then
-reconstructs absolute pin positions from the placed component's current
-bounding box, snaps terminal contacts to the Proteus grid, uses 180 degrees for
-left-side pins and 0 degrees for right-side pins, and plans the same short WIRE
-to the exact pin used by the accepted two-pin route. This is still
-planner-only until component pin-link byte offsets are mapped for active
-multi-pin binary emission.
+The first corrected multi-pin foundation now has catalogue-backed solo binary
+emission for terminalized donor families that already preserve a usable
+WIRE/link skeleton in the placed packet. `component_terminal_placer.
+analyse_terminalized_donor_pin_geometry()` extracts pin coordinates from
+terminalized donor WIRE endpoints and stores component-relative catalogue
+geometry. `attach_catalogue_pin_bidir_terminals_to_project()` then strips any
+old donor `$TERBIDIR` records, keeps the component packet and WIRE/link
+skeleton, rewrites the donor WIRE records as grid-contact-to-exact-pin short
+wires, inserts active bidirectional terminals, and rebases terminal/component
+pin links from final ROOT.DSN addresses. This is not the rejected side-label
+route.
+
+The current safe checkpoint is
+`experiments/multi_pin_catalogue_terminal_solo_v2_temp_2026_07_03`: 26
+single-component solo circuits were generated through the unified shared
+terminal placer and statically validate pending Proteus open/render testing.
+The requested 3x/13x/23x pattern was deliberately reduced to 1x per family
+because duplicated native packets do not yet preserve a verified per-copy
+pin-link table. Mixed multi-pin circuits are also blocked at this checkpoint
+because the current mixed component placer path selects a mega donor whose bare
+component packets lack the donor WIRE/link skeleton required by the safe
+catalogue emitter. Solving those two cases requires component-placer contract
+work or new donor/link evidence, not a new terminal-placement script.

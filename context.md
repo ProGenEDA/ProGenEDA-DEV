@@ -7866,6 +7866,67 @@ Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
 
 ---
 
+## Restart Context Log - 2026-07-03T23:55:22.0151703+05:00
+
+### User Message 1
+
+Timestamp: `2026-07-03T23:55:22.0151703+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+lets continue and by one by one i didnt mean one per turn, i ment all in single turn but each getting sperate focus. and i hope u have implemented the whole of all i told u, so build catelogue for each of the available componet, n list those u need donor for. and start making circuits for these of which u have info.
+make them proper, solo frsit then mixed of same pattern.
+do thorough resreach dont skem out
+~~~~
+
+### User Message 2
+
+Timestamp: `2026-07-03T23:55:22.0151703+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+continue
+~~~~
+
+### Visible Agent Responses During This Turn
+
+Timestamp: `2026-07-03T23:55:22.0151703+05:00` (Pakistan; recorded during turn)
+
+~~~~text
+Continuing from the current checkpoint. I’m going to finish this as Proteus-only: clean the temporary probe files, record the catalogue status/evidence, run focused tests, update `context.md`, then commit/push/verify.
+Temporary probe manifests are cleaned. The remaining untracked files are only the intended backup and generated Proteus pack. Next I’m recording the exact current limitation: geometry-ready solo packs are generated; mixed/multi-count are blocked until the placer emits/preserves per-copy pin-link skeletons.
+The pack exists with 26 case directories, but there is no top-level README yet. I’ll add one now instead of leaving the limitation only implicit in manifests.
+I found the architecture doc still said multi-pin was planner-only. That is outdated now: the shared placer can emit catalogue/existing-wire solo cases, but only where the placed packet already carries donor WIRE/link skeletons. I’m updating that distinction explicitly so future work doesn’t repeat the rejected label-only route.
+Catalogue/evidence docs are updated. I’m running compile and focused tests now, including catalogue emission and D20/display guard tests.
+Tests passed: compileall, 35 catalogue/validation/pinmap tests, and both D20/display guard tests. Next is updating `context.md`, then I’ll commit and push.
+~~~~
+
+### Files Edited By Agent In Response To These Messages
+
+- `backups/component_terminal_placer/component_terminal_placer_2026_07_03_184255_before_full_catalogue_generation.py` - required backup before editing the shared terminal placer.
+- `src/proteusgen/component_terminal_placer.py` - added shared catalogue/existing-wire terminal emission for multi-pin donor families; strips old `$TERBIDIR`, rewrites donor WIRE records to grid-contact short wires, inserts active terminals, and rebases final ROOT.DSN links.
+- `knowledge/component_catalog_v0.json` - bulk-promoted donor-derived component-relative pin geometry for geometry-ready multi-pin families and recorded pin-role/caveat fixes for known parts.
+- `tests/test_component_catalog.py` - added tests for 4017 catalogue existing-wire emission and stripping old partial terminals before 74HC74 emission.
+- `experiments/multi_pin_catalogue_terminal_solo_v2_temp_2026_07_03/` - generated 26 static-valid solo Proteus cases for geometry-ready families.
+- `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V2_TEMP_2026_07_03.zip` - zipped copy of the generated solo test pack.
+- `docs/architecture.md` - updated current maturity section to say multi-pin catalogue solo binary emission exists for donor WIRE/link-skeleton families, while multi-count and mixed are still blocked.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - added the generated-family list, donor-needed list, current 1x limit, mixed blocker, and implementation rule.
+- `knowledge/test_results.jsonl` - recorded the multi-pin catalogue solo V2 static-pass/pending-Proteus checkpoint.
+- `context.md` - appended this log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check was performed before the current work: branch `codex/generic-proteus-generator-v0`, local/upstream/GitHub matched `349e92c18044b4ca4d5e73cc891f22f0748c0d33`.
+- Temporary generated probe manifests removed: `78`.
+- Generated solo pack contains 26 case directories, each with `.pdsprj`, `payload.json`, `terminal_report.json`, and `manifest.json`.
+- Generated families: `NPN`, `PNP`, `NE555`, `LM741`, `4017`, `4020`, `4027`, `7490`, `74HC4024`, `74HC4040`, `74HC4060`, `74HC160`, `74HC161`, `74HC163`, `74HC192`, `74HC193`, `74HC174`, `74HC273`, `74HC74`, `74HC76`, `74HC157`, `74HC165`, `74HC283`, `74HC595`, `74HC85`, `7447`.
+- Requested `3x/13x/23x` was reduced to `1x` because duplicated native packets do not yet preserve verified per-copy pin-link tables.
+- Mixed one-each was not generated because the current mixed component-placer path selects a mega donor whose bare packets lack the WIRE/link skeleton required by this safe emitter.
+- `python -m compileall -q src tests tools\proteus_generation` -> passed.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `35 passed`.
+- `PYTHONPATH=src; python -m pytest tests\test_component_placer.py::test_terminal_dispatcher_ignores_d20_display_bridge_when_display_only tests\test_component_placer.py::test_terminal_dispatcher_preserves_d20_when_real_diode_is_terminalized -q` -> `2 passed`.
+- Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
+---
+
 ## Restart Context Log - 2026-07-03T18:25:00.7696819+05:00
 
 ### User Message 1
