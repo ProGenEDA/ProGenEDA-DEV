@@ -1,7 +1,14 @@
 from __future__ import annotations
 
-from proteusgen.component_placer import load_component_aliases
+from proteusgen.component_placer import generate_component_placement_project, load_component_aliases
 from proteusgen.component_catalog import load_component_catalog
+from proteusgen.component_beautifier import translate_packet_by_delta
+from proteusgen.component_terminal_placer import (
+    PROTEUS_TERMINAL_GRID,
+    analyse_terminalized_donor_pin_geometry,
+    plan_catalogue_pin_bidir_terminals,
+)
+from proteusgen.ic_native import NativeRegistry
 from proteusgen.node_name_mapping import build_node_name_mapping, terminal_label_for_node
 from proteusgen.pin_terminal_planner import (
     build_pin_terminal_plan,
@@ -94,6 +101,116 @@ def test_catalog_includes_donor_label_backed_ic_pin_aliases() -> None:
     assert catalog.profile("74HC151").normalize_pin("D7").name == "12"
     assert catalog.profile("4511").normalize_pin("SEG_A").name == "13"
     assert catalog.profile("7447").normalize_pin("BI/RBO").name == "5"
+
+
+def test_catalog_records_4017_donor_pin_geometry() -> None:
+    profile = load_component_catalog().profile("4017")
+
+    clk = profile.proteus_pin_geometry("CLK")
+    q0 = profile.proteus_pin_geometry("Q0")
+
+    assert clk is not None
+    assert clk["side"] == "left"
+    assert clk["angle_tenths"] == 1800
+    assert clk["x_offset_from_component_bbox_min"] == -508000
+    assert q0 is not None
+    assert q0["side"] == "right"
+    assert q0["angle_tenths"] == 0
+
+
+def test_terminalized_donor_geometry_extracts_4017_pin_coordinates() -> None:
+    donor = NativeRegistry.load().components["4017"].donors["single"]
+
+    report = analyse_terminalized_donor_pin_geometry(donor, family="4017")
+
+    assert report["valid"]
+    assert report["terminal_count"] == 14
+    assert report["wire_count"] == 14
+    assert report["pins"]["14"]["signal"] == "CLK"
+    assert report["pins"]["14"]["side"] == "left"
+    assert report["pins"]["14"]["angle_tenths"] == 1800
+    assert report["pins"]["3"]["signal"] == "Q0"
+    assert report["pins"]["3"]["side"] == "right"
+
+
+def test_catalogue_pin_planner_uses_grid_short_wire_for_4017(tmp_path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"4017": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "catalogue_4017_pin_plan.pdsprj",
+        full_cdb=True,
+    )
+
+    plan = plan_catalogue_pin_bidir_terminals(result.selected_groups)
+
+    assert plan["valid"]
+    assert plan["terminal_count"] == 14
+    by_pin = {
+        row["pin"]["name"]: row
+        for row in plan["terminal_plans"]
+    }
+    assert by_pin["14"]["terminal"]["angle_tenths"] == 1800
+    assert by_pin["3"]["terminal"]["angle_tenths"] == 0
+    for row in plan["terminal_plans"]:
+        start = row["short_wire"]["start"]
+        end = row["short_wire"]["end"]
+        assert start["x"] % PROTEUS_TERMINAL_GRID == 0
+        assert start["y"] % PROTEUS_TERMINAL_GRID == 0
+        assert end["x"] == row["pin"]["x"]
+        assert end["y"] == row["pin"]["y"]
+
+
+def test_catalogue_pin_planner_coordinates_are_component_relative(tmp_path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"4017": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "catalogue_4017_relative_pin_plan.pdsprj",
+        full_cdb=True,
+    )
+    group = next(group for group in result.selected_groups if group.family == "4017")
+    dx = 1_270_000
+    dy = -508_000
+    moved_data, move_report = translate_packet_by_delta(
+        group.data,
+        key=group.key,
+        family=group.family,
+        dx=dx,
+        dy=dy,
+    )
+    moved_group = type(group)(
+        key=group.key,
+        family=group.family,
+        start=group.start,
+        end=group.end,
+        refs=group.refs,
+        data=moved_data,
+        source_is_final=group.source_is_final,
+    )
+
+    original = plan_catalogue_pin_bidir_terminals([group])
+    moved = plan_catalogue_pin_bidir_terminals([moved_group])
+
+    assert move_report["translated"]
+    assert original["valid"]
+    assert moved["valid"]
+    original_by_pin = {
+        row["pin"]["name"]: row
+        for row in original["terminal_plans"]
+    }
+    moved_by_pin = {
+        row["pin"]["name"]: row
+        for row in moved["terminal_plans"]
+    }
+    for pin, original_row in original_by_pin.items():
+        moved_row = moved_by_pin[pin]
+        assert moved_row["pin"]["x"] == original_row["pin"]["x"] + dx
+        assert moved_row["pin"]["y"] == original_row["pin"]["y"] + dy
+        assert moved_row["short_wire"]["end"]["x"] == original_row["short_wire"]["end"]["x"] + dx
+        assert moved_row["short_wire"]["end"]["y"] == original_row["short_wire"]["end"]["y"] + dy
 
 
 def test_validation_pin_vocabulary_comes_from_catalogue() -> None:

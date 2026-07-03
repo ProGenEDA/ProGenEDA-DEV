@@ -70,8 +70,32 @@ after every user result so another contributor can resume without chat context.
 Treat commit `a6deb648` as the last trusted terminal-placement checkpoint:
 `RESISTOR/v3` passed Proteus testing. Later terminal-family work is untrusted
 until separately revalidated. Keep all researched terminal behavior in
-`src/proteusgen/component_terminal_placer.py`; dated scripts may only generate
-focused packs through that shared module.
+`src/proteusgen/component_terminal_placer.py`. Do not create new terminal
+placement scripts, component-specific terminal scripts, family-specific
+terminal generators, or alternate terminal workflows. Dated scripts may only
+call the shared terminal placer to regenerate evidence packs; they must not
+contain terminal-placement logic, geometry decisions, wire/link synthesis, pin
+mapping, component-specific exceptions, or catalogue facts. If a new terminal
+behavior is needed, add it to the shared terminal placer and the component
+catalogue/profile source of truth first, then let any experiment runner invoke
+that shared behavior.
+
+Before editing `src/proteusgen/component_terminal_placer.py`, copy the current
+file to `backups/component_terminal_placer/` with a timestamped or dated name.
+After a change is proven by tests and/or user Proteus feedback, keep the old
+backup and add a new backup for the next edit; never overwrite history. Git
+history is not a substitute for this user-requested working-script backup.
+
+Never use the rejected side-terminal/label-only diagnostic path as a proposed
+solution for ICs, displays, transistors, or other multi-pin parts. Multi-pin
+terminal placement must use the same accepted mechanics as the two-pin route:
+grid-snapped terminal contact, 180 degrees for left-side pins, 0 degrees for
+right-side pins, a short Proteus WIRE from terminal contact to the exact pin,
+and final ROOT.DSN address rebasing for active terminal/component-pin links.
+The only acceptable expansion path is catalogue-driven: identify the component,
+read normalized pin geometry/side/name/role/byte evidence from the catalogue,
+and emit through the unified shared placer. If catalogue evidence is missing,
+research/update the catalogue from donor evidence before generating packs.
 
 The user rejected `MIXED/short-wire-v6-temp`: Bad Object Record remained and
 no wires rendered. Never emit standalone wire geometry after an inactive

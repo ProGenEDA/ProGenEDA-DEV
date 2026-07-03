@@ -176,6 +176,9 @@ attachment proof. The complete donor request is
 1. Component placement, placement validation, and beautification run before
    the terminal stage.
 2. Terminal behavior is added to the single unified terminal module.
+   Experiment scripts may regenerate packs through that module, but must not
+   contain terminal-placement logic, pin geometry, WIRE/link emission, or
+   component-specific terminal exceptions.
 3. A family handler must be learned from accepted donors and byte comparisons.
 4. Unsupported attachment fails loudly; bounding-box guesses are rejected.
 5. Every stage eventually needs a direct stage-output validator and a
@@ -209,3 +212,7 @@ attachment proof. The complete donor request is
     binary terminal emission remains disabled for those endpoints until the
     catalogue has backend pin-coordinate evidence and donor-derived attachment
     records for the family.
+15. Multi-pin pin coordinates are component-relative catalogue data, not
+    absolute sheet coordinates. Store donor-derived pin offsets with a declared
+    coordinate frame, recalculate absolute pins from the placed component, snap
+    terminal contacts to the Proteus grid, and connect with short WIRE records.

@@ -7,7 +7,7 @@ hidden-supply policy in each pipeline stage.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 import json
 import re
@@ -61,6 +61,9 @@ class ComponentProfile:
     pins: tuple[PinProfile, ...]
     package: str | None = None
     inherited_pin_model: str | None = None
+    limits: Mapping[str, Any] = field(default_factory=dict)
+    caveats: tuple[str, ...] = ()
+    proteus: Mapping[str, Any] = field(default_factory=dict)
 
     @property
     def pin_by_name(self) -> dict[str, PinProfile]:
@@ -101,6 +104,19 @@ class ComponentProfile:
             if (include_hidden or not pin.hidden) and pin.role.upper() in wanted
         )
 
+    def proteus_pin_geometry(self, pin: str | int) -> Mapping[str, Any] | None:
+        """Return Proteus backend pin geometry for a normalized pin, if known."""
+
+        geometry = self.proteus.get("pin_geometry", {})
+        if not isinstance(geometry, Mapping):
+            return None
+        pins = geometry.get("pins", {})
+        if not isinstance(pins, Mapping):
+            return None
+        normalized = self.normalize_pin(pin)
+        raw = pins.get(normalized.name)
+        return raw if isinstance(raw, Mapping) else None
+
     def as_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
             "part": self.part,
@@ -114,6 +130,12 @@ class ComponentProfile:
             out["package"] = self.package
         if self.inherited_pin_model is not None:
             out["inherited_pin_model"] = self.inherited_pin_model
+        if self.limits:
+            out["limits"] = dict(self.limits)
+        if self.caveats:
+            out["caveats"] = list(self.caveats)
+        if self.proteus:
+            out["proteus"] = dict(self.proteus)
         return out
 
 
@@ -269,6 +291,9 @@ def _profile_from_raw(
             if raw_profile.get("inherits_pin_model") is not None
             else None
         ),
+        limits=dict(raw_profile.get("limits", {})),
+        caveats=tuple(str(item) for item in raw_profile.get("caveats", [])),
+        proteus=dict(raw_profile.get("proteus", {})),
     )
 
 

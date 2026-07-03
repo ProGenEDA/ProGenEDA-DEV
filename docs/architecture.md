@@ -240,3 +240,25 @@ multi-pin solo checks can be inspected without guessing which pin a terminal
 targets. Seven-segment D20 bridge packets and display sentinels are Proteus
 infrastructure and must stay byte-preserved rather than being treated as normal
 diodes.
+
+The rejected `multi_pin_terminal_solo_v1_temp_2026_07_03` pack must not be
+used as future evidence. Its donor-native attached cases did not open in
+Proteus, and its label-only cases opened with unusable terminal placement. The
+root cause was architectural: a new experiment script carried terminal behavior
+instead of extending the unified terminal placer, and it used side/bounding-box
+label placement rather than the accepted grid-contact plus short-WIRE method.
+Future multi-pin work must proceed only through
+`src/proteusgen/component_terminal_placer.py` and
+`knowledge/component_catalog_v0.json`.
+
+The first corrected multi-pin foundation is catalogue-backed pin geometry for
+4017. `component_terminal_placer.analyse_terminalized_donor_pin_geometry()`
+extracts pin coordinates from terminalized donor WIRE endpoints, strips the
+terminal/WIRE records, and stores offsets relative to the component packet's
+parsed bounding-box minimum. `plan_catalogue_pin_bidir_terminals()` then
+reconstructs absolute pin positions from the placed component's current
+bounding box, snaps terminal contacts to the Proteus grid, uses 180 degrees for
+left-side pins and 0 degrees for right-side pins, and plans the same short WIRE
+to the exact pin used by the accepted two-pin route. This is still
+planner-only until component pin-link byte offsets are mapped for active
+multi-pin binary emission.

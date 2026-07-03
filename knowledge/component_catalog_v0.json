@@ -22,7 +22,15 @@
           {"name": "1", "role": "passive", "electrical_type": "passive"},
           {"name": "2", "role": "passive", "electrical_type": "passive"}
         ]
-      }
+      },
+      "limits": {
+        "component_placer_max_count": 91,
+        "limit_source": "user_reported_current_removal-donor capacity; revalidate when placer backend changes"
+      },
+      "caveats": [
+        "Accepted two-pin V12 terminal route requires grid-snapped terminal contact plus short WIRE to exact pin.",
+        "Do not infer this count limit for future byte-forming placers."
+      ]
     },
     "CAP": {
       "aliases": ["CAPACITOR", "C"],
@@ -217,7 +225,65 @@
     "74HC192": {"aliases": ["HC192"], "category": "digital_ic", "proteus_marker": "74HC192", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16, "hidden_pins": ["8", "16"], "pin_aliases": {"D1": "1", "Q1": "2", "Q0": "3", "DN": "4", "DOWN": "4", "Q2": "6", "Q3": "7", "D3": "9", "UP": "9", "D2": "10", "PL": "11", "TCU": "12", "TCD": "13", "MR": "14", "D0": "15"}, "overrides": {"1": {"role": "D1", "electrical_type": "digital_input"}, "2": {"role": "Q1", "electrical_type": "digital_output"}, "3": {"role": "Q0", "electrical_type": "digital_output"}, "4": {"role": "DN", "electrical_type": "clock"}, "6": {"role": "Q2", "electrical_type": "digital_output"}, "7": {"role": "Q3", "electrical_type": "digital_output"}, "9": {"role": "D3_OR_UP_DONOR_AMBIGUOUS", "electrical_type": "digital_input"}, "10": {"role": "D2", "electrical_type": "digital_input"}, "11": {"role": "PL", "electrical_type": "digital_input"}, "12": {"role": "TCU", "electrical_type": "digital_output"}, "13": {"role": "TCD", "electrical_type": "digital_output"}, "14": {"role": "MR", "electrical_type": "digital_input"}, "15": {"role": "D0", "electrical_type": "digital_input"}, "8": {"role": "GND", "electrical_type": "power"}, "16": {"role": "VCC", "electrical_type": "power"}}}},
     "74HC193": {"aliases": ["HC193"], "category": "digital_ic", "proteus_marker": "74HC193", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16, "hidden_pins": ["8", "16"], "pin_aliases": {"D1": "1", "Q1": "2", "Q0": "3", "DN": "4", "DOWN": "4", "UP": "5", "Q2": "6", "Q3": "7", "D3": "9", "D2": "10", "PL": "11", "TCU": "12", "TCD": "13", "MR": "14", "D0": "15"}, "overrides": {"1": {"role": "D1", "electrical_type": "digital_input"}, "2": {"role": "Q1", "electrical_type": "digital_output"}, "3": {"role": "Q0", "electrical_type": "digital_output"}, "4": {"role": "DN", "electrical_type": "clock"}, "5": {"role": "UP", "electrical_type": "clock"}, "6": {"role": "Q2", "electrical_type": "digital_output"}, "7": {"role": "Q3", "electrical_type": "digital_output"}, "9": {"role": "D3", "electrical_type": "digital_input"}, "10": {"role": "D2", "electrical_type": "digital_input"}, "11": {"role": "PL", "electrical_type": "digital_input"}, "12": {"role": "TCU", "electrical_type": "digital_output"}, "13": {"role": "TCD", "electrical_type": "digital_output"}, "14": {"role": "MR", "electrical_type": "digital_input"}, "15": {"role": "D0", "electrical_type": "digital_input"}, "8": {"role": "GND", "electrical_type": "power"}, "16": {"role": "VCC", "electrical_type": "power"}}}},
     "74HC283": {"aliases": ["HC283", "4008", "CD4008"], "category": "digital_ic", "proteus_marker": "74HC283", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16, "hidden_pins": ["8", "16"], "pin_aliases": {"S1": "1", "B1": "2", "A1": "3", "S0": "4", "A0": "5", "B0": "6", "C0": "7", "C4": "9", "S3": "10", "B3": "11", "A3": "12", "S2": "13", "A2": "14", "B2": "15"}, "overrides": {"1": {"role": "S1", "electrical_type": "digital_output"}, "2": {"role": "B1", "electrical_type": "digital_input"}, "3": {"role": "A1", "electrical_type": "digital_input"}, "4": {"role": "S0", "electrical_type": "digital_output"}, "5": {"role": "A0", "electrical_type": "digital_input"}, "6": {"role": "B0", "electrical_type": "digital_input"}, "7": {"role": "C0", "electrical_type": "digital_input"}, "9": {"role": "C4", "electrical_type": "digital_output"}, "10": {"role": "S3", "electrical_type": "digital_output"}, "11": {"role": "B3", "electrical_type": "digital_input"}, "12": {"role": "A3", "electrical_type": "digital_input"}, "13": {"role": "S2", "electrical_type": "digital_output"}, "14": {"role": "A2", "electrical_type": "digital_input"}, "15": {"role": "B2", "electrical_type": "digital_input"}, "8": {"role": "GND", "electrical_type": "power"}, "16": {"role": "VCC", "electrical_type": "power"}}}},
-    "4017": {"aliases": ["CD4017"], "category": "digital_ic", "proteus_marker": "4017", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16, "hidden_pins": ["8", "16"], "pin_aliases": {"Q5": "1", "Q1": "2", "Q0": "3", "Q2": "4", "Q6": "5", "Q7": "6", "Q3": "7", "Q8": "9", "Q4": "10", "Q9": "11", "CO": "12", "E": "13", "CLK": "14", "MR": "15"}, "overrides": {"1": {"role": "Q5", "electrical_type": "digital_output"}, "2": {"role": "Q1", "electrical_type": "digital_output"}, "3": {"role": "Q0", "electrical_type": "digital_output"}, "4": {"role": "Q2", "electrical_type": "digital_output"}, "5": {"role": "Q6", "electrical_type": "digital_output"}, "6": {"role": "Q7", "electrical_type": "digital_output"}, "7": {"role": "Q3", "electrical_type": "digital_output"}, "9": {"role": "Q8", "electrical_type": "digital_output"}, "10": {"role": "Q4", "electrical_type": "digital_output"}, "11": {"role": "Q9", "electrical_type": "digital_output"}, "12": {"role": "CO", "electrical_type": "digital_output"}, "13": {"role": "E", "electrical_type": "digital_input"}, "14": {"role": "CLK", "electrical_type": "clock"}, "15": {"role": "MR", "electrical_type": "digital_input"}, "8": {"role": "GND", "electrical_type": "power"}, "16": {"role": "VCC", "electrical_type": "power"}}}},
+    "4017": {
+      "aliases": ["CD4017"],
+      "category": "digital_ic",
+      "proteus_marker": "4017",
+      "package": "DIL16",
+      "terminal_support": "pin_catalogue_ready_terminalization_pending",
+      "pin_model": {
+        "pin_count": 16,
+        "hidden_pins": ["8", "16"],
+        "pin_aliases": {"Q5": "1", "Q1": "2", "Q0": "3", "Q2": "4", "Q6": "5", "Q7": "6", "Q3": "7", "Q8": "9", "Q4": "10", "Q9": "11", "CO": "12", "E": "13", "CLK": "14", "MR": "15"},
+        "overrides": {
+          "1": {"role": "Q5", "electrical_type": "digital_output"},
+          "2": {"role": "Q1", "electrical_type": "digital_output"},
+          "3": {"role": "Q0", "electrical_type": "digital_output"},
+          "4": {"role": "Q2", "electrical_type": "digital_output"},
+          "5": {"role": "Q6", "electrical_type": "digital_output"},
+          "6": {"role": "Q7", "electrical_type": "digital_output"},
+          "7": {"role": "Q3", "electrical_type": "digital_output"},
+          "9": {"role": "Q8", "electrical_type": "digital_output"},
+          "10": {"role": "Q4", "electrical_type": "digital_output"},
+          "11": {"role": "Q9", "electrical_type": "digital_output"},
+          "12": {"role": "CO", "electrical_type": "digital_output"},
+          "13": {"role": "E", "electrical_type": "digital_input"},
+          "14": {"role": "CLK", "electrical_type": "clock"},
+          "15": {"role": "MR", "electrical_type": "digital_input"},
+          "8": {"role": "GND", "electrical_type": "power"},
+          "16": {"role": "VCC", "electrical_type": "power"}
+        }
+      },
+      "proteus": {
+        "pin_geometry": {
+          "status": "donor_extracted_pending_terminal_emission_tests",
+          "source_project": "proteus_ic/donors/manual_downloads_20260611/squence/4017.pdsprj",
+          "coordinate_frame": "component_bbox_min_from_terminal_stripped_donor_packet",
+          "component_bbox": {"min_x": -10160000, "min_y": 203200, "max_x": 381000, "max_y": 8128000},
+          "terminal_policy": "grid_snapped_terminal_contact_plus_short_wire_to_exact_pin",
+          "pins": {
+            "1": {"role": "Q5", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 6400800, "evidence": "terminalized_donor_wire_endpoint"},
+            "2": {"role": "Q1", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 7416800, "evidence": "terminalized_donor_wire_endpoint"},
+            "3": {"role": "Q0", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 7670800, "evidence": "terminalized_donor_wire_endpoint"},
+            "4": {"role": "Q2", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 7162800, "evidence": "terminalized_donor_wire_endpoint"},
+            "5": {"role": "Q6", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 6146800, "evidence": "terminalized_donor_wire_endpoint"},
+            "6": {"role": "Q7", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 5892800, "evidence": "terminalized_donor_wire_endpoint"},
+            "7": {"role": "Q3", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 6908800, "evidence": "terminalized_donor_wire_endpoint"},
+            "9": {"role": "Q8", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 5638800, "evidence": "terminalized_donor_wire_endpoint"},
+            "10": {"role": "Q4", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 6654800, "evidence": "terminalized_donor_wire_endpoint"},
+            "11": {"role": "Q9", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 5384800, "evidence": "terminalized_donor_wire_endpoint"},
+            "12": {"role": "CO", "side": "right", "angle_tenths": 0, "x_offset_from_component_bbox_min": 2032000, "y_offset_from_component_bbox_min": 4876800, "evidence": "terminalized_donor_wire_endpoint"},
+            "13": {"role": "E", "side": "left", "angle_tenths": 1800, "x_offset_from_component_bbox_min": -508000, "y_offset_from_component_bbox_min": 7416800, "evidence": "terminalized_donor_wire_endpoint"},
+            "14": {"role": "CLK", "side": "left", "angle_tenths": 1800, "x_offset_from_component_bbox_min": -508000, "y_offset_from_component_bbox_min": 7670800, "evidence": "terminalized_donor_wire_endpoint"},
+            "15": {"role": "MR", "side": "left", "angle_tenths": 1800, "x_offset_from_component_bbox_min": -508000, "y_offset_from_component_bbox_min": 4876800, "evidence": "terminalized_donor_wire_endpoint"}
+          }
+        }
+      },
+      "caveats": [
+        "Pin geometry was extracted from terminalized donor WIRE endpoints and is pending Proteus acceptance in the unified terminal placer.",
+        "Hidden supply pins 8/GND and 16/VCC are catalogue pins but are not visible terminal endpoints in the donor."
+      ]
+    },
     "4020": {"aliases": ["CD4020"], "category": "digital_ic", "proteus_marker": "4020", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16, "hidden_pins": ["8", "16"], "pin_aliases": {"Q11": "1", "Q12": "2", "Q13": "3", "Q5": "4", "Q4": "5", "Q6": "6", "Q3": "7", "Q0": "9", "CLK": "10", "MR": "11", "Q8": "12", "Q7": "13", "Q9": "14", "Q10": "15"}, "overrides": {"1": {"role": "Q11", "electrical_type": "digital_output"}, "2": {"role": "Q12", "electrical_type": "digital_output"}, "3": {"role": "Q13", "electrical_type": "digital_output"}, "4": {"role": "Q5", "electrical_type": "digital_output"}, "5": {"role": "Q4", "electrical_type": "digital_output"}, "6": {"role": "Q6", "electrical_type": "digital_output"}, "7": {"role": "Q3", "electrical_type": "digital_output"}, "9": {"role": "Q0", "electrical_type": "digital_output"}, "10": {"role": "CLK", "electrical_type": "clock"}, "11": {"role": "MR", "electrical_type": "digital_input"}, "12": {"role": "Q8", "electrical_type": "digital_output"}, "13": {"role": "Q7", "electrical_type": "digital_output"}, "14": {"role": "Q9", "electrical_type": "digital_output"}, "15": {"role": "Q10", "electrical_type": "digital_output"}, "8": {"role": "GND", "electrical_type": "power"}, "16": {"role": "VCC", "electrical_type": "power"}}}},
     "4027": {"aliases": ["CD4027", "74HC4027"], "category": "digital_ic", "proteus_marker": "4027", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16, "hidden_pins": ["8", "16"], "pin_aliases": {"Q": "1", "NQ": "2", "CLK": "3", "R": "4", "K": "5", "J": "6", "S": "7"}, "overrides": {"1": {"role": "Q", "electrical_type": "digital_output", "subpart": "A"}, "2": {"role": "NQ", "electrical_type": "digital_output", "subpart": "A"}, "3": {"role": "CLK", "electrical_type": "clock", "subpart": "A"}, "4": {"role": "R", "electrical_type": "digital_input", "subpart": "A"}, "5": {"role": "K", "electrical_type": "digital_input", "subpart": "A"}, "6": {"role": "J", "electrical_type": "digital_input", "subpart": "A"}, "7": {"role": "S", "electrical_type": "digital_input", "subpart": "A"}, "8": {"role": "GND", "electrical_type": "power"}, "16": {"role": "VDD", "electrical_type": "power"}}}},
     "4511": {"aliases": ["CD4511"], "category": "digital_ic", "proteus_marker": "4511", "package": "DIL16", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 16, "hidden_pins": ["8", "16"], "pin_aliases": {"B": "1", "C": "2", "LT": "3", "BI": "4", "LE": "5", "D": "6", "A": "7", "SEGE": "9", "SEGD": "10", "SEGC": "11", "SEGB": "12", "SEGA": "13", "SEGG": "14", "SEGF": "15"}, "overrides": {"1": {"role": "B", "electrical_type": "digital_input"}, "2": {"role": "C", "electrical_type": "digital_input"}, "3": {"role": "LT", "electrical_type": "digital_input"}, "4": {"role": "BI", "electrical_type": "digital_input"}, "5": {"role": "LE", "electrical_type": "digital_input"}, "6": {"role": "D", "electrical_type": "digital_input"}, "7": {"role": "A", "electrical_type": "digital_input"}, "9": {"role": "SEG_E", "electrical_type": "digital_output"}, "10": {"role": "SEG_D", "electrical_type": "digital_output"}, "11": {"role": "SEG_C", "electrical_type": "digital_output"}, "12": {"role": "SEG_B", "electrical_type": "digital_output"}, "13": {"role": "SEG_A", "electrical_type": "digital_output"}, "14": {"role": "SEG_G", "electrical_type": "digital_output"}, "15": {"role": "SEG_F", "electrical_type": "digital_output"}, "8": {"role": "GND", "electrical_type": "power"}, "16": {"role": "VDD", "electrical_type": "power"}}}},
@@ -246,7 +312,7 @@
     "POT-HG": {"aliases": ["POTHG", "POT", "POTENTIOMETER"], "category": "control", "proteus_marker": "POT-HG", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pins": [{"name": "1", "aliases": ["A", "END1"], "role": "end_1", "electrical_type": "passive"}, {"name": "2", "aliases": ["W", "WIPER"], "role": "wiper", "electrical_type": "passive"}, {"name": "3", "aliases": ["B", "END2"], "role": "end_2", "electrical_type": "passive"}]}},
     "SWITCH": {"aliases": [], "category": "control", "proteus_marker": "SWITCH", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 2}},
     "TRAN-2P2S": {"aliases": ["TRANSFORMER", "TRAN2P2S"], "category": "transformer", "proteus_marker": "TRAN-2P2S", "terminal_support": "pin_catalogue_ready_terminalization_pending", "pin_model": {"pin_count": 4}},
-    "7SEG-COM-AN-BLUE": {"aliases": ["7SEGCOMA", "7SEG-COM-ANODE"], "category": "display", "proteus_marker": "7SEG-COM-AN-BLUE", "terminal_support": "display_special_case", "pin_model": {"pin_count": 10}},
-    "7SEG-COM-CAT-BLUE": {"aliases": ["7SEGCOMK", "7SEG-COM-CATHODE"], "category": "display", "proteus_marker": "7SEG-COM-CAT-BLUE", "terminal_support": "display_special_case", "pin_model": {"pin_count": 10}}
+    "7SEG-COM-AN-BLUE": {"aliases": ["7SEGCOMA", "7SEG-COM-ANODE"], "category": "display", "proteus_marker": "7SEG-COM-AN-BLUE", "terminal_support": "display_special_case", "pin_model": {"pin_count": 10}, "caveats": ["The component placer may include D20/display sentinel infrastructure for seven-segment displays; terminal placement must never terminalize D20 as a user diode.", "Pin names and geometry remain unresolved until a labelled display donor is accepted."]},
+    "7SEG-COM-CAT-BLUE": {"aliases": ["7SEGCOMK", "7SEG-COM-CATHODE"], "category": "display", "proteus_marker": "7SEG-COM-CAT-BLUE", "terminal_support": "display_special_case", "pin_model": {"pin_count": 10}, "caveats": ["The component placer may include D20/display sentinel infrastructure for seven-segment displays; terminal placement must never terminalize D20 as a user diode.", "Pin names and geometry remain unresolved until a labelled display donor is accepted."]}
   }
 }
