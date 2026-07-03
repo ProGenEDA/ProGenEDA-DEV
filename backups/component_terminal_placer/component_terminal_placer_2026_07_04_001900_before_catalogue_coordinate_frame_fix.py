@@ -689,17 +689,12 @@ def plan_catalogue_pin_bidir_terminals(
             existing_wire: dict[str, Any] | None = None
             if isinstance(wire_order_index, int) and 0 <= wire_order_index < len(wire_rows):
                 existing_wire = wire_rows[wire_order_index]
-            pin_x = int(bbox["min_x"]) + int(
-                raw_pin_geometry["x_offset_from_component_bbox_min"]
-            )
-            pin_y = int(bbox["min_y"]) + int(
-                raw_pin_geometry["y_offset_from_component_bbox_min"]
-            )
-            coordinate_source = (
-                "component_bbox_min_offset_existing_wire_identity"
-                if existing_wire is not None
-                else "component_bbox_min_offset"
-            )
+                pin_x, pin_y = _pin_coordinate_from_wire_row(existing_wire, side=side)
+                coordinate_source = "placed_packet_existing_wire_order"
+            else:
+                pin_x = int(bbox["min_x"]) + int(raw_pin_geometry["x_offset_from_component_bbox_min"])
+                pin_y = int(bbox["min_y"]) + int(raw_pin_geometry["y_offset_from_component_bbox_min"])
+                coordinate_source = "component_bbox_min_offset"
             terminal = TerminalSpec(
                 label=_catalogue_terminal_label(key, pin.name, pin.role),
                 symbol_x=pin_x,
@@ -1078,9 +1073,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         "start": dict(start),
                         "end": dict(end),
                     },
-                    "catalogue_geometry": dict(raw_geometry),
-                    "component_bbox": dict(row.get("component_bbox", {})),
-                    "existing_wire": dict(existing_wire),
                     "old_suffix": f"{old_suffix:04x}",
                     "temporary_suffix": f"{temporary_suffix:04x}",
                     "component_link_position": component_link_position,

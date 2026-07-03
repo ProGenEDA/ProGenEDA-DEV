@@ -263,14 +263,24 @@ wires, inserts active bidirectional terminals, and rebases terminal/component
 pin links from final ROOT.DSN addresses. This is not the rejected side-label
 route.
 
-The current safe checkpoint is
-`experiments/multi_pin_catalogue_terminal_solo_v2_temp_2026_07_03`: 26
+The `multi_pin_catalogue_terminal_solo_v2_temp_2026_07_03` checkpoint was
+rejected by user Proteus inspection on 2026-07-04. The failure was shared across
+the zip: terminals were far from their components because the emitter treated
+donor WIRE-row coordinates as placed pin coordinates. WIRE rows are valid for
+byte/link identity, but placement coordinates must be recalculated from the
+current component packet.
+
+The corrected checkpoint is
+`experiments/multi_pin_catalogue_terminal_solo_v3_temp_2026_07_04`: 26
 single-component solo circuits were generated through the unified shared
 terminal placer and statically validate pending Proteus open/render testing.
-The requested 3x/13x/23x pattern was deliberately reduced to 1x per family
-because duplicated native packets do not yet preserve a verified per-copy
-pin-link table. Mixed multi-pin circuits are also blocked at this checkpoint
-because the current mixed component placer path selects a mega donor whose bare
-component packets lack the donor WIRE/link skeleton required by the safe
-catalogue emitter. Solving those two cases requires component-placer contract
-work or new donor/link evidence, not a new terminal-placement script.
+V3 decodes pin coordinates as current component body bbox plus catalogue
+component-relative pin offsets, while still using donor WIRE rows for WIRE
+order and suffix/link patching. The requested 3x/13x/23x pattern remains
+deliberately reduced to 1x per family because duplicated native packets do not
+yet preserve a verified per-copy pin-link table. Mixed multi-pin circuits are
+also blocked because the current mixed component placer path selects a mega
+donor whose bare component packets lack the donor WIRE/link skeleton required
+by the safe catalogue emitter. Solving those two cases requires
+component-placer contract work or new donor/link evidence, not a new
+terminal-placement script.

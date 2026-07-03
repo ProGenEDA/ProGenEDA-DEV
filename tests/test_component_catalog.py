@@ -214,6 +214,42 @@ def test_catalogue_pin_planner_coordinates_are_component_relative(tmp_path) -> N
         assert moved_row["short_wire"]["end"]["y"] == original_row["short_wire"]["end"]["y"] + dy
 
 
+def test_catalogue_pin_planner_uses_component_bbox_not_stale_wire_coordinates(
+    tmp_path,
+) -> None:
+    catalog = load_component_catalog()
+    result = generate_component_placement_project(
+        {
+            "components": {"74HC157": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "catalogue_74hc157_relative_pin_plan.pdsprj",
+        full_cdb=True,
+    )
+
+    plan = plan_catalogue_pin_bidir_terminals(
+        result.selected_groups,
+        catalog=catalog,
+    )
+
+    assert plan["valid"]
+    for row in plan["terminal_plans"]:
+        assert (
+            row["coordinate_source"]
+            == "component_bbox_min_offset_existing_wire_identity"
+        )
+        profile = catalog.profile(row["terminal"]["component_family"])
+        geometry = profile.proteus_pin_geometry(row["pin"]["name"])
+        assert geometry is not None
+        bbox = row["component_bbox"]
+        assert row["pin"]["x"] == (
+            bbox["min_x"] + geometry["x_offset_from_component_bbox_min"]
+        )
+        assert row["pin"]["y"] == (
+            bbox["min_y"] + geometry["y_offset_from_component_bbox_min"]
+        )
+
+
 def test_catalogue_pin_emitter_attaches_4017_existing_wire_skeleton(tmp_path) -> None:
     source = tmp_path / "catalogue_4017_bare.pdsprj"
     output = tmp_path / "catalogue_4017_terminalized.pdsprj"

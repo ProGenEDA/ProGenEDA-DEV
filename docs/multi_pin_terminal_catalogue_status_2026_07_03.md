@@ -3,19 +3,35 @@
 This checkpoint is Proteus-only and uses the unified shared terminal placer:
 `src/proteusgen/component_terminal_placer.py`.
 
-## Generated solo checkpoint
+## Generated solo checkpoints
 
-Generated pack:
+V2 generated pack:
 
 - Folder: `experiments/multi_pin_catalogue_terminal_solo_v2_temp_2026_07_03/`
 - Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V2_TEMP_2026_07_03.zip`
+
+User Proteus result on 2026-07-04: rejected. The problem was shared across the
+zip, not specific to `74HC157`: terminals were placed far away from their
+components because the emitter used donor WIRE-row coordinates as placement
+coordinates. Those WIRE rows are valid only as byte/link identity anchors after
+component placement/beautification.
+
+V3 corrected pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v3_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V3_TEMP_2026_07_04.zip`
+
+V3 changes the shared planner/emitter so pin coordinates are decoded from the
+current component body bbox plus catalogue component-relative pin offsets. The
+existing WIRE rows remain in use only for WIRE order, suffix/link patching, and
+record identity.
 
 All cases below were generated through catalogue-driven pin geometry plus the
 accepted terminal mechanics: grid-snapped bidirectional terminal contact,
 180 degrees for left-side pins, 0 degrees for right-side pins, short WIRE from
 terminal contact to exact pin, and final ROOT.DSN link rebasing.
 
-Static-valid, pending Proteus user testing:
+V3 static-valid, pending Proteus user testing:
 
 - `NPN`
 - `PNP`

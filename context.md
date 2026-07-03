@@ -7866,6 +7866,77 @@ Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
 
 ---
 
+## Restart Context Log - 2026-07-04T00:24:15.1453260+05:00
+
+### User Message 1
+
+Timestamp: `2026-07-04T00:24:15.1453260+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+the issue is v clear from the image.
+terminals are nowhere near the components.
+i think this calls for a big flaw. whilst u said the cateloge stores information of pin with respect to componet, the terminal placer doesnt seem to be decording them accordingly add in it to since it is already picking component by component to place terminals, so it knows which component it is placing terminals, so let it also get its cordinates too and place terminal after calculating
+~~~~
+
+### User Message 2
+
+Timestamp: `2026-07-04T00:24:15.1453260+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+it is not just with 157 its with all of the one in the zip
+~~~~
+
+### Visible Agent Responses During This Turn
+
+Timestamp: `2026-07-04T00:24:15.1453260+05:00` (Pakistan; recorded during turn)
+
+~~~~text
+I’ll verify the pushed checkpoint first, then debug the coordinate calculation directly in the shared Proteus terminal placer. Based on the image, the failure is not link attachment; it’s terminal contact coordinates being calculated from the wrong coordinate frame for placed components.
+The first git check command hit a PowerShell parsing issue around `@{u}`; no repo state changed. Retrying with the upstream ref quoted.
+Checkpoint is clean and pushed. I’m inspecting the generated `74HC157` report first, because your screenshot is exactly that case. I need to compare the component body bbox against the planned terminal/pin coordinates.
+The report confirms the bug: `74HC157` is using `placed_packet_existing_wire_order` as the coordinate source. Those WIRE rows are not reliable as placed pin coordinates after the component is moved; they’re being treated as anchors and creating the long slanted wires you see. I’m switching emission to use the catalogue’s component-relative pin offsets against the current component body bbox, while still using the existing WIRE rows only for byte/link identity.
+I’ll make the required backup before touching the shared terminal placer, then patch the planner so WIRE rows provide only byte identity/order, not placement geometry.
+The planned fix is precise: keep `wire_order_index` and old suffixes for patching the correct byte records, but compute `pin_x/pin_y` from `component_bbox_min + catalogue offsets`. That is the component-relative decode you asked for.
+I’ll also add a regression for this exact failure mode: planner output must use component-bbox-relative catalogue coordinates, not WIRE-row coordinates, while still preserving WIRE rows for suffix/link patching.
+Patch and regression are in. I’m running the focused catalogue tests before regenerating files.
+Focused catalogue tests pass. I’m checking the corrected `74HC157` coordinates now before regenerating the Proteus pack.
+The corrected 74HC157 plan now puts terminals around the component’s current coordinate frame instead of the old donor/WIRE frame. I’m removing the temporary debug project and then regenerating a clean V3 pack.
+I’m generating a new V3 pack, not modifying the old V2 pack in place. V2 stays as evidence of the bad coordinate-frame bug; V3 is the corrected test pack.
+Yes, that matches the code defect: it was shared across the whole V2 zip, not a 74HC157-specific issue. The patch is in the shared planner/emitter, so every V3 case now uses component-relative catalogue coordinates instead of stale WIRE coordinates. I’m validating all 26 V3 reports now.
+All 26 V3 reports now show the corrected coordinate source: `component_bbox_min_offset_existing_wire_identity`. That means the fix applied to every family in the pack, not just 157. I’m running the final compile/focused tests next.
+Tests passed. I’m recording this as a shared V2 coordinate-frame rejection and V3 static-pass checkpoint, then I’ll update `context.md`, commit, push, and verify.
+I’m updating the evidence docs to say V2 was rejected for the same coordinate bug across the zip, and V3 is the corrected coordinate-frame pack.
+Docs now record that V2 is rejected and V3 is the corrected pack. I’m adding the same evidence to `knowledge/test_results.jsonl`.
+The V3 `74HC157` report shows the corrected pattern: each terminal contact is one grid step from the calculated pin, not at the old top-left donor positions. I’m updating `context.md` now, then committing/pushing.
+~~~~
+
+### Files Edited By Agent In Response To These Messages
+
+- `backups/component_terminal_placer/component_terminal_placer_2026_07_04_001900_before_catalogue_coordinate_frame_fix.py` - required backup before editing the shared terminal placer.
+- `src/proteusgen/component_terminal_placer.py` - fixed catalogue pin planning so placed pin coordinates are calculated from current component body bbox plus catalogue component-relative offsets; existing WIRE rows are now only byte/link identity anchors.
+- `tests/test_component_catalog.py` - added regression proving catalogue pin planning uses component-bbox-relative coordinates, not stale WIRE-row coordinates, for `74HC157`.
+- `experiments/multi_pin_catalogue_terminal_solo_v3_temp_2026_07_04/` - generated corrected 26-case V3 solo Proteus pack.
+- `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V3_TEMP_2026_07_04.zip` - zipped corrected V3 test pack.
+- `docs/architecture.md` - recorded V2 rejection and V3 corrected coordinate-frame checkpoint.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V2 as rejected and V3 as the current corrected pack.
+- `knowledge/test_results.jsonl` - recorded user rejection of V2 across the zip and automated static pass for V3.
+- `context.md` - appended this log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, local/upstream/GitHub matched `55045a349e5a022e5c34aba4c94ab591b930b6a6`; working tree was clean.
+- Root cause found in V2 report: coordinate source was `placed_packet_existing_wire_order`.
+- Corrected V3 coordinate source for all 26 cases: `component_bbox_min_offset_existing_wire_identity`.
+- Generated corrected V3 pack: `experiments/multi_pin_catalogue_terminal_solo_v3_temp_2026_07_04/`.
+- Generated corrected V3 archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V3_TEMP_2026_07_04.zip`.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py -q` -> `21 passed`.
+- `python -m compileall -q src tests tools\proteus_generation` -> passed.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `36 passed`.
+- Focused D20/display guard tests -> `2 passed`.
+- Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
+---
+
 ## Restart Context Log - 2026-07-03T23:55:22.0151703+05:00
 
 ### User Message 1
