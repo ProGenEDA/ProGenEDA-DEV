@@ -6344,6 +6344,8 @@ Staging is scoped correctly and the staged whitespace check is clean. I’m addi
 Committed locally as `d04b05a`. I’m recording that commit note in `context.md`, amending it into the same commit, then I’ll push and verify local/remote hashes match.
 
 Push verified: local `HEAD` matches `origin/main` at `c16bb1d`, and only the old generated v4 KiCad files remain dirty. I’m adding that final verification note to `context.md` and amending once more so the record is complete.
+
+The final context amend changed the commit hash, so I’m making one normal follow-up context correction commit rather than amending again. After that I’ll push normally and verify the new remote hash.
 ```
 
 ### Implementation Notes
@@ -6408,7 +6410,7 @@ Push verified: local `HEAD` matches `origin/main` at `c16bb1d`, and only the old
 ### Notes
 
 - Native Rust completion remains toolchain-blocked on this machine; the Python v2 fallback now implements the PDF behavior using the same JSON/API boundary.
-- Commit after push verification: `c16bb1d5ab7a875d9fe6ad02e6ba6b77175c8cf6`.
+- The final context amend changed the commit hash after the first verification; a normal follow-up context correction commit records that and the final answer reports the current local/upstream hash.
 - Pre-existing dirty generated files were intentionally left untouched and must remain excluded from staging:
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
