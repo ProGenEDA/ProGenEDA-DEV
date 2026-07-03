@@ -7864,6 +7864,71 @@ Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
 - `python -m compileall -q src tests tools\proteus_generation` -> passed.
 - Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
 
+~~~~
+
+## 2026-07-04 01:15:31 +05:00 - User Message
+
+S05_4017_1X_DOUBLE_FF_FIX
+S06_4020_1X_DOUBLE_FF_FIX
+S09_74HC4024_1X_DOUBLE_FF_FIX
+S10_74HC4040_1X_DOUBLE_FF_FIX
+S11_74HC4060_1X_DOUBLE_FF_FIX
+S13_74HC161_1X_DOUBLE_FF_FIX
+S14_74HC163_1X_DOUBLE_FF_FIX
+S16_74HC193_1X_DOUBLE_FF_FIX
+S18_74HC273_1X_DOUBLE_FF_FIX
+S22_74HC165_1X_DOUBLE_FF_FIX
+S24_74HC595_1X_DOUBLE_FF_FIX
+they all have the same issue and has been continueing since v2 also in v3
+
+
+7447 hAS The same issue not terminals being at the org place instead of near the componet.
+
+hc74 had a location issue terminals were at the right place.
+
+## Visible Agent Responses During This Turn
+
+I verified the previous checkpoint first: local HEAD, upstream, and remote all matched `f37864b6e465e9ff08d5ebf2a28869a90c761add`, and the working tree was clean.
+
+I found that the repeated V2/V3/V4 failure was not a terminal-only bug. The affected IC families were being placed through the rejected broad coordinate scanner, so the component frame inherited by the terminal placer was wrong before terminal math started. The fix was to move those families onto parsed IC placement and to make the terminal placer use donor-derived marker-anchor pin offsets instead of polluted bbox/text coordinates.
+
+Before editing `src/proteusgen/component_terminal_placer.py`, I created the required backup at `backups/component_terminal_placer/component_terminal_placer_2026_07_04_005759_before_marker_anchor_pin_geometry.py`.
+
+The shared terminal placer now extracts/stores marker-anchor pin geometry from terminalized donors, computes terminal coordinates from the placed component anchor, keeps the same accepted short-wire/grid mechanics, and records component anchors in terminal reports.
+
+The beautifier now routes the failing IC list through parsed-family coordinate handling instead of the broad `component_text_or_body` scan.
+
+The catalogue now carries marker-anchor geometry for the researched multi-pin families, including 7447 marker alias handling where the catalogue key is `74HC47` but the packet marker is `7447`.
+
+Generated the V5 pack at `experiments/multi_pin_catalogue_terminal_solo_v5_temp_2026_07_04/` and archive `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V5_TEMP_2026_07_04.zip`.
+
+Static validation for V5 reported 26 cases, `all_valid_static true`, `all_component_placements_valid true`, `all_double_ff_valid true`, and no broad-scan error cases.
+
+Focused verification passed:
+
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py -q` -> `22 passed`.
+- `python -m compileall -q src tests tools\proteus_generation` -> passed.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `37 passed`.
+- Focused D20/display guard tests -> `2 passed`.
+
+I committed the V5 implementation as `a3f12610a6a80b13079987e8f17409004669e8d1` with message `Fix multi-pin marker anchor placement`, pushed it to `origin/codex/generic-proteus-generator-v0`, fetched, and verified local/remote hashes matched.
+
+I then appended this continuation log to `context.md`; a context-only follow-up commit/push/verify will happen before the final response.
+
+## Files Edited By Agent In Response To This Message
+
+- `backups/component_terminal_placer/component_terminal_placer_2026_07_04_005759_before_marker_anchor_pin_geometry.py` - required pre-edit backup of the shared terminal placer.
+- `src/proteusgen/component_terminal_placer.py` - added marker-anchor geometry extraction and placed-component-anchor terminal planning for catalogue-driven multi-pin placement.
+- `src/proteusgen/component_beautifier.py` - routed the affected IC families through parsed IC coordinate handling instead of broad coordinate scanning.
+- `knowledge/component_catalog_v0.json` - added marker-anchor geometry and 7447 anchor alias metadata for researched families.
+- `tests/test_component_catalog.py` - updated/add tests proving marker-anchor planning for affected families and rejecting broad-scan fallback.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V4 rejection and V5 corrected pack.
+- `docs/architecture.md` - recorded the V4 coordinate-cluster rejection and V5 marker-anchor correction.
+- `knowledge/test_results.jsonl` - recorded rejected V4 user result and V5 static-pass evidence.
+- `experiments/multi_pin_catalogue_terminal_solo_v5_temp_2026_07_04/` - regenerated V5 solo test pack.
+- `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V5_TEMP_2026_07_04.zip` - V5 zip archive for Proteus testing.
+- `context.md` - appended this turn log.
+
 ---
 
 ## Restart Context Log - 2026-07-04T01:12:40.6819313+05:00
