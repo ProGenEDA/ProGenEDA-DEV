@@ -25,7 +25,9 @@ The active stages are independent:
   symbols.
 - `kicad_wire_maker.make_kicad_wires(circuit, placement, wire_plan)`
   consumes pure JSON route output plus source-backed KiCad symbol pin geometry
-  and emits real KiCad wire, junction, and label schematic objects.
+  and emits real KiCad wire/junction objects in strict wire mode. Terminal or
+  combination modes may emit local-label terminal objects through the terminal
+  stage contract.
 
 This active placer slice does not require KiCad to be installed. It uses
 embedded Python metadata from the repository:
@@ -64,8 +66,9 @@ The post-placer stages remain independent:
   is the first EDA-specific drawing backend. It does not plan routes. It
   resolves KiCad symbol pin/body geometry into `routing_inputs/`, feeds that
   pure JSON to the wire planner, draws actual wire/junction S-expressions in
-  strict wire mode, and records unresolved pin aliases, unroutable nets,
-  geometry validation, and strict-wire connectivity validation in each manifest.
+  strict wire mode, and records unresolved pin aliases, partial-wire nets,
+  unroutable nets, geometry validation, and strict-wire connectivity validation
+  in each manifest.
 
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.
@@ -129,12 +132,12 @@ run_manifest.json   aggregate evidence
 ```
 
 The stage reports use bounded route-planning settings for batch evidence. In
-strict `wire` mode, the planner may retry an unroutable path with existing wires
-treated as high-cost lanes instead of hard walls, but it must not emit local
-labels. If a route still cannot be found, the net is marked `unroutable` and the
-KiCad wire maker records that as a strict-wire validation failure. Terminal and
-combination modes may use terminal/local-label strategies through the terminal
-stage contract.
+strict `wire` mode, the planner must not emit local labels. If some branches of
+a net are physically routed but one or more endpoints still fail, the net is
+marked `partial_wire`; if no physical branch can be routed, the net is marked
+`unroutable`. The KiCad wire maker draws available physical routes and records
+both states as strict-wire validation failures. Terminal and combination modes
+may use terminal/local-label strategies through the terminal stage contract.
 
 Old generated run folders remain immutable records.
 

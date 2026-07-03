@@ -6677,3 +6677,208 @@ The scoped files are staged. I’m checking the staged diff and status before co
 
 I sent a few more progress notes after the context append, so I’m adding a short follow-up context entry before committing. That keeps the handoff honest without rewriting the main log.
 ~~~~
+
+## 2026-07-03 13:20:46 PKT - Dense Lane Router Stress Work
+
+### User Message
+
+```text
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+# Selected text:
+
+## Selection 1
+real router work is routing lanes/rip-up reroute/bus routing
+
+## My request for Codex:
+goahead, do more if need be, test it on large circuits of 90 plus large ic level components and continue fixing it till it can optimally figure out wiring for circuit of any length, u can allow it to make wires go over each other but this must be kept to a minimum
+```
+
+### Visible Agent Responses
+
+```text
+I’m picking up from the router work and first rechecking the edited planner compiles cleanly. After that I’ll rerun the focused tests and the T10 planner probe so we can tune from actual metrics, not vibes.
+
+The focused tests are green, and the remote checkpoint is still clean. I’m moving to the 190-component T10 planner-only probe now; this is the stress case that matters for the “90+ large IC level” requirement.
+
+T10 placement prep is still fast: 190 components, 554 pins resolved, 0 body overlaps in 0.62s. The remaining runtime is all route planning, so I’m going to see whether the grid-body scorer finished or whether we still need a dense-circuit routing mode.
+
+It’s still running after a minute, so the dense case needs another guardrail. I’m stopping this probe to catch the hot path, then I’ll add a large-circuit mode that avoids expensive maze search when lane candidates already exist.
+
+The trace confirms it: T10 is still spending time in exact segment crossing scans because the threshold is too generous for dense schematics. I’m lowering that path into grid-congestion scoring much earlier and adding a large-design cap so lane scoring stays bounded.
+
+The clean fix is not to pretend A* can scale forever on dense symbol sheets. I’m adding a dense-design profile inside the same planner: fewer but better lane candidates, grid contact scoring from the start, and A* only when lanes cannot produce any body-safe path.
+
+I’m going to keep the dense behavior visible in the plan metrics, not hidden. That way when T10 finishes we can tell whether a route was solved by lane routing, by A*, or by an accepted crossing-risk path.
+
+Dense mode is patched in. I’m rerunning the focused tests first, then I’ll repeat T10 to see whether planning now finishes and what quality it reports.
+
+The code compiles and the strict wire regression still passes. One test is asserting the old router name string, so I’m updating that test contract to the new lane-plus-A* planner instead of freezing the stale label.
+
+I’m keeping the behavioral assertions intact: orthogonal wires, no labels in wire mode, no component-body crossing for the simple case. Only the router identity string needs to reflect the new implementation.
+
+The test contract is updated. I’m rerunning it and the strict regression with the current names, then back to the big T10 probe.
+
+The focused checks are green now. I’m rerunning T10 with the dense profile active; the key success condition is that it finishes and reports explicit crossings/unroutables instead of stalling or hiding them behind labels.
+
+T10 still hasn’t finished inside 30 seconds, so there is one more dense bottleneck. I’m giving it a short additional window; if it’s still running, I’ll stop it and capture the next hot path.
+
+T10 now finishes, which is real progress, but it is not good enough: 92 nets unrouted and 318 different-net crossings. The next issue is lane quality, not file generation: dense mode was considering too many central lanes and dropping outer escape lanes, so I’m changing lane generation to always include sheet-edge channels and score the full candidate set.
+
+Outer lane candidates are now guaranteed to be considered instead of falling out of the dense candidate budget. I’m patching the per-net counters next so failed partial nets no longer inflate successful route metrics.
+
+The route counters now only count committed nets. I’m running the focused tests again, then I’ll measure whether the outer-channel candidate fix lowers T10 unroutables and crossings.
+
+The focused tests still pass. T10 probe is next; I expect it to remain imperfect, but the important numbers are fewer unroutable nets, fewer crossings, and bounded runtime.
+
+Outer lanes connected more nets but made crossings worse, so that alone is not the answer. I’m inspecting T10’s net shape now, because the next improvement should be net-aware: multi-endpoint buses need trunk routing, while tiny local nets should not be forced through long shared channels.
+
+The largest nets are exactly what we expected: GND, +5V, +3V3, then SPI/I2C/shift buses. I’m going to inspect one failed bus net’s route report so the next patch targets the actual failure mode instead of guessing.
+
+The failure details are useful: several bus nets have zero lane candidates that avoid component bodies, so they fall into A* and hit the dense budget. I’m adding true two-lane dogleg candidates now: escape to an X channel, move on a Y channel, then enter the target, which is the missing “pin escape plus routing lanes” behavior.
+
+Two-lane rectangular candidates are in. I’m rerunning the focused tests, then the same T10 inspection to see whether SPI/I2C/CAN-style nets now get actual lane routes instead of dropping to failed A*.
+
+Focused tests are clean and quicker now. I’m running T10 again; the two numbers I’m watching are unroutable nets and crossings, with runtime as a third constraint.
+
+Two-lane lanes helped again, but failed targets still abort the whole net, which throws away useful partial wiring. I’m checking the maker contract before changing that, because drawing partial physical wires while still reporting the net as incomplete is better than silently discarding them, but the JSON contract needs to stay clear.
+
+The maker currently draws from global `routes`; failed net partials are only reported, not drawn. I’m going to keep strict failure reporting, but allow the planner to continue after a failed endpoint and commit routed partials as explicit `partial_wire` nets so the wire maker can draw the physical work that succeeded.
+
+This is also a foundation for rip-up/reroute later: once partial routes are real route objects with completion metadata, the planner can decide which failed endpoint to retry without losing the rest of the net.
+
+I’m going to make partial wiring first-class rather than throwing it away. A net with failed endpoints will still fail validation, but any successfully routed branches will be drawn and counted as `partial_wire`, which is much more useful for debugging and for later reroute passes.
+
+Planner partials are now emitted as `partial_wire`. I’m updating the strict connectivity validator so it treats those as drawn physical routes but still flags them as incomplete instead of pretending they are valid full wire nets.
+
+Now partial wires are physically drawn and explicitly invalid until all endpoints connect. I’m running the focused tests again before measuring T10’s new complete/partial/unroutable split.
+
+The strict test failure is expected after the contract improvement: the bad case is no longer “unrouted”, it is “partial wire”. I’m updating the assertion so the test still proves strict mode rejects the case without labels.
+
+I’m adding partial-wire counts to the run manifest too. That keeps summaries honest: complete routed nets, partial physical wires, and totally unrouted nets are separate buckets now.
+
+The manifest and strict test now understand partial wires. I’m rerunning the focused checks, then T10 again to see how many nets move from totally unroutable into partial physical wiring.
+
+Focused tests pass. I’m measuring T10 again with partial wires enabled; this should increase drawn coverage even when some nets are still incomplete.
+
+Continuing after failed endpoints makes T10 do more real routing work, so it’s taking longer. I’m giving it one more interval; if this becomes too expensive I’ll add a per-net retry budget.
+
+That got too expensive: continuing every failed endpoint on a 190-component sheet needs a cap. I’m stopping it and adding a dense per-net failure budget so partial routing improves coverage without becoming unbounded.
+
+The new hot path is scoring lots of rejected body-crossing candidates. I’m adding two guardrails: short-circuit scoring as soon as a candidate hits a component body, and cap dense per-net failed endpoint retries. That should preserve partial coverage without letting one huge bus burn the whole run.
+
+Candidate scoring now exits early for body hits. I still need to enforce the dense endpoint failure cap in the routing loop, then I’ll retest.
+
+The dense failure cap is in. I’m running focused tests again, then the T10 probe should show complete, partial, and unroutable counts without the runaway behavior.
+
+Partial routing now improves coverage: T10 moved to 89 complete wire nets, 16 partial, 48 totally unroutable, in about 37 seconds. Crossings are still too high, so I’m going to test a stronger dense crossing penalty before baking it in.
+
+Higher crossing penalty is not helping; it actually increased crossings on the first two samples. I’m stopping the third sample and going after lane assignment instead, because the candidate set itself is the limiting factor.
+
+I found another real dense-case cost: obstacle grids are rebuilt for every route attempt even when the ignored component set is identical. I’m adding a small cache for hard and soft blocked-cell grids; that gives us budget back for more useful routing work.
+
+The blocked-grid cache is in and only used for scoring, so it does not affect A*’s portal-opening behavior. I’m rerunning focused tests and then T10 once more for runtime and metrics.
+
+The focused tests are down to about a second, which confirms the scoring cache is doing useful work. I’m running T10 again now.
+
+Good: T10 planning time dropped from about 37 seconds to about 12 seconds with the same coverage. Since we recovered runtime, I’m going to test whether a larger dense lane candidate budget reduces crossings without blowing up again.
+
+A larger candidate budget slightly improved completed nets but increased crossings. I’m waiting on the 160 sample, then I’ll keep the best tradeoff instead of blindly increasing search.
+
+The 80-candidate default is the better tradeoff: fewer completed nets by one, but noticeably fewer crossings. I’m checking the dense failed-endpoint budget next, because that controls how much partial routing we draw before giving up on a difficult net.
+
+The first budget samples show the tradeoff clearly: budget 1 has fewer crossings but much less partial coverage; budget 2/3 route more branches. I’m waiting for the remaining samples before choosing the default.
+
+Budget 3 gives the same routing quality as 2 but can take longer; budget 5 is unlikely to be a better default. I’m stopping that comparison and setting dense default to 2 failed endpoints per net.
+
+I’m setting the dense retry budget to 2, which keeps the useful partial coverage from budget 2 while avoiding the extra work budget 3 sometimes causes.
+
+The default is updated. I’m running the broader test suite now, then I’ll write the router stress record and update the docs/context before committing and pushing.
+
+`pytest` is not installed in this environment, so I’m switching to the standard-library unittest discovery for the broader suite. Compileall already passed, aside from an existing KiCad demo SyntaxWarning.
+
+Full unittest discovery passed: 38 tests in about 91 seconds. I’m updating the design docs and adding a stress-run record with the measured T10 numbers, including the remaining limitations.
+
+I’m adding a new experiment record rather than generating a new accepted example folder. These T10 results are evidence for router progress, but not an accepted strict-wire output because crossings and incomplete nets remain.
+
+The agent rules now record `partial_wire` and dense lane routing explicitly. I’m updating the longer planner design document with the implemented behavior and known limits next.
+
+The T10 stress record is now in `experiment_records`. I’m linking it from the experiment index and refreshing the current baseline wording so future work starts from the right evidence.
+
+The pipeline README has two stale spots: it still describes the maker as emitting labels generically, and its failure-state text only mentions `unroutable`. I’m tightening those now.
+```
+
+### Files Edited
+
+- `kicad/AGENTS.md`
+- `kicad/experiment_records/README.md`
+- `kicad/experiment_records/runs/router_lane_dense_t10_2026_07_03/README.md`
+- `kicad/experiment_records/runs/router_lane_dense_t10_2026_07_03/results.json`
+- `kicad/pipeline/BEAUTIFIER_WIRE_PLANNER_DESIGN.md`
+- `kicad/pipeline/README.md`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+- `kicad/tests/test_placer_pipeline.py`
+- `context.md`
+
+### Implementation Notes
+
+- Added lane-first route candidates in `wire_planner.py` before bounded A*.
+- Added one-lane and two-lane rectangular dogleg candidates for bus-style routing and pin escape.
+- Added route-quality scoring for body hits, component shadows, wire contact/crossing risk, turns, length, and same-net reuse.
+- Added dense-design mode for 90+ component bodies.
+- Dense mode caps lane candidates, caps A* expansions, forces grid contact scoring, caches hard/soft obstacle grids, and caps failed endpoint retries.
+- Added `partial_wire` as a strict-wire failure state that still draws successful physical branches.
+- Updated strict wire connectivity reporting and run manifests with `partial_wire_net_count`.
+- Updated tests for the new lane/A* router identity and partial-wire failure bucket.
+- Added router stress documentation for the 190-component T10 planner-only run.
+
+### T10 Stress Metrics
+
+- Circuit: `T10_near_limit_mixed_schematic`
+- Components: 190
+- Nets: 153
+- Routing pins resolved: 554
+- Routing pins unresolved: 0
+- Component body overlaps: 0
+- Prep time: 0.59 s
+- Planner time after cached dense scoring: 11.8 s
+- Complete wire nets: 89
+- Partial-wire nets: 16
+- Totally unroutable nets: 48
+- Wired route count: 149
+- Lane routes: 148
+- A* routes: 1
+- Labels: 0
+- Segment count: 719
+- Different-net crossing count: 1257
+- Accepted as final strict-wire output: no
+
+### Verification
+
+- `python -m compileall -q kicad` passed. It emitted an existing SyntaxWarning from bundled KiCad demo file `kicad/.local/AppDir/share/kicad/demos/python_scripts_examples/action_menu_text_by_date.py`.
+- `python -m unittest discover -s kicad/tests -q`: 38 tests passed in 91.183 s.
+- `python -m pytest kicad/tests -q` could not run because `pytest` is not installed in this environment.
+
+### Notes
+
+- Pre-existing dirty generated files were intentionally left untouched:
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
+  - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
+
+### Additional Visible Responses Before Commit
+
+```text
+The context log is appended. I’m running a quick final check on JSON/doc/source diffs, then I’ll stage only the scoped files and leave the old generated project dirt alone.
+
+The scoped diff has no whitespace errors and the stress result JSON parses cleanly. I’m staging only the source/docs/tests/context files and the new experiment record now.
+
+The old generated v4 project files are still unstaged as intended. I’m adding one small follow-up context note for the post-log staging/check messages, then I’ll commit.
+```

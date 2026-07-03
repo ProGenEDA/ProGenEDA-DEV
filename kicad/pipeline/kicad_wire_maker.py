@@ -1014,6 +1014,7 @@ def _strict_wire_connectivity_report(
     routing_mode = _wire_plan_routing_mode(wire_plan)
     label_strategy_count = 0
     unrouted_net_count = 0
+    partial_wire_net_count = 0
 
     segments_by_net: dict[str, list[WireGeometrySegment]] = {}
     for segment in geometry_segments:
@@ -1049,7 +1050,18 @@ def _strict_wire_connectivity_report(
         if len(endpoints) < 2:
             violations.append({"rule": "expected_net_has_fewer_than_two_endpoints", "net": net_name, "strategy": strategy})
             continue
-        if strategy != "wire":
+        if strategy == "partial_wire":
+            partial_wire_net_count += 1
+            violations.append(
+                {
+                    "rule": "expected_net_has_partial_wire_route",
+                    "net": net_name,
+                    "strategy": strategy,
+                    "unrouted_endpoint_count": net_data.get("unrouted_endpoint_count"),
+                    "failure_warnings": net_data.get("failure_warnings", []),
+                }
+            )
+        elif strategy != "wire":
             if routing_mode == "wire":
                 violations.append({"rule": "wire_mode_requires_wire_strategy", "net": net_name, "strategy": strategy})
             continue
@@ -1117,6 +1129,7 @@ def _strict_wire_connectivity_report(
         "connected_net_count": connected_nets,
         "label_strategy_count": label_strategy_count,
         "unrouted_net_count": unrouted_net_count,
+        "partial_wire_net_count": partial_wire_net_count,
         "violation_count": len(violations),
         "violations": violations[:200],
         "violations_truncated": len(violations) > 200,
@@ -1332,6 +1345,7 @@ def make_kicad_wires(
         "deferred_nets": deferred_nets,
         "unrouted_net_count": len(unrouted_nets),
         "unrouted_nets": unrouted_nets,
+        "partial_wire_net_count": int(strict_wire_report.get("partial_wire_net_count", 0)),
         "geometry_ok": bool(geometry_report["ok"]),
         "geometry_violation_count": int(geometry_report["violation_count"]),
         "wire_geometry_validator": geometry_report,
@@ -1608,6 +1622,7 @@ def generate_wired_projects_from_final_json(
                 "component_body_overlap_pass_count": body_overlap_report["pass_count"],
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
                 "unrouted_net_count": manifest["wire_maker"]["unrouted_net_count"],
+                "partial_wire_net_count": manifest["wire_maker"]["partial_wire_net_count"],
                 "geometry_ok": bool(manifest["wire_maker"]["geometry_ok"]),
                 "geometry_violation_count": manifest["wire_maker"]["geometry_violation_count"],
                 "strict_wire_ok": bool(manifest["wire_maker"]["strict_wire_ok"]),
@@ -1634,6 +1649,7 @@ def generate_wired_projects_from_final_json(
         "total_component_body_overlaps": sum(int(item["component_body_overlap_count"]) for item in results),
         "total_deferred_nets": sum(int(item["deferred_net_count"]) for item in results),
         "total_unrouted_nets": sum(int(item["unrouted_net_count"]) for item in results),
+        "total_partial_wire_nets": sum(int(item["partial_wire_net_count"]) for item in results),
         "all_geometry_ok": all(item["geometry_ok"] for item in results),
         "total_geometry_violations": sum(int(item["geometry_violation_count"]) for item in results),
         "all_strict_wire_ok": all(item["strict_wire_ok"] for item in results),

@@ -259,6 +259,62 @@ yet run an automatic loop. The first KiCad wire maker consumes the current
 single-pass wire-plan JSON and records any route-cap or pin-resolution limits in
 project manifests.
 
+## Wire Planner Current Implementation
+
+File:
+
+```text
+kicad/pipeline/wire_planner.py
+```
+
+Current behavior:
+
+1. Builds exact endpoint coordinates from placement `pin_points` when available.
+2. Reserves exact pin grid cells so unrelated wires do not pass through pins.
+3. Routes strict wire mode without local labels.
+4. Tries deterministic lane candidates before A*:
+   - direct orthogonal paths
+   - one-lane doglegs
+   - two-lane rectangular doglegs for pin escape plus bus-style channels
+5. Scores candidates by component body hits, component shadow clearance, wire
+   contacts/crossing risk, turns, and length.
+6. Routes multi-endpoint nets from the nearest already connected endpoint.
+7. Orders nets by clock, bus/long-span nets, ordinary nets, then power/ground
+   in strict wire mode.
+8. Uses dense-design mode for large sheets:
+   - component threshold: 90 bodies
+   - bounded dense lane candidate budget
+   - bounded dense A* expansion budget
+   - cached obstacle grids
+   - grid contact scoring instead of exact segment-pair scoring
+   - failed endpoint retry budget before reporting a net incomplete
+9. Emits route-level quality metadata:
+   - selected router
+   - body hit count
+   - component shadow count
+   - different-net crossing/contact risk
+   - same-net reuse count
+   - length and turn count
+10. Emits `partial_wire` for strict wire-mode nets where some branches were
+    physically routed but one or more endpoints remain unrouted.
+
+Current limits:
+
+1. Dense large schematics can still produce many crossings.
+2. The planner does not yet rip up an already selected route and reroute it
+   after later congestion appears.
+3. Power/GND nets with very high fanout are intentionally still physical-wire
+   attempts in strict wire mode; practical final schematics will likely use the
+   terminal/combination path for those nets.
+4. `partial_wire` is a failure state for final validation. It exists so the
+   wire maker can draw successful physical branches while validators report the
+   missing endpoints clearly.
+
+The next router upgrade should add a real rip-up/reroute pass over the exact
+wire geometry validator output. The pass should identify the crossing-heavy
+nets, remove one candidate net at a time, reserve the remaining routes, and
+retry with expanded lane candidates or A* only for the affected net.
+
 ## Wire Planner
 
 File:

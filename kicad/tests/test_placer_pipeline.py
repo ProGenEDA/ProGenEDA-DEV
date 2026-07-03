@@ -321,7 +321,7 @@ class PlacerPipelineTests(unittest.TestCase):
             new_width = new_obstacles[ref]["right"] - new_obstacles[ref]["left"]
             self.assertAlmostEqual(old_width, new_width)
 
-    def test_wire_planner_emits_coordinate_and_astar_wire_json(self) -> None:
+    def test_wire_planner_emits_coordinate_and_lane_astar_wire_json(self) -> None:
         circuit = vdc_resistor_led()
         ctx = run_placer_pipeline(circuit, write_trace=False)
         planned = plan_wiring(ctx.placement_plan.as_dict(), circuit)
@@ -329,7 +329,7 @@ class PlacerPipelineTests(unittest.TestCase):
         self.assertEqual(planned["coordinate_plan"]["schema"], "progen-kicad-arrangement-decision/v0.1")
         wire_plan = planned["wire_plan"]
         self.assertEqual(wire_plan["schema"], "progen-kicad-wire-plan/v0.1")
-        self.assertEqual(wire_plan["algorithm"]["router"], "grid_astar_orthogonal")
+        self.assertEqual(wire_plan["algorithm"]["router"], "lane_candidates_then_grid_astar")
         self.assertEqual(wire_plan["routing_mode"], "wire")
         self.assertNotEqual(wire_plan["nets"]["GND"]["strategy"], "local_labels")
         self.assertGreaterEqual(wire_plan["metrics"]["wired_route_count"], 2)

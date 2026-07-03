@@ -149,13 +149,20 @@ terminal helpers. In `terminal` mode, terminal/label behavior belongs to
 `terminal_placer.py`. In `combination` mode, the explicit combination path may
 use both wire and terminal plans.
 
+The active wire planner is lane-first, then bounded A*. It must keep routing
+logic EDA-neutral and report route quality per route. Dense designs use
+bounded lane candidates, cached obstacle grids, grid congestion scoring, and a
+limited failed-endpoint retry budget. If a strict wire-mode net has some routed
+branches but not all endpoints, emit `partial_wire` with
+`unrouted_endpoint_count`; do not hide the missing endpoints with labels.
+
 `kicad_wire_maker.py` is the KiCad-specific drawing backend. It consumes final
 CircuitIR JSON and beautified placement JSON, resolves source-backed KiCad
 symbol pin/body geometry into `routing_inputs/`, feeds that pure JSON to
 `wire_planner.py`, then writes real KiCad wire/junction objects for strict wire
 plans or terminal-label objects only when the upstream mode permits them. It
-records unresolved pin aliases, unroutable nets, strict-wire connectivity
-validation, and geometry validation in manifests.
+records unresolved pin aliases, unroutable nets, partial-wire nets,
+strict-wire connectivity validation, and geometry validation in manifests.
 
 `terminal_placer.py` is the current placeholder/foundation for terminal-style
 connectivity. For KiCad its current backend is local labels with short pin

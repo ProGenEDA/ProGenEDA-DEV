@@ -29,6 +29,7 @@ before, and what should happen next.
 | `../examples/final_json_wired_project_run_2026_07_02_135207_t01_t10_connected_wired_v3` | Superseded wired projects | Third KiCad wire-maker run. It fixed avoidable T10 pin aliases but was superseded because the schematic sheet note still said placement-only. |
 | `../examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4` | Current wired projects | 10 KiCad wired projects generated from final JSON. Static quality: 10 checked, 10 passed, 0 failed. 3357 wire objects, 530 labels, 18 unresolved symbol-model pins, and 5 deferred T10 route-cap nets. |
 | `../examples/final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules` | Current strict failure evidence | First run with hard wire-geometry validation. Static quality and KiCad netlist export passed 10/10, but ERC quality passed 1/10 and geometry validation passed 0/10. The current router is not accepted. |
+| `runs/router_lane_dense_t10_2026_07_03` | Current router stress evidence | Planner-only T10 strict-wire stress probe after lane routing and dense scoring. 190 components, 554 resolved pins, 0 body overlaps, 11.8 s planner time, 89 complete wire nets, 16 partial-wire nets, 48 unroutable nets, 0 labels, and 1257 different-net crossings. Not accepted as final strict-wire output. |
 
 ## Current Baseline
 
@@ -57,6 +58,11 @@ The current supported placer baseline is:
   for all 10 v5 schematics, but the current wire planner/maker fails the new
   no-crossing/no-component-body-touch rules and fails ERC quality for 9 of 10
   schematics.
+- Current router stress evidence: dense lane routing can finish the 190
+  component T10 planner probe in bounded time with all 554 routing pins
+  resolved and no component body overlaps, but it still leaves partial and
+  unroutable nets plus many crossings. The next accepted-output blocker is
+  exact rip-up/reroute against the strict geometry validator.
 
 ## Rules For New Experiments
 
