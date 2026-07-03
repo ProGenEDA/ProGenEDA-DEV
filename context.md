@@ -7866,6 +7866,108 @@ Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
 
 ---
 
+## Restart Context Log - 2026-07-04T01:12:40.6819313+05:00
+
+### User Message 1
+
+Timestamp: `2026-07-04T01:12:40.6819313+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+S05_4017_1X_DOUBLE_FF_FIX
+S06_4020_1X_DOUBLE_FF_FIX
+S09_74HC4024_1X_DOUBLE_FF_FIX
+S10_74HC4040_1X_DOUBLE_FF_FIX
+S11_74HC4060_1X_DOUBLE_FF_FIX
+S13_74HC161_1X_DOUBLE_FF_FIX
+S14_74HC163_1X_DOUBLE_FF_FIX
+S16_74HC193_1X_DOUBLE_FF_FIX
+S18_74HC273_1X_DOUBLE_FF_FIX
+S22_74HC165_1X_DOUBLE_FF_FIX
+S24_74HC595_1X_DOUBLE_FF_FIX
+they all have the same issue and has been continueing since v2 also in v3
+
+
+7447 hAS The same issue not terminals being at the org place instead of near the componet.
+
+hc74 had a location issue terminals were at the right place.
+~~~~
+
+### Visible Agent Responses During This Turn
+
+Timestamp: `2026-07-04T01:12:40.6819313+05:00` (Pakistan; recorded during turn)
+
+~~~~text
+I’ll verify the pushed checkpoint first, then compare the affected families against a working one. Since you’re seeing this across specific IC families, I’m going to inspect their V4 reports and the actual component coordinate fields; this is likely another coordinate-frame mismatch, but narrower than the V2 whole-zip bug.
+Checkpoint is clean and pushed. I’m reading the affected reports now and comparing them to a family that visually passed the previous coordinate fix.
+I found a clear split in the reports: the failing families all have absurd current component bboxes, e.g. `4017` reports a body width around `10,541,000` internal units. That is not a real DIP body; it means our bbox extractor is picking unrelated/stale coordinate fields inside those component packets. So V3/V4 fixed the WIRE-coordinate bug, but these families still use the wrong component origin because their “component bbox” is polluted.
+For the failing families, another important fact shows up: their existing donor WIRE coordinates equal the planned terminal pin coordinates. That means the real visible component body is likely being placed from a different coordinate source than the stale DSN pin/WIRE skeleton. I’m checking ROOT.CDB/component-placement metadata now, because IC bodies may be visually placed through CDB while terminal placer is reading stale DSN coordinates for these families.
+The CDB path is not immediately giving placement coordinates. I’m now inspecting the DSN packet coordinate fields directly. The failing families have many stale coordinate fields in one packet; I need identify the stable “body origin” field, not use a broad bbox over every parsed coordinate.
+I’m also checking the beautifier’s coordinate extraction rules, because the same polluted bbox likely affects both beautification metadata and terminal placement for these IC packets.
+There are two separate sub-bugs:
+
+1. The listed counter/register families are not in the parsed-IC coordinate family list, so bbox falls back to a broad byte scan and picks stale coordinates.
+2. `7447`/some subpart cases have parsed coordinates, but the catalogue offset frame is still not the actual pin frame.
+
+The durable fix is to stop using “bbox min” as the catalogue anchor for multi-pin ICs. I’m checking whether each component has a reliable donor/body anchor coordinate we can store and use instead.
+Before touching the shared placer again, I’m making the required backup. Then I’ll add marker-anchor geometry fields and update the catalogue from the existing terminalized donors.
+I’m patching the shared terminal placer in two places: donor analysis will record pin offsets from a marker-body anchor, and planning will prefer that anchor over bbox-min. Existing WIRE rows will still be used only for record identity/link patching.
+Planner now supports marker-anchor coordinates. I’m adding the same anchor information to terminal reports so validation can show whether a case used the correct frame.
+The shared analysis helper now emits marker-anchor offsets. Next I’m mechanically updating the catalogue entries for the existing geometry-ready donor families with these anchor offsets, then I’ll regenerate a test pack.
+Catalogue anchor offsets were added for 25 families. `7447` needs a special alias treatment: its registry donor key is `74HC47`, but the packet marker in ROOT.DSN is `7447`, so exact marker-anchor lookup missed it. I’m handling that alias explicitly, not guessing from bbox.
+`7447` is now handled with marker `7447` even though the registry donor key is `74HC47`. I’m checking the affected families’ planned pin coordinates now; the reports should switch from bbox source to marker-anchor source.
+The component placer translated the coordinate pairs it knew about, but for these families it translated the wrong broad-scan fields and left the real pin/WIRE skeleton behind. That explains your observation: the component body went to the placed slot, terminals stayed at donor/original coordinates. I’m switching terminal placement to derive the movement delta from the coordinate fields that the component placer actually moved, then apply that delta to donor pin coordinates.
+The generated bare manifests already contain the root warning: `E_OUTPUT_LAYOUT_BROAD_SCAN`. So the failing cases were built on an invalid component-placement coordinate model. Terminal placement then inherited that bad geometry. Fixing terminal math alone is not enough; I need to move those families onto the parsed-IC coordinate path so component placement and terminal placement use the same visible-body frame.
+I tested the parsed-IC scanner on the affected families. It gives clean body bboxes instead of the rejected broad scan. So I’m updating the beautifier’s parsed-IC family set for exactly these supported catalogue families, then the terminal placer’s marker-anchor offsets should align with the newly placed bodies.
+Parsed-family list updated. I’m regenerating the affected single cases in temp form to confirm the component placer no longer reports `E_OUTPUT_LAYOUT_BROAD_SCAN` and terminals use the marker-anchor source.
+That probe used a wrong result attribute; no repo state changed except temp files. I’m rerunning with the actual manifest file generated beside each temp project.
+The quick probe shows the component placer validator is now clean for `4017`: no broad scan, parsed coordinate reasons, and `generated_output_validator.valid=True`. I’m rerunning the affected-family probe cleanly and then I’ll remove temp files.
+The affected-family probe is clean: placement validator passes, no broad-scan errors, and terminals use marker-anchor coordinates. The first-pin coordinates also moved into the same coordinate band as the placed bodies. I’m cleaning probe files and then I’ll regenerate a V5 zip.
+I’m adding a regression that covers the user-listed families, so future changes can’t silently fall back to the rejected broad coordinate scanner again.
+One older test expected the V3 bbox-based source. Since marker-anchor is now the correct source, I’m updating that regression to assert marker-anchor math instead.
+Tests are updated. I’m running the focused catalogue suite before generating V5.
+Focused tests pass. I’m generating V5 now: it keeps the double-FF fix, uses parsed IC placement for the affected families, and uses marker-anchor terminal geometry.
+V5 generated cleanly: 26 cases, all component placements valid, no broad-scan errors, all terminal reports valid, all double-FF valid. I’m checking the affected manifests/coordinates once more, then I’ll run final tests.
+Affected manifests are clean. I’m running compile and focused tests now.
+Tests passed. I’m updating docs/evidence to mark V5 as the current pack for the broad-scan/marker-anchor issue, then I’ll update context, commit, push, and verify.
+The catalogue diff is large because the mechanical JSON rewrite normalized key ordering while adding marker-anchor fields. The actual semantic change is the new marker-anchor offsets and coordinate frame metadata. I’ll record that in the evidence note so it’s clear.
+The status doc wording differs slightly from the patch anchor. I’m reopening that section and applying the update at the exact location.
+Patching status doc now.
+Status doc updated. I’m updating architecture/current maturity with the V5 placement fix.
+Applying architecture patch at EOF.
+Architecture is updated. I’m adding test-result evidence for the V4 user failure and V5 static pass.
+Evidence records are updated. I’m appending this turn to `context.md`, then I’ll commit/push/verify.
+~~~~
+
+### Files Edited By Agent In Response To These Messages
+
+- `backups/component_terminal_placer/component_terminal_placer_2026_07_04_005759_before_marker_anchor_pin_geometry.py` - required backup before editing the shared terminal placer.
+- `src/proteusgen/component_terminal_placer.py` - added component marker-anchor extraction, donor analysis marker-anchor offsets, marker-anchor terminal planning, and report metadata.
+- `src/proteusgen/component_beautifier.py` - added the user-listed supported IC families to parsed IC coordinate extraction so component placement no longer uses the rejected broad scanner.
+- `knowledge/component_catalog_v0.json` - added marker-anchor coordinate frame metadata and per-pin marker-anchor offsets for geometry-ready families; `7447` uses marker `7447` while donor registry key remains `74HC47`.
+- `tests/test_component_catalog.py` - added regression for user-listed families: placement must validate, no `E_OUTPUT_LAYOUT_BROAD_SCAN`, and terminal plans must use marker-anchor coordinates.
+- `experiments/multi_pin_catalogue_terminal_solo_v5_temp_2026_07_04/` - generated corrected 26-case V5 solo Proteus pack.
+- `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V5_TEMP_2026_07_04.zip` - zipped corrected V5 test pack.
+- `docs/architecture.md` - recorded V4 coordinate-cluster rejection and V5 parsed-IC/marker-anchor correction.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V4 affected family list and V5 as the current corrected checkpoint.
+- `knowledge/test_results.jsonl` - recorded V4 user rejection and V5 automated static pass.
+- `context.md` - appended this log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, local/upstream/GitHub matched `f37864b6e465e9ff08d5ebf2a28869a90c761add`; working tree clean.
+- Affected V4 cases had component-placer broad-scan errors in generated manifests, especially `E_OUTPUT_LAYOUT_BROAD_SCAN`.
+- Added parsed IC coordinate extraction for: `4017`, `4020`, `74HC4024`, `74HC4040`, `74HC4060`, `74HC161`, `74HC163`, `74HC165`, `74HC193`, `74HC273`, `74HC595`.
+- Added marker-anchor offsets to catalogue for geometry-ready families; `7447` handled via packet marker `7447`.
+- Affected-family temp probe: placement validator passed, no broad-scan errors, terminal reports valid, coordinate source `component_marker_anchor_offset_existing_wire_identity`.
+- V5 generated 26 cases; summary reports `all_valid_static true`, `all_component_placements_valid true`, `all_double_ff_valid true`, and `broad_scan_error_cases []`.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py -q` -> `22 passed`.
+- `python -m compileall -q src tests tools\proteus_generation` -> passed.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `37 passed`.
+- Focused D20/display guard tests -> `2 passed`.
+- Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
+---
+
 ## Restart Context Log - 2026-07-04T00:36:19.0541180+05:00
 
 ### User Message 1

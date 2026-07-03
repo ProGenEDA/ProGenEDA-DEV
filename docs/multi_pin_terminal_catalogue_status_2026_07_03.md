@@ -43,12 +43,36 @@ V4 writes an explicit double-`FF` ROOT.DSN object-stream ending. The V4 NE555
 object chunk matches the user's Proteus-saved no-error NE555 object chunk
 byte-for-byte.
 
+User Proteus result on 2026-07-04: the following V4 cases still had placement
+problems already visible since V2/V3: `4017`, `4020`, `74HC4024`, `74HC4040`,
+`74HC4060`, `74HC161`, `74HC163`, `74HC193`, `74HC273`, `74HC165`,
+`74HC595`, and `7447`. Terminals were still in the old coordinate cluster
+instead of near the placed component. `74HC74` had a separate component-location
+issue while its terminals were visually near the right pins.
+
+Root cause for the listed counters/registers/decoder cases: the
+component placer/beautifier used the rejected broad `component_text_or_body`
+coordinate scanner for these supported IC families. That broad scan moved a
+mixed set of label/body/WIRE coordinates and left the terminal catalogue tied
+to the wrong coordinate frame.
+
+V5 corrected pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v5_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V5_TEMP_2026_07_04.zip`
+
+V5 keeps the V4 double-`FF` Bad Object Record fix, moves the affected families
+onto parsed IC coordinate extraction, and uses marker-body-anchor pin offsets
+from the catalogue. All V5 component placements statically validate, no V5
+manifest reports `E_OUTPUT_LAYOUT_BROAD_SCAN`, and all V5 terminal reports use
+`component_marker_anchor_offset_existing_wire_identity`.
+
 All cases below were generated through catalogue-driven pin geometry plus the
 accepted terminal mechanics: grid-snapped bidirectional terminal contact,
 180 degrees for left-side pins, 0 degrees for right-side pins, short WIRE from
 terminal contact to exact pin, and final ROOT.DSN link rebasing.
 
-V4 static-valid, pending Proteus user testing:
+V5 static-valid, pending Proteus user testing:
 
 - `NPN`
 - `PNP`

@@ -290,6 +290,19 @@ stream terminator. The corrected Bad Object Record checkpoint is
 NE555 object chunk matches the user's no-error saved NE555 object chunk
 byte-for-byte.
 
+The V4 checkpoint still left several counter/register/decoder families in the
+wrong coordinate cluster: `4017`, `4020`, `74HC4024`, `74HC4040`, `74HC4060`,
+`74HC161`, `74HC163`, `74HC193`, `74HC273`, `74HC165`, `74HC595`, and `7447`.
+Their component-placer manifests exposed the root cause: those families were
+using the rejected broad `component_text_or_body` scanner instead of parsed IC
+coordinate extraction. The V5 checkpoint
+`experiments/multi_pin_catalogue_terminal_solo_v5_temp_2026_07_04` moves those
+families onto parsed IC placement, records marker-body-anchor pin offsets in
+the catalogue, and emits terminals from
+`component_marker_anchor_offset_existing_wire_identity`. All V5 component
+placements statically validate, all V5 object chunks preserve the double-`FF`
+terminator, and no V5 manifest reports `E_OUTPUT_LAYOUT_BROAD_SCAN`.
+
 Mixed multi-pin circuits are also blocked because the current mixed component
 placer path selects a mega donor whose bare component packets lack the donor
 WIRE/link skeleton required by the safe catalogue emitter. Solving mixed and

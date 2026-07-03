@@ -216,7 +216,7 @@ def test_catalogue_pin_planner_coordinates_are_component_relative(tmp_path) -> N
         assert moved_row["short_wire"]["end"]["y"] == original_row["short_wire"]["end"]["y"] + dy
 
 
-def test_catalogue_pin_planner_uses_component_bbox_not_stale_wire_coordinates(
+def test_catalogue_pin_planner_uses_component_anchor_not_stale_wire_coordinates(
     tmp_path,
 ) -> None:
     catalog = load_component_catalog()
@@ -238,18 +238,66 @@ def test_catalogue_pin_planner_uses_component_bbox_not_stale_wire_coordinates(
     for row in plan["terminal_plans"]:
         assert (
             row["coordinate_source"]
-            == "component_bbox_min_offset_existing_wire_identity"
+            == "component_marker_anchor_offset_existing_wire_identity"
         )
         profile = catalog.profile(row["terminal"]["component_family"])
         geometry = profile.proteus_pin_geometry(row["pin"]["name"])
         assert geometry is not None
-        bbox = row["component_bbox"]
+        anchor = row["component_anchor"]
+        assert anchor is not None
         assert row["pin"]["x"] == (
-            bbox["min_x"] + geometry["x_offset_from_component_bbox_min"]
+            anchor["x"] + geometry["x_offset_from_component_anchor"]
         )
         assert row["pin"]["y"] == (
-            bbox["min_y"] + geometry["y_offset_from_component_bbox_min"]
+            anchor["y"] + geometry["y_offset_from_component_anchor"]
         )
+
+
+def test_catalogue_multi_pin_families_use_parsed_layout_and_marker_anchor(
+    tmp_path,
+) -> None:
+    catalog = load_component_catalog()
+    families = [
+        "4017",
+        "4020",
+        "74HC4024",
+        "74HC4040",
+        "74HC4060",
+        "74HC161",
+        "74HC163",
+        "74HC193",
+        "74HC273",
+        "74HC165",
+        "74HC595",
+        "7447",
+    ]
+
+    for family in families:
+        result = generate_component_placement_project(
+            {
+                "components": {family: 1},
+                "layout": {"strategy": "beautify"},
+            },
+            tmp_path / f"catalogue_{family}_marker_anchor.pdsprj",
+            full_cdb=True,
+        )
+        placement_errors = [
+            issue["code"]
+            for issue in result.validation_reports["generated_output_validator"][
+                "errors"
+            ]
+        ]
+        plan = plan_catalogue_pin_bidir_terminals(
+            result.selected_groups,
+            catalog=catalog,
+        )
+
+        assert result.valid, family
+        assert "E_OUTPUT_LAYOUT_BROAD_SCAN" not in placement_errors
+        assert plan["valid"], family
+        assert {
+            row["coordinate_source"] for row in plan["terminal_plans"]
+        } == {"component_marker_anchor_offset_existing_wire_identity"}
 
 
 def test_catalogue_pin_emitter_attaches_4017_existing_wire_skeleton(tmp_path) -> None:

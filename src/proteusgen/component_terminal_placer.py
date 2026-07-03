@@ -601,6 +601,54 @@ def _component_body_bbox_for_catalogue(data: bytes, family: str) -> dict[str, in
     return coordinate_bbox(component_data, pairs)
 
 
+def _component_marker_anchor_for_catalogue(
+    data: bytes,
+    family: str,
+) -> dict[str, Any] | None:
+    """Return the last valid marker-body coordinate for a placed component.
+
+    Several multi-pin native packets contain off-body length-prefixed text and
+    stale donor coordinates.  A broad bbox over all parsed coordinate pairs can
+    therefore select the wrong origin.  The component marker followed by two
+    signed coordinates is a narrower symbol/body anchor and is the preferred
+    catalogue coordinate frame when available.
+    """
+
+    marker = str(family).encode("ascii", errors="ignore")
+    if not marker:
+        return None
+    anchors: list[dict[str, Any]] = []
+    offset = 0
+    while True:
+        marker_offset = data.find(marker, offset)
+        if marker_offset < 0:
+            break
+        x_offset = marker_offset + len(marker)
+        y_offset = x_offset + 4
+        if y_offset + 4 <= len(data):
+            x_value = struct.unpack("<i", data[x_offset : x_offset + 4])[0]
+            y_value = struct.unpack("<i", data[y_offset : y_offset + 4])[0]
+            if (
+                -700_000_000 <= x_value <= 700_000_000
+                and -700_000_000 <= y_value <= 700_000_000
+                and x_value % 10 == 0
+                and y_value % 10 == 0
+                and (abs(x_value) >= 1_000_000 or abs(y_value) >= 1_000_000)
+            ):
+                anchors.append(
+                    {
+                        "marker": str(family),
+                        "marker_offset": marker_offset,
+                        "x_offset": x_offset,
+                        "y_offset": y_offset,
+                        "x": x_value,
+                        "y": y_value,
+                    }
+                )
+        offset = marker_offset + 1
+    return anchors[-1] if anchors else None
+
+
 def _pin_coordinate_from_wire_row(
     row: dict[str, Any],
     *,
@@ -657,6 +705,11 @@ def plan_catalogue_pin_bidir_terminals(
         except ValueError:
             missing_geometry.append({"component_key": key, "component_family": family})
             continue
+        component_data = _component_only_chunk_from_terminalized_chunk(data)
+        component_anchor = _component_marker_anchor_for_catalogue(
+            component_data,
+            str(geometry.get("anchor_family") or family),
+        )
         wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
         for pin in profile.pins:
             if pin.hidden:
@@ -689,17 +742,34 @@ def plan_catalogue_pin_bidir_terminals(
             existing_wire: dict[str, Any] | None = None
             if isinstance(wire_order_index, int) and 0 <= wire_order_index < len(wire_rows):
                 existing_wire = wire_rows[wire_order_index]
-            pin_x = int(bbox["min_x"]) + int(
-                raw_pin_geometry["x_offset_from_component_bbox_min"]
-            )
-            pin_y = int(bbox["min_y"]) + int(
-                raw_pin_geometry["y_offset_from_component_bbox_min"]
-            )
-            coordinate_source = (
-                "component_bbox_min_offset_existing_wire_identity"
-                if existing_wire is not None
-                else "component_bbox_min_offset"
-            )
+            if (
+                component_anchor is not None
+                and "x_offset_from_component_anchor" in raw_pin_geometry
+                and "y_offset_from_component_anchor" in raw_pin_geometry
+            ):
+                pin_x = int(component_anchor["x"]) + int(
+                    raw_pin_geometry["x_offset_from_component_anchor"]
+                )
+                pin_y = int(component_anchor["y"]) + int(
+                    raw_pin_geometry["y_offset_from_component_anchor"]
+                )
+                coordinate_source = (
+                    "component_marker_anchor_offset_existing_wire_identity"
+                    if existing_wire is not None
+                    else "component_marker_anchor_offset"
+                )
+            else:
+                pin_x = int(bbox["min_x"]) + int(
+                    raw_pin_geometry["x_offset_from_component_bbox_min"]
+                )
+                pin_y = int(bbox["min_y"]) + int(
+                    raw_pin_geometry["y_offset_from_component_bbox_min"]
+                )
+                coordinate_source = (
+                    "component_bbox_min_offset_existing_wire_identity"
+                    if existing_wire is not None
+                    else "component_bbox_min_offset"
+                )
             terminal = TerminalSpec(
                 label=_catalogue_terminal_label(key, pin.name, pin.role),
                 symbol_x=pin_x,
@@ -742,6 +812,9 @@ def plan_catalogue_pin_bidir_terminals(
                     },
                     "catalogue_geometry": dict(raw_pin_geometry),
                     "component_bbox": dict(bbox),
+                    "component_anchor": (
+                        dict(component_anchor) if component_anchor is not None else None
+                    ),
                     "coordinate_source": coordinate_source,
                     "existing_wire": (
                         {
@@ -1080,6 +1153,11 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     },
                     "catalogue_geometry": dict(raw_geometry),
                     "component_bbox": dict(row.get("component_bbox", {})),
+                    "component_anchor": (
+                        dict(row["component_anchor"])
+                        if isinstance(row.get("component_anchor"), dict)
+                        else None
+                    ),
                     "existing_wire": dict(existing_wire),
                     "old_suffix": f"{old_suffix:04x}",
                     "temporary_suffix": f"{temporary_suffix:04x}",
@@ -4559,8 +4637,9 @@ def analyse_terminalized_donor_pin_geometry(
     """Extract component-relative Proteus pin geometry from a terminalized donor.
 
     Terminals are matched to WIRE records by terminal-contact coordinate, not by
-    object order.  The resulting pin coordinates are relative to the
-    terminal-stripped component packet bounding-box minimum.
+    object order.  Pin coordinates are recorded relative to both the historic
+    terminal-stripped component bbox minimum and, when available, the narrower
+    component marker-body anchor.
     """
 
     source = Path(project)
@@ -4590,6 +4669,7 @@ def analyse_terminalized_donor_pin_geometry(
         "width": 0,
         "height": 0,
     }
+    component_anchor = _component_marker_anchor_for_catalogue(component_chunk, family)
     pin_rows: dict[str, dict[str, Any]] = {}
     unmatched: list[dict[str, Any]] = []
     for terminal in terminals:
@@ -4611,7 +4691,7 @@ def analyse_terminalized_donor_pin_geometry(
         if not pin_key:
             pin_key = str(len(pin_rows) + 1)
         side = "left" if int(terminal["angle_tenths"]) == LEFT_SIDE_ANGLE else "right"
-        pin_rows[pin_key] = {
+        pin_row = {
             "pin": pin_key,
             "signal": signal,
             "side": side,
@@ -4629,12 +4709,27 @@ def analyse_terminalized_donor_pin_geometry(
             "wire_order_index": wire_order_by_marker[int(wire["marker_offset"])],
             "evidence": "terminalized_donor_wire_endpoint",
         }
+        if component_anchor is not None:
+            pin_row.update(
+                {
+                    "x_offset_from_component_anchor": other[0]
+                    - int(component_anchor["x"]),
+                    "y_offset_from_component_anchor": other[1]
+                    - int(component_anchor["y"]),
+                }
+            )
+        pin_rows[pin_key] = pin_row
 
     return {
         "source_project": str(source),
         "family": family,
-        "coordinate_frame": "component_bbox_min_from_terminal_stripped_donor_packet",
+        "coordinate_frame": (
+            "component_marker_anchor_from_terminal_stripped_donor_packet"
+            if component_anchor is not None
+            else "component_bbox_min_from_terminal_stripped_donor_packet"
+        ),
         "component_bbox": bbox,
+        "component_anchor": component_anchor,
         "terminal_count": len(terminals),
         "wire_count": len(wire_rows),
         "pins": dict(sorted(pin_rows.items(), key=lambda item: item[0])),
