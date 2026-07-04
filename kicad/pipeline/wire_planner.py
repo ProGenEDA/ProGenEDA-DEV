@@ -63,6 +63,8 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "wire_spacing": 2.54,
     "turn_penalty": 0.15,
     "near_wire_penalty": 0.0,
+    "occupied_wire_penalty": 50.0,
+    "strict_occupied_wire_penalty": 2000.0,
     "block_existing_wires": 0.0,
     "max_astar_expansions": 50_000.0,
     "strict_fallback_max_astar_expansions": 50_000.0,
@@ -72,6 +74,7 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "max_lane_candidates": 256.0,
     "crossing_penalty": 0.0,
     "forbidden_contact_penalty": 250_000.0,
+    "strict_forbidden_contact_filter": 1.0,
     "density_tile_size": 25.4,
     "max_crossings_per_tile_soft": 6.0,
     "same_net_reuse_penalty": 0.05,
@@ -80,14 +83,14 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "component_shadow_clearance": 12.7,
     "long_lane_threshold": 80.0,
     "long_lane_outer_penalty": 12.0,
-    "exact_crossing_score_segment_limit": 80.0,
+    "exact_crossing_score_segment_limit": 5000.0,
     "body_grid_score_component_limit": 80.0,
     "dense_design_component_limit": 90.0,
     "dense_max_lane_candidates": 256.0,
     "dense_max_astar_expansions": 1500.0,
     "max_failed_endpoints_per_net": 1000.0,
     "dense_max_failed_endpoints_per_net": 1000.0,
-    "dense_force_grid_contact_scoring": 1.0,
+    "dense_force_grid_contact_scoring": 0.0,
     "dense_skip_astar_when_lane_candidate": 1.0,
     "crossing_risk_astar": 0.0,
     "lane_zero_crossing_fast_accept": 1.0,
@@ -108,6 +111,8 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "partial_route_move_search_steps": 14.0,
     "partial_route_move_body_clearance": 0.0,
     "partial_route_move_min_pin_gap": 10.16,
+    "partial_route_move_include_unroutable": 0.0,
+    "priority_nets": (),
 }
 
 
@@ -131,7 +136,10 @@ def _wire_config(config: dict[str, Any] | None, circuit: dict[str, Any] | None =
     if config:
         explicit_strict_fallback_budget = "strict_fallback_max_astar_expansions" in config
         for key, value in config.items():
-            cfg[key] = value if key == "routing_mode" else float(value)
+            if key in {"routing_mode", "priority_nets"}:
+                cfg[key] = value
+            else:
+                cfg[key] = float(value)
     cfg["routing_mode"] = normalize_routing_mode(cfg.get("routing_mode"))
     if not explicit_strict_fallback_budget:
         cfg["strict_fallback_max_astar_expansions"] = float(cfg.get("max_astar_expansions", 50_000.0))
@@ -492,7 +500,7 @@ def _astar(
                 if cfg.get("block_existing_wires", 1.0) >= 1.0 and nxt not in {start_cell, goal_cell}:
                     continue
                 if owner != net:
-                    step_cost += 50.0
+                    step_cost += float(cfg.get("occupied_wire_penalty", 50.0))
             for adjacent in _neighbors(nxt):
                 adjacent_owner = occupied.get(adjacent)
                 if adjacent_owner and adjacent_owner != net:
@@ -1304,22 +1312,29 @@ def plan_wire_routes(
     crossing_risk_route_count = 0
     salvage_astar_attempt_count = 0
 
-    def net_priority(item: tuple[str, list[dict[str, Any]]]) -> tuple[int, str]:
+    raw_priority_nets = cfg.get("priority_nets") or ()
+    if isinstance(raw_priority_nets, str):
+        raw_priority_nets = [raw_priority_nets]
+    priority_order = {str(net).upper(): index for index, net in enumerate(raw_priority_nets) if str(net)}
+
+    def net_priority(item: tuple[str, list[dict[str, Any]]]) -> tuple[int, int, str]:
         net, endpoints = item
         upper = net.upper()
+        if upper in priority_order:
+            return (-1, priority_order[upper], net)
         if any(token in upper for token in ("CLK", "CLOCK", "CK", "CP")):
-            return (0, net)
+            return (0, 0, net)
         if routing_mode != "wire" and (upper in POWER_NETS or upper in GROUND_NETS):
-            return (2, net)
+            return (2, 0, net)
         if routing_mode == "wire":
             if upper in POWER_NETS or upper in GROUND_NETS:
-                return (4, net)
+                return (1, 0, net)
             if any(token in upper for token in ("I2C", "SPI", "BCD", "SEG", "SHIFT", "CAN", "RS485", "UART")):
-                return (1, net)
+                return (2, 0, net)
             if len(endpoints) >= 4 or _endpoint_span(endpoints) >= 120.0:
-                return (2, net)
-            return (3, net)
-        return (1 if len(endpoints) <= 6 else 3, net)
+                return (3, 0, net)
+            return (4, 0, net)
+        return (1 if len(endpoints) <= 6 else 3, 0, net)
 
     def blocked_cells_for(ignore_refs: set[str], clearance: float) -> set[GridPoint]:
         key = (tuple(sorted(ignore_refs)), round(float(clearance), 3))
@@ -1450,6 +1465,9 @@ def plan_wire_routes(
             scoring_segments = existing_segments + pending_net_segments
             hard_blocked_cells = blocked_cells_for(ignore_refs, float(cfg["clearance"]))
             shadow_blocked_cells = blocked_cells_for(ignore_refs, float(cfg.get("component_shadow_clearance", cfg["clearance"])))
+            full_route_ignore_refs = set(ignore_refs)
+            full_route_ignore_refs.add(str(root["ref"]))
+            full_route_ignore_refs.add(str(target["ref"]))
 
             if cfg.get("lane_router", 1.0) >= 1.0:
                 lane_path, lane_report = _best_lane_path(
@@ -1467,6 +1485,34 @@ def plan_wire_routes(
                 )
                 if lane_path and lane_report:
                     route_candidates.append(("lane_candidate", lane_path, lane_report, []))
+
+            def score_full_route_candidates(
+                candidates: list[tuple[str, list[Point], dict[str, Any], list[str]]],
+            ) -> list[tuple[str, list[Point], dict[str, Any], list[str]]]:
+                scored: list[tuple[str, list[Point], dict[str, Any], list[str]]] = []
+                for algorithm, candidate_path, candidate_report, candidate_warnings in candidates:
+                    candidate_full_path = _join_paths(
+                        _orthogonal_escape_path(start, start_route),
+                        candidate_path,
+                        _orthogonal_escape_path(goal_route, goal),
+                    )
+                    full_score, full_report = _path_score(
+                        candidate_full_path,
+                        bodies=bodies,
+                        existing_segments=scoring_segments,
+                        cfg=cfg,
+                        net=net,
+                        ignore_refs=full_route_ignore_refs,
+                        occupied=routed_occupied,
+                        hard_blocked_cells=hard_blocked_cells,
+                        shadow_blocked_cells=shadow_blocked_cells,
+                    )
+                    full_report["score"] = round(full_score, 3)
+                    full_report["portal_route_score"] = candidate_report.get("score")
+                    full_report["portal_route_forbidden_contacts"] = candidate_report.get("forbidden_contacts", 0)
+                    full_report["portal_route_body_hits"] = candidate_report.get("body_hits", 0)
+                    scored.append((algorithm, candidate_path, full_report, candidate_warnings))
+                return scored
 
             clean_lane_available = any(
                 algorithm == "lane_candidate"
@@ -1510,6 +1556,7 @@ def plan_wire_routes(
                     astar_report["score"] = round(astar_score, 3)
                     route_candidates.append(("grid_astar", astar_path, astar_report, astar_warnings))
 
+            route_candidates = score_full_route_candidates(route_candidates)
             best_preliminary_forbidden = min(
                 (int(candidate[2].get("forbidden_contacts", 0)) for candidate in route_candidates),
                 default=1_000_000,
@@ -1572,8 +1619,9 @@ def plan_wire_routes(
                     )
                 elif fallback_warnings:
                     route_warnings.extend(fallback_warnings)
+            route_candidates = score_full_route_candidates(route_candidates)
             route_candidates = [candidate for candidate in route_candidates if not candidate[2].get("body_hits")]
-            if routing_mode == "wire":
+            if routing_mode == "wire" and cfg.get("strict_forbidden_contact_filter", 1.0) >= 1.0:
                 route_candidates = [
                     candidate
                     for candidate in route_candidates
@@ -1612,6 +1660,11 @@ def plan_wire_routes(
                 salvage_cfg = dict(cfg)
                 salvage_cfg["max_astar_expansions"] = float(cfg.get("salvage_astar_expansions", cfg["max_astar_expansions"]))
                 salvage_cfg["block_existing_wires"] = 0.0
+                salvage_cfg["near_wire_penalty"] = max(float(cfg.get("near_wire_penalty", 0.0)), 50.0)
+                salvage_cfg["occupied_wire_penalty"] = max(
+                    float(cfg.get("occupied_wire_penalty", 50.0)),
+                    float(cfg.get("strict_occupied_wire_penalty", 2000.0)),
+                )
                 salvage_path, salvage_warnings = _astar(
                     start_route,
                     goal_route,
@@ -1623,13 +1676,18 @@ def plan_wire_routes(
                     portals=portals,
                 )
                 if salvage_path:
-                    salvage_score, salvage_report = _path_score(
+                    salvage_full_path = _join_paths(
+                        _orthogonal_escape_path(start, start_route),
                         salvage_path,
+                        _orthogonal_escape_path(goal_route, goal),
+                    )
+                    salvage_score, salvage_report = _path_score(
+                        salvage_full_path,
                         bodies=bodies,
                         existing_segments=scoring_segments,
                         cfg=cfg,
                         net=net,
-                        ignore_refs=ignore_refs,
+                        ignore_refs=full_route_ignore_refs,
                         occupied=routed_occupied,
                         hard_blocked_cells=hard_blocked_cells,
                         shadow_blocked_cells=shadow_blocked_cells,
@@ -1639,6 +1697,17 @@ def plan_wire_routes(
                         route_warnings.extend(
                             [
                                 f"salvage_astar_rejected_body_hit: {net} still touched component bodies.",
+                                *salvage_warnings,
+                            ]
+                        )
+                    elif (
+                        routing_mode == "wire"
+                        and cfg.get("strict_forbidden_contact_filter", 1.0) >= 1.0
+                        and int(salvage_report.get("forbidden_contacts", 0)) > 0
+                    ):
+                        route_warnings.extend(
+                            [
+                                f"salvage_astar_rejected_forbidden_contact: {net} still touched or overlapped another net.",
                                 *salvage_warnings,
                             ]
                         )
@@ -2046,6 +2115,7 @@ def plan_partial_route_component_moves(
     search_steps = max(2, int(cfg.get("partial_route_move_search_steps", 14.0)))
     move_clearance = float(cfg.get("partial_route_move_body_clearance", 0.0))
     min_pin_gap = float(cfg.get("partial_route_move_min_pin_gap", grid * 4))
+    sheet_width, sheet_height = _sheet_bounds(bodies, cfg)
 
     coordinate_edits: list[dict[str, Any]] = []
     move_records: list[dict[str, Any]] = []
@@ -2059,7 +2129,10 @@ def plan_partial_route_component_moves(
     for net, net_data in sorted(nets.items()):
         if len(coordinate_edits) >= max_moves:
             break
-        if not isinstance(net_data, dict) or net_data.get("strategy") != "partial_wire":
+        allowed_motion_strategies = {"partial_wire"}
+        if cfg.get("partial_route_move_include_unroutable", 0.0) >= 1.0:
+            allowed_motion_strategies.add("unroutable")
+        if not isinstance(net_data, dict) or net_data.get("strategy") not in allowed_motion_strategies:
             continue
         endpoints = [item for item in net_data.get("endpoints", []) if isinstance(item, dict)]
         routes = [item for item in net_data.get("routes", []) if isinstance(item, dict)]
@@ -2096,6 +2169,8 @@ def plan_partial_route_component_moves(
             failed_point = (float(failed_point_raw[0]), float(failed_point_raw[1]))
             anchors = []
             for endpoint in connected:
+                if (str(endpoint.get("ref") or ""), str(endpoint.get("pin") or "")) == (ref, pin):
+                    continue
                 point_raw = endpoint.get("point")
                 if isinstance(point_raw, (list, tuple)) and len(point_raw) >= 2:
                     anchors.append((float(point_raw[0]), float(point_raw[1]), endpoint))
@@ -2122,6 +2197,8 @@ def plan_partial_route_component_moves(
                 dx = round(candidate_at[0] - current_at[0], 3)
                 dy = round(candidate_at[1] - current_at[1], 3)
                 moved_bodies = [_translated_body(body, dx, dy) for body in ref_bodies]
+                if any(body.left < 0 or body.top < 0 or body.right > sheet_width or body.bottom > sheet_height for body in moved_bodies):
+                    continue
                 if _component_move_overlaps(ref=ref, moved_bodies=moved_bodies, bodies=bodies, clearance=move_clearance):
                     continue
                 moved_pin = (round(failed_point[0] + dx, 3), round(failed_point[1] + dy, 3))

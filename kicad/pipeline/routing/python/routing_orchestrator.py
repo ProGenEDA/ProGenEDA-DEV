@@ -9,12 +9,13 @@ compatibility backend for today's KiCad generation.
 from __future__ import annotations
 
 import json
+import time
 from copy import deepcopy
 from typing import Any
 
 from kicad.pipeline.catelogues import load_component_catalogue
 from kicad.pipeline.placement_catalog import normalize_kind, resolve_placement_spec
-from kicad.pipeline.wire_planner import plan_wire_routes
+from kicad.pipeline.wire_planner import plan_wire_routes, select_routeable_arrangement
 
 from .live_routing_state import LiveRoutingState, build_live_routing_state
 from .routing_config import routing_v2_config
@@ -110,12 +111,12 @@ def _wire_score(wire_plan: dict[str, Any], validation: dict[str, Any]) -> dict[s
     route_length = sum(float(item.get("length", 0.0)) for item in route_quality if isinstance(item, dict))
     turns = sum(int(item.get("turns", 0)) for item in route_quality if isinstance(item, dict))
     score = (
-        int(validation_metrics.get("component_overlap_count", 0)) * 10_000_000_000
-        + int(validation_metrics.get("body_hit_count", 0)) * 1_000_000_000
-        + int(validation_metrics.get("forbidden_contact_count", 0)) * 750_000_000
-        + int(wire_metrics.get("unroutable_net_count", 0)) * 500_000_000
-        + int(wire_metrics.get("partial_wire_net_count", 0)) * 100_000_000
-        + int(wire_metrics.get("label_strategy_count", 0)) * 10_000_000
+        int(validation_metrics.get("component_overlap_count", 0)) * 1_000_000_000_000_000
+        + int(validation_metrics.get("body_hit_count", 0)) * 100_000_000_000_000
+        + int(wire_metrics.get("unroutable_net_count", 0)) * 10_000_000_000_000
+        + int(wire_metrics.get("partial_wire_net_count", 0)) * 1_000_000_000_000
+        + int(wire_metrics.get("label_strategy_count", 0)) * 100_000_000_000
+        + int(validation_metrics.get("forbidden_contact_count", 0)) * 1_000_000_000
         + int(wire_metrics.get("crossing_density_overflow", 0)) * 1_000_000
         + turns * 10
         + route_length
@@ -133,6 +134,71 @@ def _wire_score(wire_plan: dict[str, Any], validation: dict[str, Any]) -> dict[s
         "different_net_crossing_count": int(wire_metrics.get("different_net_crossing_count", 0)),
         "crossing_density_overflow": int(wire_metrics.get("crossing_density_overflow", 0)),
     }
+
+
+def _incomplete_wire_nets(wire_plan: dict[str, Any]) -> list[str]:
+    nets = wire_plan.get("nets", {})
+    if not isinstance(nets, dict):
+        return []
+    failed = [
+        str(net)
+        for net, data in nets.items()
+        if isinstance(data, dict) and data.get("strategy") not in {"wire", "local_labels", "single_endpoint_label"}
+    ]
+    return sorted(failed)
+
+
+def _wire_completion_key(wire_plan: dict[str, Any]) -> tuple[int, int, int, int, float]:
+    metrics = wire_plan.get("metrics", {}) if isinstance(wire_plan.get("metrics"), dict) else {}
+    route_quality = [route.get("route_quality", {}) for route in wire_plan.get("routes", []) if isinstance(route, dict)]
+    route_length = sum(float(item.get("length", 0.0)) for item in route_quality if isinstance(item, dict))
+    return (
+        int(metrics.get("unroutable_net_count", 0)),
+        int(metrics.get("partial_wire_net_count", 0)),
+        int(metrics.get("label_strategy_count", 0)),
+        -int(metrics.get("wired_route_count", 0)),
+        route_length,
+    )
+
+
+def _plan_wire_routes_with_priority_retries(
+    routing_placement: dict[str, Any],
+    circuit: dict[str, Any],
+    *,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    max_retries = max(0, int(float(config.get("strict_priority_reroute_attempts", 0.0))))
+    attempts: list[dict[str, Any]] = []
+    best = plan_wire_routes(routing_placement, circuit, config=config)
+    attempts.append({"name": "default_order", "priority_nets": [], "metrics": best.get("metrics", {})})
+    failed = _incomplete_wire_nets(best)
+    seen: set[tuple[str, ...]] = {tuple(failed)}
+    for index in range(max_retries):
+        if not failed:
+            break
+        retry_config = dict(config)
+        retry_config["priority_nets"] = failed
+        candidate = plan_wire_routes(routing_placement, circuit, config=retry_config)
+        attempts.append(
+            {
+                "name": f"priority_failed_nets_{index + 1}",
+                "priority_nets": failed,
+                "metrics": candidate.get("metrics", {}),
+            }
+        )
+        if _wire_completion_key(candidate) < _wire_completion_key(best):
+            best = candidate
+        failed = _incomplete_wire_nets(candidate)
+        key = tuple(failed)
+        if not failed or key in seen:
+            break
+        seen.add(key)
+    if len(attempts) > 1:
+        best = deepcopy(best)
+        warnings = list(best.get("warnings", []))
+        warnings.append("strict_priority_reroute_attempts: " + json.dumps(attempts, sort_keys=True))
+        best["warnings"] = warnings
+    return best
 
 
 def _state_signature(state: LiveRoutingState) -> tuple[tuple[str, tuple[float, float], int], ...]:
@@ -158,6 +224,64 @@ def _dedupe_states(states: list[LiveRoutingState]) -> list[LiveRoutingState]:
     return out
 
 
+def _dedupe_named_states(states: list[tuple[str, LiveRoutingState]]) -> list[tuple[str, LiveRoutingState]]:
+    seen: set[tuple[tuple[str, tuple[float, float], int], ...]] = set()
+    out: list[tuple[str, LiveRoutingState]] = []
+    for name, state in states:
+        signature = _state_signature(state)
+        if signature in seen:
+            continue
+        seen.add(signature)
+        out.append((name, state))
+    return out
+
+
+def _legacy_routeable_state_candidate(
+    placement: dict[str, Any],
+    circuit: dict[str, Any],
+    *,
+    catalogue: Any,
+    config: dict[str, Any],
+    wire_config: dict[str, Any] | None,
+) -> tuple[LiveRoutingState | None, dict[str, Any]]:
+    placement_config = config.get("placement", {}) if isinstance(config.get("placement"), dict) else {}
+    if not placement_config.get("enable_legacy_routeable_floor", True):
+        return None, {"ok": False, "skipped": True, "reason": "disabled_by_config"}
+
+    started = time.perf_counter()
+    legacy_wire_config = deepcopy(config.get("wire_fallback", {}))
+    if wire_config:
+        legacy_wire_config.update(wire_config)
+    legacy_wire_config["arrangement_variant_search"] = 1.0
+    legacy_wire_config["arrangement_final_wire_route"] = 0.0
+    legacy_wire_config["max_arrangement_variants"] = float(placement_config.get("legacy_routeable_max_arrangement_variants", 3))
+    try:
+        selected = select_routeable_arrangement(placement, circuit, wire_config=legacy_wire_config)
+        routing_placement = selected.get("routing_placement")
+        if not isinstance(routing_placement, dict):
+            raise ValueError("legacy routeable arrangement did not return routing_placement")
+        state = build_live_routing_state(routing_placement, circuit, component_catalogue=catalogue, config=config)
+        report = selected.get("arrangement_selection", {})
+        if not isinstance(report, dict):
+            report = {}
+        return state, {
+            "ok": True,
+            "elapsed_seconds": round(time.perf_counter() - started, 3),
+            "selected_variant": report.get("selected_variant"),
+            "selected_score": report.get("selected_score", {}),
+            "variant_count": report.get("variant_count"),
+            "worker_count": report.get("worker_count"),
+            "max_arrangement_variants": int(legacy_wire_config["max_arrangement_variants"]),
+            "purpose": "route-complete floor candidate from v0.1 arrangement selector; still rerouted and validated by v2",
+        }
+    except Exception as exc:  # pragma: no cover - defensive report path
+        return None, {
+            "ok": False,
+            "elapsed_seconds": round(time.perf_counter() - started, 3),
+            "error": str(exc),
+        }
+
+
 def _route_final_states(
     states: list[LiveRoutingState],
     circuit: dict[str, Any],
@@ -165,14 +289,16 @@ def _route_final_states(
     engine: str,
     config: dict[str, Any],
     wire_config: dict[str, Any] | None,
+    state_names: list[str] | None = None,
 ) -> dict[str, Any]:
     fallback_wire_config = deepcopy(config.get("wire_fallback", {}))
     if wire_config:
         fallback_wire_config.update(wire_config)
     routed_variants: list[dict[str, Any]] = []
     for index, state in enumerate(states):
+        name = state_names[index] if state_names and index < len(state_names) else f"beam_state_{index}"
         routing_placement = state.to_routing_placement()
-        wire_plan = _wire_plan_v2(plan_wire_routes(routing_placement, circuit, config=fallback_wire_config))
+        wire_plan = _wire_plan_v2(_plan_wire_routes_with_priority_retries(routing_placement, circuit, config=fallback_wire_config))
         validation = build_validation_report(
             project=_project_name(circuit),
             engine=engine,
@@ -182,7 +308,7 @@ def _route_final_states(
         score = _wire_score(wire_plan, validation)
         routed_variants.append(
             {
-                "name": f"beam_state_{index}",
+                "name": name,
                 "state": state,
                 "routing_placement": routing_placement,
                 "wire_plan": wire_plan,
@@ -250,7 +376,7 @@ def _python_live_state_plan(
     engine = "python_live_state_v0.2_full_math_router"
     rotation_edits: list[dict[str, Any]] = []
     beam_report: dict[str, Any] = {"strategy": "disabled"}
-    final_states = [state]
+    final_named_states: list[tuple[str, LiveRoutingState]] = [("initial_live_state", state)]
     if config.get("placement", {}).get("enable_python_live_state_placement", True):
         if config.get("placement", {}).get("enable_cluster_growth_beam_search", True):
             rotation_baseline = baseline_state.clone_state()
@@ -258,7 +384,14 @@ def _python_live_state_plan(
             baseline_legalization = _legalize_existing_overlaps(rotation_baseline, config)
             beam = state.beam_search_cluster_growth(config)
             state = beam["selected_state"]
-            final_states = _dedupe_states([baseline_state, rotation_baseline, *list(beam.get("final_states") or [state])])
+            final_named_states = [
+                ("initial_baseline", baseline_state),
+                ("rotation_baseline", rotation_baseline),
+                *[
+                    (f"beam_state_{index}", beam_state)
+                    for index, beam_state in enumerate(list(beam.get("final_states") or [state]))
+                ],
+            ]
             beam_report = dict(beam.get("report") or {})
             beam_report["baseline_rotation_edit_count"] = len(baseline_rotation_edits)
             beam_report["baseline_legalization"] = baseline_legalization
@@ -266,9 +399,23 @@ def _python_live_state_plan(
         else:
             rotation_edits = _rotation_improvement_pass(state)
             legalization_report = _legalize_existing_overlaps(state, config)
-            final_states = [state]
+            final_named_states = [("rotation_improved_state", state)]
     else:
         legalization_report = {"moved": [], "failed": [], "overlap_count": len(state.find_overlaps())}
+
+    legacy_state, legacy_report = _legacy_routeable_state_candidate(
+        placement,
+        circuit,
+        catalogue=catalogue,
+        config=config,
+        wire_config=wire_config,
+    )
+    beam_report["legacy_routeable_arrangement"] = legacy_report
+    if legacy_state is not None:
+        final_named_states.insert(0, ("legacy_routeable_arrangement", legacy_state))
+    final_named_states = _dedupe_named_states(final_named_states)
+    final_states = [item[1] for item in final_named_states]
+    final_state_names = [item[0] for item in final_named_states]
 
     routed = _route_final_states(
         final_states,
@@ -276,6 +423,7 @@ def _python_live_state_plan(
         engine=engine,
         config=config,
         wire_config=wire_config,
+        state_names=final_state_names,
     )
     selected = routed["selected"]
     state = selected["state"]

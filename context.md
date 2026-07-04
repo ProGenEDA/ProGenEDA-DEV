@@ -8367,3 +8367,326 @@ I’ll keep the log concise but complete: install result, what Rust can do now, 
 - `kicad/pipeline/routing/rust_core/src/validation.rs`
 - `kicad/tests/test_routing_v2.py`
 - `kicad/tools/compare_rust_python_routing_core.py`
+
+---
+
+## 2026-07-04T19:32:54+05:00 - Routing v2 strict wiring continuation
+
+### User Message
+
+```text
+complete the building of new rust+py. build validate verify improve till u have one that can finally wire all the nets properly, i really think the roattion and moving components need imporvements
+```
+
+### Visible Agent Responses
+
+```text
+I’m going to make the new planner stop losing nets before I touch speed. The core fix is to force the rust+py path to compete against the last known route-complete Python arrangement, then only choose the newer motion/rotation result when it is at least as electrically complete.
+```
+
+```text
+The repo checkpoint is still clean apart from the three old generated KiCad files the user had open/modified, and local `HEAD` matches `origin/main`. I’m patching only the routing orchestration, not those historical output files.
+```
+
+```text
+The weak spot is now pretty specific: v2 had better rotation/motion math in places, but it was allowed to select an arrangement that the downstream strict router could not fully connect. I’m adding a “do not regress from known-routable placement” candidate into v2’s final choice.
+```
+
+```text
+I’m keeping the actual generated examples untouched while I work. The change is in the planner’s decision logic: feed it both the new rotation/move candidates and the old route-complete candidate, then score all of them with the same strict physical wire validator.
+```
+
+```text
+Before editing, one subtlety: I’m not making v2 “hide” hard cases behind labels. The legacy candidate is only a coordinate candidate; it still goes through the same strict v2 route generation and validation before it can win.
+```
+
+```text
+The patch is in. Next I’m running the focused routing-v2 unit tests first, then I’ll measure it against the routed benchmark circuits where v2 previously lost nets.
+```
+
+```text
+Focused tests pass. I’m starting the benchmark run now; the key numbers I care about are `unroutable_net_count` and `partial_wire_net_count`, because crossings are allowed but missing physical connections are not.
+```
+
+```text
+The benchmark is still running, which is expected for the richer state search. While it runs: the new candidate floor means even if the newer beam search makes an attractive-looking placement, it has to beat a known route-oriented placement on actual physical routing completeness.
+```
+
+```text
+Still no output yet because the script prints per circuit after each planner call completes. If the first case drags too long, I’ll tighten the search parameters, but I’m giving this run enough room to expose the real routing behavior.
+```
+
+```text
+This run is now slower than useful for iteration. I’m going to interrupt it and rerun with the same legacy safety candidate but a smaller beam, because first we need proof that the routes are complete, then we can turn the speed knob back up.
+```
+
+```text
+The first benchmark exposed a problem in my first pass: the legacy candidate was being included, but it still did not win on R01/R02, which means its exact reroute under the v2 scoring path was not acting as the route-complete floor yet. I’m narrowing that down now by comparing the old generator’s exact arrangement path to the v2 candidate list on one circuit.
+```
+
+```text
+Found the scoring bug: v2 was penalizing “forbidden contacts” so heavily that it could prefer “fewer bad contacts but missing nets” over “all nets physically routed but messier contacts.” That is backwards for this phase; I’m making physical connectivity a hard-priority tier after component/body violations.
+```
+
+```text
+With the corrected priority, the no-beam v2 path routes R01 completely and rotation actually improves crossings and forbidden contacts versus the legacy placement. I’m rerunning the three routed benchmarks with a small beam to see whether any partial/unroutable nets remain.
+```
+
+```text
+The benchmark is running with reduced beam width now. If it still picks a partial route, the next fix will be to make the final selection lexicographic instead of relying on any giant weighted score at all.
+```
+
+```text
+Still in the first full benchmark pass. The planner is doing exact routing per candidate, so the wall time is dominated by the router, not JSON handling; that’s useful evidence for where the Rust handoff should focus later.
+```
+
+```text
+Good: with the new selection priority, all three routed benchmarks now have `partial=0` and `unroutable=0`, and no wire-body/component hits. There are still forbidden contact warnings, so I’m checking whether those are real wrong-net touches or validator sensitivity around endpoint/crossing points.
+```
+
+```text
+The forbidden contacts are not component-body crossings; they are different-net collinear overlaps and T-touches, mostly happening on the small pin escape/stub sections after the router has scored the middle path. I’m fixing that by scoring and filtering the full route, including pin escape stubs, before a route is accepted.
+```
+
+```text
+The router now judges the whole wire, not just the middle segment between pin portals. I’m testing that change on R01 first because it had a compact, easy-to-read forbidden-contact failure.
+```
+
+```text
+That stricter scoring immediately revealed another implementation detail: the scorer was counting the legal pin escape from a pin on its own component as a component-body hit. I’m narrowing that allowance to only the two endpoint components for that route, then rerunning.
+```
+
+```text
+The endpoint-component allowance is patched. Now I’m checking that it restores actual routing while still catching wrong-net overlaps on the full wire.
+```
+
+```text
+Routing is back to complete, and full-path scoring reduced contacts a bit, but the final validator still sees T/collinear shorts that the route scorer is not fully catching. I’m reading the scorer now; this is likely a mismatch between the planner’s contact metric and the stricter validator’s contact metric.
+```
+
+```text
+The mismatch is from an optimization threshold: after enough prior segments, the scorer switched to grid contact scoring, which counted congestion but could miss T/collinear short distinctions. I’m raising that exact-contact threshold so correctness wins during these tests.
+```
+
+```text
+Threshold is patched. I’m rerunning R01; if it still has contacts, then the remaining issue is route choice/placement, not contact detection.
+```
+
+```text
+The remaining partial is GND: the router was leaving power/ground until after local signals, so by the time GND tried to fan out, the clean lanes were already polluted. I’m moving power/ground earlier in strict wire mode so the high-fanout rails reserve clean structure first and later signals can cross them normally.
+```
+
+```text
+Power/ground ordering is patched. I’m rerunning R01 again; target is zero partial/unroutable and zero geometry violations together.
+```
+
+```text
+R01 now hits the mark: all nets routed, no labels, no component/body hits, no forbidden wire contacts, and validation says netlist-equivalence-ready. I’m running the same check over all three routed benchmark circuits now.
+```
+
+```text
+The full three-circuit check is running. The R01 result is encouraging because it proves the stricter route scoring can still complete nets once power/ground are ordered correctly.
+```
+
+```text
+Still running through the heavier cases. This is the cost of using exact contact scoring for correctness; once the behavior is solid, the right Rust target is this scoring loop rather than the file generation code.
+```
+
+```text
+This all-candidates run is taking too long with exact scoring and beam search. I’ll let it finish a little longer, but if it keeps dragging I’ll rerun with beam disabled to validate correctness first, then we can optimize the beam/exact-scoring combination.
+```
+
+```text
+R02/R03 are now geometrically clean but incomplete; the stricter no-short rule exposed that the planner does not yet have enough reroute freedom for denser logic cases. I’m checking whether this is caused by beam movement specifically or by the stricter router itself.
+```
+
+```text
+This comparison is still running. If no-beam is also incomplete, the next move is planner-level: more route lanes / fewer hard blocks / reroute ordering, not component beam search.
+```
+
+```text
+No-beam is also incomplete, so the stricter router itself needs more route freedom. I’m inspecting the failed nets now to see whether they are mostly power fanout, bus fanout, or endpoint escape problems.
+```
+
+```text
+The failed-net inspection is still running. I’m expecting this to show whether we need smarter net ordering or a route fallback that can use outer buses without creating T/overlap shorts.
+```
+
+```text
+The failed routes are mostly dense bus/display/control nets and high-fanout power. The next improvement is to make A* strongly prefer open 90-degree crossings over any shared run or T-touch: crossing one occupied cell is acceptable, riding along an occupied wire is not.
+```
+
+```text
+That A* cost model is patched. I’m rerunning R02/R03 in no-beam mode to isolate the router change from movement search.
+```
+
+```text
+The router comparison is still running. If this reduces failed nets without bringing contacts back, it becomes a useful default; if not, the remaining missing piece is a true rip-up/reroute pass.
+```
+
+```text
+The cost change alone didn’t reduce the failed nets. I’m testing wider route-aware arrangements next; if looser spacing fixes it, then the movement/beautifier side is the right lever.
+```
+
+```text
+The wider-arrangement sweep is still running. This is a useful fork: if all widths fail the same way, we need route rip-up; if wider spacing helps, we encode that into the arrangement decider.
+```
+
+```text
+Still running, likely because R02 exact contact scoring is expensive. I’m letting this one finish because it tells us whether arrangement spacing is worth investing in before adding a rip-up pass.
+```
+
+```text
+Spacing variants do not change R02, so this is routing order/rip-up territory. I’m adding a first real reroute pass: when strict routing leaves nets incomplete, rerun the same placement with those failed nets promoted to the front, then keep whichever physical plan has fewer missing nets.
+```
+
+```text
+The wire planner now accepts `priority_nets` as a real config field, so a reroute attempt can promote failed nets instead of relying on the original static order. Next I’m wiring that retry into v2 selection.
+```
+
+```text
+v2 now retries the same placement with failed nets promoted. I’m compiling and rerunning R02/R03; this is the first lightweight rip-up/reroute behavior, still pure JSON and independent from KiCad.
+```
+
+```text
+The retry benchmark is running. It may be slower because each failed placement can now do more than one strict routing pass, but it should tell us whether ordering alone recovers the missing nets.
+```
+
+```text
+Still running through the stricter retries. If this is too slow or weak, I’ll limit the retry to fewer candidates and move the expensive contact scoring into the Rust core later.
+```
+
+```text
+This is now clearly expensive, but I’m letting the current run complete so the result is real rather than guessed. The main performance hotspot remains exact contact-aware routing.
+```
+
+```text
+Priority reroute helped only slightly and was too slow: R02 still has 12 unroutable, R03 has 3. I’m testing whether the remaining failures are just search-budget limits by raising A* and lane budgets on R03 first.
+```
+
+```text
+Budget sweep is running. If higher budgets do not recover nets, then the missing routes need different geometry, not just more search time.
+```
+
+```text
+Still running; the 150k/300k attempts are expensive. This is another signal that brute-force expansion is not the final answer, but I want the data point.
+```
+
+```text
+Higher A* budgets do not change R03 at all, so the remaining missing nets are geometric/arrangement failures, not timeouts. There is already a partial-route motion repair module in the repo; I’m checking whether we can reuse that instead of inventing a new one.
+```
+
+```text
+The existing downstream wire maker already has a partial-route motion repair loop. I’m testing that same idea directly on v2 routing placement now: move failed endpoints, reroute, and only keep the move if completion improves.
+```
+
+```text
+The motion repair can improve partial nets, but it ignores fully unroutable nets. I’m extending it so unroutable nets can also emit coordinate edits, using the same “move a failed endpoint toward the nearest same-net anchor without overlapping bodies” logic.
+```
+
+```text
+That extension is in. I’m rerunning the direct motion-repair probe on R03 to see whether unroutable nets now become movable instead of just staying stuck.
+```
+
+```text
+The first unroutable-motion attempt was too naive: it even selected the same pin as its own anchor and tried moving a component off-sheet. I’m tightening that helper so anchors exclude the failed endpoint and candidate moves must stay inside the sheet.
+```
+
+```text
+The motion helper is safer now. I’m rerunning the probe; a good result would be moves that reduce the weighted missing-net count without creating overlaps or off-sheet placement.
+```
+
+```text
+The generic unroutable-motion extension made R03 worse, so I’m not going to let that become default behavior. I’m gating it behind a config flag so existing partial-route repair stays conservative while we design a better unroutable-specific mover.
+```
+
+```text
+I’m also turning the retry feature off by default; it is useful as an experiment hook, but it is too slow and too weak to be the normal v2 path right now. Exact contact scoring stays enabled because that directly prevents short-like wire contacts.
+```
+
+```text
+Dense designs will now keep exact contact scoring too, instead of dropping to the faster but less precise grid approximation. That is slower, but it is the correct default until the Rust scorer takes over.
+```
+
+```text
+The defaults are now conservative: no expensive priority retries unless requested, exact contact checks still on, and power/ground route earlier. I’m running the focused routing and wire-maker tests next.
+```
+
+```text
+The routing-v2 tests pass, but one strict wire-maker test now fails: old generator path has 2 incomplete nets under the stricter no-short router. I’m checking that path now so the new stricter rules do not regress existing generation.
+```
+
+```text
+The old generator path is failing because it does not use the rotation-aware v2 placement that made R01 clean; it routes the stricter planner on the older arrangement. I’m testing the generator flow with v2 arrangement feeding the existing KiCad symbol-settling step.
+```
+
+```text
+Tiny hiccup: I accidentally invoked the web tool with an empty query while switching context; no repo state changed. Back to the local generator flow now.
+```
+
+```text
+The settled KiCad symbol bodies make the old generator path much harder than the pure v2 placement. To keep existing project generation working, I’m separating two modes: v2 strict planning keeps rejecting short-like contacts; the KiCad writer can allow repairable contacts into its geometry-repair stage, which already validates the final schematic.
+```
+
+```text
+The planner now has an explicit `strict_forbidden_contact_filter` switch. I’m turning it off only inside the KiCad writer’s repairable planning path so the downstream geometry/netlist repair stage gets a complete wire set to work from.
+```
+
+```text
+That compatibility switch is in. I’m rerunning the failing strict wire-maker test plus the v2 tests, because this is exactly the sort of split where regressions like to hide.
+```
+
+```text
+The targeted tests pass again. I’m doing one final v2 R01/R02/R03 measurement with strict contact filtering on, so the final report is honest about what the new rust+py path can and cannot route yet.
+```
+
+```text
+Final strict v2 benchmark is running. I expect R01 clean; R02/R03 probably still incomplete under no-short strictness, which is the remaining real router work rather than a hidden label/terminal behavior.
+```
+
+```text
+Final strict v2 result is clear: R01 is fully clean; R02/R03 are geometry-clean but incomplete when we forbid all short-like contacts. The old KiCad writer path still passes because it hands repairable geometry to its downstream repair/validation stage.
+```
+
+```text
+I’m updating `context.md` now with this turn’s user request, the visible progress updates, implementation notes, test results, and the files touched. After that I’ll commit and push only the source changes.
+```
+
+```text
+Small note for the log: I’m going to record the main visible updates rather than the raw command outputs. The command outputs are represented by the verification lines and the exact files edited, which is the part the next contributor needs to resume safely.
+```
+
+### Implementation Notes
+
+- Verified at turn start that local `HEAD` matched `origin/main`; old generated v4 project files were already dirty and were left unstaged/untouched.
+- Added a legacy routeable arrangement floor candidate to routing v2 so new rotation/beam states compete against the last known route-oriented placement and cannot silently win only because they look better geometrically.
+- Reweighted v2 final selection so component/body violations remain hardest failures, then missing physical nets, then labels, then forbidden contacts and quality metrics.
+- Added named-state dedupe so reports show whether `legacy_routeable_arrangement`, `rotation_baseline`, or a beam state won.
+- Added optional strict priority reroute support through `priority_nets` and `strict_priority_reroute_attempts`; it is off by default because R02/R03 benefit was small and runtime cost was high.
+- Made full-route scoring include pin escape/stub segments instead of only the middle portal-to-portal segment.
+- Allowed the two endpoint components during full-route scoring so legal pin escapes are not counted as body hits.
+- Increased exact wire-contact scoring and disabled dense grid-contact approximation by default so T/collinear short-like contacts are not hidden by the fast approximation.
+- Moved power/ground earlier in strict wire-mode ordering; this fixed R01 under strict no-short routing.
+- Added `strict_forbidden_contact_filter`; v2 keeps it enabled, while the KiCad project writer disables it before its downstream geometry/netlist repair stage so existing generated-project tests keep a complete wire set to repair.
+- Extended partial-route motion internals with safer sheet-bound and non-self-anchor checks; fully unroutable movement is gated behind `partial_route_move_include_unroutable` and remains off by default after testing made R03 worse.
+
+### Verification
+
+- `PYTHONPATH=. python3 -m compileall -q kicad/pipeline/wire_planner.py kicad/pipeline/kicad_wire_maker.py kicad/pipeline/routing/python/routing_orchestrator.py`
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_routing_v2 -v`
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_kicad_wire_maker.KiCadWireMakerTests.test_strict_wire_mode_reports_unrouted_nets_without_terminal_labels kicad.tests.test_kicad_wire_maker.KiCadWireMakerTests.test_proteus_alias_routed_projects_have_real_wires_and_clean_geometry -v`
+- Strict v2 no-beam benchmark with `routing_mode=wire`:
+  - R01: `partial=0`, `unroutable=0`, `body_hit=0`, `forbidden=0`, `netlist_equivalence_ready=True`, elapsed `1.94s`.
+  - R02: `partial=3`, `unroutable=13`, `body_hit=0`, `forbidden=0`, `netlist_equivalence_ready=False`, elapsed `28.91s`.
+  - R03: `partial=2`, `unroutable=4`, `body_hit=0`, `forbidden=0`, `netlist_equivalence_ready=False`, elapsed `10.65s`.
+- Priority reroute experiment with two retries:
+  - R02 remained incomplete: `partial=3`, `unroutable=12`, elapsed `106.64s`.
+  - R03 remained incomplete: `partial=2`, `unroutable=3`, elapsed `32.86s`.
+- Higher R03 A* budgets `50k`, `150k`, and `300k` did not change incomplete-net counts, proving the remaining issue is geometry/reroute strategy rather than search budget.
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/routing/python/routing_orchestrator.py`
+- `kicad/pipeline/wire_planner.py`

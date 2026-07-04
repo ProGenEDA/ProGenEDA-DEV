@@ -2075,6 +2075,7 @@ def generate_wired_projects_from_final_json(
         cfg.update(wire_config)
     if routing_mode:
         cfg["routing_mode"] = normalize_routing_mode(routing_mode)
+    cfg.setdefault("strict_forbidden_contact_filter", 0.0)
 
     results: list[dict[str, Any]] = []
     for source_file in files:
