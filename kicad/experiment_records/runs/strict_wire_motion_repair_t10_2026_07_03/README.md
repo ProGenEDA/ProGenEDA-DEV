@@ -106,3 +106,31 @@ Work on expected-net-to-KiCad-netlist comparison and ERC cleanup separately from
 the geometry router. Likely fixes are better power/ground symbol modeling,
 electrical-type-aware generated symbols or no-connect handling, and pin-driver
 rules for nets that currently connect passive/input pins directly.
+
+## 2026-07-04 Local Expected-Net Recheck
+
+New hosted validator:
+
+`kicad/pipeline/kicad_netlist_validator.py`
+
+Report written beside the generated T10 example:
+
+`kicad/examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1/local_netlist_validation_report.json`
+
+Result:
+
+- file validity: passed
+- component count/reference/value: passed
+- pin existence: passed, 554/554 expected endpoints resolved
+- expected member reachability: passed for 153/153 nets
+- labels in wire mode: passed, 0 labels
+- cross-net merge check: failed
+- merged expected-net groups: 3
+- power/GND shorts: 1
+
+This means the older strict-wire report was incomplete: it proved every net
+could reach its own required endpoints, but it did not prove that different
+expected nets stayed isolated from each other. The T10 run is therefore no
+longer accepted as a validated final circuit. The next router fix must prevent
+or repair endpoint-to-segment and junction-style accidental cross-net merges,
+then rerun this local expected-net validator before claiming T10 valid.

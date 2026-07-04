@@ -102,6 +102,24 @@ The future validation pipeline for generated KiCad output is:
 Add these as incremental validator extensions after each producing stage exists.
 Do not treat static placement validation as final schematic correctness.
 
+The active hosted expected-net validator is:
+
+```text
+kicad/pipeline/kicad_netlist_validator.py
+```
+
+It must not require KiCad or `kicad-cli`. It parses generated `.kicad_sch`
+S-expressions directly, resolves embedded KiCad symbol pin geometry, builds the
+wire/junction/pin/label connectivity graph, then compares that graph against
+CircuitIR expected nets. The report carries KiCad source-pack digests from
+`kicad/source_pack/source_reference.py` so the parser/exporter assumptions are
+anchored to bundled KiCad source files without executing KiCad.
+
+KiCad ERC remains an optional external evidence step when `kicad-cli` is
+available. ERC is not a replacement for expected-net comparison because ERC
+cannot prove that semantic nets such as clocks, display segments, and exact
+gate pins match the CircuitIR contract.
+
 The active wire-geometry validator must enforce these hard rules before a wired
 schematic can be called accepted:
 
@@ -115,6 +133,20 @@ schematic can be called accepted:
 
 If these fail, the output may still be an openable KiCad record, but it is not a
 validated final circuit.
+
+The final netlist validator must also reject accidental cross-net merges. A
+wire-mode schematic can reach every endpoint of every individual net and still
+be invalid if one endpoint, junction, or label electrically joins two expected
+nets. Power/GND shorts, merged single-purpose nets, missing expected members,
+and floating expected pins are blocking validation failures.
+
+Before routing, the expected-net validator must also reject physical pin
+conflicts: if two CircuitIR logical endpoints on the same component resolve
+through aliases to the same backend pin number/unit but belong to different
+nets, the JSON is invalid. This commonly appears on controller modules when
+many aliases are assigned to one Arduino/ESP32 pin. Do not try to solve that in
+the wire router; repair the JSON allocation, move signals to expanders, or use
+an explicit terminal/combination design.
 
 ## Arrangement, Beautifier, And Wire Planner
 
@@ -173,7 +205,8 @@ symbol pin/body geometry into `routing_inputs/`, feeds that pure JSON to
 `wire_planner.py`, then writes real KiCad wire/junction objects for strict wire
 plans or terminal-label objects only when the upstream mode permits them. It
 records unresolved pin aliases, unroutable nets, partial-wire nets,
-strict-wire connectivity validation, and geometry validation in manifests.
+strict-wire connectivity validation, hosted expected-net comparison, and
+geometry validation in manifests.
 
 `terminal_placer.py` is the current placeholder/foundation for terminal-style
 connectivity. For KiCad its current backend is local labels with short pin

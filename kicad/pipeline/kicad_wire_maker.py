@@ -36,6 +36,7 @@ from .wire_planner import LABEL_STRATEGIES, normalize_routing_mode, plan_partial
 WIRE_MAKER_VERSION = "progen-kicad-wire-maker/v0.1"
 POWER_LABEL_NETS = {"GND", "0", "VSS", "+5V", "5V", "+3V3", "3V3", "VCC", "VDD", "VIN", "VBUS"}
 UNROUTED_STRATEGY_PREFIXES = ("unroutable", "deferred")
+MAX_ACTUAL_PATH_CANDIDATES = 160
 
 
 @dataclass(frozen=True)
@@ -729,6 +730,69 @@ def _point_distance_on_segment(origin: tuple[float, float], point: tuple[float, 
     return abs(origin[0] - point[0]) + abs(origin[1] - point[1])
 
 
+def _segment_endpoint(point: tuple[float, float], segment: WireGeometrySegment) -> bool:
+    rounded = _round_wire_point(point)
+    return rounded == _round_wire_point(segment.start) or rounded == _round_wire_point(segment.end)
+
+
+def _segment_pin_touch(point: tuple[float, float], segment: WireGeometrySegment) -> bool:
+    rounded = _round_wire_point(point)
+    return any(rounded == _round_wire_point(allowed.point) for allowed in segment.allowed_touches)
+
+
+def _cross_net_hard_contacts(
+    left: WireGeometrySegment,
+    right: WireGeometrySegment,
+) -> list[tuple[float, float] | tuple[tuple[float, float], tuple[float, float]]]:
+    if left.net == right.net:
+        return []
+    left_axis = _segment_axis(left)
+    right_axis = _segment_axis(right)
+    if left_axis is None or right_axis is None:
+        return []
+
+    left_orientation, left_fixed, left_low, left_high = left_axis
+    right_orientation, right_fixed, right_low, right_high = right_axis
+    if left_orientation == right_orientation:
+        if abs(left_fixed - right_fixed) > 0.001:
+            return []
+        low = max(left_low, right_low)
+        high = min(left_high, right_high)
+        if low > high + 0.001:
+            return []
+        if abs(low - high) <= 0.001:
+            point = (round(low, 3), left_fixed) if left_orientation == "h" else (left_fixed, round(low, 3))
+            return [point]
+        start = (round(low, 3), left_fixed) if left_orientation == "h" else (left_fixed, round(low, 3))
+        end = (round(high, 3), left_fixed) if left_orientation == "h" else (left_fixed, round(high, 3))
+        return [(start, end)]
+
+    horizontal = left if left_orientation == "h" else right
+    vertical = right if left_orientation == "h" else left
+    point = (round(vertical.start[0], 3), round(horizontal.start[1], 3))
+    if not _point_on_wire_segment(point, horizontal) or not _point_on_wire_segment(point, vertical):
+        return []
+
+    horizontal_interior = not _segment_endpoint(point, horizontal)
+    vertical_interior = not _segment_endpoint(point, vertical)
+    if horizontal_interior and vertical_interior and not (
+        _segment_pin_touch(point, horizontal) or _segment_pin_touch(point, vertical)
+    ):
+        return []
+    return [point]
+
+
+def _candidate_creates_cross_net_endpoint_touch(
+    candidate_segments: list[WireGeometrySegment],
+    existing_segments: list[WireGeometrySegment],
+) -> bool:
+    for candidate in candidate_segments:
+        for existing in existing_segments:
+            if _cross_net_hard_contacts(candidate, existing):
+                return True
+    return False
+
+
 def _trim_dangling_wire_tails(
     segments: list[WireGeometrySegment],
     protected_points: set[tuple[float, float]],
@@ -889,6 +953,32 @@ def _compress_wire_path(points: list[tuple[float, float]]) -> list[tuple[float, 
     return deduped
 
 
+def _dedupe_wire_path(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    out: list[tuple[float, float]] = []
+    for point in points:
+        rounded = _round_wire_point(point)
+        if not out or out[-1] != rounded:
+            out.append(rounded)
+    return out
+
+
+def _routing_axis_limits(
+    *,
+    axis: str,
+    start: tuple[float, float],
+    end: tuple[float, float],
+    existing_segments: list[WireGeometrySegment],
+    component_bodies: tuple[ComponentBody, ...],
+    margin: float = 76.2,
+) -> tuple[float, float]:
+    values = [start[0], end[0]] if axis == "x" else [start[1], end[1]]
+    for body in component_bodies:
+        values.extend([body.left, body.right] if axis == "x" else [body.top, body.bottom])
+    for segment in existing_segments:
+        values.extend([segment.start[0], segment.end[0]] if axis == "x" else [segment.start[1], segment.end[1]])
+    return min(values) - margin, max(values) + margin
+
+
 def _exact_lane_values(
     *,
     axis: str,
@@ -914,32 +1004,108 @@ def _exact_lane_values(
         value = segment.start[0] if axis == "x" else segment.start[1]
         for delta in (2.54, -2.54, 5.08, -5.08):
             values.add(value + delta)
-    return sorted({round(round(value / 2.54) * 2.54, 3) for value in values if -200.0 <= value <= 900.0}, key=lambda item: (abs(item - (base + target) / 2), item))
+    low_limit, high_limit = _routing_axis_limits(
+        axis=axis,
+        start=start,
+        end=end,
+        existing_segments=existing_segments,
+        component_bodies=component_bodies,
+    )
+    return sorted(
+        {round(round(value / 2.54) * 2.54, 3) for value in values if low_limit <= value <= high_limit},
+        key=lambda item: (abs(item - (base + target) / 2), item),
+    )
 
 
-def _candidate_actual_paths(
-    original: list[tuple[float, float]],
+def _touch_body_candidates(touch: AllowedTouch, component_bodies: tuple[ComponentBody, ...]) -> list[ComponentBody]:
+    point = _round_wire_point(touch.point)
+    bodies = [body for body in component_bodies if body.ref == touch.ref]
+    if not bodies:
+        return []
+    containing = [
+        body
+        for body in bodies
+        if body.left - 2.54 <= point[0] <= body.right + 2.54 and body.top - 2.54 <= point[1] <= body.bottom + 2.54
+    ]
+    return containing or bodies
+
+
+def _escape_points_for_touch(
+    touch: AllowedTouch,
+    target: tuple[float, float],
+    component_bodies: tuple[ComponentBody, ...],
+) -> list[tuple[float, float]]:
+    point = _round_wire_point(touch.point)
+    out: list[tuple[float, float]] = [point]
+    for body in _touch_body_candidates(touch, component_bodies):
+        body_center = ((body.left + body.right) / 2, (body.top + body.bottom) / 2)
+        preferred = [
+            (body.right + 5.08, point[1]) if point[0] >= body_center[0] else (body.left - 5.08, point[1]),
+            (point[0], body.bottom + 5.08) if point[1] >= body_center[1] else (point[0], body.top - 5.08),
+        ]
+        candidates = preferred + [
+            (body.left - 5.08, point[1]),
+            (body.right + 5.08, point[1]),
+            (point[0], body.top - 5.08),
+            (point[0], body.bottom + 5.08),
+        ]
+        candidates.sort(key=lambda candidate: (abs(candidate[0] - target[0]) + abs(candidate[1] - target[1]), candidate[1], candidate[0]))
+        for candidate in candidates:
+            rounded = _round_wire_point(candidate)
+            if rounded not in out:
+                out.append(rounded)
+    return out[:5]
+
+
+def _core_candidate_actual_paths(
     start: tuple[float, float],
     end: tuple[float, float],
     existing_segments: list[WireGeometrySegment],
     component_bodies: tuple[ComponentBody, ...],
 ) -> list[list[tuple[float, float]]]:
     candidates: list[list[tuple[float, float]]] = [
-        _compress_wire_path(original),
         _compress_wire_path(_orthogonal_points(start, end)),
         _compress_wire_path([start, (end[0], start[1]), end]),
         _compress_wire_path([start, (start[0], end[1]), end]),
     ]
     x_lanes = _exact_lane_values(axis="x", start=start, end=end, existing_segments=existing_segments, component_bodies=component_bodies)
     y_lanes = _exact_lane_values(axis="y", start=start, end=end, existing_segments=existing_segments, component_bodies=component_bodies)
-    for lane_y in y_lanes[:28]:
+    for lane_y in y_lanes[:32]:
         candidates.append(_compress_wire_path([start, (start[0], lane_y), (end[0], lane_y), end]))
-    for lane_x in x_lanes[:28]:
+    for lane_x in x_lanes[:32]:
         candidates.append(_compress_wire_path([start, (lane_x, start[1]), (lane_x, end[1]), end]))
-    for lane_x in x_lanes[:10]:
-        for lane_y in y_lanes[:10]:
+    for lane_x in x_lanes[:12]:
+        for lane_y in y_lanes[:12]:
             candidates.append(_compress_wire_path([start, (lane_x, start[1]), (lane_x, lane_y), (end[0], lane_y), end]))
             candidates.append(_compress_wire_path([start, (start[0], lane_y), (lane_x, lane_y), (lane_x, end[1]), end]))
+    return candidates
+
+
+def _candidate_actual_paths(
+    original: list[tuple[float, float]],
+    start: tuple[float, float],
+    end: tuple[float, float],
+    allowed_touches: tuple[AllowedTouch, ...],
+    existing_segments: list[WireGeometrySegment],
+    component_bodies: tuple[ComponentBody, ...],
+) -> list[list[tuple[float, float]]]:
+    candidates: list[list[tuple[float, float]]] = [_compress_wire_path(original)]
+    start_touch = allowed_touches[0] if allowed_touches else AllowedTouch("", start)
+    end_touch = allowed_touches[1] if len(allowed_touches) > 1 else AllowedTouch("", end)
+    start_exits = _escape_points_for_touch(start_touch, end, component_bodies)[:3]
+    end_exits = _escape_points_for_touch(end_touch, start, component_bodies)[:3]
+    for start_exit in start_exits:
+        for end_exit in end_exits:
+            for core in _core_candidate_actual_paths(start_exit, end_exit, existing_segments, component_bodies):
+                prefix = [start] if start_exit == start else [start, start_exit]
+                suffix = [end] if end_exit == end else [end_exit, end]
+                candidates.append(_dedupe_wire_path(prefix + core[1:-1] + suffix))
+                if len(candidates) >= MAX_ACTUAL_PATH_CANDIDATES:
+                    break
+            if len(candidates) >= MAX_ACTUAL_PATH_CANDIDATES:
+                break
+        if len(candidates) >= MAX_ACTUAL_PATH_CANDIDATES:
+            break
 
     seen: set[tuple[tuple[float, float], ...]] = set()
     out: list[list[tuple[float, float]]] = []
@@ -949,6 +1115,8 @@ def _candidate_actual_paths(
             continue
         seen.add(key)
         out.append(candidate)
+        if len(out) >= MAX_ACTUAL_PATH_CANDIDATES:
+            break
     return out
 
 
@@ -963,11 +1131,11 @@ def _validated_actual_path(
     component_bodies: tuple[ComponentBody, ...],
     protected_pin_points: dict[tuple[float, float], set[str]],
     source: str,
-) -> tuple[list[tuple[float, float]], bool]:
+) -> tuple[list[tuple[float, float]], bool, bool]:
     best_path = _compress_wire_path(original)
     best_violation_count: int | None = None
     best_length = float("inf")
-    for candidate in _candidate_actual_paths(best_path, start, end, existing_segments, component_bodies):
+    for candidate in _candidate_actual_paths(best_path, start, end, allowed_touches, existing_segments, component_bodies):
         candidate_allowed_points = {(round(allowed.point[0], 3), round(allowed.point[1], 3)) for allowed in allowed_touches}
         touches_wrong_pin = False
         for a, b in _segments_from_points(candidate):
@@ -986,16 +1154,18 @@ def _validated_actual_path(
             WireGeometrySegment(net=net, start=a, end=b, allowed_touches=allowed_touches, source=source)
             for a, b in _segments_from_points(candidate)
         ]
-        report = validate_wire_geometry(existing_segments + candidate_segments, component_bodies)
+        if _candidate_creates_cross_net_endpoint_touch(candidate_segments, existing_segments):
+            continue
+        report = validate_wire_geometry(candidate_segments, component_bodies)
         length = sum(abs(a[0] - b[0]) + abs(a[1] - b[1]) for a, b in _segments_from_points(candidate))
         violation_count = int(report.get("violation_count", 0))
         if report["ok"]:
-            return candidate, candidate != best_path
+            return candidate, candidate != best_path, True
         if best_violation_count is None or (violation_count, length) < (best_violation_count, best_length):
             best_path = candidate
             best_violation_count = violation_count
             best_length = length
-    return best_path, best_path != _compress_wire_path(original)
+    return best_path, best_path != _compress_wire_path(original), False
 
 
 def _label_justify(anchor: tuple[float, float], label: tuple[float, float]) -> str:
@@ -1070,7 +1240,7 @@ def _reserved_label_point(
                 allowed_touches=(AllowedTouch(ref, pin_point),),
                 source=f"{net}:reserved_label_candidate:{ref}",
             )
-            report = validate_wire_geometry(existing_segments + [candidate_segment], component_bodies)
+            report = validate_wire_geometry([candidate_segment], component_bodies)
             if report["ok"]:
                 used_label_points[candidate] = net
                 return candidate, True
@@ -1090,28 +1260,38 @@ def _point_on_visual_segment(point: tuple[float, float], segment: tuple[tuple[fl
     return False
 
 
-def _insert_junctions(segments: list[tuple[tuple[float, float], tuple[float, float]]]) -> list[tuple[float, float]]:
-    endpoint_counts: dict[tuple[float, float], int] = {}
-    endpoints: set[tuple[float, float]] = set()
-    for a, b in segments:
-        endpoint_counts[a] = endpoint_counts.get(a, 0) + 1
-        endpoint_counts[b] = endpoint_counts.get(b, 0) + 1
-        endpoints.add(a)
-        endpoints.add(b)
-
+def _insert_junctions(segments: list[WireGeometrySegment]) -> list[tuple[float, float]]:
     junctions: set[tuple[float, float]] = set()
-    for point in endpoints:
-        touching_count = 0
-        interior_touch = False
-        for segment in segments:
-            if not _point_on_visual_segment(point, segment):
-                continue
-            touching_count += 1
-            a, b = segment
-            if point != a and point != b:
-                interior_touch = True
-        if endpoint_counts.get(point, 0) >= 3 or touching_count >= 3 or interior_touch:
-            junctions.add(point)
+    segments_by_net: dict[str, list[WireGeometrySegment]] = {}
+    for segment in segments:
+        segments_by_net.setdefault(segment.net, []).append(segment)
+
+    for net_segments in segments_by_net.values():
+        endpoint_counts: dict[tuple[float, float], int] = {}
+        endpoints: set[tuple[float, float]] = set()
+        visual_segments = [(segment.start, segment.end) for segment in net_segments]
+        for segment in net_segments:
+            endpoint_counts[segment.start] = endpoint_counts.get(segment.start, 0) + 1
+            endpoint_counts[segment.end] = endpoint_counts.get(segment.end, 0) + 1
+            endpoints.add(segment.start)
+            endpoints.add(segment.end)
+
+        for point in endpoints:
+            touching_count = 0
+            interior_touch = False
+            for visual_segment in visual_segments:
+                if not _point_on_visual_segment(point, visual_segment):
+                    continue
+                touching_count += 1
+                a, b = visual_segment
+                if point != a and point != b:
+                    interior_touch = True
+            if endpoint_counts.get(point, 0) >= 3 or touching_count >= 3 or interior_touch:
+                if not any(
+                    other.net != net_segments[0].net and _point_on_wire_segment(point, other)
+                    for other in segments
+                ):
+                    junctions.add(point)
     return sorted(junctions, key=lambda item: (item[1], item[0]))
 
 
@@ -1354,6 +1534,7 @@ def make_kicad_wires(
     route_count = 0
     fallback_route_count = 0
     exact_path_repair_count = 0
+    invalid_actual_routes: list[dict[str, Any]] = []
     label_collision_avoidance_count = 0
     deferred_nets: list[str] = []
     unrouted_nets: list[str] = []
@@ -1441,7 +1622,7 @@ def make_kicad_wires(
             from_ref = str(raw_from.get("ref") or "") if isinstance(raw_from, dict) else ""
             to_ref = str(raw_to.get("ref") or "") if isinstance(raw_to, dict) else ""
             allowed_touches = (AllowedTouch(from_ref, start), AllowedTouch(to_ref, end))
-            path, path_repaired = _validated_actual_path(
+            path, path_repaired, path_valid = _validated_actual_path(
                 net=net_name,
                 original=path,
                 start=start,
@@ -1452,6 +1633,16 @@ def make_kicad_wires(
                 protected_pin_points=protected_pin_points,
                 source=f"{net_name}:{from_ref}->{to_ref}",
             )
+            if not path_valid:
+                invalid_actual_routes.append(
+                    {
+                        "net": net_name,
+                        "from": f"{from_ref}.{raw_from.get('pin')}" if isinstance(raw_from, dict) else from_ref,
+                        "to": f"{to_ref}.{raw_to.get('pin')}" if isinstance(raw_to, dict) else to_ref,
+                        "reason": "no_geometry_clean_actual_path_candidate",
+                    }
+                )
+                continue
             if path_repaired:
                 exact_path_repair_count += 1
             add_segments(
@@ -1468,7 +1659,9 @@ def make_kicad_wires(
                     fallback_route_count += 1
 
     raw_segment_count = len(geometry_segments)
-    geometry_segments = _merge_same_net_collinear_segments(geometry_segments)
+    # Do not collapse same-net collinear pieces yet. A naive merge can create a
+    # long span through component bodies or across other nets even when the
+    # original routed pieces were valid.
     protected_points = {
         (round(allowed.point[0], 3), round(allowed.point[1], 3))
         for segment in geometry_segments
@@ -1476,12 +1669,28 @@ def make_kicad_wires(
     }
     protected_points.update((round(float(label["at"][0]), 3), round(float(label["at"][1]), 3)) for label in labels)
     geometry_segments, trimmed_wire_tail_count = _trim_dangling_wire_tails(geometry_segments, protected_points)
-    geometry_segments = _merge_same_net_collinear_segments(geometry_segments)
     segments = [(segment.start, segment.end) for segment in geometry_segments]
-    merged_segment_count = raw_segment_count - len(geometry_segments)
-    junctions = _insert_junctions(segments)
+    merged_segment_count = 0
+    junctions = _insert_junctions(geometry_segments)
     geometry_report = validate_wire_geometry(geometry_segments, component_bodies)
     strict_wire_report = _strict_wire_connectivity_report(wire_plan, geometry_segments, endpoint_point)
+    if invalid_actual_routes:
+        strict_wire_report = dict(strict_wire_report)
+        violations = list(strict_wire_report.get("violations", []))
+        violations.extend(
+            {
+                "rule": "wire_maker_rejected_invalid_actual_route",
+                "net": item["net"],
+                "from": item["from"],
+                "to": item["to"],
+                "reason": item["reason"],
+            }
+            for item in invalid_actual_routes[: max(0, 200 - len(violations))]
+        )
+        strict_wire_report["ok"] = False
+        strict_wire_report["violation_count"] = int(strict_wire_report.get("violation_count", 0)) + len(invalid_actual_routes)
+        strict_wire_report["violations"] = violations[:200]
+        strict_wire_report["violations_truncated"] = bool(strict_wire_report.get("violations_truncated")) or len(violations) > 200
     project_name = str(circuit.get("project", {}).get("name") or circuit.get("circuit_id") or "wired")
     objects: list[str] = []
     for index, (a, b) in enumerate(segments, 1):
@@ -1509,6 +1718,9 @@ def make_kicad_wires(
         "unresolved_pin_report_truncated": len(unresolved) > 200,
         "fallback_route_count": fallback_route_count,
         "exact_path_repair_count": exact_path_repair_count,
+        "invalid_actual_route_count": len(invalid_actual_routes),
+        "invalid_actual_routes": invalid_actual_routes[:200],
+        "invalid_actual_routes_truncated": len(invalid_actual_routes) > 200,
         "forbidden_label_strategy_count": len(forbidden_label_strategy_nets),
         "forbidden_label_strategy_nets": forbidden_label_strategy_nets[:200],
         "forbidden_label_strategy_report_truncated": len(forbidden_label_strategy_nets) > 200,
@@ -1794,6 +2006,30 @@ def write_wired_project(
     schematic = (out_dir / manifest["schematic_file"]).read_text(encoding="utf-8")
     manifest["static_checks"] = validate_schematic(schematic)
     manifest["static_checks"]["wire_maker"] = True
+    from .kicad_netlist_validator import validate_schematic_netlist, write_validation_report
+
+    local_netlist_report = validate_schematic_netlist(
+        out_dir / manifest["schematic_file"],
+        circuit,
+        routing_mode=_wire_plan_routing_mode(wire_plan),
+        run_erc=False,
+    )
+    local_netlist_report_path = out_dir / "local_netlist_validation_report.json"
+    write_validation_report(local_netlist_report, local_netlist_report_path)
+    expected_net_check = local_netlist_report.get("checks", {}).get("expected_net_comparison", {})
+    physical_pin_check = local_netlist_report.get("checks", {}).get("physical_pin_assignment", {})
+    manifest["local_netlist_validation"] = {
+        "schema": local_netlist_report.get("schema"),
+        "ok": bool(local_netlist_report.get("ok")),
+        "report": local_netlist_report_path.name,
+        "kicad_cli_required": bool(local_netlist_report.get("kicad_cli_required", True)),
+        "blocking_failure_count": int(local_netlist_report.get("metrics", {}).get("blocking_failure_count", 0)),
+        "physical_pin_conflict_count": int(physical_pin_check.get("conflict_count", 0)),
+        "failed_net_count": int(expected_net_check.get("failed_net_count", 0)),
+        "merged_net_count": int(expected_net_check.get("merged_net_count", 0)),
+        "power_ground_short_count": int(expected_net_check.get("power_ground_short_count", 0)),
+        "floating_expected_pin_count": int(expected_net_check.get("floating_expected_pin_count", 0)),
+    }
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return manifest
 
@@ -1914,6 +2150,15 @@ def generate_wired_projects_from_final_json(
                 "geometry_violation_count": manifest["wire_maker"]["geometry_violation_count"],
                 "strict_wire_ok": bool(manifest["wire_maker"]["strict_wire_ok"]),
                 "strict_wire_violation_count": manifest["wire_maker"]["strict_wire_violation_count"],
+                "local_netlist_ok": bool(manifest["local_netlist_validation"]["ok"]),
+                "local_netlist_blocking_failure_count": manifest["local_netlist_validation"]["blocking_failure_count"],
+                "local_netlist_physical_pin_conflict_count": manifest["local_netlist_validation"].get(
+                    "physical_pin_conflict_count", 0
+                ),
+                "local_netlist_failed_net_count": manifest["local_netlist_validation"]["failed_net_count"],
+                "local_netlist_merged_net_count": manifest["local_netlist_validation"]["merged_net_count"],
+                "local_netlist_power_ground_short_count": manifest["local_netlist_validation"]["power_ground_short_count"],
+                "local_netlist_floating_expected_pin_count": manifest["local_netlist_validation"]["floating_expected_pin_count"],
                 "static_checks_ok": bool(manifest["static_checks"]["ok"]),
             }
         )
@@ -1942,6 +2187,19 @@ def generate_wired_projects_from_final_json(
         "total_geometry_violations": sum(int(item["geometry_violation_count"]) for item in results),
         "all_strict_wire_ok": all(item["strict_wire_ok"] for item in results),
         "total_strict_wire_violations": sum(int(item["strict_wire_violation_count"]) for item in results),
+        "all_local_netlist_ok": all(item["local_netlist_ok"] for item in results),
+        "total_local_netlist_blocking_failures": sum(int(item["local_netlist_blocking_failure_count"]) for item in results),
+        "total_local_netlist_physical_pin_conflicts": sum(
+            int(item["local_netlist_physical_pin_conflict_count"]) for item in results
+        ),
+        "total_local_netlist_failed_nets": sum(int(item["local_netlist_failed_net_count"]) for item in results),
+        "total_local_netlist_merged_nets": sum(int(item["local_netlist_merged_net_count"]) for item in results),
+        "total_local_netlist_power_ground_shorts": sum(
+            int(item["local_netlist_power_ground_short_count"]) for item in results
+        ),
+        "total_local_netlist_floating_expected_pins": sum(
+            int(item["local_netlist_floating_expected_pin_count"]) for item in results
+        ),
         "wire_config": cfg,
         "results": results,
     }
@@ -1955,8 +2213,9 @@ def generate_wired_projects_from_final_json(
         "The wire planner is fed exact KiCad source-symbol pin points through `routing_inputs/` "
         "when those pins can be resolved. The wire maker uses the same source-backed KiCad pin "
         "geometry when possible. Any unresolved "
-        "pin aliases, unroutable nets, strict-wire connectivity violations, wire crossings, and "
-        "wire/component body contacts are recorded in each project manifest.\n",
+        "pin aliases, unroutable nets, strict-wire connectivity violations, local expected-net "
+        "comparison failures, wire crossings, and wire/component body contacts are recorded in "
+        "each project manifest.\n",
         encoding="utf-8",
     )
     return summary

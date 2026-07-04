@@ -35,6 +35,36 @@ def run_placer_pack(*args, **kwargs):
 
     return _run_placer_pack(*args, **kwargs)
 
+
+def compare_expected_netlist(*args, **kwargs):
+    from .kicad_netlist_validator import compare_expected_netlist as _compare_expected_netlist
+
+    return _compare_expected_netlist(*args, **kwargs)
+
+
+def parse_schematic(*args, **kwargs):
+    from .kicad_netlist_validator import parse_schematic as _parse_schematic
+
+    return _parse_schematic(*args, **kwargs)
+
+
+def run_optional_kicad_erc(*args, **kwargs):
+    from .kicad_netlist_validator import run_optional_kicad_erc as _run_optional_kicad_erc
+
+    return _run_optional_kicad_erc(*args, **kwargs)
+
+
+def validate_schematic_netlist(*args, **kwargs):
+    from .kicad_netlist_validator import validate_schematic_netlist as _validate_schematic_netlist
+
+    return _validate_schematic_netlist(*args, **kwargs)
+
+
+def write_validation_report(*args, **kwargs):
+    from .kicad_netlist_validator import write_validation_report as _write_validation_report
+
+    return _write_validation_report(*args, **kwargs)
+
 __all__ = [
     "PipelineContext",
     "PipelineError",
@@ -43,7 +73,9 @@ __all__ = [
     "apply_coordinate_edits",
     "build_live_routing_state",
     "build_validation_report",
+    "compare_expected_netlist",
     "decide_arrangement",
+    "parse_schematic",
     "place_components",
     "place_terminals",
     "plan_partial_route_component_moves",
@@ -55,7 +87,10 @@ __all__ = [
     "select_routeable_arrangement",
     "run_placer_pipeline",
     "run_placer_pack",
+    "run_optional_kicad_erc",
     "validate_placement",
     "validate_placement_input",
+    "validate_schematic_netlist",
+    "write_validation_report",
     "write_wire_planner_jsons",
 ]

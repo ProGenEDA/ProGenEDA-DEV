@@ -1573,6 +1573,12 @@ def plan_wire_routes(
                 elif fallback_warnings:
                     route_warnings.extend(fallback_warnings)
             route_candidates = [candidate for candidate in route_candidates if not candidate[2].get("body_hits")]
+            if routing_mode == "wire":
+                route_candidates = [
+                    candidate
+                    for candidate in route_candidates
+                    if int(candidate[2].get("forbidden_contacts", 0)) == 0
+                ]
             route_candidates.sort(
                 key=lambda item: (
                     int(item[2].get("forbidden_contacts", 0)),

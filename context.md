@@ -258,6 +258,7 @@ The harness deletes the per-family working folders after bundling, which is why 
 Timestamp: `2026-06-26T07:44:23.213Z` (UTC) / `2026-06-26 12:44:23.213 +05:00` (Pakistan)
 
 ~~~~markdown
+
 The all-in-one mode is added to the same harness. I’m doing a quick compile/test pass again, then I’ll generate the `1x`, `5x`, and `15x` combined IC circuits.
 ~~~~
 
@@ -7873,3 +7874,226 @@ Committed locally as `1c045d0`. I’m pushing now and then I’ll verify the rem
   - `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
 
 ---
+
+---
+
+## KiCad Migration Context Update
+
+Timestamp: `2026-07-04T12:31:25+05:00` (Pakistan)
+
+### User Prompt
+
+~~~~text
+what is this merge n fix it now? n btw the v10 u produced for me earlier had come pins missing, the catelogue and the new validator are there to avoid doing that happening again
+~~~~
+
+### Visible Agent Responses
+
+~~~~markdown
+The “merge” here is not a JSON merge. It’s wire compaction: after routing, the wire maker was collapsing several same-net collinear wire pieces into one longer wire segment to reduce object count. That is only safe if the longer span does not pass through component bodies or touch other nets; the current version did not prove that, so I’m fixing the router/maker around the validator rather than trusting that cleanup.
+~~~~
+
+~~~~markdown
+The v4 failures prove two separate things: the old compaction merge is no longer the main problem, and the maker is still accepting fallback paths when it cannot find a clean candidate. Some fallback paths are straight lines from a pin back through its own symbol body. I’m fixing that now with proper pin escape candidates and wider sheet-aware routing lanes, then I’ll make the maker stop silently accepting invalid fallback paths.
+~~~~
+
+~~~~markdown
+The catalogue/new validator point is exactly right: missing pins now fail at `pin_existence` before we claim a generated circuit is valid. I’m also wiring that result into every new generated project manifest, so a V10-style run can’t quietly pass if a symbol is present but one of the requested pins can’t be resolved.
+~~~~
+
+~~~~markdown
+The patch was too broad for the current file shape, so I’m splitting it into smaller surgical edits around the candidate path functions.
+~~~~
+
+~~~~markdown
+I also found a nasty sheet-size bug in the repair candidates: exact lane values were clamped to `x/y <= 900`, but T10 lives out past `x=4000`. That starved the repair search and explains the giant straight-through-body fallback paths.
+~~~~
+
+~~~~markdown
+The lane clamp is fixed. Next I’m adding explicit pin escape points so candidate routes move away from each endpoint symbol before they attempt a long horizontal/vertical run.
+~~~~
+
+~~~~markdown
+Pin escapes and sheet-aware lanes are in. I’m making one more behavioral change: if no candidate passes the validator, the wire maker will report that route as invalid instead of drawing a bad fallback wire and pretending the net is fine.
+~~~~
+
+~~~~markdown
+Now an invalid repaired path becomes a recorded strict-wire failure instead of a hidden bad wire. I’m compiling and running the focused tests before another V10/T10 attempt.
+~~~~
+
+~~~~markdown
+The focused tests are green. I’m generating v5 now; expected outcomes are either a clean pass, or explicit invalid-route failures instead of a bogus “strict wire OK.”
+~~~~
+
+~~~~markdown
+v5 is running. This one has more candidate freedom because the lane clamp is gone, so I’m expecting either cleaner routing or a clear list of routes that need upstream planner work.
+~~~~
+
+~~~~markdown
+Still running; no early crash.
+~~~~
+
+~~~~markdown
+It’s still active after roughly two minutes. That’s longer, but plausible with wider sheet-aware lane search; I’ll wait for the manifest rather than cutting it off prematurely.
+~~~~
+
+~~~~markdown
+This is now getting long again. I’m checking the process and partial folder; if it’s stuck in exhaustive candidate validation, I’ll cap the expanded search and keep the invalid-route reporting.
+~~~~
+
+~~~~markdown
+The v5 process is pegged at one CPU after a bit over three minutes, so the expanded search is expensive. I’ll give it one more minute because it may still complete; if not, I’ll stop it and add a bounded candidate budget.
+~~~~
+
+~~~~markdown
+v5 is past the useful wait point. I’m stopping it and putting a candidate budget on the exact-path repair so the large circuit produces a report instead of burning time.
+~~~~
+
+~~~~markdown
+The traceback confirms the expensive part is candidate body validation. I’m capping candidate enumeration per route and limiting escape combinations so the maker remains bounded, while keeping the “no invalid fallback wire” rule.
+~~~~
+
+~~~~markdown
+v5 is now marked as an interrupted performance probe. I’m running compile/tests once more, then a bounded v6 T10 run.
+~~~~
+
+~~~~markdown
+The bounded candidate logic compiles and the focused tests pass. I’m starting v6 now; if it can’t fully route cleanly, it should at least fail honestly with invalid-route counts instead of drawing broken wires.
+~~~~
+
+~~~~markdown
+v6 is running. It has passed startup and is in the heavy routing/maker path.
+~~~~
+
+~~~~markdown
+Still running. The candidate budget is bounded now, so it should not hang indefinitely.
+~~~~
+
+~~~~markdown
+v6 is honest now: geometry is clean, zero pin/body violations, and no power/GND short, but it rejected too many actual routes, so 102 expected nets are now incomplete. This is progress in validator terms but not acceptable output. I’m inspecting which routes were rejected so the next fix targets the planner rather than guessing.
+~~~~
+
+~~~~markdown
+The rejected routes line up with planner warnings like `minimum_crossing_route accepted crossing/touch risks`. So the planner is still allowed to choose routes that are geometrically/electrically risky; the maker is now correctly refusing many of them. I’m going to push the same hard-contact rule upstream into the planner’s accepted-route validation so it does not hand the maker bad paths in the first place.
+~~~~
+
+~~~~markdown
+The upstream planner already measures different-net contact risk, but it treats those risks as acceptable “minimum crossing” fallbacks. For strict wire mode that is backwards: open-space 90-degree crossings are fine, but T/endpoint/overlap contacts must be hard blockers.
+~~~~
+
+~~~~markdown
+There’s another subtle merge: a KiCad junction dot is global at a coordinate. If we place a junction for net A at the exact coordinate where net B merely crosses, KiCad electrically joins A and B. So I’m fixing two places: planner must not accept hard contacts, and wire maker must not emit a junction dot on top of a different-net crossing.
+~~~~
+
+~~~~markdown
+The planner now rejects forbidden contacts in strict wire mode instead of accepting the “least bad” one. I’m tightening junction emission next.
+~~~~
+
+~~~~markdown
+Junction emission now refuses to put a dot at any coordinate where a different net also has a segment. That avoids turning legal visual crossings into electrical shorts. Running the focused checks again.
+~~~~
+
+~~~~markdown
+Focused tests pass. Rechecking the old v6 file still shows merges because that file already contains the old junction dots; I need a fresh generation to verify the junction fix. Starting v7 now with the planner hard-contact rejection included.
+~~~~
+
+~~~~markdown
+v7 is running. With the planner rejecting hard contacts upstream, I expect fewer maker rejections but possibly more partial/unroutable nets if the planner can’t find clean paths yet.
+~~~~
+
+~~~~markdown
+Still running, normal for this T10 path.
+~~~~
+
+~~~~markdown
+v7 has the same counts, so the new planner filter did not move the T10 result yet. I’m checking whether the remaining “merged nets” are true wire contacts, junction placement, or a local validator interpretation issue.
+~~~~
+
+~~~~markdown
+Those “merged nets” are not mostly random wiring anymore; many are physical pin alias conflicts. Example: the final JSON assigns different logical nets to Arduino Nano aliases that resolve to the same real Nano pin. KiCad is right to merge them because they are literally the same symbol pin. I’m adding an explicit validator gate for “same physical component pin assigned to multiple expected nets” so this fails before we ever trust routing.
+~~~~
+
+~~~~markdown
+The validator now records physical-pin conflicts as a first-class blocking failure. I’m adding a regression test so a future V10-like JSON cannot assign one real pin to multiple nets without failing clearly.
+~~~~
+
+~~~~markdown
+I’m running the focused tests and then rechecking v7 with the upgraded validator to see the conflict count explicitly.
+~~~~
+
+~~~~markdown
+The v7 recheck now says the important part clearly: `physical_pin_net_conflict: 17`. That’s the “V10 pins missing/wrong” class of failure made explicit. I’m adding that count into generated manifests so it shows up in the run summary too, not only the detailed report.
+~~~~
+
+~~~~markdown
+Manifest summaries now include physical pin conflict counts. I’m doing a quick compile on the touched modules, then I’ll update the experiment notes with what v1-v7 proved.
+~~~~
+
+~~~~markdown
+The experiment record now captures the important result: the validator uncovered that T10’s final JSON is physically over-assigning controller pins. I’m updating the central log and agent rules with that so the next work starts at JSON validation, not blind router tweaks.
+~~~~
+
+~~~~markdown
+The docs are updated. I’m checking the worktree now so I can stage only this work and leave the older unrelated dirty v4 files alone.
+~~~~
+
+~~~~markdown
+The new generated evidence is about 19 MB total, which is acceptable for the record requirement. I’m updating `context.md` before staging so the repo carries the user-facing trail too.
+~~~~
+
+~~~~markdown
+I’m keeping the context entry practical: the latest user prompt, the visible responses from this turn segment, the files edited, and the test/evidence outcomes. That is enough for another run to resume without needing the chat pane.
+~~~~
+
+### Files Edited / Added
+
+- `kicad/pipeline/kicad_netlist_validator.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/pipeline/beautifier.py`
+- `kicad/pipeline/__init__.py`
+- `kicad/tests/test_kicad_netlist_validator.py`
+- `kicad/AGENTS.md`
+- `kicad/experiment_records/README.md`
+- `kicad/experiment_records/runs/strict_wire_motion_repair_t10_2026_07_03/README.md`
+- `kicad/experiment_records/runs/local_netlist_merge_repair_t10_2026_07_04/README.md`
+- `kicad/examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1/local_netlist_validation_report.json`
+- `kicad/examples/final_json_wired_project_run_2026_07_04_115935_t10_local_netlist_merge_repair_v1/`
+- `kicad/examples/final_json_wired_project_run_2026_07_04_120507_t10_local_netlist_merge_repair_v2/`
+- `kicad/examples/final_json_wired_project_run_2026_07_04_120839_t10_local_netlist_merge_repair_v3/`
+- `kicad/examples/final_json_wired_project_run_2026_07_04_121154_t10_local_netlist_merge_repair_v4/`
+- `kicad/examples/final_json_wired_project_run_2026_07_04_121800_t10_local_netlist_merge_repair_v5/`
+- `kicad/examples/final_json_wired_project_run_2026_07_04_122311_t10_local_netlist_merge_repair_v6/`
+- `kicad/examples/final_json_wired_project_run_2026_07_04_122623_t10_local_netlist_merge_repair_v7/`
+
+### Tests / Evidence
+
+- `PYTHONPATH=. python -m compileall -q kicad/pipeline/kicad_wire_maker.py kicad/pipeline/kicad_netlist_validator.py kicad/pipeline/wire_planner.py kicad/tests/test_kicad_netlist_validator.py`
+- `PYTHONPATH=. python -m unittest kicad.tests.test_kicad_netlist_validator kicad.tests.test_kicad_wire_maker.KiCadWireMakerTests.test_wire_maker_strict_wire_mode_emits_no_terminal_labels -v`
+- T10 v7 recheck: `physical_pin_net_conflict = 17`, `expected_net_mismatch = 102`, `merged_expected_nets = 17`, geometry clean, no labels, no unresolved pins, no power/GND short.
+
+### Follow-up Visible Agent Responses
+
+~~~~markdown
+I noticed the context insertion landed above an older log section instead of true EOF. I’m moving this new KiCad update to the end now so the file stays chronological.
+~~~~
+
+~~~~markdown
+I found it at line 262. I’m extracting that block and appending it to EOF with a small script-like shell edit? Per editing rules, use `apply_patch`; I’ll do it as a delete/re-add patch rather than ad hoc file rewriting.
+~~~~
+
+~~~~markdown
+The inserted block is large, so I’m doing a mechanical move by marker: remove from `## KiCad Migration Context Update` through the T10 evidence line, then append that exact block to EOF. No source code is being rewritten by this command.
+~~~~
+
+~~~~markdown
+The context block is now at EOF and the old section reads normally again. I’m running whitespace/status checks, then I’ll stage only the relevant files and generated records.
+~~~~
+
+~~~~markdown
+Whitespace is clean. I’m staging the implementation, docs, context, and the new evidence folders explicitly; the three old v4 generated files stay unstaged.
+~~~~
+
+~~~~markdown
+Staging is scoped correctly: the old v4 files are still unstaged, and all new evidence/code/docs are staged. I’m adding one tiny context addendum for the context-move/staging messages, then I’ll run staged checks and commit.
+~~~~

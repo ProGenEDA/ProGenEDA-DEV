@@ -33,7 +33,8 @@ before, and what should happen next.
 | `runs/component_motion_first_crossing_allowed_t10_2026_07_03` | Current routing policy evidence | Planner-only T10 probe after making component movement happen before route search in `plan_wiring()` and allowing wire-wire crossings. 190 components, 554 resolved pins, 0 body overlaps, 7.87 s planner time, 89 complete wire nets, 16 partial-wire nets, 48 unroutable nets, and 0 labels. Not accepted because incomplete nets remain. |
 | `runs/routeability_variant_selector_t10_2026_07_03` | Current routeability selector evidence | Planner-only T10 probe after adding parallel routeability-scored arrangement variants. Selected `compact_flow` from 5 variants with 4 workers. Result: 152 complete wire nets, 1 partial-wire net, 0 unroutable nets, 0 labels, 26.13 s planner time. Not accepted because one partial net remains. |
 | `runs/exact_pin_retry_t10_2026_07_03` | Superseded exact-pin evidence | Full exact KiCad pin/body verifier reached 0 unresolved pins, 0 labels, 0 unroutable nets, and 0 geometry violations, but still had 6 partial exact nets. Superseded by strict-wire motion repair. |
-| `runs/strict_wire_motion_repair_t10_2026_07_03` | Current strict-wire T10 evidence | Fresh exact KiCad T10 project generated in `../examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1`. Internal validators passed with 190 components, 554 resolved routing pins, 1503 wire objects, 0 labels, 0 unresolved pins, 0 partial/unrouted nets, 0 geometry violations, and strict physical wire graph OK. KiCad netlist export passed; ERC still fails on symbol electrical-type issues. |
+| `runs/strict_wire_motion_repair_t10_2026_07_03` | Rechecked, not final accepted | Fresh exact KiCad T10 project generated in `../examples/final_json_wired_project_run_2026_07_03_213416_t10_exact_strict_wire_repair_v1`. Older internal validators passed with 190 components, 554 resolved routing pins, 1503 wire objects, 0 labels, 0 partial/unrouted nets, and 0 geometry violations. The 2026-07-04 hosted expected-net validator now finds 3 merged expected-net groups and 1 power/GND short, so T10 is not accepted until cross-net merge repair lands. |
+| `runs/local_netlist_merge_repair_t10_2026_07_04` | Current local netlist evidence | Added hosted KiCad schematic expected-net comparison, physical pin conflict checks, rotation-aware beautifier support, strict invalid-route rejection, and several T10 repair attempts through v7. v7 has clean geometry and no power/GND short, but the validator reports 17 physical pin conflicts in the T10 final JSON, 102 failed expected nets after invalid routes are refused, and 17 merged expected-net groups. T10 is blocked on final JSON pin allocation plus upstream router work. |
 
 ## Current Baseline
 
@@ -67,13 +68,16 @@ The current supported placer baseline is:
   resolved and no component body overlaps, but it still leaves partial and
   unroutable nets. The next accepted-output blocker is movement-first
   routeability planning against the strict geometry/connectivity validators.
-- Current strict-wire routing evidence: exact KiCad T10 now routes all 153 nets
-  with 401 routed branches, 1503 emitted wire objects, 0 labels, 0 unresolved
-  pins, 0 partial/unrouted nets, 0 geometry violations, and strict physical wire
-  graph OK. The current blocker moved beyond routing geometry: KiCad netlist
-  export passes, but ERC still reports symbol electrical-type issues
-  (`pin_to_pin` and `ground_pin_not_ground`) that need a separate logical/ERC
-  cleanup stage.
+- Current strict-wire routing evidence: exact KiCad T10 reaches all 153 expected
+  nets with 401 routed branches, 1503 emitted wire objects, 0 labels, 0
+  unresolved pins, 0 partial/unrouted nets, and 0 geometry violations, but the
+  new local expected-net validator finds accidental cross-net merges. The next
+  accepted-output blocker is router/validator repair for endpoint-to-segment
+  cross-net joins before ERC cleanup can be treated as the remaining issue.
+- Current local expected-net evidence: the hosted validator now resolves KiCad
+  symbol pins and finds 17 physical pin conflicts in T10. A final JSON that
+  assigns one real component pin to multiple unrelated nets must fail before
+  routing; otherwise KiCad will correctly merge those nets at the symbol pin.
 
 ## Rules For New Experiments
 
