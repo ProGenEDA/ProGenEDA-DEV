@@ -509,6 +509,7 @@ def compare_expected_netlist(
     schematic_path: Path | str,
     circuit: dict[str, Any],
     routing_mode: str = "wire",
+    wire_mode_terminal_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     parsed = parse_schematic(schematic_path)
     graph = build_schematic_connectivity_graph(parsed)
@@ -654,7 +655,16 @@ def compare_expected_netlist(
             break
 
     label_count = sum(len(points) for points in parsed.labels_by_text.values())
-    wire_mode_label_failure = routing_mode == "wire" and label_count > 0
+    terminal_policy = wire_mode_terminal_policy if isinstance(wire_mode_terminal_policy, dict) else {}
+    raw_allowed_label_nets = terminal_policy.get("terminal_nets") or ()
+    if isinstance(raw_allowed_label_nets, str):
+        raw_allowed_label_nets = [raw_allowed_label_nets]
+    if not isinstance(raw_allowed_label_nets, (list, tuple, set)):
+        raw_allowed_label_nets = []
+    allowed_label_nets = {str(net).strip().upper() for net in raw_allowed_label_nets if str(net).strip()}
+    label_nets = {str(label).strip().upper() for label in parsed.labels_by_text if str(label).strip()}
+    unexpected_label_nets = sorted(label_nets - allowed_label_nets)
+    wire_mode_label_failure = routing_mode == "wire" and label_count > 0 and (not terminal_policy.get("enabled") or bool(unexpected_label_nets))
     blocking_failures: list[dict[str, Any]] = []
     if not parsed.file_validity["ok"]:
         blocking_failures.append({"type": "file_validity", "detail": parsed.file_validity})
@@ -677,7 +687,14 @@ def compare_expected_netlist(
     if floating_pins:
         blocking_failures.append({"type": "floating_expected_pins", "items": floating_pins[:100], "count": len(floating_pins)})
     if wire_mode_label_failure:
-        blocking_failures.append({"type": "wire_mode_label_used", "label_count": label_count})
+        blocking_failures.append(
+            {
+                "type": "wire_mode_label_used",
+                "label_count": label_count,
+                "unexpected_label_nets": unexpected_label_nets,
+                "allowed_label_nets": sorted(allowed_label_nets),
+            }
+        )
 
     checks = {
         "file_validity": parsed.file_validity,
@@ -718,7 +735,13 @@ def compare_expected_netlist(
             "floating_expected_pin_count": len(floating_pins),
             "floating_expected_pins": floating_pins[:100],
         },
-        "wire_mode_policy": {"ok": not wire_mode_label_failure, "routing_mode": routing_mode, "label_count": label_count},
+        "wire_mode_policy": {
+            "ok": not wire_mode_label_failure,
+            "routing_mode": routing_mode,
+            "label_count": label_count,
+            "allowed_label_nets": sorted(allowed_label_nets),
+            "unexpected_label_nets": unexpected_label_nets,
+        },
     }
     return {
         "schema": "progen-kicad-local-netlist-comparison/v0.1",
@@ -798,8 +821,14 @@ def validate_schematic_netlist(
     run_erc: bool = False,
     erc_output: Path | str | None = None,
     kicad_cli: str | None = None,
+    wire_mode_terminal_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    report = compare_expected_netlist(schematic_path=schematic_path, circuit=circuit, routing_mode=routing_mode)
+    report = compare_expected_netlist(
+        schematic_path=schematic_path,
+        circuit=circuit,
+        routing_mode=routing_mode,
+        wire_mode_terminal_policy=wire_mode_terminal_policy,
+    )
     report["erc"] = (
         run_optional_kicad_erc(schematic_path, output_json=erc_output, kicad_cli=kicad_cli)
         if run_erc

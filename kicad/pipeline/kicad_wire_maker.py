@@ -30,7 +30,14 @@ from .placement_catalog import CatalogPlacementPlan, PlacedCatalogComponent, res
 from .placement_project_writer import write_placement_project
 from .placer_pipeline import run_placer_pipeline
 from .wire_geometry_validator import AllowedTouch, ComponentBody, WireGeometrySegment, validate_wire_geometry
-from .wire_planner import LABEL_STRATEGIES, normalize_routing_mode, plan_partial_route_component_moves, plan_wire_routes, plan_wiring
+from .wire_planner import (
+    LABEL_STRATEGIES,
+    WIRE_MODE_TERMINAL_LABEL_STRATEGY,
+    normalize_routing_mode,
+    plan_partial_route_component_moves,
+    plan_wire_routes,
+    plan_wiring,
+)
 
 
 WIRE_MAKER_VERSION = "progen-kicad-wire-maker/v0.1"
@@ -1330,6 +1337,26 @@ def _wire_plan_routing_mode(wire_plan: dict[str, Any]) -> str:
     return normalize_routing_mode(raw or "wire")
 
 
+def _wire_mode_terminal_policy_nets(wire_plan: dict[str, Any]) -> set[str]:
+    policy = wire_plan.get("wire_mode_terminal_policy")
+    if not isinstance(policy, dict) or not policy.get("enabled"):
+        return set()
+    raw = policy.get("terminal_nets") or ()
+    if isinstance(raw, str):
+        raw = [raw]
+    if not isinstance(raw, (list, tuple, set)):
+        return set()
+    return {str(net).strip().upper() for net in raw if str(net).strip()}
+
+
+def _wire_mode_terminal_label_allowed(wire_plan: dict[str, Any], net: str, strategy: str) -> bool:
+    return (
+        _wire_plan_routing_mode(wire_plan) == "wire"
+        and strategy == WIRE_MODE_TERMINAL_LABEL_STRATEGY
+        and net.strip().upper() in _wire_mode_terminal_policy_nets(wire_plan)
+    )
+
+
 def _strict_wire_connectivity_report(
     wire_plan: dict[str, Any],
     geometry_segments: list[WireGeometrySegment],
@@ -1353,9 +1380,10 @@ def _strict_wire_connectivity_report(
         net_name = str(net)
         strategy = str(net_data.get("strategy") or "")
         endpoints = [item for item in net_data.get("endpoints", []) if isinstance(item, dict)]
+        allowed_wire_terminal_label = _wire_mode_terminal_label_allowed(wire_plan, net_name, strategy)
         if strategy in LABEL_STRATEGIES:
             label_strategy_count += 1
-            if routing_mode == "wire":
+            if routing_mode == "wire" and not allowed_wire_terminal_label:
                 violations.append(
                     {
                         "rule": "wire_mode_forbids_terminal_label_strategy",
@@ -1389,7 +1417,7 @@ def _strict_wire_connectivity_report(
                 }
             )
         elif strategy != "wire":
-            if routing_mode == "wire":
+            if routing_mode == "wire" and not allowed_wire_terminal_label:
                 violations.append({"rule": "wire_mode_requires_wire_strategy", "net": net_name, "strategy": strategy})
             continue
 
@@ -1583,7 +1611,7 @@ def make_kicad_wires(
             unrouted_nets.append(net_name)
             continue
         if strategy in LABEL_STRATEGIES:
-            if routing_mode == "wire":
+            if routing_mode == "wire" and not _wire_mode_terminal_label_allowed(wire_plan, net_name, strategy):
                 forbidden_label_strategy_nets.append({"net": net_name, "strategy": strategy})
                 continue
             for endpoint in endpoints:
@@ -1724,6 +1752,13 @@ def make_kicad_wires(
         "forbidden_label_strategy_count": len(forbidden_label_strategy_nets),
         "forbidden_label_strategy_nets": forbidden_label_strategy_nets[:200],
         "forbidden_label_strategy_report_truncated": len(forbidden_label_strategy_nets) > 200,
+        "wire_mode_terminal_policy": wire_plan.get("wire_mode_terminal_policy", {}),
+        "wire_mode_terminal_label_count": sum(
+            1
+            for net, net_data in wire_plan.get("nets", {}).items()
+            if isinstance(net_data, dict)
+            and _wire_mode_terminal_label_allowed(wire_plan, str(net), str(net_data.get("strategy") or ""))
+        ),
         "label_collision_avoidance_count": label_collision_avoidance_count,
         "deferred_net_count": len(deferred_nets),
         "deferred_nets": deferred_nets,
@@ -2013,6 +2048,7 @@ def write_wired_project(
         circuit,
         routing_mode=_wire_plan_routing_mode(wire_plan),
         run_erc=False,
+        wire_mode_terminal_policy=wire_plan.get("wire_mode_terminal_policy", {}),
     )
     local_netlist_report_path = out_dir / "local_netlist_validation_report.json"
     write_validation_report(local_netlist_report, local_netlist_report_path)

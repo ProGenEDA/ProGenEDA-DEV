@@ -50,7 +50,14 @@ class Body:
 
 
 ROUTING_MODES = {"wire", "terminal", "combination"}
-LABEL_STRATEGIES = {"local_labels", "single_endpoint_label", "local_labels_after_router_failure", "local_labels_after_geometry_violation"}
+WIRE_MODE_TERMINAL_LABEL_STRATEGY = "wire_mode_terminal_label"
+LABEL_STRATEGIES = {
+    "local_labels",
+    "single_endpoint_label",
+    "local_labels_after_router_failure",
+    "local_labels_after_geometry_violation",
+    WIRE_MODE_TERMINAL_LABEL_STRATEGY,
+}
 
 DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "routing_mode": "wire",
@@ -116,6 +123,9 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "partial_route_move_min_pin_gap": 10.16,
     "partial_route_move_include_unroutable": 0.0,
     "priority_nets": (),
+    "terminal_nets": (),
+    "wire_mode_terminal_power_ground": 0.0,
+    "wire_mode_terminal_high_fanout_threshold": 0.0,
 }
 
 
@@ -139,7 +149,7 @@ def _wire_config(config: dict[str, Any] | None, circuit: dict[str, Any] | None =
     if config:
         explicit_strict_fallback_budget = "strict_fallback_max_astar_expansions" in config
         for key, value in config.items():
-            if key in {"routing_mode", "priority_nets"}:
+            if key in {"routing_mode", "priority_nets", "terminal_nets", "wire_mode_terminal_policy"}:
                 cfg[key] = value
             else:
                 cfg[key] = float(value)
@@ -1142,13 +1152,38 @@ def _manhattan(left: Point, right: Point) -> float:
     return abs(left[0] - right[0]) + abs(left[1] - right[1])
 
 
-def _local_label_net(net: str, endpoints: list[dict[str, Any]], routing_mode: str) -> bool:
-    if routing_mode == "wire":
-        return False
-    if routing_mode == "terminal":
-        return True
+def _terminal_net_set(cfg: dict[str, Any]) -> set[str]:
+    raw = cfg.get("terminal_nets") or ()
+    if isinstance(raw, str):
+        raw = [raw]
+    if not isinstance(raw, (list, tuple, set)):
+        return set()
+    return {str(net).strip().upper() for net in raw if str(net).strip()}
+
+
+def _terminalized_net_reason(net: str, endpoints: list[dict[str, Any]], routing_mode: str, cfg: dict[str, Any]) -> str | None:
     upper = net.upper()
-    return upper in POWER_NETS or upper in GROUND_NETS or len(endpoints) >= 7
+    if routing_mode == "wire":
+        explicit_terminals = _terminal_net_set(cfg)
+        if upper in explicit_terminals:
+            return "wire_mode_declared_terminal_net"
+        if float(cfg.get("wire_mode_terminal_power_ground", 0.0)) > 0.0 and (upper in POWER_NETS or upper in GROUND_NETS):
+            return "wire_mode_power_ground_terminal"
+        high_fanout_threshold = int(float(cfg.get("wire_mode_terminal_high_fanout_threshold", 0.0)))
+        if high_fanout_threshold > 0 and len(endpoints) >= high_fanout_threshold:
+            return "wire_mode_high_fanout_terminal"
+        return None
+    if routing_mode == "terminal":
+        return "terminal_mode_all_nets"
+    if upper in POWER_NETS or upper in GROUND_NETS:
+        return "combination_power_ground_terminal"
+    if len(endpoints) >= 7:
+        return "combination_high_fanout_terminal"
+    return None
+
+
+def _local_label_net(net: str, endpoints: list[dict[str, Any]], routing_mode: str) -> bool:
+    return _terminalized_net_reason(net, endpoints, routing_mode, DEFAULT_WIRE_CONFIG) is not None
 
 
 def _endpoint_span(endpoints: list[dict[str, Any]]) -> float:
@@ -1351,6 +1386,7 @@ def plan_wire_routes(
     blocked_cell_cache: dict[tuple[tuple[str, ...], float], set[GridPoint]] = {}
     routes: list[dict[str, Any]] = []
     nets_out: dict[str, Any] = {}
+    terminalized_nets: dict[str, dict[str, Any]] = {}
     warnings: list[str] = []
     max_wired_routes = max(1, int(cfg.get("max_wired_routes", 10_000.0)))
     max_failed_endpoints_per_net = max(1, int(cfg.get("max_failed_endpoints_per_net", 1000.0)))
@@ -1406,8 +1442,21 @@ def plan_wire_routes(
             else:
                 nets_out[net] = {"strategy": "single_endpoint_label", "endpoints": endpoints, "routes": []}
             continue
-        if _local_label_net(net, endpoints, routing_mode):
-            nets_out[net] = {"strategy": "local_labels", "endpoints": endpoints, "routes": []}
+        terminal_reason = _terminalized_net_reason(net, endpoints, routing_mode, cfg)
+        if terminal_reason:
+            strategy = WIRE_MODE_TERMINAL_LABEL_STRATEGY if routing_mode == "wire" else "local_labels"
+            terminalized_nets[net] = {
+                "reason": terminal_reason,
+                "strategy": strategy,
+                "endpoint_count": len(endpoints),
+                "class": "ground" if net.upper() in GROUND_NETS else "power" if net.upper() in POWER_NETS else "signal",
+            }
+            nets_out[net] = {
+                "strategy": strategy,
+                "terminal_reason": terminal_reason,
+                "endpoints": endpoints,
+                "routes": [],
+            }
             continue
         if len(routes) >= max_wired_routes:
             warnings.append(f"wire_route_limit_deferred: {net} skipped after {max_wired_routes} routed connections.")
@@ -1907,6 +1956,9 @@ def plan_wire_routes(
     )
 
     width, height = _sheet_bounds(bodies, cfg)
+    wire_mode_terminalized_nets = {
+        net: item for net, item in terminalized_nets.items() if routing_mode == "wire" and item.get("strategy") == WIRE_MODE_TERMINAL_LABEL_STRATEGY
+    }
     return {
         "schema": "progen-kicad-wire-plan/v0.1",
         "stage": "wire_planner",
@@ -1932,6 +1984,13 @@ def plan_wire_routes(
             "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges",
         },
         "sheet": {"width": width, "height": height, "grid": cfg["grid"], "clearance": cfg["clearance"]},
+        "wire_mode_terminal_policy": {
+            "enabled": bool(wire_mode_terminalized_nets),
+            "terminal_strategy": WIRE_MODE_TERMINAL_LABEL_STRATEGY,
+            "terminal_nets": sorted(wire_mode_terminalized_nets),
+            "nets": wire_mode_terminalized_nets,
+            "source": "explicit_terminal_nets_or_power_ground_policy",
+        },
         "nets": nets_out,
         "routes": routes,
         "metrics": {
@@ -1948,6 +2007,8 @@ def plan_wire_routes(
             "mst_total_length": mst_total_length,
             **crossing_density,
             "label_strategy_count": sum(1 for item in nets_out.values() if isinstance(item, dict) and item.get("strategy") in LABEL_STRATEGIES),
+            "wire_mode_terminal_net_count": len(wire_mode_terminalized_nets),
+            "wire_mode_terminal_endpoint_count": sum(int(item.get("endpoint_count", 0)) for item in wire_mode_terminalized_nets.values()),
             "partial_wire_net_count": sum(
                 1 for item in nets_out.values() if isinstance(item, dict) and item.get("strategy") == "partial_wire"
             ),

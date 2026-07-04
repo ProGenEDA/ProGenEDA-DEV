@@ -12,6 +12,9 @@ Current implemented parity slice:
 - pin anchor resolution
 - fast HPWL/overlap/out-of-sheet metrics
 - component overlap and out-of-sheet validation
+- `plan_terminal_policy`, which selects explicit wire-mode terminal nets for
+  power/ground rails and optional high-fanout nets, then returns the wire
+  planner config patch that declares those labels
 
 Current intentionally non-authoritative functions:
 
@@ -39,6 +42,10 @@ PYTHONPATH=. python3 kicad/tools/compare_rust_python_routing_core.py \
   --placement-json kicad/examples/final_json_wired_project_run_2026_07_02_170327_t01_t10_connected_wired_v6_exact_pin_planner/placement_inputs/T01_arduino_led_button_demo_placement_input.json \
   --wheel kicad/pipeline/routing/rust_core/target/wheels/progen_routing_core-0.1.0-cp313-cp313-manylinux_2_34_x86_64.whl
 ```
+
+`cargo test` links against Python normally. `maturin build` still uses
+`pyo3/extension-module` from `pyproject.toml`, so the wheel remains a proper
+Python extension module.
 
 Promotion rule:
 

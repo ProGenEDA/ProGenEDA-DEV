@@ -72,6 +72,61 @@ fn i32_value(value: Option<&Value>, fallback: i32) -> i32 {
         .unwrap_or(fallback)
 }
 
+fn config_value<'a>(config: &'a Value, key: &str) -> Option<&'a Value> {
+    config.get(key).or_else(|| {
+        config
+            .get("wire_mode_terminal_policy")
+            .and_then(|item| item.get(key))
+    })
+}
+
+fn bool_config(config: &Value, key: &str, fallback: bool) -> bool {
+    match config_value(config, key) {
+        Some(Value::Bool(value)) => *value,
+        Some(Value::Number(value)) => value.as_f64().unwrap_or(0.0) != 0.0,
+        Some(Value::String(value)) => {
+            let lower = value.trim().to_ascii_lowercase();
+            matches!(lower.as_str(), "1" | "true" | "yes" | "on")
+        }
+        _ => fallback,
+    }
+}
+
+fn usize_config(config: &Value, key: &str, fallback: usize) -> usize {
+    match config_value(config, key) {
+        Some(Value::Number(value)) => value
+            .as_u64()
+            .map(|item| item as usize)
+            .or_else(|| value.as_f64().map(|item| item.max(0.0) as usize))
+            .unwrap_or(fallback),
+        Some(Value::String(value)) => value.trim().parse::<usize>().unwrap_or(fallback),
+        _ => fallback,
+    }
+}
+
+fn string_set_config(config: &Value, key: &str) -> BTreeSet<String> {
+    let Some(value) = config_value(config, key) else {
+        return BTreeSet::new();
+    };
+    match value {
+        Value::String(item) => {
+            let mut out = BTreeSet::new();
+            let normalized = item.trim().to_ascii_uppercase();
+            if !normalized.is_empty() {
+                out.insert(normalized);
+            }
+            out
+        }
+        Value::Array(items) => items
+            .iter()
+            .filter_map(Value::as_str)
+            .map(|item| item.trim().to_ascii_uppercase())
+            .filter(|item| !item.is_empty())
+            .collect(),
+        _ => BTreeSet::new(),
+    }
+}
+
 fn classify_net(net: &str) -> &'static str {
     let upper = net.to_ascii_uppercase();
     const POWER: &[&str] = &["+5V", "+3V3", "VCC", "VDD", "VIN", "REG_OUT"];
@@ -355,6 +410,7 @@ fn build_state(payload: &Value) -> Result<Value, String> {
         );
         let type_id = catalogue.resolve_type_id(&kind);
         let normalized_kind = normalize_type_id(&kind);
+        let source_backed_type = catalogue.has_type(&type_id);
         let type_def = if catalogue.has_type(&type_id) {
             catalogue.get(&kind)
         } else {
@@ -394,6 +450,9 @@ fn build_state(payload: &Value) -> Result<Value, String> {
         let mut pin_defs =
             value_object(type_def.get("pin_model").and_then(|item| item.get("pins")));
         if let Some(raw_pins) = raw_component.get("pins").and_then(Value::as_object) {
+            if raw_pins.len() > pin_defs.len() && !source_backed_type {
+                pin_defs.clear();
+            }
             let lookup = pin_lookup(&pin_defs);
             let total = raw_pins.len().max(1);
             for (index, (pin_name, net_value)) in raw_pins.iter().enumerate() {
@@ -632,6 +691,81 @@ fn resolve_pins(input_json: &str) -> PyResult<String> {
 }
 
 #[pyfunction]
+fn plan_terminal_policy(input_json: &str) -> PyResult<String> {
+    let payload = parse_json(input_json)?;
+    let config = payload.get("config").unwrap_or(&Value::Null);
+    let power_ground_enabled = bool_config(config, "wire_mode_terminal_power_ground", true);
+    let high_fanout_threshold = usize_config(config, "wire_mode_terminal_high_fanout_threshold", 0);
+    let explicit_terminal_nets = string_set_config(config, "terminal_nets");
+    let state = build_state(&payload).map_err(pyo3::exceptions::PyValueError::new_err)?;
+    let nets: BTreeMap<String, LiveNet> =
+        serde_json::from_value(state.get("nets").cloned().unwrap_or(Value::Null))
+            .map_err(|err| pyo3::exceptions::PyValueError::new_err(err.to_string()))?;
+
+    let mut terminal_nets = BTreeSet::new();
+    let mut terminal_details = BTreeMap::new();
+    let mut physical_net_count = 0usize;
+    let mut physical_endpoint_count = 0usize;
+    let mut terminal_endpoint_count = 0usize;
+    for (net_name, net) in nets.iter() {
+        let upper = net_name.to_ascii_uppercase();
+        let mut reason: Option<&str> = None;
+        if explicit_terminal_nets.contains(&upper) {
+            reason = Some("explicit_terminal_net");
+        } else if power_ground_enabled && matches!(net.class.as_str(), "power" | "ground") {
+            reason = Some("power_ground_terminal");
+        } else if high_fanout_threshold > 0 && net.fanout >= high_fanout_threshold {
+            reason = Some("high_fanout_terminal");
+        }
+
+        if let Some(reason) = reason {
+            terminal_nets.insert(net_name.clone());
+            terminal_endpoint_count += net.fanout;
+            terminal_details.insert(
+                net_name.clone(),
+                json!({
+                    "reason": reason,
+                    "class": net.class,
+                    "fanout": net.fanout,
+                    "endpoint_count": net.fanout,
+                    "strategy": "wire_mode_terminal_label"
+                }),
+            );
+        } else {
+            physical_net_count += 1;
+            physical_endpoint_count += net.fanout;
+        }
+    }
+
+    Ok(json!({
+        "schema": "progen-routing-terminal-policy/v0.1",
+        "engine": "rust_core_v0.1_terminal_policy",
+        "implemented": true,
+        "routing_mode": "wire",
+        "policy": {
+            "wire_mode_terminal_power_ground": power_ground_enabled,
+            "wire_mode_terminal_high_fanout_threshold": high_fanout_threshold,
+            "terminal_strategy": "wire_mode_terminal_label"
+        },
+        "terminal_nets": terminal_nets.iter().cloned().collect::<Vec<_>>(),
+        "nets": terminal_details,
+        "wire_config_patch": {
+            "terminal_nets": terminal_nets.iter().cloned().collect::<Vec<_>>(),
+            "wire_mode_terminal_power_ground": if power_ground_enabled { 1.0 } else { 0.0 },
+            "wire_mode_terminal_high_fanout_threshold": high_fanout_threshold
+        },
+        "metrics": {
+            "total_net_count": nets.len(),
+            "terminal_net_count": terminal_nets.len(),
+            "terminal_endpoint_count": terminal_endpoint_count,
+            "physical_net_count": physical_net_count,
+            "physical_endpoint_count": physical_endpoint_count
+        }
+    })
+    .to_string())
+}
+
+#[pyfunction]
 fn score_rotations(input_json: &str) -> PyResult<String> {
     temp_not_full("score_rotations", input_json)
 }
@@ -688,6 +822,7 @@ fn plan_full(input_json: &str) -> PyResult<String> {
 fn progen_routing_core(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(build_live_state, module)?)?;
     module.add_function(wrap_pyfunction!(resolve_pins, module)?)?;
+    module.add_function(wrap_pyfunction!(plan_terminal_policy, module)?)?;
     module.add_function(wrap_pyfunction!(score_rotations, module)?)?;
     module.add_function(wrap_pyfunction!(legalize_candidate, module)?)?;
     module.add_function(wrap_pyfunction!(score_placement_variants, module)?)?;
@@ -750,5 +885,89 @@ mod tests {
         let components: BTreeMap<String, LiveComponent> =
             serde_json::from_value(state["components"].clone()).unwrap();
         assert_eq!(component_overlaps(&components).len(), 1);
+    }
+
+    #[test]
+    fn terminal_policy_terminalizes_power_and_ground_in_wire_mode() {
+        let payload = json!({
+            "catalogue": catalogue(),
+            "placement": {
+                "components": {
+                    "U1": {"kind": "74HC595_SHIFT_REGISTER", "at": [100.0, 100.0]},
+                    "R1": {"kind": "RES", "at": [130.0, 100.0]},
+                    "C1": {"kind": "CAP", "at": [130.0, 120.0]}
+                }
+            },
+            "circuit": {
+                "components": [
+                    {"id": "U1", "kind": "74HC595_SHIFT_REGISTER", "pins": {"VCC": "+5V", "GND": "GND", "SER": "DATA"}},
+                    {"id": "R1", "kind": "RES", "pins": {"1": "DATA", "2": "+5V"}},
+                    {"id": "C1", "kind": "CAP", "pins": {"1": "+5V", "2": "GND"}}
+                ],
+                "nets": {
+                    "+5V": ["U1.VCC", "R1.2", "C1.1"],
+                    "GND": ["U1.GND", "C1.2"],
+                    "DATA": ["U1.SER", "R1.1"]
+                }
+            },
+            "config": {"wire_mode_terminal_power_ground": true}
+        });
+        let result: Value =
+            serde_json::from_str(&plan_terminal_policy(&payload.to_string()).unwrap()).unwrap();
+        assert_eq!(result["implemented"], true);
+        assert_eq!(result["metrics"]["terminal_net_count"], 2);
+        assert_eq!(result["metrics"]["physical_net_count"], 1);
+        assert_eq!(result["nets"]["+5V"]["reason"], "power_ground_terminal");
+        assert_eq!(
+            result["nets"]["GND"]["strategy"],
+            "wire_mode_terminal_label"
+        );
+    }
+
+    #[test]
+    fn terminal_policy_can_terminalize_explicit_high_fanout_signal() {
+        let payload = json!({
+            "catalogue": catalogue(),
+            "placement": {"components": {}},
+            "circuit": {
+                "components": [
+                    {"id": "U1", "kind": "UNSUPPORTED_FANOUT_IC", "pins": {"P1": "BUS", "P2": "BUS", "P3": "BUS", "P4": "BUS", "P5": "BUS", "P6": "OTHER"}}
+                ],
+                "nets": {"BUS": ["U1.P1", "U1.P2", "U1.P3", "U1.P4", "U1.P5"], "OTHER": ["U1.P6"]}
+            },
+            "placement_fallbacks": {"UNSUPPORTED_FANOUT_IC": {"width": 20.0, "height": 20.0, "category": "ic"}},
+            "config": {"wire_mode_terminal_power_ground": false, "wire_mode_terminal_high_fanout_threshold": 5}
+        });
+        let result: Value =
+            serde_json::from_str(&plan_terminal_policy(&payload.to_string()).unwrap()).unwrap();
+        assert_eq!(result["metrics"]["terminal_net_count"], 1);
+        assert_eq!(result["nets"]["BUS"]["reason"], "high_fanout_terminal");
+    }
+
+    #[test]
+    fn unsupported_component_keeps_all_raw_pins() {
+        let payload = json!({
+            "catalogue": catalogue(),
+            "placement": {"components": {"U1": {"kind": "UNSUPPORTED_WIDE_IC", "at": [90.0, 90.0]}}},
+            "circuit": {
+                "components": [
+                    {"id": "U1", "kind": "UNSUPPORTED_WIDE_IC", "pins": {
+                        "P1": "N1", "P2": "N2", "P3": "N3", "P4": "N4", "P5": "N5", "P6": "N6"
+                    }}
+                ],
+                "nets": {
+                    "N1": ["U1.P1"], "N2": ["U1.P2"], "N3": ["U1.P3"],
+                    "N4": ["U1.P4"], "N5": ["U1.P5"], "N6": ["U1.P6"]
+                }
+            },
+            "placement_fallbacks": {"UNSUPPORTED_WIDE_IC": {"width": 20.0, "height": 30.0, "category": "ic"}},
+            "config": {}
+        });
+        let state = build_state(&payload).unwrap();
+        assert_eq!(
+            state["components"]["U1"]["pins"].as_object().unwrap().len(),
+            6
+        );
+        assert!(state["components"]["U1"]["pins"].get("P6").is_some());
     }
 }

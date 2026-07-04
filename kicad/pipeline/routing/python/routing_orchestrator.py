@@ -48,6 +48,22 @@ def _try_rust_plan(payload: dict[str, Any]) -> dict[str, Any] | None:
     return result
 
 
+def _try_rust_terminal_policy(payload: dict[str, Any]) -> dict[str, Any] | None:
+    try:
+        import progen_routing_core  # type: ignore[import-not-found]
+    except Exception:
+        return None
+    if not hasattr(progen_routing_core, "plan_terminal_policy"):
+        return None
+    result_json = progen_routing_core.plan_terminal_policy(json.dumps(payload))
+    result = json.loads(result_json)
+    if not isinstance(result, dict):
+        raise ValueError("Rust routing core returned non-object terminal policy JSON")
+    if result.get("implemented") is False:
+        return None
+    return result
+
+
 def _placement_fallbacks_for_rust(placement: dict[str, Any], circuit: dict[str, Any]) -> dict[str, dict[str, Any]]:
     kinds: set[str] = set()
     for component in circuit.get("components", []):
@@ -784,6 +800,7 @@ def _python_live_state_plan(
     component_catalogue_path: str | None,
     config: dict[str, Any],
     wire_config: dict[str, Any] | None,
+    rust_terminal_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     catalogue = load_component_catalogue(component_catalogue_path)
     state = build_live_routing_state(placement, circuit, component_catalogue=catalogue, config=config)
@@ -876,9 +893,14 @@ def _python_live_state_plan(
             "wire_plan": wire_plan.get("metrics", {}),
             "validation": validation.get("metrics", {}),
             "selected_wire_score": selected["score"],
+            "rust_terminal_policy": rust_terminal_policy.get("metrics", {}) if isinstance(rust_terminal_policy, dict) else {},
         },
         "warnings": [
-            "Rust routing core is not installed; used Python LiveRoutingState full mathematical fallback.",
+            (
+                "Rust terminal policy applied; Python LiveRoutingState remains authoritative for placement and full routing."
+                if rust_terminal_policy
+                else "Rust routing core is not installed; used Python LiveRoutingState full mathematical fallback."
+            ),
             *wire_plan.get("warnings", []),
         ],
         "validation_report": validation,
@@ -895,6 +917,7 @@ def plan_wiring_v2(
 ) -> dict[str, Any]:
     merged_config = routing_v2_config(config)
     catalogue = load_component_catalogue(component_catalogue_path)
+    effective_wire_config = deepcopy(wire_config) if wire_config else None
     payload = {
         "catalogue": catalogue.as_dict(),
         "placement_fallbacks": _placement_fallbacks_for_rust(placement, circuit),
@@ -902,6 +925,20 @@ def plan_wiring_v2(
         "circuit": circuit,
         "config": merged_config,
     }
+    rust_terminal_policy = None
+    wire_fallback = merged_config.get("wire_fallback", {}) if isinstance(merged_config.get("wire_fallback"), dict) else {}
+    requested_routing_mode = str(
+        (wire_config or {}).get("routing_mode") if isinstance(wire_config, dict) and wire_config.get("routing_mode") else wire_fallback.get("routing_mode", "wire")
+    ).lower()
+    if requested_routing_mode == "wire":
+        rust_terminal_policy = _try_rust_terminal_policy(payload)
+        if isinstance(rust_terminal_policy, dict):
+            patch = rust_terminal_policy.get("wire_config_patch")
+            if isinstance(patch, dict):
+                effective_wire_config = dict(effective_wire_config or {})
+                effective_wire_config.update(patch)
+                merged_config.setdefault("wire_fallback", {}).update(patch)
+                payload["config"] = merged_config
     rust_result = _try_rust_plan(payload)
     if rust_result is not None:
         validation = build_validation_report(
@@ -926,5 +963,6 @@ def plan_wiring_v2(
         circuit,
         component_catalogue_path=component_catalogue_path,
         config=merged_config,
-        wire_config=wire_config,
+        wire_config=effective_wire_config,
+        rust_terminal_policy=rust_terminal_policy,
     )

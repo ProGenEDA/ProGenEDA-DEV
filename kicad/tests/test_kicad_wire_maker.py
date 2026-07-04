@@ -47,6 +47,25 @@ class KiCadWireMakerTests(unittest.TestCase):
         self.assertEqual(result.report["routing_mode"], "terminal")
         self.assertTrue(result.report["strict_wire_ok"])
 
+    def test_wire_mode_terminal_policy_labels_declared_power_ground_nets(self) -> None:
+        circuit = build_final_test_circuits()[0]
+        ctx = run_placer_pipeline(placer_ready_circuit(circuit), write_trace=False)
+        placement = ctx.placement_plan
+        placement_dict = placement.as_dict()
+        beautified = apply_coordinate_edits(placement_dict, decide_arrangement(placement_dict, circuit))
+        cfg = dict(STAGE_REPORT_WIRE_CONFIG)
+        cfg["wire_mode_terminal_power_ground"] = 1.0
+        wire_plan = plan_wire_routes(beautified, circuit, config=cfg)
+        self.assertEqual(wire_plan["routing_mode"], "wire")
+        self.assertTrue(wire_plan["wire_mode_terminal_policy"]["enabled"])
+        self.assertIn("GND", wire_plan["wire_mode_terminal_policy"]["terminal_nets"])
+        self.assertEqual(wire_plan["nets"]["GND"]["strategy"], "wire_mode_terminal_label")
+        result = make_kicad_wires(circuit, placement, wire_plan)
+        self.assertIn("(label \"GND\"", result.schematic_objects)
+        self.assertEqual(result.report["forbidden_label_strategy_count"], 0)
+        self.assertEqual(result.report["wire_mode_terminal_label_count"], len(wire_plan["wire_mode_terminal_policy"]["terminal_nets"]))
+        self.assertNotIn("wire_mode_forbids_terminal_label_strategy", json.dumps(result.report["strict_wire_validator"]))
+
     def test_generate_wired_projects_from_final_json_writes_projects(self) -> None:
         circuits = build_final_test_circuits()[:2]
         with tempfile.TemporaryDirectory() as temp_dir:
