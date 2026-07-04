@@ -65,6 +65,9 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "near_wire_penalty": 0.0,
     "occupied_wire_penalty": 50.0,
     "strict_occupied_wire_penalty": 2000.0,
+    "perpendicular_crossing_step_penalty": 0.0,
+    "block_collinear_existing_wires": 0.0,
+    "forbid_wire_turn_on_occupied": 0.0,
     "block_existing_wires": 0.0,
     "max_astar_expansions": 50_000.0,
     "strict_fallback_max_astar_expansions": 50_000.0,
@@ -320,7 +323,7 @@ def _endpoint_points(placement: dict[str, Any], circuit: dict[str, Any], cfg: di
                 bucket = sorted(side_buckets[(endpoint.ref, side)])
                 index = bucket.index((net, endpoint.pin))
                 count = len(bucket)
-                offset = (index - (count - 1) / 2) * cfg["wire_spacing"]
+                offset = (index - (count // 2)) * cfg["wire_spacing"]
                 if side == "left":
                     point = (body.left - cfg["pin_stub"], body.center[1] + offset)
                 elif side == "right":
@@ -454,6 +457,7 @@ def _astar(
     net: str,
     ignore_refs: set[str],
     portals: list[tuple[str, Point, str]] | None = None,
+    wire_cell_index: dict[GridPoint, list[tuple[str, str]]] | None = None,
 ) -> tuple[list[Point], list[str]]:
     grid = cfg["grid"]
     width, height = _sheet_bounds(bodies, cfg)
@@ -469,6 +473,7 @@ def _astar(
     def heuristic(cell: GridPoint) -> float:
         return abs(cell[0] - goal_cell[0]) + abs(cell[1] - goal_cell[1])
 
+    wire_index = wire_cell_index or {}
     queue: list[tuple[float, float, GridPoint, str]] = [(heuristic(start_cell), 0.0, start_cell, "")]
     came_from: dict[tuple[GridPoint, str], tuple[GridPoint, str]] = {}
     best: dict[tuple[GridPoint, str], float] = {(start_cell, ""): 0.0}
@@ -492,9 +497,33 @@ def _astar(
             if nxt in blocked:
                 continue
             nxt_direction = _direction(cell, nxt)
+            step_orientation = "H" if nxt_direction in {"L", "R"} else "V"
             step_cost = 1.0
             if direction and nxt_direction != direction:
+                current_entries = wire_index.get(cell, [])
+                if (
+                    cfg.get("forbid_wire_turn_on_occupied", 0.0) >= 1.0
+                    and cell not in {start_cell, goal_cell}
+                    and any(owner != net for owner, _orientation in current_entries)
+                ):
+                    continue
+                if any(owner != net for owner, _orientation in current_entries):
+                    step_cost += float(cfg.get("strict_occupied_wire_penalty", 2000.0))
                 step_cost += cfg["turn_penalty"]
+            blocked_by_wire = False
+            for owner_at_cell, orientation in wire_index.get(nxt, []):
+                if owner_at_cell == net:
+                    step_cost += float(cfg.get("same_net_reuse_penalty", 0.05))
+                    continue
+                if orientation == step_orientation:
+                    if cfg.get("block_collinear_existing_wires", 0.0) >= 1.0 and nxt not in {start_cell, goal_cell}:
+                        blocked_by_wire = True
+                        break
+                    step_cost += float(cfg.get("strict_occupied_wire_penalty", 2000.0))
+                else:
+                    step_cost += float(cfg.get("perpendicular_crossing_step_penalty", 0.25))
+            if blocked_by_wire:
+                continue
             owner = occupied.get(nxt)
             if owner:
                 if cfg.get("block_existing_wires", 1.0) >= 1.0 and nxt not in {start_cell, goal_cell}:
@@ -779,6 +808,25 @@ def _grid_cells_for_segment(start: Point, end: Point, grid: float) -> list[GridP
     else:
         cells = [start_cell, end_cell]
     return cells
+
+
+def _segment_orientation(start: Point, end: Point) -> str:
+    if abs(start[1] - end[1]) <= 0.001:
+        return "H"
+    if abs(start[0] - end[0]) <= 0.001:
+        return "V"
+    return "X"
+
+
+def _wire_cell_index(segments: list[tuple[str, Point, Point]], grid: float) -> dict[GridPoint, list[tuple[str, str]]]:
+    index: dict[GridPoint, list[tuple[str, str]]] = defaultdict(list)
+    for net, start, end in segments:
+        orientation = _segment_orientation(start, end)
+        if orientation == "X":
+            continue
+        for cell in _grid_cells_for_segment(start, end, grid):
+            index[cell].append((net, orientation))
+    return index
 
 
 def _path_grid_contact_counts(
@@ -1448,9 +1496,9 @@ def plan_wire_routes(
             start_route = _portal_point(start, str(root.get("side") or "right"), cfg)
             goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg)
             ignore_refs = set()
-            if not root.get("exact"):
+            if root.get("exact"):
                 ignore_refs.add(str(root["ref"]))
-            if not target.get("exact"):
+            if target.get("exact"):
                 ignore_refs.add(str(target["ref"]))
             routed_occupied = dict(reserved_pin_occupied)
             routed_occupied.update(occupied)
@@ -1463,11 +1511,15 @@ def plan_wire_routes(
             route_warnings: list[str] = []
             route_candidates: list[tuple[str, list[Point], dict[str, Any], list[str]]] = []
             scoring_segments = existing_segments + pending_net_segments
+            use_wire_cell_index = (
+                float(cfg.get("perpendicular_crossing_step_penalty", 0.0)) > 0.0
+                or float(cfg.get("block_collinear_existing_wires", 0.0)) >= 1.0
+                or float(cfg.get("forbid_wire_turn_on_occupied", 0.0)) >= 1.0
+            )
+            scoring_wire_cell_index = _wire_cell_index(scoring_segments, float(cfg["grid"])) if use_wire_cell_index else None
             hard_blocked_cells = blocked_cells_for(ignore_refs, float(cfg["clearance"]))
             shadow_blocked_cells = blocked_cells_for(ignore_refs, float(cfg.get("component_shadow_clearance", cfg["clearance"])))
             full_route_ignore_refs = set(ignore_refs)
-            full_route_ignore_refs.add(str(root["ref"]))
-            full_route_ignore_refs.add(str(target["ref"]))
 
             if cfg.get("lane_router", 1.0) >= 1.0:
                 lane_path, lane_report = _best_lane_path(
@@ -1539,6 +1591,7 @@ def plan_wire_routes(
                     net=net,
                     ignore_refs=ignore_refs,
                     portals=portals,
+                    wire_cell_index=scoring_wire_cell_index,
                 )
                 route_warnings.extend(astar_warnings)
                 if astar_path:
@@ -1588,6 +1641,7 @@ def plan_wire_routes(
                     net=net,
                     ignore_refs=ignore_refs,
                     portals=portals,
+                    wire_cell_index=scoring_wire_cell_index,
                 )
                 if fallback_path:
                     fallback_score, fallback_report = _path_score(
@@ -1674,6 +1728,7 @@ def plan_wire_routes(
                     net=net,
                     ignore_refs=ignore_refs,
                     portals=portals,
+                    wire_cell_index=scoring_wire_cell_index,
                 )
                 if salvage_path:
                     salvage_full_path = _join_paths(
@@ -1919,6 +1974,173 @@ def _arrangement_base_config(config: dict[str, float] | None) -> dict[str, float
     return cfg
 
 
+def _ref_sort_key(ref: str) -> tuple[str, int, str]:
+    prefix = "".join(ch for ch in ref if not ch.isdigit())
+    digits = "".join(ch for ch in ref if ch.isdigit())
+    return (prefix, int(digits or 0), ref)
+
+
+def _logic_chain_refs(circuit: dict[str, Any]) -> list[str]:
+    refs: list[str] = []
+    for component in circuit.get("components", []):
+        if not isinstance(component, dict):
+            continue
+        ref = str(component.get("id") or component.get("ref") or "")
+        kind = str(component.get("kind") or "").upper()
+        category = str(component.get("category") or component.get("role") or "").lower()
+        if not ref:
+            continue
+        if "logic" in category or kind.startswith(("74", "40", "45", "CD40", "CD45")):
+            refs.append(ref)
+    return sorted(set(refs), key=_ref_sort_key)
+
+
+def _component_by_ref(circuit: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for component in circuit.get("components", []):
+        if not isinstance(component, dict):
+            continue
+        ref = str(component.get("id") or component.get("ref") or "")
+        if ref:
+            out[ref] = component
+    return out
+
+
+def _logic_chain_bus_rows_coordinate_plan(
+    placement: dict[str, Any],
+    circuit: dict[str, Any],
+    cfg: dict[str, float],
+) -> dict[str, Any]:
+    components = placement.get("components", {})
+    if not isinstance(components, dict):
+        components = {}
+    by_ref = _component_by_ref(circuit)
+    logic_refs = _logic_chain_refs(circuit)
+    column_count = max(1, (len(logic_refs) + 1) // 2)
+    grid = float(cfg.get("grid", 2.54))
+    margin = max(float(cfg.get("margin", 25.4)), 25.4)
+    logic_gap = max(float(cfg.get("column_gap", 35.56)) * 1.35, 53.34)
+    left_x = _snap(margin + 10.16, grid)
+    header_x = _snap(left_x + 38.1, grid)
+    passive_x = _snap(header_x + 35.56, grid)
+    logic_start_x = _snap(passive_x + 45.72, grid)
+    output_x = _snap(logic_start_x + (column_count + 0.7) * logic_gap, grid)
+    sheet_width = max(float(cfg.get("sheet_width", 420.0)), output_x + 83.82)
+    sheet_height = max(float(cfg.get("sheet_height", 297.0)), 297.0)
+    upper_y = _snap(sheet_height * 0.34, grid)
+    lower_y = _snap(sheet_height * 0.66, grid)
+    mid_y = _snap(sheet_height * 0.50, grid)
+    top_y = _snap(margin + 12.7, grid)
+    bottom_y = _snap(sheet_height - margin - 12.7, grid)
+
+    planned: dict[str, tuple[float, float]] = {}
+    decoder_refs = [
+        ref
+        for ref in logic_refs
+        if "decoder" in str(by_ref.get(ref, {}).get("category") or "").lower()
+        or str(by_ref.get(ref, {}).get("kind") or "").upper() in {"4511", "7447", "74HC4511"}
+    ]
+    display_refs = [
+        ref
+        for ref, component in by_ref.items()
+        if "display" in str(component.get("category") or "").lower()
+        or str(component.get("kind") or "").upper().startswith("7SEG")
+    ]
+    if decoder_refs and display_refs:
+        gate_refs = [ref for ref in logic_refs if ref not in set(decoder_refs)]
+        gate_gap = max(logic_gap * 0.82, 43.18)
+        for index, ref in enumerate(gate_refs):
+            planned[ref] = (_snap(logic_start_x + index * gate_gap, grid), upper_y)
+        for index, ref in enumerate(decoder_refs):
+            planned[ref] = (_snap(logic_start_x + index * logic_gap, grid), lower_y)
+    else:
+        for index, ref in enumerate(logic_refs):
+            column = index // 2
+            row_y = upper_y if index % 2 == 0 else lower_y
+            planned[ref] = (_snap(logic_start_x + column * logic_gap, grid), row_y)
+
+    header_index = 0
+    source_index = 0
+    passive_index = 0
+    output_index = 0
+    for ref in sorted(components, key=_ref_sort_key):
+        if ref in planned:
+            continue
+        component = by_ref.get(ref, {})
+        kind = str(component.get("kind") or components.get(ref, {}).get("kind") or "").upper()
+        category = str(component.get("category") or components.get(ref, {}).get("category") or "").lower()
+        role = str(component.get("role") or "").lower()
+        if kind in GROUND_NETS or "ground" in role or "ground" in category:
+            planned[ref] = (left_x, bottom_y)
+            source_index += 1
+        elif kind in POWER_NETS or "source" in role or "power_symbol" in category:
+            planned[ref] = (left_x, _snap(top_y + source_index * 30.48, grid))
+            source_index += 1
+        elif any(token in category for token in ("header", "connector", "terminal")) or ref.startswith("J"):
+            planned[ref] = (header_x, _snap(upper_y + header_index * 30.48, grid))
+            header_index += 1
+        elif "display" in category or kind.startswith("7SEG"):
+            if decoder_refs:
+                decoder_x = planned.get(decoder_refs[0], (output_x, lower_y))[0]
+                planned[ref] = (_snap(decoder_x + 76.2, grid), lower_y)
+            else:
+                planned[ref] = (_snap(output_x + 38.1, grid), mid_y)
+            output_index += 1
+        elif "indicator" in category or kind == "LED":
+            planned[ref] = (_snap(output_x, grid), _snap(lower_y + output_index * 22.86, grid))
+            output_index += 1
+        elif "resistor" in category or kind.startswith(("RES", "R_")):
+            planned[ref] = (passive_x, _snap(lower_y + passive_index * 22.86, grid))
+            passive_index += 1
+        else:
+            planned[ref] = (_snap(output_x, grid), _snap(upper_y + output_index * 22.86, grid))
+            output_index += 1
+
+    edits: list[dict[str, Any]] = []
+    components_report: dict[str, Any] = {}
+    for ref, target in sorted(planned.items(), key=lambda item: _ref_sort_key(item[0])):
+        record = components.get(ref)
+        if not isinstance(record, dict):
+            continue
+        source = record.get("at", [target[0], target[1]])
+        if not isinstance(source, (list, tuple)) or len(source) < 2:
+            continue
+        source_point = (float(source[0]), float(source[1]))
+        target_point = (round(target[0], 3), round(target[1], 3))
+        rotation = float(record.get("rotation", 0.0))
+        edits.append(
+            {
+                "ref": ref,
+                "from": [round(source_point[0], 3), round(source_point[1], 3)],
+                "to": [target_point[0], target_point[1]],
+                "delta": [round(target_point[0] - source_point[0], 3), round(target_point[1] - source_point[1], 3)],
+                "rotation": rotation,
+                "reason": ["logic_chain_bus_rows", "pre_route_escape_corridors"],
+            }
+        )
+        components_report[ref] = {
+            "kind": str(record.get("kind") or ""),
+            "original_at": [round(source_point[0], 3), round(source_point[1], 3)],
+            "planned_at": [target_point[0], target_point[1]],
+            "logic_chain": ref in logic_refs,
+        }
+    return {
+        "schema": "progen-kicad-arrangement-decision/v0.1",
+        "stage": "arrangement_decider",
+        "algorithm": {
+            "primary": "logic_chain_bus_rows",
+            "ordering": "natural_ref_order_with_connector_input_and_output_display_columns",
+            "rules_source": "pre-route component rearrangement for logic/display bus corridors",
+        },
+        "sheet": {"width": round(sheet_width, 3), "height": round(sheet_height, 3), "grid": grid, "margin": margin},
+        "component_count": len(components_report),
+        "net_count": len(extract_connection_nets(circuit)),
+        "layers": {"logic_upper_lower_rows": logic_refs},
+        "components": components_report,
+        "coordinate_edits": edits,
+    }
+
+
 def _arrangement_variant_specs(
     placement: dict[str, Any],
     circuit: dict[str, Any],
@@ -1938,6 +2160,9 @@ def _arrangement_variant_specs(
         ("loose_grid", {"column_gap": 1.35, "row_gap": 1.45, "component_clearance": 1.6}),
         ("compact_flow", {"column_gap": 1.15, "row_gap": 1.25, "component_clearance": 1.2}),
     ]
+    custom_specs: list[dict[str, Any]] = []
+    if len(_logic_chain_refs(circuit)) >= 4:
+        custom_specs.append({"name": "logic_chain_bus_rows", "custom": "logic_chain_bus_rows", "arrangement_config": dict(base)})
     if dense:
         profiles.extend(
             [
@@ -1948,7 +2173,7 @@ def _arrangement_variant_specs(
         )
 
     limit = max(1, int(wire_cfg.get("max_arrangement_variants", 8.0)))
-    specs: list[dict[str, Any]] = []
+    specs: list[dict[str, Any]] = custom_specs[:limit]
     seen: set[tuple[float, float, float, float]] = set()
     for name, multipliers in profiles:
         cfg = dict(base)
@@ -2459,7 +2684,10 @@ def _evaluate_arrangement_variant_task(args: tuple[dict[str, Any], dict[str, Any
     placement, circuit, spec, wire_cfg = args
     started = time.perf_counter()
     try:
-        coordinate_plan = decide_arrangement(placement, circuit, config=spec["arrangement_config"])
+        if spec.get("custom") == "logic_chain_bus_rows":
+            coordinate_plan = _logic_chain_bus_rows_coordinate_plan(placement, circuit, spec["arrangement_config"])
+        else:
+            coordinate_plan = decide_arrangement(placement, circuit, config=spec["arrangement_config"])
         routing_placement = apply_coordinate_edits(placement, coordinate_plan)
         score = _estimate_variant_routeability(routing_placement, circuit, wire_cfg)
         return {

@@ -971,6 +971,7 @@ def build_live_routing_state(
         placed = placement_components.get(ref, {}) if isinstance(placement_components.get(ref), dict) else {}
         kind = str(raw_component.get("kind") or placed.get("kind") or raw_component.get("name") or placed.get("name") or "GENERIC_COMPONENT")
         type_id = catalogue.resolve_type_id(kind)
+        source_backed_type = type_id in catalogue.components
         type_def = catalogue.get(type_id)
         body = type_def["body"]
         at = _point_from_raw(placed.get("at") if isinstance(placed, dict) else None, (0.0, 0.0))
@@ -979,6 +980,8 @@ def build_live_routing_state(
             rotation = int(type_def.get("default_rotation", 0))
         pin_defs = deepcopy(type_def["pin_model"]["pins"])
         raw_pins = raw_component.get("pins", {})
+        if isinstance(raw_pins, dict) and len(raw_pins) > len(pin_defs) and not source_backed_type:
+            pin_defs = {}
         if isinstance(raw_pins, dict):
             lookup = _pin_lookup(pin_defs)
             for index, (pin_name, net_name) in enumerate(sorted(raw_pins.items())):

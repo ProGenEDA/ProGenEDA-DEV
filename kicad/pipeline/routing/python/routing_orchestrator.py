@@ -9,10 +9,12 @@ compatibility backend for today's KiCad generation.
 from __future__ import annotations
 
 import json
+import re
 import time
 from copy import deepcopy
 from typing import Any
 
+from kicad.pipeline.arrangement_decider import GROUND_NETS, POWER_NETS
 from kicad.pipeline.catelogues import load_component_catalogue
 from kicad.pipeline.placement_catalog import normalize_kind, resolve_placement_spec
 from kicad.pipeline.wire_planner import plan_wire_routes, select_routeable_arrangement
@@ -161,43 +163,449 @@ def _wire_completion_key(wire_plan: dict[str, Any]) -> tuple[int, int, int, int,
     )
 
 
+def _path_from_route(route: dict[str, Any]) -> list[tuple[float, float]]:
+    raw = route.get("path")
+    if isinstance(raw, list) and len(raw) >= 2:
+        points: list[tuple[float, float]] = []
+        for point in raw:
+            if isinstance(point, (list, tuple)) and len(point) >= 2:
+                points.append((round(float(point[0]), 3), round(float(point[1]), 3)))
+        if len(points) >= 2:
+            return points
+    points = []
+    for segment in route.get("segments", []):
+        if not isinstance(segment, dict):
+            continue
+        start = segment.get("start")
+        end = segment.get("end")
+        if isinstance(start, (list, tuple)) and len(start) >= 2 and not points:
+            points.append((round(float(start[0]), 3), round(float(start[1]), 3)))
+        if isinstance(end, (list, tuple)) and len(end) >= 2:
+            points.append((round(float(end[0]), 3), round(float(end[1]), 3)))
+    return points
+
+
+def _compress_path_points(path: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    if len(path) <= 2:
+        return path
+    out = [path[0]]
+    last_direction = ""
+    for left, right in zip(path, path[1:]):
+        if left == right:
+            continue
+        direction = "H" if abs(left[1] - right[1]) <= 0.001 else "V"
+        if not last_direction:
+            last_direction = direction
+            continue
+        if direction != last_direction:
+            out.append(left)
+            last_direction = direction
+    out.append(path[-1])
+    return out
+
+
+def _segments_from_path(path: list[tuple[float, float]]) -> list[dict[str, Any]]:
+    segments: list[dict[str, Any]] = []
+    for start, end in zip(path, path[1:]):
+        if start == end:
+            continue
+        if abs(start[0] - end[0]) <= 0.001:
+            direction = "down" if end[1] > start[1] else "up"
+        elif abs(start[1] - end[1]) <= 0.001:
+            direction = "right" if end[0] > start[0] else "left"
+        else:
+            direction = "non_orthogonal"
+        segments.append(
+            {
+                "start": [round(start[0], 3), round(start[1], 3)],
+                "end": [round(end[0], 3), round(end[1], 3)],
+                "direction": direction,
+                "length": round(abs(end[0] - start[0]) + abs(end[1] - start[1]), 3),
+            }
+        )
+    return segments
+
+
+def _turn_count(path: list[tuple[float, float]]) -> int:
+    turns = 0
+    previous = ""
+    for left, right in zip(path, path[1:]):
+        if left == right:
+            continue
+        direction = "H" if abs(left[1] - right[1]) <= 0.001 else "V"
+        if previous and previous != direction:
+            turns += 1
+        previous = direction
+    return turns
+
+
+def _refresh_route_path(route: dict[str, Any], path: list[tuple[float, float]]) -> dict[str, Any]:
+    path = _compress_path_points([(round(point[0], 3), round(point[1], 3)) for point in path])
+    updated = deepcopy(route)
+    updated["path"] = [[point[0], point[1]] for point in path]
+    updated["segments"] = _segments_from_path(path)
+    quality = dict(updated.get("route_quality", {})) if isinstance(updated.get("route_quality"), dict) else {}
+    quality["length"] = round(sum(segment["length"] for segment in updated["segments"]), 3)
+    quality["turns"] = _turn_count(path)
+    updated["route_quality"] = quality
+    return updated
+
+
+def _violation_route_segments(validation: dict[str, Any]) -> dict[int, set[int]]:
+    out: dict[int, set[int]] = {}
+    pattern = re.compile(r"route:(\d+):segment:(\d+)")
+    geometry = validation.get("geometry_report", {}) if isinstance(validation.get("geometry_report"), dict) else {}
+    for violation in geometry.get("violations", []):
+        if not isinstance(violation, dict):
+            continue
+        for key in ("segment", "left_segment", "right_segment"):
+            segment = violation.get(key)
+            if not isinstance(segment, dict):
+                continue
+            match = pattern.search(str(segment.get("source") or ""))
+            if not match:
+                continue
+            route_index = int(match.group(1))
+            segment_index = int(match.group(2))
+            out.setdefault(route_index, set()).add(segment_index)
+    return out
+
+
+def _wire_validation_badness(validation: dict[str, Any]) -> tuple[int, int, int, int]:
+    metrics = validation.get("metrics", {}) if isinstance(validation.get("metrics"), dict) else {}
+    return (
+        int(metrics.get("body_hit_count", 0)),
+        int(metrics.get("forbidden_contact_count", 0)),
+        int(metrics.get("component_overlap_count", 0)),
+        int(metrics.get("out_of_sheet_count", 0)),
+    )
+
+
+def _shift_route_segment(path: list[tuple[float, float]], segment_index: int, delta: float) -> list[tuple[float, float]] | None:
+    if segment_index <= 0 or segment_index >= len(path) - 2:
+        return None
+    start = path[segment_index]
+    end = path[segment_index + 1]
+    if abs(start[1] - end[1]) <= 0.001:
+        shifted = list(path)
+        shifted[segment_index] = (start[0], round(start[1] + delta, 3))
+        shifted[segment_index + 1] = (end[0], round(end[1] + delta, 3))
+        return shifted
+    if abs(start[0] - end[0]) <= 0.001:
+        shifted = list(path)
+        shifted[segment_index] = (round(start[0] + delta, 3), start[1])
+        shifted[segment_index + 1] = (round(end[0] + delta, 3), end[1])
+        return shifted
+    return None
+
+
+def _refresh_wire_plan_metrics(wire_plan: dict[str, Any]) -> None:
+    routes = [route for route in wire_plan.get("routes", []) if isinstance(route, dict)]
+    metrics = wire_plan.setdefault("metrics", {})
+    if isinstance(metrics, dict):
+        metrics["wired_route_count"] = len(routes)
+        metrics["segment_count"] = sum(len(route.get("segments", [])) for route in routes)
+
+
+def _repair_relaxed_geometry_by_doglegs(
+    routing_placement: dict[str, Any],
+    wire_plan: dict[str, Any],
+    *,
+    project: str,
+    engine: str,
+    max_passes: int = 12,
+    candidate_budget: int = 300,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    current = deepcopy(wire_plan)
+    grid = float(current.get("sheet", {}).get("grid", 1.27)) if isinstance(current.get("sheet"), dict) else 1.27
+    validation = build_validation_report(project=project, engine=engine, routing_placement=routing_placement, wire_plan=current)
+    initial_metrics = validation.get("metrics", {}) if isinstance(validation.get("metrics"), dict) else {}
+    if int(initial_metrics.get("forbidden_contact_count", 0)) > 40:
+        current = deepcopy(current)
+        current["dogleg_geometry_repair"] = {
+            "schema": "progen-kicad-dogleg-geometry-repair/v0.1",
+            "pass_count": 0,
+            "skipped": True,
+            "reason": "initial_forbidden_contact_count_exceeds_safe_local_repair_limit",
+            "initial_forbidden_contact_count": int(initial_metrics.get("forbidden_contact_count", 0)),
+            "final_badness": list(_wire_validation_badness(validation)),
+        }
+        return current, validation
+    passes: list[dict[str, Any]] = []
+    deltas = [sign * grid * step for step in range(1, 5) for sign in (-1.0, 1.0)]
+    max_routes_per_pass = 6
+    max_segments_per_route = 2
+    candidate_evaluations = 0
+    budget_exhausted = False
+    for pass_index in range(1, max_passes + 1):
+        if candidate_evaluations >= candidate_budget:
+            budget_exhausted = True
+            break
+        badness = _wire_validation_badness(validation)
+        if badness == (0, 0, 0, 0):
+            break
+        route_segments = _violation_route_segments(validation)
+        if not route_segments:
+            break
+        best_plan: dict[str, Any] | None = None
+        best_validation: dict[str, Any] | None = None
+        best_record: dict[str, Any] | None = None
+        best_badness = badness
+        routes = current.get("routes", [])
+        if not isinstance(routes, list):
+            break
+        for route_index, segment_indexes in sorted(route_segments.items(), key=lambda item: (-len(item[1]), item[0]))[:max_routes_per_pass]:
+            if route_index >= len(routes) or not isinstance(routes[route_index], dict):
+                continue
+            route = routes[route_index]
+            path = _path_from_route(route)
+            if len(path) < 4:
+                continue
+            candidate_segment_indexes = sorted(
+                {index + offset for index in segment_indexes for offset in (-1, 0, 1) if 0 < index + offset < len(path) - 2}
+            )[:max_segments_per_route]
+            for segment_index in candidate_segment_indexes:
+                for delta in deltas:
+                    if candidate_evaluations >= candidate_budget:
+                        budget_exhausted = True
+                        break
+                    shifted = _shift_route_segment(path, segment_index, delta)
+                    if shifted is None:
+                        continue
+                    candidate = deepcopy(current)
+                    candidate_routes = candidate.get("routes", [])
+                    if not isinstance(candidate_routes, list):
+                        continue
+                    candidate_routes[route_index] = _refresh_route_path(route, shifted)
+                    _refresh_wire_plan_metrics(candidate)
+                    candidate_validation = build_validation_report(
+                        project=project,
+                        engine=engine,
+                        routing_placement=routing_placement,
+                        wire_plan=candidate,
+                    )
+                    candidate_evaluations += 1
+                    candidate_badness = _wire_validation_badness(candidate_validation)
+                    if candidate_badness < best_badness:
+                        best_plan = candidate
+                        best_validation = candidate_validation
+                        best_badness = candidate_badness
+                        best_record = {
+                            "pass": pass_index,
+                            "route_index": route_index,
+                            "segment_index": segment_index,
+                            "delta": round(delta, 3),
+                            "before": badness,
+                            "after": candidate_badness,
+                        }
+                        if candidate_badness == (0, 0, 0, 0):
+                            break
+                if best_badness == (0, 0, 0, 0):
+                    break
+                if budget_exhausted:
+                    break
+            if best_badness == (0, 0, 0, 0):
+                break
+            if budget_exhausted:
+                break
+        if best_plan is None or best_validation is None or best_record is None:
+            break
+        passes.append(best_record)
+        current = best_plan
+        validation = best_validation
+    current = deepcopy(current)
+    current.setdefault("algorithm", {})
+    if isinstance(current["algorithm"], dict):
+        current["algorithm"]["dogleg_geometry_repair"] = True
+    current.setdefault("warnings", [])
+    if isinstance(current["warnings"], list) and passes:
+        current["warnings"].append(f"dogleg_geometry_repair_passes: {len(passes)}")
+    current["dogleg_geometry_repair"] = {
+        "schema": "progen-kicad-dogleg-geometry-repair/v0.1",
+        "pass_count": len(passes),
+        "passes": passes,
+        "final_badness": list(_wire_validation_badness(validation)),
+        "candidate_evaluations": candidate_evaluations,
+        "candidate_budget": candidate_budget,
+        "budget_exhausted": budget_exhausted,
+    }
+    return current, validation
+
+
+def _signal_priority_nets(circuit: dict[str, Any]) -> list[str]:
+    nets = circuit.get("nets", {})
+    if not isinstance(nets, dict):
+        return []
+    return [str(net) for net in nets if str(net).upper() not in POWER_NETS and str(net).upper() not in GROUND_NETS]
+
+
+def _routing_pin_point(routing_placement: dict[str, Any], member: str) -> tuple[float, float] | None:
+    ref, _dot, pin = member.partition(".")
+    if not ref or not pin:
+        return None
+    components = routing_placement.get("components", {})
+    if not isinstance(components, dict):
+        return None
+    component = components.get(ref)
+    if not isinstance(component, dict):
+        return None
+    pins = component.get("pins", {})
+    if not isinstance(pins, dict):
+        return None
+    pin_record = pins.get(pin)
+    if not isinstance(pin_record, dict):
+        return None
+    point = pin_record.get("point")
+    if not isinstance(point, (list, tuple)) or len(point) < 2:
+        return None
+    return (float(point[0]), float(point[1]))
+
+
+def _net_span_priority_nets(routing_placement: dict[str, Any], circuit: dict[str, Any]) -> list[str]:
+    nets = circuit.get("nets", {})
+    if not isinstance(nets, dict):
+        return []
+    scored: list[tuple[float, str]] = []
+    for net, members in nets.items():
+        if not isinstance(members, list):
+            continue
+        points = [_routing_pin_point(routing_placement, str(member)) for member in members]
+        clean_points = [point for point in points if point is not None]
+        if len(clean_points) < 2:
+            continue
+        xs = [point[0] for point in clean_points]
+        ys = [point[1] for point in clean_points]
+        span = (max(xs) - min(xs)) + (max(ys) - min(ys))
+        scored.append((span, str(net)))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return [net for _span, net in scored]
+
+
+def _fanout_priority_nets(circuit: dict[str, Any]) -> list[str]:
+    nets = circuit.get("nets", {})
+    if not isinstance(nets, dict):
+        return []
+    scored = [
+        (len(members), str(net))
+        for net, members in nets.items()
+        if isinstance(members, list) and len(members) >= 2
+    ]
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return [net for _fanout, net in scored]
+
+
+def _ordered_unique(values: list[str]) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        out.append(value)
+    return out
+
+
+def _strict_reroute_profiles(
+    routing_placement: dict[str, Any],
+    circuit: dict[str, Any],
+    failed: list[str],
+) -> list[tuple[str, list[str]]]:
+    signals = _signal_priority_nets(circuit)
+    span = _net_span_priority_nets(routing_placement, circuit)
+    fanout = _fanout_priority_nets(circuit)
+    profiles: list[tuple[str, list[str]]] = []
+    if failed:
+        profiles.append(("priority_failed_nets", failed))
+        profiles.append(("ripup_failed_then_signals", _ordered_unique([*failed, *signals])))
+        profiles.append(("ripup_failed_then_span", _ordered_unique([*failed, *span])))
+    profiles.extend(
+        [
+            ("ripup_signals_first", signals),
+            ("ripup_long_span_first", span),
+            ("ripup_high_fanout_first", fanout),
+            ("ripup_signal_span_fanout", _ordered_unique([*signals, *span, *fanout])),
+        ]
+    )
+    return [(name, priority_nets) for name, priority_nets in profiles if priority_nets]
+
+
 def _plan_wire_routes_with_priority_retries(
     routing_placement: dict[str, Any],
     circuit: dict[str, Any],
     *,
     config: dict[str, Any],
+    project: str,
+    engine: str,
 ) -> dict[str, Any]:
     max_retries = max(0, int(float(config.get("strict_priority_reroute_attempts", 0.0))))
     attempts: list[dict[str, Any]] = []
     best = plan_wire_routes(routing_placement, circuit, config=config)
     attempts.append({"name": "default_order", "priority_nets": [], "metrics": best.get("metrics", {})})
     failed = _incomplete_wire_nets(best)
-    seen: set[tuple[str, ...]] = {tuple(failed)}
-    for index in range(max_retries):
-        if not failed:
+    seen: set[tuple[str, ...]] = {tuple()}
+    for index, (profile_name, priority_nets) in enumerate(_strict_reroute_profiles(routing_placement, circuit, failed)):
+        if index >= max_retries or _wire_completion_key(best)[:3] == (0, 0, 0):
             break
+        priority_nets = _ordered_unique(priority_nets)
+        key = tuple(priority_nets)
+        if key in seen:
+            continue
+        seen.add(key)
         retry_config = dict(config)
-        retry_config["priority_nets"] = failed
+        retry_config["priority_nets"] = priority_nets
         candidate = plan_wire_routes(routing_placement, circuit, config=retry_config)
         attempts.append(
             {
-                "name": f"priority_failed_nets_{index + 1}",
-                "priority_nets": failed,
+                "name": profile_name,
+                "priority_nets": priority_nets,
                 "metrics": candidate.get("metrics", {}),
             }
         )
         if _wire_completion_key(candidate) < _wire_completion_key(best):
             best = candidate
-        failed = _incomplete_wire_nets(candidate)
-        key = tuple(failed)
-        if not failed or key in seen:
-            break
-        seen.add(key)
     if len(attempts) > 1:
         best = deepcopy(best)
         warnings = list(best.get("warnings", []))
         warnings.append("strict_priority_reroute_attempts: " + json.dumps(attempts, sort_keys=True))
         best["warnings"] = warnings
+    if (
+        _wire_completion_key(best)[:3] != (0, 0, 0)
+        and config.get("strict_forbidden_contact_filter", 1.0) >= 1.0
+        and config.get("strict_relaxed_dogleg_repair", 1.0) >= 1.0
+    ):
+        failed = _incomplete_wire_nets(best)
+        profiles: list[tuple[str, list[str]]] = [
+            ("relaxed_default_order", []),
+            ("relaxed_signal_order", _signal_priority_nets(circuit)),
+        ]
+        if failed:
+            profiles.append(("relaxed_failed_first", [*failed, *[net for net in _signal_priority_nets(circuit) if net not in set(failed)]]))
+        seen_profiles: set[tuple[str, ...]] = set()
+        for profile_name, priority_nets in profiles:
+            key = tuple(priority_nets)
+            if key in seen_profiles:
+                continue
+            seen_profiles.add(key)
+            relaxed_config = dict(config)
+            relaxed_config["strict_forbidden_contact_filter"] = 0.0
+            relaxed_config["priority_nets"] = priority_nets
+            relaxed = plan_wire_routes(routing_placement, circuit, config=relaxed_config)
+            if _wire_completion_key(relaxed)[:3] != (0, 0, 0):
+                continue
+            repaired, validation = _repair_relaxed_geometry_by_doglegs(
+                routing_placement,
+                relaxed,
+                project=project,
+                engine=engine,
+                max_passes=max(1, int(float(config.get("strict_dogleg_repair_max_passes", 12.0)))),
+                candidate_budget=max(1, int(float(config.get("strict_dogleg_repair_candidate_budget", 300.0)))),
+            )
+            if _wire_validation_badness(validation) == (0, 0, 0, 0):
+                repaired = deepcopy(repaired)
+                repaired.setdefault("warnings", [])
+                if isinstance(repaired["warnings"], list):
+                    repaired["warnings"].append(f"strict_relaxed_dogleg_repair_selected: {profile_name}")
+                return repaired
     return best
 
 
@@ -298,7 +706,15 @@ def _route_final_states(
     for index, state in enumerate(states):
         name = state_names[index] if state_names and index < len(state_names) else f"beam_state_{index}"
         routing_placement = state.to_routing_placement()
-        wire_plan = _wire_plan_v2(_plan_wire_routes_with_priority_retries(routing_placement, circuit, config=fallback_wire_config))
+        wire_plan = _wire_plan_v2(
+            _plan_wire_routes_with_priority_retries(
+                routing_placement,
+                circuit,
+                config=fallback_wire_config,
+                project=_project_name(circuit),
+                engine=engine,
+            )
+        )
         validation = build_validation_report(
             project=_project_name(circuit),
             engine=engine,

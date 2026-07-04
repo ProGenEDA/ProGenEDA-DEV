@@ -8690,3 +8690,95 @@ Small note for the log: I’m going to record the main visible updates rather th
 - `kicad/pipeline/kicad_wire_maker.py`
 - `kicad/pipeline/routing/python/routing_orchestrator.py`
 - `kicad/pipeline/wire_planner.py`
+
+## 2026-07-04 21:12:10 PKT - Strict Dense Routing, Reroute Profiles, Dogleg Repair Budget, Pin-Lane Fixes
+
+### User Request
+
+```text
+fix not fully solved yet for large/denser strict routing. The remaining real work is true rip-up/reroute plus stronger pre-route component rearrangement, and the exact contact scoring loop is now the obvious Rust acceleration target.
+```
+
+### Visible Agent Updates
+
+```text
+I’m picking up from the routing checkpoint and first re-verifying the repo state, then I’ll run the bounded R02/R03 checks so we know exactly what changed instead of trusting stale output.
+```
+
+```text
+Remote and local are still aligned at `f8edf85`; the only unrelated dirt is the already-generated v4 KiCad examples, so I’m leaving those alone and testing only the planner/orchestrator edits.
+```
+
+```text
+The code compiles. I’m running the focused unit tests now, then I’ll run the R01/R02/R03 circuit-level probes so we can separate “unit-safe” from “actually routes dense circuits.”
+```
+
+```text
+The existing priority loop only repeats the same failed-net order until the failure set stops changing. I’m adding named profile sweeps: signals-first, largest-net-first, component-span-first, and failed-plus-signal order, then selecting by the same completion score.
+```
+
+```text
+This gives us “rip-up” in the planner’s current architecture: each profile rebuilds the full wire plan from zero, so earlier bad routes do not stay committed. It is not yet a local obstacle-negotiation router, but it is a real deterministic reroute sweep with failed nets moved to the top.
+```
+
+```text
+Given your newer rule, crossings can be tolerated but component hits cannot. I’m making wire-on-wire constraints soft by default and leaving the hard correctness burden to the validator/dogleg repair, which is a better fit for dense routing.
+```
+
+```text
+The interrupt shows the dogleg repair is the new hotspot: it validates too many local shifts. I’m converting it into a real bounded repair pass with a candidate budget, fewer deltas, and a clean “budget exhausted” report instead of an open-ended search.
+```
+
+```text
+There is already a legacy arrangement selector that can inject alternative floors before v2 routing. I’m opening that now and adding a generic logic-chain spread candidate there, because R02’s issue is clearly sheet topology.
+```
+
+```text
+This is the key finding: several R02 pins share identical coordinates, for example `U8.7` and `U8.1`, and header pins also collapse in pairs. The router cannot physically wire separate nets to the same point without creating shorts, so this is not just route search; the catalogue pin geometry needs unique pin positions.
+```
+
+```text
+The precise bug: unsupported parts get a two-pin generic profile, then real pins `1` and `2` keep those generic locations while other pins get fallback locations, causing collisions. I’m changing unsupported multi-pin parts to regenerate *all* requested pins from the fallback distributor instead.
+```
+
+```text
+The collapse is caused by half-grid offsets on even pin counts, then snapping back to the grid. I’m changing side-bucket spacing to integer grid lanes, so pins 7/8/9/10 no longer fold onto pairs after snapping.
+```
+
+```text
+Verification is green. I’m checking the diff and worktree now, then I’ll append the run notes to `context.md` and commit only the source/test/log files, leaving the pre-existing generated KiCad dirt untouched.
+```
+
+### Implementation Notes
+
+- Verified at turn start that local `HEAD` and `origin/main` both pointed at `f8edf85e29439899a71a70fe25177b5ed2f071a9`; pre-existing generated v4 example modifications were left unstaged.
+- Added orientation-aware wire occupancy scoring hooks in `wire_planner.py`, then made them lazy/soft by default because the user clarified wire crossings are acceptable while component crossings are not.
+- Added deterministic reroute priority profiles in routing v2: failed nets first, failed-then-signals, signals-first, long-span-first, high-fanout-first, and combined signal/span/fanout ordering. Each profile replans from scratch, so earlier bad route commitments are ripped up at the profile level.
+- Added bounded relaxed-route dogleg repair with configurable pass count and candidate budget. It records pass details, candidate counts, final badness, and budget exhaustion.
+- Added a `logic_chain_bus_rows` arrangement variant to `wire_planner.py` for logic/display chains. It separates headers, logic IC rows, decoder/display rows, passives, and outputs to create pre-route bus corridors.
+- Fixed unsupported multi-pin routing profiles in `live_routing_state.py`: if a part is not source-backed and the circuit requests more pins than the generic fallback provides, all requested pins are regenerated instead of keeping the generic two-pin anchors.
+- Fixed planner side-bucket pin spacing so even-count side pins use integer grid lanes instead of half-grid offsets that snap into duplicate coordinates.
+- Confirmed R02 now has a complete relaxed route with zero body hits after the pin-lane fixes, but strict no-contact routing still needs further local rip-up/exact-pin scoring work to fully clean the final contacts.
+- Identified the next exact issue: broad exact-pin body allowance can still allow long self-body crossings, but removing it entirely prevents exact pins from escaping. This should become a targeted exact-pin entry scoring rule, likely in the Rust contact-scoring loop.
+
+### Verification
+
+- `PYTHONPATH=. python3 -m compileall -q kicad/pipeline/wire_planner.py kicad/pipeline/routing/python/routing_orchestrator.py kicad/pipeline/routing/python/live_routing_state.py kicad/tests/test_routing_v2.py`
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_routing_v2 -v`
+  - Passed: 11 tests.
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_kicad_wire_maker.KiCadWireMakerTests.test_strict_wire_mode_reports_unrouted_nets_without_terminal_labels kicad.tests.test_kicad_wire_maker.KiCadWireMakerTests.test_proteus_alias_routed_projects_have_real_wires_and_clean_geometry -v`
+  - Passed: 2 tests.
+- R01 direct selected arrangement: strict incomplete, relaxed complete with 16 forbidden contacts, dogleg repair cleans to `(0 body, 0 forbidden, 0 overlap, 0 out-of-sheet)` in 5 passes / 338 candidate validations.
+- R02 direct selected arrangement after pin-lane fixes:
+  - Strict quick probe: `wired_route_count=43`, `partial=2`, `unroutable=5`, `body_hit=0`, `forbidden=0`.
+  - Relaxed quick probe: `wired_route_count=50`, `partial=0`, `unroutable=0`, `body_hit=0`, `forbidden=33`.
+  - Dogleg repair on relaxed R02 reduced forbidden contacts from 33 to 2, but did not reach zero; last contacts are T-touches around the RN1 signal pins and a GND trunk.
+- `git diff --check` passed.
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/routing/python/live_routing_state.py`
+- `kicad/pipeline/routing/python/routing_orchestrator.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_routing_v2.py`

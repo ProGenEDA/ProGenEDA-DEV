@@ -15,6 +15,7 @@ from kicad.pipeline.routing.python import (
 )
 from kicad.pipeline.routing.python.routing_config import routing_v2_config
 from kicad.pipeline.routing.python.routing_orchestrator import _try_rust_plan
+from kicad.pipeline.wire_planner import _endpoint_points, _wire_config
 
 
 def simple_vdc_resistor() -> dict[str, object]:
@@ -55,6 +56,38 @@ class RoutingV2Tests(unittest.TestCase):
         self.assertEqual(pin["side"], "top")
         self.assertEqual(pin["point"], [101.6, 88.9])
         self.assertAlmostEqual(state.components["U1"]["body"]["right"] - state.components["U1"]["body"]["left"], 7.62)
+
+    def test_unsupported_multipin_live_state_does_not_keep_generic_two_pin_anchors(self) -> None:
+        circuit = {
+            "components": [{"id": "U1", "kind": "4511", "pins": {"1": "A", "2": "B", "6": "C", "7": "D"}}],
+            "nets": {"A": ["U1.1"], "B": ["U1.2"], "C": ["U1.6"], "D": ["U1.7"]},
+        }
+        placement = {"components": {"U1": {"kind": "4511", "at": [100.0, 100.0]}}, "obstacles": []}
+        state = build_live_routing_state(placement, circuit)
+        points = {tuple(pin["point"]) for pin in state.components["U1"]["pins"].values()}
+        self.assertEqual(len(points), 4)
+
+    def test_wire_planner_even_side_bucket_pins_use_distinct_grid_lanes(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "U1", "kind": "4511", "pins": {"1": "N1", "2": "N2", "3": "N3", "4": "N4"}},
+                {"id": "J1", "kind": "PROGRAMMING_HEADER", "pins": {"1": "N1", "2": "N2", "3": "N3", "4": "N4"}},
+            ],
+            "nets": {"N1": ["U1.1", "J1.1"], "N2": ["U1.2", "J1.2"], "N3": ["U1.3", "J1.3"], "N4": ["U1.4", "J1.4"]},
+        }
+        placement = {
+            "components": {
+                "U1": {"kind": "4511", "at": [100.0, 100.0]},
+                "J1": {"kind": "PROGRAMMING_HEADER", "at": [40.0, 100.0]},
+            },
+            "obstacles": [
+                {"owner": "U1", "left": 89.0, "top": 86.0, "right": 111.0, "bottom": 114.0},
+                {"owner": "J1", "left": 34.0, "top": 98.5, "right": 46.0, "bottom": 101.5},
+            ],
+        }
+        endpoints = _endpoint_points(placement, circuit, _wire_config({}, circuit))
+        u1_points = [tuple(endpoint["point"]) for net in sorted(endpoints) for endpoint in endpoints[net] if endpoint["ref"] == "U1"]
+        self.assertEqual(len(set(u1_points)), 4)
 
     def test_priority_legalization_pushes_lower_priority_blocker(self) -> None:
         circuit = {
