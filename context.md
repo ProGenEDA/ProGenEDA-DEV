@@ -8782,3 +8782,25 @@ Verification is green. I’m checking the diff and worktree now, then I’ll app
 - `kicad/pipeline/routing/python/routing_orchestrator.py`
 - `kicad/pipeline/wire_planner.py`
 - `kicad/tests/test_routing_v2.py`
+
+## 2026-07-05 01:14:51 PKT - Architecture Question: Terminal Rules for Power/Ground and High-Fanout Nets
+
+### User Request
+
+```text
+can u tell me about following, what will happened if we made hard rule of always using terminals for grounds and power?
+and if we add rule for any pin that is connected to over 4 or 5 things is also always a terminal?
+what form of improvement can we expect
+```
+
+### Visible Agent Response Summary
+
+- Verified local `HEAD` matches upstream `origin/main` at `38de3e063ac41c8b07fca907ef748c8c7a1a5dc3`.
+- Explained that always-terminal power/GND would significantly reduce routing complexity, crossings, A* search time, long global trunks, and many strict geometry failures.
+- Explained that high-fanout terminalization is useful but should be net-based, not pin-based: nets with fanout above 4 or 5 can become terminal candidates, especially rails, buses, clocks, enable/reset, and shared references.
+- Warned that terminalization trades visible physical wires for named-net connectivity, so strict wire-mode validator must not silently accept terminals; the pipeline should mark routing mode as `terminal` or `combination`.
+- Recommended using terminals for `POWER_NETS`/`GROUND_NETS` by default, and high-fanout terminalization as a combination-mode policy with exceptions for local clustered nets.
+
+### Files Edited
+
+- `context.md`
