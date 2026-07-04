@@ -37,8 +37,8 @@ This folder implements the routing refactor extracted from
 
 ## Rust Boundary
 
-`routing/rust_core/` contains the planned PyO3/maturin module skeleton and the
-exact JSON API names from the refactor plan:
+`routing/rust_core/` contains the planned PyO3/maturin module and the exact JSON
+API names from the refactor plan:
 
 - `build_live_state`
 - `resolve_pins`
@@ -49,10 +49,16 @@ exact JSON API names from the refactor plan:
 - `validate_geometry`
 - `plan_full`
 
-The Rust module cannot be compiled in this environment because `rustc` and
-`cargo` are not installed. Until it exists as an importable
-`progen_routing_core`, the Python v2 orchestrator is authoritative and mirrors
-the Rust API boundary/JSON contracts.
+The Rust toolchain is now installed through the user Nix profile on this
+machine. The current crate builds with maturin, but it is still a temp parity
+core, not the production router. Implemented Rust functions cover catalogue
+alias resolution, placement fallback geometry, rotation-aware body/keepout/pin
+resolution, fast metrics, and basic geometry validation. Full-route functions
+still return `implemented: false`, and the Python v2 orchestrator ignores such
+results so the temp core cannot silently replace the current planner.
+
+Use `kicad/tools/compare_rust_python_routing_core.py` to compare the temp Rust
+state against Python before any promotion.
 
 ## Current Acceptance
 

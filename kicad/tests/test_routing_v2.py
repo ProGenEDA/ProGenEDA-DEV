@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+import sys
+import types
 import unittest
 
 from kicad.generator.kicad_json_to_project import plan_placement
@@ -11,6 +14,7 @@ from kicad.pipeline.routing.python import (
     rotate_side,
 )
 from kicad.pipeline.routing.python.routing_config import routing_v2_config
+from kicad.pipeline.routing.python.routing_orchestrator import _try_rust_plan
 
 
 def simple_vdc_resistor() -> dict[str, object]:
@@ -95,6 +99,27 @@ class RoutingV2Tests(unittest.TestCase):
         self.assertEqual(planned["wire_plan"]["schema"], "progen-kicad-wire-plan/v0.2")
         self.assertTrue(planned["wire_plan"]["algorithm"]["hanan_grid_lanes"])
         self.assertTrue(planned["wire_plan"]["algorithm"]["rectilinear_mst_tree"])
+
+    def test_temp_rust_core_does_not_replace_python_planner(self) -> None:
+        original = sys.modules.get("progen_routing_core")
+
+        fake = types.SimpleNamespace(
+            plan_full=lambda payload: json.dumps(
+                {
+                    "schema": "progen-routing-core-result/v0.1",
+                    "engine": "rust_core_v0.1_temp_geometry",
+                    "implemented": False,
+                }
+            )
+        )
+        sys.modules["progen_routing_core"] = fake
+        try:
+            self.assertIsNone(_try_rust_plan({"placement": {}, "circuit": {}, "catalogue": {}}))
+        finally:
+            if original is None:
+                sys.modules.pop("progen_routing_core", None)
+            else:
+                sys.modules["progen_routing_core"] = original
 
     def test_live_state_selects_weighted_pivot(self) -> None:
         circuit = {

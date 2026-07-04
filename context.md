@@ -8170,3 +8170,200 @@ Remaining PDF work: native Rust implementation, Rust-vs-Python benchmark/regress
 ### Files Edited
 
 - `context.md`
+## 2026-07-04 13:32:55 +0500 - Start Temporary Rust Routing Core
+
+### User Message
+
+```text
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Open tabs:
+- todo: todo
+
+## My request for Codex:
+goahead then install rust n maturin and get started.
+donot immediatly replace it. start temp. where ull slow create it, copy stuff from current main to their to avoid rebuilding from scratch.
+after build is complete. ill give u circuitsm frist we will run them both to see if the rust is lacking something, after rust gives atleast equal and most probably better results then our current python one we can move it to main.
+hope u have implemented the rotation behaviour in beautifier and in wireplaner and temp catelogue too
+```
+
+### Visible Agent Responses
+
+```text
+I’ll do this as an isolated Rust track, not a switch-over. First I’m checking the repo checkpoint and current toolchain state, then I’ll install Rust/maturin if missing and start the Rust core behind tests/comparison hooks instead of replacing the Python router.
+```
+
+```text
+The repo checkpoint is clean against GitHub, with only the known old v4 generated files dirty. Rust, Cargo, maturin, and pip are not available on PATH here, so I’m installing Rust in the user toolchain first and then maturin through Cargo so we don’t depend on system Python packaging.
+```
+
+```text
+The standard rustup installer won’t run on this NixOS environment because the downloaded binary is dynamically linked for generic Linux. I’m switching to the Nix-native install path, which should keep the toolchain usable here without system package mutation.
+```
+
+```text
+Nix is available, so I’m installing `rustc`, `cargo`, and `maturin` through the user profile now. If the profile install is blocked by local Nix settings, I’ll fall back to a checked-in dev shell wrapper so the build remains reproducible.
+```
+
+```text
+The Nix profile add returned cleanly. I’m verifying the binaries and versions now before touching code.
+```
+
+```text
+Toolchain is live: Rust `1.95.0`, Cargo `1.95.0`, maturin `1.12.6`. Next I’m checking the existing Rust skeleton build, then I’ll turn it into a temp comparison core without making Python production depend on it.
+```
+
+```text
+I can see the current Python v2 already has rotation in the live routing state and the temp catalogue has legal rotations/pin-local coordinates. I’ll still add Rust tests for that specifically so the new core cannot drift from beautifier/wire-planner rotation behavior.
+```
+
+```text
+The Rust crate exists but is skeleton-only. I’m going to keep the package import name separate from production use by building/testing the crate directly first; no orchestrator replacement, no `maturin develop` into the active Python path yet.
+```
+
+```text
+The skeleton builds. For the first temp slice I’m not attempting full routing yet; I’m moving the safest heavy math first: catalogue-backed body/keepout recompute, rotation transforms, pin resolution, and body-overlap validation. Those are exactly the bits we need before route scoring can be trusted.
+```
+
+```text
+I’m going to patch the Rust crate now. The first version will expose implemented `build_live_state`, `resolve_pins`, and `validate_geometry`; `plan_full` will remain explicitly non-authoritative so it cannot hijack the Python route planner before we compare results.
+```
+
+```text
+The geometry/catalogue/validation primitives are in. Now I’m wiring those into the PyO3 surface: temp `build_live_state`, `resolve_pins`, and `validate_geometry`, while keeping `plan_full` safely non-authoritative.
+```
+
+```text
+I replaced the old all-stub `lib.rs` so the temp core has real code instead of pretending. Next patch adds the implemented bridge and tests.
+```
+
+```text
+The first Rust implementation slice is patched. I’m formatting and compiling it now; I expect a few Rust borrow/type nits on the first pass, then I’ll tighten it until the Rust tests pass.
+```
+
+```text
+Cargo is installed but `rustfmt` is missing from the Nix profile. I’m adding it through Nix too, then I’ll rerun format/test.
+```
+
+```text
+`rustfmt` is available now. Running the Rust formatter and tests again.
+```
+
+```text
+Rust unit tests are green: rotation parity, catalogue alias resolution, rotated pin resolution, and overlap validation. I’m building the PyO3 wheel with maturin now, but not installing it into the active Python environment, so production Python won’t silently switch engines.
+```
+
+```text
+The wheel builds successfully for CPython 3.13. I’m doing a no-install import test by extracting the wheel to `/tmp` and comparing Rust output against the Python live-state output for the same rotated component payload.
+```
+
+```text
+The no-install import comparison passes: Rust and Python agree on the rotated 74HC595 pin/body, and `plan_full` correctly says it is not ready. I’m adding a safety guard now so even if the temp wheel is accidentally on `PYTHONPATH`, Python will ignore it until it returns a complete routed contract.
+```
+
+```text
+I also want a small comparison harness now, so when you hand me circuits we can run “Python state vs Rust temp state” without installing the wheel globally. I’m adding that as a tool instead of folding it into the production pipeline.
+```
+
+```text
+The comparison tool is in place. I’m running it against an existing small final JSON with the no-install wheel path so we know the Rust temp core agrees with Python on a real repo circuit, not just a hand-built unit test.
+```
+
+```text
+The first real-circuit comparison exposed an important parity gap: Rust generic fallback didn’t know about placement-catalog body sizes for unsupported routing-catalogue parts like push buttons, while Python does. I’m fixing that fallback path so Rust copies the existing Python fallback behavior instead of inventing new geometry.
+```
+
+```text
+That mismatch is useful: Python can fall back to the placement catalogue for parts not in the routing catalogue; Rust only had a blind generic fallback. I’m adding the same fallback metadata to the Rust payload and teaching Rust to consume it.
+```
+
+```text
+Fallback metadata is now part of the temp Rust payload, so Python and Rust should agree on placement-catalog-only bodies too. I’m rebuilding the Rust wheel and rerunning the comparison.
+```
+
+```text
+Rebuild is green. Running the real-circuit parity check again with the freshly built wheel.
+```
+
+```text
+The comparison is clean on T01: zero mismatches between Python and Rust for live-state geometry/pins. I’m going to run it on T10 too, because that is the kind of large case this Rust track is meant to protect.
+```
+
+```text
+T10 parity is also clean for the implemented phase: 190 components, zero geometry/pin-state mismatches. The overlap numbers are high because that input is the raw placement input, but both engines agree exactly, which is the point of this temp stage.
+```
+
+```text
+Docs now reflect the temp/promotion rule. I’m running the full focused verification pass: Rust format/tests/build, Python compile, routing tests, and both comparison checks.
+```
+
+```text
+The focused Rust and Python tests are clean. I’m running the no-install wheel comparison on T01 and T10 one last time after the final rebuild.
+```
+
+```text
+Both comparison checks pass with zero mismatches, including the 190-component T10 state. I’m checking the working tree now so I can commit only source/docs/tests and not bulky build artifacts.
+```
+
+```text
+The built `target/` directory is untracked. I’m going to ignore Rust build output, keep `Cargo.lock` for reproducibility, and commit the source/docs/tests plus the comparison harness.
+```
+
+```text
+I’m adding a Git ignore for Rust build directories so the maturin wheel and Cargo build cache stay local. `Cargo.lock` will stay tracked for reproducible Rust dependency resolution.
+```
+
+```text
+The Rust build ignore belongs in the repo-root `.gitignore`; the KiCad local ignore only covers local app/project debris.
+```
+
+```text
+The working tree is scoped: new Rust source/docs/tests, comparison tool, root ignore, and `Cargo.lock`; old v4 records are still untouched and unstaged. I’m logging this turn to `context.md` before the commit, per repo rules.
+```
+
+```text
+I’ll keep the log concise but complete: install result, what Rust can do now, what remains temp, and the comparison evidence.
+```
+
+### Implementation Notes
+
+- Installed `rustc 1.95.0`, `cargo 1.95.0`, `maturin 1.12.6`, and `rustfmt 1.9.0` through the user Nix profile.
+- Standard `rustup` was not usable on this NixOS environment because the generic dynamically linked installer could not start.
+- Implemented the first temp Rust parity slice in `kicad/pipeline/routing/rust_core/`:
+  - catalogue alias resolution
+  - placement-catalog fallback metadata from Python
+  - body/keepout recomputation
+  - rotation-aware point/side transform
+  - pin anchor resolution
+  - fast HPWL/overlap/out-of-sheet metrics
+  - component overlap/out-of-sheet validation
+- `plan_full`, route variants, placement variants, rotation scoring, and legalization remain non-authoritative and return `implemented: false`.
+- `routing_orchestrator.py` now ignores Rust results that are not complete routed contracts.
+- Added `kicad/tools/compare_rust_python_routing_core.py` for no-install wheel comparison against Python.
+
+### Verification
+
+- `cargo fmt && cargo test && maturin build --manifest-path Cargo.toml --out target/wheels`
+- `PYTHONPATH=. python3 -m compileall -q kicad/pipeline/routing/python/routing_orchestrator.py kicad/tools/compare_rust_python_routing_core.py kicad/tests/test_routing_v2.py`
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_routing_v2 -v`
+- No-install wheel comparison:
+  - T01: 13 components, 0 mismatches
+  - T10: 190 components, 0 mismatches
+
+### Files Edited
+
+- `.gitignore`
+- `context.md`
+- `kicad/pipeline/routing/README.md`
+- `kicad/pipeline/routing/python/routing_orchestrator.py`
+- `kicad/pipeline/routing/rust_core/Cargo.lock`
+- `kicad/pipeline/routing/rust_core/README.md`
+- `kicad/pipeline/routing/rust_core/src/catalogue.rs`
+- `kicad/pipeline/routing/rust_core/src/geometry.rs`
+- `kicad/pipeline/routing/rust_core/src/lib.rs`
+- `kicad/pipeline/routing/rust_core/src/types.rs`
+- `kicad/pipeline/routing/rust_core/src/validation.rs`
+- `kicad/tests/test_routing_v2.py`
+- `kicad/tools/compare_rust_python_routing_core.py`

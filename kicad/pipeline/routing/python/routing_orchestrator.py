@@ -13,6 +13,7 @@ from copy import deepcopy
 from typing import Any
 
 from kicad.pipeline.catelogues import load_component_catalogue
+from kicad.pipeline.placement_catalog import normalize_kind, resolve_placement_spec
 from kicad.pipeline.wire_planner import plan_wire_routes
 
 from .live_routing_state import LiveRoutingState, build_live_routing_state
@@ -36,7 +37,42 @@ def _try_rust_plan(payload: dict[str, Any]) -> dict[str, Any] | None:
     result = json.loads(result_json)
     if not isinstance(result, dict):
         raise ValueError("Rust routing core returned non-object JSON")
+    if result.get("implemented") is False:
+        return None
+    required = {"coordinate_plan", "routing_placement", "wire_plan", "arrangement_selection"}
+    if not required.issubset(result):
+        return None
     return result
+
+
+def _placement_fallbacks_for_rust(placement: dict[str, Any], circuit: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    kinds: set[str] = set()
+    for component in circuit.get("components", []):
+        if isinstance(component, dict):
+            kind = component.get("kind") or component.get("name")
+            if kind:
+                kinds.add(str(kind))
+    placement_components = placement.get("components")
+    if isinstance(placement_components, dict):
+        for component in placement_components.values():
+            if isinstance(component, dict):
+                kind = component.get("kind") or component.get("name")
+                if kind:
+                    kinds.add(str(kind))
+    fallbacks: dict[str, dict[str, Any]] = {}
+    for kind in sorted(kinds):
+        spec = resolve_placement_spec(kind)
+        if spec is None:
+            continue
+        fallbacks[normalize_kind(kind)] = {
+            "kind": spec.kind,
+            "name": spec.name,
+            "width": spec.width,
+            "height": spec.height,
+            "category": spec.category,
+            "source": spec.source,
+        }
+    return fallbacks
 
 
 def _legalize_existing_overlaps(state: LiveRoutingState, config: dict[str, Any]) -> dict[str, Any]:
@@ -297,6 +333,7 @@ def plan_wiring_v2(
     catalogue = load_component_catalogue(component_catalogue_path)
     payload = {
         "catalogue": catalogue.as_dict(),
+        "placement_fallbacks": _placement_fallbacks_for_rust(placement, circuit),
         "placement": placement,
         "circuit": circuit,
         "config": merged_config,
