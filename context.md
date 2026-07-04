@@ -8097,3 +8097,76 @@ Whitespace is clean. I’m staging the implementation, docs, context, and the ne
 ~~~~markdown
 Staging is scoped correctly: the old v4 files are still unstaged, and all new evidence/code/docs are staged. I’m adding one tiny context addendum for the context-move/staging messages, then I’ll run staged checks and commit.
 ~~~~
+## 2026-07-04 13:14:30 +0500 - Supported Component List And PDF/Rust Status
+
+### User Message
+
+```text
+# Context from my IDE setup:
+
+## Active file: todo
+
+## Active selection of the file:
+and we need another thing. u need to import from source files of kicad
+## Open tabs:
+- todo: todo
+
+## My request for Codex:
+then make a much proper circuit which we can use for testing, first give me list of all the components, then ill try n give u the circuits.
+and tell me is the pdf fully implemented? is the shift to rust for heavy calculations complete? yes reply yes or no, and no then y not, and how will u go about it.
+also mention anything else remaining from pdf
+```
+
+### Visible Agent Responses
+
+```text
+I’ll answer this from the actual repo state, not memory. First I’m doing the required checkpoint check, then I’ll pull the supported component list from the catalogue/registry code and summarize the PDF implementation status honestly.
+```
+
+```text
+Checkpoint is good: `main` tracks `origin/main`, and both point at `e675029...`. The only dirty files are the old v4 generated records, so I’m leaving them alone and reading the actual catalogue now.
+```
+
+```text
+I have the component list and the PDF/Rust status now. One repo-rule thing before the final answer: I’m appending this question/answer checkpoint to `context.md`, then I’ll commit and push that log so the next turn doesn’t depend on chat memory.
+```
+
+### Final Response Draft
+
+```text
+Use these exact component IDs when you give me the test circuits.
+
+Microcontrollers/modules: `ARDUINO_NANO`, `ESP32_WROOM`
+
+Power/sources/symbols: `GND_SYMBOL`, `GROUND`, `VCC_SYMBOL`, `PWR_5V`, `PWR_3V3`, `VDC`, `VSOURCE`, `CSOURCE`, `VSIN`, `VPULSE`
+
+Passives: `RES`, `RESISTOR`, `R_220`, `R_10K_PULLUP`, `R_4K7_PULLUP`, `R_120_CAN`, `R_120_RS485`, `FEEDBACK_RESISTOR`, `PULLUP_RESISTOR_OLED`, `SDA_PULLUP`, `SCL_PULLUP`, `RESISTOR_NETWORK`, `CAP`, `CAPACITOR`, `CAP_ELEC`, `CP_100UF`, `C_100NF_CERAMIC`, `C_100NF_FLASH`, `C_22PF_X1`, `C_22PF_X2`, `DECOUPLING_CAPACITOR`, `DECOUPLING_CAPACITOR_SD`, `INPUT_CAPACITOR`, `INPUT_CAPACITOR_BUCK`, `OUTPUT_CAPACITOR_BUCK`, `OUTPUT_FILTER_CAPACITOR`, `RESET_CAPACITOR`, `REALIND`, `POWER_INDUCTOR`
+
+Diodes/protection: `DIODE`, `D_1N4007`, `1N4007`, `1N4148`, `1N60`, `BZX55C5`, `BZX79C5`, `FLYBACK_DIODE`, `RELAY_FLYBACK_DIODE`, `SCHOTTKY_DIODE_BUCK`, `TVS_DIODE_RS485`, `BRIDGE_RECTIFIER`, `FUSE`, `POLYFUSE`
+
+Transistors/drivers: `NPN`, `PNP`, `BC547`, `NMOS`, `MOSFET`, `2N7000`, `BS170`, `IRLZ44N`, `RELAY`, `RELAY_5V`, `DC_MOTOR`
+
+Analog/audio: `OPAMP`, `LM358`, `LM741`, `LM393_COMPARATOR`, `POT_HG`, `POTENTIOMETER`, `TRIMMER_POTENTIOMETER`, `VOLUME_POTENTIOMETER`, `PAM8403`, `SPEAKER`, `AUDIO_JACK`, `AUDIO_INPUT_JACK`
+
+Power ICs/modules: `LM7805`, `LM317`, `LM2596`, `TP4056`, `PROTECTION_IC`, `TRANSFORMER`
+
+Digital/logic/display: `NE555`, `CD4007`, `4027`, `4511`, `7447`, `7490`, `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC74`, `74HC76`, `74HC85`, `74HC86`, `74HC151`, `74HC157`, `74HC160`, `74HC174`, `74HC192`, `74HC266`, `74HC283`, `74HC595_SHIFT_REGISTER`, `7SEGCOMA`, `7SEGCOMK`, `LED`, `LED_INDICATOR`, `LED_ARRAY`, `CHARGING_LED`, `POWER_LED`, `RELAY_INDICATOR_LED`, `SSD1306_OLED`
+
+Comms/memory/sensors: `CP2102`, `CH340`, `MAX485`, `MCP2515`, `TJA1050`, `LEVEL_SHIFTER`, `W25Q64`, `BME280`, `ACS712`, `DS3231`
+
+Connectors/headers/mechanical: `USB_C_CONNECTOR`, `USB_CONNECTOR`, `USB_CONNECTOR_UART`, `MICRO_USB_CONNECTOR`, `DC_BARREL_JACK`, `MICRO_SD_SOCKET`, `JST_CONNECTOR`, `LI_ION_BATTERY_CONNECTOR`, `PIN_HEADER`, `HEADER_CONNECTOR`, `UART_HEADER`, `I2C_HEADER`, `SPI_HEADER_FLASH`, `SPI_HEADER_SD`, `PWM_HEADER`, `PROGRAMMING_HEADER`, `TX_HEADER`, `RX_HEADER`, `TERMINAL`, `TERMINAL_BLOCK`, `SCREW_TERMINAL_2`, `CAN_TERMINAL`, `RS485_TERMINAL`, `TEST_POINT`, `MOUNTING_HOLE`, `CHIP_SELECT_JUMPER`, `DIP_SWITCH`, `SWITCH`, `PUSH_BUTTON`, `EN_PUSH_BUTTON`, `BOOT_PUSH_BUTTON`, `CARD_DETECT_SWITCH`, `COIN_CELL_HOLDER`, `CR2032_BATTERY`
+
+PDF fully implemented? No.
+
+Rust heavy-calculation shift complete? No.
+
+Why not: the PDF behavior is mostly implemented as the Python v2 fallback, but the native Rust core is still a PyO3/maturin skeleton. Its exported functions currently return `implemented: false`, and this environment does not have `rustc`/`cargo`, so I could not compile or prove a real Rust engine.
+
+How I’d finish it: install Rust + maturin, port one phase at a time from Python to Rust, compare every Rust function against the Python output, then switch the orchestrator to require Rust only after pin resolving, geometry validation, legalization, placement scoring, routing, and parallel variant evaluation all match tests.
+
+Remaining PDF work: native Rust implementation, Rust-vs-Python benchmark/regression, full replacement of old planner internals, optional PDF/SVG preview export, stronger pre-route JSON pin-allocation repair, and final hosted validation parity beyond the current embedded-symbol netlist validator. Also, simulation models are not complete; these are real KiCad schematic symbols, not guaranteed SPICE-ready parts yet.
+```
+
+### Files Edited
+
+- `context.md`
