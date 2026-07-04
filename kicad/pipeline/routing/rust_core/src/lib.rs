@@ -642,14 +642,65 @@ fn score_fast(
     }
     let overlap_count = component_overlaps(components).len();
     let out_of_sheet_count = out_of_sheet(components, sheet).len();
+    let square_fill = square_fill_metrics(components);
     let score = weighted_hpwl
         + overlap_count as f64 * 1_000_000.0
-        + out_of_sheet_count as f64 * 1_000_000.0;
+        + out_of_sheet_count as f64 * 1_000_000.0
+        + square_fill
+            .get("score")
+            .and_then(Value::as_f64)
+            .unwrap_or(0.0);
     json!({
         "hpwl": round3(hpwl),
         "weighted_hpwl": round3(weighted_hpwl),
+        "square_fill": square_fill,
         "component_overlap_count": overlap_count,
         "out_of_sheet_count": out_of_sheet_count,
+        "score": round3(score)
+    })
+}
+
+fn square_fill_metrics(components: &BTreeMap<String, LiveComponent>) -> Value {
+    if components.len() <= 1 {
+        return json!({"aspect_ratio": 1.0, "aspect_penalty": 0.0, "fill_waste_area": 0.0, "score": 0.0});
+    }
+    let left = components
+        .values()
+        .map(|component| component.keepout.left)
+        .fold(f64::INFINITY, f64::min);
+    let top = components
+        .values()
+        .map(|component| component.keepout.top)
+        .fold(f64::INFINITY, f64::min);
+    let right = components
+        .values()
+        .map(|component| component.keepout.right)
+        .fold(f64::NEG_INFINITY, f64::max);
+    let bottom = components
+        .values()
+        .map(|component| component.keepout.bottom)
+        .fold(f64::NEG_INFINITY, f64::max);
+    let width = (right - left).max(0.0);
+    let height = (bottom - top).max(0.0);
+    if width <= 0.001 || height <= 0.001 {
+        return json!({"aspect_ratio": 1.0, "aspect_penalty": 0.0, "fill_waste_area": 0.0, "score": 0.0});
+    }
+    let body_area: f64 = components
+        .values()
+        .map(|component| {
+            (component.body.right - component.body.left).max(0.0)
+                * (component.body.bottom - component.body.top).max(0.0)
+        })
+        .sum();
+    let fill_waste_area = (width * height - body_area * 2.25).max(0.0);
+    let aspect_penalty = (width - height).abs();
+    let score = aspect_penalty * 2.0 + fill_waste_area * 0.015;
+    json!({
+        "bounds": {"left": round3(left), "top": round3(top), "right": round3(right), "bottom": round3(bottom), "width": round3(width), "height": round3(height), "area": round3(width * height)},
+        "body_area": round3(body_area),
+        "aspect_ratio": round3(width / height),
+        "aspect_penalty": round3(aspect_penalty),
+        "fill_waste_area": round3(fill_waste_area),
         "score": round3(score)
     })
 }

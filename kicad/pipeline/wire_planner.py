@@ -2216,6 +2216,8 @@ def _arrangement_variant_specs(
     dense = component_count >= int(wire_cfg.get("dense_design_component_limit", 90.0)) or max_fanout >= 8
     profiles: list[tuple[str, dict[str, float]]] = [
         ("base", {}),
+        ("square_fill_compact", {"column_gap": 1.15, "row_gap": 1.15, "component_clearance": 1.15}),
+        ("square_fill_balanced", {"column_gap": 1.3, "row_gap": 1.3, "component_clearance": 1.3}),
         ("wide_columns", {"column_gap": 1.45, "row_gap": 1.0, "component_clearance": 1.15}),
         ("tall_rows", {"column_gap": 1.0, "row_gap": 1.65, "component_clearance": 1.25}),
         ("loose_grid", {"column_gap": 1.35, "row_gap": 1.45, "component_clearance": 1.6}),
@@ -2609,6 +2611,47 @@ def _body_overlap_count(bodies: dict[str, Body]) -> int:
     return count
 
 
+def _square_fill_metrics(bodies: dict[str, Body]) -> dict[str, Any]:
+    component_bodies: dict[str, Body] = {}
+    for body in bodies.values():
+        ref = body.component_ref or body.ref
+        current = component_bodies.get(ref)
+        if current is None:
+            component_bodies[ref] = body
+        else:
+            component_bodies[ref] = Body(
+                ref,
+                min(current.left, body.left),
+                min(current.top, body.top),
+                max(current.right, body.right),
+                max(current.bottom, body.bottom),
+                ref,
+            )
+    items = list(component_bodies.values())
+    if len(items) <= 1:
+        return {"aspect_ratio": 1.0, "aspect_penalty": 0.0, "fill_waste_area": 0.0, "score": 0.0}
+    left = min(body.left for body in items)
+    right = max(body.right for body in items)
+    top = min(body.top for body in items)
+    bottom = max(body.bottom for body in items)
+    width = max(0.0, right - left)
+    height = max(0.0, bottom - top)
+    if width <= 0.001 or height <= 0.001:
+        return {"aspect_ratio": 1.0, "aspect_penalty": 0.0, "fill_waste_area": 0.0, "score": 0.0}
+    body_area = sum(max(0.0, body.right - body.left) * max(0.0, body.bottom - body.top) for body in items)
+    fill_waste_area = max(0.0, width * height - body_area * 2.25)
+    aspect_penalty = abs(width - height)
+    score = aspect_penalty * 2.0 + fill_waste_area * 0.015
+    return {
+        "width": round(width, 3),
+        "height": round(height, 3),
+        "aspect_ratio": round(width / height, 3),
+        "aspect_penalty": round(aspect_penalty, 3),
+        "fill_waste_area": round(fill_waste_area, 3),
+        "score": round(score, 3),
+    }
+
+
 def _estimate_candidate_paths(start: Point, goal: Point, bodies: dict[str, Body], cfg: dict[str, Any]) -> list[list[Point]]:
     width, height = _sheet_bounds(bodies, cfg)
     margin = float(cfg["margin"])
@@ -2722,15 +2765,18 @@ def _estimate_variant_routeability(routing_placement: dict[str, Any], circuit: d
 
     partial_like_nets = sum(1 for endpoints in endpoints_by_net.values() if len(endpoints) >= 2) - routable_branch_count
     overlap_count = _body_overlap_count(bodies)
+    square_fill = _square_fill_metrics(bodies)
     score = (
         overlap_count * 10_000_000_000
         + blocked_endpoint_count * 1_000_000_000
         + estimated_body_hits * 1_000_000
+        + float(square_fill["score"]) * 100.0
         + estimated_turns * 10
         + estimated_length
     )
     return {
         "score": round(score, 3),
+        "square_fill": square_fill,
         "component_body_overlap_count": overlap_count,
         "estimated_blocked_endpoint_count": blocked_endpoint_count,
         "estimated_partial_pressure": max(0, partial_like_nets),

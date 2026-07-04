@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from typing import Any
 
@@ -660,6 +661,50 @@ def _dedupe_named_states(states: list[tuple[str, LiveRoutingState]]) -> list[tup
     return out
 
 
+def _route_final_state_variant(
+    *,
+    index: int,
+    name: str,
+    state: LiveRoutingState,
+    circuit: dict[str, Any],
+    engine: str,
+    config: dict[str, Any],
+    wire_config: dict[str, Any],
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    routing_placement = state.to_routing_placement()
+    wire_plan = _wire_plan_v2(
+        _plan_wire_routes_with_priority_retries(
+            routing_placement,
+            circuit,
+            config=wire_config,
+            project=_project_name(circuit),
+            engine=engine,
+        )
+    )
+    validation = build_validation_report(
+        project=_project_name(circuit),
+        engine=engine,
+        routing_placement=routing_placement,
+        wire_plan=wire_plan,
+    )
+    score = _wire_score(wire_plan, validation)
+    square_fill = state.score_square_fill()
+    score = dict(score)
+    score["square_fill"] = square_fill
+    score["score"] = round(float(score["score"]) + float(square_fill.get("score", 0.0)) * 100.0, 3)
+    return {
+        "index": index,
+        "name": name,
+        "state": state,
+        "routing_placement": routing_placement,
+        "wire_plan": wire_plan,
+        "validation_report": validation,
+        "score": score,
+        "elapsed_seconds": round(time.perf_counter() - started, 3),
+    }
+
+
 def _legacy_routeable_state_candidate(
     placement: dict[str, Any],
     circuit: dict[str, Any],
@@ -718,52 +763,58 @@ def _route_final_states(
     fallback_wire_config = deepcopy(config.get("wire_fallback", {}))
     if wire_config:
         fallback_wire_config.update(wire_config)
+    parallel_cfg = config.get("parallel", {}) if isinstance(config.get("parallel"), dict) else {}
+    min_variants = max(2, int(parallel_cfg.get("final_state_parallel_min_variants", 2)))
+    configured_workers = int(parallel_cfg.get("final_state_route_workers", 0) or 0)
+    max_workers = configured_workers if configured_workers > 0 else int(parallel_cfg.get("threads", 1) or 1)
+    worker_count = max(1, min(len(states), max_workers))
+    if len(states) < min_variants:
+        worker_count = 1
+
+    tasks = [
+        {
+            "index": index,
+            "name": state_names[index] if state_names and index < len(state_names) else f"beam_state_{index}",
+            "state": state,
+            "circuit": circuit,
+            "engine": engine,
+            "config": config,
+            "wire_config": fallback_wire_config,
+        }
+        for index, state in enumerate(states)
+    ]
     routed_variants: list[dict[str, Any]] = []
-    for index, state in enumerate(states):
-        name = state_names[index] if state_names and index < len(state_names) else f"beam_state_{index}"
-        routing_placement = state.to_routing_placement()
-        wire_plan = _wire_plan_v2(
-            _plan_wire_routes_with_priority_retries(
-                routing_placement,
-                circuit,
-                config=fallback_wire_config,
-                project=_project_name(circuit),
-                engine=engine,
-            )
-        )
-        validation = build_validation_report(
-            project=_project_name(circuit),
-            engine=engine,
-            routing_placement=routing_placement,
-            wire_plan=wire_plan,
-        )
-        score = _wire_score(wire_plan, validation)
-        routed_variants.append(
-            {
-                "name": name,
-                "state": state,
-                "routing_placement": routing_placement,
-                "wire_plan": wire_plan,
-                "validation_report": validation,
-                "score": score,
-            }
-        )
+    parallel_error = ""
+    if worker_count > 1:
+        try:
+            with ThreadPoolExecutor(max_workers=worker_count) as executor:
+                future_map = {executor.submit(_route_final_state_variant, **task): task["name"] for task in tasks}
+                for future in as_completed(future_map):
+                    routed_variants.append(future.result())
+        except Exception as exc:  # pragma: no cover - defensive fallback for thread/runtime edge cases.
+            parallel_error = str(exc)
+            routed_variants = []
+            worker_count = 1
+    if not routed_variants:
+        routed_variants = [_route_final_state_variant(**task) for task in tasks]
+        worker_count = 1
     routed_variants.sort(key=lambda item: (float(item["score"]["score"]), str(item["name"])))
     selected = routed_variants[0]
     return {
         "selected": selected,
+        "worker_count": worker_count,
+        "parallel_error": parallel_error,
         "variants": [
             {
                 "name": item["name"],
                 "score": item["score"],
+                "elapsed_seconds": item.get("elapsed_seconds"),
                 "coordinate_edit_count": len(item["state"].to_coordinate_plan().get("coordinate_edits", [])),
                 "validation_checks": item["validation_report"].get("checks", {}),
             }
             for item in routed_variants
         ],
     }
-
-
 def _rotation_improvement_pass(state: LiveRoutingState) -> list[dict[str, Any]]:
     """Cheap rotation-aware scoring pass using only LiveRoutingState math."""
     edits: list[dict[str, Any]] = []
@@ -811,7 +862,11 @@ def _python_live_state_plan(
     beam_report: dict[str, Any] = {"strategy": "disabled"}
     final_named_states: list[tuple[str, LiveRoutingState]] = [("initial_live_state", state)]
     if config.get("placement", {}).get("enable_python_live_state_placement", True):
-        if config.get("placement", {}).get("enable_cluster_growth_beam_search", True):
+        placement_cfg = config.get("placement", {}) if isinstance(config.get("placement"), dict) else {}
+        component_count = len(state.components)
+        max_beam_components = int(placement_cfg.get("max_beam_search_components", 12))
+        use_beam_search = bool(placement_cfg.get("enable_cluster_growth_beam_search", True)) and component_count <= max_beam_components
+        if use_beam_search:
             rotation_baseline = baseline_state.clone_state()
             baseline_rotation_edits = _rotation_improvement_pass(rotation_baseline)
             baseline_legalization = _legalize_existing_overlaps(rotation_baseline, config)
@@ -833,6 +888,13 @@ def _python_live_state_plan(
             rotation_edits = _rotation_improvement_pass(state)
             legalization_report = _legalize_existing_overlaps(state, config)
             final_named_states = [("rotation_improved_state", state)]
+            if placement_cfg.get("enable_cluster_growth_beam_search", True) and component_count > max_beam_components:
+                beam_report = {
+                    "strategy": "adaptive_beam_skipped",
+                    "reason": "component_count_exceeds_max_beam_search_components",
+                    "component_count": component_count,
+                    "max_beam_search_components": max_beam_components,
+                }
     else:
         legalization_report = {"moved": [], "failed": [], "overlap_count": len(state.find_overlaps())}
 
@@ -847,6 +909,24 @@ def _python_live_state_plan(
     if legacy_state is not None:
         final_named_states.insert(0, ("legacy_routeable_arrangement", legacy_state))
     final_named_states = _dedupe_named_states(final_named_states)
+    deep_route_candidate_count = len(final_named_states)
+    parallel_cfg = config.get("parallel", {}) if isinstance(config.get("parallel"), dict) else {}
+    placement_cfg = config.get("placement", {}) if isinstance(config.get("placement"), dict) else {}
+    max_final_states = max(
+        1,
+        int(
+            parallel_cfg.get(
+                "max_final_state_route_variants",
+                placement_cfg.get("deep_route_top_n", 4),
+            )
+        ),
+    )
+    protected_names = {"legacy_routeable_arrangement", "rotation_baseline", "rotation_improved_state"}
+    protected_states = [item for item in final_named_states if item[0] in protected_names]
+    remaining_states = [item for item in final_named_states if item[0] not in protected_names]
+    protected_states.sort(key=lambda item: (0 if item[0] == "legacy_routeable_arrangement" else 1, float(item[1].score_routeability()["score"]), item[0]))
+    remaining_states.sort(key=lambda item: (float(item[1].score_routeability()["score"]), item[0]))
+    final_named_states = [*protected_states, *remaining_states][:max_final_states]
     final_states = [item[1] for item in final_named_states]
     final_state_names = [item[0] for item in final_named_states]
 
@@ -879,6 +959,10 @@ def _python_live_state_plan(
             "selected_score": selected["score"],
             "initial_score": initial_score,
             "placement_beam": beam_report,
+            "deep_route_candidate_count": deep_route_candidate_count,
+            "deep_route_selected_count": len(final_named_states),
+            "final_state_route_worker_count": routed.get("worker_count", 1),
+            "final_state_parallel_error": routed.get("parallel_error", ""),
             "variants": routed["variants"],
         },
         "component_motion_policy": {

@@ -7774,6 +7774,82 @@ The previously quoted `partial 3 -> 1` came from a capped comparison before the 
 - `kicad/pipeline/wire_planner.py`
 - `kicad/tests/test_kicad_wire_maker.py`
 
+## 2026-07-05 02:50:03 PKT - Square-Fill Law, Adaptive Variant Routing, and Pivot Rotation Readiness
+
+### User Request
+
+```text
+improve the code more. make it faster, insure all the stuff of multiple variation testing at once, piviot components rotation all are properly infused
+make sure it is ready for becoming the main. ill give u test circuits after this.
+add like a square fill law, where the design is such that it tries to fill up be like a square as much as it can rather then a rectangle
+this will result in better looking circuits
+```
+
+### Visible Agent Response Summary
+
+- Verified turn-start git state: local `HEAD` and `origin/main` both pointed at `1d5d65bd0011044e0c7a5c043c4745af945a6ec2`; the old generated v4 KiCad example modifications were left untouched and unstaged.
+- Added a square-fill layout law to the authoritative Python `LiveRoutingState` scoring. It measures layout bounds, aspect penalty, fill waste, and a compactness score so square-like layouts are preferred over long rectangular rows when route quality is otherwise comparable.
+- Added square-aware candidate generation around the growing pivot cluster: when the cluster is wide, candidate points are proposed above/below; when tall, candidates are proposed left/right; corner candidates are also included.
+- Added pivot rotation seeding inside beam search so the pivot component is evaluated across legal rotations before the rest of the placement grows around it.
+- Added parallel final-state route evaluation with configurable worker count. Final candidate states are routed concurrently when multiple states are selected.
+- Added an adaptive deep-route cap so multiple variants are still tested, but expensive full routing is bounded.
+- Added adaptive beam skipping for medium/large designs. For component counts above `max_beam_search_components` (default `12`), v2 uses rotation-improved and legacy routeable variants instead of slow full beam search.
+- Protected practical final states (`legacy_routeable_arrangement`, `rotation_baseline`, `rotation_improved_state`) from being dropped by the deep-route cap before prettier but less routable beam states.
+- Added square-fill metrics to the Rust temp core's `score_fast` output so the Rust migration track stays aligned with Python scoring.
+
+### Measurement
+
+Initial full v2 probe with beam search on `R01` routed six final states and took about `30.031s`. It did finish with:
+
+```text
+R01: worker=3, variant_count=6, wired=13, unroutable=0, partial=0, selected=beam_state_2
+```
+
+After adaptive beam skip and deep-route capping:
+
+```text
+R01: sec=4.828, beam_strategy=adaptive_beam_skipped, candidates=2, selected_count=2, worker=2,
+     unroutable=0, partial=0, selected=rotation_improved_state,
+     variants=['rotation_improved_state', 'legacy_routeable_arrangement']
+```
+
+With square-fill included in final score:
+
+```text
+R01: sec=8.101, selected=rotation_improved_state, unroutable=0, partial=0,
+     variants=[('rotation_improved_state', score=300304000057770.25, square=557.59),
+               ('legacy_routeable_arrangement', score=500304001062780.8, square=606.203)]
+```
+
+The adaptive path preserves zero partial/unroutable while keeping multiple final variants and making route testing parallel. Square-fill is now a tie-breaker under route correctness instead of overriding electrical/routing validity.
+
+### Verification
+
+- `PYTHONPATH=. python3 -m compileall -q kicad/pipeline/routing/python kicad/pipeline/wire_planner.py kicad/tests/test_routing_v2.py`
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_routing_v2 -v`
+  - Passed: 13 tests.
+- `cargo fmt && cargo test`
+  - Passed: 7 Rust tests.
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_kicad_wire_maker -v`
+  - Passed: 8 tests.
+- `maturin build --out target/wheels`
+  - Built `progen_routing_core-0.1.0-cp313-cp313-manylinux_2_34_x86_64.whl`.
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_kicad_netlist_validator -v`
+  - Passed: 4 tests.
+- `git diff --check`
+  - Passed.
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/routing/python/live_routing_state.py`
+- `kicad/pipeline/routing/python/routing_config.py`
+- `kicad/pipeline/routing/python/routing_orchestrator.py`
+- `kicad/pipeline/routing/rust_core/README.md`
+- `kicad/pipeline/routing/rust_core/src/lib.rs`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_routing_v2.py`
+
 ### Notes
 
 - Pre-existing dirty generated files were intentionally left untouched:

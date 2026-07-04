@@ -399,6 +399,67 @@ class LiveRoutingState:
             or keepout["bottom"] > float(self.sheet.get("height", 297.0)) - margin
         )
 
+    def layout_bounds(self, *, use_keepout: bool = True) -> dict[str, float]:
+        rects = [
+            component.get("keepout" if use_keepout else "body", {})
+            for component in self.components.values()
+            if isinstance(component.get("keepout" if use_keepout else "body"), dict)
+        ]
+        if not rects:
+            return {"left": 0.0, "top": 0.0, "right": 0.0, "bottom": 0.0, "width": 0.0, "height": 0.0, "area": 0.0}
+        left = min(float(rect.get("left", 0.0)) for rect in rects)
+        top = min(float(rect.get("top", 0.0)) for rect in rects)
+        right = max(float(rect.get("right", 0.0)) for rect in rects)
+        bottom = max(float(rect.get("bottom", 0.0)) for rect in rects)
+        width = max(0.0, right - left)
+        height = max(0.0, bottom - top)
+        return {
+            "left": round(left, 3),
+            "top": round(top, 3),
+            "right": round(right, 3),
+            "bottom": round(bottom, 3),
+            "width": round(width, 3),
+            "height": round(height, 3),
+            "area": round(width * height, 3),
+        }
+
+    def score_square_fill(self) -> dict[str, Any]:
+        bounds = self.layout_bounds(use_keepout=True)
+        width = float(bounds["width"])
+        height = float(bounds["height"])
+        if width <= 0.001 or height <= 0.001 or len(self.components) <= 1:
+            return {
+                "bounds": bounds,
+                "body_area": 0.0,
+                "aspect_ratio": 1.0,
+                "aspect_penalty": 0.0,
+                "fill_waste_area": 0.0,
+                "score": 0.0,
+            }
+        body_area = 0.0
+        for component in self.components.values():
+            body = component.get("body", {})
+            if not isinstance(body, dict):
+                continue
+            body_area += max(0.0, float(body.get("right", 0.0)) - float(body.get("left", 0.0))) * max(
+                0.0,
+                float(body.get("bottom", 0.0)) - float(body.get("top", 0.0)),
+            )
+        bbox_area = width * height
+        target_fill_area = body_area * 2.25
+        fill_waste_area = max(0.0, bbox_area - target_fill_area)
+        aspect_ratio = width / height
+        aspect_penalty = abs(width - height)
+        score = aspect_penalty * 2.0 + fill_waste_area * 0.015
+        return {
+            "bounds": bounds,
+            "body_area": round(body_area, 3),
+            "aspect_ratio": round(aspect_ratio, 3),
+            "aspect_penalty": round(aspect_penalty, 3),
+            "fill_waste_area": round(fill_waste_area, 3),
+            "score": round(score, 3),
+        }
+
     def score_fast(self) -> dict[str, Any]:
         hpwl = 0.0
         weighted_hpwl = 0.0
@@ -413,10 +474,12 @@ class LiveRoutingState:
             weighted_hpwl += raw * net_weight(str(net.get("class") or classify_net(net_name)))
         overlap_count = len(self.find_overlaps())
         out_of_sheet = sum(1 for ref in self.components if self._component_out_of_sheet(ref))
-        score = weighted_hpwl + overlap_count * 1_000_000.0 + out_of_sheet * 1_000_000.0
+        square_fill = self.score_square_fill()
+        score = weighted_hpwl + overlap_count * 1_000_000.0 + out_of_sheet * 1_000_000.0 + float(square_fill["score"])
         return {
             "hpwl": round(hpwl, 3),
             "weighted_hpwl": round(weighted_hpwl, 3),
+            "square_fill": square_fill,
             "component_overlap_count": overlap_count,
             "out_of_sheet_count": out_of_sheet,
             "score": round(score, 3),
@@ -432,6 +495,7 @@ class LiveRoutingState:
         score["pin_facing_penalty"] = round(self.score_pin_facing(), 3)
         score["bus_order_penalty"] = round(self.score_bus_alignment(), 3)
         score["power_ground_side_penalty"] = round(self.score_power_ground_sides(), 3)
+        score["square_fill_score"] = round(float(score.get("square_fill", {}).get("score", 0.0)), 3)
         score["score"] = round(
             float(score["score"])
             + score["pin_facing_penalty"] * 10.0
@@ -569,6 +633,33 @@ class LiveRoutingState:
             for multiplier in multipliers:
                 for dx, dy in directions:
                     raw.append((snap(seed[0] + dx * x_step * multiplier, self.grid), snap(seed[1] + dy * y_step * multiplier, self.grid)))
+        cluster_refs = [placed for placed in sorted(placed_refs) if placed in self.components]
+        if cluster_refs:
+            rects = [self.components[placed].get("keepout", self.components[placed].get("body", {})) for placed in cluster_refs]
+            left = min(float(rect.get("left", self.component_center(cluster_refs[0])[0])) for rect in rects)
+            right = max(float(rect.get("right", self.component_center(cluster_refs[0])[0])) for rect in rects)
+            top = min(float(rect.get("top", self.component_center(cluster_refs[0])[1])) for rect in rects)
+            bottom = max(float(rect.get("bottom", self.component_center(cluster_refs[0])[1])) for rect in rects)
+            width = max(0.0, right - left)
+            height = max(0.0, bottom - top)
+            mid_x = snap((left + right) / 2.0, self.grid)
+            mid_y = snap((top + bottom) / 2.0, self.grid)
+            if width >= height:
+                lanes = (snap(top - y_step, self.grid), snap(bottom + y_step, self.grid))
+                for y in lanes:
+                    raw.extend([(mid_x, y), (snap(mid_x - x_step, self.grid), y), (snap(mid_x + x_step, self.grid), y)])
+            else:
+                lanes = (snap(left - x_step, self.grid), snap(right + x_step, self.grid))
+                for x in lanes:
+                    raw.extend([(x, mid_y), (x, snap(mid_y - y_step, self.grid)), (x, snap(mid_y + y_step, self.grid))])
+            raw.extend(
+                [
+                    (snap(left - x_step, self.grid), snap(top - y_step, self.grid)),
+                    (snap(right + x_step, self.grid), snap(top - y_step, self.grid)),
+                    (snap(left - x_step, self.grid), snap(bottom + y_step, self.grid)),
+                    (snap(right + x_step, self.grid), snap(bottom + y_step, self.grid)),
+                ]
+            )
         seen: set[Point] = set()
         candidates: list[Point] = []
         for point in raw:
@@ -652,11 +743,13 @@ class LiveRoutingState:
         pin_facing = candidate.score_pin_facing()
         bus_order = candidate.score_bus_alignment()
         power_ground = candidate.score_power_ground_sides()
+        square_fill = candidate.score_square_fill()
         rotation_cost = 0.0 if int(rotation) % 360 == int(self.components[ref].get("rotation", 0)) % 360 else 1.0
         lower_bound = (
             float(fast["weighted_hpwl"])
             + int(fast["component_overlap_count"]) * 1_000_000.0
             + int(fast["out_of_sheet_count"]) * 1_000_000.0
+            + float(square_fill["score"])
             + pin_facing * 10.0
             + bus_order * 25.0
             + power_ground * 20.0
@@ -673,6 +766,8 @@ class LiveRoutingState:
             "pin_facing_penalty": round(pin_facing, 3),
             "bus_misalignment": round(bus_order, 3),
             "power_ground_side_penalty": round(power_ground, 3),
+            "square_fill_score": round(float(square_fill["score"]), 3),
+            "square_fill": square_fill,
             "rotation_cost": rotation_cost,
             "lower_bound_score": round(lower_bound, 3),
         }
@@ -680,7 +775,7 @@ class LiveRoutingState:
     @staticmethod
     def pareto_prune_candidates(candidates: list[dict[str, Any]], *, limit: int) -> list[dict[str, Any]]:
         survivors: list[dict[str, Any]] = []
-        metrics = ("weighted_hpwl", "overlap_count", "pin_facing_penalty", "bus_misalignment", "power_ground_side_penalty")
+        metrics = ("weighted_hpwl", "overlap_count", "pin_facing_penalty", "bus_misalignment", "power_ground_side_penalty", "square_fill_score")
         for candidate in candidates:
             dominated = False
             for other in candidates:
@@ -749,9 +844,35 @@ class LiveRoutingState:
             order.append(nxt)
             placed_for_order.add(nxt)
 
-        beam: list[LiveRoutingState] = [self.clone_state()]
+        pivot_rotation_report: list[dict[str, Any]] = []
+        beam: list[LiveRoutingState] = []
+        if placement_cfg.get("enable_pivot_rotation_search", True):
+            for rotation in self.components[pivot].get("legal_rotations", [int(self.components[pivot].get("rotation", 0))]):
+                candidate = self.clone_state()
+                status = "accepted"
+                try:
+                    candidate.apply_rotation(pivot, int(rotation))
+                    if candidate.find_overlaps(pivot) or candidate._component_out_of_sheet(pivot):
+                        status = "rejected_geometry"
+                except ValueError:
+                    status = "illegal_rotation"
+                routeability = candidate.score_routeability() if status == "accepted" else {"score": 1.0e99}
+                pivot_rotation_report.append(
+                    {
+                        "ref": pivot,
+                        "rotation": int(rotation) % 360,
+                        "status": status,
+                        "score": routeability,
+                    }
+                )
+                if status == "accepted":
+                    beam.append(candidate)
+            beam.sort(key=lambda state: float(state.score_routeability()["score"]))
+            beam = beam[:beam_width]
+        if not beam:
+            beam = [self.clone_state()]
         placed_cluster: set[str] = {pivot}
-        best_full_score = float(self.score_routeability()["score"])
+        best_full_score = min(float(state.score_routeability()["score"]) for state in beam)
         step_reports: list[dict[str, Any]] = []
         for step_index, ref in enumerate(order[1:], start=1):
             next_states: list[tuple[float, LiveRoutingState, dict[str, Any]]] = []
@@ -834,6 +955,7 @@ class LiveRoutingState:
                 "schema": "progen-kicad-live-state-beam-search/v0.2",
                 "strategy": "pivot_cluster_growth_rotation_aware_legalized_beam",
                 "pivot": pivot,
+                "pivot_rotation_candidates": pivot_rotation_report,
                 "order": order,
                 "beam_width": beam_width,
                 "deep_route_top_n": deep_route_top_n,

@@ -19,6 +19,8 @@ DEFAULT_ROUTING_V2_CONFIG: dict[str, Any] = {
         "max_candidate_states_per_step": 128,
         "enable_python_live_state_placement": True,
         "enable_cluster_growth_beam_search": True,
+        "max_beam_search_components": 12,
+        "enable_pivot_rotation_search": True,
         "user_primary_ref": "",
     },
     "legalization": {
@@ -46,6 +48,9 @@ DEFAULT_ROUTING_V2_CONFIG: dict[str, Any] = {
         "beam_width": 12,
         "max_candidate_states_per_step": 128,
         "deep_route_top_n": 4,
+        "final_state_route_workers": 0,
+        "final_state_parallel_min_variants": 2,
+        "max_final_state_route_variants": 4,
         "debug_parallel": False,
     },
     "wire_fallback": {

@@ -14,7 +14,7 @@ from kicad.pipeline.routing.python import (
     rotate_side,
 )
 from kicad.pipeline.routing.python.routing_config import routing_v2_config
-from kicad.pipeline.routing.python.routing_orchestrator import _try_rust_plan
+from kicad.pipeline.routing.python.routing_orchestrator import _route_final_states, _try_rust_plan
 from kicad.pipeline.wire_planner import _endpoint_points, _wire_config
 
 
@@ -208,8 +208,58 @@ class RoutingV2Tests(unittest.TestCase):
         report = state.beam_search_cluster_growth(routing_v2_config({"placement": {"beam_width": 2, "deep_route_top_n": 2}}))
         self.assertEqual(report["report"]["schema"], "progen-kicad-live-state-beam-search/v0.2")
         self.assertTrue(report["report"]["pivot"])
+        self.assertGreaterEqual(len(report["report"]["pivot_rotation_candidates"]), 1)
         self.assertGreaterEqual(len(report["final_states"]), 1)
         self.assertLessEqual(len(report["final_states"]), 2)
+
+    def test_square_fill_law_prefers_compact_square_layout(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "R1", "kind": "RES", "pins": {"1": "A1", "2": "A2"}},
+                {"id": "R2", "kind": "RES", "pins": {"1": "B1", "2": "B2"}},
+                {"id": "R3", "kind": "RES", "pins": {"1": "C1", "2": "C2"}},
+                {"id": "R4", "kind": "RES", "pins": {"1": "D1", "2": "D2"}},
+            ],
+            "nets": {"A1": ["R1.1"], "A2": ["R1.2"], "B1": ["R2.1"], "B2": ["R2.2"], "C1": ["R3.1"], "C2": ["R3.2"], "D1": ["R4.1"], "D2": ["R4.2"]},
+        }
+        row = {
+            "components": {
+                "R1": {"kind": "RES", "at": [40.0, 40.0]},
+                "R2": {"kind": "RES", "at": [80.0, 40.0]},
+                "R3": {"kind": "RES", "at": [120.0, 40.0]},
+                "R4": {"kind": "RES", "at": [160.0, 40.0]},
+            },
+            "obstacles": [],
+        }
+        square = {
+            "components": {
+                "R1": {"kind": "RES", "at": [40.0, 40.0]},
+                "R2": {"kind": "RES", "at": [80.0, 40.0]},
+                "R3": {"kind": "RES", "at": [40.0, 80.0]},
+                "R4": {"kind": "RES", "at": [80.0, 80.0]},
+            },
+            "obstacles": [],
+        }
+        row_state = build_live_routing_state(row, circuit)
+        square_state = build_live_routing_state(square, circuit)
+        self.assertGreater(row_state.score_square_fill()["score"], square_state.score_square_fill()["score"])
+
+    def test_final_route_variants_can_run_in_parallel(self) -> None:
+        circuit = simple_vdc_resistor()
+        placement = plan_placement(circuit).as_dict()
+        state = build_live_routing_state(placement, circuit)
+        other = state.clone_state()
+        other.apply_move("R1", other.component_center("R1")[0] + 2.54, other.component_center("R1")[1])
+        result = _route_final_states(
+            [state, other],
+            circuit,
+            engine="unit_test_parallel_variants",
+            config=routing_v2_config({"parallel": {"threads": 2, "final_state_route_workers": 2, "final_state_parallel_min_variants": 2}}),
+            wire_config={"max_astar_expansions": 500.0},
+            state_names=["state_a", "state_b"],
+        )
+        self.assertEqual(result["worker_count"], 2)
+        self.assertEqual(len(result["variants"]), 2)
 
 
 if __name__ == "__main__":

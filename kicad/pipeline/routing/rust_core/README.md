@@ -11,6 +11,7 @@ Current implemented parity slice:
 - `0/90/180/270` point and side rotation
 - pin anchor resolution
 - fast HPWL/overlap/out-of-sheet metrics
+- square-fill compactness metrics for preferring compact square-like layouts
 - component overlap and out-of-sheet validation
 - `plan_terminal_policy`, which selects explicit wire-mode terminal nets for
   power/ground rails and optional high-fanout nets, then returns the wire
