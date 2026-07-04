@@ -1,4 +1,4 @@
-"""Generate safe catalogue-backed multi-pin terminal solo evidence.
+"""Generate safe catalogue-backed multi-pin terminal solo evidence packs.
 
 This runner intentionally contains no terminal-placement logic.  It uses the
 shared component placer and the shared catalogue terminal placer only.
@@ -22,8 +22,8 @@ from proteusgen.component_terminal_placer import (  # noqa: E402
 )
 
 
-OUTPUT_ROOT = REPO / "experiments" / "new_catalogue_terminal_solo_v7_temp_2026_07_04"
-ARCHIVE = REPO / "experiments" / "NEW_CATALOGUE_TERMINAL_SOLO_V7_TEMP_2026_07_04.zip"
+OUTPUT_ROOT = REPO / "experiments" / "new_catalogue_terminal_solo_v8_final_only_temp_2026_07_04"
+ARCHIVE = REPO / "experiments" / "NEW_CATALOGUE_TERMINAL_SOLO_V8_FINAL_ONLY_TEMP_2026_07_04.zip"
 
 DONOR_BASE = REPO / "experiments" / "multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04"
 
@@ -40,14 +40,6 @@ SAFE_CASES: tuple[tuple[str, Path], ...] = (
         / "M07_74HC151_1X_NO_TERMINAL_DONOR_BASE"
         / "M07_74HC151_1X_NO_TERMINAL_DONOR_BASE.pdsprj",
     ),
-    (
-        "74HC04",
-        REPO
-        / "experiments"
-        / "ic_hc04_all7_v1_temp_2026_06_08"
-        / "T02_74HC04_ALL6_NOT"
-        / "T02_74HC04_ALL6_NOT.pdsprj",
-    ),
 )
 
 BLOCKED_CASES = {
@@ -59,6 +51,7 @@ BLOCKED_CASES = {
     "74HC86": "saved donor has terminals/WIREs but lacks a complete active pin-link table",
     "BRIDGE": "saved donor has terminals/WIREs but no active component pin-link fields",
     "LM317T": "saved donor has terminals/WIREs but no active component pin-link fields",
+    "74HC04": "V7 _sa output rejected by user Proteus test; old HC04 evidence needs a cleaner component-placer packet without old I/O artifacts",
     "7SEG-COM-AN-BLUE": "display terminal evidence is not yet integrated with the D20/display grouping path",
     "7SEG-COM-CAT-BLUE": "display terminal evidence is not yet integrated with the D20/display grouping path",
 }
@@ -72,12 +65,14 @@ def main() -> None:
     if OUTPUT_ROOT.exists():
         shutil.rmtree(OUTPUT_ROOT)
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+    build_root = OUTPUT_ROOT / "_build_intermediate"
+    build_root.mkdir(parents=True, exist_ok=True)
 
     cases: list[dict[str, object]] = []
     for index, (family, donor) in enumerate(SAFE_CASES, start=1):
         case_dir = OUTPUT_ROOT / _case_name(index, family)
         case_dir.mkdir(parents=True, exist_ok=True)
-        placed = case_dir / f"{case_dir.name}_placed.pdsprj"
+        placed = build_root / f"{case_dir.name}_placed.pdsprj"
         final = case_dir / f"{case_dir.name}_sa.pdsprj"
 
         placement = generate_component_placement_project(
@@ -122,23 +117,27 @@ def main() -> None:
 
     summary = {
         "experiment": OUTPUT_ROOT.name,
-        "purpose": "Safe catalogue-backed terminal solos for newly promoted multi-pin evidence.",
+        "purpose": "Final-only safe catalogue-backed terminal solos for newly promoted multi-pin evidence.",
         "safe_cases": cases,
         "blocked_cases": BLOCKED_CASES,
         "notes": [
             "Generated through component placer plus shared component_terminal_placer.py.",
+            "Only final *_sa.pdsprj files are included for Proteus user testing; component-placer intermediates are removed.",
             "No component-specific terminal-placement script or alternate terminal workflow was used.",
             "Blocked cases have terminal geometry in the catalogue but lack complete active component pin-link evidence.",
         ],
     }
+    shutil.rmtree(build_root)
     (OUTPUT_ROOT / "summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     (OUTPUT_ROOT / "README.md").write_text(
-        "# New catalogue terminal solo V7 - 2026-07-04\n\n"
+        "# New catalogue terminal solo V8 final-only - 2026-07-04\n\n"
         "Generated through the shared component placer and "
         "`src/proteusgen/component_terminal_placer.py`.\n\n"
+        "Only the final `*_sa.pdsprj` files in each case directory are Proteus "
+        "test artifacts. Component-placer intermediate projects are not included.\n\n"
         "Safe generated cases:\n\n"
         + "\n".join(
             f"- `{case['case']}`: `{case['family']}`, "

@@ -8007,6 +8007,63 @@ I’m appending this clarification to `context.md`, then I’ll commit/push that
 
 ~~~~
 
+## Turn Log - 2026-07-04T18:56:29.4813024+05:00
+
+### User Message
+
+the sa one was correct, but other one was insanely faulty. 04 none sa one opened other gave error was empty
+how have u done such a horrible job. when i tell u to do one by one u start making seperate scripts when i tell u do many at once u pay not attention and end up witht his shit
+and clarifications, in bridge no pins ever specifically labeled cause they had no spcific purpose, atleast i couldnt find one, u can look up online for more information, otherwise i think it behaves excatly the same as a 2 pinned one.
+and I1 measn input 1, and O1 means output1 and so on
+
+### Visible Agent Responses During Turn
+
+I’ll verify the pushed checkpoint first, then I’ll fix the packaging problem: the only files you should have been asked to test are final `_sa.pdsprj` outputs. Including `_placed.pdsprj` intermediates in the pack was a mistake and made the test confusing.
+
+I’m going to correct the artifact, not defend it: V7 included `_placed` intermediates that should never have been in the user-test zip, and HC04 `_sa` is now treated as rejected based on your Proteus result. I’m making a final-only V8 pack with only the accepted `_sa` outputs, and I’ll record bridge/I/O clarifications in the catalogue notes.
+
+I also corrected the runner naming so it is a generic reproducible pack runner, not a new version-specific terminal implementation.
+
+The patch tool needs a content hunk for a rename; I’ll make the move with a no-op wording update in the file header.
+
+I’m also updating the catalogue wording: bridge pin roles stay unresolved unless Proteus-specific evidence maps them; `I1/O1` gate labels are explicitly input/output labels, not unknowns.
+
+I’m regenerating a V8 final-only pack now. It will not include `_placed.pdsprj` intermediates, and it will not include HC04 until the HC04 final output is fixed properly.
+
+V8 generated with only two final `_sa` projects: 4511 and 74HC151. I’m removing the faulty V7 artifact from the current working tree so it is not presented as a valid test pack anymore.
+
+I’m marking V7 as rejected in the status docs and adding V8 final-only as the current pack.
+
+I’m updating the old “V7 safe” wording because your Proteus result invalidated it.
+
+I’m adding evidence records for your Proteus result and the replacement V8 pack.
+
+V8 archive now contains only two `.pdsprj` files, both final `_sa` outputs. No `_placed` intermediates are in the zip. I’m running focused tests/compile now.
+
+Tests and compile passed. I’m appending the turn log to `context.md`, then I’ll commit/push the corrected V8 checkpoint.
+
+### Files Edited By Agent In Response To This Message
+
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py` - renamed/updated the existing reproducible runner; it still only calls component placer plus shared terminal placer, contains no terminal-placement logic, generates V8 final-only artifacts, and removes build intermediates.
+- `experiments/new_catalogue_terminal_solo_v8_final_only_temp_2026_07_04/` - generated replacement pack containing only final `_sa.pdsprj` outputs for `4511` and `74HC151`.
+- `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V8_FINAL_ONLY_TEMP_2026_07_04.zip` - final-only archive with no `_placed.pdsprj` intermediates.
+- `experiments/new_catalogue_terminal_solo_v7_temp_2026_07_04/` and `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V7_TEMP_2026_07_04.zip` - removed from current working tree because user Proteus testing rejected the pack as a user-test artifact.
+- `knowledge/component_catalog_v0.json` - added catalogue caveats: bridge roles remain unknown until Proteus-specific evidence maps them; gate `I1/O1` labels mean input/output numbers.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V7 rejection and V8 final-only replacement.
+- `knowledge/test_results.jsonl` - recorded user Proteus feedback and V8 static result.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: local/upstream/GitHub remote all matched `a55c677ef1cadfd493b9ddaa8a9c20e548f90ca7`.
+- Browsed bridge-rectifier background: standard bridge rectifiers use two AC input terminals and two DC output terminals, but that does not prove Proteus `BRIDGE` pin-number mapping.
+- V8 archive inspection: only `S01_4511_1X_CATALOGUE_TERMINAL_sa.pdsprj` and `S02_74HC151_1X_CATALOGUE_TERMINAL_sa.pdsprj` are present as `.pdsprj` files.
+- `PYTHONPATH=src; python -m pytest tests/test_component_catalog.py -q` -> `23 passed`.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+- V8 terminal reports: `4511 valid=True terminal_count_added=14 wire_path_contacts_valid=True object_chunk_double_ff_valid=True`; `74HC151 valid=True terminal_count_added=14 wire_path_contacts_valid=True object_chunk_double_ff_valid=True`.
+
+~~~~
+
 ## 2026-07-04 12:42:08 +05:00 - User Message
 
 what did u use to generate these donor base packs? did u not use the component placer with the mega donor

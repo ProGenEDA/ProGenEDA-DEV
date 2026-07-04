@@ -199,18 +199,30 @@ The catalogue now contains component-relative pin geometry for `4511`,
 typo where the second `Pin5...` terminal is treated as package pin 6.  `BRIDGE`
 records the ambiguous `pin` terminal as the missing package pin 4.
 
-Generated V7 safe solo pack:
+V7 user Proteus result:
 
-- Folder: `experiments/new_catalogue_terminal_solo_v7_temp_2026_07_04/`
-- Archive: `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V7_TEMP_2026_07_04.zip`
-- Safe generated cases: `4511`, `74HC151`, and `74HC04`.
-- Static summary: all three terminal reports are valid, all grid/short-wire
-  checks pass, and all three final ROOT.DSN streams have the required double
-  `FF` object termination.
+- Rejected as a user-test pack because it included `_placed.pdsprj`
+  component-placer intermediates alongside final `_sa.pdsprj` outputs. The
+  intermediates are not terminal-placer deliverables and must not be presented
+  for user testing.
+- `4511` and `74HC151` final `_sa` outputs were visually correct enough to keep
+  as safe evidence.
+- `74HC04` final `_sa` output is rejected. The old HC04 evidence still needs a
+  cleaner component-placer packet without old I/O artifacts before it can be
+  treated as a safe terminalized deliverable.
+
+Generated V8 final-only solo pack:
+
+- Folder: `experiments/new_catalogue_terminal_solo_v8_final_only_temp_2026_07_04/`
+- Archive: `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V8_FINAL_ONLY_TEMP_2026_07_04.zip`
+- Safe generated cases: `4511` and `74HC151`.
+- Static summary: both terminal reports are valid, all grid/short-wire checks
+  pass, and final ROOT.DSN streams have the required double `FF` object
+  termination.
 
 Blocked at this checkpoint:
 
-- `74HC00`, `74HC02`, `74HC08`, `74HC32`, `74HC86`, `74HC266`: saved donor
+- `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC86`, `74HC266`: saved donor
   geometry exists, but the saved packets do not expose a complete active
   component pin-link table for every visible pin.
 - `BRIDGE`, `LM317T`: saved donor geometry exists, but no active component
