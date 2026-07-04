@@ -7866,6 +7866,121 @@ Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
 
 ~~~~
 
+## Turn Log - 2026-07-04T14:23:31.9921044+05:00
+
+### User Message
+
+M02_4518_1X_NO_TERMINAL_DONOR_BASE
+M05_74HC04_6X_NO_TERMINAL_DONOR_BASE
+M10_74HC4520_1X_NO_TERMINAL_DONOR_BASE
+these didnt work ignore the 4518 n 4520
+use the old generator to generate urself donor for 04 n fix it in current placer donot use new donor
+then i haved placed some terminals in the nontrminalzip use them to geenrate the solo
+generate solor for all with 15 each ic non ic terminalized then start generating mix one with 3 ic each type of available one and 15 2 pined
+
+### Visible Agent Responses During Turn
+
+I’ll ignore 4518/4520, preserve your edited donor-base files, and treat 74HC04 separately. I’m checking whether the current component placer emits the WIRE/link skeleton needed by the shared terminal placer; if it doesn’t, I won’t fake an unsafe pack.
+
+The manually edited pack has usable terminal evidence for several families, but 74HC04 has none there. I’m now checking the old accepted HC04 donor path and whether the shared placer can reuse those pin/link mechanics without adding another terminal workflow.
+
+74HC04 has old accepted donors under `proteus_ic/donors/74hc04`; I’ll use those only as evidence for the current shared placer/catalogue, not as a separate terminal-placement script.
+
+The existing shared multi-pin emitter is intentionally strict: it only emits active terminal attachments when the selected component packet already has donor WIRE/link anchors. I’m testing the edited donors against that now, because that decides whether 15x/mixed can be generated safely.
+
+One important correction from the current docs: large multi-pin counts were deliberately blocked before because duplicate packets did not yet have verified per-copy link tables. I’m checking whether your newly saved terminalized files provide enough evidence to unblock that, family by family.
+
+The edited 4511/gate/display/BRIDGE/LM317T donor-base files do contain terminals and short wires, but the component placer’s selected packets for those same families currently contain zero WIRE records. That means I need to promote their saved attachment evidence into the shared catalogue/placer before large generation is safe.
+
+I’m also checking the count limit. The current component placer is still removal-only, so “15 each” is only possible for families where the trusted donor actually contains 15 usable packets. If a family has only 1 accepted native packet, generating 15 would require the byte-forming/cloning path the repo rules still forbid.
+
+For current accepted V6 one-copy ICs, the placer picked native per-family donors that already include WIRE anchors. For larger counts and mixed output, it picks the mega donor, and those packets are bare. That is why prior docs marked mixed multi-pin blocked. The fix is shared-placer/schema work, not a new generator.
+
+The 15-count test confirms the blocker: most 15x outputs come from bare mega packets with no WIRE anchors; only a couple of old 16x combo donors already carry terminalized/native WIRE data. So I’m not going to claim all 15x IC packs are safe until the shared placer learns an attachment schema for bare packets.
+
+I found an existing old 16x combo donor already containing usable WIRE skeletons for 74HC00/02/08/32/86/266, but its manifest doesn’t advertise those counts, so the placer was choosing the wrong bare donor. That is a current-placer registry fix, not a new donor. 74HC04 still needs a separate old evidence source.
+
+The old 16x donor can unblock the six binary gate families at 15x if I add its real counts to the trusted donor registry and catalogue geometry from your saved files. For 4511/display/BRIDGE/LM317T, I only have one terminalized saved donor each so far; they can produce safe one-copy evidence, but not a 15-copy pack without a multi-copy link schema.
+
+No existing 15-copy WIRE-anchor donor turned up for 4511/display/BRIDGE/LM317T. There are smaller old donors for some, but not enough for 15. I’ll proceed with the safe 15x gate path and one-copy manually terminalized evidence for the count-limited families unless the code proves otherwise.
+
+I’m going to separate “terminal evidence exists” from “15x/mixed safe generation exists”. The edited files are evidence for catalogue promotion, but they are mostly one-package donors, so they do not automatically make 15-copy or mixed output safe.
+
+Next I’m extracting component-relative pin geometry from the saved terminalized donors and checking it against the catalogue pin lists. This is the source-of-truth update needed before any shared terminal emission.
+
+The first analyser pass shows some of your manually placed terminals are valid in Proteus but not matched by the strict “terminal contact equals wire endpoint” rule. I’m checking the actual endpoint offsets before I loosen the analyser; I won’t change emission rules based on bad matching.
+
+I found why the analyser rejected several saved terminals: Proteus saved some wire endpoints 20,320 units away from the ideal terminal contact. That is a tiny sub-grid offset, not a different placement strategy. I’m backing up the shared placer before adding tolerant donor-evidence parsing.
+
+Backup created. I’m applying a narrow change: tolerant donor parsing only; emission will still use exact grid-snapped terminal contact and short-wire output.
+
+Tolerant donor parsing is in. Now I’m rerunning geometry extraction to see which saved donors become catalogue-ready and which still have real missing/ambiguous labels.
+
+After tolerance: 4511, 74HC00/02/08/32/151, BRIDGE parse cleanly; 74HC266, 74HC86, and LM317T still have real mismatches/ambiguous saved evidence. I’m inspecting those before deciding whether to exclude or correct them from donor facts.
+
+The remaining mismatches are still within one Proteus terminal grid step; this is donor-evidence parsing only, so I’m raising the analyser tolerance to one grid. I also found one real label typo in your 74HC266 donor: two labels say pin 5; the second should be treated as pin 6 based on the signal/order.
+
+74HC266 needs a catalogue correction: donor label `Pin5I4` will be recorded as package pin 6, because package pin 5 is already `I3` and 74HC266 pinout matches the standard quad gate layout.
+
+I’m updating `knowledge/component_catalog_v0.json` now. This will not make unsupported large-count output magically safe; it makes the shared placer know the pin geometry and attachment evidence for the newly terminalized families.
+
+I’m going to update the catalogue mechanically from the parsed donor evidence, with two explicit corrections: `74HC266` pin 6 label typo, and `BRIDGE` ambiguous `pin` label recorded as missing pin 4.
+
+For 74HC04 I found the old accepted HC04 generated experiments. I’ll extract from those rather than from the failed M05 donor-base file.
+
+The old HC04 all-six generated file has exactly what we need: 12 WIRE/link anchors, one pair per inverter subpart, but no bidirectional terminals. I’m making the shared emitter accept catalogue entries where the donor has WIRE/link anchors but no old terminal suffix.
+
+Catalogue updated for 11 families: 4511, 74HC00/02/04/08/32/86/151/266, BRIDGE, LM317T. Displays are not promoted yet because their current display grouping/D20 handling is different and needs a separate safe shared path.
+
+Static tests passed. I’m generating what is actually safe now: one-copy solos for the newly promoted donor-evidence families, and I’ll separately mark 15x/mixed as blocked where the selected packet lacks WIRE/link anchors.
+
+I’m using the existing shared terminal entrypoint for generation. No terminal-placement logic is going into a new component-specific script.
+
+Generation test result: 4511 and 74HC151 pass through the shared active-link route. The gate families, HC04, BRIDGE, and LM317T have WIREs but no component pin-link field in the expected place, so the shared emitter correctly refuses to rewrite them. I’m inspecting whether their link field is elsewhere or absent.
+
+The failure mode is more specific now: gate donors keep a shared link table before the first WIRE, and the current emitter’s fallback expects per-WIRE nearby link fields. Some families have old suffixes in the table, some do not. I’m not changing that blindly because it can corrupt pin-link allocation.
+
+For HC04, the old all-six donor does have a reusable link table; it just has no terminal suffix labels. I can map the old link suffixes from that table into the catalogue, then the shared emitter can patch them deterministically.
+
+I’m adding HC04’s old link suffix map into the catalogue. The other failed families either have only a partial link table (quad gates) or no link table at all (BRIDGE/LM317T), so those remain blocked for active-link regeneration.
+
+HC04 now passes the shared active-link emitter using the old all-six HC04 generator evidence. I’m creating a reproducible Proteus-only evidence pack for the safe new solos: 4511, 74HC151, and 74HC04. The quad gates/BRIDGE/LM317T are recorded as blocked because their saved files do not contain complete active pin-link tables.
+
+The generated V7 solo pack is ready for Proteus testing at `experiments/new_catalogue_terminal_solo_v7_temp_2026_07_04`; archive is `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V7_TEMP_2026_07_04.zip`. I’m running the full test suite now, then I’ll update context and commit/push.
+
+Full `pytest -q` hits a pre-existing stale test under `tools/proteus_generation/2026-06-01/...` importing removed `proteusgen.inductor`. The focused repo tests already passed; I’m running `tests/` explicitly so the changed code is still covered.
+
+`compileall` passed. `pytest tests -q` exceeded the 3-minute tool limit in this workspace, so I’m running the focused terminal/component test files instead of leaving it ambiguous.
+
+The generated V7 reports validate: all three safe cases have valid terminal reports, grid/short-wire checks, and double-FF object termination. I’m cleaning temporary probe output before committing.
+
+I’m appending this turn to `context.md` with the user request, the visible agent updates, files changed, and verification results, then I’ll commit and push.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - added tolerant donor-evidence parsing for Proteus-saved sub-grid WIRE endpoints; allowed catalogue WIRE/link donors without old terminal suffixes; kept exact grid/short-wire emission unchanged.
+- `backups/component_terminal_placer/component_terminal_placer_20260704_140511.py` - required backup before editing the shared terminal placer.
+- `knowledge/component_catalog_v0.json` - added component-relative pin geometry for `4511`, `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC151`, `74HC266`, `74HC32`, `74HC86`, `BRIDGE`, and `LM317T`; recorded `74HC266` pin-6 label correction and HC04 old link suffixes.
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_v7_temp.py` - reproducible runner that only calls the component placer and shared catalogue terminal placer; contains no terminal-placement logic.
+- `experiments/new_catalogue_terminal_solo_v7_temp_2026_07_04/` - generated safe solo pack for `4511`, `74HC151`, and `74HC04`, with blocked-case notes.
+- `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V7_TEMP_2026_07_04.zip` - archive of the generated V7 safe solo pack.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V7 safe solos, promoted donor evidence, and blocked families.
+- `knowledge/test_results.jsonl` - recorded V7 static/pending Proteus result and current blockers.
+- `experiments/multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04/M01_4511_1X_NO_TERMINAL_DONOR_BASE/M01_4511_1X_NO_TERMINAL_DONOR_BASE.pdsprj` and related user-edited donor-base `.pdsprj` files - preserved as donor evidence used for catalogue extraction.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check was performed before implementation; local/upstream/remote matched `47a7756cb14bed6f67f22728800aafc58b08b949`.
+- `PYTHONPATH=src; python -m pytest tests/test_component_catalog.py -q` -> `23 passed`.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+- `python -m pytest -q` -> failed during collection on pre-existing stale tool test `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main/test_inductor.py` importing removed `proteusgen.inductor`.
+- `python -m pytest tests -q` and `python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q` exceeded the 180-second tool timeout in this workspace.
+- Generated V7 terminal reports validate for `4511`, `74HC151`, and `74HC04`: `valid=True`, `wire_path_contacts_valid=True`, `object_chunk_double_ff_valid=True`.
+- 15x/mixed multi-pin output remains blocked for families whose selected packets lack complete active WIRE/link evidence; no unsafe fake mixed pack was emitted.
+
+~~~~
+
 ## 2026-07-04 12:42:08 +05:00 - User Message
 
 what did u use to generate these donor base packs? did u not use the component placer with the mega donor

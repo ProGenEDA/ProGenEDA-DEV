@@ -189,3 +189,35 @@ All future multi-pin expansion must follow this path:
 
 Do not reintroduce label-only terminals, side-terminal diagnostics, component
 specific terminal scripts, or family-specific terminal workflows.
+
+## V7 donor-evidence promotion - 2026-07-04
+
+User-saved terminalized donor-base files were parsed as Proteus donor evidence.
+The catalogue now contains component-relative pin geometry for `4511`,
+`74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC151`, `74HC266`, `74HC32`,
+`74HC86`, `BRIDGE`, and `LM317T`.  `74HC266` records a corrected donor-label
+typo where the second `Pin5...` terminal is treated as package pin 6.  `BRIDGE`
+records the ambiguous `pin` terminal as the missing package pin 4.
+
+Generated V7 safe solo pack:
+
+- Folder: `experiments/new_catalogue_terminal_solo_v7_temp_2026_07_04/`
+- Archive: `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V7_TEMP_2026_07_04.zip`
+- Safe generated cases: `4511`, `74HC151`, and `74HC04`.
+- Static summary: all three terminal reports are valid, all grid/short-wire
+  checks pass, and all three final ROOT.DSN streams have the required double
+  `FF` object termination.
+
+Blocked at this checkpoint:
+
+- `74HC00`, `74HC02`, `74HC08`, `74HC32`, `74HC86`, `74HC266`: saved donor
+  geometry exists, but the saved packets do not expose a complete active
+  component pin-link table for every visible pin.
+- `BRIDGE`, `LM317T`: saved donor geometry exists, but no active component
+  pin-link fields were found.
+- `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`: display terminal evidence is still
+  separate from the display/D20 grouping path and was not promoted into active
+  emission.
+- 15x and mixed multi-pin generation remain blocked for families whose selected
+  packets lack complete active WIRE/link evidence. No unsafe fake mixed pack was
+  emitted.

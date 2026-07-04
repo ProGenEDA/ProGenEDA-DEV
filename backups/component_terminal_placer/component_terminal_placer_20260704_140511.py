@@ -44,7 +44,6 @@ from .templates import FixtureRegistry, repository_root
 TERMINAL_MARGIN = 0
 MAX_TERMINALS_PER_SIDE = 8
 PROTEUS_TERMINAL_GRID = 254_000
-DONOR_TERMINAL_WIRE_ENDPOINT_TOLERANCE = PROTEUS_TERMINAL_GRID
 LEFT_SIDE_ANGLE = 1800
 RIGHT_SIDE_ANGLE = 0
 RESISTOR_PIN_SPAN = 1_270_000
@@ -1164,12 +1163,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 if wire_order_index <= 0
                 else wire_marker_offsets[wire_order_index - 1] + 27
             )
-            raw_donor_old_suffix = raw_geometry.get("donor_terminal_suffix")
-            donor_old_suffix = (
-                int(raw_donor_old_suffix)
-                if raw_donor_old_suffix is not None
-                else None
-            )
+            donor_old_suffix = int(raw_geometry.get("donor_terminal_suffix"))
             preferred_old_suffix = current_suffix_by_pin.get(
                 pin_name,
                 donor_old_suffix,
@@ -1183,11 +1177,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 before_offset=int(existing_wire["marker_offset"]),
                 after_offset=after_offset,
                 preferred_old_suffix=preferred_old_suffix,
-                preferred_old_suffixes=(
-                    value
-                    for value in (preferred_old_suffix, donor_old_suffix)
-                    if value is not None
-                ),
+                preferred_old_suffixes=(preferred_old_suffix, donor_old_suffix),
             )
             )
             short_wire = row["short_wire"]
@@ -4747,27 +4737,7 @@ def analyse_terminalized_donor_pin_geometry(
     unmatched: list[dict[str, Any]] = []
     for terminal in terminals:
         contact = _terminal_contact_xy(terminal)
-        exact_candidates = [
-            (0, row, contact) for row in wires_by_endpoint.get(contact, [])
-        ]
-        candidates: list[tuple[int, dict[str, Any], tuple[int, int]]] = exact_candidates
-        if not candidates:
-            nearby_candidates: list[tuple[int, dict[str, Any], tuple[int, int]]] = []
-            for row in wire_rows:
-                x1, y1, x2, y2 = row["coordinates"]
-                for endpoint in ((int(x1), int(y1)), (int(x2), int(y2))):
-                    distance = abs(contact[0] - endpoint[0]) + abs(contact[1] - endpoint[1])
-                    if distance <= DONOR_TERMINAL_WIRE_ENDPOINT_TOLERANCE:
-                        nearby_candidates.append((distance, row, endpoint))
-            nearby_candidates.sort(
-                key=lambda item: (
-                    int(item[0]),
-                    int(item[1]["marker_offset"]),
-                    item[2][0],
-                    item[2][1],
-                )
-            )
-            candidates = nearby_candidates[:1]
+        candidates = wires_by_endpoint.get(contact, [])
         if not candidates:
             unmatched.append(
                 {
@@ -4776,13 +4746,9 @@ def analyse_terminalized_donor_pin_geometry(
                 }
             )
             continue
-        _distance, wire, matched_endpoint = candidates[0]
+        wire = candidates[0]
         x1, y1, x2, y2 = wire["coordinates"]
-        other = (
-            (int(x2), int(y2))
-            if (int(x1), int(y1)) == matched_endpoint
-            else (int(x1), int(y1))
-        )
+        other = (int(x2), int(y2)) if (int(x1), int(y1)) == contact else (int(x1), int(y1))
         pin, signal = _pin_label_parts(str(terminal["label"]))
         pin_key = pin or signal
         if not pin_key:
@@ -4801,9 +4767,6 @@ def analyse_terminalized_donor_pin_geometry(
             "donor_terminal_suffix": int(terminal["suffix"]),
             "terminal_contact_x": contact[0],
             "terminal_contact_y": contact[1],
-            "matched_wire_endpoint_x": matched_endpoint[0],
-            "matched_wire_endpoint_y": matched_endpoint[1],
-            "matched_wire_endpoint_distance": int(_distance),
             "wire_coordinates": [int(x1), int(y1), int(x2), int(y2)],
             "wire_marker_offset": int(wire["marker_offset"]),
             "wire_order_index": wire_order_by_marker[int(wire["marker_offset"])],
