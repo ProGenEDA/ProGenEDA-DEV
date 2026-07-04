@@ -7711,6 +7711,69 @@ The full 10-circuit double-routing comparison was intentionally interrupted afte
 - `kicad/pipeline/wire_planner.py`
 - `kicad/tests/test_kicad_wire_maker.py`
 
+## 2026-07-05 02:25:42 PKT - Fix Remaining Partial and Unroutable Counts After Terminal Policy
+
+### User Request
+
+```text
+fix this,
+```
+
+The selected text was:
+
+```text
+Wired routes: 84 -> 38Partial nets: 3 -> 1Unroutable nets: 22 -> 20
+```
+
+### Visible Agent Response Summary
+
+- Interpreted the request as fixing the remaining `partial_wire` and `unroutable` counts after the power/ground terminal policy.
+- Reproduced the failing routed Proteus-alias circuits.
+- Found that most failures were not component/body hits. They were planner-side rejections of otherwise usable routes because `strict_forbidden_contact_filter` discarded routes with different-net wire T-touch/overlap risk before the KiCad wire maker had a chance to perform its existing geometry repair.
+- Confirmed the generated-project path already used repair-friendly behavior, but direct `plan_wire_routes` calls still inherited the stricter default.
+- Changed the wire planner default `strict_forbidden_contact_filter` from `1.0` to `0.0`, so the planner keeps the least-bad route and lets downstream geometry validation/repair handle exact contacts.
+- Synced Python rail classification with Rust by adding `VBUS` and `REG_OUT` to `POWER_NETS`.
+- Added a regression test proving the three routed alias circuits have zero partial and zero unroutable nets when the power-terminal policy is enabled.
+
+### Measurement
+
+After the fix, direct planner metrics on `R01`, `R02`, and `R03` with `wire_mode_terminal_power_ground=1.0`:
+
+```text
+R01: wired=13, unroutable=0, partial=0, terminal_nets=['GND', 'REG_OUT', 'VIN'], terminal_endpoints=13
+R02: wired=28, unroutable=0, partial=0, terminal_nets=['+5V', 'GND'], terminal_endpoints=24
+R03: wired=20, unroutable=0, partial=0, terminal_nets=['+3V3', '+5V', 'GND'], terminal_endpoints=22
+TOTAL: wired=61, unroutable=0, partial=0, terminal_nets=8, terminal_endpoints=59, elapsed_seconds=7.562
+```
+
+This fixes the selected bad counts from:
+
+```text
+unroutable: 20 -> 0
+partial: 2 -> 0
+```
+
+The previously quoted `partial 3 -> 1` came from a capped comparison before the rail classification sync; the current direct routed-alias test now locks the repaired result at zero.
+
+### Verification
+
+- `PYTHONPATH=. python3 -m compileall -q kicad/pipeline kicad/tests`
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_kicad_wire_maker.KiCadWireMakerTests.test_power_terminal_policy_removes_routed_alias_partial_and_unroutable_nets -v`
+  - Passed: 1 test.
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_kicad_wire_maker -v`
+  - Passed: 8 tests.
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_routing_v2 -v`
+  - Passed: 11 tests.
+- `PYTHONPATH=. python3 -m unittest kicad.tests.test_kicad_netlist_validator -v`
+  - Passed: 4 tests.
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/arrangement_decider.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+
 ### Notes
 
 - Pre-existing dirty generated files were intentionally left untouched:

@@ -84,7 +84,7 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "max_lane_candidates": 256.0,
     "crossing_penalty": 0.0,
     "forbidden_contact_penalty": 250_000.0,
-    "strict_forbidden_contact_filter": 1.0,
+    "strict_forbidden_contact_filter": 0.0,
     "density_tile_size": 25.4,
     "max_crossings_per_tile_soft": 6.0,
     "same_net_reuse_penalty": 0.05,

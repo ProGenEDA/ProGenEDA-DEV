@@ -13,7 +13,7 @@ from math import ceil
 from typing import Any
 
 
-POWER_NETS = {"VCC", "VDD", "VIN", "+5V", "5V", "+3V3", "3V3", "PWR", "POWER"}
+POWER_NETS = {"VCC", "VDD", "VIN", "VBUS", "REG_OUT", "+5V", "5V", "+3V3", "3V3", "PWR", "POWER"}
 GROUND_NETS = {"GND", "0", "VSS", "GROUND"}
 CLOCK_TOKENS = ("CLK", "CLOCK", "CK", "CP")
 
