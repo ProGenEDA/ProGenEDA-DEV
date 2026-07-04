@@ -260,11 +260,13 @@ def test_catalogue_multi_pin_families_use_parsed_layout_and_marker_anchor(
     families = [
         "4017",
         "4020",
+        "4027",
         "74HC4024",
         "74HC4040",
         "74HC4060",
         "74HC161",
         "74HC163",
+        "74HC192",
         "74HC193",
         "74HC273",
         "74HC165",
@@ -298,6 +300,84 @@ def test_catalogue_multi_pin_families_use_parsed_layout_and_marker_anchor(
         assert {
             row["coordinate_source"] for row in plan["terminal_plans"]
         } == {"component_marker_anchor_offset_existing_wire_identity"}
+
+
+def test_reported_v5_coordinate_issues_are_fixed_for_4027_4060_and_192(
+    tmp_path,
+) -> None:
+    catalog = load_component_catalog()
+
+    result_4027 = generate_component_placement_project(
+        {
+            "components": {"4027": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "catalogue_4027_v6_coordinate_fix.pdsprj",
+        full_cdb=True,
+    )
+    plan_4027 = plan_catalogue_pin_bidir_terminals(
+        result_4027.selected_groups,
+        catalog=catalog,
+    )
+    by_pin_4027 = {
+        row["pin"]["name"]: row
+        for row in plan_4027["terminal_plans"]
+    }
+
+    assert plan_4027["valid"]
+    assert by_pin_4027["6"]["component_anchor"]["marker_offset"] != by_pin_4027["10"]["component_anchor"]["marker_offset"]
+    assert by_pin_4027["6"]["pin"]["y"] != by_pin_4027["10"]["pin"]["y"]
+    assert by_pin_4027["7"]["pin"]["y"] != by_pin_4027["9"]["pin"]["y"]
+    assert {
+        row["coordinate_source"] for row in plan_4027["terminal_plans"]
+    } == {"component_marker_anchor_offset_existing_wire_identity"}
+
+    result_4060 = generate_component_placement_project(
+        {
+            "components": {"74HC4060": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "catalogue_4060_v6_coordinate_fix.pdsprj",
+        full_cdb=True,
+    )
+    plan_4060 = plan_catalogue_pin_bidir_terminals(
+        result_4060.selected_groups,
+        catalog=catalog,
+    )
+    layout_4060 = result_4060.layout_plan["actual_binary_placements"][0]
+
+    assert plan_4060["valid"]
+    assert "marker_body:4060" in layout_4060["coordinate_reason_counts"]
+    assert {
+        row["component_anchor"]["marker"] for row in plan_4060["terminal_plans"]
+    } == {"4060"}
+    assert {
+        row["coordinate_source"] for row in plan_4060["terminal_plans"]
+    } == {"component_marker_anchor_offset_existing_wire_identity"}
+
+    result_192 = generate_component_placement_project(
+        {
+            "components": {"74HC192": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "catalogue_192_v6_coordinate_fix.pdsprj",
+        full_cdb=True,
+    )
+    plan_192 = plan_catalogue_pin_bidir_terminals(
+        result_192.selected_groups,
+        catalog=catalog,
+    )
+    by_pin_192 = {
+        row["pin"]["name"]: row
+        for row in plan_192["terminal_plans"]
+    }
+
+    assert plan_192["valid"]
+    assert by_pin_192["5"]["pin"]["y"] != by_pin_192["9"]["pin"]["y"]
+    assert by_pin_192["5"]["terminal"]["label"] == "U1PIN5UP"
+    assert by_pin_192["9"]["terminal"]["label"] == "U1PIN9D3"
+    assert by_pin_192["5"]["coordinate_source"] == "component_marker_anchor_offset_existing_wire_identity"
+    assert by_pin_192["9"]["coordinate_source"] == "component_marker_anchor_offset_existing_wire_identity"
 
 
 def test_catalogue_pin_emitter_attaches_4017_existing_wire_skeleton(tmp_path) -> None:

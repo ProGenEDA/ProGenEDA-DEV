@@ -122,6 +122,12 @@ PARSED_IC_LAYOUT_FAMILIES = {
     "LM741",
     "NE555",
 }
+BODY_MARKER_ALIASES: dict[str, tuple[str, ...]] = {
+    # Refreshed 74HC4060 packets use 74HC4060 for text/model fields, but the
+    # visible symbol body marker is the shorter Proteus marker "4060".  Moving
+    # only the text fields strands the body at its donor-native coordinate.
+    "74HC4060": ("4060",),
+}
 IC_LAYOUT_FAMILY_RE = re.compile(r"^(?:74HC\d+|\d{4})$")
 DISPLAY_LAYOUT_FAMILIES = {
     "7SEG-COM-AN-BLUE",
@@ -385,10 +391,66 @@ def _marker_body_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[in
             if _packet_coord_pair_ok(x_value, y_value):
                 pairs.append((x_offset, y_offset, f"marker_body:{family}"))
         offset = marker_offset + 1
+    return pairs
+
+
+def _is_length_prefixed_text_marker(
+    fragment: bytes,
+    marker_offset: int,
+    marker_length: int,
+) -> bool:
+    return (
+        marker_offset >= 2
+        and fragment[marker_offset - 2] == 0xFF
+        and fragment[marker_offset - 1] == marker_length
+    )
+
+
+def _is_embedded_ascii_marker(
+    fragment: bytes,
+    marker_offset: int,
+    marker_length: int,
+) -> bool:
+    before = fragment[marker_offset - 1] if marker_offset > 0 else 0
+    return 48 <= before <= 57 or 65 <= before <= 90 or 97 <= before <= 122
+
+
+def _strict_marker_body_coordinate_pairs(
+    fragment: bytes,
+    marker_text: str,
+) -> list[tuple[int, int, str]]:
+    marker = marker_text.encode("ascii", errors="ignore")
+    if not marker:
+        return []
+    pairs: list[tuple[int, int, str]] = []
+    offset = 0
+    while True:
+        marker_offset = fragment.find(marker, offset)
+        if marker_offset < 0:
+            return pairs
+        x_offset = marker_offset + len(marker)
+        y_offset = x_offset + 4
+        if (
+            y_offset + 4 <= len(fragment)
+            and not _is_length_prefixed_text_marker(
+                fragment,
+                marker_offset,
+                len(marker),
+            )
+            and not _is_embedded_ascii_marker(fragment, marker_offset, len(marker))
+        ):
+            x_value = _s32_at(fragment, x_offset)
+            y_value = _s32_at(fragment, y_offset)
+            if _packet_coord_pair_ok(x_value, y_value):
+                pairs.append((x_offset, y_offset, f"marker_body:{marker_text}"))
+        offset = marker_offset + 1
 
 
 def _parsed_family_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
-    pairs = _length_prefixed_text_coordinate_pairs(fragment) + _marker_body_coordinate_pairs(fragment, family)
+    marker_pairs: list[tuple[int, int, str]] = []
+    for marker_text in (family, *BODY_MARKER_ALIASES.get(family, ())):
+        marker_pairs.extend(_strict_marker_body_coordinate_pairs(fragment, marker_text))
+    pairs = _length_prefixed_text_coordinate_pairs(fragment) + marker_pairs
     return _dedupe_coordinate_pairs(pairs)
 
 

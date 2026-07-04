@@ -601,22 +601,44 @@ def _component_body_bbox_for_catalogue(data: bytes, family: str) -> dict[str, in
     return coordinate_bbox(component_data, pairs)
 
 
-def _component_marker_anchor_for_catalogue(
+def _is_length_prefixed_text_marker(
+    data: bytes,
+    marker_offset: int,
+    marker_length: int,
+) -> bool:
+    return (
+        marker_offset >= 2
+        and data[marker_offset - 2] == 0xFF
+        and data[marker_offset - 1] == marker_length
+    )
+
+
+def _is_embedded_ascii_marker(
+    data: bytes,
+    marker_offset: int,
+    marker_length: int,
+) -> bool:
+    before = data[marker_offset - 1] if marker_offset > 0 else 0
+    return 48 <= before <= 57 or 65 <= before <= 90 or 97 <= before <= 122
+
+
+def _component_marker_anchors_for_catalogue(
     data: bytes,
     family: str,
-) -> dict[str, Any] | None:
-    """Return the last valid marker-body coordinate for a placed component.
+) -> list[dict[str, Any]]:
+    """Return strict marker-body coordinates for a placed component.
 
     Several multi-pin native packets contain off-body length-prefixed text and
     stale donor coordinates.  A broad bbox over all parsed coordinate pairs can
     therefore select the wrong origin.  The component marker followed by two
-    signed coordinates is a narrower symbol/body anchor and is the preferred
-    catalogue coordinate frame when available.
+    signed coordinates is a narrower symbol/body anchor, but the same marker
+    text can also appear inside visible labels.  This helper rejects those
+    label/embedded occurrences and returns only body-marker anchors.
     """
 
     marker = str(family).encode("ascii", errors="ignore")
     if not marker:
-        return None
+        return []
     anchors: list[dict[str, Any]] = []
     offset = 0
     while True:
@@ -625,7 +647,11 @@ def _component_marker_anchor_for_catalogue(
             break
         x_offset = marker_offset + len(marker)
         y_offset = x_offset + 4
-        if y_offset + 4 <= len(data):
+        if (
+            y_offset + 4 <= len(data)
+            and not _is_length_prefixed_text_marker(data, marker_offset, len(marker))
+            and not _is_embedded_ascii_marker(data, marker_offset, len(marker))
+        ):
             x_value = struct.unpack("<i", data[x_offset : x_offset + 4])[0]
             y_value = struct.unpack("<i", data[y_offset : y_offset + 4])[0]
             if (
@@ -646,6 +672,16 @@ def _component_marker_anchor_for_catalogue(
                     }
                 )
         offset = marker_offset + 1
+    return anchors
+
+
+def _component_marker_anchor_for_catalogue(
+    data: bytes,
+    family: str,
+) -> dict[str, Any] | None:
+    """Return the last strict marker-body coordinate for a placed component."""
+
+    anchors = _component_marker_anchors_for_catalogue(data, family)
     return anchors[-1] if anchors else None
 
 
@@ -706,10 +742,7 @@ def plan_catalogue_pin_bidir_terminals(
             missing_geometry.append({"component_key": key, "component_family": family})
             continue
         component_data = _component_only_chunk_from_terminalized_chunk(data)
-        component_anchor = _component_marker_anchor_for_catalogue(
-            component_data,
-            str(geometry.get("anchor_family") or family),
-        )
+        anchor_cache: dict[str, list[dict[str, Any]]] = {}
         wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
         for pin in profile.pins:
             if pin.hidden:
@@ -742,6 +775,36 @@ def plan_catalogue_pin_bidir_terminals(
             existing_wire: dict[str, Any] | None = None
             if isinstance(wire_order_index, int) and 0 <= wire_order_index < len(wire_rows):
                 existing_wire = wire_rows[wire_order_index]
+            anchor_family = str(
+                raw_pin_geometry.get("anchor_family")
+                or geometry.get("anchor_family")
+                or family
+            )
+            if anchor_family not in anchor_cache:
+                anchor_cache[anchor_family] = _component_marker_anchors_for_catalogue(
+                    component_data,
+                    anchor_family,
+                )
+            component_anchors = anchor_cache[anchor_family]
+            component_anchor: dict[str, Any] | None
+            anchor_index = raw_pin_geometry.get("component_anchor_index")
+            if anchor_index is None:
+                anchor_index = raw_pin_geometry.get("subpart_anchor_index")
+            if isinstance(anchor_index, int):
+                if 0 <= anchor_index < len(component_anchors):
+                    component_anchor = component_anchors[anchor_index]
+                else:
+                    missing_geometry.append(
+                        {
+                            "component_key": key,
+                            "component_family": family,
+                            "pin": pin.name,
+                            "reason": "component_anchor_index_out_of_range",
+                        }
+                    )
+                    continue
+            else:
+                component_anchor = component_anchors[-1] if component_anchors else None
             if (
                 component_anchor is not None
                 and "x_offset_from_component_anchor" in raw_pin_geometry

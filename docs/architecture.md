@@ -303,6 +303,26 @@ the catalogue, and emits terminals from
 placements statically validate, all V5 object chunks preserve the double-`FF`
 terminator, and no V5 manifest reports `E_OUTPUT_LAYOUT_BROAD_SCAN`.
 
+The V5 user test left three narrower geometry defects. `4027` proved that
+dual-subpart packages cannot use one package-level marker anchor for every pin;
+each pin must reference the correct subpart/body anchor from the catalogue.
+`74HC4060` proved that the backend body marker may differ from the catalogue
+family key: refreshed 4060 packets use `74HC4060` in text/model fields but the
+visible body marker is `4060`, so beautification and terminal placement must
+consume the backend marker/profile data rather than assuming the family key is
+the body marker. `74HC192` proved that donor terminal labels can contain wrong
+pin text (`UP PIN 9` for package pin 5), so the catalogue is the authority after
+manual/user verification. The V6 checkpoint
+`experiments/multi_pin_catalogue_terminal_solo_v6_temp_2026_07_04` encodes
+those fixes as catalogue/profile facts and shared parser behavior. No
+component-specific terminal workflow was added.
+
+Families that still lack catalogue terminal geometry are emitted separately as
+bare component-placer donor bases in
+`experiments/multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04`. Those
+files are for manual terminalized donor creation, not evidence that the shared
+terminal placer supports the families yet.
+
 Mixed multi-pin circuits are also blocked because the current mixed component
 placer path selects a mega donor whose bare component packets lack the donor
 WIRE/link skeleton required by the safe catalogue emitter. Solving mixed and

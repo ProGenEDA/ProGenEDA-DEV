@@ -101,6 +101,44 @@ V5 static-valid, pending Proteus user testing:
 - `74HC85`
 - `7447`
 
+## V5 user result and V6 coordinate correction
+
+User Proteus testing on 2026-07-04 reported that all V5 files opened and were
+mostly visually good, with three remaining coordinate issues:
+
+- `4027`: terminals for one `U1:A` subpart were placed on top of the other
+  subpart.
+- `74HC4060`: terminals and component labels moved to the new location, but the
+  actual component body stayed at the old donor location.
+- `74HC192`: pin 9 / `D3` terminal was placed on top of pin 5 / `UP`.
+
+V6 fixes these in the shared route:
+
+- `4027` now stores two strict component body anchors in the catalogue and each
+  pin selects its own `component_anchor_index`.
+- `74HC4060` now uses the actual Proteus body marker `4060` as its coordinate
+  frame, and the beautifier moves that marker along with the visible labels.
+- `74HC192` catalogue geometry separates package pin 9 / `D3` from package pin
+  5 / `UP`; the donor's misleading `UP PIN 9` label is recorded as corrected
+  catalogue evidence for pin 5.
+
+Generated V6 pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v6_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V6_TEMP_2026_07_04.zip`
+- Static summary: 26 cases, all terminal reports valid, all grid/short-wire
+  checks valid.
+
+Generated missing-geometry donor-base pack:
+
+- Folder: `experiments/multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_MISSING_TERMINAL_DONOR_BASES_V1_TEMP_2026_07_04.zip`
+- Purpose: bare component-placer outputs for >2-pin families whose terminal
+  geometry is not yet in the catalogue, so the user can manually add terminals
+  and return saved donor evidence.
+- Static summary: 19 cases generated, 17 static-valid; `4518` and `74HC4520`
+  are included but marked static-invalid for triage.
+
 ## Current limits
 
 The requested `3x/13x/23x` pattern is reduced to `1x` at this checkpoint.

@@ -7929,6 +7929,121 @@ I then appended this continuation log to `context.md`; a context-only follow-up 
 - `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V5_TEMP_2026_07_04.zip` - V5 zip archive for Proteus testing.
 - `context.md` - appended this turn log.
 
+~~~~
+
+## 2026-07-04 12:07:57 +05:00 - User Message
+
+okk all opened and where good except the 3 terminal cordinate issue u can see in the images, ill type it out for u too
+4027 the U1A had its terminal placed ontop of U1B. 4060 was wired terminals were in the new location, and its component name and name were all at new place but the component itself was at old space. 192 has its D3 pin 9 terminal ontop of UP pin 5.
+but the second image gave me another fear, which u need to clarify in one sentence.
+are u or are u not using component placer to place these solo components? cause u should be
+fix these then generate the whole pack. also generate a pack of all the non terminalized ones without the terminals so i can add them for u
+
+Images attached by user showed:
+
+- 4027 dual JK package with one subpart's terminals placed over the other subpart.
+- 74HC4060 with terminals/labels translated but the symbol body stranded at old donor coordinates.
+- 74HC192 with D3 pin 9 terminal overlapping UP pin 5.
+
+## 2026-07-04 12:07:57 +05:00 - User Message
+
+continue
+
+## Visible Agent Responses During This Turn
+
+I’ll verify the required git checkpoint first, then I’ll confirm the generation path, fix the three coordinate cases, regenerate both requested packs, and commit/push the checkpoint.
+
+Checkpoint is clean and remote-matched at `e6a90d97`. One-sentence clarification: yes, the V5 solo files are generated through the component placer first; the failures are coordinate-frame/translation bugs after placement, not skipped placement.
+
+I’m reading the current shared placer/beautifier path now. The visible pattern is: 4027 and 192 are pin-to-subpart overlap errors, while 4060 is incomplete component-body translation.
+
+The V5 generator artifacts themselves prove the component placer was used: every case includes a `*_BARE_COMPONENT_PLACER.pdsprj.manifest.json` before terminal attachment. Now I’m fixing the coordinate logic in shared code, not making a new terminal workflow.
+
+For 4027 and 192 I need subpart-local anchors, not one package-level anchor. For 4060 I need to find which coordinate fields in the component packet were not being translated by the beautifier/component placement stage.
+
+I’m going to add tests that reproduce exactly these three reported cases before changing coordinates: 4027 must not use U1A geometry for U1B, 192 pins on same side must not share a terminal contact, and 4060 marker/body coordinates must move together.
+
+The current catalogue has a concrete bad fact: 4027 subparts are reversed/missing for marker-anchor offsets, and 74HC192 pin 5 inherited pin 9’s donor label/offset. I’m fixing catalogue evidence first so the planner has defensible data.
+
+The donor analyzer overwrote duplicate 4027 label names because the donor labels are per subpart (`J PIN 6`, `J PIN 6`) instead of package-pin unique. I’m not relying on that overwrite; I’m deriving the second-subpart offsets from the component’s second marker anchor.
+
+I need one backup before touching the shared terminal placer again, per repo rule. Then I’ll patch the shared parser/planner and catalogue, and regenerate V6 packs.
+
+Continuing. I’ll keep this as one shared-code fix path: update catalogue/profile facts and shared planner/beautifier only, then regenerate V6 terminalized pack plus a separate no-terminal donor-base pack.
+
+I’m applying the actual shared-code changes now: strict body-marker parsing, 4060 body-marker alias movement, and per-pin anchor-index support in the terminal planner.
+
+Planner support is in. Now I’m patching only the catalogue entries that are actually wrong: 4027 anchor-index/second-subpart offsets, 4060 anchor family/offset frame, and 192 pin 5/9 offsets.
+
+The catalogue edit is larger than a couple of lines because 4060’s whole pin frame changes from text-anchor to body-anchor. I’m going to patch the JSON mechanically but scoped to those three profiles only, then inspect the diff before committing.
+
+The regression test now covers the three exact reports. I’m running it before generating packs so any catalogue/code mismatch fails locally first.
+
+The new test failed only for 4027 because the strict body-anchor filter is too strict for marker bytes followed by a normal ASCII digit in coordinate bytes. I’m inspecting the planned missing geometry and anchor filter output now.
+
+The anchor rejection was from checking the byte after the marker; that byte is the first byte of a binary coordinate and can look like ASCII. I’m changing embedded-marker detection to check only the byte before the marker.
+
+The strict anchor parser now accepts body markers and still rejects text/embedded markers. Re-running catalogue tests.
+
+The supported split is: 26 geometry-ready >2-pin families for the V6 terminalized pack, and 19 >2-pin families still missing catalogue pin geometry for the no-terminal donor-base pack. I’m generating both through the component placer.
+
+Terminalized generation completed far enough to hit the bare-pack manifest writer; the failure was JSON serialization of validator issue objects, not Proteus generation. I’m rerunning with manifest-safe serialization.
+
+The terminalized V6 pack generated; the no-terminal base pack hit a component-placer boundary on `74HC00` because that family is a multi-gate package and the current placer cannot select one complete package for a `1x` request. I’m changing only the no-terminal pack to record blocked families instead of aborting, and I’ll include all generated bases plus a blocked list.
+
+For the no-terminal donor-base pack, three gate families need a minimum request of `6` to pass current package selection; `4518` and `74HC4520` generate files but fail static validation, so I’ll include them marked invalid for Proteus triage rather than hiding them.
+
+I’m regenerating both packs cleanly now: V6 terminalized all geometry-ready families, and V1 bare donor bases for missing-geometry families with per-family request counts recorded in each payload.
+
+Both packs are generated. V6 terminalized is fully static-valid. The bare donor-base pack has 17 valid cases; `4518` and `74HC4520` are included but marked static-invalid for triage. I’m spot-checking the three fixed reports in the generated V6 manifests now.
+
+The fixed generated reports show the intended separation: 4027 top/bottom subparts use different body anchors, 4060 now anchors to moved `4060` body marker, and 192 pin 5/pin 9 are separated. I’m running compile and the Proteus-focused tests now.
+
+Compile passed and the focused catalogue/validation/pin-map tests passed: `38 passed`. I’m running the D20/display guard tests as the last targeted check.
+
+The targeted D20/display guard tests passed too: `4 passed`. I’m recording the user V5 result, the V6 fix, and the generated pack paths in docs/evidence/context before committing.
+
+There is one temporary manifest from inspection; removing that before documentation/commit.
+
+I’m adding the V6 status notes now: V5 mostly accepted with three coordinate exceptions, V6 generated, plus the bare donor-base pack and its two static-invalid cases.
+
+Status doc is updated. I’m adding the architecture note that the 4060 body marker and multi-subpart anchors are first-class catalogue facts, not terminal-script exceptions.
+
+Architecture notes are updated. I’m appending three evidence records: V5 user result, V6 static pass, and the missing-geometry donor-base pack.
+
+Evidence records are appended. I’m updating `context.md` with the user result, the continue message, visible responses, files changed, generated packs, and verification.
+
+## Files Edited By Agent In Response To This Message
+
+- `backups/component_terminal_placer/component_terminal_placer_2026_07_04_013623_before_subpart_anchor_and_4060_body.py` - required backup before editing shared terminal placer.
+- `src/proteusgen/component_beautifier.py` - added strict body-marker coordinate parsing and 74HC4060 backend marker alias `4060` so the visible body moves with text/labels.
+- `src/proteusgen/component_terminal_placer.py` - added strict component body-anchor extraction and per-pin `component_anchor_index` support for catalogue-driven multi-pin placement.
+- `knowledge/component_catalog_v0.json` - corrected 4027 dual-subpart body anchors and per-pin anchor indexes; changed 74HC4060 pin frame to backend body marker `4060`; corrected 74HC192 pin 5 / pin 9 offsets and donor-label caveat.
+- `tests/test_component_catalog.py` - added regressions for the exact 4027, 74HC4060, and 74HC192 V5 issues.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V5 user result, V6 pack, and missing-geometry donor-base pack.
+- `docs/architecture.md` - recorded the V6 architecture rule: backend body marker aliases and subpart anchors are catalogue/profile facts.
+- `knowledge/test_results.jsonl` - appended V5 user result, V6 static pass, and missing-geometry donor-base evidence.
+- `experiments/multi_pin_catalogue_terminal_solo_v6_temp_2026_07_04/` - generated 26-case V6 terminalized pack.
+- `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V6_TEMP_2026_07_04.zip` - V6 archive.
+- `experiments/multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04/` - generated no-terminal donor-base pack for missing-geometry >2-pin families.
+- `experiments/MULTI_PIN_MISSING_TERMINAL_DONOR_BASES_V1_TEMP_2026_07_04.zip` - donor-base archive.
+- `context.md` - appended this turn log.
+
+## Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, local/upstream/GitHub matched `e6a90d977ef7a315e7186c9339c53e261a93c72a`.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py -q` -> `23 passed`.
+- V6 generated report spot checks:
+  - `S07_4027_1X_V6_COORD_FIX`: pins 6/10 and 7/9 use different body anchors and separate coordinates.
+  - `S11_74HC4060_1X_V6_COORD_FIX`: terminals use moved backend marker `4060` as component anchor.
+  - `S15_74HC192_1X_V6_COORD_FIX`: `U1PIN9D3` and `U1PIN5UP` are separated.
+- V6 terminalized summary: 26 cases, `valid_static: true`.
+- Missing-geometry donor-base summary: 19 cases generated, 17 static-valid, invalid/triage cases are `M02_4518_1X_NO_TERMINAL_DONOR_BASE` and `M10_74HC4520_1X_NO_TERMINAL_DONOR_BASE`.
+- `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `38 passed`.
+- `python -m compileall -q src tests tools\proteus_generation` -> passed.
+- `PYTHONPATH=src; python -m pytest tests -q -k "D20 or display_bridge or terminal_infrastructure"` -> `4 passed, 258 deselected`.
+- Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
 ---
 
 ## Restart Context Log - 2026-07-04T01:12:40.6819313+05:00
