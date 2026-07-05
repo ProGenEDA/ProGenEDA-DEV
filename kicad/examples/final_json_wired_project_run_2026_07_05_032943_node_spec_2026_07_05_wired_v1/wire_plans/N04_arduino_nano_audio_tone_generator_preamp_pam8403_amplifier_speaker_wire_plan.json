@@ -1,0 +1,5975 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "routing_mode": "wire",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "lane_candidates_then_grid_astar",
+    "routing_engine": "hanan_lane_candidates_rectilinear_mst_then_grid_astar",
+    "hanan_grid_lanes": true,
+    "rectilinear_mst_tree": true,
+    "astar_manhattan_fallback": true,
+    "segment_indexed_crossing_metrics": true,
+    "dense_design_mode": false,
+    "routing_order": "clock/control, bus, local/ordinary, display, power, ground; terminal/combination mode may label selected nets",
+    "multi_terminal_policy": "rectilinear MST / nearest connected tree; each branch uses net-wide Hanan lanes plus A* fallback",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "wire-wire crossings are allowed; existing wire grid cells are congestion hints, not hard obstacles",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "wire mode records unroutable nets as failures; terminal/combination mode may convert selected failures to local-label terminal plans",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 849.63,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "wire_mode_terminal_policy": {
+    "enabled": true,
+    "terminal_strategy": "wire_mode_terminal_label",
+    "terminal_nets": [
+      "+5V",
+      "GND",
+      "NET_555_TIMING",
+      "NET_AUDIO_BIAS"
+    ],
+    "nets": {
+      "+5V": {
+        "reason": "wire_mode_power_ground_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 18,
+        "class": "power"
+      },
+      "GND": {
+        "reason": "wire_mode_power_ground_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 21,
+        "class": "ground"
+      },
+      "NET_555_TIMING": {
+        "reason": "wire_mode_high_fanout_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 5,
+        "class": "signal"
+      },
+      "NET_AUDIO_BIAS": {
+        "reason": "wire_mode_high_fanout_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 5,
+        "class": "signal"
+      }
+    },
+    "source": "explicit_terminal_nets_or_power_ground_policy"
+  },
+  "nets": {
+    "NET_AUDIO_INPUT_JACK_RING": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "AUDIO_INPUT_JACK",
+          "pin": "RING",
+          "side": "right",
+          "point": [
+            73.66,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "COUPLING_CAP_IN_R",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            125.73
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_AUDIO_INPUT_JACK_RING",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 57.15,
+            "turns": 3,
+            "score": 217.6,
+            "portal_route_score": 217.6,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "AUDIO_INPUT_JACK",
+            "pin": "RING",
+            "point": [
+              73.66,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "COUPLING_CAP_IN_R",
+            "pin": "1",
+            "point": [
+              101.6,
+              125.73
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "path": [
+            [
+              73.66,
+              144.78
+            ],
+            [
+              78.74,
+              144.78
+            ],
+            [
+              78.74,
+              120.65
+            ],
+            [
+              101.6,
+              120.65
+            ],
+            [
+              101.6,
+              125.73
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                73.66,
+                144.78
+              ],
+              "end": [
+                78.74,
+                144.78
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                78.74,
+                144.78
+              ],
+              "end": [
+                78.74,
+                120.65
+              ],
+              "direction": "up",
+              "length": 24.13
+            },
+            {
+              "start": [
+                78.74,
+                120.65
+              ],
+              "end": [
+                101.6,
+                120.65
+              ],
+              "direction": "right",
+              "length": 22.86
+            },
+            {
+              "start": [
+                101.6,
+                120.65
+              ],
+              "end": [
+                101.6,
+                125.73
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            46.99
+          ]
+        ],
+        "length": 46.99
+      }
+    },
+    "NET_AUDIO_INPUT_JACK_TIP": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "AUDIO_INPUT_JACK",
+          "pin": "TIP",
+          "side": "right",
+          "point": [
+            73.66,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "COUPLING_CAP_IN_L",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_AUDIO_INPUT_JACK_TIP",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 44.45,
+            "turns": 3,
+            "score": 364.9,
+            "portal_route_score": 364.9,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "AUDIO_INPUT_JACK",
+            "pin": "TIP",
+            "point": [
+              73.66,
+              147.32
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "COUPLING_CAP_IN_L",
+            "pin": "1",
+            "point": [
+              101.6,
+              163.83
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "path": [
+            [
+              73.66,
+              147.32
+            ],
+            [
+              83.82,
+              147.32
+            ],
+            [
+              83.82,
+              158.75
+            ],
+            [
+              101.6,
+              158.75
+            ],
+            [
+              101.6,
+              163.83
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                73.66,
+                147.32
+              ],
+              "end": [
+                83.82,
+                147.32
+              ],
+              "direction": "right",
+              "length": 10.16
+            },
+            {
+              "start": [
+                83.82,
+                147.32
+              ],
+              "end": [
+                83.82,
+                158.75
+              ],
+              "direction": "down",
+              "length": 11.43
+            },
+            {
+              "start": [
+                83.82,
+                158.75
+              ],
+              "end": [
+                101.6,
+                158.75
+              ],
+              "direction": "right",
+              "length": 17.78
+            },
+            {
+              "start": [
+                101.6,
+                158.75
+              ],
+              "end": [
+                101.6,
+                163.83
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            44.45
+          ]
+        ],
+        "length": 44.45
+      }
+    },
+    "+5V": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "PWR_5V",
+          "pin": "+",
+          "side": "top",
+          "point": [
+            30.48,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            624.84,
+            116.84
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin27"
+        },
+        {
+          "ref": "R_10K_PULLUP_RESET",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            429.26,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "NE555",
+          "pin": "RESET",
+          "side": "top",
+          "point": [
+            383.54,
+            121.92
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            388.62,
+            124.46
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin8"
+        },
+        {
+          "ref": "RES_555_RA",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            330.2,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "RES_BIAS_TOP",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            231.14,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "LM358",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            601.98,
+            165.1
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin8"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_LM358",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            363.22,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "PAM8403",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            594.36,
+            162.56
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin6"
+        },
+        {
+          "ref": "CP_100UF_AUDIO",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            396.24,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "C_100NF_AUDIO",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            459.74,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            594.36,
+            137.16
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "R_10K_PULLUP_AUDIO_DETECT",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            287.02,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "TRIMMER_POTENTIOMETER",
+          "pin": "END_A",
+          "side": "top",
+          "point": [
+            199.39,
+            139.7
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "R_10K_PULLUP_CLIP",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            297.18,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "PWM_HEADER",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            101.6,
+            138.43
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "UART_HEADER",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            134.62,
+            135.89
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "PWR_5V",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            30.48,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            622.3,
+            167.64
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin29"
+        },
+        {
+          "ref": "PUSH_BUTTON_RESET",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            495.3,
+            147.32
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "NE555",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            386.08,
+            144.78
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin1"
+        },
+        {
+          "ref": "C_100NF_555_CTRL",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            231.14,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            167.64,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "AUDIO_INPUT_JACK",
+          "pin": "SLEEVE",
+          "side": "bottom",
+          "point": [
+            63.5,
+            157.48
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "RES_BIAS_BOTTOM",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            297.18,
+            168.91
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "CAP_BIAS_FILTER",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            429.26,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "LM358",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            601.98,
+            180.34
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin4"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_LM358",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            363.22,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "PAM8403",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            594.36,
+            193.04
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin11"
+        },
+        {
+          "ref": "CP_100UF_AUDIO",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            396.24,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "C_100NF_AUDIO",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            459.74,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            594.36,
+            157.48
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LED_INDICATOR_AUDIO",
+          "pin": "CATHODE",
+          "side": "bottom",
+          "point": [
+            831.85,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "TRIMMER_POTENTIOMETER",
+          "pin": "END_B",
+          "side": "bottom",
+          "point": [
+            199.39,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LED_INDICATOR_CLIP",
+          "pin": "CATHODE",
+          "side": "bottom",
+          "point": [
+            801.37,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LED_INDICATOR_STATUS",
+          "pin": "CATHODE",
+          "side": "bottom",
+          "point": [
+            765.81,
+            121.92
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "PWM_HEADER",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            101.6,
+            158.75
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "UART_HEADER",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            134.62,
+            158.75
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": []
+    },
+    "NET_UART_HEADER_RX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "UART_HEADER",
+          "pin": "RX",
+          "side": "right",
+          "point": [
+            140.97,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D0_RX",
+          "side": "left",
+          "point": [
+            607.06,
+            127.0
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_UART_HEADER_RX",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 615.221,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 521.97,
+            "turns": 4,
+            "score": 8225.217,
+            "portal_route_score": 8225.217,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "UART_HEADER",
+            "pin": "RX",
+            "point": [
+              140.97,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "ARDUINO_NANO",
+            "pin": "D0_RX",
+            "point": [
+              607.06,
+              127.0
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin2"
+          },
+          "path": [
+            [
+              140.97,
+              144.78
+            ],
+            [
+              146.05,
+              144.78
+            ],
+            [
+              146.05,
+              107.95
+            ],
+            [
+              601.98,
+              107.95
+            ],
+            [
+              601.98,
+              127.0
+            ],
+            [
+              607.06,
+              127.0
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                140.97,
+                144.78
+              ],
+              "end": [
+                146.05,
+                144.78
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                146.05,
+                144.78
+              ],
+              "end": [
+                146.05,
+                107.95
+              ],
+              "direction": "up",
+              "length": 36.83
+            },
+            {
+              "start": [
+                146.05,
+                107.95
+              ],
+              "end": [
+                601.98,
+                107.95
+              ],
+              "direction": "right",
+              "length": 455.93
+            },
+            {
+              "start": [
+                601.98,
+                107.95
+              ],
+              "end": [
+                601.98,
+                127.0
+              ],
+              "direction": "down",
+              "length": 19.05
+            },
+            {
+              "start": [
+                601.98,
+                127.0
+              ],
+              "end": [
+                607.06,
+                127.0
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            483.87
+          ]
+        ],
+        "length": 483.87
+      }
+    },
+    "NET_UART_HEADER_TX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "UART_HEADER",
+          "pin": "TX",
+          "side": "right",
+          "point": [
+            140.97,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D1_TX",
+          "side": "left",
+          "point": [
+            607.06,
+            129.54
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_UART_HEADER_TX",
+          "router": "grid_astar",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 487,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 494.03,
+            "turns": 4,
+            "score": 39454.63,
+            "portal_route_score": 39454.63,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "UART_HEADER",
+            "pin": "TX",
+            "point": [
+              140.97,
+              147.32
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "ARDUINO_NANO",
+            "pin": "D1_TX",
+            "point": [
+              607.06,
+              129.54
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin1"
+          },
+          "path": [
+            [
+              140.97,
+              147.32
+            ],
+            [
+              146.05,
+              147.32
+            ],
+            [
+              146.05,
+              152.4
+            ],
+            [
+              584.2,
+              152.4
+            ],
+            [
+              584.2,
+              129.54
+            ],
+            [
+              607.06,
+              129.54
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                140.97,
+                147.32
+              ],
+              "end": [
+                146.05,
+                147.32
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                146.05,
+                147.32
+              ],
+              "end": [
+                146.05,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                146.05,
+                152.4
+              ],
+              "end": [
+                584.2,
+                152.4
+              ],
+              "direction": "right",
+              "length": 438.15
+            },
+            {
+              "start": [
+                584.2,
+                152.4
+              ],
+              "end": [
+                584.2,
+                129.54
+              ],
+              "direction": "up",
+              "length": 22.86
+            },
+            {
+              "start": [
+                584.2,
+                129.54
+              ],
+              "end": [
+                607.06,
+                129.54
+              ],
+              "direction": "right",
+              "length": 22.86
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            483.87
+          ]
+        ],
+        "length": 483.87
+      }
+    },
+    "NET_555_TIMING": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "NE555",
+          "pin": "THRESH",
+          "side": "left",
+          "point": [
+            373.38,
+            132.08
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "TRIG",
+          "side": "left",
+          "point": [
+            375.92,
+            139.7
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin2"
+        },
+        {
+          "ref": "POT_HG",
+          "pin": "END_B",
+          "side": "left",
+          "point": [
+            356.87,
+            139.7
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "POT_HG",
+          "pin": "WIPER",
+          "side": "left",
+          "point": [
+            356.87,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            167.64,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_ARDUINO_NANO_D5": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_220_STATUS",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            166.37
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D5",
+          "side": "left",
+          "point": [
+            607.06,
+            139.7
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin8"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            603.25
+          ]
+        ],
+        "length": 603.25
+      },
+      "failure_warnings": [
+        "salvage_astar_rejected_forbidden_contact: NET_ARDUINO_NANO_D5 still touched or overlapped another net."
+      ]
+    },
+    "NET_ARDUINO_NANO_D6": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "PWM_HEADER",
+          "pin": "PWM1",
+          "side": "right",
+          "point": [
+            107.95,
+            146.05
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D6",
+          "side": "left",
+          "point": [
+            607.06,
+            142.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin9"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            502.92
+          ]
+        ],
+        "length": 502.92
+      },
+      "failure_warnings": [
+        "salvage_astar_rejected_body_hit: NET_ARDUINO_NANO_D6 still touched component bodies."
+      ]
+    },
+    "NET_ARDUINO_NANO_D9": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "PWM_HEADER",
+          "pin": "PWM2",
+          "side": "right",
+          "point": [
+            107.95,
+            148.59
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D9",
+          "side": "left",
+          "point": [
+            607.06,
+            149.86
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin12"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            500.38
+          ]
+        ],
+        "length": 500.38
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_ARDUINO_NANO_D9 exceeded 80000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_ARDUINO_NANO_D9 exceeded 80000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_ARDUINO_NANO_D9 exceeded 200000 explored grid states."
+      ]
+    },
+    "NET_ARDUINO_NANO_RST": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_10K_PULLUP_RESET",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            429.26,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "PUSH_BUTTON_RESET",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            485.14,
+            147.32
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "RST",
+          "side": "left",
+          "point": [
+            604.52,
+            139.7
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_ARDUINO_NANO_RST",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 0,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 77.47,
+            "turns": 3,
+            "score": 77.92,
+            "portal_route_score": 77.92,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "PUSH_BUTTON_RESET",
+            "pin": "1",
+            "point": [
+              485.14,
+              147.32
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "to": {
+            "ref": "R_10K_PULLUP_RESET",
+            "pin": "1",
+            "point": [
+              429.26,
+              135.89
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              485.14,
+              147.32
+            ],
+            [
+              480.06,
+              147.32
+            ],
+            [
+              480.06,
+              130.81
+            ],
+            [
+              429.26,
+              130.81
+            ],
+            [
+              429.26,
+              135.89
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                485.14,
+                147.32
+              ],
+              "end": [
+                480.06,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                480.06,
+                147.32
+              ],
+              "end": [
+                480.06,
+                130.81
+              ],
+              "direction": "up",
+              "length": 16.51
+            },
+            {
+              "start": [
+                480.06,
+                130.81
+              ],
+              "end": [
+                429.26,
+                130.81
+              ],
+              "direction": "left",
+              "length": 50.8
+            },
+            {
+              "start": [
+                429.26,
+                130.81
+              ],
+              "end": [
+                429.26,
+                135.89
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_ARDUINO_NANO_RST",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 11,
+            "outer_channel_cost": 968.506,
+            "different_net_crossings": 3,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 381.0,
+            "turns": 4,
+            "score": 12883.874,
+            "portal_route_score": 12883.874,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "PUSH_BUTTON_RESET",
+            "pin": "1",
+            "point": [
+              485.14,
+              147.32
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "to": {
+            "ref": "ARDUINO_NANO",
+            "pin": "RST",
+            "point": [
+              604.52,
+              139.7
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              485.14,
+              147.32
+            ],
+            [
+              480.06,
+              147.32
+            ],
+            [
+              480.06,
+              22.86
+            ],
+            [
+              604.52,
+              22.86
+            ],
+            [
+              604.52,
+              139.7
+            ],
+            [
+              604.52,
+              139.7
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                485.14,
+                147.32
+              ],
+              "end": [
+                480.06,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                480.06,
+                147.32
+              ],
+              "end": [
+                480.06,
+                22.86
+              ],
+              "direction": "up",
+              "length": 124.46
+            },
+            {
+              "start": [
+                480.06,
+                22.86
+              ],
+              "end": [
+                604.52,
+                22.86
+              ],
+              "direction": "right",
+              "length": 124.46
+            },
+            {
+              "start": [
+                604.52,
+                22.86
+              ],
+              "end": [
+                604.52,
+                139.7
+              ],
+              "direction": "down",
+              "length": 116.84
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            67.31
+          ],
+          [
+            1,
+            2,
+            127.0
+          ]
+        ],
+        "length": 194.31
+      }
+    },
+    "NET_AUDIO_BIAS": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "RES_BIAS_TOP",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            231.14,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_BIAS_BOTTOM",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            297.18,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "CAP_BIAS_FILTER",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            429.26,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "VOLUME_POTENTIOMETER",
+          "pin": "END_B",
+          "side": "right",
+          "point": [
+            271.78,
+            137.16
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "IN1-",
+          "side": "left",
+          "point": [
+            584.2,
+            139.7
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": []
+    },
+    "NET_AUDIO_DETECT": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_10K_PULLUP_AUDIO_DETECT",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            287.02,
+            128.27
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R_220_AUDIO_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            297.18,
+            128.27
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "OUT1",
+          "side": "left",
+          "point": [
+            584.2,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D3",
+          "side": "left",
+          "point": [
+            607.06,
+            134.62
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            10.16
+          ],
+          [
+            1,
+            2,
+            300.99
+          ],
+          [
+            2,
+            3,
+            30.48
+          ]
+        ],
+        "length": 341.63
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_AUDIO_DETECT ARDUINO_NANO.D3",
+        "unroutable_endpoint: NET_AUDIO_DETECT R_220_AUDIO_LED.1",
+        "unroutable_endpoint: NET_AUDIO_DETECT R_10K_PULLUP_AUDIO_DETECT.1"
+      ]
+    },
+    "NET_AUDIO_IN_R": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "COUPLING_CAP_IN_R",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "LM358",
+          "pin": "IN2+",
+          "side": "left",
+          "point": [
+            594.36,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            504.19
+          ]
+        ],
+        "length": 504.19
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_AUDIO_IN_R exceeded 80000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_AUDIO_IN_R exceeded 80000 explored grid states."
+      ]
+    },
+    "NET_CLIP_DETECT": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_10K_PULLUP_CLIP",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            297.18,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R_220_CLIP_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            330.2,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "OUT2",
+          "side": "left",
+          "point": [
+            584.2,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D4",
+          "side": "left",
+          "point": [
+            607.06,
+            137.16
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            40.64
+          ],
+          [
+            1,
+            2,
+            262.89
+          ],
+          [
+            2,
+            3,
+            30.48
+          ]
+        ],
+        "length": 334.01
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_CLIP_DETECT ARDUINO_NANO.D4",
+        "unroutable_endpoint: NET_CLIP_DETECT R_220_CLIP_LED.1",
+        "unroutable_endpoint: NET_CLIP_DETECT R_10K_PULLUP_CLIP.1"
+      ]
+    },
+    "NET_LM358_IN1": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "VOLUME_POTENTIOMETER",
+          "pin": "END_A",
+          "side": "right",
+          "point": [
+            271.78,
+            139.7
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "IN1+",
+          "side": "left",
+          "point": [
+            584.2,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM358",
+          "pin": "IN1-",
+          "side": "left",
+          "point": [
+            594.36,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM358",
+          "pin": "OUT1",
+          "side": "left",
+          "point": [
+            594.36,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            320.04
+          ],
+          [
+            1,
+            2,
+            10.16
+          ],
+          [
+            2,
+            3,
+            2.54
+          ]
+        ],
+        "length": 332.74
+      },
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1."
+      ]
+    },
+    "NET_LM393_COMPARATOR_IN2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "TRIMMER_POTENTIOMETER",
+          "pin": "WIPER",
+          "side": "right",
+          "point": [
+            205.74,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "IN2-",
+          "side": "left",
+          "point": [
+            584.2,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            381.0
+          ]
+        ],
+        "length": 381.0
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_LM393_COMPARATOR_IN2 LM393_COMPARATOR.IN2-"
+      ]
+    },
+    "NET_NE555_CTRL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C_100NF_555_CTRL",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            231.14,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "NE555",
+          "pin": "CTRL",
+          "side": "left",
+          "point": [
+            373.38,
+            137.16
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_NE555_CTRL",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 5,
+            "outer_channel_cost": 195.967,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 186.69,
+            "turns": 3,
+            "score": 2938.748,
+            "portal_route_score": 2938.748,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "C_100NF_555_CTRL",
+            "pin": "1",
+            "point": [
+              231.14,
+              135.89
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "NE555",
+            "pin": "CTRL",
+            "point": [
+              373.38,
+              137.16
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              231.14,
+              135.89
+            ],
+            [
+              231.14,
+              114.3
+            ],
+            [
+              368.3,
+              114.3
+            ],
+            [
+              368.3,
+              137.16
+            ],
+            [
+              373.38,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                231.14,
+                135.89
+              ],
+              "end": [
+                231.14,
+                114.3
+              ],
+              "direction": "up",
+              "length": 21.59
+            },
+            {
+              "start": [
+                231.14,
+                114.3
+              ],
+              "end": [
+                368.3,
+                114.3
+              ],
+              "direction": "right",
+              "length": 137.16
+            },
+            {
+              "start": [
+                368.3,
+                114.3
+              ],
+              "end": [
+                368.3,
+                137.16
+              ],
+              "direction": "down",
+              "length": 22.86
+            },
+            {
+              "start": [
+                368.3,
+                137.16
+              ],
+              "end": [
+                373.38,
+                137.16
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            143.51
+          ]
+        ],
+        "length": 143.51
+      }
+    },
+    "NET_PAM8403_L_OUT": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "PAM8403",
+          "pin": "L_OUT+",
+          "side": "right",
+          "point": [
+            609.6,
+            170.18
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin1"
+        },
+        {
+          "ref": "SPEAKER_LEFT",
+          "pin": "POSITIVE",
+          "side": "left",
+          "point": [
+            759.46,
+            140.97
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_PAM8403_L_OUT",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 7,
+            "outer_channel_cost": 128.849,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 179.07,
+            "turns": 2,
+            "score": 2285.559,
+            "portal_route_score": 2285.559,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "PAM8403",
+            "pin": "L_OUT+",
+            "point": [
+              609.6,
+              170.18
+            ],
+            "exact": true,
+            "source": "Amplifier_Audio:PAM8403D:unit1:pin1"
+          },
+          "to": {
+            "ref": "SPEAKER_LEFT",
+            "pin": "POSITIVE",
+            "point": [
+              759.46,
+              140.97
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              609.6,
+              170.18
+            ],
+            [
+              695.96,
+              170.18
+            ],
+            [
+              695.96,
+              140.97
+            ],
+            [
+              759.46,
+              140.97
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                609.6,
+                170.18
+              ],
+              "end": [
+                695.96,
+                170.18
+              ],
+              "direction": "right",
+              "length": 86.36
+            },
+            {
+              "start": [
+                695.96,
+                170.18
+              ],
+              "end": [
+                695.96,
+                140.97
+              ],
+              "direction": "up",
+              "length": 29.21
+            },
+            {
+              "start": [
+                695.96,
+                140.97
+              ],
+              "end": [
+                759.46,
+                140.97
+              ],
+              "direction": "right",
+              "length": 63.5
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            179.07
+          ]
+        ],
+        "length": 179.07
+      }
+    },
+    "NET_PAM8403_L_OUT_2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "PAM8403",
+          "pin": "L_OUT-",
+          "side": "right",
+          "point": [
+            609.6,
+            172.72
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin3"
+        },
+        {
+          "ref": "SPEAKER_LEFT",
+          "pin": "NEGATIVE",
+          "side": "left",
+          "point": [
+            759.46,
+            143.51
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_PAM8403_L_OUT_2",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 8,
+            "outer_channel_cost": 177.105,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 224.79,
+            "turns": 4,
+            "score": 2990.646,
+            "portal_route_score": 2990.646,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "PAM8403",
+            "pin": "L_OUT-",
+            "point": [
+              609.6,
+              172.72
+            ],
+            "exact": true,
+            "source": "Amplifier_Audio:PAM8403D:unit1:pin3"
+          },
+          "to": {
+            "ref": "SPEAKER_LEFT",
+            "pin": "NEGATIVE",
+            "point": [
+              759.46,
+              143.51
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              609.6,
+              172.72
+            ],
+            [
+              614.68,
+              172.72
+            ],
+            [
+              614.68,
+              195.58
+            ],
+            [
+              754.38,
+              195.58
+            ],
+            [
+              754.38,
+              143.51
+            ],
+            [
+              759.46,
+              143.51
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                609.6,
+                172.72
+              ],
+              "end": [
+                614.68,
+                172.72
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                614.68,
+                172.72
+              ],
+              "end": [
+                614.68,
+                195.58
+              ],
+              "direction": "down",
+              "length": 22.86
+            },
+            {
+              "start": [
+                614.68,
+                195.58
+              ],
+              "end": [
+                754.38,
+                195.58
+              ],
+              "direction": "right",
+              "length": 139.7
+            },
+            {
+              "start": [
+                754.38,
+                195.58
+              ],
+              "end": [
+                754.38,
+                143.51
+              ],
+              "direction": "up",
+              "length": 52.07
+            },
+            {
+              "start": [
+                754.38,
+                143.51
+              ],
+              "end": [
+                759.46,
+                143.51
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            179.07
+          ]
+        ],
+        "length": 179.07
+      }
+    },
+    "NET_PAM8403_R_OUT": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "PAM8403",
+          "pin": "R_OUT+",
+          "side": "right",
+          "point": [
+            609.6,
+            185.42
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin16"
+        },
+        {
+          "ref": "SPEAKER_RIGHT",
+          "pin": "POSITIVE",
+          "side": "left",
+          "point": [
+            759.46,
+            173.99
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            161.29
+          ]
+        ],
+        "length": 161.29
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_PAM8403_R_OUT SPEAKER_RIGHT.POSITIVE"
+      ]
+    },
+    "NET_PAM8403_R_OUT_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "PAM8403",
+          "pin": "R_OUT-",
+          "side": "right",
+          "point": [
+            609.6,
+            182.88
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin14"
+        },
+        {
+          "ref": "SPEAKER_RIGHT",
+          "pin": "NEGATIVE",
+          "side": "left",
+          "point": [
+            759.46,
+            176.53
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            156.21
+          ]
+        ],
+        "length": 156.21
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_PAM8403_R_OUT_2 SPEAKER_RIGHT.NEGATIVE"
+      ]
+    },
+    "NET_RIGHT_BUFFERED": {
+      "strategy": "partial_wire",
+      "endpoints": [
+        {
+          "ref": "PAM8403",
+          "pin": "R_IN",
+          "side": "left",
+          "point": [
+            584.2,
+            177.8
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin10"
+        },
+        {
+          "ref": "LM358",
+          "pin": "IN2-",
+          "side": "right",
+          "point": [
+            614.68,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM358",
+          "pin": "OUT2",
+          "side": "right",
+          "point": [
+            614.68,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "A2",
+          "side": "right",
+          "point": [
+            632.46,
+            147.32
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin21"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_RIGHT_BUFFERED",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 30.48,
+            "turns": 2,
+            "score": 350.78,
+            "portal_route_score": 350.78,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "LM358",
+            "pin": "OUT2",
+            "point": [
+              614.68,
+              149.86
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "ARDUINO_NANO",
+            "pin": "A2",
+            "point": [
+              632.46,
+              147.32
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin21"
+          },
+          "path": [
+            [
+              614.68,
+              149.86
+            ],
+            [
+              637.54,
+              149.86
+            ],
+            [
+              637.54,
+              147.32
+            ],
+            [
+              632.46,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                614.68,
+                149.86
+              ],
+              "end": [
+                637.54,
+                149.86
+              ],
+              "direction": "right",
+              "length": 22.86
+            },
+            {
+              "start": [
+                637.54,
+                149.86
+              ],
+              "end": [
+                637.54,
+                147.32
+              ],
+              "direction": "up",
+              "length": 2.54
+            },
+            {
+              "start": [
+                637.54,
+                147.32
+              ],
+              "end": [
+                632.46,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_RIGHT_BUFFERED",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 0,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 2,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 99.06,
+            "turns": 2,
+            "score": 99.56,
+            "portal_route_score": 99.56,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "ARDUINO_NANO",
+            "pin": "A2",
+            "point": [
+              632.46,
+              147.32
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin21"
+          },
+          "to": {
+            "ref": "PAM8403",
+            "pin": "R_IN",
+            "point": [
+              584.2,
+              177.8
+            ],
+            "exact": true,
+            "source": "Amplifier_Audio:PAM8403D:unit1:pin10"
+          },
+          "path": [
+            [
+              632.46,
+              147.32
+            ],
+            [
+              637.54,
+              147.32
+            ],
+            [
+              637.54,
+              177.8
+            ],
+            [
+              584.2,
+              177.8
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                632.46,
+                147.32
+              ],
+              "end": [
+                637.54,
+                147.32
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                637.54,
+                147.32
+              ],
+              "end": [
+                637.54,
+                177.8
+              ],
+              "direction": "down",
+              "length": 30.48
+            },
+            {
+              "start": [
+                637.54,
+                177.8
+              ],
+              "end": [
+                584.2,
+                177.8
+              ],
+              "direction": "left",
+              "length": 53.34
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            2,
+            58.42
+          ],
+          [
+            2,
+            1,
+            2.54
+          ],
+          [
+            1,
+            3,
+            17.78
+          ]
+        ],
+        "length": 78.74
+      },
+      "unrouted_endpoint_count": 1,
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for NET_RIGHT_BUFFERED.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_RIGHT_BUFFERED."
+      ]
+    },
+    "NET_R_220_AUDIO_LED_2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_220_AUDIO_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            297.18,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "LED_INDICATOR_AUDIO",
+          "pin": "ANODE",
+          "side": "left",
+          "point": [
+            822.96,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_R_220_AUDIO_LED_2",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 6,
+            "outer_channel_cost": 618.668,
+            "different_net_crossings": 2,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 788.67,
+            "turns": 3,
+            "score": 8693.137,
+            "portal_route_score": 8693.137,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "R_220_AUDIO_LED",
+            "pin": "2",
+            "point": [
+              297.18,
+              135.89
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "LED_INDICATOR_AUDIO",
+            "pin": "ANODE",
+            "point": [
+              822.96,
+              147.32
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              297.18,
+              135.89
+            ],
+            [
+              297.18,
+              15.24
+            ],
+            [
+              817.88,
+              15.24
+            ],
+            [
+              817.88,
+              147.32
+            ],
+            [
+              822.96,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                297.18,
+                135.89
+              ],
+              "end": [
+                297.18,
+                15.24
+              ],
+              "direction": "up",
+              "length": 120.65
+            },
+            {
+              "start": [
+                297.18,
+                15.24
+              ],
+              "end": [
+                817.88,
+                15.24
+              ],
+              "direction": "right",
+              "length": 520.7
+            },
+            {
+              "start": [
+                817.88,
+                15.24
+              ],
+              "end": [
+                817.88,
+                147.32
+              ],
+              "direction": "down",
+              "length": 132.08
+            },
+            {
+              "start": [
+                817.88,
+                147.32
+              ],
+              "end": [
+                822.96,
+                147.32
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            537.21
+          ]
+        ],
+        "length": 537.21
+      }
+    },
+    "NET_R_220_CLIP_LED_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_220_CLIP_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            330.2,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "LED_INDICATOR_CLIP",
+          "pin": "ANODE",
+          "side": "left",
+          "point": [
+            792.48,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            466.09
+          ]
+        ],
+        "length": 466.09
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_R_220_CLIP_LED_2 LED_INDICATOR_CLIP.ANODE"
+      ]
+    },
+    "NET_R_220_STATUS_2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_220_STATUS",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            173.99
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "LED_INDICATOR_STATUS",
+          "pin": "ANODE",
+          "side": "left",
+          "point": [
+            756.92,
+            114.3
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_R_220_STATUS_2",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 379.908,
+            "different_net_crossings": 2,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 1002.03,
+            "turns": 3,
+            "score": 5881.381,
+            "portal_route_score": 5881.381,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "R_220_STATUS",
+            "pin": "2",
+            "point": [
+              30.48,
+              173.99
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "LED_INDICATOR_STATUS",
+            "pin": "ANODE",
+            "point": [
+              756.92,
+              114.3
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              30.48,
+              173.99
+            ],
+            [
+              30.48,
+              281.94
+            ],
+            [
+              751.84,
+              281.94
+            ],
+            [
+              751.84,
+              114.3
+            ],
+            [
+              756.92,
+              114.3
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                173.99
+              ],
+              "end": [
+                30.48,
+                281.94
+              ],
+              "direction": "down",
+              "length": 107.95
+            },
+            {
+              "start": [
+                30.48,
+                281.94
+              ],
+              "end": [
+                751.84,
+                281.94
+              ],
+              "direction": "right",
+              "length": 721.36
+            },
+            {
+              "start": [
+                751.84,
+                281.94
+              ],
+              "end": [
+                751.84,
+                114.3
+              ],
+              "direction": "up",
+              "length": 167.64
+            },
+            {
+              "start": [
+                751.84,
+                114.3
+              ],
+              "end": [
+                756.92,
+                114.3
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            786.13
+          ]
+        ],
+        "length": 786.13
+      }
+    },
+    "NET_TONE_OUT": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "NE555",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            396.24,
+            134.62
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin3"
+        },
+        {
+          "ref": "COUPLING_CAP_TONE",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            589.28,
+            132.08
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "D2",
+          "side": "left",
+          "point": [
+            607.06,
+            132.08
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            195.58
+          ],
+          [
+            1,
+            2,
+            17.78
+          ]
+        ],
+        "length": 213.36
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_TONE_OUT ARDUINO_NANO.D2",
+        "unroutable_endpoint: NET_TONE_OUT NE555.OUT"
+      ]
+    },
+    "NET_VOLUME_WIPER": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "VOLUME_POTENTIOMETER",
+          "pin": "WIPER",
+          "side": "right",
+          "point": [
+            271.78,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "pin": "IN2+",
+          "side": "left",
+          "point": [
+            584.2,
+            152.4
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "PAM8403",
+          "pin": "L_IN",
+          "side": "left",
+          "point": [
+            584.2,
+            167.64
+          ],
+          "exact": true,
+          "source": "Amplifier_Audio:PAM8403D:unit1:pin7"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "A0",
+          "side": "right",
+          "point": [
+            632.46,
+            142.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin19"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            322.58
+          ],
+          [
+            1,
+            2,
+            15.24
+          ],
+          [
+            1,
+            3,
+            58.42
+          ]
+        ],
+        "length": 396.24
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_VOLUME_WIPER PAM8403.L_IN",
+        "unroutable_endpoint: NET_VOLUME_WIPER ARDUINO_NANO.A0",
+        "unroutable_endpoint: NET_VOLUME_WIPER VOLUME_POTENTIOMETER.WIPER"
+      ]
+    },
+    "NET_555_DISCH": {
+      "strategy": "partial_wire",
+      "endpoints": [
+        {
+          "ref": "RES_555_RA",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            330.2,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "POT_HG",
+          "pin": "END_A",
+          "side": "left",
+          "point": [
+            356.87,
+            137.16
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "DISCH",
+          "side": "left",
+          "point": [
+            375.92,
+            132.08
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_555_DISCH",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 34.29,
+            "turns": 2,
+            "score": 354.59,
+            "portal_route_score": 354.59,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "POT_HG",
+            "pin": "END_A",
+            "point": [
+              356.87,
+              137.16
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "NE555",
+            "pin": "DISCH",
+            "point": [
+              375.92,
+              132.08
+            ],
+            "exact": true,
+            "source": "Timer:NE555P:unit1:pin7"
+          },
+          "path": [
+            [
+              356.87,
+              137.16
+            ],
+            [
+              351.79,
+              137.16
+            ],
+            [
+              351.79,
+              132.08
+            ],
+            [
+              375.92,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                356.87,
+                137.16
+              ],
+              "end": [
+                351.79,
+                137.16
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                351.79,
+                137.16
+              ],
+              "end": [
+                351.79,
+                132.08
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                351.79,
+                132.08
+              ],
+              "end": [
+                375.92,
+                132.08
+              ],
+              "direction": "right",
+              "length": 24.13
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            50.8
+          ],
+          [
+            1,
+            2,
+            24.13
+          ]
+        ],
+        "length": 74.93
+      },
+      "unrouted_endpoint_count": 1,
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_555_DISCH exceeded 80000 explored grid states."
+      ]
+    },
+    "NET_AUDIO_MIX": {
+      "strategy": "partial_wire",
+      "endpoints": [
+        {
+          "ref": "COUPLING_CAP_TONE",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            589.28,
+            139.7
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "LM358",
+          "pin": "IN1+",
+          "side": "right",
+          "point": [
+            614.68,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "pin": "A1",
+          "side": "right",
+          "point": [
+            632.46,
+            144.78
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin20"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_AUDIO_MIX",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 27.94,
+            "turns": 0,
+            "score": 347.94,
+            "portal_route_score": 347.94,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "LM358",
+            "pin": "IN1+",
+            "point": [
+              614.68,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "ARDUINO_NANO",
+            "pin": "A1",
+            "point": [
+              632.46,
+              144.78
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin20"
+          },
+          "path": [
+            [
+              614.68,
+              144.78
+            ],
+            [
+              632.46,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                614.68,
+                144.78
+              ],
+              "end": [
+                632.46,
+                144.78
+              ],
+              "direction": "right",
+              "length": 17.78
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            30.48
+          ],
+          [
+            1,
+            2,
+            17.78
+          ]
+        ],
+        "length": 48.26
+      },
+      "unrouted_endpoint_count": 1,
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for NET_AUDIO_MIX.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_AUDIO_MIX."
+      ]
+    }
+  },
+  "routes": [
+    {
+      "net": "NET_AUDIO_INPUT_JACK_RING",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 57.15,
+        "turns": 3,
+        "score": 217.6,
+        "portal_route_score": 217.6,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "AUDIO_INPUT_JACK",
+        "pin": "RING",
+        "point": [
+          73.66,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "COUPLING_CAP_IN_R",
+        "pin": "1",
+        "point": [
+          101.6,
+          125.73
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "path": [
+        [
+          73.66,
+          144.78
+        ],
+        [
+          78.74,
+          144.78
+        ],
+        [
+          78.74,
+          120.65
+        ],
+        [
+          101.6,
+          120.65
+        ],
+        [
+          101.6,
+          125.73
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            73.66,
+            144.78
+          ],
+          "end": [
+            78.74,
+            144.78
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            78.74,
+            144.78
+          ],
+          "end": [
+            78.74,
+            120.65
+          ],
+          "direction": "up",
+          "length": 24.13
+        },
+        {
+          "start": [
+            78.74,
+            120.65
+          ],
+          "end": [
+            101.6,
+            120.65
+          ],
+          "direction": "right",
+          "length": 22.86
+        },
+        {
+          "start": [
+            101.6,
+            120.65
+          ],
+          "end": [
+            101.6,
+            125.73
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_AUDIO_INPUT_JACK_TIP",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 44.45,
+        "turns": 3,
+        "score": 364.9,
+        "portal_route_score": 364.9,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "AUDIO_INPUT_JACK",
+        "pin": "TIP",
+        "point": [
+          73.66,
+          147.32
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "COUPLING_CAP_IN_L",
+        "pin": "1",
+        "point": [
+          101.6,
+          163.83
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "path": [
+        [
+          73.66,
+          147.32
+        ],
+        [
+          83.82,
+          147.32
+        ],
+        [
+          83.82,
+          158.75
+        ],
+        [
+          101.6,
+          158.75
+        ],
+        [
+          101.6,
+          163.83
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            73.66,
+            147.32
+          ],
+          "end": [
+            83.82,
+            147.32
+          ],
+          "direction": "right",
+          "length": 10.16
+        },
+        {
+          "start": [
+            83.82,
+            147.32
+          ],
+          "end": [
+            83.82,
+            158.75
+          ],
+          "direction": "down",
+          "length": 11.43
+        },
+        {
+          "start": [
+            83.82,
+            158.75
+          ],
+          "end": [
+            101.6,
+            158.75
+          ],
+          "direction": "right",
+          "length": 17.78
+        },
+        {
+          "start": [
+            101.6,
+            158.75
+          ],
+          "end": [
+            101.6,
+            163.83
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_UART_HEADER_RX",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 615.221,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 521.97,
+        "turns": 4,
+        "score": 8225.217,
+        "portal_route_score": 8225.217,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "UART_HEADER",
+        "pin": "RX",
+        "point": [
+          140.97,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "ARDUINO_NANO",
+        "pin": "D0_RX",
+        "point": [
+          607.06,
+          127.0
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin2"
+      },
+      "path": [
+        [
+          140.97,
+          144.78
+        ],
+        [
+          146.05,
+          144.78
+        ],
+        [
+          146.05,
+          107.95
+        ],
+        [
+          601.98,
+          107.95
+        ],
+        [
+          601.98,
+          127.0
+        ],
+        [
+          607.06,
+          127.0
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            140.97,
+            144.78
+          ],
+          "end": [
+            146.05,
+            144.78
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            146.05,
+            144.78
+          ],
+          "end": [
+            146.05,
+            107.95
+          ],
+          "direction": "up",
+          "length": 36.83
+        },
+        {
+          "start": [
+            146.05,
+            107.95
+          ],
+          "end": [
+            601.98,
+            107.95
+          ],
+          "direction": "right",
+          "length": 455.93
+        },
+        {
+          "start": [
+            601.98,
+            107.95
+          ],
+          "end": [
+            601.98,
+            127.0
+          ],
+          "direction": "down",
+          "length": 19.05
+        },
+        {
+          "start": [
+            601.98,
+            127.0
+          ],
+          "end": [
+            607.06,
+            127.0
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_UART_HEADER_TX",
+      "router": "grid_astar",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 487,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 494.03,
+        "turns": 4,
+        "score": 39454.63,
+        "portal_route_score": 39454.63,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "UART_HEADER",
+        "pin": "TX",
+        "point": [
+          140.97,
+          147.32
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "ARDUINO_NANO",
+        "pin": "D1_TX",
+        "point": [
+          607.06,
+          129.54
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin1"
+      },
+      "path": [
+        [
+          140.97,
+          147.32
+        ],
+        [
+          146.05,
+          147.32
+        ],
+        [
+          146.05,
+          152.4
+        ],
+        [
+          584.2,
+          152.4
+        ],
+        [
+          584.2,
+          129.54
+        ],
+        [
+          607.06,
+          129.54
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            140.97,
+            147.32
+          ],
+          "end": [
+            146.05,
+            147.32
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            146.05,
+            147.32
+          ],
+          "end": [
+            146.05,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            146.05,
+            152.4
+          ],
+          "end": [
+            584.2,
+            152.4
+          ],
+          "direction": "right",
+          "length": 438.15
+        },
+        {
+          "start": [
+            584.2,
+            152.4
+          ],
+          "end": [
+            584.2,
+            129.54
+          ],
+          "direction": "up",
+          "length": 22.86
+        },
+        {
+          "start": [
+            584.2,
+            129.54
+          ],
+          "end": [
+            607.06,
+            129.54
+          ],
+          "direction": "right",
+          "length": 22.86
+        }
+      ]
+    },
+    {
+      "net": "NET_ARDUINO_NANO_RST",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 0,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 77.47,
+        "turns": 3,
+        "score": 77.92,
+        "portal_route_score": 77.92,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "PUSH_BUTTON_RESET",
+        "pin": "1",
+        "point": [
+          485.14,
+          147.32
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "to": {
+        "ref": "R_10K_PULLUP_RESET",
+        "pin": "1",
+        "point": [
+          429.26,
+          135.89
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          485.14,
+          147.32
+        ],
+        [
+          480.06,
+          147.32
+        ],
+        [
+          480.06,
+          130.81
+        ],
+        [
+          429.26,
+          130.81
+        ],
+        [
+          429.26,
+          135.89
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            485.14,
+            147.32
+          ],
+          "end": [
+            480.06,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            480.06,
+            147.32
+          ],
+          "end": [
+            480.06,
+            130.81
+          ],
+          "direction": "up",
+          "length": 16.51
+        },
+        {
+          "start": [
+            480.06,
+            130.81
+          ],
+          "end": [
+            429.26,
+            130.81
+          ],
+          "direction": "left",
+          "length": 50.8
+        },
+        {
+          "start": [
+            429.26,
+            130.81
+          ],
+          "end": [
+            429.26,
+            135.89
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_ARDUINO_NANO_RST",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 11,
+        "outer_channel_cost": 968.506,
+        "different_net_crossings": 3,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 381.0,
+        "turns": 4,
+        "score": 12883.874,
+        "portal_route_score": 12883.874,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "PUSH_BUTTON_RESET",
+        "pin": "1",
+        "point": [
+          485.14,
+          147.32
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "to": {
+        "ref": "ARDUINO_NANO",
+        "pin": "RST",
+        "point": [
+          604.52,
+          139.7
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          485.14,
+          147.32
+        ],
+        [
+          480.06,
+          147.32
+        ],
+        [
+          480.06,
+          22.86
+        ],
+        [
+          604.52,
+          22.86
+        ],
+        [
+          604.52,
+          139.7
+        ],
+        [
+          604.52,
+          139.7
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            485.14,
+            147.32
+          ],
+          "end": [
+            480.06,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            480.06,
+            147.32
+          ],
+          "end": [
+            480.06,
+            22.86
+          ],
+          "direction": "up",
+          "length": 124.46
+        },
+        {
+          "start": [
+            480.06,
+            22.86
+          ],
+          "end": [
+            604.52,
+            22.86
+          ],
+          "direction": "right",
+          "length": 124.46
+        },
+        {
+          "start": [
+            604.52,
+            22.86
+          ],
+          "end": [
+            604.52,
+            139.7
+          ],
+          "direction": "down",
+          "length": 116.84
+        }
+      ]
+    },
+    {
+      "net": "NET_NE555_CTRL",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 5,
+        "outer_channel_cost": 195.967,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 186.69,
+        "turns": 3,
+        "score": 2938.748,
+        "portal_route_score": 2938.748,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "C_100NF_555_CTRL",
+        "pin": "1",
+        "point": [
+          231.14,
+          135.89
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "NE555",
+        "pin": "CTRL",
+        "point": [
+          373.38,
+          137.16
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          231.14,
+          135.89
+        ],
+        [
+          231.14,
+          114.3
+        ],
+        [
+          368.3,
+          114.3
+        ],
+        [
+          368.3,
+          137.16
+        ],
+        [
+          373.38,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            231.14,
+            135.89
+          ],
+          "end": [
+            231.14,
+            114.3
+          ],
+          "direction": "up",
+          "length": 21.59
+        },
+        {
+          "start": [
+            231.14,
+            114.3
+          ],
+          "end": [
+            368.3,
+            114.3
+          ],
+          "direction": "right",
+          "length": 137.16
+        },
+        {
+          "start": [
+            368.3,
+            114.3
+          ],
+          "end": [
+            368.3,
+            137.16
+          ],
+          "direction": "down",
+          "length": 22.86
+        },
+        {
+          "start": [
+            368.3,
+            137.16
+          ],
+          "end": [
+            373.38,
+            137.16
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_PAM8403_L_OUT",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 7,
+        "outer_channel_cost": 128.849,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 179.07,
+        "turns": 2,
+        "score": 2285.559,
+        "portal_route_score": 2285.559,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "PAM8403",
+        "pin": "L_OUT+",
+        "point": [
+          609.6,
+          170.18
+        ],
+        "exact": true,
+        "source": "Amplifier_Audio:PAM8403D:unit1:pin1"
+      },
+      "to": {
+        "ref": "SPEAKER_LEFT",
+        "pin": "POSITIVE",
+        "point": [
+          759.46,
+          140.97
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          609.6,
+          170.18
+        ],
+        [
+          695.96,
+          170.18
+        ],
+        [
+          695.96,
+          140.97
+        ],
+        [
+          759.46,
+          140.97
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            609.6,
+            170.18
+          ],
+          "end": [
+            695.96,
+            170.18
+          ],
+          "direction": "right",
+          "length": 86.36
+        },
+        {
+          "start": [
+            695.96,
+            170.18
+          ],
+          "end": [
+            695.96,
+            140.97
+          ],
+          "direction": "up",
+          "length": 29.21
+        },
+        {
+          "start": [
+            695.96,
+            140.97
+          ],
+          "end": [
+            759.46,
+            140.97
+          ],
+          "direction": "right",
+          "length": 63.5
+        }
+      ]
+    },
+    {
+      "net": "NET_PAM8403_L_OUT_2",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 8,
+        "outer_channel_cost": 177.105,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 224.79,
+        "turns": 4,
+        "score": 2990.646,
+        "portal_route_score": 2990.646,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "PAM8403",
+        "pin": "L_OUT-",
+        "point": [
+          609.6,
+          172.72
+        ],
+        "exact": true,
+        "source": "Amplifier_Audio:PAM8403D:unit1:pin3"
+      },
+      "to": {
+        "ref": "SPEAKER_LEFT",
+        "pin": "NEGATIVE",
+        "point": [
+          759.46,
+          143.51
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          609.6,
+          172.72
+        ],
+        [
+          614.68,
+          172.72
+        ],
+        [
+          614.68,
+          195.58
+        ],
+        [
+          754.38,
+          195.58
+        ],
+        [
+          754.38,
+          143.51
+        ],
+        [
+          759.46,
+          143.51
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            609.6,
+            172.72
+          ],
+          "end": [
+            614.68,
+            172.72
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            614.68,
+            172.72
+          ],
+          "end": [
+            614.68,
+            195.58
+          ],
+          "direction": "down",
+          "length": 22.86
+        },
+        {
+          "start": [
+            614.68,
+            195.58
+          ],
+          "end": [
+            754.38,
+            195.58
+          ],
+          "direction": "right",
+          "length": 139.7
+        },
+        {
+          "start": [
+            754.38,
+            195.58
+          ],
+          "end": [
+            754.38,
+            143.51
+          ],
+          "direction": "up",
+          "length": 52.07
+        },
+        {
+          "start": [
+            754.38,
+            143.51
+          ],
+          "end": [
+            759.46,
+            143.51
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_RIGHT_BUFFERED",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 30.48,
+        "turns": 2,
+        "score": 350.78,
+        "portal_route_score": 350.78,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "LM358",
+        "pin": "OUT2",
+        "point": [
+          614.68,
+          149.86
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "ARDUINO_NANO",
+        "pin": "A2",
+        "point": [
+          632.46,
+          147.32
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin21"
+      },
+      "path": [
+        [
+          614.68,
+          149.86
+        ],
+        [
+          637.54,
+          149.86
+        ],
+        [
+          637.54,
+          147.32
+        ],
+        [
+          632.46,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            614.68,
+            149.86
+          ],
+          "end": [
+            637.54,
+            149.86
+          ],
+          "direction": "right",
+          "length": 22.86
+        },
+        {
+          "start": [
+            637.54,
+            149.86
+          ],
+          "end": [
+            637.54,
+            147.32
+          ],
+          "direction": "up",
+          "length": 2.54
+        },
+        {
+          "start": [
+            637.54,
+            147.32
+          ],
+          "end": [
+            632.46,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_RIGHT_BUFFERED",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 0,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 2,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 99.06,
+        "turns": 2,
+        "score": 99.56,
+        "portal_route_score": 99.56,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "ARDUINO_NANO",
+        "pin": "A2",
+        "point": [
+          632.46,
+          147.32
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin21"
+      },
+      "to": {
+        "ref": "PAM8403",
+        "pin": "R_IN",
+        "point": [
+          584.2,
+          177.8
+        ],
+        "exact": true,
+        "source": "Amplifier_Audio:PAM8403D:unit1:pin10"
+      },
+      "path": [
+        [
+          632.46,
+          147.32
+        ],
+        [
+          637.54,
+          147.32
+        ],
+        [
+          637.54,
+          177.8
+        ],
+        [
+          584.2,
+          177.8
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            632.46,
+            147.32
+          ],
+          "end": [
+            637.54,
+            147.32
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            637.54,
+            147.32
+          ],
+          "end": [
+            637.54,
+            177.8
+          ],
+          "direction": "down",
+          "length": 30.48
+        },
+        {
+          "start": [
+            637.54,
+            177.8
+          ],
+          "end": [
+            584.2,
+            177.8
+          ],
+          "direction": "left",
+          "length": 53.34
+        }
+      ]
+    },
+    {
+      "net": "NET_R_220_AUDIO_LED_2",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 6,
+        "outer_channel_cost": 618.668,
+        "different_net_crossings": 2,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 788.67,
+        "turns": 3,
+        "score": 8693.137,
+        "portal_route_score": 8693.137,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "R_220_AUDIO_LED",
+        "pin": "2",
+        "point": [
+          297.18,
+          135.89
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "LED_INDICATOR_AUDIO",
+        "pin": "ANODE",
+        "point": [
+          822.96,
+          147.32
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          297.18,
+          135.89
+        ],
+        [
+          297.18,
+          15.24
+        ],
+        [
+          817.88,
+          15.24
+        ],
+        [
+          817.88,
+          147.32
+        ],
+        [
+          822.96,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            297.18,
+            135.89
+          ],
+          "end": [
+            297.18,
+            15.24
+          ],
+          "direction": "up",
+          "length": 120.65
+        },
+        {
+          "start": [
+            297.18,
+            15.24
+          ],
+          "end": [
+            817.88,
+            15.24
+          ],
+          "direction": "right",
+          "length": 520.7
+        },
+        {
+          "start": [
+            817.88,
+            15.24
+          ],
+          "end": [
+            817.88,
+            147.32
+          ],
+          "direction": "down",
+          "length": 132.08
+        },
+        {
+          "start": [
+            817.88,
+            147.32
+          ],
+          "end": [
+            822.96,
+            147.32
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_R_220_STATUS_2",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 379.908,
+        "different_net_crossings": 2,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 1002.03,
+        "turns": 3,
+        "score": 5881.381,
+        "portal_route_score": 5881.381,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "R_220_STATUS",
+        "pin": "2",
+        "point": [
+          30.48,
+          173.99
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "LED_INDICATOR_STATUS",
+        "pin": "ANODE",
+        "point": [
+          756.92,
+          114.3
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          30.48,
+          173.99
+        ],
+        [
+          30.48,
+          281.94
+        ],
+        [
+          751.84,
+          281.94
+        ],
+        [
+          751.84,
+          114.3
+        ],
+        [
+          756.92,
+          114.3
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            173.99
+          ],
+          "end": [
+            30.48,
+            281.94
+          ],
+          "direction": "down",
+          "length": 107.95
+        },
+        {
+          "start": [
+            30.48,
+            281.94
+          ],
+          "end": [
+            751.84,
+            281.94
+          ],
+          "direction": "right",
+          "length": 721.36
+        },
+        {
+          "start": [
+            751.84,
+            281.94
+          ],
+          "end": [
+            751.84,
+            114.3
+          ],
+          "direction": "up",
+          "length": 167.64
+        },
+        {
+          "start": [
+            751.84,
+            114.3
+          ],
+          "end": [
+            756.92,
+            114.3
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_555_DISCH",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 34.29,
+        "turns": 2,
+        "score": 354.59,
+        "portal_route_score": 354.59,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "POT_HG",
+        "pin": "END_A",
+        "point": [
+          356.87,
+          137.16
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "NE555",
+        "pin": "DISCH",
+        "point": [
+          375.92,
+          132.08
+        ],
+        "exact": true,
+        "source": "Timer:NE555P:unit1:pin7"
+      },
+      "path": [
+        [
+          356.87,
+          137.16
+        ],
+        [
+          351.79,
+          137.16
+        ],
+        [
+          351.79,
+          132.08
+        ],
+        [
+          375.92,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            356.87,
+            137.16
+          ],
+          "end": [
+            351.79,
+            137.16
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            351.79,
+            137.16
+          ],
+          "end": [
+            351.79,
+            132.08
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            351.79,
+            132.08
+          ],
+          "end": [
+            375.92,
+            132.08
+          ],
+          "direction": "right",
+          "length": 24.13
+        }
+      ]
+    },
+    {
+      "net": "NET_AUDIO_MIX",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 27.94,
+        "turns": 0,
+        "score": 347.94,
+        "portal_route_score": 347.94,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "LM358",
+        "pin": "IN1+",
+        "point": [
+          614.68,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "ARDUINO_NANO",
+        "pin": "A1",
+        "point": [
+          632.46,
+          144.78
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin20"
+      },
+      "path": [
+        [
+          614.68,
+          144.78
+        ],
+        [
+          632.46,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            614.68,
+            144.78
+          ],
+          "end": [
+            632.46,
+            144.78
+          ],
+          "direction": "right",
+          "length": 17.78
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 30,
+    "wired_route_count": 15,
+    "lane_route_count": 14,
+    "astar_route_count": 1,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 12,
+    "crossing_risk_route_count": 5,
+    "dense_design_mode": false,
+    "segment_count": 56,
+    "different_net_crossing_count": 10,
+    "mst_total_length": 8173.72,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 8,
+    "crossing_density_max_tile_crossings": 2,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 4,
+    "label_strategy_count": 4,
+    "wire_mode_terminal_net_count": 4,
+    "wire_mode_terminal_endpoint_count": 49,
+    "partial_wire_net_count": 3,
+    "unroutable_net_count": 13
+  },
+  "warnings": [
+    "salvage_astar_rejected_forbidden_contact: NET_ARDUINO_NANO_D5 still touched or overlapped another net.",
+    "strict_wire_unroutable: NET_ARDUINO_NANO_D5 could not be routed without labels.",
+    "salvage_astar_rejected_body_hit: NET_ARDUINO_NANO_D6 still touched component bodies.",
+    "strict_wire_unroutable: NET_ARDUINO_NANO_D6 could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_ARDUINO_NANO_D9 exceeded 80000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_ARDUINO_NANO_D9 exceeded 80000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_ARDUINO_NANO_D9 exceeded 200000 explored grid states.",
+    "strict_wire_unroutable: NET_ARDUINO_NANO_D9 could not be routed without labels.",
+    "minimum_crossing_route: NET_ARDUINO_NANO_RST accepted 3 different-net crossing/touch risks.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_AUDIO_DETECT still touched or overlapped another net.",
+    "strict_wire_unroutable: NET_AUDIO_DETECT could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_AUDIO_IN_R exceeded 80000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_AUDIO_IN_R exceeded 80000 explored grid states.",
+    "strict_wire_unroutable: NET_AUDIO_IN_R could not be routed without labels.",
+    "strict_wire_unroutable: NET_CLIP_DETECT could not be routed without labels.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_LM358_IN1.",
+    "strict_wire_unroutable: NET_LM358_IN1 could not be routed without labels.",
+    "strict_wire_unroutable: NET_LM393_COMPARATOR_IN2 could not be routed without labels.",
+    "strict_wire_unroutable: NET_PAM8403_R_OUT could not be routed without labels.",
+    "strict_wire_unroutable: NET_PAM8403_R_OUT_2 could not be routed without labels.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_RIGHT_BUFFERED.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_RIGHT_BUFFERED.",
+    "minimum_crossing_route: NET_RIGHT_BUFFERED accepted 2 different-net crossing/touch risks.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_RIGHT_BUFFERED.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_RIGHT_BUFFERED.",
+    "strict_wire_unroutable: NET_RIGHT_BUFFERED could not be routed without labels.",
+    "minimum_crossing_route: NET_R_220_AUDIO_LED_2 accepted 2 different-net crossing/touch risks.",
+    "strict_wire_unroutable: NET_R_220_CLIP_LED_2 could not be routed without labels.",
+    "minimum_crossing_route: NET_R_220_STATUS_2 accepted 2 different-net crossing/touch risks.",
+    "strict_wire_unroutable: NET_TONE_OUT could not be routed without labels.",
+    "strict_wire_unroutable: NET_VOLUME_WIPER could not be routed without labels.",
+    "minimum_crossing_route: NET_555_DISCH accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_555_DISCH exceeded 80000 explored grid states.",
+    "strict_wire_unroutable: NET_555_DISCH could not be routed without labels.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_AUDIO_MIX.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_AUDIO_MIX.",
+    "strict_wire_unroutable: NET_AUDIO_MIX could not be routed without labels.",
+    "different_net_crossings_detected: 10"
+  ],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": true,
+    "pass_count": 3,
+    "passes": [
+      {
+        "pass": 1,
+        "status": "rerouted_after_coordinate_edits",
+        "metrics_before": {
+          "net_count": 30,
+          "wired_route_count": 24,
+          "lane_route_count": 24,
+          "astar_route_count": 0,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 12,
+          "crossing_risk_route_count": 13,
+          "dense_design_mode": false,
+          "segment_count": 98,
+          "different_net_crossing_count": 29,
+          "mst_total_length": 9525.0,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 17,
+          "crossing_density_max_tile_crossings": 4,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 11,
+          "label_strategy_count": 4,
+          "wire_mode_terminal_net_count": 4,
+          "wire_mode_terminal_endpoint_count": 49,
+          "partial_wire_net_count": 4,
+          "unroutable_net_count": 8
+        },
+        "metrics_after": {
+          "net_count": 30,
+          "wired_route_count": 18,
+          "lane_route_count": 17,
+          "astar_route_count": 1,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 12,
+          "crossing_risk_route_count": 3,
+          "dense_design_mode": false,
+          "segment_count": 71,
+          "different_net_crossing_count": 4,
+          "mst_total_length": 7322.82,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 4,
+          "crossing_density_max_tile_crossings": 1,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 2,
+          "label_strategy_count": 4,
+          "wire_mode_terminal_net_count": 4,
+          "wire_mode_terminal_endpoint_count": 49,
+          "partial_wire_net_count": 4,
+          "unroutable_net_count": 12
+        },
+        "move_plan": {
+          "schema": "progen-kicad-partial-route-component-motion/v0.1",
+          "stage": "partial_route_component_motion_decider",
+          "algorithm": {
+            "primary": "move_failed_partial_endpoint_toward_nearest_wired_same_net_endpoint",
+            "input_contract": "routing placement JSON plus wire_plan partial-wire net reports",
+            "output_contract": "coordinate edits for beautifier.py"
+          },
+          "coordinate_edits": [
+            {
+              "ref": "ARDUINO_NANO",
+              "from": [
+                670.56,
+                147.32
+              ],
+              "to": [
+                535.94,
+                152.4
+              ],
+              "delta": [
+                -134.62,
+                5.08
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_AUDIO_DETECT",
+              "pin": "D3",
+              "anchor": {
+                "ref": "LM393_COMPARATOR",
+                "pin": "OUT1",
+                "point": [
+                  510.54,
+                  144.78
+                ]
+              }
+            },
+            {
+              "ref": "COUPLING_CAP_TONE",
+              "from": [
+                30.48,
+                127.0
+              ],
+              "to": [
+                589.28,
+                135.89
+              ],
+              "delta": [
+                558.8,
+                8.89
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_AUDIO_MIX",
+              "pin": "2",
+              "anchor": {
+                "ref": "LM358",
+                "pin": "IN1+",
+                "point": [
+                  594.36,
+                  144.78
+                ]
+              }
+            }
+          ],
+          "move_count": 2,
+          "moves": [
+            {
+              "net": "NET_AUDIO_DETECT",
+              "ref": "ARDUINO_NANO",
+              "pin": "D3",
+              "status": "moved",
+              "from": [
+                670.56,
+                147.32
+              ],
+              "to": [
+                535.94,
+                152.4
+              ],
+              "anchor": {
+                "ref": "LM393_COMPARATOR",
+                "pin": "OUT1",
+                "point": [
+                  510.54,
+                  144.78
+                ]
+              }
+            },
+            {
+              "net": "NET_AUDIO_MIX",
+              "ref": "COUPLING_CAP_TONE",
+              "pin": "2",
+              "status": "moved",
+              "from": [
+                30.48,
+                127.0
+              ],
+              "to": [
+                589.28,
+                135.89
+              ],
+              "anchor": {
+                "ref": "LM358",
+                "pin": "IN1+",
+                "point": [
+                  594.36,
+                  144.78
+                ]
+              }
+            }
+          ]
+        },
+        "component_body_overlap_report": {
+          "schema": "progen-kicad-component-body-overlap-report/v0.1",
+          "ok": true,
+          "clearance": 0.0,
+          "body_count": 38,
+          "overlap_count": 0,
+          "overlaps": [],
+          "overlaps_truncated": false
+        }
+      },
+      {
+        "pass": 2,
+        "status": "rerouted_after_coordinate_edits",
+        "metrics_before": {
+          "net_count": 30,
+          "wired_route_count": 18,
+          "lane_route_count": 17,
+          "astar_route_count": 1,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 12,
+          "crossing_risk_route_count": 3,
+          "dense_design_mode": false,
+          "segment_count": 71,
+          "different_net_crossing_count": 4,
+          "mst_total_length": 7322.82,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 4,
+          "crossing_density_max_tile_crossings": 1,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 2,
+          "label_strategy_count": 4,
+          "wire_mode_terminal_net_count": 4,
+          "wire_mode_terminal_endpoint_count": 49,
+          "partial_wire_net_count": 4,
+          "unroutable_net_count": 12
+        },
+        "metrics_after": {
+          "net_count": 30,
+          "wired_route_count": 19,
+          "lane_route_count": 19,
+          "astar_route_count": 0,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 12,
+          "crossing_risk_route_count": 8,
+          "dense_design_mode": false,
+          "segment_count": 75,
+          "different_net_crossing_count": 12,
+          "mst_total_length": 7459.98,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 10,
+          "crossing_density_max_tile_crossings": 2,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 3,
+          "label_strategy_count": 4,
+          "wire_mode_terminal_net_count": 4,
+          "wire_mode_terminal_endpoint_count": 49,
+          "partial_wire_net_count": 4,
+          "unroutable_net_count": 9
+        },
+        "move_plan": {
+          "schema": "progen-kicad-partial-route-component-motion/v0.1",
+          "stage": "partial_route_component_motion_decider",
+          "algorithm": {
+            "primary": "move_failed_partial_endpoint_toward_nearest_wired_same_net_endpoint",
+            "input_contract": "routing placement JSON plus wire_plan partial-wire net reports",
+            "output_contract": "coordinate edits for beautifier.py"
+          },
+          "coordinate_edits": [
+            {
+              "ref": "R_10K_PULLUP_AUDIO_DETECT",
+              "from": [
+                264.16,
+                160.02
+              ],
+              "to": [
+                287.02,
+                132.08
+              ],
+              "delta": [
+                22.86,
+                -27.94
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_AUDIO_DETECT",
+              "pin": "1",
+              "anchor": {
+                "ref": "R_220_AUDIO_LED",
+                "pin": "1",
+                "point": [
+                  297.18,
+                  128.27
+                ]
+              }
+            },
+            {
+              "ref": "ARDUINO_NANO",
+              "from": [
+                535.94,
+                152.4
+              ],
+              "to": [
+                535.94,
+                149.86
+              ],
+              "delta": [
+                0.0,
+                -2.54
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_AUDIO_DETECT",
+              "pin": "D3",
+              "anchor": {
+                "ref": "LM393_COMPARATOR",
+                "pin": "OUT1",
+                "point": [
+                  510.54,
+                  142.24
+                ]
+              }
+            },
+            {
+              "ref": "LM393_COMPARATOR",
+              "from": [
+                520.7,
+                147.32
+              ],
+              "to": [
+                594.36,
+                147.32
+              ],
+              "delta": [
+                73.66,
+                0.0
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_LM358_IN1",
+              "pin": "IN1+",
+              "anchor": {
+                "ref": "LM358",
+                "pin": "IN1-",
+                "point": [
+                  594.36,
+                  147.32
+                ]
+              }
+            }
+          ],
+          "move_count": 3,
+          "moves": [
+            {
+              "net": "NET_AUDIO_DETECT",
+              "ref": "R_10K_PULLUP_AUDIO_DETECT",
+              "pin": "1",
+              "status": "moved",
+              "from": [
+                264.16,
+                160.02
+              ],
+              "to": [
+                287.02,
+                132.08
+              ],
+              "anchor": {
+                "ref": "R_220_AUDIO_LED",
+                "pin": "1",
+                "point": [
+                  297.18,
+                  128.27
+                ]
+              }
+            },
+            {
+              "net": "NET_AUDIO_DETECT",
+              "ref": "ARDUINO_NANO",
+              "pin": "D3",
+              "status": "moved",
+              "from": [
+                535.94,
+                152.4
+              ],
+              "to": [
+                535.94,
+                149.86
+              ],
+              "anchor": {
+                "ref": "LM393_COMPARATOR",
+                "pin": "OUT1",
+                "point": [
+                  510.54,
+                  142.24
+                ]
+              }
+            },
+            {
+              "net": "NET_LM358_IN1",
+              "ref": "LM393_COMPARATOR",
+              "pin": "IN1+",
+              "status": "moved",
+              "from": [
+                520.7,
+                147.32
+              ],
+              "to": [
+                594.36,
+                147.32
+              ],
+              "anchor": {
+                "ref": "LM358",
+                "pin": "IN1-",
+                "point": [
+                  594.36,
+                  147.32
+                ]
+              }
+            }
+          ]
+        },
+        "component_body_overlap_report": {
+          "schema": "progen-kicad-component-body-overlap-report/v0.1",
+          "ok": true,
+          "clearance": 0.0,
+          "body_count": 38,
+          "overlap_count": 0,
+          "overlaps": [],
+          "overlaps_truncated": false
+        }
+      },
+      {
+        "pass": 3,
+        "status": "rerouted_after_coordinate_edits",
+        "metrics_before": {
+          "net_count": 30,
+          "wired_route_count": 19,
+          "lane_route_count": 19,
+          "astar_route_count": 0,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 12,
+          "crossing_risk_route_count": 8,
+          "dense_design_mode": false,
+          "segment_count": 75,
+          "different_net_crossing_count": 12,
+          "mst_total_length": 7459.98,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 10,
+          "crossing_density_max_tile_crossings": 2,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 3,
+          "label_strategy_count": 4,
+          "wire_mode_terminal_net_count": 4,
+          "wire_mode_terminal_endpoint_count": 49,
+          "partial_wire_net_count": 4,
+          "unroutable_net_count": 9
+        },
+        "metrics_after": {
+          "net_count": 30,
+          "wired_route_count": 15,
+          "lane_route_count": 14,
+          "astar_route_count": 1,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 12,
+          "crossing_risk_route_count": 5,
+          "dense_design_mode": false,
+          "segment_count": 56,
+          "different_net_crossing_count": 10,
+          "mst_total_length": 8173.72,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 8,
+          "crossing_density_max_tile_crossings": 2,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 4,
+          "label_strategy_count": 4,
+          "wire_mode_terminal_net_count": 4,
+          "wire_mode_terminal_endpoint_count": 49,
+          "partial_wire_net_count": 3,
+          "unroutable_net_count": 13
+        },
+        "move_plan": {
+          "schema": "progen-kicad-partial-route-component-motion/v0.1",
+          "stage": "partial_route_component_motion_decider",
+          "algorithm": {
+            "primary": "move_failed_partial_endpoint_toward_nearest_wired_same_net_endpoint",
+            "input_contract": "routing placement JSON plus wire_plan partial-wire net reports",
+            "output_contract": "coordinate edits for beautifier.py"
+          },
+          "coordinate_edits": [
+            {
+              "ref": "NE555",
+              "from": [
+                561.34,
+                147.32
+              ],
+              "to": [
+                386.08,
+                134.62
+              ],
+              "delta": [
+                -175.26,
+                -12.7
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_555_DISCH",
+              "pin": "DISCH",
+              "anchor": {
+                "ref": "POT_HG",
+                "pin": "END_A",
+                "point": [
+                  370.84,
+                  137.16
+                ]
+              }
+            },
+            {
+              "ref": "ARDUINO_NANO",
+              "from": [
+                535.94,
+                149.86
+              ],
+              "to": [
+                619.76,
+                142.24
+              ],
+              "delta": [
+                83.82,
+                -7.62
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_RIGHT_BUFFERED",
+              "pin": "A2",
+              "anchor": {
+                "ref": "LM358",
+                "pin": "OUT2",
+                "point": [
+                  614.68,
+                  147.32
+                ]
+              }
+            },
+            {
+              "ref": "PAM8403",
+              "from": [
+                726.44,
+                147.32
+              ],
+              "to": [
+                596.9,
+                177.8
+              ],
+              "delta": [
+                -129.54,
+                30.48
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_VOLUME_WIPER",
+              "pin": "L_IN",
+              "anchor": {
+                "ref": "LM393_COMPARATOR",
+                "pin": "IN2+",
+                "point": [
+                  584.2,
+                  152.4
+                ]
+              }
+            }
+          ],
+          "move_count": 3,
+          "moves": [
+            {
+              "net": "NET_555_DISCH",
+              "ref": "NE555",
+              "pin": "DISCH",
+              "status": "moved",
+              "from": [
+                561.34,
+                147.32
+              ],
+              "to": [
+                386.08,
+                134.62
+              ],
+              "anchor": {
+                "ref": "POT_HG",
+                "pin": "END_A",
+                "point": [
+                  370.84,
+                  137.16
+                ]
+              }
+            },
+            {
+              "net": "NET_RIGHT_BUFFERED",
+              "ref": "ARDUINO_NANO",
+              "pin": "A2",
+              "status": "moved",
+              "from": [
+                535.94,
+                149.86
+              ],
+              "to": [
+                619.76,
+                142.24
+              ],
+              "anchor": {
+                "ref": "LM358",
+                "pin": "OUT2",
+                "point": [
+                  614.68,
+                  147.32
+                ]
+              }
+            },
+            {
+              "net": "NET_VOLUME_WIPER",
+              "ref": "PAM8403",
+              "pin": "L_IN",
+              "status": "moved",
+              "from": [
+                726.44,
+                147.32
+              ],
+              "to": [
+                596.9,
+                177.8
+              ],
+              "anchor": {
+                "ref": "LM393_COMPARATOR",
+                "pin": "IN2+",
+                "point": [
+                  584.2,
+                  152.4
+                ]
+              }
+            }
+          ]
+        },
+        "component_body_overlap_report": {
+          "schema": "progen-kicad-component-body-overlap-report/v0.1",
+          "ok": true,
+          "clearance": 0.0,
+          "body_count": 38,
+          "overlap_count": 0,
+          "overlaps": [],
+          "overlaps_truncated": false
+        }
+      }
+    ],
+    "final_metrics": {
+      "net_count": 30,
+      "wired_route_count": 15,
+      "lane_route_count": 14,
+      "astar_route_count": 1,
+      "salvage_astar_route_count": 0,
+      "salvage_astar_attempt_count": 12,
+      "crossing_risk_route_count": 5,
+      "dense_design_mode": false,
+      "segment_count": 56,
+      "different_net_crossing_count": 10,
+      "mst_total_length": 8173.72,
+      "crossing_density_tile_size": 25.4,
+      "crossing_density_tile_count": 8,
+      "crossing_density_max_tile_crossings": 2,
+      "crossing_density_overflow": 0,
+      "near_endpoint_crossing_count": 4,
+      "label_strategy_count": 4,
+      "wire_mode_terminal_net_count": 4,
+      "wire_mode_terminal_endpoint_count": 49,
+      "partial_wire_net_count": 3,
+      "unroutable_net_count": 13
+    }
+  },
+  "arrangement_selection": {
+    "schema": "progen-kicad-routeable-arrangement-selection/v0.1",
+    "stage": "routeable_arrangement_selector",
+    "strategy": "parallel_variant_routeability_score",
+    "variant_count": 3,
+    "worker_count": 1,
+    "parallel_error": "",
+    "scoring_wire_config": {
+      "max_astar_expansions": 600.0,
+      "max_lane_candidates": 32.0,
+      "max_failed_endpoints_per_net": 1.0
+    },
+    "selected_variant": "base",
+    "selected_score": {
+      "score": 232540.57,
+      "square_fill": {
+        "width": 810.14,
+        "height": 72.46,
+        "aspect_ratio": 11.181,
+        "aspect_penalty": 737.68,
+        "fill_waste_area": 45238.744,
+        "score": 2153.941
+      },
+      "component_body_overlap_count": 0,
+      "estimated_blocked_endpoint_count": 0,
+      "estimated_partial_pressure": 0,
+      "estimated_body_hit_count": 0,
+      "estimated_routable_branch_count": 85,
+      "estimated_turn_count": 94,
+      "estimated_route_length": 16206.47
+    },
+    "final_score": {
+      "score": 0.0,
+      "complete_wire_net_count": 0,
+      "unroutable_net_count": 0,
+      "partial_wire_net_count": 0,
+      "label_strategy_count": 0,
+      "route_body_hit_count": 0,
+      "route_forbidden_contact_count": 0,
+      "component_shadow_count": 0,
+      "route_turn_count": 0,
+      "route_length": 0,
+      "different_net_crossing_count": 0
+    },
+    "variants": [
+      {
+        "name": "base",
+        "ok": true,
+        "score": {
+          "score": 232540.57,
+          "square_fill": {
+            "width": 810.14,
+            "height": 72.46,
+            "aspect_ratio": 11.181,
+            "aspect_penalty": 737.68,
+            "fill_waste_area": 45238.744,
+            "score": 2153.941
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 85,
+          "estimated_turn_count": 94,
+          "estimated_route_length": 16206.47
+        },
+        "elapsed_seconds": 0.123,
+        "coordinate_edit_count": 36,
+        "error": null
+      },
+      {
+        "name": "square_fill_compact",
+        "ok": true,
+        "score": {
+          "score": 1001262585.51,
+          "square_fill": {
+            "width": 893.96,
+            "height": 75.0,
+            "aspect_ratio": 11.919,
+            "aspect_penalty": 818.96,
+            "fill_waste_area": 53583.0,
+            "score": 2441.665
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 1,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 1,
+          "estimated_routable_branch_count": 84,
+          "estimated_turn_count": 94,
+          "estimated_route_length": 17479.01
+        },
+        "elapsed_seconds": 0.128,
+        "coordinate_edit_count": 36,
+        "error": null
+      },
+      {
+        "name": "square_fill_balanced",
+        "ok": true,
+        "score": {
+          "score": 1001296473.91,
+          "square_fill": {
+            "width": 977.78,
+            "height": 80.08,
+            "aspect_ratio": 12.21,
+            "aspect_penalty": 897.7,
+            "fill_waste_area": 64836.622,
+            "score": 2767.949
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 1,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 1,
+          "estimated_routable_branch_count": 84,
+          "estimated_turn_count": 93,
+          "estimated_route_length": 18749.01
+        },
+        "elapsed_seconds": 0.127,
+        "coordinate_edit_count": 36,
+        "error": null
+      }
+    ]
+  }
+}

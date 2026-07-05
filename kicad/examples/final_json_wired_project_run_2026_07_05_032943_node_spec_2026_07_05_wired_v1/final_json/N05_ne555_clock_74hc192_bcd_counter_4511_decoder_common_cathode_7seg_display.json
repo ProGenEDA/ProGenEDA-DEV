@@ -1,0 +1,928 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n05",
+    "title": "NE555 CLOCK + 74HC192 BCD COUNTER + 4511 DECODER + COMMON-CATHODE 7SEG DISPLAY",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N05",
+  "circuit_name": "NE555 CLOCK + 74HC192 BCD COUNTER + 4511 DECODER + COMMON-CATHODE 7SEG DISPLAY",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "PWR_5V",
+      "ref": "PWR_5V",
+      "kind": "PWR_5V",
+      "type": "PWR_5V",
+      "value": "+5V Power Symbol",
+      "role": "power_symbol",
+      "block": "05",
+      "pins": {
+        "+": "+5V",
+        "-": "GND"
+      }
+    },
+    {
+      "id": "NE555",
+      "ref": "NE555",
+      "kind": "NE555",
+      "type": "NE555",
+      "value": "NE555 Timer",
+      "role": "timer_ic",
+      "block": "05",
+      "pins": {
+        "CTRL": "NET_NE555_CTRL",
+        "DISCH": "NET_555_DISCH",
+        "GND": "GND",
+        "OUT": "NET_CLOCK_RAW",
+        "RESET": "+5V",
+        "THRESH": "NET_555_TIMING",
+        "TRIG": "NET_555_TIMING",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "C_100NF_555_CTRL",
+      "ref": "C_100NF_555_CTRL",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "05",
+      "pins": {
+        "1": "NET_NE555_CTRL",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "RES_555_RA",
+      "ref": "RES_555_RA",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "+5V",
+        "2": "NET_555_DISCH"
+      }
+    },
+    {
+      "id": "RES_555_RB",
+      "ref": "RES_555_RB",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_555_DISCH",
+        "2": "NET_555_TIMING"
+      }
+    },
+    {
+      "id": "CAP_555_TIMING",
+      "ref": "CAP_555_TIMING",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "Capacitor",
+      "role": "capacitor",
+      "block": "05",
+      "pins": {
+        "1": "NET_555_TIMING",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "DIP_SWITCH",
+      "ref": "DIP_SWITCH",
+      "kind": "DIP_SWITCH",
+      "type": "DIP_SWITCH",
+      "value": "DIP Switch",
+      "role": "switch",
+      "block": "05",
+      "pins": {
+        "S1A": "+5V",
+        "S1B": "NET_COUNT_ENABLE"
+      }
+    },
+    {
+      "id": "R_COUNT_ENABLE_PD",
+      "ref": "R_COUNT_ENABLE_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_COUNT_ENABLE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "74HC00",
+      "ref": "74HC00",
+      "kind": "74HC00",
+      "type": "74HC00",
+      "value": "74HC00 Quad NAND Gate",
+      "role": "logic_ic",
+      "block": "05",
+      "pins": {
+        "1A": "NET_CLOCK_RAW",
+        "1B": "NET_COUNT_ENABLE",
+        "1Y": "NET_CLOCK_NAND",
+        "2A": "NET_CLOCK_NAND",
+        "2B": "NET_CLOCK_NAND",
+        "2Y": "NET_CLOCK_GATED",
+        "3A": "GND",
+        "3B": "GND",
+        "3Y": "NET_74HC00_3Y",
+        "4A": "GND",
+        "4B": "GND",
+        "4Y": "NET_74HC00_4Y",
+        "GND": "GND",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "TEST_POINT_NAND3",
+      "ref": "TEST_POINT_NAND3",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "05",
+      "pins": {
+        "TP": "NET_74HC00_3Y"
+      }
+    },
+    {
+      "id": "TEST_POINT_NAND4",
+      "ref": "TEST_POINT_NAND4",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "05",
+      "pins": {
+        "TP": "NET_74HC00_4Y"
+      }
+    },
+    {
+      "id": "74HC192",
+      "ref": "74HC192",
+      "kind": "74HC192",
+      "type": "74HC192",
+      "value": "74HC192 Up/Down Counter",
+      "role": "logic_ic",
+      "block": "05",
+      "pins": {
+        "/LOAD": "+5V",
+        "A": "GND",
+        "B": "GND",
+        "BORROW": "NET_74HC192_BORROW",
+        "C": "GND",
+        "CARRY": "NET_74HC192_CARRY",
+        "CLR": "NET_COUNTER_CLR",
+        "D": "GND",
+        "DOWN_CLK": "+5V",
+        "GND": "GND",
+        "QA": "NET_BCD_A",
+        "QB": "NET_BCD_B",
+        "QC": "NET_BCD_C",
+        "QD": "NET_BCD_D",
+        "UP_CLK": "NET_CLOCK_GATED",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "R_COUNTER_CLR_PD",
+      "ref": "R_COUNTER_CLR_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_COUNTER_CLR",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "PUSH_BUTTON_CLEAR",
+      "ref": "PUSH_BUTTON_CLEAR",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "05",
+      "pins": {
+        "1": "NET_COUNTER_CLR",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "TEST_POINT_CARRY",
+      "ref": "TEST_POINT_CARRY",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "05",
+      "pins": {
+        "TP": "NET_74HC192_CARRY"
+      }
+    },
+    {
+      "id": "TEST_POINT_BORROW",
+      "ref": "TEST_POINT_BORROW",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "05",
+      "pins": {
+        "TP": "NET_74HC192_BORROW"
+      }
+    },
+    {
+      "id": "4511",
+      "ref": "4511",
+      "kind": "4511",
+      "type": "4511",
+      "value": "4511 BCD to 7-Segment Latch/Decoder",
+      "role": "logic_ic",
+      "block": "05",
+      "pins": {
+        "/BI": "+5V",
+        "/LT": "+5V",
+        "A": "NET_BCD_A",
+        "B": "NET_BCD_B",
+        "C": "NET_BCD_C",
+        "D": "NET_BCD_D",
+        "GND": "GND",
+        "LE": "GND",
+        "VCC": "+5V",
+        "a": "NET_4511_A",
+        "b": "NET_4511_B",
+        "c": "NET_4511_C",
+        "d": "NET_4511_D",
+        "e": "NET_4511_E",
+        "f": "NET_4511_F",
+        "g": "NET_4511_G"
+      }
+    },
+    {
+      "id": "R_SEG_A",
+      "ref": "R_SEG_A",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_4511_A",
+        "2": "NET_R_SEG_A_2"
+      }
+    },
+    {
+      "id": "7SEGCOMK",
+      "ref": "7SEGCOMK",
+      "kind": "7SEGCOMK",
+      "type": "7SEGCOMK",
+      "value": "7-Segment Common Cathode",
+      "role": "display",
+      "block": "05",
+      "pins": {
+        "A": "NET_R_SEG_A_2",
+        "B": "NET_R_SEG_B_2",
+        "C": "NET_R_SEG_C_2",
+        "COM1": "GND",
+        "COM2": "GND",
+        "D": "NET_R_SEG_D_2",
+        "DP": "GND",
+        "E": "NET_R_SEG_E_2",
+        "F": "NET_R_SEG_F_2",
+        "G": "NET_R_SEG_G_2"
+      }
+    },
+    {
+      "id": "R_SEG_B",
+      "ref": "R_SEG_B",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_4511_B",
+        "2": "NET_R_SEG_B_2"
+      }
+    },
+    {
+      "id": "R_SEG_C",
+      "ref": "R_SEG_C",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_4511_C",
+        "2": "NET_R_SEG_C_2"
+      }
+    },
+    {
+      "id": "R_SEG_D",
+      "ref": "R_SEG_D",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_4511_D",
+        "2": "NET_R_SEG_D_2"
+      }
+    },
+    {
+      "id": "R_SEG_E",
+      "ref": "R_SEG_E",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_4511_E",
+        "2": "NET_R_SEG_E_2"
+      }
+    },
+    {
+      "id": "R_SEG_F",
+      "ref": "R_SEG_F",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_4511_F",
+        "2": "NET_R_SEG_F_2"
+      }
+    },
+    {
+      "id": "R_SEG_G",
+      "ref": "R_SEG_G",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_4511_G",
+        "2": "NET_R_SEG_G_2"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_CLOCK",
+      "ref": "LED_INDICATOR_CLOCK",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "05",
+      "pins": {
+        "ANODE": "NET_LED_INDICATOR_CLOCK_ANODE",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "R_220_CLOCK_LED",
+      "ref": "R_220_CLOCK_LED",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_LED_INDICATOR_CLOCK_ANODE",
+        "2": "NET_CLOCK_GATED"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_CARRY",
+      "ref": "LED_INDICATOR_CARRY",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "05",
+      "pins": {
+        "ANODE": "NET_LED_INDICATOR_CARRY_ANODE",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "R_220_CARRY_LED",
+      "ref": "R_220_CARRY_LED",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "05",
+      "pins": {
+        "1": "NET_LED_INDICATOR_CARRY_ANODE",
+        "2": "NET_74HC192_CARRY"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_555",
+      "ref": "DECOUPLING_CAPACITOR_555",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "05",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_74HC00",
+      "ref": "DECOUPLING_CAPACITOR_74HC00",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "05",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_74HC192",
+      "ref": "DECOUPLING_CAPACITOR_74HC192",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "05",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_4511",
+      "ref": "DECOUPLING_CAPACITOR_4511",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "05",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "PWR_5V.+",
+      "NE555.VCC",
+      "NE555.RESET",
+      "RES_555_RA.1",
+      "DIP_SWITCH.S1A",
+      "74HC00.VCC",
+      "74HC192.VCC",
+      "74HC192.DOWN_CLK",
+      "74HC192./LOAD",
+      "PUSH_BUTTON_CLEAR.2",
+      "4511.VCC",
+      "4511./LT",
+      "4511./BI",
+      "DECOUPLING_CAPACITOR_555.1",
+      "DECOUPLING_CAPACITOR_74HC00.1",
+      "DECOUPLING_CAPACITOR_74HC192.1",
+      "DECOUPLING_CAPACITOR_4511.1"
+    ],
+    "GND": [
+      "PWR_5V.-",
+      "NE555.GND",
+      "C_100NF_555_CTRL.2",
+      "CAP_555_TIMING.2",
+      "R_COUNT_ENABLE_PD.2",
+      "74HC00.GND",
+      "74HC00.3A",
+      "74HC00.3B",
+      "74HC00.4A",
+      "74HC00.4B",
+      "74HC192.GND",
+      "R_COUNTER_CLR_PD.2",
+      "74HC192.A",
+      "74HC192.B",
+      "74HC192.C",
+      "74HC192.D",
+      "4511.GND",
+      "4511.LE",
+      "7SEGCOMK.COM1",
+      "7SEGCOMK.COM2",
+      "7SEGCOMK.DP",
+      "LED_INDICATOR_CLOCK.CATHODE",
+      "LED_INDICATOR_CARRY.CATHODE",
+      "DECOUPLING_CAPACITOR_555.2",
+      "DECOUPLING_CAPACITOR_74HC00.2",
+      "DECOUPLING_CAPACITOR_74HC192.2",
+      "DECOUPLING_CAPACITOR_4511.2"
+    ],
+    "NET_NE555_CTRL": [
+      "NE555.CTRL",
+      "C_100NF_555_CTRL.1"
+    ],
+    "NET_555_DISCH": [
+      "NE555.DISCH",
+      "RES_555_RA.2",
+      "RES_555_RB.1"
+    ],
+    "NET_555_TIMING": [
+      "NE555.TRIG",
+      "NE555.THRESH",
+      "RES_555_RB.2",
+      "CAP_555_TIMING.1"
+    ],
+    "NET_CLOCK_RAW": [
+      "NE555.OUT",
+      "74HC00.1A"
+    ],
+    "NET_COUNT_ENABLE": [
+      "DIP_SWITCH.S1B",
+      "R_COUNT_ENABLE_PD.1",
+      "74HC00.1B"
+    ],
+    "NET_CLOCK_NAND": [
+      "74HC00.1Y",
+      "74HC00.2A",
+      "74HC00.2B"
+    ],
+    "NET_CLOCK_GATED": [
+      "74HC00.2Y",
+      "74HC192.UP_CLK",
+      "R_220_CLOCK_LED.2"
+    ],
+    "NET_74HC00_3Y": [
+      "74HC00.3Y",
+      "TEST_POINT_NAND3.TP"
+    ],
+    "NET_74HC00_4Y": [
+      "74HC00.4Y",
+      "TEST_POINT_NAND4.TP"
+    ],
+    "NET_COUNTER_CLR": [
+      "74HC192.CLR",
+      "R_COUNTER_CLR_PD.1",
+      "PUSH_BUTTON_CLEAR.1"
+    ],
+    "NET_BCD_A": [
+      "74HC192.QA",
+      "4511.A"
+    ],
+    "NET_BCD_B": [
+      "74HC192.QB",
+      "4511.B"
+    ],
+    "NET_BCD_C": [
+      "74HC192.QC",
+      "4511.C"
+    ],
+    "NET_BCD_D": [
+      "74HC192.QD",
+      "4511.D"
+    ],
+    "NET_74HC192_CARRY": [
+      "74HC192.CARRY",
+      "TEST_POINT_CARRY.TP",
+      "R_220_CARRY_LED.2"
+    ],
+    "NET_74HC192_BORROW": [
+      "74HC192.BORROW",
+      "TEST_POINT_BORROW.TP"
+    ],
+    "NET_4511_A": [
+      "4511.a",
+      "R_SEG_A.1"
+    ],
+    "NET_R_SEG_A_2": [
+      "R_SEG_A.2",
+      "7SEGCOMK.A"
+    ],
+    "NET_4511_B": [
+      "4511.b",
+      "R_SEG_B.1"
+    ],
+    "NET_R_SEG_B_2": [
+      "R_SEG_B.2",
+      "7SEGCOMK.B"
+    ],
+    "NET_4511_C": [
+      "4511.c",
+      "R_SEG_C.1"
+    ],
+    "NET_R_SEG_C_2": [
+      "R_SEG_C.2",
+      "7SEGCOMK.C"
+    ],
+    "NET_4511_D": [
+      "4511.d",
+      "R_SEG_D.1"
+    ],
+    "NET_R_SEG_D_2": [
+      "R_SEG_D.2",
+      "7SEGCOMK.D"
+    ],
+    "NET_4511_E": [
+      "4511.e",
+      "R_SEG_E.1"
+    ],
+    "NET_R_SEG_E_2": [
+      "R_SEG_E.2",
+      "7SEGCOMK.E"
+    ],
+    "NET_4511_F": [
+      "4511.f",
+      "R_SEG_F.1"
+    ],
+    "NET_R_SEG_F_2": [
+      "R_SEG_F.2",
+      "7SEGCOMK.F"
+    ],
+    "NET_4511_G": [
+      "4511.g",
+      "R_SEG_G.1"
+    ],
+    "NET_R_SEG_G_2": [
+      "R_SEG_G.2",
+      "7SEGCOMK.G"
+    ],
+    "NET_LED_INDICATOR_CLOCK_ANODE": [
+      "LED_INDICATOR_CLOCK.ANODE",
+      "R_220_CLOCK_LED.1"
+    ],
+    "NET_LED_INDICATOR_CARRY_ANODE": [
+      "LED_INDICATOR_CARRY.ANODE",
+      "R_220_CARRY_LED.1"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "PWR_5V",
+          "kind": "PWR_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "NE555",
+          "kind": "NE555",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "C_100NF_555_CTRL",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_555_RA",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_555_RB",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "DIP_SWITCH",
+          "kind": "DIP_SWITCH",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_COUNT_ENABLE_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "74HC00",
+          "kind": "74HC00",
+          "reason": "exact_catalog_kind",
+          "pin_count": 14
+        },
+        {
+          "ref": "TEST_POINT_NAND3",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_NAND4",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "74HC192",
+          "kind": "74HC192",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "R_COUNTER_CLR_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "PUSH_BUTTON_CLEAR",
+          "kind": "PUSH_BUTTON",
+          "reason": "push_button_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "TEST_POINT_CARRY",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_BORROW",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "4511",
+          "kind": "4511",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "R_SEG_A",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "7SEGCOMK",
+          "kind": "7SEGCOMK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 10
+        },
+        {
+          "ref": "R_SEG_B",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_SEG_C",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_SEG_D",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_SEG_E",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_SEG_F",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_SEG_G",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_CLOCK",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_CLOCK_LED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_CARRY",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_CARRY_LED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_555",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC00",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC192",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_4511",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 95
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 33,
+    "net_count": 34,
+    "endpoint_count": 116,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

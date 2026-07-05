@@ -861,11 +861,15 @@ def _python_live_state_plan(
     rotation_edits: list[dict[str, Any]] = []
     beam_report: dict[str, Any] = {"strategy": "disabled"}
     final_named_states: list[tuple[str, LiveRoutingState]] = [("initial_live_state", state)]
+    variation_cfg = config.get("variation", {}) if isinstance(config.get("variation"), dict) else {}
+    variation_enabled = bool(variation_cfg.get("enabled", False))
     if config.get("placement", {}).get("enable_python_live_state_placement", True):
         placement_cfg = config.get("placement", {}) if isinstance(config.get("placement"), dict) else {}
         component_count = len(state.components)
         max_beam_components = int(placement_cfg.get("max_beam_search_components", 12))
-        use_beam_search = bool(placement_cfg.get("enable_cluster_growth_beam_search", True)) and component_count <= max_beam_components
+        use_beam_search = bool(placement_cfg.get("enable_cluster_growth_beam_search", True)) and (
+            variation_enabled or component_count <= max_beam_components
+        )
         if use_beam_search:
             rotation_baseline = baseline_state.clone_state()
             baseline_rotation_edits = _rotation_improvement_pass(rotation_baseline)
@@ -894,6 +898,7 @@ def _python_live_state_plan(
                     "reason": "component_count_exceeds_max_beam_search_components",
                     "component_count": component_count,
                     "max_beam_search_components": max_beam_components,
+                    "variation_mode_enabled": variation_enabled,
                 }
     else:
         legalization_report = {"moved": [], "failed": [], "overlap_count": len(state.find_overlaps())}
@@ -912,15 +917,19 @@ def _python_live_state_plan(
     deep_route_candidate_count = len(final_named_states)
     parallel_cfg = config.get("parallel", {}) if isinstance(config.get("parallel"), dict) else {}
     placement_cfg = config.get("placement", {}) if isinstance(config.get("placement"), dict) else {}
-    max_final_states = max(
-        1,
-        int(
-            parallel_cfg.get(
-                "max_final_state_route_variants",
-                placement_cfg.get("deep_route_top_n", 4),
-            )
-        ),
-    )
+    adaptive_cap_disabled = variation_enabled and bool(variation_cfg.get("disable_adaptive_cap", True))
+    if adaptive_cap_disabled:
+        max_final_states = max(1, len(final_named_states))
+    else:
+        max_final_states = max(
+            1,
+            int(
+                parallel_cfg.get(
+                    "max_final_state_route_variants",
+                    placement_cfg.get("deep_route_top_n", 4),
+                )
+            ),
+        )
     protected_names = {"legacy_routeable_arrangement", "rotation_baseline", "rotation_improved_state"}
     protected_states = [item for item in final_named_states if item[0] in protected_names]
     remaining_states = [item for item in final_named_states if item[0] not in protected_names]
@@ -944,6 +953,11 @@ def _python_live_state_plan(
     coordinate_plan["rotation_score_edits"] = rotation_edits
     coordinate_plan["legalization"] = legalization_report
     coordinate_plan["beam_search"] = beam_report
+    coordinate_plan["variation"] = {
+        "enabled": variation_enabled,
+        "adaptive_cap_disabled": adaptive_cap_disabled,
+        "max_final_state_route_variants": max_final_states,
+    }
     routing_placement = selected["routing_placement"]
     wire_plan = selected["wire_plan"]
     validation = selected["validation_report"]
@@ -961,6 +975,8 @@ def _python_live_state_plan(
             "placement_beam": beam_report,
             "deep_route_candidate_count": deep_route_candidate_count,
             "deep_route_selected_count": len(final_named_states),
+            "variation_mode_enabled": variation_enabled,
+            "adaptive_cap_disabled": adaptive_cap_disabled,
             "final_state_route_worker_count": routed.get("worker_count", 1),
             "final_state_parallel_error": routed.get("parallel_error", ""),
             "variants": routed["variants"],

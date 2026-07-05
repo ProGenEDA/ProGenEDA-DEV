@@ -1,0 +1,5920 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "routing_mode": "wire",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "lane_candidates_then_grid_astar",
+    "routing_engine": "hanan_lane_candidates_rectilinear_mst_then_grid_astar",
+    "hanan_grid_lanes": true,
+    "rectilinear_mst_tree": true,
+    "astar_manhattan_fallback": true,
+    "segment_indexed_crossing_metrics": true,
+    "dense_design_mode": false,
+    "routing_order": "clock/control, bus, local/ordinary, display, power, ground; terminal/combination mode may label selected nets",
+    "multi_terminal_policy": "rectilinear MST / nearest connected tree; each branch uses net-wide Hanan lanes plus A* fallback",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "wire-wire crossings are allowed; existing wire grid cells are congestion hints, not hard obstacles",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "wire mode records unroutable nets as failures; terminal/combination mode may convert selected failures to local-label terminal plans",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 784.86,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "wire_mode_terminal_policy": {
+    "enabled": true,
+    "terminal_strategy": "wire_mode_terminal_label",
+    "terminal_nets": [
+      "GND",
+      "NET_3V3_SYS",
+      "NET_5V_SYS",
+      "NET_RAW_DC"
+    ],
+    "nets": {
+      "GND": {
+        "reason": "wire_mode_power_ground_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 26,
+        "class": "ground"
+      },
+      "NET_3V3_SYS": {
+        "reason": "wire_mode_high_fanout_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 6,
+        "class": "signal"
+      },
+      "NET_5V_SYS": {
+        "reason": "wire_mode_high_fanout_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 9,
+        "class": "signal"
+      },
+      "NET_RAW_DC": {
+        "reason": "wire_mode_high_fanout_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 8,
+        "class": "signal"
+      }
+    },
+    "source": "explicit_terminal_nets_or_power_ground_policy"
+  },
+  "nets": {
+    "NET_BUCK_5V": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "FEEDBACK_RESISTOR_TOP",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            27.94,
+            134.62
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_BUCK",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            274.32,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_BUCK",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            311.15,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        },
+        {
+          "ref": "POWER_INDUCTOR",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            340.36,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_BUCK_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 0,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 43.18,
+            "turns": 1,
+            "score": 43.33,
+            "portal_route_score": 43.33,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "SCHOTTKY_OR_BUCK",
+            "pin": "ANODE",
+            "point": [
+              311.15,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin2"
+          },
+          "to": {
+            "ref": "POWER_INDUCTOR",
+            "pin": "2",
+            "point": [
+              340.36,
+              161.29
+            ],
+            "exact": true,
+            "source": "Device:L:unit1:pin2"
+          },
+          "path": [
+            [
+              311.15,
+              157.48
+            ],
+            [
+              340.36,
+              157.48
+            ],
+            [
+              340.36,
+              161.29
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                311.15,
+                157.48
+              ],
+              "end": [
+                340.36,
+                157.48
+              ],
+              "direction": "right",
+              "length": 29.21
+            },
+            {
+              "start": [
+                340.36,
+                157.48
+              ],
+              "end": [
+                340.36,
+                161.29
+              ],
+              "direction": "down",
+              "length": 3.81
+            }
+          ]
+        },
+        {
+          "net": "NET_BUCK_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 0,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 71.12,
+            "turns": 1,
+            "score": 71.47,
+            "portal_route_score": 71.47,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "SCHOTTKY_OR_BUCK",
+            "pin": "ANODE",
+            "point": [
+              311.15,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin2"
+          },
+          "to": {
+            "ref": "OUTPUT_CAPACITOR_BUCK",
+            "pin": "POS",
+            "point": [
+              274.32,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:C_Polarized:unit1:pin1"
+          },
+          "path": [
+            [
+              311.15,
+              157.48
+            ],
+            [
+              274.32,
+              157.48
+            ],
+            [
+              274.32,
+              143.51
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                311.15,
+                157.48
+              ],
+              "end": [
+                274.32,
+                157.48
+              ],
+              "direction": "left",
+              "length": 36.83
+            },
+            {
+              "start": [
+                274.32,
+                157.48
+              ],
+              "end": [
+                274.32,
+                143.51
+              ],
+              "direction": "up",
+              "length": 13.97
+            }
+          ]
+        },
+        {
+          "net": "NET_BUCK_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 3,
+            "outer_channel_cost": 231.532,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 387.35,
+            "turns": 3,
+            "score": 3406.382,
+            "portal_route_score": 3406.382,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "OUTPUT_CAPACITOR_BUCK",
+            "pin": "POS",
+            "point": [
+              274.32,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:C_Polarized:unit1:pin1"
+          },
+          "to": {
+            "ref": "FEEDBACK_RESISTOR_TOP",
+            "pin": "1",
+            "point": [
+              27.94,
+              134.62
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+          },
+          "path": [
+            [
+              274.32,
+              143.51
+            ],
+            [
+              274.32,
+              73.66
+            ],
+            [
+              22.86,
+              73.66
+            ],
+            [
+              22.86,
+              134.62
+            ],
+            [
+              27.94,
+              134.62
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                274.32,
+                143.51
+              ],
+              "end": [
+                274.32,
+                73.66
+              ],
+              "direction": "up",
+              "length": 69.85
+            },
+            {
+              "start": [
+                274.32,
+                73.66
+              ],
+              "end": [
+                22.86,
+                73.66
+              ],
+              "direction": "left",
+              "length": 251.46
+            },
+            {
+              "start": [
+                22.86,
+                73.66
+              ],
+              "end": [
+                22.86,
+                134.62
+              ],
+              "direction": "down",
+              "length": 60.96
+            },
+            {
+              "start": [
+                22.86,
+                134.62
+              ],
+              "end": [
+                27.94,
+                134.62
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            255.27
+          ],
+          [
+            1,
+            2,
+            50.8
+          ],
+          [
+            2,
+            3,
+            33.02
+          ]
+        ],
+        "length": 339.09
+      }
+    },
+    "NET_BUCK_FB": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "FEEDBACK_RESISTOR_TOP",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            27.94,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_BOTTOM",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            175.26,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "FB",
+          "side": "right",
+          "point": [
+            713.74,
+            144.78
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin4"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_BUCK_FB",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 3,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 162.56,
+            "turns": 2,
+            "score": 402.86,
+            "portal_route_score": 402.86,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "FEEDBACK_RESISTOR_BOTTOM",
+            "pin": "1",
+            "point": [
+              175.26,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+          },
+          "to": {
+            "ref": "FEEDBACK_RESISTOR_TOP",
+            "pin": "2",
+            "point": [
+              27.94,
+              137.16
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+          },
+          "path": [
+            [
+              175.26,
+              132.08
+            ],
+            [
+              100.33,
+              132.08
+            ],
+            [
+              100.33,
+              137.16
+            ],
+            [
+              27.94,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                175.26,
+                132.08
+              ],
+              "end": [
+                100.33,
+                132.08
+              ],
+              "direction": "left",
+              "length": 74.93
+            },
+            {
+              "start": [
+                100.33,
+                132.08
+              ],
+              "end": [
+                100.33,
+                137.16
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                100.33,
+                137.16
+              ],
+              "end": [
+                27.94,
+                137.16
+              ],
+              "direction": "left",
+              "length": 72.39
+            }
+          ]
+        },
+        {
+          "net": "NET_BUCK_FB",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 0,
+            "outer_channel_cost": 459.999,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 805.18,
+            "turns": 4,
+            "score": 6325.969,
+            "portal_route_score": 6325.969,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "FEEDBACK_RESISTOR_BOTTOM",
+            "pin": "1",
+            "point": [
+              175.26,
+              132.08
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+          },
+          "to": {
+            "ref": "LM2596",
+            "pin": "FB",
+            "point": [
+              713.74,
+              144.78
+            ],
+            "exact": true,
+            "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin4"
+          },
+          "path": [
+            [
+              175.26,
+              132.08
+            ],
+            [
+              170.18,
+              132.08
+            ],
+            [
+              170.18,
+              15.24
+            ],
+            [
+              718.82,
+              15.24
+            ],
+            [
+              718.82,
+              144.78
+            ],
+            [
+              713.74,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                175.26,
+                132.08
+              ],
+              "end": [
+                170.18,
+                132.08
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                170.18,
+                132.08
+              ],
+              "end": [
+                170.18,
+                15.24
+              ],
+              "direction": "up",
+              "length": 116.84
+            },
+            {
+              "start": [
+                170.18,
+                15.24
+              ],
+              "end": [
+                718.82,
+                15.24
+              ],
+              "direction": "right",
+              "length": 548.64
+            },
+            {
+              "start": [
+                718.82,
+                15.24
+              ],
+              "end": [
+                718.82,
+                144.78
+              ],
+              "direction": "down",
+              "length": 129.54
+            },
+            {
+              "start": [
+                718.82,
+                144.78
+              ],
+              "end": [
+                713.74,
+                144.78
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            152.4
+          ],
+          [
+            1,
+            2,
+            551.18
+          ]
+        ],
+        "length": 703.58
+      }
+    },
+    "NET_BUCK_SW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "POWER_INDUCTOR",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            340.36,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_DIODE_BUCK",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            534.67,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "SW",
+          "side": "left",
+          "point": [
+            685.8,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_BUCK_SW",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 6,
+            "outer_channel_cost": 148.41,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 295.91,
+            "turns": 4,
+            "score": 2557.426,
+            "portal_route_score": 2557.426,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "SCHOTTKY_DIODE_BUCK",
+            "pin": "CATHODE",
+            "point": [
+              534.67,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin1"
+          },
+          "to": {
+            "ref": "LM2596",
+            "pin": "SW",
+            "point": [
+              685.8,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              534.67,
+              157.48
+            ],
+            [
+              529.59,
+              157.48
+            ],
+            [
+              529.59,
+              218.44
+            ],
+            [
+              680.72,
+              218.44
+            ],
+            [
+              680.72,
+              144.78
+            ],
+            [
+              685.8,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                534.67,
+                157.48
+              ],
+              "end": [
+                529.59,
+                157.48
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                529.59,
+                157.48
+              ],
+              "end": [
+                529.59,
+                218.44
+              ],
+              "direction": "down",
+              "length": 60.96
+            },
+            {
+              "start": [
+                529.59,
+                218.44
+              ],
+              "end": [
+                680.72,
+                218.44
+              ],
+              "direction": "right",
+              "length": 151.13
+            },
+            {
+              "start": [
+                680.72,
+                218.44
+              ],
+              "end": [
+                680.72,
+                144.78
+              ],
+              "direction": "up",
+              "length": 73.66
+            },
+            {
+              "start": [
+                680.72,
+                144.78
+              ],
+              "end": [
+                685.8,
+                144.78
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_BUCK_SW",
+          "router": "grid_astar",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 153,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 208.28,
+            "turns": 3,
+            "score": 12448.93,
+            "portal_route_score": 12448.93,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "SCHOTTKY_DIODE_BUCK",
+            "pin": "CATHODE",
+            "point": [
+              534.67,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin1"
+          },
+          "to": {
+            "ref": "POWER_INDUCTOR",
+            "pin": "1",
+            "point": [
+              340.36,
+              153.67
+            ],
+            "exact": true,
+            "source": "Device:L:unit1:pin1"
+          },
+          "path": [
+            [
+              534.67,
+              157.48
+            ],
+            [
+              454.66,
+              157.48
+            ],
+            [
+              454.66,
+              152.4
+            ],
+            [
+              340.36,
+              152.4
+            ],
+            [
+              340.36,
+              153.67
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                534.67,
+                157.48
+              ],
+              "end": [
+                454.66,
+                157.48
+              ],
+              "direction": "left",
+              "length": 80.01
+            },
+            {
+              "start": [
+                454.66,
+                157.48
+              ],
+              "end": [
+                454.66,
+                152.4
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                454.66,
+                152.4
+              ],
+              "end": [
+                340.36,
+                152.4
+              ],
+              "direction": "left",
+              "length": 114.3
+            },
+            {
+              "start": [
+                340.36,
+                152.4
+              ],
+              "end": [
+                340.36,
+                153.67
+              ],
+              "direction": "down",
+              "length": 1.27
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            198.12
+          ],
+          [
+            1,
+            2,
+            163.83
+          ]
+        ],
+        "length": 361.95
+      }
+    },
+    "NET_DC_BARREL_JACK_CENTER": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "DC_BARREL_JACK",
+          "pin": "CENTER",
+          "side": "right",
+          "point": [
+            40.64,
+            116.84
+          ],
+          "exact": true,
+          "source": "Connector:Barrel_Jack:unit1:pin1"
+        },
+        {
+          "ref": "FUSE",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            71.12,
+            77.47
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_DC_BARREL_JACK_CENTER",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 0,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 2,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 80.01,
+            "turns": 3,
+            "score": 80.46,
+            "portal_route_score": 80.46,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "DC_BARREL_JACK",
+            "pin": "CENTER",
+            "point": [
+              40.64,
+              116.84
+            ],
+            "exact": true,
+            "source": "Connector:Barrel_Jack:unit1:pin1"
+          },
+          "to": {
+            "ref": "FUSE",
+            "pin": "1",
+            "point": [
+              71.12,
+              77.47
+            ],
+            "exact": true,
+            "source": "Device:Fuse:unit1:pin1"
+          },
+          "path": [
+            [
+              40.64,
+              116.84
+            ],
+            [
+              45.72,
+              116.84
+            ],
+            [
+              45.72,
+              72.39
+            ],
+            [
+              71.12,
+              72.39
+            ],
+            [
+              71.12,
+              77.47
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                116.84
+              ],
+              "end": [
+                45.72,
+                116.84
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                45.72,
+                116.84
+              ],
+              "end": [
+                45.72,
+                72.39
+              ],
+              "direction": "up",
+              "length": 44.45
+            },
+            {
+              "start": [
+                45.72,
+                72.39
+              ],
+              "end": [
+                71.12,
+                72.39
+              ],
+              "direction": "right",
+              "length": 25.4
+            },
+            {
+              "start": [
+                71.12,
+                72.39
+              ],
+              "end": [
+                71.12,
+                77.47
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            69.85
+          ]
+        ],
+        "length": 69.85
+      }
+    },
+    "GND": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "-",
+          "side": "left",
+          "point": [
+            464.82,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin2"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_BUCK",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            604.52,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "C_100NF_BUCK_IN",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            213.36,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            701.04,
+            154.94
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin3"
+        },
+        {
+          "ref": "SCHOTTKY_DIODE_BUCK",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            542.29,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_BUCK",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            274.32,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_BOTTOM",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            175.26,
+            134.62
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "LM7805",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            764.54,
+            154.94
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin2"
+        },
+        {
+          "ref": "CAP_7805_IN",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            243.84,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "CAP_7805_OUT",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            307.34,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            33.02,
+            203.2
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA1"
+        },
+        {
+          "ref": "RES_USB_CC1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            436.88,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_USB_CC2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            571.5,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_LM317_BOTTOM",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            375.92,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_LM317",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            406.4,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_LM317",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            505.46,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "B-",
+          "side": "bottom",
+          "point": [
+            635.0,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "IN-",
+          "side": "bottom",
+          "point": [
+            637.54,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "OUT-",
+          "side": "bottom",
+          "point": [
+            640.08,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LI_ION_BATTERY_CONNECTOR",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            106.68,
+            156.21
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "R_PWR_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            340.36,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "PWR_5V",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            71.12,
+            137.16
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "PWR_3V3",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            71.12,
+            109.22
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_5V",
+          "pin": "-",
+          "side": "left",
+          "point": [
+            66.04,
+            180.34
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_3V3",
+          "pin": "-",
+          "side": "left",
+          "point": [
+            139.7,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        },
+        {
+          "ref": "TEST_POINT_GND",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            668.02,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_3V3_SYS": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "LM317",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            579.12,
+            139.7
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin2"
+        },
+        {
+          "ref": "RES_LM317_TOP",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            213.36,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_LM317",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            505.46,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "PWR_3V3",
+          "pin": "+",
+          "side": "top",
+          "point": [
+            71.12,
+            99.06
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_3V3",
+          "pin": "+",
+          "side": "left",
+          "point": [
+            139.7,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "TEST_POINT_3V3",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            538.48,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_5V_SYS": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "SCHOTTKY_OR_BUCK",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            303.53,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_7805",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            433.07,
+            139.7
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_USB",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            176.53,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        },
+        {
+          "ref": "LM317",
+          "pin": "IN",
+          "side": "left",
+          "point": [
+            563.88,
+            139.7
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin3"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_LM317",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            406.4,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "POWER_LED",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            641.35,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "PWR_5V",
+          "pin": "+",
+          "side": "top",
+          "point": [
+            71.12,
+            127.0
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_5V",
+          "pin": "+",
+          "side": "left",
+          "point": [
+            66.04,
+            177.8
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "TEST_POINT_5V",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            604.52,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_7805_5V": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "CAP_7805_OUT",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            307.34,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_7805",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            440.69,
+            139.7
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        },
+        {
+          "ref": "LM7805",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            772.16,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin3"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_7805_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 157.48,
+            "turns": 3,
+            "score": 477.93,
+            "portal_route_score": 477.93,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "SCHOTTKY_OR_7805",
+            "pin": "ANODE",
+            "point": [
+              440.69,
+              139.7
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin2"
+          },
+          "to": {
+            "ref": "CAP_7805_OUT",
+            "pin": "1",
+            "point": [
+              307.34,
+              135.89
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "path": [
+            [
+              440.69,
+              139.7
+            ],
+            [
+              375.92,
+              139.7
+            ],
+            [
+              375.92,
+              130.81
+            ],
+            [
+              307.34,
+              130.81
+            ],
+            [
+              307.34,
+              135.89
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                440.69,
+                139.7
+              ],
+              "end": [
+                375.92,
+                139.7
+              ],
+              "direction": "left",
+              "length": 64.77
+            },
+            {
+              "start": [
+                375.92,
+                139.7
+              ],
+              "end": [
+                375.92,
+                130.81
+              ],
+              "direction": "up",
+              "length": 8.89
+            },
+            {
+              "start": [
+                375.92,
+                130.81
+              ],
+              "end": [
+                307.34,
+                130.81
+              ],
+              "direction": "left",
+              "length": 68.58
+            },
+            {
+              "start": [
+                307.34,
+                130.81
+              ],
+              "end": [
+                307.34,
+                135.89
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_7805_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 0,
+            "outer_channel_cost": 305.201,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 481.33,
+            "turns": 4,
+            "score": 4144.542,
+            "portal_route_score": 4144.542,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "SCHOTTKY_OR_7805",
+            "pin": "ANODE",
+            "point": [
+              440.69,
+              139.7
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin2"
+          },
+          "to": {
+            "ref": "LM7805",
+            "pin": "OUT",
+            "point": [
+              772.16,
+              147.32
+            ],
+            "exact": true,
+            "source": "Regulator_Linear:LM7805_TO220:unit1:pin3"
+          },
+          "path": [
+            [
+              440.69,
+              139.7
+            ],
+            [
+              445.77,
+              139.7
+            ],
+            [
+              445.77,
+              73.66
+            ],
+            [
+              777.24,
+              73.66
+            ],
+            [
+              777.24,
+              147.32
+            ],
+            [
+              772.16,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                440.69,
+                139.7
+              ],
+              "end": [
+                445.77,
+                139.7
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                445.77,
+                139.7
+              ],
+              "end": [
+                445.77,
+                73.66
+              ],
+              "direction": "up",
+              "length": 66.04
+            },
+            {
+              "start": [
+                445.77,
+                73.66
+              ],
+              "end": [
+                777.24,
+                73.66
+              ],
+              "direction": "right",
+              "length": 331.47
+            },
+            {
+              "start": [
+                777.24,
+                73.66
+              ],
+              "end": [
+                777.24,
+                147.32
+              ],
+              "direction": "down",
+              "length": 73.66
+            },
+            {
+              "start": [
+                777.24,
+                147.32
+              ],
+              "end": [
+                772.16,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            137.16
+          ],
+          [
+            1,
+            2,
+            339.09
+          ]
+        ],
+        "length": 476.25
+      }
+    },
+    "NET_BAT_PLUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "LI_ION_BATTERY_CONNECTOR",
+          "pin": "+",
+          "side": "right",
+          "point": [
+            113.03,
+            148.59
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "B+",
+          "side": "left",
+          "point": [
+            624.84,
+            137.16
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_BAT_PLUS",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 509.676,
+            "different_net_crossings": 4,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 635.0,
+            "turns": 4,
+            "score": 7071.717,
+            "portal_route_score": 7071.717,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "LI_ION_BATTERY_CONNECTOR",
+            "pin": "+",
+            "point": [
+              113.03,
+              148.59
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "TP4056",
+            "pin": "B+",
+            "point": [
+              624.84,
+              137.16
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              113.03,
+              148.59
+            ],
+            [
+              118.11,
+              148.59
+            ],
+            [
+              118.11,
+              81.28
+            ],
+            [
+              619.76,
+              81.28
+            ],
+            [
+              619.76,
+              137.16
+            ],
+            [
+              624.84,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                113.03,
+                148.59
+              ],
+              "end": [
+                118.11,
+                148.59
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                118.11,
+                148.59
+              ],
+              "end": [
+                118.11,
+                81.28
+              ],
+              "direction": "up",
+              "length": 67.31
+            },
+            {
+              "start": [
+                118.11,
+                81.28
+              ],
+              "end": [
+                619.76,
+                81.28
+              ],
+              "direction": "right",
+              "length": 501.65
+            },
+            {
+              "start": [
+                619.76,
+                81.28
+              ],
+              "end": [
+                619.76,
+                137.16
+              ],
+              "direction": "down",
+              "length": 55.88
+            },
+            {
+              "start": [
+                619.76,
+                137.16
+              ],
+              "end": [
+                624.84,
+                137.16
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            523.24
+          ]
+        ],
+        "length": 523.24
+      }
+    },
+    "NET_CHARGING_LED_CATHODE": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_CHG_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            33.02,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "CHARGING_LED",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            664.21,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            632.46
+          ]
+        ],
+        "length": 632.46
+      },
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for NET_CHARGING_LED_CATHODE.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_CHARGING_LED_CATHODE.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_CHARGING_LED_CATHODE."
+      ]
+    },
+    "NET_DC_IN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "FUSE",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            71.12,
+            85.09
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin2"
+        },
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "AC1",
+          "side": "left",
+          "point": [
+            462.28,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_DC_IN",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 6,
+            "outer_channel_cost": 395.08,
+            "different_net_crossings": 4,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 453.39,
+            "turns": 3,
+            "score": 5674.798,
+            "portal_route_score": 5674.798,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "FUSE",
+            "pin": "2",
+            "point": [
+              71.12,
+              85.09
+            ],
+            "exact": true,
+            "source": "Device:Fuse:unit1:pin2"
+          },
+          "to": {
+            "ref": "BRIDGE_RECTIFIER",
+            "pin": "AC1",
+            "point": [
+              462.28,
+              147.32
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              71.12,
+              85.09
+            ],
+            [
+              71.12,
+              90.17
+            ],
+            [
+              421.64,
+              90.17
+            ],
+            [
+              421.64,
+              147.32
+            ],
+            [
+              462.28,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                71.12,
+                85.09
+              ],
+              "end": [
+                71.12,
+                90.17
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                71.12,
+                90.17
+              ],
+              "end": [
+                421.64,
+                90.17
+              ],
+              "direction": "right",
+              "length": 350.52
+            },
+            {
+              "start": [
+                421.64,
+                90.17
+              ],
+              "end": [
+                421.64,
+                147.32
+              ],
+              "direction": "down",
+              "length": 57.15
+            },
+            {
+              "start": [
+                421.64,
+                147.32
+              ],
+              "end": [
+                462.28,
+                147.32
+              ],
+              "direction": "right",
+              "length": 40.64
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            453.39
+          ]
+        ],
+        "length": 453.39
+      }
+    },
+    "NET_DC_RETURN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "DC_BARREL_JACK",
+          "pin": "SLEEVE",
+          "side": "right",
+          "point": [
+            40.64,
+            121.92
+          ],
+          "exact": true,
+          "source": "Connector:Barrel_Jack:unit1:pin2"
+        },
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "AC2",
+          "side": "left",
+          "point": [
+            462.28,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_DC_RETURN",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 12,
+            "outer_channel_cost": 512.902,
+            "different_net_crossings": 4,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 449.58,
+            "turns": 2,
+            "score": 7564.706,
+            "portal_route_score": 7564.706,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "DC_BARREL_JACK",
+            "pin": "SLEEVE",
+            "point": [
+              40.64,
+              121.92
+            ],
+            "exact": true,
+            "source": "Connector:Barrel_Jack:unit1:pin2"
+          },
+          "to": {
+            "ref": "BRIDGE_RECTIFIER",
+            "pin": "AC2",
+            "point": [
+              462.28,
+              149.86
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              40.64,
+              121.92
+            ],
+            [
+              382.27,
+              121.92
+            ],
+            [
+              382.27,
+              149.86
+            ],
+            [
+              462.28,
+              149.86
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                121.92
+              ],
+              "end": [
+                382.27,
+                121.92
+              ],
+              "direction": "right",
+              "length": 341.63
+            },
+            {
+              "start": [
+                382.27,
+                121.92
+              ],
+              "end": [
+                382.27,
+                149.86
+              ],
+              "direction": "down",
+              "length": 27.94
+            },
+            {
+              "start": [
+                382.27,
+                149.86
+              ],
+              "end": [
+                462.28,
+                149.86
+              ],
+              "direction": "right",
+              "length": 80.01
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            449.58
+          ]
+        ],
+        "length": 449.58
+      }
+    },
+    "NET_LM317_ADJ": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "RES_LM317_TOP",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            213.36,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_LM317_BOTTOM",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            375.92,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "LM317",
+          "pin": "ADJ",
+          "side": "bottom",
+          "point": [
+            571.5,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            180.34
+          ],
+          [
+            1,
+            2,
+            199.39
+          ]
+        ],
+        "length": 379.73
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_LM317_ADJ RES_LM317_TOP.2",
+        "unroutable_endpoint: NET_LM317_ADJ LM317.ADJ"
+      ]
+    },
+    "NET_POWER_LED_CATHODE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_PWR_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            340.36,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "POWER_LED",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            633.73,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_POWER_LED_CATHODE",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 7,
+            "outer_channel_cost": 395.04,
+            "different_net_crossings": 4,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 330.2,
+            "turns": 3,
+            "score": 5631.124,
+            "portal_route_score": 5631.124,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "R_PWR_LED",
+            "pin": "1",
+            "point": [
+              340.36,
+              133.35
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "to": {
+            "ref": "POWER_LED",
+            "pin": "CATHODE",
+            "point": [
+              633.73,
+              160.02
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin1"
+          },
+          "path": [
+            [
+              340.36,
+              133.35
+            ],
+            [
+              340.36,
+              128.27
+            ],
+            [
+              586.74,
+              128.27
+            ],
+            [
+              586.74,
+              160.02
+            ],
+            [
+              633.73,
+              160.02
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                340.36,
+                133.35
+              ],
+              "end": [
+                340.36,
+                128.27
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                340.36,
+                128.27
+              ],
+              "end": [
+                586.74,
+                128.27
+              ],
+              "direction": "right",
+              "length": 246.38
+            },
+            {
+              "start": [
+                586.74,
+                128.27
+              ],
+              "end": [
+                586.74,
+                160.02
+              ],
+              "direction": "down",
+              "length": 31.75
+            },
+            {
+              "start": [
+                586.74,
+                160.02
+              ],
+              "end": [
+                633.73,
+                160.02
+              ],
+              "direction": "right",
+              "length": 46.99
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            320.04
+          ]
+        ],
+        "length": 320.04
+      }
+    },
+    "NET_RAW_DC": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "+",
+          "side": "right",
+          "point": [
+            480.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin1"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_BUCK",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            604.52,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "C_100NF_BUCK_IN",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            213.36,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "EN",
+          "side": "left",
+          "point": [
+            685.8,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "VIN",
+          "side": "left",
+          "point": [
+            688.34,
+            144.78
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin1"
+        },
+        {
+          "ref": "LM7805",
+          "pin": "IN",
+          "side": "left",
+          "point": [
+            756.92,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin1"
+        },
+        {
+          "ref": "CAP_7805_IN",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            243.84,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "TEST_POINT_RAW",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            734.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_CHG_LED_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_CHG_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            33.02,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "CHRG",
+          "side": "left",
+          "point": [
+            627.38,
+            139.7
+          ],
+          "exact": true,
+          "source": "Battery_Management:TP4056-42-ESOP8:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            618.49
+          ]
+        ],
+        "length": 618.49
+      },
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for NET_R_CHG_LED_2.",
+        "astar_unroutable_no_clear_route: no clear route found for NET_R_CHG_LED_2."
+      ]
+    },
+    "NET_USB_5V": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "POLYFUSE",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            71.12,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:Polyfuse:unit1:pin2"
+        },
+        {
+          "ref": "SCHOTTKY_OR_USB",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            184.15,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "IN+",
+          "side": "left",
+          "point": [
+            624.84,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "CHARGING_LED",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            671.83,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_USB_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 125.73,
+            "turns": 4,
+            "score": 286.33,
+            "portal_route_score": 286.33,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "TP4056",
+            "pin": "IN+",
+            "point": [
+              624.84,
+              142.24
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "CHARGING_LED",
+            "pin": "ANODE",
+            "point": [
+              671.83,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              624.84,
+              142.24
+            ],
+            [
+              619.76,
+              142.24
+            ],
+            [
+              619.76,
+              179.07
+            ],
+            [
+              676.91,
+              179.07
+            ],
+            [
+              676.91,
+              157.48
+            ],
+            [
+              671.83,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                624.84,
+                142.24
+              ],
+              "end": [
+                619.76,
+                142.24
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                619.76,
+                142.24
+              ],
+              "end": [
+                619.76,
+                179.07
+              ],
+              "direction": "down",
+              "length": 36.83
+            },
+            {
+              "start": [
+                619.76,
+                179.07
+              ],
+              "end": [
+                676.91,
+                179.07
+              ],
+              "direction": "right",
+              "length": 57.15
+            },
+            {
+              "start": [
+                676.91,
+                179.07
+              ],
+              "end": [
+                676.91,
+                157.48
+              ],
+              "direction": "up",
+              "length": 21.59
+            },
+            {
+              "start": [
+                676.91,
+                157.48
+              ],
+              "end": [
+                671.83,
+                157.48
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_USB_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 517.611,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 607.06,
+            "turns": 4,
+            "score": 6979.196,
+            "portal_route_score": 6979.196,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "CHARGING_LED",
+            "pin": "ANODE",
+            "point": [
+              671.83,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "to": {
+            "ref": "SCHOTTKY_OR_USB",
+            "pin": "ANODE",
+            "point": [
+              184.15,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin2"
+          },
+          "path": [
+            [
+              671.83,
+              157.48
+            ],
+            [
+              676.91,
+              157.48
+            ],
+            [
+              676.91,
+              212.09
+            ],
+            [
+              189.23,
+              212.09
+            ],
+            [
+              189.23,
+              157.48
+            ],
+            [
+              184.15,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                671.83,
+                157.48
+              ],
+              "end": [
+                676.91,
+                157.48
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                676.91,
+                157.48
+              ],
+              "end": [
+                676.91,
+                212.09
+              ],
+              "direction": "down",
+              "length": 54.61
+            },
+            {
+              "start": [
+                676.91,
+                212.09
+              ],
+              "end": [
+                189.23,
+                212.09
+              ],
+              "direction": "left",
+              "length": 487.68
+            },
+            {
+              "start": [
+                189.23,
+                212.09
+              ],
+              "end": [
+                189.23,
+                157.48
+              ],
+              "direction": "up",
+              "length": 54.61
+            },
+            {
+              "start": [
+                189.23,
+                157.48
+              ],
+              "end": [
+                184.15,
+                157.48
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_USB_5V",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 134.62,
+            "turns": 3,
+            "score": 455.27,
+            "portal_route_score": 455.27,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "SCHOTTKY_OR_USB",
+            "pin": "ANODE",
+            "point": [
+              184.15,
+              157.48
+            ],
+            "exact": true,
+            "source": "Device:D_Schottky:unit1:pin2"
+          },
+          "to": {
+            "ref": "POLYFUSE",
+            "pin": "2",
+            "point": [
+              71.12,
+              158.75
+            ],
+            "exact": true,
+            "source": "Device:Polyfuse:unit1:pin2"
+          },
+          "path": [
+            [
+              184.15,
+              157.48
+            ],
+            [
+              125.73,
+              157.48
+            ],
+            [
+              125.73,
+              163.83
+            ],
+            [
+              71.12,
+              163.83
+            ],
+            [
+              71.12,
+              158.75
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                184.15,
+                157.48
+              ],
+              "end": [
+                125.73,
+                157.48
+              ],
+              "direction": "left",
+              "length": 58.42
+            },
+            {
+              "start": [
+                125.73,
+                157.48
+              ],
+              "end": [
+                125.73,
+                163.83
+              ],
+              "direction": "down",
+              "length": 6.35
+            },
+            {
+              "start": [
+                125.73,
+                163.83
+              ],
+              "end": [
+                71.12,
+                163.83
+              ],
+              "direction": "left",
+              "length": 54.61
+            },
+            {
+              "start": [
+                71.12,
+                163.83
+              ],
+              "end": [
+                71.12,
+                158.75
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            114.3
+          ],
+          [
+            1,
+            2,
+            455.93
+          ],
+          [
+            2,
+            3,
+            62.23
+          ]
+        ],
+        "length": 632.46
+      }
+    },
+    "NET_USB_C_CONNECTOR_CC1": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "CC1",
+          "side": "right",
+          "point": [
+            48.26,
+            170.18
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA5"
+        },
+        {
+          "ref": "RES_USB_CC1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            436.88,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            405.13
+          ]
+        ],
+        "length": 405.13
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_USB_C_CONNECTOR_CC1 exceeded 12000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_USB_C_CONNECTOR_CC1 exceeded 12000 explored grid states."
+      ]
+    },
+    "NET_USB_C_CONNECTOR_CC2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "CC2",
+          "side": "right",
+          "point": [
+            48.26,
+            172.72
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+        },
+        {
+          "ref": "RES_USB_CC2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            571.5,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_USB_C_CONNECTOR_CC2",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 519.236,
+            "different_net_crossings": 2,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 768.35,
+            "turns": 3,
+            "score": 7159.636,
+            "portal_route_score": 7159.636,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "USB_C_CONNECTOR",
+            "pin": "CC2",
+            "point": [
+              48.26,
+              172.72
+            ],
+            "exact": true,
+            "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+          },
+          "to": {
+            "ref": "RES_USB_CC2",
+            "pin": "1",
+            "point": [
+              571.5,
+              156.21
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              48.26,
+              172.72
+            ],
+            [
+              53.34,
+              172.72
+            ],
+            [
+              53.34,
+              281.94
+            ],
+            [
+              571.5,
+              281.94
+            ],
+            [
+              571.5,
+              156.21
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                48.26,
+                172.72
+              ],
+              "end": [
+                53.34,
+                172.72
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                53.34,
+                172.72
+              ],
+              "end": [
+                53.34,
+                281.94
+              ],
+              "direction": "down",
+              "length": 109.22
+            },
+            {
+              "start": [
+                53.34,
+                281.94
+              ],
+              "end": [
+                571.5,
+                281.94
+              ],
+              "direction": "right",
+              "length": 518.16
+            },
+            {
+              "start": [
+                571.5,
+                281.94
+              ],
+              "end": [
+                571.5,
+                156.21
+              ],
+              "direction": "up",
+              "length": 125.73
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            539.75
+          ]
+        ],
+        "length": 539.75
+      }
+    },
+    "NET_USB_C_CONNECTOR_D": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "D+",
+          "side": "right",
+          "point": [
+            48.26,
+            182.88
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA6"
+        },
+        {
+          "ref": "TEST_POINT_USB_DP",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            71.12,
+            215.9
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            55.88
+          ]
+        ],
+        "length": 55.88
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_USB_C_CONNECTOR_D TEST_POINT_USB_DP.TP"
+      ]
+    },
+    "NET_USB_C_CONNECTOR_D_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "D-",
+          "side": "right",
+          "point": [
+            48.26,
+            177.8
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA7"
+        },
+        {
+          "ref": "TEST_POINT_USB_DM",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            71.12,
+            198.12
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            43.18
+          ]
+        ],
+        "length": 43.18
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_USB_C_CONNECTOR_D_2 TEST_POINT_USB_DM.TP"
+      ]
+    },
+    "NET_USB_C_CONNECTOR_VBUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "VBUS",
+          "side": "right",
+          "point": [
+            48.26,
+            165.1
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+        },
+        {
+          "ref": "POLYFUSE",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            71.12,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:Polyfuse:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_USB_C_CONNECTOR_VBUS",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 46.99,
+            "turns": 3,
+            "score": 207.44,
+            "portal_route_score": 207.44,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "USB_C_CONNECTOR",
+            "pin": "VBUS",
+            "point": [
+              48.26,
+              165.1
+            ],
+            "exact": true,
+            "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+          },
+          "to": {
+            "ref": "POLYFUSE",
+            "pin": "1",
+            "point": [
+              71.12,
+              151.13
+            ],
+            "exact": true,
+            "source": "Device:Polyfuse:unit1:pin1"
+          },
+          "path": [
+            [
+              48.26,
+              165.1
+            ],
+            [
+              53.34,
+              165.1
+            ],
+            [
+              53.34,
+              146.05
+            ],
+            [
+              71.12,
+              146.05
+            ],
+            [
+              71.12,
+              151.13
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                48.26,
+                165.1
+              ],
+              "end": [
+                53.34,
+                165.1
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                53.34,
+                165.1
+              ],
+              "end": [
+                53.34,
+                146.05
+              ],
+              "direction": "up",
+              "length": 19.05
+            },
+            {
+              "start": [
+                53.34,
+                146.05
+              ],
+              "end": [
+                71.12,
+                146.05
+              ],
+              "direction": "right",
+              "length": 17.78
+            },
+            {
+              "start": [
+                71.12,
+                146.05
+              ],
+              "end": [
+                71.12,
+                151.13
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            36.83
+          ]
+        ],
+        "length": 36.83
+      }
+    }
+  },
+  "routes": [
+    {
+      "net": "NET_BUCK_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 0,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 43.18,
+        "turns": 1,
+        "score": 43.33,
+        "portal_route_score": 43.33,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "SCHOTTKY_OR_BUCK",
+        "pin": "ANODE",
+        "point": [
+          311.15,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin2"
+      },
+      "to": {
+        "ref": "POWER_INDUCTOR",
+        "pin": "2",
+        "point": [
+          340.36,
+          161.29
+        ],
+        "exact": true,
+        "source": "Device:L:unit1:pin2"
+      },
+      "path": [
+        [
+          311.15,
+          157.48
+        ],
+        [
+          340.36,
+          157.48
+        ],
+        [
+          340.36,
+          161.29
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            311.15,
+            157.48
+          ],
+          "end": [
+            340.36,
+            157.48
+          ],
+          "direction": "right",
+          "length": 29.21
+        },
+        {
+          "start": [
+            340.36,
+            157.48
+          ],
+          "end": [
+            340.36,
+            161.29
+          ],
+          "direction": "down",
+          "length": 3.81
+        }
+      ]
+    },
+    {
+      "net": "NET_BUCK_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 0,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 71.12,
+        "turns": 1,
+        "score": 71.47,
+        "portal_route_score": 71.47,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "SCHOTTKY_OR_BUCK",
+        "pin": "ANODE",
+        "point": [
+          311.15,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin2"
+      },
+      "to": {
+        "ref": "OUTPUT_CAPACITOR_BUCK",
+        "pin": "POS",
+        "point": [
+          274.32,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:C_Polarized:unit1:pin1"
+      },
+      "path": [
+        [
+          311.15,
+          157.48
+        ],
+        [
+          274.32,
+          157.48
+        ],
+        [
+          274.32,
+          143.51
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            311.15,
+            157.48
+          ],
+          "end": [
+            274.32,
+            157.48
+          ],
+          "direction": "left",
+          "length": 36.83
+        },
+        {
+          "start": [
+            274.32,
+            157.48
+          ],
+          "end": [
+            274.32,
+            143.51
+          ],
+          "direction": "up",
+          "length": 13.97
+        }
+      ]
+    },
+    {
+      "net": "NET_BUCK_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 3,
+        "outer_channel_cost": 231.532,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 387.35,
+        "turns": 3,
+        "score": 3406.382,
+        "portal_route_score": 3406.382,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "OUTPUT_CAPACITOR_BUCK",
+        "pin": "POS",
+        "point": [
+          274.32,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:C_Polarized:unit1:pin1"
+      },
+      "to": {
+        "ref": "FEEDBACK_RESISTOR_TOP",
+        "pin": "1",
+        "point": [
+          27.94,
+          134.62
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+      },
+      "path": [
+        [
+          274.32,
+          143.51
+        ],
+        [
+          274.32,
+          73.66
+        ],
+        [
+          22.86,
+          73.66
+        ],
+        [
+          22.86,
+          134.62
+        ],
+        [
+          27.94,
+          134.62
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            274.32,
+            143.51
+          ],
+          "end": [
+            274.32,
+            73.66
+          ],
+          "direction": "up",
+          "length": 69.85
+        },
+        {
+          "start": [
+            274.32,
+            73.66
+          ],
+          "end": [
+            22.86,
+            73.66
+          ],
+          "direction": "left",
+          "length": 251.46
+        },
+        {
+          "start": [
+            22.86,
+            73.66
+          ],
+          "end": [
+            22.86,
+            134.62
+          ],
+          "direction": "down",
+          "length": 60.96
+        },
+        {
+          "start": [
+            22.86,
+            134.62
+          ],
+          "end": [
+            27.94,
+            134.62
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_BUCK_FB",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 3,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 162.56,
+        "turns": 2,
+        "score": 402.86,
+        "portal_route_score": 402.86,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "FEEDBACK_RESISTOR_BOTTOM",
+        "pin": "1",
+        "point": [
+          175.26,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+      },
+      "to": {
+        "ref": "FEEDBACK_RESISTOR_TOP",
+        "pin": "2",
+        "point": [
+          27.94,
+          137.16
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+      },
+      "path": [
+        [
+          175.26,
+          132.08
+        ],
+        [
+          100.33,
+          132.08
+        ],
+        [
+          100.33,
+          137.16
+        ],
+        [
+          27.94,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            175.26,
+            132.08
+          ],
+          "end": [
+            100.33,
+            132.08
+          ],
+          "direction": "left",
+          "length": 74.93
+        },
+        {
+          "start": [
+            100.33,
+            132.08
+          ],
+          "end": [
+            100.33,
+            137.16
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            100.33,
+            137.16
+          ],
+          "end": [
+            27.94,
+            137.16
+          ],
+          "direction": "left",
+          "length": 72.39
+        }
+      ]
+    },
+    {
+      "net": "NET_BUCK_FB",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 0,
+        "outer_channel_cost": 459.999,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 805.18,
+        "turns": 4,
+        "score": 6325.969,
+        "portal_route_score": 6325.969,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "FEEDBACK_RESISTOR_BOTTOM",
+        "pin": "1",
+        "point": [
+          175.26,
+          132.08
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+      },
+      "to": {
+        "ref": "LM2596",
+        "pin": "FB",
+        "point": [
+          713.74,
+          144.78
+        ],
+        "exact": true,
+        "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin4"
+      },
+      "path": [
+        [
+          175.26,
+          132.08
+        ],
+        [
+          170.18,
+          132.08
+        ],
+        [
+          170.18,
+          15.24
+        ],
+        [
+          718.82,
+          15.24
+        ],
+        [
+          718.82,
+          144.78
+        ],
+        [
+          713.74,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            175.26,
+            132.08
+          ],
+          "end": [
+            170.18,
+            132.08
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            170.18,
+            132.08
+          ],
+          "end": [
+            170.18,
+            15.24
+          ],
+          "direction": "up",
+          "length": 116.84
+        },
+        {
+          "start": [
+            170.18,
+            15.24
+          ],
+          "end": [
+            718.82,
+            15.24
+          ],
+          "direction": "right",
+          "length": 548.64
+        },
+        {
+          "start": [
+            718.82,
+            15.24
+          ],
+          "end": [
+            718.82,
+            144.78
+          ],
+          "direction": "down",
+          "length": 129.54
+        },
+        {
+          "start": [
+            718.82,
+            144.78
+          ],
+          "end": [
+            713.74,
+            144.78
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_BUCK_SW",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 6,
+        "outer_channel_cost": 148.41,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 295.91,
+        "turns": 4,
+        "score": 2557.426,
+        "portal_route_score": 2557.426,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "SCHOTTKY_DIODE_BUCK",
+        "pin": "CATHODE",
+        "point": [
+          534.67,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin1"
+      },
+      "to": {
+        "ref": "LM2596",
+        "pin": "SW",
+        "point": [
+          685.8,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          534.67,
+          157.48
+        ],
+        [
+          529.59,
+          157.48
+        ],
+        [
+          529.59,
+          218.44
+        ],
+        [
+          680.72,
+          218.44
+        ],
+        [
+          680.72,
+          144.78
+        ],
+        [
+          685.8,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            534.67,
+            157.48
+          ],
+          "end": [
+            529.59,
+            157.48
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            529.59,
+            157.48
+          ],
+          "end": [
+            529.59,
+            218.44
+          ],
+          "direction": "down",
+          "length": 60.96
+        },
+        {
+          "start": [
+            529.59,
+            218.44
+          ],
+          "end": [
+            680.72,
+            218.44
+          ],
+          "direction": "right",
+          "length": 151.13
+        },
+        {
+          "start": [
+            680.72,
+            218.44
+          ],
+          "end": [
+            680.72,
+            144.78
+          ],
+          "direction": "up",
+          "length": 73.66
+        },
+        {
+          "start": [
+            680.72,
+            144.78
+          ],
+          "end": [
+            685.8,
+            144.78
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_BUCK_SW",
+      "router": "grid_astar",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 153,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 208.28,
+        "turns": 3,
+        "score": 12448.93,
+        "portal_route_score": 12448.93,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "SCHOTTKY_DIODE_BUCK",
+        "pin": "CATHODE",
+        "point": [
+          534.67,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin1"
+      },
+      "to": {
+        "ref": "POWER_INDUCTOR",
+        "pin": "1",
+        "point": [
+          340.36,
+          153.67
+        ],
+        "exact": true,
+        "source": "Device:L:unit1:pin1"
+      },
+      "path": [
+        [
+          534.67,
+          157.48
+        ],
+        [
+          454.66,
+          157.48
+        ],
+        [
+          454.66,
+          152.4
+        ],
+        [
+          340.36,
+          152.4
+        ],
+        [
+          340.36,
+          153.67
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            534.67,
+            157.48
+          ],
+          "end": [
+            454.66,
+            157.48
+          ],
+          "direction": "left",
+          "length": 80.01
+        },
+        {
+          "start": [
+            454.66,
+            157.48
+          ],
+          "end": [
+            454.66,
+            152.4
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            454.66,
+            152.4
+          ],
+          "end": [
+            340.36,
+            152.4
+          ],
+          "direction": "left",
+          "length": 114.3
+        },
+        {
+          "start": [
+            340.36,
+            152.4
+          ],
+          "end": [
+            340.36,
+            153.67
+          ],
+          "direction": "down",
+          "length": 1.27
+        }
+      ]
+    },
+    {
+      "net": "NET_DC_BARREL_JACK_CENTER",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 0,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 2,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 80.01,
+        "turns": 3,
+        "score": 80.46,
+        "portal_route_score": 80.46,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "DC_BARREL_JACK",
+        "pin": "CENTER",
+        "point": [
+          40.64,
+          116.84
+        ],
+        "exact": true,
+        "source": "Connector:Barrel_Jack:unit1:pin1"
+      },
+      "to": {
+        "ref": "FUSE",
+        "pin": "1",
+        "point": [
+          71.12,
+          77.47
+        ],
+        "exact": true,
+        "source": "Device:Fuse:unit1:pin1"
+      },
+      "path": [
+        [
+          40.64,
+          116.84
+        ],
+        [
+          45.72,
+          116.84
+        ],
+        [
+          45.72,
+          72.39
+        ],
+        [
+          71.12,
+          72.39
+        ],
+        [
+          71.12,
+          77.47
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            116.84
+          ],
+          "end": [
+            45.72,
+            116.84
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            45.72,
+            116.84
+          ],
+          "end": [
+            45.72,
+            72.39
+          ],
+          "direction": "up",
+          "length": 44.45
+        },
+        {
+          "start": [
+            45.72,
+            72.39
+          ],
+          "end": [
+            71.12,
+            72.39
+          ],
+          "direction": "right",
+          "length": 25.4
+        },
+        {
+          "start": [
+            71.12,
+            72.39
+          ],
+          "end": [
+            71.12,
+            77.47
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_7805_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 157.48,
+        "turns": 3,
+        "score": 477.93,
+        "portal_route_score": 477.93,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "SCHOTTKY_OR_7805",
+        "pin": "ANODE",
+        "point": [
+          440.69,
+          139.7
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin2"
+      },
+      "to": {
+        "ref": "CAP_7805_OUT",
+        "pin": "1",
+        "point": [
+          307.34,
+          135.89
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "path": [
+        [
+          440.69,
+          139.7
+        ],
+        [
+          375.92,
+          139.7
+        ],
+        [
+          375.92,
+          130.81
+        ],
+        [
+          307.34,
+          130.81
+        ],
+        [
+          307.34,
+          135.89
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            440.69,
+            139.7
+          ],
+          "end": [
+            375.92,
+            139.7
+          ],
+          "direction": "left",
+          "length": 64.77
+        },
+        {
+          "start": [
+            375.92,
+            139.7
+          ],
+          "end": [
+            375.92,
+            130.81
+          ],
+          "direction": "up",
+          "length": 8.89
+        },
+        {
+          "start": [
+            375.92,
+            130.81
+          ],
+          "end": [
+            307.34,
+            130.81
+          ],
+          "direction": "left",
+          "length": 68.58
+        },
+        {
+          "start": [
+            307.34,
+            130.81
+          ],
+          "end": [
+            307.34,
+            135.89
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_7805_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 0,
+        "outer_channel_cost": 305.201,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 481.33,
+        "turns": 4,
+        "score": 4144.542,
+        "portal_route_score": 4144.542,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "SCHOTTKY_OR_7805",
+        "pin": "ANODE",
+        "point": [
+          440.69,
+          139.7
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin2"
+      },
+      "to": {
+        "ref": "LM7805",
+        "pin": "OUT",
+        "point": [
+          772.16,
+          147.32
+        ],
+        "exact": true,
+        "source": "Regulator_Linear:LM7805_TO220:unit1:pin3"
+      },
+      "path": [
+        [
+          440.69,
+          139.7
+        ],
+        [
+          445.77,
+          139.7
+        ],
+        [
+          445.77,
+          73.66
+        ],
+        [
+          777.24,
+          73.66
+        ],
+        [
+          777.24,
+          147.32
+        ],
+        [
+          772.16,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            440.69,
+            139.7
+          ],
+          "end": [
+            445.77,
+            139.7
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            445.77,
+            139.7
+          ],
+          "end": [
+            445.77,
+            73.66
+          ],
+          "direction": "up",
+          "length": 66.04
+        },
+        {
+          "start": [
+            445.77,
+            73.66
+          ],
+          "end": [
+            777.24,
+            73.66
+          ],
+          "direction": "right",
+          "length": 331.47
+        },
+        {
+          "start": [
+            777.24,
+            73.66
+          ],
+          "end": [
+            777.24,
+            147.32
+          ],
+          "direction": "down",
+          "length": 73.66
+        },
+        {
+          "start": [
+            777.24,
+            147.32
+          ],
+          "end": [
+            772.16,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_BAT_PLUS",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 509.676,
+        "different_net_crossings": 4,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 635.0,
+        "turns": 4,
+        "score": 7071.717,
+        "portal_route_score": 7071.717,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "LI_ION_BATTERY_CONNECTOR",
+        "pin": "+",
+        "point": [
+          113.03,
+          148.59
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "TP4056",
+        "pin": "B+",
+        "point": [
+          624.84,
+          137.16
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          113.03,
+          148.59
+        ],
+        [
+          118.11,
+          148.59
+        ],
+        [
+          118.11,
+          81.28
+        ],
+        [
+          619.76,
+          81.28
+        ],
+        [
+          619.76,
+          137.16
+        ],
+        [
+          624.84,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            113.03,
+            148.59
+          ],
+          "end": [
+            118.11,
+            148.59
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            118.11,
+            148.59
+          ],
+          "end": [
+            118.11,
+            81.28
+          ],
+          "direction": "up",
+          "length": 67.31
+        },
+        {
+          "start": [
+            118.11,
+            81.28
+          ],
+          "end": [
+            619.76,
+            81.28
+          ],
+          "direction": "right",
+          "length": 501.65
+        },
+        {
+          "start": [
+            619.76,
+            81.28
+          ],
+          "end": [
+            619.76,
+            137.16
+          ],
+          "direction": "down",
+          "length": 55.88
+        },
+        {
+          "start": [
+            619.76,
+            137.16
+          ],
+          "end": [
+            624.84,
+            137.16
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_DC_IN",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 6,
+        "outer_channel_cost": 395.08,
+        "different_net_crossings": 4,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 453.39,
+        "turns": 3,
+        "score": 5674.798,
+        "portal_route_score": 5674.798,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "FUSE",
+        "pin": "2",
+        "point": [
+          71.12,
+          85.09
+        ],
+        "exact": true,
+        "source": "Device:Fuse:unit1:pin2"
+      },
+      "to": {
+        "ref": "BRIDGE_RECTIFIER",
+        "pin": "AC1",
+        "point": [
+          462.28,
+          147.32
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          71.12,
+          85.09
+        ],
+        [
+          71.12,
+          90.17
+        ],
+        [
+          421.64,
+          90.17
+        ],
+        [
+          421.64,
+          147.32
+        ],
+        [
+          462.28,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            71.12,
+            85.09
+          ],
+          "end": [
+            71.12,
+            90.17
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            71.12,
+            90.17
+          ],
+          "end": [
+            421.64,
+            90.17
+          ],
+          "direction": "right",
+          "length": 350.52
+        },
+        {
+          "start": [
+            421.64,
+            90.17
+          ],
+          "end": [
+            421.64,
+            147.32
+          ],
+          "direction": "down",
+          "length": 57.15
+        },
+        {
+          "start": [
+            421.64,
+            147.32
+          ],
+          "end": [
+            462.28,
+            147.32
+          ],
+          "direction": "right",
+          "length": 40.64
+        }
+      ]
+    },
+    {
+      "net": "NET_DC_RETURN",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 12,
+        "outer_channel_cost": 512.902,
+        "different_net_crossings": 4,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 449.58,
+        "turns": 2,
+        "score": 7564.706,
+        "portal_route_score": 7564.706,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "DC_BARREL_JACK",
+        "pin": "SLEEVE",
+        "point": [
+          40.64,
+          121.92
+        ],
+        "exact": true,
+        "source": "Connector:Barrel_Jack:unit1:pin2"
+      },
+      "to": {
+        "ref": "BRIDGE_RECTIFIER",
+        "pin": "AC2",
+        "point": [
+          462.28,
+          149.86
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          40.64,
+          121.92
+        ],
+        [
+          382.27,
+          121.92
+        ],
+        [
+          382.27,
+          149.86
+        ],
+        [
+          462.28,
+          149.86
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            121.92
+          ],
+          "end": [
+            382.27,
+            121.92
+          ],
+          "direction": "right",
+          "length": 341.63
+        },
+        {
+          "start": [
+            382.27,
+            121.92
+          ],
+          "end": [
+            382.27,
+            149.86
+          ],
+          "direction": "down",
+          "length": 27.94
+        },
+        {
+          "start": [
+            382.27,
+            149.86
+          ],
+          "end": [
+            462.28,
+            149.86
+          ],
+          "direction": "right",
+          "length": 80.01
+        }
+      ]
+    },
+    {
+      "net": "NET_POWER_LED_CATHODE",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 7,
+        "outer_channel_cost": 395.04,
+        "different_net_crossings": 4,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 330.2,
+        "turns": 3,
+        "score": 5631.124,
+        "portal_route_score": 5631.124,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "R_PWR_LED",
+        "pin": "1",
+        "point": [
+          340.36,
+          133.35
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "to": {
+        "ref": "POWER_LED",
+        "pin": "CATHODE",
+        "point": [
+          633.73,
+          160.02
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin1"
+      },
+      "path": [
+        [
+          340.36,
+          133.35
+        ],
+        [
+          340.36,
+          128.27
+        ],
+        [
+          586.74,
+          128.27
+        ],
+        [
+          586.74,
+          160.02
+        ],
+        [
+          633.73,
+          160.02
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            340.36,
+            133.35
+          ],
+          "end": [
+            340.36,
+            128.27
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            340.36,
+            128.27
+          ],
+          "end": [
+            586.74,
+            128.27
+          ],
+          "direction": "right",
+          "length": 246.38
+        },
+        {
+          "start": [
+            586.74,
+            128.27
+          ],
+          "end": [
+            586.74,
+            160.02
+          ],
+          "direction": "down",
+          "length": 31.75
+        },
+        {
+          "start": [
+            586.74,
+            160.02
+          ],
+          "end": [
+            633.73,
+            160.02
+          ],
+          "direction": "right",
+          "length": 46.99
+        }
+      ]
+    },
+    {
+      "net": "NET_USB_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 125.73,
+        "turns": 4,
+        "score": 286.33,
+        "portal_route_score": 286.33,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "TP4056",
+        "pin": "IN+",
+        "point": [
+          624.84,
+          142.24
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "CHARGING_LED",
+        "pin": "ANODE",
+        "point": [
+          671.83,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          624.84,
+          142.24
+        ],
+        [
+          619.76,
+          142.24
+        ],
+        [
+          619.76,
+          179.07
+        ],
+        [
+          676.91,
+          179.07
+        ],
+        [
+          676.91,
+          157.48
+        ],
+        [
+          671.83,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            624.84,
+            142.24
+          ],
+          "end": [
+            619.76,
+            142.24
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            619.76,
+            142.24
+          ],
+          "end": [
+            619.76,
+            179.07
+          ],
+          "direction": "down",
+          "length": 36.83
+        },
+        {
+          "start": [
+            619.76,
+            179.07
+          ],
+          "end": [
+            676.91,
+            179.07
+          ],
+          "direction": "right",
+          "length": 57.15
+        },
+        {
+          "start": [
+            676.91,
+            179.07
+          ],
+          "end": [
+            676.91,
+            157.48
+          ],
+          "direction": "up",
+          "length": 21.59
+        },
+        {
+          "start": [
+            676.91,
+            157.48
+          ],
+          "end": [
+            671.83,
+            157.48
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_USB_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 517.611,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 607.06,
+        "turns": 4,
+        "score": 6979.196,
+        "portal_route_score": 6979.196,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "CHARGING_LED",
+        "pin": "ANODE",
+        "point": [
+          671.83,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "to": {
+        "ref": "SCHOTTKY_OR_USB",
+        "pin": "ANODE",
+        "point": [
+          184.15,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin2"
+      },
+      "path": [
+        [
+          671.83,
+          157.48
+        ],
+        [
+          676.91,
+          157.48
+        ],
+        [
+          676.91,
+          212.09
+        ],
+        [
+          189.23,
+          212.09
+        ],
+        [
+          189.23,
+          157.48
+        ],
+        [
+          184.15,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            671.83,
+            157.48
+          ],
+          "end": [
+            676.91,
+            157.48
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            676.91,
+            157.48
+          ],
+          "end": [
+            676.91,
+            212.09
+          ],
+          "direction": "down",
+          "length": 54.61
+        },
+        {
+          "start": [
+            676.91,
+            212.09
+          ],
+          "end": [
+            189.23,
+            212.09
+          ],
+          "direction": "left",
+          "length": 487.68
+        },
+        {
+          "start": [
+            189.23,
+            212.09
+          ],
+          "end": [
+            189.23,
+            157.48
+          ],
+          "direction": "up",
+          "length": 54.61
+        },
+        {
+          "start": [
+            189.23,
+            157.48
+          ],
+          "end": [
+            184.15,
+            157.48
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_USB_5V",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 134.62,
+        "turns": 3,
+        "score": 455.27,
+        "portal_route_score": 455.27,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "SCHOTTKY_OR_USB",
+        "pin": "ANODE",
+        "point": [
+          184.15,
+          157.48
+        ],
+        "exact": true,
+        "source": "Device:D_Schottky:unit1:pin2"
+      },
+      "to": {
+        "ref": "POLYFUSE",
+        "pin": "2",
+        "point": [
+          71.12,
+          158.75
+        ],
+        "exact": true,
+        "source": "Device:Polyfuse:unit1:pin2"
+      },
+      "path": [
+        [
+          184.15,
+          157.48
+        ],
+        [
+          125.73,
+          157.48
+        ],
+        [
+          125.73,
+          163.83
+        ],
+        [
+          71.12,
+          163.83
+        ],
+        [
+          71.12,
+          158.75
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            184.15,
+            157.48
+          ],
+          "end": [
+            125.73,
+            157.48
+          ],
+          "direction": "left",
+          "length": 58.42
+        },
+        {
+          "start": [
+            125.73,
+            157.48
+          ],
+          "end": [
+            125.73,
+            163.83
+          ],
+          "direction": "down",
+          "length": 6.35
+        },
+        {
+          "start": [
+            125.73,
+            163.83
+          ],
+          "end": [
+            71.12,
+            163.83
+          ],
+          "direction": "left",
+          "length": 54.61
+        },
+        {
+          "start": [
+            71.12,
+            163.83
+          ],
+          "end": [
+            71.12,
+            158.75
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_USB_C_CONNECTOR_CC2",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 519.236,
+        "different_net_crossings": 2,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 768.35,
+        "turns": 3,
+        "score": 7159.636,
+        "portal_route_score": 7159.636,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "USB_C_CONNECTOR",
+        "pin": "CC2",
+        "point": [
+          48.26,
+          172.72
+        ],
+        "exact": true,
+        "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+      },
+      "to": {
+        "ref": "RES_USB_CC2",
+        "pin": "1",
+        "point": [
+          571.5,
+          156.21
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          48.26,
+          172.72
+        ],
+        [
+          53.34,
+          172.72
+        ],
+        [
+          53.34,
+          281.94
+        ],
+        [
+          571.5,
+          281.94
+        ],
+        [
+          571.5,
+          156.21
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            48.26,
+            172.72
+          ],
+          "end": [
+            53.34,
+            172.72
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            53.34,
+            172.72
+          ],
+          "end": [
+            53.34,
+            281.94
+          ],
+          "direction": "down",
+          "length": 109.22
+        },
+        {
+          "start": [
+            53.34,
+            281.94
+          ],
+          "end": [
+            571.5,
+            281.94
+          ],
+          "direction": "right",
+          "length": 518.16
+        },
+        {
+          "start": [
+            571.5,
+            281.94
+          ],
+          "end": [
+            571.5,
+            156.21
+          ],
+          "direction": "up",
+          "length": 125.73
+        }
+      ]
+    },
+    {
+      "net": "NET_USB_C_CONNECTOR_VBUS",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 46.99,
+        "turns": 3,
+        "score": 207.44,
+        "portal_route_score": 207.44,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "USB_C_CONNECTOR",
+        "pin": "VBUS",
+        "point": [
+          48.26,
+          165.1
+        ],
+        "exact": true,
+        "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+      },
+      "to": {
+        "ref": "POLYFUSE",
+        "pin": "1",
+        "point": [
+          71.12,
+          151.13
+        ],
+        "exact": true,
+        "source": "Device:Polyfuse:unit1:pin1"
+      },
+      "path": [
+        [
+          48.26,
+          165.1
+        ],
+        [
+          53.34,
+          165.1
+        ],
+        [
+          53.34,
+          146.05
+        ],
+        [
+          71.12,
+          146.05
+        ],
+        [
+          71.12,
+          151.13
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            48.26,
+            165.1
+          ],
+          "end": [
+            53.34,
+            165.1
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            53.34,
+            165.1
+          ],
+          "end": [
+            53.34,
+            146.05
+          ],
+          "direction": "up",
+          "length": 19.05
+        },
+        {
+          "start": [
+            53.34,
+            146.05
+          ],
+          "end": [
+            71.12,
+            146.05
+          ],
+          "direction": "right",
+          "length": 17.78
+        },
+        {
+          "start": [
+            71.12,
+            146.05
+          ],
+          "end": [
+            71.12,
+            151.13
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 22,
+    "wired_route_count": 19,
+    "lane_route_count": 18,
+    "astar_route_count": 1,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 4,
+    "crossing_risk_route_count": 10,
+    "dense_design_mode": false,
+    "segment_count": 76,
+    "different_net_crossing_count": 24,
+    "mst_total_length": 7040.88,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 19,
+    "crossing_density_max_tile_crossings": 2,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 3,
+    "label_strategy_count": 4,
+    "wire_mode_terminal_net_count": 4,
+    "wire_mode_terminal_endpoint_count": 49,
+    "partial_wire_net_count": 0,
+    "unroutable_net_count": 6
+  },
+  "warnings": [
+    "astar_unroutable_expansion_limit: NET_BUCK_FB exceeded 12000 explored grid states.",
+    "minimum_crossing_route: NET_BUCK_FB accepted 1 different-net crossing/touch risks.",
+    "minimum_crossing_route: NET_DC_BARREL_JACK_CENTER accepted 2 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_7805_5V exceeded 12000 explored grid states.",
+    "minimum_crossing_route: NET_7805_5V accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_BAT_PLUS exceeded 12000 explored grid states.",
+    "minimum_crossing_route: NET_BAT_PLUS accepted 4 different-net crossing/touch risks.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_CHARGING_LED_CATHODE.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_CHARGING_LED_CATHODE.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_CHARGING_LED_CATHODE.",
+    "strict_wire_unroutable: NET_CHARGING_LED_CATHODE could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_DC_IN exceeded 12000 explored grid states.",
+    "minimum_crossing_route: NET_DC_IN accepted 4 different-net crossing/touch risks.",
+    "minimum_crossing_route: NET_DC_RETURN accepted 4 different-net crossing/touch risks.",
+    "salvage_astar_rejected_forbidden_contact: NET_LM317_ADJ still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_LM317_ADJ still touched or overlapped another net.",
+    "salvage_astar_rejected_forbidden_contact: NET_LM317_ADJ still touched or overlapped another net.",
+    "strict_wire_unroutable: NET_LM317_ADJ could not be routed without labels.",
+    "minimum_crossing_route: NET_POWER_LED_CATHODE accepted 4 different-net crossing/touch risks.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_R_CHG_LED_2.",
+    "astar_unroutable_no_clear_route: no clear route found for NET_R_CHG_LED_2.",
+    "strict_wire_unroutable: NET_R_CHG_LED_2 could not be routed without labels.",
+    "minimum_crossing_route: NET_USB_5V accepted 1 different-net crossing/touch risks.",
+    "minimum_crossing_route: NET_USB_5V accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_USB_C_CONNECTOR_CC1 exceeded 12000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_USB_C_CONNECTOR_CC1 exceeded 12000 explored grid states.",
+    "strict_wire_unroutable: NET_USB_C_CONNECTOR_CC1 could not be routed without labels.",
+    "minimum_crossing_route: NET_USB_C_CONNECTOR_CC2 accepted 2 different-net crossing/touch risks.",
+    "strict_wire_unroutable: NET_USB_C_CONNECTOR_D could not be routed without labels.",
+    "strict_wire_unroutable: NET_USB_C_CONNECTOR_D_2 could not be routed without labels.",
+    "different_net_crossings_detected: 24"
+  ],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": true,
+    "pass_count": 1,
+    "passes": [
+      {
+        "pass": 1,
+        "status": "no_coordinate_edits",
+        "metrics_before": {
+          "net_count": 22,
+          "wired_route_count": 19,
+          "lane_route_count": 18,
+          "astar_route_count": 1,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 4,
+          "crossing_risk_route_count": 10,
+          "dense_design_mode": false,
+          "segment_count": 76,
+          "different_net_crossing_count": 24,
+          "mst_total_length": 7040.88,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 19,
+          "crossing_density_max_tile_crossings": 2,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 3,
+          "label_strategy_count": 4,
+          "wire_mode_terminal_net_count": 4,
+          "wire_mode_terminal_endpoint_count": 49,
+          "partial_wire_net_count": 0,
+          "unroutable_net_count": 6
+        },
+        "move_plan": {
+          "schema": "progen-kicad-partial-route-component-motion/v0.1",
+          "stage": "partial_route_component_motion_decider",
+          "algorithm": {
+            "primary": "move_failed_partial_endpoint_toward_nearest_wired_same_net_endpoint",
+            "input_contract": "routing placement JSON plus wire_plan partial-wire net reports",
+            "output_contract": "coordinate edits for beautifier.py"
+          },
+          "coordinate_edits": [],
+          "move_count": 0,
+          "moves": []
+        }
+      }
+    ],
+    "final_metrics": {
+      "net_count": 22,
+      "wired_route_count": 19,
+      "lane_route_count": 18,
+      "astar_route_count": 1,
+      "salvage_astar_route_count": 0,
+      "salvage_astar_attempt_count": 4,
+      "crossing_risk_route_count": 10,
+      "dense_design_mode": false,
+      "segment_count": 76,
+      "different_net_crossing_count": 24,
+      "mst_total_length": 7040.88,
+      "crossing_density_tile_size": 25.4,
+      "crossing_density_tile_count": 19,
+      "crossing_density_max_tile_crossings": 2,
+      "crossing_density_overflow": 0,
+      "near_endpoint_crossing_count": 3,
+      "label_strategy_count": 4,
+      "wire_mode_terminal_net_count": 4,
+      "wire_mode_terminal_endpoint_count": 49,
+      "partial_wire_net_count": 0,
+      "unroutable_net_count": 6
+    }
+  },
+  "arrangement_selection": {
+    "schema": "progen-kicad-routeable-arrangement-selection/v0.1",
+    "stage": "routeable_arrangement_selector",
+    "strategy": "parallel_variant_routeability_score",
+    "variant_count": 3,
+    "worker_count": 3,
+    "parallel_error": "",
+    "scoring_wire_config": {
+      "max_astar_expansions": 600.0,
+      "max_lane_candidates": 32.0,
+      "max_failed_endpoints_per_net": 1.0
+    },
+    "selected_variant": "base",
+    "selected_score": {
+      "score": 282471.59,
+      "square_fill": {
+        "width": 743.52,
+        "height": 137.37,
+        "aspect_ratio": 5.413,
+        "aspect_penalty": 606.15,
+        "fill_waste_area": 98117.717,
+        "score": 2684.066
+      },
+      "component_body_overlap_count": 0,
+      "estimated_blocked_endpoint_count": 0,
+      "estimated_partial_pressure": 0,
+      "estimated_body_hit_count": 0,
+      "estimated_routable_branch_count": 71,
+      "estimated_turn_count": 81,
+      "estimated_route_length": 13254.99
+    },
+    "final_score": {
+      "score": 0.0,
+      "complete_wire_net_count": 0,
+      "unroutable_net_count": 0,
+      "partial_wire_net_count": 0,
+      "label_strategy_count": 0,
+      "route_body_hit_count": 0,
+      "route_forbidden_contact_count": 0,
+      "component_shadow_count": 0,
+      "route_turn_count": 0,
+      "route_length": 0,
+      "different_net_crossing_count": 0
+    },
+    "variants": [
+      {
+        "name": "base",
+        "ok": true,
+        "score": {
+          "score": 282471.59,
+          "square_fill": {
+            "width": 743.52,
+            "height": 137.37,
+            "aspect_ratio": 5.413,
+            "aspect_penalty": 606.15,
+            "fill_waste_area": 98117.717,
+            "score": 2684.066
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 71,
+          "estimated_turn_count": 81,
+          "estimated_route_length": 13254.99
+        },
+        "elapsed_seconds": 0.748,
+        "coordinate_edit_count": 42,
+        "error": null
+      },
+      {
+        "name": "square_fill_compact",
+        "ok": true,
+        "score": {
+          "score": 327647.99,
+          "square_fill": {
+            "width": 827.34,
+            "height": 147.53,
+            "aspect_ratio": 5.608,
+            "aspect_penalty": 679.81,
+            "fill_waste_area": 118037.845,
+            "score": 3130.188
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 71,
+          "estimated_turn_count": 79,
+          "estimated_route_length": 13839.19
+        },
+        "elapsed_seconds": 1.014,
+        "coordinate_edit_count": 42,
+        "error": null
+      },
+      {
+        "name": "square_fill_balanced",
+        "ok": true,
+        "score": {
+          "score": 381879.75,
+          "square_fill": {
+            "width": 911.16,
+            "height": 162.77,
+            "aspect_ratio": 5.598,
+            "aspect_penalty": 748.39,
+            "fill_waste_area": 144289.888,
+            "score": 3661.128
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 71,
+          "estimated_turn_count": 80,
+          "estimated_route_length": 14966.95
+        },
+        "elapsed_seconds": 0.988,
+        "coordinate_edit_count": 42,
+        "error": null
+      }
+    ]
+  }
+}

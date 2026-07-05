@@ -33,6 +33,7 @@ from .wire_planner import plan_wiring
 SCHEMA_VERSION = "progen-kicad-circuit-ir/v1"
 PROMPT_CLEANER_VERSION = "progeneda-prompt-cleaner/v0.1"
 COMPILER_VERSION = "progeneda-final-circuit-builder/v0.1"
+NODE_SPEC_COMPILER_VERSION = "progeneda-node-spec-compiler/v0.1"
 DEFAULT_FINAL_CIRCUIT_SUITE = "t01_t10"
 PROTEUS_ALIAS_MIXED_SUITE = "proteus_alias_mixed"
 PROTEUS_ALIAS_ROUTED_SUITE = "proteus_alias_routed"
@@ -407,13 +408,424 @@ def compile_raw_circuit(raw: dict[str, Any]) -> dict[str, Any]:
         "nets": compiled_nets,
         "blocks": raw.get("blocks", []),
         "generation_notes": {
-            "source": "user-supplied connected T01-T10 test specification",
+            "source": str(raw.get("source") or "user-supplied connected T01-T10 test specification"),
             "compiler_repairs": repairs,
             "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+            "source_format": raw.get("source_format", "raw_python_spec"),
+            "source_line_count": raw.get("source_line_count"),
         },
     }
     circuit["validation"] = validate_final_circuit(circuit)
     return circuit
+
+
+_NODE_SPEC_HEADER_RE = re.compile(r"^CIRCUIT\s+(\d+)\s*:\s*(.+?)\s*$", re.IGNORECASE)
+_NET_LABEL_RE = re.compile(r"^(?:NET_|GND$|\+?[0-9.]+V$|VCC$|VDD$|VSS$|VIN$|VBUS$|VBAT$)", re.IGNORECASE)
+
+
+def _node_spec_token(token: str) -> str:
+    return token.strip().strip("`").strip()
+
+
+def _is_endpoint_token(token: str) -> bool:
+    text = _node_spec_token(token)
+    if "." not in text:
+        return False
+    ref, pin = text.split(".", 1)
+    return bool(ref.strip() and pin.strip())
+
+
+def _normalize_node_endpoint(token: str) -> str:
+    ref, pin = _node_spec_token(token).split(".", 1)
+    return f"{ref.strip()}.{pin.strip()}"
+
+
+def _canonical_node_net_label(label: str) -> str:
+    text = _node_spec_token(label)
+    upper = text.upper()
+    if upper in {"NET_GND", "GND", "GROUND", "0", "NET_0"}:
+        return "GND"
+    if upper in {"NET_5V", "+5V", "5V", "NET_PLUS_5V"}:
+        return "+5V"
+    if upper in {"NET_3V3", "+3V3", "3V3", "NET_PLUS_3V3"}:
+        return "+3V3"
+    return text
+
+
+def _safe_net_from_endpoint(endpoint: str, index: int) -> str:
+    stem = re.sub(r"[^A-Za-z0-9]+", "_", endpoint).strip("_").upper()
+    return f"NET_{stem or f'AUTO_{index:03d}'}"
+
+
+def _net_group_name(group: set[str], order: dict[str, int], index: int) -> str:
+    labels = [item for item in group if not _is_endpoint_token(item)]
+    if labels:
+        canonical = [_canonical_node_net_label(label) for label in labels]
+        for preferred in POWER_NET_PRIORITY:
+            if preferred in canonical:
+                return preferred
+        return min(canonical, key=lambda item: order.get(item, 10_000))
+    endpoints = [item for item in group if _is_endpoint_token(item)]
+    if endpoints:
+        return _safe_net_from_endpoint(min(endpoints, key=lambda item: order.get(item, 10_000)), index)
+    return f"NET_AUTO_{index:03d}"
+
+
+def _ref_pin_stats(edges: list[tuple[str, str]]) -> tuple[dict[str, set[str]], list[str]]:
+    pins_by_ref: dict[str, set[str]] = defaultdict(set)
+    refs_in_order: list[str] = []
+    seen_refs: set[str] = set()
+    for left, right in edges:
+        for token in (left, right):
+            if not _is_endpoint_token(token):
+                continue
+            endpoint = _normalize_node_endpoint(token)
+            ref, pin = endpoint.split(".", 1)
+            pins_by_ref[ref].add(pin)
+            if ref not in seen_refs:
+                seen_refs.add(ref)
+                refs_in_order.append(ref)
+    return pins_by_ref, refs_in_order
+
+
+def _max_indexed_pin(pins: set[str], prefix: str) -> int:
+    highest = 0
+    for pin in pins:
+        text = pin.upper()
+        match = re.fullmatch(rf"{re.escape(prefix.upper())}(\d+)", text)
+        if match:
+            highest = max(highest, int(match.group(1)))
+    return highest
+
+
+def _resolve_kind_candidate(value: str) -> str | None:
+    return value if resolve_placement_spec(value) is not None else None
+
+
+def _infer_node_component_kind(ref: str, pins: set[str]) -> tuple[str, str]:
+    normalized = re.sub(r"[^A-Za-z0-9]+", "_", ref.strip().upper()).strip("_")
+    exact = _resolve_kind_candidate(normalized)
+    if exact:
+        if normalized in {"PWR_5V", "PWR_3V3"} and "-" in pins:
+            return "VDC", "two_pin_power_block_as_voltage_source"
+        if normalized == "HEADER_CONNECTOR" and _max_indexed_pin(pins, "P") > 4:
+            return "PROGRAMMING_HEADER", "exact_header_ref_widened_for_pin_count"
+        if normalized in {"UART_HEADER", "PWM_HEADER"} and len(pins) > 5:
+            return "PROGRAMMING_HEADER", "exact_header_ref_widened_for_pin_count"
+        return exact, "exact_catalog_kind"
+
+    suffix_reduced = re.sub(r"(?:_\d+|\d+)$", "", normalized)
+    suffix_match = _resolve_kind_candidate(suffix_reduced)
+    if suffix_match:
+        return suffix_match, "numeric_suffix_removed"
+
+    if normalized.startswith("74HC595_SHIFT_REGISTER"):
+        return "74HC595_SHIFT_REGISTER", "shift_register_ref_family"
+    for logic in (
+        "74HC283",
+        "74HC266",
+        "74HC192",
+        "74HC174",
+        "74HC160",
+        "74HC157",
+        "74HC151",
+        "74HC86",
+        "74HC85",
+        "74HC76",
+        "74HC74",
+        "74HC32",
+        "74HC08",
+        "74HC04",
+        "74HC02",
+        "74HC00",
+        "7490",
+        "7447",
+        "4511",
+        "4027",
+        "NE555",
+        "LM741",
+        "LM358",
+        "LM393_COMPARATOR",
+        "MCP2515",
+        "TJA1050",
+        "MAX485",
+        "CP2102",
+        "CH340",
+        "LM317",
+        "LM7805",
+        "LM2596",
+        "TP4056",
+        "W25Q64",
+        "DS3231",
+        "BME280",
+        "SSD1306_OLED",
+        "ESP32_WROOM",
+        "ARDUINO_NANO",
+        "PAM8403",
+        "ACS712",
+    ):
+        if normalized.startswith(logic):
+            return logic, "known_family_prefix"
+
+    if normalized.startswith("LEVEL_SHIFTER"):
+        return "LEVEL_SHIFTER", "level_shifter_family"
+    if normalized.startswith("MICRO_SD_SOCKET"):
+        return "MICRO_SD_SOCKET", "micro_sd_family"
+    if normalized.startswith("USB_C_CONNECTOR"):
+        return "USB_C_CONNECTOR", "usb_c_family"
+    if normalized.startswith("DC_BARREL_JACK"):
+        return "DC_BARREL_JACK", "barrel_jack_family"
+    if normalized.startswith("BRIDGE_RECTIFIER"):
+        return "BRIDGE RECTIFIER", "bridge_rectifier_family"
+    if normalized.startswith("LI_ION_BATTERY_CONNECTOR"):
+        return "LI_ION_BATTERY_CONNECTOR", "battery_connector_family"
+    if normalized.startswith("CR2032_BATTERY"):
+        return "CR2032_BATTERY", "battery_family"
+
+    if normalized.startswith("CAN_TERMINAL") or normalized.startswith("RS485_TERMINAL"):
+        return "TERMINAL_BLOCK_4" if "SHIELD" in {pin.upper() for pin in pins} else normalized.split("_TERMINAL", 1)[0] + "_TERMINAL", "terminal_family_pin_count"
+    if normalized.startswith("TERMINAL_BLOCK"):
+        return "TERMINAL_BLOCK", "terminal_block_family"
+    if normalized.startswith("SCREW_TERMINAL"):
+        return "SCREW_TERMINAL_2", "screw_terminal_family"
+    if normalized in {"I2C_HEADER", "SPI_HEADER_FLASH", "SPI_HEADER_SD"} or normalized.endswith("_HEADER"):
+        if normalized.startswith("SPI_HEADER"):
+            return "SPI_HEADER_FLASH", "spi_header_family"
+        if normalized == "I2C_HEADER":
+            return "I2C_HEADER", "i2c_header_family"
+        return "PROGRAMMING_HEADER" if len(pins) > 5 else "PIN_HEADER", "generic_header_family"
+    if normalized.startswith("TEST_POINT"):
+        return "TEST_POINT", "test_point_family"
+
+    if normalized.startswith(("R_", "RES_", "PULLUP_")) or normalized.endswith(("_PD", "_PULLDOWN", "_PULLUP")):
+        if "4K7" in normalized:
+            return "R_4K7_PULLUP", "resistor_value_4k7"
+        if "10K" in normalized:
+            return "R_10K_PULLUP", "resistor_value_10k"
+        if "120" in normalized and "CAN" in normalized:
+            return "R_120_CAN", "resistor_value_120_can"
+        if "120" in normalized and "RS485" in normalized:
+            return "R_120_RS485", "resistor_value_120_rs485"
+        if "220" in normalized:
+            return "R_220", "resistor_value_220"
+        return "RES", "generic_resistor_family"
+
+    if normalized.startswith(("C_100NF", "DECOUPLING_CAPACITOR", "RESET_CAPACITOR", "CAP_7805", "CAP_BIAS", "CAP_555")):
+        return "C_100NF_CERAMIC", "ceramic_capacitor_family"
+    if normalized.startswith(("CP_100UF", "INPUT_CAPACITOR_BUCK", "OUTPUT_CAPACITOR_BUCK")) or "100UF" in normalized:
+        return "CP_100UF", "electrolytic_capacitor_family"
+    if normalized.startswith(("INPUT_CAPACITOR", "OUTPUT_CAPACITOR", "COUPLING_CAP", "CAP_")):
+        return "CAP", "generic_capacitor_family"
+
+    if normalized.startswith("D_1N4007"):
+        return "D_1N4007", "diode_1n4007_family"
+    if normalized.startswith("SCHOTTKY_DIODE"):
+        return "SCHOTTKY_DIODE_BUCK", "schottky_diode_family"
+    if normalized.startswith("SCHOTTKY_OR"):
+        return "SCHOTTKY_DIODE_BUCK", "schottky_or_diode_family"
+    if normalized.startswith("FLYBACK_DIODE"):
+        return "FLYBACK_DIODE", "flyback_diode_family"
+    if normalized.startswith("RELAY_FLYBACK_DIODE"):
+        return "RELAY_FLYBACK_DIODE", "relay_flyback_diode_family"
+    if normalized.startswith("TVS_DIODE"):
+        return "TVS_DIODE_RS485", "tvs_diode_family"
+    if normalized.startswith("BZX55C5"):
+        return "BZX55C5", "zener_family"
+    if normalized.startswith("BZX79C5"):
+        return "BZX79C5", "zener_family"
+    if "DIODE" in normalized:
+        return "DIODE", "generic_diode_family"
+
+    if normalized.startswith("LED_INDICATOR"):
+        return "LED_INDICATOR", "indicator_led_family"
+    if normalized.endswith("_LED") or normalized in {"POWER_LED", "CHARGING_LED", "RELAY_INDICATOR_LED"}:
+        return normalized if _resolve_kind_candidate(normalized) else "LED", "led_family"
+    if normalized.startswith("LED_ARRAY"):
+        return "LED_ARRAY", "led_array_family"
+
+    if normalized.startswith("IRLZ44N"):
+        return "IRLZ44N", "mosfet_family"
+    if normalized.startswith(("2N7000", "BS170")):
+        return normalized.split("_", 1)[0], "mosfet_family"
+    if "MOSFET" in normalized:
+        return "MOSFET", "mosfet_family"
+    if normalized.startswith("BC547"):
+        return "BC547", "bjt_family"
+    if normalized.startswith(("NPN", "PNP")):
+        return normalized.split("_", 1)[0], "bjt_family"
+    if normalized.startswith("RELAY_5V"):
+        return "RELAY_5V", "relay_family"
+    if normalized.startswith("RELAY"):
+        return "RELAY", "relay_family"
+    if normalized.startswith("DC_MOTOR"):
+        return "DC_MOTOR", "motor_family"
+
+    if normalized.startswith(("POTENTIOMETER", "POT_HG")):
+        return "POT-HG" if normalized.startswith("POT_HG") else "POTENTIOMETER", "potentiometer_family"
+    if normalized.startswith("VOLUME_POTENTIOMETER"):
+        return "VOLUME_POTENTIOMETER", "potentiometer_family"
+    if normalized.startswith("TRIMMER_POTENTIOMETER"):
+        return "TRIMMER_POTENTIOMETER", "potentiometer_family"
+    if normalized.startswith("AUDIO_INPUT_JACK"):
+        return "AUDIO_INPUT_JACK", "audio_jack_family"
+    if normalized.startswith("SPEAKER"):
+        return "SPEAKER", "speaker_family"
+    if normalized.startswith("DIP_SWITCH"):
+        return "DIP_SWITCH", "dip_switch_family"
+    if normalized.startswith("PUSH_BUTTON"):
+        return "PUSH_BUTTON", "push_button_family"
+    if normalized.startswith(("EN_PUSH_BUTTON", "BOOT_PUSH_BUTTON")):
+        return normalized.split("_BUTTON", 1)[0] + "_BUTTON", "push_button_family"
+    if normalized.startswith("SWITCH"):
+        return "SWITCH", "switch_family"
+    if normalized.startswith("FUSE"):
+        return "FUSE", "fuse_family"
+    if normalized.startswith("POLYFUSE"):
+        return "POLYFUSE", "polyfuse_family"
+    if normalized.startswith("POWER_INDUCTOR"):
+        return "POWER_INDUCTOR", "inductor_family"
+    if normalized.startswith("RESISTOR_NETWORK"):
+        return "RESISTOR_NETWORK", "resistor_network_family"
+    if normalized.startswith("7SEGCOMK"):
+        return "7SEGCOMK", "seven_segment_family"
+    if normalized.startswith("7SEGCOMA"):
+        return "7SEGCOMA", "seven_segment_family"
+    if normalized.startswith("PWR_5V"):
+        return "PWR_5V", "power_symbol_family"
+    if normalized.startswith("PWR_3V3"):
+        return "PWR_3V3", "power_symbol_family"
+
+    return "PIN_HEADER", "fallback_pin_header_for_unknown_ref"
+
+
+def _infer_node_component_value(ref: str, kind: str) -> str:
+    normalized = re.sub(r"[^A-Za-z0-9]+", "_", ref.strip().upper()).strip("_")
+    if kind in {"RES", "RESISTOR", "R_10K_PULLUP", "R_4K7_PULLUP", "R_120_CAN", "R_120_RS485", "R_220"}:
+        if "4K7" in normalized:
+            return "4.7k"
+        if "10K" in normalized or normalized.endswith("_PD") or "PULLDOWN" in normalized or "PULLUP" in normalized:
+            return "10k"
+        if "120" in normalized:
+            return "120 ohm"
+        if "220" in normalized:
+            return "220 ohm"
+        if "LM317_TOP" in normalized:
+            return "240 ohm"
+        if "LM317_BOTTOM" in normalized:
+            return "1.2k"
+        return "Resistor"
+    if kind in {"CAP", "CAPACITOR", "C_100NF_CERAMIC", "DECOUPLING_CAPACITOR", "RESET_CAPACITOR"}:
+        if "100NF" in normalized or "DECOUPLING" in normalized or "RESET" in normalized:
+            return "100nF"
+        return "Capacitor"
+    if kind in {"CP_100UF", "CAP-ELEC", "INPUT_CAPACITOR_BUCK", "OUTPUT_CAPACITOR_BUCK"}:
+        return "100uF"
+    spec = resolve_placement_spec(kind)
+    return spec.name if spec else ref
+
+
+def raw_specs_from_node_spec_text(text: str, *, source: str = "user_node_spec_text") -> list[dict[str, Any]]:
+    """Compile pasted `A.PIN -> NET_X` text into raw circuit specs."""
+    circuits: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for line_no, raw_line in enumerate(str(text).splitlines(), 1):
+        line = raw_line.strip()
+        if not line or line.startswith("```") or line.startswith("#"):
+            continue
+        header = _NODE_SPEC_HEADER_RE.match(line)
+        if header:
+            current = {
+                "number": int(header.group(1)),
+                "title": header.group(2).strip(),
+                "edges": [],
+                "source_line_start": line_no,
+            }
+            circuits.append(current)
+            continue
+        if "->" not in line:
+            continue
+        if current is None:
+            raise ValueError(f"Node-spec connection before first CIRCUIT header at line {line_no}: {line}")
+        left, right = (_node_spec_token(part) for part in line.split("->", 1))
+        if not left or not right:
+            raise ValueError(f"Invalid node-spec connection at line {line_no}: {line}")
+        current["edges"].append((left, right, line_no))
+
+    raw_specs: list[dict[str, Any]] = []
+    for circuit in circuits:
+        edges_with_lines: list[tuple[str, str, int]] = list(circuit["edges"])
+        if not edges_with_lines:
+            continue
+        edges = [(left, right) for left, right, _line_no in edges_with_lines]
+        pins_by_ref, refs_in_order = _ref_pin_stats(edges)
+        components: list[dict[str, str]] = []
+        inference_repairs: list[dict[str, Any]] = []
+        for ref in refs_in_order:
+            kind, reason = _infer_node_component_kind(ref, pins_by_ref.get(ref, set()))
+            value = _infer_node_component_value(ref, kind)
+            spec = resolve_placement_spec(kind)
+            components.append(_c(ref, kind, value, spec.category if spec else "", str(circuit["number"]).zfill(2)))
+            inference_repairs.append(
+                {
+                    "ref": ref,
+                    "kind": kind,
+                    "reason": reason,
+                    "pin_count": len(pins_by_ref.get(ref, set())),
+                }
+            )
+
+        uf = _UnionFind()
+        order: dict[str, int] = {}
+
+        def remember(node: str) -> None:
+            if node not in order:
+                order[node] = len(order)
+            uf.make(node)
+
+        for left, right, _line_no in edges_with_lines:
+            left_node = _normalize_node_endpoint(left) if _is_endpoint_token(left) else _canonical_node_net_label(left)
+            right_node = _normalize_node_endpoint(right) if _is_endpoint_token(right) else _canonical_node_net_label(right)
+            remember(left_node)
+            remember(right_node)
+            uf.union(left_node, right_node)
+
+        groups: dict[str, set[str]] = defaultdict(set)
+        for node in order:
+            groups[uf.find(node)].add(node)
+
+        nets: dict[str, list[str]] = {}
+        used_names: set[str] = set()
+        for index, group in enumerate(sorted(groups.values(), key=lambda items: min(order[item] for item in items)), 1):
+            endpoints = [item for item in group if _is_endpoint_token(item)]
+            if len(endpoints) < 2:
+                continue
+            base_name = _net_group_name(group, order, index)
+            name = base_name
+            suffix = 2
+            while name in used_names:
+                name = f"{base_name}_{suffix}"
+                suffix += 1
+            used_names.add(name)
+            nets[name] = sorted(endpoints, key=lambda item: order[item])
+
+        circuit_id = f"N{int(circuit['number']):02d}"
+        raw = _raw_spec(
+            circuit_id,
+            str(circuit["title"]),
+            "pasted node-spec connected circuit for parser/router/netlist validation",
+            components,
+            nets,
+        )
+        raw["source"] = source
+        raw["source_format"] = "node_spec_arrow_text"
+        raw["source_line_count"] = len(edges_with_lines)
+        raw["blocks"] = [{"name": "node_spec_component_inference", "items": inference_repairs}]
+        raw_specs.append(raw)
+    return raw_specs
+
+
+def build_final_circuits_from_node_spec_text(text: str, *, source: str = "user_node_spec_text") -> list[dict[str, Any]]:
+    return [compile_raw_circuit(raw) for raw in raw_specs_from_node_spec_text(text, source=source)]
 
 
 def available_final_circuit_suites() -> tuple[str, ...]:
@@ -1657,14 +2069,16 @@ def _final_json_files(source: Path) -> list[Path]:
     return files
 
 
-def generate_final_json_run(
+def _write_final_json_run(
+    circuits: list[dict[str, Any]],
     *,
     examples_root: Path,
-    label: str = "t01_t10_connected_v1",
+    label: str,
     run_dir: Path | None = None,
-    suite: str = DEFAULT_FINAL_CIRCUIT_SUITE,
+    suite: str,
+    readme_title: str,
+    readme_source_note: str,
 ) -> dict[str, Any]:
-    """Generate a fresh immutable final-JSON examples run and stage report."""
     run_path = run_dir or _fresh_run_dir(examples_root, label)
     if run_path.exists():
         raise FileExistsError(f"Refusing to overwrite existing final JSON run folder: {run_path}")
@@ -1677,7 +2091,7 @@ def generate_final_json_run(
     stage_report_dir.mkdir()
 
     results: list[dict[str, Any]] = []
-    for circuit in build_final_circuits(suite):
+    for circuit in circuits:
         cid = str(circuit["circuit_id"])
         stem = f"{cid}_{re.sub(r'[^a-z0-9]+', '_', circuit['circuit_name'].lower()).strip('_')}"
         final_path = final_json_dir / f"{stem}.json"
@@ -1730,10 +2144,11 @@ def generate_final_json_run(
     }
     (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     (run_path / "README.md").write_text(
-        f"# Connected Final JSON Run: {suite}\n\n"
+        f"# {readme_title}\n\n"
         "This folder is an immutable generated record. It contains canonical final CircuitIR JSON, "
         "component-only placement inputs derived from that JSON, and per-circuit reports from the "
         "arrangement decider, beautifier, and wire planner.\n\n"
+        f"{readme_source_note}\n\n"
         "The final JSON was compiled by `kicad.pipeline.final_circuit_builder`, not by a one-shot AI prompt. "
         "Compiler repairs are recorded inside each JSON under `generation_notes.compiler_repairs`.\n\n"
         "Do not overwrite this folder. Generate a new `final_json_run_*` folder for any changed component, net, "
@@ -1741,6 +2156,49 @@ def generate_final_json_run(
         encoding="utf-8",
     )
     return summary
+
+
+def generate_final_json_run(
+    *,
+    examples_root: Path,
+    label: str = "t01_t10_connected_v1",
+    run_dir: Path | None = None,
+    suite: str = DEFAULT_FINAL_CIRCUIT_SUITE,
+) -> dict[str, Any]:
+    """Generate a fresh immutable final-JSON examples run and stage report."""
+    return _write_final_json_run(
+        build_final_circuits(suite),
+        examples_root=examples_root,
+        label=label,
+        run_dir=run_dir,
+        suite=suite,
+        readme_title=f"Connected Final JSON Run: {suite}",
+        readme_source_note="The final JSON was compiled from a named deterministic built-in suite.",
+    )
+
+
+def generate_final_json_run_from_node_spec_text(
+    text: str,
+    *,
+    examples_root: Path,
+    label: str = "node_spec_connected_v1",
+    run_dir: Path | None = None,
+    source: str = "user_node_spec_text",
+) -> dict[str, Any]:
+    """Generate a fresh immutable final JSON run from pasted `A.PIN -> NET` text."""
+    circuits = build_final_circuits_from_node_spec_text(text, source=source)
+    return _write_final_json_run(
+        circuits,
+        examples_root=examples_root,
+        label=label,
+        run_dir=run_dir,
+        suite="node_spec_arrow_text",
+        readme_title="Node-Spec Final JSON Run",
+        readme_source_note=(
+            "The final JSON was compiled from pasted arrow-node text where `NET_*` labels are electrical nodes "
+            "and `REF.PIN` tokens are component pins."
+        ),
+    )
 
 
 def generate_projects_from_final_json(
@@ -1844,6 +2302,10 @@ def main() -> None:
     )
     parser.add_argument("--prompt", help="Optional prompt to clean/enhance and print instead of generating files.")
     parser.add_argument(
+        "--node-spec-from-text",
+        help="Path to pasted CIRCUIT/REF.PIN -> NET text; writes a fresh final JSON run from that source.",
+    )
+    parser.add_argument(
         "--project-run-from-final-json",
         help="Final JSON folder or run folder containing final_json/; writes a fresh KiCad project run from those JSON files.",
     )
@@ -1851,6 +2313,18 @@ def main() -> None:
 
     if args.prompt is not None:
         print(json.dumps(clean_prompt(args.prompt), indent=2))
+        return
+
+    if args.node_spec_from_text is not None:
+        source_path = Path(args.node_spec_from_text)
+        summary = generate_final_json_run_from_node_spec_text(
+            source_path.read_text(encoding="utf-8"),
+            examples_root=Path(args.examples_root),
+            label=args.label,
+            run_dir=Path(args.run_dir) if args.run_dir else None,
+            source=str(source_path),
+        )
+        print(json.dumps(summary, indent=2))
         return
 
     if args.project_run_from_final_json is not None:

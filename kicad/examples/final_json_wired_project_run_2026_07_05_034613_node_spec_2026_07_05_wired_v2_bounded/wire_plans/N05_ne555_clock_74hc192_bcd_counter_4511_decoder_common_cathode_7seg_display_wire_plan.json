@@ -1,0 +1,6384 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "routing_mode": "wire",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "lane_candidates_then_grid_astar",
+    "routing_engine": "hanan_lane_candidates_rectilinear_mst_then_grid_astar",
+    "hanan_grid_lanes": true,
+    "rectilinear_mst_tree": true,
+    "astar_manhattan_fallback": true,
+    "segment_indexed_crossing_metrics": true,
+    "dense_design_mode": false,
+    "routing_order": "clock/control, bus, local/ordinary, display, power, ground; terminal/combination mode may label selected nets",
+    "multi_terminal_policy": "rectilinear MST / nearest connected tree; each branch uses net-wide Hanan lanes plus A* fallback",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "wire-wire crossings are allowed; existing wire grid cells are congestion hints, not hard obstacles",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "wire mode records unroutable nets as failures; terminal/combination mode may convert selected failures to local-label terminal plans",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 613.41,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "wire_mode_terminal_policy": {
+    "enabled": true,
+    "terminal_strategy": "wire_mode_terminal_label",
+    "terminal_nets": [
+      "+5V",
+      "GND"
+    ],
+    "nets": {
+      "+5V": {
+        "reason": "wire_mode_power_ground_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 17,
+        "class": "power"
+      },
+      "GND": {
+        "reason": "wire_mode_power_ground_terminal",
+        "strategy": "wire_mode_terminal_label",
+        "endpoint_count": 27,
+        "class": "ground"
+      }
+    },
+    "source": "explicit_terminal_nets_or_power_ground_policy"
+  },
+  "nets": {
+    "NET_CLOCK_GATED": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_220_CLOCK_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            234.95
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "UP_CLK",
+          "side": "right",
+          "point": [
+            95.25,
+            146.05
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "2Y",
+          "side": "left",
+          "point": [
+            339.09,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            153.67
+          ],
+          [
+            1,
+            2,
+            245.11
+          ]
+        ],
+        "length": 398.78
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_CLOCK_GATED R_220_CLOCK_LED.2",
+        "unroutable_endpoint: NET_CLOCK_GATED 74HC00.2Y"
+      ]
+    },
+    "NET_CLOCK_NAND": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "74HC00",
+          "pin": "1Y",
+          "side": "right",
+          "point": [
+            356.87,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "2A",
+          "side": "right",
+          "point": [
+            356.87,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "2B",
+          "side": "right",
+          "point": [
+            356.87,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_CLOCK_NAND",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 5,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 12.7,
+            "turns": 2,
+            "score": 413.0,
+            "portal_route_score": 413.0,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "74HC00",
+            "pin": "2A",
+            "point": [
+              356.87,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "74HC00",
+            "pin": "1Y",
+            "point": [
+              356.87,
+              142.24
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              356.87,
+              144.78
+            ],
+            [
+              361.95,
+              144.78
+            ],
+            [
+              361.95,
+              142.24
+            ],
+            [
+              356.87,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                356.87,
+                144.78
+              ],
+              "end": [
+                361.95,
+                144.78
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                361.95,
+                144.78
+              ],
+              "end": [
+                361.95,
+                142.24
+              ],
+              "direction": "up",
+              "length": 2.54
+            },
+            {
+              "start": [
+                361.95,
+                142.24
+              ],
+              "end": [
+                356.87,
+                142.24
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_CLOCK_NAND",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 6,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 12.7,
+            "turns": 2,
+            "score": 493.2,
+            "portal_route_score": 493.2,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "74HC00",
+            "pin": "2A",
+            "point": [
+              356.87,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "74HC00",
+            "pin": "2B",
+            "point": [
+              356.87,
+              147.32
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              356.87,
+              144.78
+            ],
+            [
+              361.95,
+              144.78
+            ],
+            [
+              361.95,
+              147.32
+            ],
+            [
+              356.87,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                356.87,
+                144.78
+              ],
+              "end": [
+                361.95,
+                144.78
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                361.95,
+                144.78
+              ],
+              "end": [
+                361.95,
+                147.32
+              ],
+              "direction": "down",
+              "length": 2.54
+            },
+            {
+              "start": [
+                361.95,
+                147.32
+              ],
+              "end": [
+                356.87,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            2.54
+          ],
+          [
+            1,
+            2,
+            2.54
+          ]
+        ],
+        "length": 5.08
+      }
+    },
+    "NET_CLOCK_RAW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "74HC00",
+          "pin": "1A",
+          "side": "right",
+          "point": [
+            356.87,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            449.58,
+            147.32
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin3"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_CLOCK_RAW",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 7,
+            "outer_channel_cost": 85.154,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 252.73,
+            "turns": 4,
+            "score": 1835.18,
+            "portal_route_score": 1835.18,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "74HC00",
+            "pin": "1A",
+            "point": [
+              356.87,
+              149.86
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "NE555",
+            "pin": "OUT",
+            "point": [
+              449.58,
+              147.32
+            ],
+            "exact": true,
+            "source": "Timer:NE555P:unit1:pin3"
+          },
+          "path": [
+            [
+              356.87,
+              149.86
+            ],
+            [
+              361.95,
+              149.86
+            ],
+            [
+              361.95,
+              223.52
+            ],
+            [
+              454.66,
+              223.52
+            ],
+            [
+              454.66,
+              147.32
+            ],
+            [
+              449.58,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                356.87,
+                149.86
+              ],
+              "end": [
+                361.95,
+                149.86
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                361.95,
+                149.86
+              ],
+              "end": [
+                361.95,
+                223.52
+              ],
+              "direction": "down",
+              "length": 73.66
+            },
+            {
+              "start": [
+                361.95,
+                223.52
+              ],
+              "end": [
+                454.66,
+                223.52
+              ],
+              "direction": "right",
+              "length": 92.71
+            },
+            {
+              "start": [
+                454.66,
+                223.52
+              ],
+              "end": [
+                454.66,
+                147.32
+              ],
+              "direction": "up",
+              "length": 76.2
+            },
+            {
+              "start": [
+                454.66,
+                147.32
+              ],
+              "end": [
+                449.58,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            95.25
+          ]
+        ],
+        "length": 95.25
+      }
+    },
+    "NET_LED_INDICATOR_CLOCK_ANODE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_220_CLOCK_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            227.33
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "LED_INDICATOR_CLOCK",
+          "pin": "ANODE",
+          "side": "left",
+          "point": [
+            513.08,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_LED_INDICATOR_CLOCK_ANODE",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 307.338,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 857.25,
+            "turns": 5,
+            "score": 4866.057,
+            "portal_route_score": 4866.057,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "R_220_CLOCK_LED",
+            "pin": "1",
+            "point": [
+              30.48,
+              227.33
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "to": {
+            "ref": "LED_INDICATOR_CLOCK",
+            "pin": "ANODE",
+            "point": [
+              513.08,
+              147.32
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              30.48,
+              227.33
+            ],
+            [
+              30.48,
+              222.25
+            ],
+            [
+              15.24,
+              222.25
+            ],
+            [
+              15.24,
+              15.24
+            ],
+            [
+              508.0,
+              15.24
+            ],
+            [
+              508.0,
+              147.32
+            ],
+            [
+              513.08,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                227.33
+              ],
+              "end": [
+                30.48,
+                222.25
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                30.48,
+                222.25
+              ],
+              "end": [
+                15.24,
+                222.25
+              ],
+              "direction": "left",
+              "length": 15.24
+            },
+            {
+              "start": [
+                15.24,
+                222.25
+              ],
+              "end": [
+                15.24,
+                15.24
+              ],
+              "direction": "up",
+              "length": 207.01
+            },
+            {
+              "start": [
+                15.24,
+                15.24
+              ],
+              "end": [
+                508.0,
+                15.24
+              ],
+              "direction": "right",
+              "length": 492.76
+            },
+            {
+              "start": [
+                508.0,
+                15.24
+              ],
+              "end": [
+                508.0,
+                147.32
+              ],
+              "direction": "down",
+              "length": 132.08
+            },
+            {
+              "start": [
+                508.0,
+                147.32
+              ],
+              "end": [
+                513.08,
+                147.32
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            562.61
+          ]
+        ],
+        "length": 562.61
+      }
+    },
+    "+5V": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "PWR_5V",
+          "pin": "+",
+          "side": "top",
+          "point": [
+            30.48,
+            25.4
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "RESET",
+          "side": "top",
+          "point": [
+            436.88,
+            134.62
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            441.96,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin8"
+        },
+        {
+          "ref": "RES_555_RA",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            309.88,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "DIP_SWITCH",
+          "pin": "S1A",
+          "side": "top",
+          "point": [
+            246.38,
+            139.7
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            347.98,
+            185.42
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit5:pin14"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "/LOAD",
+          "side": "left",
+          "point": [
+            69.85,
+            142.24
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin11"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "DOWN_CLK",
+          "side": "top",
+          "point": [
+            80.01,
+            121.92
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            82.55,
+            121.92
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin16"
+        },
+        {
+          "ref": "PUSH_BUTTON_CLEAR",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            190.5,
+            147.32
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "4511",
+          "pin": "/BI",
+          "side": "left",
+          "point": [
+            383.54,
+            154.94
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin4"
+        },
+        {
+          "ref": "4511",
+          "pin": "/LT",
+          "side": "left",
+          "point": [
+            383.54,
+            152.4
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin3"
+        },
+        {
+          "ref": "4511",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            393.7,
+            132.08
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_555",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            154.94,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC00",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            215.9,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC192",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            279.4,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_4511",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            63.5,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "wire_mode_terminal_label",
+      "terminal_reason": "wire_mode_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "PWR_5V",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            30.48,
+            38.1
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            439.42,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin1"
+        },
+        {
+          "ref": "C_100NF_555_CTRL",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            246.38,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            124.46,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "R_COUNT_ENABLE_PD",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            309.88,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "3A",
+          "side": "bottom",
+          "point": [
+            342.9,
+            156.21
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "3B",
+          "side": "bottom",
+          "point": [
+            345.44,
+            156.21
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "4A",
+          "side": "bottom",
+          "point": [
+            347.98,
+            156.21
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "4B",
+          "side": "bottom",
+          "point": [
+            350.52,
+            156.21
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            347.98,
+            210.82
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit5:pin7"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            69.85,
+            129.54
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin15"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            69.85,
+            132.08
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin1"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "C",
+          "side": "left",
+          "point": [
+            69.85,
+            134.62
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin10"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            69.85,
+            137.16
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin9"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            82.55,
+            160.02
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin8"
+        },
+        {
+          "ref": "R_COUNTER_CLR_PD",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            93.98,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "4511",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            391.16,
+            162.56
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "4511",
+          "pin": "LE",
+          "side": "bottom",
+          "point": [
+            393.7,
+            162.56
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "COM1",
+          "side": "bottom",
+          "point": [
+            558.8,
+            165.1
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "COM2",
+          "side": "bottom",
+          "point": [
+            561.34,
+            165.1
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "DP",
+          "side": "left",
+          "point": [
+            553.72,
+            157.48
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin5"
+        },
+        {
+          "ref": "LED_INDICATOR_CLOCK",
+          "pin": "CATHODE",
+          "side": "bottom",
+          "point": [
+            521.97,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "LED_INDICATOR_CARRY",
+          "pin": "CATHODE",
+          "side": "bottom",
+          "point": [
+            595.63,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_555",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            154.94,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC00",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            215.9,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC192",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            279.4,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_4511",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            63.5,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BCD_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QA",
+          "side": "right",
+          "point": [
+            95.25,
+            129.54
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin3"
+        },
+        {
+          "ref": "4511",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            382.27,
+            154.94
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_BCD_A",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 263.709,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 419.1,
+            "turns": 4,
+            "score": 3744.21,
+            "portal_route_score": 3744.21,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "74HC192",
+            "pin": "QA",
+            "point": [
+              95.25,
+              129.54
+            ],
+            "exact": true,
+            "source": "74xx:74HC192:unit1:pin3"
+          },
+          "to": {
+            "ref": "4511",
+            "pin": "A",
+            "point": [
+              382.27,
+              154.94
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              95.25,
+              129.54
+            ],
+            [
+              100.33,
+              129.54
+            ],
+            [
+              100.33,
+              76.2
+            ],
+            [
+              377.19,
+              76.2
+            ],
+            [
+              377.19,
+              154.94
+            ],
+            [
+              382.27,
+              154.94
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                95.25,
+                129.54
+              ],
+              "end": [
+                100.33,
+                129.54
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                100.33,
+                129.54
+              ],
+              "end": [
+                100.33,
+                76.2
+              ],
+              "direction": "up",
+              "length": 53.34
+            },
+            {
+              "start": [
+                100.33,
+                76.2
+              ],
+              "end": [
+                377.19,
+                76.2
+              ],
+              "direction": "right",
+              "length": 276.86
+            },
+            {
+              "start": [
+                377.19,
+                76.2
+              ],
+              "end": [
+                377.19,
+                154.94
+              ],
+              "direction": "down",
+              "length": 78.74
+            },
+            {
+              "start": [
+                377.19,
+                154.94
+              ],
+              "end": [
+                382.27,
+                154.94
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            312.42
+          ]
+        ],
+        "length": 312.42
+      }
+    },
+    "NET_BCD_B": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QB",
+          "side": "right",
+          "point": [
+            95.25,
+            132.08
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin2"
+        },
+        {
+          "ref": "4511",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            382.27,
+            157.48
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_BCD_B",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 5,
+            "outer_channel_cost": 298.247,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 419.1,
+            "turns": 4,
+            "score": 4398.669,
+            "portal_route_score": 4398.669,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "74HC192",
+            "pin": "QB",
+            "point": [
+              95.25,
+              132.08
+            ],
+            "exact": true,
+            "source": "74xx:74HC192:unit1:pin2"
+          },
+          "to": {
+            "ref": "4511",
+            "pin": "B",
+            "point": [
+              382.27,
+              157.48
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              95.25,
+              132.08
+            ],
+            [
+              100.33,
+              132.08
+            ],
+            [
+              100.33,
+              210.82
+            ],
+            [
+              377.19,
+              210.82
+            ],
+            [
+              377.19,
+              157.48
+            ],
+            [
+              382.27,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                95.25,
+                132.08
+              ],
+              "end": [
+                100.33,
+                132.08
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                100.33,
+                132.08
+              ],
+              "end": [
+                100.33,
+                210.82
+              ],
+              "direction": "down",
+              "length": 78.74
+            },
+            {
+              "start": [
+                100.33,
+                210.82
+              ],
+              "end": [
+                377.19,
+                210.82
+              ],
+              "direction": "right",
+              "length": 276.86
+            },
+            {
+              "start": [
+                377.19,
+                210.82
+              ],
+              "end": [
+                377.19,
+                157.48
+              ],
+              "direction": "up",
+              "length": 53.34
+            },
+            {
+              "start": [
+                377.19,
+                157.48
+              ],
+              "end": [
+                382.27,
+                157.48
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            312.42
+          ]
+        ],
+        "length": 312.42
+      }
+    },
+    "NET_BCD_C": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QC",
+          "side": "right",
+          "point": [
+            95.25,
+            134.62
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin6"
+        },
+        {
+          "ref": "4511",
+          "pin": "C",
+          "side": "left",
+          "point": [
+            382.27,
+            160.02
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            312.42
+          ]
+        ],
+        "length": 312.42
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_BCD_C exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_BCD_C exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_BCD_D": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QD",
+          "side": "right",
+          "point": [
+            95.25,
+            137.16
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin7"
+        },
+        {
+          "ref": "4511",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            382.27,
+            162.56
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            312.42
+          ]
+        ],
+        "length": 312.42
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_BCD_D exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_BCD_D exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_R_SEG_A_2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_SEG_A",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            130.81
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            553.72,
+            139.7
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_R_SEG_A_2",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 9,
+            "outer_channel_cost": 277.137,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 773.43,
+            "turns": 5,
+            "score": 4819.819,
+            "portal_route_score": 4819.819,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "R_SEG_A",
+            "pin": "2",
+            "point": [
+              30.48,
+              130.81
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "7SEGCOMK",
+            "pin": "A",
+            "point": [
+              553.72,
+              139.7
+            ],
+            "exact": true,
+            "source": "Display_Character:KCSC02-107:unit1:pin7"
+          },
+          "path": [
+            [
+              30.48,
+              130.81
+            ],
+            [
+              30.48,
+              135.89
+            ],
+            [
+              22.86,
+              135.89
+            ],
+            [
+              22.86,
+              22.86
+            ],
+            [
+              548.64,
+              22.86
+            ],
+            [
+              548.64,
+              139.7
+            ],
+            [
+              553.72,
+              139.7
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                130.81
+              ],
+              "end": [
+                30.48,
+                135.89
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                30.48,
+                135.89
+              ],
+              "end": [
+                22.86,
+                135.89
+              ],
+              "direction": "left",
+              "length": 7.62
+            },
+            {
+              "start": [
+                22.86,
+                135.89
+              ],
+              "end": [
+                22.86,
+                22.86
+              ],
+              "direction": "up",
+              "length": 113.03
+            },
+            {
+              "start": [
+                22.86,
+                22.86
+              ],
+              "end": [
+                548.64,
+                22.86
+              ],
+              "direction": "right",
+              "length": 525.78
+            },
+            {
+              "start": [
+                548.64,
+                22.86
+              ],
+              "end": [
+                548.64,
+                139.7
+              ],
+              "direction": "down",
+              "length": 116.84
+            },
+            {
+              "start": [
+                548.64,
+                139.7
+              ],
+              "end": [
+                553.72,
+                139.7
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            532.13
+          ]
+        ],
+        "length": 532.13
+      }
+    },
+    "NET_R_SEG_B_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_B",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            553.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            527.05
+          ]
+        ],
+        "length": 527.05
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_R_SEG_B_2 exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_R_SEG_B_2 exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_R_SEG_C_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_C",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "C",
+          "side": "left",
+          "point": [
+            553.72,
+            144.78
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            542.29
+          ]
+        ],
+        "length": 542.29
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_R_SEG_C_2 exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_R_SEG_C_2 exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_R_SEG_D_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_D",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            181.61
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            553.72,
+            147.32
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            557.53
+          ]
+        ],
+        "length": 557.53
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_R_SEG_D_2 exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_R_SEG_D_2 exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_R_SEG_E_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_E",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            199.39
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "E",
+          "side": "left",
+          "point": [
+            553.72,
+            149.86
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            572.77
+          ]
+        ],
+        "length": 572.77
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_R_SEG_E_2 exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_R_SEG_E_2 exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_R_SEG_F_2": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_F",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            217.17
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "F",
+          "side": "left",
+          "point": [
+            553.72,
+            152.4
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin9"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            588.01
+          ]
+        ],
+        "length": 588.01
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_R_SEG_F_2 exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_R_SEG_F_2 exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_R_SEG_G_2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_SEG_G",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            252.73
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            553.72,
+            154.94
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin10"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_R_SEG_G_2",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 297.694,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 730.25,
+            "turns": 3,
+            "score": 4623.026,
+            "portal_route_score": 4623.026,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "R_SEG_G",
+            "pin": "2",
+            "point": [
+              30.48,
+              252.73
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "7SEGCOMK",
+            "pin": "G",
+            "point": [
+              553.72,
+              154.94
+            ],
+            "exact": true,
+            "source": "Display_Character:KCSC02-107:unit1:pin10"
+          },
+          "path": [
+            [
+              30.48,
+              252.73
+            ],
+            [
+              30.48,
+              257.81
+            ],
+            [
+              598.17,
+              257.81
+            ],
+            [
+              598.17,
+              154.94
+            ],
+            [
+              553.72,
+              154.94
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                252.73
+              ],
+              "end": [
+                30.48,
+                257.81
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                30.48,
+                257.81
+              ],
+              "end": [
+                598.17,
+                257.81
+              ],
+              "direction": "right",
+              "length": 567.69
+            },
+            {
+              "start": [
+                598.17,
+                257.81
+              ],
+              "end": [
+                598.17,
+                154.94
+              ],
+              "direction": "up",
+              "length": 102.87
+            },
+            {
+              "start": [
+                598.17,
+                154.94
+              ],
+              "end": [
+                553.72,
+                154.94
+              ],
+              "direction": "left",
+              "length": 44.45
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            621.03
+          ]
+        ],
+        "length": 621.03
+      }
+    },
+    "NET_4511_A": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_A",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            123.19
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "4511",
+          "pin": "a",
+          "side": "left",
+          "point": [
+            382.27,
+            137.16
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            365.76
+          ]
+        ],
+        "length": 365.76
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_4511_A exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_4511_A exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_4511_B": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_B",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "4511",
+          "pin": "b",
+          "side": "left",
+          "point": [
+            382.27,
+            139.7
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            353.06
+          ]
+        ],
+        "length": 353.06
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_4511_B exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_4511_B exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_4511_C": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_C",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "4511",
+          "pin": "c",
+          "side": "left",
+          "point": [
+            382.27,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            365.76
+          ]
+        ],
+        "length": 365.76
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_4511_C exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_4511_C exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_4511_D": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_D",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            173.99
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "4511",
+          "pin": "d",
+          "side": "left",
+          "point": [
+            382.27,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            381.0
+          ]
+        ],
+        "length": 381.0
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_4511_D exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_4511_D exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_4511_E": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_E",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            191.77
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "4511",
+          "pin": "e",
+          "side": "left",
+          "point": [
+            382.27,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            396.24
+          ]
+        ],
+        "length": 396.24
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_4511_E exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_4511_E exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_4511_F": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_F",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            209.55
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "4511",
+          "pin": "f",
+          "side": "left",
+          "point": [
+            382.27,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            411.48
+          ]
+        ],
+        "length": 411.48
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_4511_F exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_4511_F exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_4511_G": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_SEG_G",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            245.11
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "4511",
+          "pin": "g",
+          "side": "left",
+          "point": [
+            382.27,
+            152.4
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            444.5
+          ]
+        ],
+        "length": 444.5
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_4511_G exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_4511_G exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_555_DISCH": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "RES_555_RB",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            52.07
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "RES_555_RA",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            309.88,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "NE555",
+          "pin": "DISCH",
+          "side": "left",
+          "point": [
+            429.26,
+            144.78
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin7"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_555_DISCH",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 99.798,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 278.13,
+            "turns": 3,
+            "score": 1636.158,
+            "portal_route_score": 1636.158,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "RES_555_RA",
+            "pin": "2",
+            "point": [
+              309.88,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "NE555",
+            "pin": "DISCH",
+            "point": [
+              429.26,
+              144.78
+            ],
+            "exact": true,
+            "source": "Timer:NE555P:unit1:pin7"
+          },
+          "path": [
+            [
+              309.88,
+              143.51
+            ],
+            [
+              309.88,
+              69.85
+            ],
+            [
+              424.18,
+              69.85
+            ],
+            [
+              424.18,
+              144.78
+            ],
+            [
+              429.26,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                309.88,
+                143.51
+              ],
+              "end": [
+                309.88,
+                69.85
+              ],
+              "direction": "up",
+              "length": 73.66
+            },
+            {
+              "start": [
+                309.88,
+                69.85
+              ],
+              "end": [
+                424.18,
+                69.85
+              ],
+              "direction": "right",
+              "length": 114.3
+            },
+            {
+              "start": [
+                424.18,
+                69.85
+              ],
+              "end": [
+                424.18,
+                144.78
+              ],
+              "direction": "down",
+              "length": 74.93
+            },
+            {
+              "start": [
+                424.18,
+                144.78
+              ],
+              "end": [
+                429.26,
+                144.78
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "NET_555_DISCH",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 515.201,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 391.16,
+            "turns": 4,
+            "score": 6894.367,
+            "portal_route_score": 6894.367,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "RES_555_RA",
+            "pin": "2",
+            "point": [
+              309.88,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "RES_555_RB",
+            "pin": "1",
+            "point": [
+              30.48,
+              52.07
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              309.88,
+              143.51
+            ],
+            [
+              309.88,
+              148.59
+            ],
+            [
+              287.02,
+              148.59
+            ],
+            [
+              287.02,
+              46.99
+            ],
+            [
+              30.48,
+              46.99
+            ],
+            [
+              30.48,
+              52.07
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                309.88,
+                143.51
+              ],
+              "end": [
+                309.88,
+                148.59
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                309.88,
+                148.59
+              ],
+              "end": [
+                287.02,
+                148.59
+              ],
+              "direction": "left",
+              "length": 22.86
+            },
+            {
+              "start": [
+                287.02,
+                148.59
+              ],
+              "end": [
+                287.02,
+                46.99
+              ],
+              "direction": "up",
+              "length": 101.6
+            },
+            {
+              "start": [
+                287.02,
+                46.99
+              ],
+              "end": [
+                30.48,
+                46.99
+              ],
+              "direction": "left",
+              "length": 256.54
+            },
+            {
+              "start": [
+                30.48,
+                46.99
+              ],
+              "end": [
+                30.48,
+                52.07
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            370.84
+          ],
+          [
+            1,
+            2,
+            120.65
+          ]
+        ],
+        "length": 491.49
+      }
+    },
+    "NET_555_TIMING": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "RES_555_RB",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            59.69
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            124.46,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "NE555",
+          "pin": "THRESH",
+          "side": "left",
+          "point": [
+            426.72,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "NE555",
+          "pin": "TRIG",
+          "side": "left",
+          "point": [
+            429.26,
+            152.4
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            177.8
+          ],
+          [
+            1,
+            2,
+            303.53
+          ],
+          [
+            2,
+            3,
+            10.16
+          ]
+        ],
+        "length": 491.49
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_555_TIMING NE555.TRIG",
+        "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_74HC00_3Y": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "TEST_POINT_NAND3",
+          "pin": "TP",
+          "side": "right",
+          "point": [
+            36.83,
+            69.85
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "3Y",
+          "side": "left",
+          "point": [
+            339.09,
+            142.24
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_74HC00_3Y",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 8,
+            "outer_channel_cost": 231.854,
+            "different_net_crossings": 3,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 387.35,
+            "turns": 4,
+            "score": 3810.202,
+            "portal_route_score": 3810.202,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "TEST_POINT_NAND3",
+            "pin": "TP",
+            "point": [
+              36.83,
+              69.85
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "74HC00",
+            "pin": "3Y",
+            "point": [
+              339.09,
+              142.24
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              36.83,
+              69.85
+            ],
+            [
+              41.91,
+              69.85
+            ],
+            [
+              41.91,
+              63.5
+            ],
+            [
+              334.01,
+              63.5
+            ],
+            [
+              334.01,
+              142.24
+            ],
+            [
+              339.09,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                36.83,
+                69.85
+              ],
+              "end": [
+                41.91,
+                69.85
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                41.91,
+                69.85
+              ],
+              "end": [
+                41.91,
+                63.5
+              ],
+              "direction": "up",
+              "length": 6.35
+            },
+            {
+              "start": [
+                41.91,
+                63.5
+              ],
+              "end": [
+                334.01,
+                63.5
+              ],
+              "direction": "right",
+              "length": 292.1
+            },
+            {
+              "start": [
+                334.01,
+                63.5
+              ],
+              "end": [
+                334.01,
+                142.24
+              ],
+              "direction": "down",
+              "length": 78.74
+            },
+            {
+              "start": [
+                334.01,
+                142.24
+              ],
+              "end": [
+                339.09,
+                142.24
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            374.65
+          ]
+        ],
+        "length": 374.65
+      }
+    },
+    "NET_74HC00_4Y": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "TEST_POINT_NAND4",
+          "pin": "TP",
+          "side": "right",
+          "point": [
+            36.83,
+            87.63
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "4Y",
+          "side": "left",
+          "point": [
+            339.09,
+            144.78
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_74HC00_4Y",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 10,
+            "outer_channel_cost": 242.056,
+            "different_net_crossings": 5,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 359.41,
+            "turns": 2,
+            "score": 4064.382,
+            "portal_route_score": 4064.382,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "TEST_POINT_NAND4",
+            "pin": "TP",
+            "point": [
+              36.83,
+              87.63
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "74HC00",
+            "pin": "4Y",
+            "point": [
+              339.09,
+              144.78
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              36.83,
+              87.63
+            ],
+            [
+              262.89,
+              87.63
+            ],
+            [
+              262.89,
+              144.78
+            ],
+            [
+              339.09,
+              144.78
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                36.83,
+                87.63
+              ],
+              "end": [
+                262.89,
+                87.63
+              ],
+              "direction": "right",
+              "length": 226.06
+            },
+            {
+              "start": [
+                262.89,
+                87.63
+              ],
+              "end": [
+                262.89,
+                144.78
+              ],
+              "direction": "down",
+              "length": 57.15
+            },
+            {
+              "start": [
+                262.89,
+                144.78
+              ],
+              "end": [
+                339.09,
+                144.78
+              ],
+              "direction": "right",
+              "length": 76.2
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            359.41
+          ]
+        ],
+        "length": 359.41
+      }
+    },
+    "NET_74HC192_CARRY": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R_220_CARRY_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            270.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "TEST_POINT_CARRY",
+          "pin": "TP",
+          "side": "left",
+          "point": [
+            57.15,
+            135.89
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "CARRY",
+          "side": "left",
+          "point": [
+            69.85,
+            146.05
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_74HC192_CARRY",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 8,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 45.72,
+            "turns": 2,
+            "score": 686.02,
+            "portal_route_score": 686.02,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "TEST_POINT_CARRY",
+            "pin": "TP",
+            "point": [
+              57.15,
+              135.89
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "74HC192",
+            "pin": "CARRY",
+            "point": [
+              69.85,
+              146.05
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              57.15,
+              135.89
+            ],
+            [
+              45.72,
+              135.89
+            ],
+            [
+              45.72,
+              146.05
+            ],
+            [
+              69.85,
+              146.05
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                57.15,
+                135.89
+              ],
+              "end": [
+                45.72,
+                135.89
+              ],
+              "direction": "left",
+              "length": 11.43
+            },
+            {
+              "start": [
+                45.72,
+                135.89
+              ],
+              "end": [
+                45.72,
+                146.05
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                45.72,
+                146.05
+              ],
+              "end": [
+                69.85,
+                146.05
+              ],
+              "direction": "right",
+              "length": 24.13
+            }
+          ]
+        },
+        {
+          "net": "NET_74HC192_CARRY",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 79.839,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 7,
+            "length": 171.45,
+            "turns": 3,
+            "score": 1290.313,
+            "portal_route_score": 1290.313,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "TEST_POINT_CARRY",
+            "pin": "TP",
+            "point": [
+              57.15,
+              135.89
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "R_220_CARRY_LED",
+            "pin": "2",
+            "point": [
+              30.48,
+              270.51
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "path": [
+            [
+              57.15,
+              135.89
+            ],
+            [
+              45.72,
+              135.89
+            ],
+            [
+              45.72,
+              275.59
+            ],
+            [
+              30.48,
+              275.59
+            ],
+            [
+              30.48,
+              270.51
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                57.15,
+                135.89
+              ],
+              "end": [
+                45.72,
+                135.89
+              ],
+              "direction": "left",
+              "length": 11.43
+            },
+            {
+              "start": [
+                45.72,
+                135.89
+              ],
+              "end": [
+                45.72,
+                275.59
+              ],
+              "direction": "down",
+              "length": 139.7
+            },
+            {
+              "start": [
+                45.72,
+                275.59
+              ],
+              "end": [
+                30.48,
+                275.59
+              ],
+              "direction": "left",
+              "length": 15.24
+            },
+            {
+              "start": [
+                30.48,
+                275.59
+              ],
+              "end": [
+                30.48,
+                270.51
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            161.29
+          ],
+          [
+            1,
+            2,
+            22.86
+          ]
+        ],
+        "length": 184.15
+      }
+    },
+    "NET_LED_INDICATOR_CARRY_ANODE": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "R_220_CARRY_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            262.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "LED_INDICATOR_CARRY",
+          "pin": "ANODE",
+          "side": "left",
+          "point": [
+            586.74,
+            147.32
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            671.83
+          ]
+        ],
+        "length": 671.83
+      },
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: NET_LED_INDICATOR_CARRY_ANODE exceeded 3000 explored grid states.",
+        "astar_unroutable_expansion_limit: NET_LED_INDICATOR_CARRY_ANODE exceeded 3000 explored grid states."
+      ]
+    },
+    "NET_NE555_CTRL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C_100NF_555_CTRL",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            246.38,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "NE555",
+          "pin": "CTRL",
+          "side": "left",
+          "point": [
+            426.72,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_NE555_CTRL",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 3,
+            "outer_channel_cost": 172.5,
+            "different_net_crossings": 5,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 306.07,
+            "turns": 3,
+            "score": 2616.516,
+            "portal_route_score": 2616.516,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "C_100NF_555_CTRL",
+            "pin": "1",
+            "point": [
+              246.38,
+              133.35
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "NE555",
+            "pin": "CTRL",
+            "point": [
+              426.72,
+              149.86
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              246.38,
+              133.35
+            ],
+            [
+              246.38,
+              78.74
+            ],
+            [
+              421.64,
+              78.74
+            ],
+            [
+              421.64,
+              149.86
+            ],
+            [
+              426.72,
+              149.86
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                246.38,
+                133.35
+              ],
+              "end": [
+                246.38,
+                78.74
+              ],
+              "direction": "up",
+              "length": 54.61
+            },
+            {
+              "start": [
+                246.38,
+                78.74
+              ],
+              "end": [
+                421.64,
+                78.74
+              ],
+              "direction": "right",
+              "length": 175.26
+            },
+            {
+              "start": [
+                421.64,
+                78.74
+              ],
+              "end": [
+                421.64,
+                149.86
+              ],
+              "direction": "down",
+              "length": 71.12
+            },
+            {
+              "start": [
+                421.64,
+                149.86
+              ],
+              "end": [
+                426.72,
+                149.86
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            196.85
+          ]
+        ],
+        "length": 196.85
+      }
+    },
+    "NET_74HC192_BORROW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "TEST_POINT_BORROW",
+          "pin": "TP",
+          "side": "right",
+          "point": [
+            36.83,
+            105.41
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "BORROW",
+          "side": "left",
+          "point": [
+            69.85,
+            143.51
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_74HC192_BORROW",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 7,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 2,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 71.12,
+            "turns": 2,
+            "score": 631.42,
+            "portal_route_score": 631.42,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "TEST_POINT_BORROW",
+            "pin": "TP",
+            "point": [
+              36.83,
+              105.41
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "to": {
+            "ref": "74HC192",
+            "pin": "BORROW",
+            "point": [
+              69.85,
+              143.51
+            ],
+            "exact": false,
+            "source": "estimated_component_edge"
+          },
+          "path": [
+            [
+              36.83,
+              105.41
+            ],
+            [
+              55.88,
+              105.41
+            ],
+            [
+              55.88,
+              143.51
+            ],
+            [
+              69.85,
+              143.51
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                36.83,
+                105.41
+              ],
+              "end": [
+                55.88,
+                105.41
+              ],
+              "direction": "right",
+              "length": 19.05
+            },
+            {
+              "start": [
+                55.88,
+                105.41
+              ],
+              "end": [
+                55.88,
+                143.51
+              ],
+              "direction": "down",
+              "length": 38.1
+            },
+            {
+              "start": [
+                55.88,
+                143.51
+              ],
+              "end": [
+                69.85,
+                143.51
+              ],
+              "direction": "right",
+              "length": 13.97
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            71.12
+          ]
+        ],
+        "length": 71.12
+      }
+    },
+    "NET_COUNTER_CLR": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "CLR",
+          "side": "left",
+          "point": [
+            69.85,
+            152.4
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin14"
+        },
+        {
+          "ref": "R_COUNTER_CLR_PD",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            93.98,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "PUSH_BUTTON_CLEAR",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            180.34,
+            147.32
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "NET_COUNTER_CLR",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 2,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 53.34,
+            "turns": 1,
+            "score": 213.49,
+            "portal_route_score": 213.49,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "R_COUNTER_CLR_PD",
+            "pin": "1",
+            "point": [
+              93.98,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "to": {
+            "ref": "74HC192",
+            "pin": "CLR",
+            "point": [
+              69.85,
+              152.4
+            ],
+            "exact": true,
+            "source": "74xx:74HC192:unit1:pin14"
+          },
+          "path": [
+            [
+              93.98,
+              143.51
+            ],
+            [
+              93.98,
+              152.4
+            ],
+            [
+              69.85,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                93.98,
+                143.51
+              ],
+              "end": [
+                93.98,
+                152.4
+              ],
+              "direction": "down",
+              "length": 8.89
+            },
+            {
+              "start": [
+                93.98,
+                152.4
+              ],
+              "end": [
+                69.85,
+                152.4
+              ],
+              "direction": "left",
+              "length": 24.13
+            }
+          ]
+        },
+        {
+          "net": "NET_COUNTER_CLR",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 7,
+            "outer_channel_cost": 176.755,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 125.73,
+            "turns": 2,
+            "score": 2807.295,
+            "portal_route_score": 2807.295,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "74HC192",
+            "pin": "CLR",
+            "point": [
+              69.85,
+              152.4
+            ],
+            "exact": true,
+            "source": "74xx:74HC192:unit1:pin14"
+          },
+          "to": {
+            "ref": "PUSH_BUTTON_CLEAR",
+            "pin": "1",
+            "point": [
+              180.34,
+              147.32
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "path": [
+            [
+              69.85,
+              152.4
+            ],
+            [
+              162.56,
+              152.4
+            ],
+            [
+              162.56,
+              147.32
+            ],
+            [
+              180.34,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                69.85,
+                152.4
+              ],
+              "end": [
+                162.56,
+                152.4
+              ],
+              "direction": "right",
+              "length": 92.71
+            },
+            {
+              "start": [
+                162.56,
+                152.4
+              ],
+              "end": [
+                162.56,
+                147.32
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                162.56,
+                147.32
+              ],
+              "end": [
+                180.34,
+                147.32
+              ],
+              "direction": "right",
+              "length": 17.78
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            33.02
+          ],
+          [
+            1,
+            2,
+            90.17
+          ]
+        ],
+        "length": 123.19
+      }
+    },
+    "NET_COUNT_ENABLE": {
+      "strategy": "unroutable",
+      "endpoints": [
+        {
+          "ref": "DIP_SWITCH",
+          "pin": "S1B",
+          "side": "right",
+          "point": [
+            255.27,
+            156.21
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        },
+        {
+          "ref": "R_COUNT_ENABLE_PD",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            309.88,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "1B",
+          "side": "left",
+          "point": [
+            339.09,
+            149.86
+          ],
+          "exact": false,
+          "source": "estimated_component_edge"
+        }
+      ],
+      "routes": [],
+      "partial_routes": [],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            57.15
+          ],
+          [
+            1,
+            2,
+            33.02
+          ]
+        ],
+        "length": 90.17
+      },
+      "failure_warnings": [
+        "unroutable_endpoint: NET_COUNT_ENABLE 74HC00.1B",
+        "unroutable_endpoint: NET_COUNT_ENABLE DIP_SWITCH.S1B"
+      ]
+    }
+  },
+  "routes": [
+    {
+      "net": "NET_CLOCK_NAND",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 5,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 12.7,
+        "turns": 2,
+        "score": 413.0,
+        "portal_route_score": 413.0,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "74HC00",
+        "pin": "2A",
+        "point": [
+          356.87,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "74HC00",
+        "pin": "1Y",
+        "point": [
+          356.87,
+          142.24
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          356.87,
+          144.78
+        ],
+        [
+          361.95,
+          144.78
+        ],
+        [
+          361.95,
+          142.24
+        ],
+        [
+          356.87,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            356.87,
+            144.78
+          ],
+          "end": [
+            361.95,
+            144.78
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            361.95,
+            144.78
+          ],
+          "end": [
+            361.95,
+            142.24
+          ],
+          "direction": "up",
+          "length": 2.54
+        },
+        {
+          "start": [
+            361.95,
+            142.24
+          ],
+          "end": [
+            356.87,
+            142.24
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_CLOCK_NAND",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 6,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 12.7,
+        "turns": 2,
+        "score": 493.2,
+        "portal_route_score": 493.2,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "74HC00",
+        "pin": "2A",
+        "point": [
+          356.87,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "74HC00",
+        "pin": "2B",
+        "point": [
+          356.87,
+          147.32
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          356.87,
+          144.78
+        ],
+        [
+          361.95,
+          144.78
+        ],
+        [
+          361.95,
+          147.32
+        ],
+        [
+          356.87,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            356.87,
+            144.78
+          ],
+          "end": [
+            361.95,
+            144.78
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            361.95,
+            144.78
+          ],
+          "end": [
+            361.95,
+            147.32
+          ],
+          "direction": "down",
+          "length": 2.54
+        },
+        {
+          "start": [
+            361.95,
+            147.32
+          ],
+          "end": [
+            356.87,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_CLOCK_RAW",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 7,
+        "outer_channel_cost": 85.154,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 252.73,
+        "turns": 4,
+        "score": 1835.18,
+        "portal_route_score": 1835.18,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "74HC00",
+        "pin": "1A",
+        "point": [
+          356.87,
+          149.86
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "NE555",
+        "pin": "OUT",
+        "point": [
+          449.58,
+          147.32
+        ],
+        "exact": true,
+        "source": "Timer:NE555P:unit1:pin3"
+      },
+      "path": [
+        [
+          356.87,
+          149.86
+        ],
+        [
+          361.95,
+          149.86
+        ],
+        [
+          361.95,
+          223.52
+        ],
+        [
+          454.66,
+          223.52
+        ],
+        [
+          454.66,
+          147.32
+        ],
+        [
+          449.58,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            356.87,
+            149.86
+          ],
+          "end": [
+            361.95,
+            149.86
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            361.95,
+            149.86
+          ],
+          "end": [
+            361.95,
+            223.52
+          ],
+          "direction": "down",
+          "length": 73.66
+        },
+        {
+          "start": [
+            361.95,
+            223.52
+          ],
+          "end": [
+            454.66,
+            223.52
+          ],
+          "direction": "right",
+          "length": 92.71
+        },
+        {
+          "start": [
+            454.66,
+            223.52
+          ],
+          "end": [
+            454.66,
+            147.32
+          ],
+          "direction": "up",
+          "length": 76.2
+        },
+        {
+          "start": [
+            454.66,
+            147.32
+          ],
+          "end": [
+            449.58,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_LED_INDICATOR_CLOCK_ANODE",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 307.338,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 857.25,
+        "turns": 5,
+        "score": 4866.057,
+        "portal_route_score": 4866.057,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "R_220_CLOCK_LED",
+        "pin": "1",
+        "point": [
+          30.48,
+          227.33
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "to": {
+        "ref": "LED_INDICATOR_CLOCK",
+        "pin": "ANODE",
+        "point": [
+          513.08,
+          147.32
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          30.48,
+          227.33
+        ],
+        [
+          30.48,
+          222.25
+        ],
+        [
+          15.24,
+          222.25
+        ],
+        [
+          15.24,
+          15.24
+        ],
+        [
+          508.0,
+          15.24
+        ],
+        [
+          508.0,
+          147.32
+        ],
+        [
+          513.08,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            227.33
+          ],
+          "end": [
+            30.48,
+            222.25
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            30.48,
+            222.25
+          ],
+          "end": [
+            15.24,
+            222.25
+          ],
+          "direction": "left",
+          "length": 15.24
+        },
+        {
+          "start": [
+            15.24,
+            222.25
+          ],
+          "end": [
+            15.24,
+            15.24
+          ],
+          "direction": "up",
+          "length": 207.01
+        },
+        {
+          "start": [
+            15.24,
+            15.24
+          ],
+          "end": [
+            508.0,
+            15.24
+          ],
+          "direction": "right",
+          "length": 492.76
+        },
+        {
+          "start": [
+            508.0,
+            15.24
+          ],
+          "end": [
+            508.0,
+            147.32
+          ],
+          "direction": "down",
+          "length": 132.08
+        },
+        {
+          "start": [
+            508.0,
+            147.32
+          ],
+          "end": [
+            513.08,
+            147.32
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_BCD_A",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 263.709,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 419.1,
+        "turns": 4,
+        "score": 3744.21,
+        "portal_route_score": 3744.21,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "74HC192",
+        "pin": "QA",
+        "point": [
+          95.25,
+          129.54
+        ],
+        "exact": true,
+        "source": "74xx:74HC192:unit1:pin3"
+      },
+      "to": {
+        "ref": "4511",
+        "pin": "A",
+        "point": [
+          382.27,
+          154.94
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          95.25,
+          129.54
+        ],
+        [
+          100.33,
+          129.54
+        ],
+        [
+          100.33,
+          76.2
+        ],
+        [
+          377.19,
+          76.2
+        ],
+        [
+          377.19,
+          154.94
+        ],
+        [
+          382.27,
+          154.94
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            95.25,
+            129.54
+          ],
+          "end": [
+            100.33,
+            129.54
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            100.33,
+            129.54
+          ],
+          "end": [
+            100.33,
+            76.2
+          ],
+          "direction": "up",
+          "length": 53.34
+        },
+        {
+          "start": [
+            100.33,
+            76.2
+          ],
+          "end": [
+            377.19,
+            76.2
+          ],
+          "direction": "right",
+          "length": 276.86
+        },
+        {
+          "start": [
+            377.19,
+            76.2
+          ],
+          "end": [
+            377.19,
+            154.94
+          ],
+          "direction": "down",
+          "length": 78.74
+        },
+        {
+          "start": [
+            377.19,
+            154.94
+          ],
+          "end": [
+            382.27,
+            154.94
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_BCD_B",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 5,
+        "outer_channel_cost": 298.247,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 419.1,
+        "turns": 4,
+        "score": 4398.669,
+        "portal_route_score": 4398.669,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "74HC192",
+        "pin": "QB",
+        "point": [
+          95.25,
+          132.08
+        ],
+        "exact": true,
+        "source": "74xx:74HC192:unit1:pin2"
+      },
+      "to": {
+        "ref": "4511",
+        "pin": "B",
+        "point": [
+          382.27,
+          157.48
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          95.25,
+          132.08
+        ],
+        [
+          100.33,
+          132.08
+        ],
+        [
+          100.33,
+          210.82
+        ],
+        [
+          377.19,
+          210.82
+        ],
+        [
+          377.19,
+          157.48
+        ],
+        [
+          382.27,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            95.25,
+            132.08
+          ],
+          "end": [
+            100.33,
+            132.08
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            100.33,
+            132.08
+          ],
+          "end": [
+            100.33,
+            210.82
+          ],
+          "direction": "down",
+          "length": 78.74
+        },
+        {
+          "start": [
+            100.33,
+            210.82
+          ],
+          "end": [
+            377.19,
+            210.82
+          ],
+          "direction": "right",
+          "length": 276.86
+        },
+        {
+          "start": [
+            377.19,
+            210.82
+          ],
+          "end": [
+            377.19,
+            157.48
+          ],
+          "direction": "up",
+          "length": 53.34
+        },
+        {
+          "start": [
+            377.19,
+            157.48
+          ],
+          "end": [
+            382.27,
+            157.48
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_R_SEG_A_2",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 9,
+        "outer_channel_cost": 277.137,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 773.43,
+        "turns": 5,
+        "score": 4819.819,
+        "portal_route_score": 4819.819,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "R_SEG_A",
+        "pin": "2",
+        "point": [
+          30.48,
+          130.81
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "7SEGCOMK",
+        "pin": "A",
+        "point": [
+          553.72,
+          139.7
+        ],
+        "exact": true,
+        "source": "Display_Character:KCSC02-107:unit1:pin7"
+      },
+      "path": [
+        [
+          30.48,
+          130.81
+        ],
+        [
+          30.48,
+          135.89
+        ],
+        [
+          22.86,
+          135.89
+        ],
+        [
+          22.86,
+          22.86
+        ],
+        [
+          548.64,
+          22.86
+        ],
+        [
+          548.64,
+          139.7
+        ],
+        [
+          553.72,
+          139.7
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            130.81
+          ],
+          "end": [
+            30.48,
+            135.89
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            30.48,
+            135.89
+          ],
+          "end": [
+            22.86,
+            135.89
+          ],
+          "direction": "left",
+          "length": 7.62
+        },
+        {
+          "start": [
+            22.86,
+            135.89
+          ],
+          "end": [
+            22.86,
+            22.86
+          ],
+          "direction": "up",
+          "length": 113.03
+        },
+        {
+          "start": [
+            22.86,
+            22.86
+          ],
+          "end": [
+            548.64,
+            22.86
+          ],
+          "direction": "right",
+          "length": 525.78
+        },
+        {
+          "start": [
+            548.64,
+            22.86
+          ],
+          "end": [
+            548.64,
+            139.7
+          ],
+          "direction": "down",
+          "length": 116.84
+        },
+        {
+          "start": [
+            548.64,
+            139.7
+          ],
+          "end": [
+            553.72,
+            139.7
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_R_SEG_G_2",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 297.694,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 730.25,
+        "turns": 3,
+        "score": 4623.026,
+        "portal_route_score": 4623.026,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "R_SEG_G",
+        "pin": "2",
+        "point": [
+          30.48,
+          252.73
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "7SEGCOMK",
+        "pin": "G",
+        "point": [
+          553.72,
+          154.94
+        ],
+        "exact": true,
+        "source": "Display_Character:KCSC02-107:unit1:pin10"
+      },
+      "path": [
+        [
+          30.48,
+          252.73
+        ],
+        [
+          30.48,
+          257.81
+        ],
+        [
+          598.17,
+          257.81
+        ],
+        [
+          598.17,
+          154.94
+        ],
+        [
+          553.72,
+          154.94
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            252.73
+          ],
+          "end": [
+            30.48,
+            257.81
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            30.48,
+            257.81
+          ],
+          "end": [
+            598.17,
+            257.81
+          ],
+          "direction": "right",
+          "length": 567.69
+        },
+        {
+          "start": [
+            598.17,
+            257.81
+          ],
+          "end": [
+            598.17,
+            154.94
+          ],
+          "direction": "up",
+          "length": 102.87
+        },
+        {
+          "start": [
+            598.17,
+            154.94
+          ],
+          "end": [
+            553.72,
+            154.94
+          ],
+          "direction": "left",
+          "length": 44.45
+        }
+      ]
+    },
+    {
+      "net": "NET_555_DISCH",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 99.798,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 278.13,
+        "turns": 3,
+        "score": 1636.158,
+        "portal_route_score": 1636.158,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "RES_555_RA",
+        "pin": "2",
+        "point": [
+          309.88,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "NE555",
+        "pin": "DISCH",
+        "point": [
+          429.26,
+          144.78
+        ],
+        "exact": true,
+        "source": "Timer:NE555P:unit1:pin7"
+      },
+      "path": [
+        [
+          309.88,
+          143.51
+        ],
+        [
+          309.88,
+          69.85
+        ],
+        [
+          424.18,
+          69.85
+        ],
+        [
+          424.18,
+          144.78
+        ],
+        [
+          429.26,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            309.88,
+            143.51
+          ],
+          "end": [
+            309.88,
+            69.85
+          ],
+          "direction": "up",
+          "length": 73.66
+        },
+        {
+          "start": [
+            309.88,
+            69.85
+          ],
+          "end": [
+            424.18,
+            69.85
+          ],
+          "direction": "right",
+          "length": 114.3
+        },
+        {
+          "start": [
+            424.18,
+            69.85
+          ],
+          "end": [
+            424.18,
+            144.78
+          ],
+          "direction": "down",
+          "length": 74.93
+        },
+        {
+          "start": [
+            424.18,
+            144.78
+          ],
+          "end": [
+            429.26,
+            144.78
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_555_DISCH",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 515.201,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 391.16,
+        "turns": 4,
+        "score": 6894.367,
+        "portal_route_score": 6894.367,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "RES_555_RA",
+        "pin": "2",
+        "point": [
+          309.88,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "RES_555_RB",
+        "pin": "1",
+        "point": [
+          30.48,
+          52.07
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          309.88,
+          143.51
+        ],
+        [
+          309.88,
+          148.59
+        ],
+        [
+          287.02,
+          148.59
+        ],
+        [
+          287.02,
+          46.99
+        ],
+        [
+          30.48,
+          46.99
+        ],
+        [
+          30.48,
+          52.07
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            309.88,
+            143.51
+          ],
+          "end": [
+            309.88,
+            148.59
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            309.88,
+            148.59
+          ],
+          "end": [
+            287.02,
+            148.59
+          ],
+          "direction": "left",
+          "length": 22.86
+        },
+        {
+          "start": [
+            287.02,
+            148.59
+          ],
+          "end": [
+            287.02,
+            46.99
+          ],
+          "direction": "up",
+          "length": 101.6
+        },
+        {
+          "start": [
+            287.02,
+            46.99
+          ],
+          "end": [
+            30.48,
+            46.99
+          ],
+          "direction": "left",
+          "length": 256.54
+        },
+        {
+          "start": [
+            30.48,
+            46.99
+          ],
+          "end": [
+            30.48,
+            52.07
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_74HC00_3Y",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 8,
+        "outer_channel_cost": 231.854,
+        "different_net_crossings": 3,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 387.35,
+        "turns": 4,
+        "score": 3810.202,
+        "portal_route_score": 3810.202,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "TEST_POINT_NAND3",
+        "pin": "TP",
+        "point": [
+          36.83,
+          69.85
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "74HC00",
+        "pin": "3Y",
+        "point": [
+          339.09,
+          142.24
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          36.83,
+          69.85
+        ],
+        [
+          41.91,
+          69.85
+        ],
+        [
+          41.91,
+          63.5
+        ],
+        [
+          334.01,
+          63.5
+        ],
+        [
+          334.01,
+          142.24
+        ],
+        [
+          339.09,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            36.83,
+            69.85
+          ],
+          "end": [
+            41.91,
+            69.85
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            41.91,
+            69.85
+          ],
+          "end": [
+            41.91,
+            63.5
+          ],
+          "direction": "up",
+          "length": 6.35
+        },
+        {
+          "start": [
+            41.91,
+            63.5
+          ],
+          "end": [
+            334.01,
+            63.5
+          ],
+          "direction": "right",
+          "length": 292.1
+        },
+        {
+          "start": [
+            334.01,
+            63.5
+          ],
+          "end": [
+            334.01,
+            142.24
+          ],
+          "direction": "down",
+          "length": 78.74
+        },
+        {
+          "start": [
+            334.01,
+            142.24
+          ],
+          "end": [
+            339.09,
+            142.24
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_74HC00_4Y",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 10,
+        "outer_channel_cost": 242.056,
+        "different_net_crossings": 5,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 359.41,
+        "turns": 2,
+        "score": 4064.382,
+        "portal_route_score": 4064.382,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "TEST_POINT_NAND4",
+        "pin": "TP",
+        "point": [
+          36.83,
+          87.63
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "74HC00",
+        "pin": "4Y",
+        "point": [
+          339.09,
+          144.78
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          36.83,
+          87.63
+        ],
+        [
+          262.89,
+          87.63
+        ],
+        [
+          262.89,
+          144.78
+        ],
+        [
+          339.09,
+          144.78
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            36.83,
+            87.63
+          ],
+          "end": [
+            262.89,
+            87.63
+          ],
+          "direction": "right",
+          "length": 226.06
+        },
+        {
+          "start": [
+            262.89,
+            87.63
+          ],
+          "end": [
+            262.89,
+            144.78
+          ],
+          "direction": "down",
+          "length": 57.15
+        },
+        {
+          "start": [
+            262.89,
+            144.78
+          ],
+          "end": [
+            339.09,
+            144.78
+          ],
+          "direction": "right",
+          "length": 76.2
+        }
+      ]
+    },
+    {
+      "net": "NET_74HC192_CARRY",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 8,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 45.72,
+        "turns": 2,
+        "score": 686.02,
+        "portal_route_score": 686.02,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "TEST_POINT_CARRY",
+        "pin": "TP",
+        "point": [
+          57.15,
+          135.89
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "74HC192",
+        "pin": "CARRY",
+        "point": [
+          69.85,
+          146.05
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          57.15,
+          135.89
+        ],
+        [
+          45.72,
+          135.89
+        ],
+        [
+          45.72,
+          146.05
+        ],
+        [
+          69.85,
+          146.05
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            57.15,
+            135.89
+          ],
+          "end": [
+            45.72,
+            135.89
+          ],
+          "direction": "left",
+          "length": 11.43
+        },
+        {
+          "start": [
+            45.72,
+            135.89
+          ],
+          "end": [
+            45.72,
+            146.05
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            45.72,
+            146.05
+          ],
+          "end": [
+            69.85,
+            146.05
+          ],
+          "direction": "right",
+          "length": 24.13
+        }
+      ]
+    },
+    {
+      "net": "NET_74HC192_CARRY",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 79.839,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 7,
+        "length": 171.45,
+        "turns": 3,
+        "score": 1290.313,
+        "portal_route_score": 1290.313,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "TEST_POINT_CARRY",
+        "pin": "TP",
+        "point": [
+          57.15,
+          135.89
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "R_220_CARRY_LED",
+        "pin": "2",
+        "point": [
+          30.48,
+          270.51
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "path": [
+        [
+          57.15,
+          135.89
+        ],
+        [
+          45.72,
+          135.89
+        ],
+        [
+          45.72,
+          275.59
+        ],
+        [
+          30.48,
+          275.59
+        ],
+        [
+          30.48,
+          270.51
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            57.15,
+            135.89
+          ],
+          "end": [
+            45.72,
+            135.89
+          ],
+          "direction": "left",
+          "length": 11.43
+        },
+        {
+          "start": [
+            45.72,
+            135.89
+          ],
+          "end": [
+            45.72,
+            275.59
+          ],
+          "direction": "down",
+          "length": 139.7
+        },
+        {
+          "start": [
+            45.72,
+            275.59
+          ],
+          "end": [
+            30.48,
+            275.59
+          ],
+          "direction": "left",
+          "length": 15.24
+        },
+        {
+          "start": [
+            30.48,
+            275.59
+          ],
+          "end": [
+            30.48,
+            270.51
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_NE555_CTRL",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 3,
+        "outer_channel_cost": 172.5,
+        "different_net_crossings": 5,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 306.07,
+        "turns": 3,
+        "score": 2616.516,
+        "portal_route_score": 2616.516,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "C_100NF_555_CTRL",
+        "pin": "1",
+        "point": [
+          246.38,
+          133.35
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "NE555",
+        "pin": "CTRL",
+        "point": [
+          426.72,
+          149.86
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          246.38,
+          133.35
+        ],
+        [
+          246.38,
+          78.74
+        ],
+        [
+          421.64,
+          78.74
+        ],
+        [
+          421.64,
+          149.86
+        ],
+        [
+          426.72,
+          149.86
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            246.38,
+            133.35
+          ],
+          "end": [
+            246.38,
+            78.74
+          ],
+          "direction": "up",
+          "length": 54.61
+        },
+        {
+          "start": [
+            246.38,
+            78.74
+          ],
+          "end": [
+            421.64,
+            78.74
+          ],
+          "direction": "right",
+          "length": 175.26
+        },
+        {
+          "start": [
+            421.64,
+            78.74
+          ],
+          "end": [
+            421.64,
+            149.86
+          ],
+          "direction": "down",
+          "length": 71.12
+        },
+        {
+          "start": [
+            421.64,
+            149.86
+          ],
+          "end": [
+            426.72,
+            149.86
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "NET_74HC192_BORROW",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 7,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 2,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 71.12,
+        "turns": 2,
+        "score": 631.42,
+        "portal_route_score": 631.42,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "TEST_POINT_BORROW",
+        "pin": "TP",
+        "point": [
+          36.83,
+          105.41
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "to": {
+        "ref": "74HC192",
+        "pin": "BORROW",
+        "point": [
+          69.85,
+          143.51
+        ],
+        "exact": false,
+        "source": "estimated_component_edge"
+      },
+      "path": [
+        [
+          36.83,
+          105.41
+        ],
+        [
+          55.88,
+          105.41
+        ],
+        [
+          55.88,
+          143.51
+        ],
+        [
+          69.85,
+          143.51
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            36.83,
+            105.41
+          ],
+          "end": [
+            55.88,
+            105.41
+          ],
+          "direction": "right",
+          "length": 19.05
+        },
+        {
+          "start": [
+            55.88,
+            105.41
+          ],
+          "end": [
+            55.88,
+            143.51
+          ],
+          "direction": "down",
+          "length": 38.1
+        },
+        {
+          "start": [
+            55.88,
+            143.51
+          ],
+          "end": [
+            69.85,
+            143.51
+          ],
+          "direction": "right",
+          "length": 13.97
+        }
+      ]
+    },
+    {
+      "net": "NET_COUNTER_CLR",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 2,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 53.34,
+        "turns": 1,
+        "score": 213.49,
+        "portal_route_score": 213.49,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "R_COUNTER_CLR_PD",
+        "pin": "1",
+        "point": [
+          93.98,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "to": {
+        "ref": "74HC192",
+        "pin": "CLR",
+        "point": [
+          69.85,
+          152.4
+        ],
+        "exact": true,
+        "source": "74xx:74HC192:unit1:pin14"
+      },
+      "path": [
+        [
+          93.98,
+          143.51
+        ],
+        [
+          93.98,
+          152.4
+        ],
+        [
+          69.85,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            93.98,
+            143.51
+          ],
+          "end": [
+            93.98,
+            152.4
+          ],
+          "direction": "down",
+          "length": 8.89
+        },
+        {
+          "start": [
+            93.98,
+            152.4
+          ],
+          "end": [
+            69.85,
+            152.4
+          ],
+          "direction": "left",
+          "length": 24.13
+        }
+      ]
+    },
+    {
+      "net": "NET_COUNTER_CLR",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 7,
+        "outer_channel_cost": 176.755,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 125.73,
+        "turns": 2,
+        "score": 2807.295,
+        "portal_route_score": 2807.295,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "74HC192",
+        "pin": "CLR",
+        "point": [
+          69.85,
+          152.4
+        ],
+        "exact": true,
+        "source": "74xx:74HC192:unit1:pin14"
+      },
+      "to": {
+        "ref": "PUSH_BUTTON_CLEAR",
+        "pin": "1",
+        "point": [
+          180.34,
+          147.32
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "path": [
+        [
+          69.85,
+          152.4
+        ],
+        [
+          162.56,
+          152.4
+        ],
+        [
+          162.56,
+          147.32
+        ],
+        [
+          180.34,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            69.85,
+            152.4
+          ],
+          "end": [
+            162.56,
+            152.4
+          ],
+          "direction": "right",
+          "length": 92.71
+        },
+        {
+          "start": [
+            162.56,
+            152.4
+          ],
+          "end": [
+            162.56,
+            147.32
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            162.56,
+            147.32
+          ],
+          "end": [
+            180.34,
+            147.32
+          ],
+          "direction": "right",
+          "length": 17.78
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 34,
+    "wired_route_count": 18,
+    "lane_route_count": 18,
+    "astar_route_count": 0,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 4,
+    "crossing_risk_route_count": 10,
+    "dense_design_mode": false,
+    "segment_count": 73,
+    "different_net_crossing_count": 19,
+    "mst_total_length": 12024.36,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 15,
+    "crossing_density_max_tile_crossings": 2,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 5,
+    "label_strategy_count": 2,
+    "wire_mode_terminal_net_count": 2,
+    "wire_mode_terminal_endpoint_count": 44,
+    "partial_wire_net_count": 0,
+    "unroutable_net_count": 18
+  },
+  "warnings": [
+    "salvage_astar_rejected_body_hit: NET_CLOCK_GATED still touched component bodies.",
+    "salvage_astar_rejected_body_hit: NET_CLOCK_GATED still touched component bodies.",
+    "salvage_astar_rejected_body_hit: NET_CLOCK_GATED still touched component bodies.",
+    "salvage_astar_rejected_body_hit: NET_CLOCK_GATED still touched component bodies.",
+    "strict_wire_unroutable: NET_CLOCK_GATED could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_BCD_B exceeded 3000 explored grid states.",
+    "minimum_crossing_route: NET_BCD_B accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_BCD_C exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_BCD_C exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_BCD_C could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_BCD_D exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_BCD_D exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_BCD_D could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_A_2 exceeded 3000 explored grid states.",
+    "minimum_crossing_route: NET_R_SEG_A_2 accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_B_2 exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_B_2 exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_R_SEG_B_2 could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_C_2 exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_C_2 exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_R_SEG_C_2 could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_D_2 exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_D_2 exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_R_SEG_D_2 could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_E_2 exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_E_2 exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_R_SEG_E_2 could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_F_2 exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_R_SEG_F_2 exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_R_SEG_F_2 could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_4511_A exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_4511_A exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_4511_A could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_4511_B exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_4511_B exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_4511_B could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_4511_C exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_4511_C exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_4511_C could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_4511_D exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_4511_D exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_4511_D could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_4511_E exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_4511_E exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_4511_E could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_4511_F exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_4511_F exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_4511_F could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_4511_G exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_4511_G exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_4511_G could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_555_DISCH exceeded 3000 explored grid states.",
+    "minimum_crossing_route: NET_555_DISCH accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_555_DISCH exceeded 3000 explored grid states.",
+    "minimum_crossing_route: NET_555_DISCH accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_555_TIMING exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_555_TIMING could not be routed without labels.",
+    "astar_unroutable_expansion_limit: NET_74HC00_3Y exceeded 3000 explored grid states.",
+    "minimum_crossing_route: NET_74HC00_3Y accepted 3 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_74HC00_4Y exceeded 3000 explored grid states.",
+    "minimum_crossing_route: NET_74HC00_4Y accepted 5 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_74HC192_CARRY exceeded 3000 explored grid states.",
+    "minimum_crossing_route: NET_74HC192_CARRY accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: NET_LED_INDICATOR_CARRY_ANODE exceeded 3000 explored grid states.",
+    "astar_unroutable_expansion_limit: NET_LED_INDICATOR_CARRY_ANODE exceeded 3000 explored grid states.",
+    "strict_wire_unroutable: NET_LED_INDICATOR_CARRY_ANODE could not be routed without labels.",
+    "minimum_crossing_route: NET_NE555_CTRL accepted 5 different-net crossing/touch risks.",
+    "minimum_crossing_route: NET_74HC192_BORROW accepted 2 different-net crossing/touch risks.",
+    "minimum_crossing_route: NET_COUNTER_CLR accepted 1 different-net crossing/touch risks.",
+    "strict_wire_unroutable: NET_COUNT_ENABLE could not be routed without labels.",
+    "different_net_crossings_detected: 19"
+  ],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": true,
+    "pass_count": 1,
+    "passes": [
+      {
+        "pass": 1,
+        "status": "rerouted_after_coordinate_edits",
+        "metrics_before": {
+          "net_count": 34,
+          "wired_route_count": 18,
+          "lane_route_count": 18,
+          "astar_route_count": 0,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 4,
+          "crossing_risk_route_count": 9,
+          "dense_design_mode": false,
+          "segment_count": 78,
+          "different_net_crossing_count": 24,
+          "mst_total_length": 12382.5,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 16,
+          "crossing_density_max_tile_crossings": 3,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 8,
+          "label_strategy_count": 2,
+          "wire_mode_terminal_net_count": 2,
+          "wire_mode_terminal_endpoint_count": 44,
+          "partial_wire_net_count": 1,
+          "unroutable_net_count": 18
+        },
+        "metrics_after": {
+          "net_count": 34,
+          "wired_route_count": 18,
+          "lane_route_count": 18,
+          "astar_route_count": 0,
+          "salvage_astar_route_count": 0,
+          "salvage_astar_attempt_count": 4,
+          "crossing_risk_route_count": 10,
+          "dense_design_mode": false,
+          "segment_count": 73,
+          "different_net_crossing_count": 19,
+          "mst_total_length": 12024.36,
+          "crossing_density_tile_size": 25.4,
+          "crossing_density_tile_count": 15,
+          "crossing_density_max_tile_crossings": 2,
+          "crossing_density_overflow": 0,
+          "near_endpoint_crossing_count": 5,
+          "label_strategy_count": 2,
+          "wire_mode_terminal_net_count": 2,
+          "wire_mode_terminal_endpoint_count": 44,
+          "partial_wire_net_count": 0,
+          "unroutable_net_count": 18
+        },
+        "move_plan": {
+          "schema": "progen-kicad-partial-route-component-motion/v0.1",
+          "stage": "partial_route_component_motion_decider",
+          "algorithm": {
+            "primary": "move_failed_partial_endpoint_toward_nearest_wired_same_net_endpoint",
+            "input_contract": "routing placement JSON plus wire_plan partial-wire net reports",
+            "output_contract": "coordinate edits for beautifier.py"
+          },
+          "coordinate_edits": [
+            {
+              "ref": "74HC192",
+              "from": [
+                485.14,
+                147.32
+              ],
+              "to": [
+                82.55,
+                139.7
+              ],
+              "delta": [
+                -402.59,
+                -7.62
+              ],
+              "reason": "partial_wire_endpoint_local_move",
+              "net": "NET_74HC192_CARRY",
+              "pin": "CARRY",
+              "anchor": {
+                "ref": "TEST_POINT_CARRY",
+                "pin": "TP",
+                "point": [
+                  69.85,
+                  135.89
+                ]
+              }
+            }
+          ],
+          "move_count": 1,
+          "moves": [
+            {
+              "net": "NET_74HC192_CARRY",
+              "ref": "74HC192",
+              "pin": "CARRY",
+              "status": "moved",
+              "from": [
+                485.14,
+                147.32
+              ],
+              "to": [
+                82.55,
+                139.7
+              ],
+              "anchor": {
+                "ref": "TEST_POINT_CARRY",
+                "pin": "TP",
+                "point": [
+                  69.85,
+                  135.89
+                ]
+              }
+            }
+          ]
+        },
+        "component_body_overlap_report": {
+          "schema": "progen-kicad-component-body-overlap-report/v0.1",
+          "ok": true,
+          "clearance": 0.0,
+          "body_count": 37,
+          "overlap_count": 0,
+          "overlaps": [],
+          "overlaps_truncated": false
+        }
+      }
+    ],
+    "final_metrics": {
+      "net_count": 34,
+      "wired_route_count": 18,
+      "lane_route_count": 18,
+      "astar_route_count": 0,
+      "salvage_astar_route_count": 0,
+      "salvage_astar_attempt_count": 4,
+      "crossing_risk_route_count": 10,
+      "dense_design_mode": false,
+      "segment_count": 73,
+      "different_net_crossing_count": 19,
+      "mst_total_length": 12024.36,
+      "crossing_density_tile_size": 25.4,
+      "crossing_density_tile_count": 15,
+      "crossing_density_max_tile_crossings": 2,
+      "crossing_density_overflow": 0,
+      "near_endpoint_crossing_count": 5,
+      "label_strategy_count": 2,
+      "wire_mode_terminal_net_count": 2,
+      "wire_mode_terminal_endpoint_count": 44,
+      "partial_wire_net_count": 0,
+      "unroutable_net_count": 18
+    }
+  },
+  "arrangement_selection": {
+    "schema": "progen-kicad-routeable-arrangement-selection/v0.1",
+    "stage": "routeable_arrangement_selector",
+    "strategy": "parallel_variant_routeability_score",
+    "variant_count": 3,
+    "worker_count": 1,
+    "parallel_error": "",
+    "scoring_wire_config": {
+      "max_astar_expansions": 600.0,
+      "max_lane_candidates": 32.0,
+      "max_failed_endpoints_per_net": 1.0
+    },
+    "selected_variant": "base",
+    "selected_score": {
+      "score": 280991.67,
+      "square_fill": {
+        "width": 573.92,
+        "height": 239.93,
+        "aspect_ratio": 2.392,
+        "aspect_penalty": 333.99,
+        "fill_waste_area": 130868.501,
+        "score": 2631.008
+      },
+      "component_body_overlap_count": 0,
+      "estimated_blocked_endpoint_count": 0,
+      "estimated_partial_pressure": 0,
+      "estimated_body_hit_count": 0,
+      "estimated_routable_branch_count": 82,
+      "estimated_turn_count": 77,
+      "estimated_route_length": 17120.87
+    },
+    "final_score": {
+      "score": 0.0,
+      "complete_wire_net_count": 0,
+      "unroutable_net_count": 0,
+      "partial_wire_net_count": 0,
+      "label_strategy_count": 0,
+      "route_body_hit_count": 0,
+      "route_forbidden_contact_count": 0,
+      "component_shadow_count": 0,
+      "route_turn_count": 0,
+      "route_length": 0,
+      "different_net_crossing_count": 0
+    },
+    "variants": [
+      {
+        "name": "base",
+        "ok": true,
+        "score": {
+          "score": 280991.67,
+          "square_fill": {
+            "width": 573.92,
+            "height": 239.93,
+            "aspect_ratio": 2.392,
+            "aspect_penalty": 333.99,
+            "fill_waste_area": 130868.501,
+            "score": 2631.008
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 82,
+          "estimated_turn_count": 77,
+          "estimated_route_length": 17120.87
+        },
+        "elapsed_seconds": 0.089,
+        "coordinate_edit_count": 33,
+        "error": null
+      },
+      {
+        "name": "square_fill_compact",
+        "ok": true,
+        "score": {
+          "score": 339930.47,
+          "square_fill": {
+            "width": 634.88,
+            "height": 270.41,
+            "aspect_ratio": 2.348,
+            "aspect_penalty": 364.47,
+            "fill_waste_area": 164845.776,
+            "score": 3201.627
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 82,
+          "estimated_turn_count": 78,
+          "estimated_route_length": 18987.77
+        },
+        "elapsed_seconds": 0.082,
+        "coordinate_edit_count": 33,
+        "error": null
+      },
+      {
+        "name": "square_fill_balanced",
+        "ok": true,
+        "score": {
+          "score": 404657.15,
+          "square_fill": {
+            "width": 695.84,
+            "height": 300.89,
+            "aspect_ratio": 2.313,
+            "aspect_penalty": 394.95,
+            "fill_waste_area": 202539.173,
+            "score": 3827.988
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 82,
+          "estimated_turn_count": 77,
+          "estimated_route_length": 21088.35
+        },
+        "elapsed_seconds": 0.08,
+        "coordinate_edit_count": 33,
+        "error": null
+      }
+    ]
+  }
+}

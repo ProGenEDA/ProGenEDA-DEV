@@ -11,12 +11,15 @@ from kicad.pipeline.final_circuit_builder import (
     PROTEUS_ALIAS_ROUTED_SUITE,
     available_final_circuit_suites,
     build_final_circuits,
+    build_final_circuits_from_node_spec_text,
     build_final_test_circuits,
     build_proteus_alias_mixed_circuits,
     build_proteus_alias_routed_circuits,
+    generate_final_json_run_from_node_spec_text,
     clean_prompt,
     generate_projects_from_final_json,
     placer_ready_circuit,
+    raw_specs_from_node_spec_text,
 )
 from kicad.pipeline.arrangement_decider import decide_arrangement
 from kicad.pipeline.placer_pipeline import run_placer_pipeline
@@ -110,6 +113,59 @@ class FinalCircuitBuilderTests(unittest.TestCase):
                 self.assertEqual(circuit["validation"]["errors"], [])
                 self.assertEqual(circuit["validation"]["warnings"], [])
                 self.assertTrue(all(component["pins"] for component in circuit["components"]))
+
+    def test_node_spec_text_compiles_to_valid_final_json(self) -> None:
+        text = """
+        `NET_*` = same wire/node.
+
+        ```text
+        CIRCUIT 01: HEADER BUS SAMPLE
+        HEADER_CONNECTOR.P1 -> NET_BUS
+        HEADER_CONNECTOR.P13 -> NET_BUS
+        R_10K_PULLUP_BUS.1 -> NET_BUS
+        R_10K_PULLUP_BUS.2 -> NET_5V
+        PWR_5V.+ -> NET_5V
+        R_LOAD.1 -> NET_BUS
+        R_LOAD.2 -> NET_GND
+        GROUND.1 -> NET_GND
+        ```
+        """
+        raw = raw_specs_from_node_spec_text(text, source="unit_test")
+        self.assertEqual(len(raw), 1)
+        circuits = build_final_circuits_from_node_spec_text(text, source="unit_test")
+        circuit = circuits[0]
+        self.assertEqual(circuit["circuit_id"], "N01")
+        self.assertEqual(circuit["validation"]["status"], "pass")
+        self.assertEqual(circuit["validation"]["errors"], [])
+        self.assertEqual(circuit["validation"]["warnings"], [])
+        self.assertEqual(circuit["nets"]["+5V"], ["R_10K_PULLUP_BUS.2", "PWR_5V.+"])
+        self.assertEqual(circuit["nets"]["GND"], ["R_LOAD.2", "GROUND.1"])
+        kinds = {component["ref"]: component["kind"] for component in circuit["components"]}
+        self.assertEqual(kinds["HEADER_CONNECTOR"], "PROGRAMMING_HEADER")
+        self.assertEqual(kinds["R_10K_PULLUP_BUS"], "R_10K_PULLUP")
+
+    def test_node_spec_text_run_writes_immutable_final_json_folder(self) -> None:
+        text = """
+        CIRCUIT 01: SMALL NODE SPEC
+        VDC.1 -> NET_5V
+        VDC.2 -> NET_GND
+        RES_LOAD.1 -> NET_5V
+        RES_LOAD.2 -> NET_GND
+        GROUND.1 -> NET_GND
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            summary = generate_final_json_run_from_node_spec_text(
+                text,
+                examples_root=root,
+                label="unit_node_spec",
+                run_dir=root / "node_spec_run",
+                source="unit_test",
+            )
+            self.assertEqual(summary["schema"], "progen-kicad-final-json-run/v0.1")
+            self.assertEqual(summary["suite"], "node_spec_arrow_text")
+            self.assertTrue(summary["all_final_json_valid"])
+            self.assertTrue((root / "node_spec_run" / "final_json").is_dir())
 
     def test_final_json_drives_arrangement_beautifier_and_wire_planner(self) -> None:
         for circuit in build_final_test_circuits():

@@ -261,6 +261,27 @@ class RoutingV2Tests(unittest.TestCase):
         self.assertEqual(result["worker_count"], 2)
         self.assertEqual(len(result["variants"]), 2)
 
+    def test_variation_mode_bypasses_adaptive_beam_cap(self) -> None:
+        circuit = simple_vdc_resistor()
+        placement = plan_placement(circuit).as_dict()
+        planned = plan_wiring_v2(
+            placement,
+            circuit,
+            config={
+                "placement": {"max_beam_search_components": 0, "beam_width": 2, "deep_route_top_n": 2},
+                "parallel": {"max_final_state_route_variants": 1},
+                "variation": {"enabled": True, "disable_adaptive_cap": True},
+            },
+            wire_config={"max_astar_expansions": 500.0},
+        )
+        self.assertTrue(planned["coordinate_plan"]["variation"]["enabled"])
+        self.assertTrue(planned["coordinate_plan"]["variation"]["adaptive_cap_disabled"])
+        self.assertNotEqual(planned["coordinate_plan"]["beam_search"].get("strategy"), "adaptive_beam_skipped")
+        self.assertGreaterEqual(
+            planned["arrangement_selection"]["deep_route_selected_count"],
+            planned["arrangement_selection"]["deep_route_candidate_count"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

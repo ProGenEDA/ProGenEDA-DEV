@@ -53,6 +53,10 @@ DEFAULT_ROUTING_V2_CONFIG: dict[str, Any] = {
         "max_final_state_route_variants": 4,
         "debug_parallel": False,
     },
+    "variation": {
+        "enabled": False,
+        "disable_adaptive_cap": True,
+    },
     "wire_fallback": {
         "routing_mode": "wire",
         "arrangement_variant_search": 0.0,

@@ -167,6 +167,227 @@ PIN_ALIAS_BY_KIND: dict[str, dict[str, tuple[str, ...]]] = {
 }
 
 
+def _numbered_alias(prefix: str, count: int, *, start: int = 1) -> dict[str, tuple[str, ...]]:
+    return {f"{prefix}{index}": (str(index + start - 1),) for index in range(1, count + 1)}
+
+
+PIN_ALIAS_BY_KIND.update(
+    {
+        "TEST_POINT": {"TP": ("1",)},
+        "VDC": {"PLUS": ("1",), "MINUS": ("2",), "+": ("1",), "-": ("2",), "POS": ("1",), "NEG": ("2",)},
+        "VSOURCE": {"PLUS": ("1",), "MINUS": ("2",), "+": ("1",), "-": ("2",)},
+        "PWR_5V": {"PLUS": ("1",), "+": ("1",)},
+        "PWR_3V3": {"PLUS": ("1",), "+": ("1",)},
+        "GROUND": {"GND": ("1",), "1": ("1",)},
+        "TERMINAL_BLOCK": {"PLUS": ("1",), "MINUS": ("2",), "+": ("1",), "-": ("2",)},
+        "TERMINAL_BLOCK_4": {"CANH": ("1",), "A": ("1",), "CANL": ("2",), "B": ("2",), "GND": ("3",), "SHIELD": ("4",)},
+        "CAN_TERMINAL": {"CANH": ("1",), "CANL": ("2",), "GND": ("3",), "SHIELD": ("3",)},
+        "RS485_TERMINAL": {"A": ("1",), "B": ("2",), "GND": ("3",), "SHIELD": ("3",)},
+        "SCREW_TERMINAL_2": {"PLUS": ("1",), "MINUS": ("2",), "+": ("1",), "-": ("2",)},
+        "DC_BARREL_JACK": {"CENTER": ("1",), "SLEEVE": ("2",), "POS": ("1",), "NEG": ("2",)},
+        "DC_MOTOR": {"POSITIVE": ("1", "+"), "NEGATIVE": ("2", "-"), "POS": ("1", "+"), "NEG": ("2", "-")},
+        "IRLZ44N": {"GATE": ("G", "1"), "DRAIN": ("D", "2"), "SOURCE": ("S", "3")},
+        "MOSFET": {"GATE": ("G", "1"), "DRAIN": ("D", "2"), "SOURCE": ("S", "3")},
+        "NMOS": {"GATE": ("G", "1"), "DRAIN": ("D", "2"), "SOURCE": ("S", "3")},
+        "2N7000": {"GATE": ("G", "1"), "DRAIN": ("D", "2"), "SOURCE": ("S", "3")},
+        "BS170": {"GATE": ("G", "1"), "DRAIN": ("D", "2"), "SOURCE": ("S", "3")},
+        "BC547": {"COLLECTOR": ("C", "1"), "BASE": ("B", "2"), "EMITTER": ("E", "3")},
+        "NPN": {"COLLECTOR": ("C", "1"), "BASE": ("B", "2"), "EMITTER": ("E", "3")},
+        "PNP": {"COLLECTOR": ("C", "1"), "BASE": ("B", "2"), "EMITTER": ("E", "3")},
+        "POTENTIOMETER": {"END_A": ("1",), "WIPER": ("2",), "END_B": ("3",)},
+        "POT_HG": {"END_A": ("1",), "WIPER": ("2",), "END_B": ("3",)},
+        "VOLUME_POTENTIOMETER": {"END_A": ("1",), "WIPER": ("2",), "END_B": ("3",)},
+        "TRIMMER_POTENTIOMETER": {"END_A": ("1",), "WIPER": ("2",), "END_B": ("3",)},
+        "AUDIO_INPUT_JACK": {"TIP": ("T", "1"), "RING": ("R", "2"), "SLEEVE": ("S", "3"), "LEFT": ("T", "1"), "RIGHT": ("R", "2"), "GND": ("S", "3")},
+        "AUDIO_JACK": {"TIP": ("T", "1"), "RING": ("R", "2"), "SLEEVE": ("S", "3"), "LEFT": ("T", "1"), "RIGHT": ("R", "2"), "GND": ("S", "3")},
+        "SPEAKER": {"POSITIVE": ("1", "+"), "NEGATIVE": ("2", "-"), "POS": ("1", "+"), "NEG": ("2", "-")},
+        "LM317": {"IN": ("VI", "I", "3"), "OUT": ("VO", "O", "2"), "ADJ": ("ADJ", "1")},
+        "NE555": {"GND": ("1",), "TRIG": ("2",), "OUT": ("3", "Q"), "RESET": ("4", "R"), "CTRL": ("5", "CV"), "THRESH": ("6", "THR"), "DISCH": ("7", "DIS"), "VCC": ("8", "VCC")},
+        "LM393_COMPARATOR": {
+            "OUT1": ("1",),
+            "IN1-": ("2",),
+            "IN1+": ("3",),
+            "GND": ("4", "V-"),
+            "IN2+": ("5",),
+            "IN2-": ("6",),
+            "OUT2": ("7",),
+            "VCC": ("8", "V+"),
+        },
+        "LM358": {
+            "OUT1": ("1",),
+            "IN1-": ("2",),
+            "IN1+": ("3",),
+            "GND": ("4", "V-"),
+            "IN2+": ("5",),
+            "IN2-": ("6",),
+            "OUT2": ("7",),
+            "VCC": ("8", "V+"),
+            "IN_PLUS": ("+", "3", "5"),
+            "IN_MINUS": ("-", "2", "6"),
+            "OUT": ("1", "7"),
+        },
+        "LEVEL_SHIFTER": {
+            "LV": ("VCCA", "1"),
+            "HV": ("VCCB", "20"),
+            "GND": ("GND", "10"),
+            "OE": ("OE",),
+            **{f"L{index}": (f"A{index}",) for index in range(1, 9)},
+            **{f"H{index}": (f"B{index}",) for index in range(1, 9)},
+        },
+        "MICRO_SD_SOCKET": {"VCC": ("VDD", "4"), "GND": ("VSS", "6"), "SCK": ("CLK", "5"), "MOSI": ("CMD", "3"), "MISO": ("DAT0", "7"), "CS": ("DAT3", "2"), "CD": ("DET_A", "CD")},
+        "I2C_HEADER": {"VCC": ("1",), "GND": ("2",), "SDA": ("3",), "SCL": ("4",)},
+        "UART_HEADER": {"VCC": ("1",), "GND": ("2",), "RX": ("3",), "TX": ("4",), "RTS": ("5",), "CTS": ("5",)},
+        "PWM_HEADER": {"VCC": ("1",), "GND": ("2",), "PWM1": ("3",), "PWM2": ("4",), "PWM3": ("5",), "PWM4": ("6",), "PWM5": ("7",)},
+        "SPI_HEADER_FLASH": {"VCC": ("1",), "GND": ("2",), "SCK": ("3",), "MOSI": ("4",), "MISO": ("5",), "CS": ("6",)},
+        "SPI_HEADER_SD": {"VCC": ("1",), "GND": ("2",), "SCK": ("3",), "MOSI": ("4",), "MISO": ("5",), "CS": ("6",)},
+        "PROGRAMMING_HEADER": {
+            **_numbered_alias("P", 14),
+            "VCC": ("1",),
+            "GND": ("2",),
+            "RX": ("3",),
+            "TX": ("4",),
+            "RTS": ("5",),
+            "CTS": ("6",),
+            "PWM1": ("3",),
+            "PWM2": ("4",),
+            "PWM3": ("5",),
+            "PWM4": ("6",),
+            "PWM5": ("7",),
+        },
+        "PIN_HEADER": {**_numbered_alias("P", 14), "VCC": ("1",), "GND": ("2",), "RX": ("3",), "TX": ("4",)},
+        "RX_HEADER": {"RX": ("1",)},
+        "TX_HEADER": {"TX": ("1",)},
+        "DIP_SWITCH": {f"S{index}{side}": (str((index - 1) * 2 + (1 if side == "A" else 2)),) for index in range(1, 9) for side in ("A", "B")},
+        "LED_ARRAY": {
+            **{f"LED{index}_ANODE": (str((index - 1) * 2 + 1),) for index in range(1, 9)},
+            **{f"LED{index}_CATHODE": (str((index - 1) * 2 + 2),) for index in range(1, 9)},
+        },
+        "RESISTOR_NETWORK": {
+            **{f"R{index}": (str((index - 1) * 2 + 1),) for index in range(1, 9)},
+            **{f"C{index}": (str((index - 1) * 2 + 2),) for index in range(1, 9)},
+        },
+        "4511": {"VCC": ("16", "VDD"), "GND": ("8", "VSS"), "A": ("7",), "B": ("1",), "C": ("2",), "D": ("6",), "LE": ("5",), "LT": ("3",), "BI": ("4",), "a": ("13",), "b": ("12",), "c": ("11",), "d": ("10",), "e": ("9",), "f": ("15",), "g": ("14",), "/LT": ("3",), "/BI": ("4",)},
+        "7SEGCOMK": {"A": ("7",), "B": ("6",), "C": ("4",), "D": ("2",), "E": ("1",), "F": ("9",), "G": ("10",), "DP": ("5",), "COM1": ("3",), "COM2": ("8",)},
+        "7SEGCOMA": {"A": ("7",), "B": ("6",), "C": ("4",), "D": ("2",), "E": ("1",), "F": ("9",), "G": ("10",), "DP": ("5",), "COM1": ("3",), "COM2": ("8",)},
+        "74HC151": {"VCC": ("16",), "GND": ("8",), "D0": ("4",), "D1": ("3",), "D2": ("2",), "D3": ("1",), "D4": ("15",), "D5": ("14",), "D6": ("13",), "D7": ("12",), "A": ("11", "S0"), "B": ("10", "S1"), "C": ("9", "S2"), "/E": ("7", "E"), "Y": ("5",), "/Y": ("6",)},
+        "74HC157": {"VCC": ("16",), "GND": ("8",), "/OE": ("15",), "SELECT": ("1",), "1A": ("2",), "1B": ("3",), "1Y": ("4",), "2A": ("5",), "2B": ("6",), "2Y": ("7",), "3Y": ("9",), "3B": ("10",), "3A": ("11",), "4Y": ("12",), "4B": ("13",), "4A": ("14",)},
+        "74HC192": {"VCC": ("16",), "GND": ("8",), "A": ("15",), "B": ("1",), "C": ("10",), "D": ("9",), "QA": ("3",), "QB": ("2",), "QC": ("6",), "QD": ("7",), "UP_CLK": ("5",), "DOWN_CLK": ("4",), "/LOAD": ("11",), "CLR": ("14",), "CARRY": ("12",), "BORROW": ("13",)},
+        "74HC283": {"VCC": ("16",), "GND": ("8",), "A1": ("5",), "B1": ("6",), "S1": ("4",), "A2": ("3",), "B2": ("2",), "S2": ("1",), "A3": ("14",), "B3": ("15",), "S3": ("13",), "A4": ("12",), "B4": ("11",), "S4": ("10",), "C0": ("7",), "C4": ("9",)},
+        "74HC85": {"VCC": ("16",), "GND": ("8",), "A0": ("10",), "A1": ("12",), "A2": ("13",), "A3": ("15",), "B0": ("9",), "B1": ("11",), "B2": ("14",), "B3": ("1",), "I_A_LT_B": ("2",), "I_A_EQ_B": ("3",), "I_A_GT_B": ("4",), "O_A_GT_B": ("5",), "O_A_EQ_B": ("6",), "O_A_LT_B": ("7",)},
+        "74HC174": {"VCC": ("16",), "GND": ("8",), "/CLR": ("1",), "CLK": ("9",), "D1": ("3",), "D2": ("4",), "D3": ("6",), "D4": ("11",), "D5": ("12",), "D6": ("14",), "Q1": ("2",), "Q2": ("5",), "Q3": ("7",), "Q4": ("10",), "Q5": ("13",), "Q6": ("15",)},
+        "MCP2515": {"VCC": ("VDD", "18"), "GND": ("VSS", "9"), "TXCAN": ("TXCAN", "1"), "RXCAN": ("RXCAN", "2"), "SCK": ("SCK", "13"), "SI": ("SI", "14"), "SO": ("SO", "15"), "CS": ("CS", "16"), "RESET": ("RESET", "17"), "INT": ("INT", "12")},
+        "TJA1050": {"VCC": ("VCC", "3"), "GND": ("GND", "2"), "TXD": ("D", "1"), "RXD": ("R", "4"), "CANL": ("CANL", "6"), "CANH": ("CANH", "7"), "RS": ("RS", "8")},
+        "ACS712": {"VCC": ("VCC", "8"), "GND": ("GND", "5"), "OUT": ("VIOUT", "7"), "IP+": ("IP+", "1"), "IP-": ("IP-", "4")},
+        "DS3231": {"VCC": ("VCC", "2"), "GND": ("GND", "13"), "SDA": ("SDA", "15"), "SCL": ("SCL", "16"), "SQW": ("~INT/SQW", "3"), "32K": ("32kHz", "1"), "BAT": ("VBAT", "14")},
+        "LM2596": {"VIN": ("VIN", "1"), "SW": ("OUT", "2"), "GND": ("GND", "3"), "FB": ("FB", "4"), "EN": ("ON/OFF", "5")},
+        "TP4056": {"IN+": ("VCC", "4"), "IN-": ("GND", "3"), "B+": ("BAT", "5"), "B-": ("GND", "3"), "OUT+": ("BAT", "5"), "OUT-": ("GND", "3"), "CHRG": ("~CHRG", "7")},
+        "LI_ION_BATTERY_CONNECTOR": {"+": ("1",), "-": ("2",), "PLUS": ("1",), "MINUS": ("2",)},
+        "BRIDGE_RECTIFIER": {"AC1": ("3", "~"), "AC2": ("4", "~"), "+": ("1",), "-": ("2",), "PLUS": ("1",), "MINUS": ("2",)},
+        "4027": {"VDD": ("16",), "VSS": ("8",), "J1": ("6",), "K1": ("5",), "CLK1": ("3",), "SET1": ("7",), "RESET1": ("4",), "Q1": ("1",), "/Q1": ("2",), "J2": ("10",), "K2": ("11",), "CLK2": ("13",), "SET2": ("9",), "RESET2": ("12",), "Q2": ("15",), "/Q2": ("14",)},
+        "74HC76": {"VCC": ("5",), "GND": ("13",), "1J": ("4",), "1K": ("16",), "1CLK": ("1",), "1/PRE": ("2",), "1/CLR": ("3",), "1Q": ("15",), "1/Q": ("14",), "2J": ("12",), "2K": ("9",), "2CLK": ("6",), "2/PRE": ("7",), "2/CLR": ("8",), "2Q": ("11",), "2/Q": ("10",)},
+    }
+)
+
+for _kind in ("LED_INDICATOR", "POWER_LED", "RELAY_INDICATOR_LED", "CHARGING_LED", "LED"):
+    PIN_ALIAS_BY_KIND.setdefault(_kind, {}).update({"ANODE": ("A", "2"), "CATHODE": ("K", "1")})
+
+for _kind in ("DIODE", "D_1N4007", "1N4007", "1N4148", "1N60", "BZX55C5", "BZX79C5", "FLYBACK_DIODE", "RELAY_FLYBACK_DIODE", "SCHOTTKY_DIODE_BUCK", "TVS_DIODE_RS485"):
+    PIN_ALIAS_BY_KIND.setdefault(_kind, {}).update({"ANODE": ("A", "1"), "CATHODE": ("K", "2"), "A": ("A", "1"), "K": ("K", "2")})
+
+for _kind in ("74HC00", "74HC02", "74HC08", "74HC32", "74HC86", "74HC266"):
+    PIN_ALIAS_BY_KIND.setdefault(_kind, {}).update(
+        {
+            "VCC": ("14",),
+            "GND": ("7",),
+            "1A": ("1",),
+            "1B": ("2",),
+            "1Y": ("3",),
+            "2A": ("4",),
+            "2B": ("5",),
+            "2Y": ("6",),
+            "3Y": ("8",),
+            "3A": ("9",),
+            "3B": ("10",),
+            "4Y": ("11",),
+            "4A": ("12",),
+            "4B": ("13",),
+        }
+    )
+
+PIN_ALIAS_BY_KIND.setdefault("74HC04", {}).update(
+    {
+        "VCC": ("14",),
+        "GND": ("7",),
+        "1A": ("1",),
+        "1Y": ("2",),
+        "2A": ("3",),
+        "2Y": ("4",),
+        "3A": ("5",),
+        "3Y": ("6",),
+        "4Y": ("8",),
+        "4A": ("9",),
+        "5Y": ("10",),
+        "5A": ("11",),
+        "6Y": ("12",),
+        "6A": ("13",),
+    }
+)
+
+PIN_ALIAS_BY_KIND.setdefault("ARDUINO_NANO", {}).update(
+    {
+        "RST": ("RESET", "28"),
+        "D0_RX": ("D0/RX", "D0", "2"),
+        "D1_TX": ("D1/TX", "D1", "1"),
+        "D2": ("D2", "5"),
+        "D3": ("D3", "6"),
+        "D3_PWM": ("D3", "6"),
+        "D4": ("D4", "7"),
+        "D5": ("D5", "8"),
+        "D5_PWM": ("D5", "8"),
+        "D6": ("D6", "9"),
+        "D6_PWM": ("D6", "9"),
+        "D7": ("D7", "10"),
+        "D8": ("D8", "11"),
+        "D9": ("D9", "12"),
+        "D9_PWM": ("D9", "12"),
+        "D10": ("D10", "13"),
+        "D10_CS": ("D10", "13"),
+        "D11": ("D11", "14"),
+        "D11_MOSI": ("D11", "14"),
+        "D12": ("D12", "15"),
+        "D12_MISO": ("D12", "15"),
+        "D13": ("D13", "16"),
+        "D13_SCK": ("D13", "16"),
+        "A0": ("A0", "19"),
+        "A1": ("A1", "20"),
+        "A2": ("A2", "21"),
+        "A3": ("A3", "22"),
+        "A4_SDA": ("A4", "23"),
+        "A5_SCL": ("A5", "24"),
+        "A6": ("A6", "25"),
+        "A7": ("A7", "26"),
+    }
+)
+
+PIN_ALIAS_BY_KIND.setdefault("CP2102", {}).update({"VIO": ("VDD", "6")})
+PIN_ALIAS_BY_KIND.setdefault("W25Q64", {}).update({"/HOLD_IO3": ("HOLD", "IO3", "7"), "/WP_IO2": ("WP", "IO2", "3")})
+PIN_ALIAS_BY_KIND.setdefault("SSD1306_OLED", {}).update({"RESET": ("RES", "14")})
+PIN_ALIAS_BY_KIND.setdefault("74HC595_SHIFT_REGISTER", {}).update({"DS": ("SER", "14"), "VCC": ("VCC", "16"), "GND": ("GND", "8")})
+
+PIN_ALIAS_BY_KIND.setdefault("ESP32_WROOM", {}).update(
+    {
+        **{f"GPIO{index}": (f"IO{index}",) for index in range(0, 40)},
+        "GPIO0_BOOT": ("IO0",),
+        "GPIO1_TX0": ("TXD0", "IO1"),
+        "GPIO3_RX0": ("RXD0", "IO3"),
+        "GPIO34": ("IO34",),
+        "GPIO35": ("IO35",),
+        "GPIO36": ("SENSOR_VP", "IO36"),
+        "GPIO39": ("SENSOR_VN", "IO39"),
+    }
+)
+
+
 def _norm_pin(value: str) -> str:
     text = str(value).upper()
     text = text.replace("+", "PLUS").replace("-", "MINUS").replace("'", "PRIME")
@@ -1942,6 +2163,12 @@ def _repair_strict_partial_routes_by_motion(
     max_passes: int = 3,
 ) -> tuple[dict[str, Any], CatalogPlacementPlan, dict[str, Any], dict[str, Any]]:
     routing_mode = _wire_plan_routing_mode(wire_plan)
+    max_passes = max(0, int(float(cfg.get("strict_partial_route_repair_passes", max_passes))))
+    repair_route_cfg = dict(cfg)
+    if "partial_route_repair_max_astar_expansions" in cfg:
+        repair_route_cfg["max_astar_expansions"] = float(cfg["partial_route_repair_max_astar_expansions"])
+    if "partial_route_repair_max_wired_routes" in cfg:
+        repair_route_cfg["max_wired_routes"] = float(cfg["partial_route_repair_max_wired_routes"])
     passes: list[dict[str, Any]] = []
     current_routing_placement = routing_placement
     current_placement = placement
@@ -1991,7 +2218,7 @@ def _repair_strict_partial_routes_by_motion(
             )
             break
 
-        next_wire_plan = plan_wire_routes(next_routing_placement, circuit, config=cfg)
+        next_wire_plan = plan_wire_routes(next_routing_placement, circuit, config=repair_route_cfg)
         after_metrics = next_wire_plan.get("metrics", {}) if isinstance(next_wire_plan.get("metrics"), dict) else {}
         passes.append(
             {

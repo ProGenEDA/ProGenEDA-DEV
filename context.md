@@ -7616,6 +7616,79 @@ Commit made: `32830c7`. I’m pushing it and then I’ll verify local and remote
 
 - `context.md`
 
+## 2026-07-05 14:12 PKT - Node-Spec 11-Circuit KiCad Generation, Alias Fixes, and Router Scoring Cap
+
+### User Request
+
+```text
+here u go
+this will test all our current modules. all our validators placers etc. also generate their projectfiles for me too dont just check urself
+first let the generator n validator n net validator do its thing then u can validate urself this will allow improvement.
+and obv if the rust is finalized move that as main router, and move the py only old scripts into an "old scripts" older.
+and donot remove the none adaptive cap. we need it for a later feature. just add if variation true then do without adaptive cap this is for a future feature where we will be making variations of a circuit
+```
+
+Follow-up while v3 was stuck:
+
+```text
+its been 9hrs tf?
+```
+
+### Visible Agent Response Summary
+
+- Verified at turn start that local `HEAD` and `origin/main` both pointed at `0204ca0cd8712aa038abff4e5cc7fb488aea6edd`; the pre-existing July 2 generated schematic modifications were left untouched and unstaged.
+- Confirmed Rust `plan_full` is still intentionally non-authoritative and did not move Python routing scripts to old scripts.
+- Added a canonical pasted node-spec parser for `CIRCUIT NN:` plus `REF.PIN -> NET_*` lines in `final_circuit_builder.py`.
+- Added deterministic component kind/value inference from user-facing refs such as `RES_USB_CC1`, `LEVEL_SHIFTER_SPI1`, `PWR_5V`, `SCHOTTKY_OR_USB`, and logic IC refs.
+- Added a fresh final JSON run writer for node-spec text, keeping the same validator, placement input, arrangement, beautifier, and wire-planner stage reports as built-in suites.
+- Added `variation.enabled` / `disable_adaptive_cap` to routing v2 config so future variation generation can bypass the adaptive final-state cap without removing the normal cap.
+- Added source-backed alias fixes for power blocks, terminals, headers, ESP32 GPIOs, Arduino Nano pins, LEDs, diodes, transistor pins, logic IC pins, MCP2515, TJA1050, LM2596, TP4056, 74HC595, W25Q64, SSD1306 reset, CP2102 VIO, and related connector/test-point names.
+- Switched `LED_ARRAY` and `RESISTOR_NETWORK` embedded symbol mappings to connector-style symbols for this suite so the local netlist validator gets separate real pins instead of merged/common pins.
+- Generated final JSON and wired project runs, preserving interrupted attempts as immutable records with `INTERRUPTED_ATTEMPT.md`.
+- The v3 wired generation ran for about 9 hours and stalled in `wire_planner._path_wire_contact_counts` during exact full-route candidate scoring. Stopped it, recorded the interrupted folder, and patched a hard `exact_contact_score_operation_limit` so dense route scoring falls back to grid contact counting instead of hanging.
+- Generated the current best pack: `kicad/examples/final_json_wired_project_run_2026_07_05_140446_node_spec_2026_07_05_wired_v6_zero_pin_gap`.
+
+### Current Best Generated Output
+
+- Final JSON source: `kicad/examples/final_json_run_2026_07_05_035523_node_spec_2026_07_05_v2_aliases`
+- KiCad projects: `kicad/examples/final_json_wired_project_run_2026_07_05_140446_node_spec_2026_07_05_wired_v6_zero_pin_gap/projects/n01` through `projects/n11`
+- Open files are named `OPEN_THIS_PROJECT__nXX__WIRED.kicad_pro`.
+
+### V6 Validation Results
+
+- 11 / 11 projects generated.
+- 448 requested components emitted.
+- 480 symbol instances emitted.
+- Static schematic checks pass for every project.
+- 0 unresolved pins.
+- 0 routing unresolved pins.
+- 0 component body overlaps.
+- 0 wire geometry violations.
+- 0 power/ground shorts.
+- Local netlist validation still fails: 196 unrouted nets, 29 partial nets, 276 failed expected nets, 572 floating expected pins.
+- Conclusion: component placement/catalogue/pin identity is now good enough for this test suite; the remaining blocker is strict wire-router completeness.
+
+### Verification
+
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_final_circuit_builder.py -q`
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_routing_v2.py -q`
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_final_circuit_builder.py kicad/tests/test_routing_v2.py kicad/tests/test_kicad_wire_maker.py kicad/tests/test_kicad_netlist_validator.py -q`
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_kicad_netlist_validator.py -q`
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests`
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/final_circuit_builder.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/placement_catalog.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/pipeline/routing/python/routing_config.py`
+- `kicad/pipeline/routing/python/routing_orchestrator.py`
+- `kicad/tests/test_final_circuit_builder.py`
+- `kicad/tests/test_routing_v2.py`
+- Generated records under `kicad/examples/final_json_run_2026_07_05_*` and `kicad/examples/final_json_wired_project_run_2026_07_05_*`.
+
 ## 2026-07-05 02:03:07 PKT - Rust Wire-Mode Power/Ground Terminal Policy
 
 ### User Request

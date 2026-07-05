@@ -94,6 +94,7 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "long_lane_threshold": 80.0,
     "long_lane_outer_penalty": 12.0,
     "exact_crossing_score_segment_limit": 5000.0,
+    "exact_contact_score_operation_limit": 60000.0,
     "body_grid_score_component_limit": 80.0,
     "dense_design_component_limit": 90.0,
     "dense_max_lane_candidates": 256.0,
@@ -778,10 +779,15 @@ def _path_wire_contact_counts(
     cfg: dict[str, Any] | None = None,
     occupied: dict[GridPoint, str] | None = None,
 ) -> tuple[int, int, int]:
+    path_segment_count = max(0, len(path) - 1)
+    operation_count = path_segment_count * len(existing_segments)
     if (
         cfg is not None
         and occupied is not None
-        and len(existing_segments) > int(cfg.get("exact_crossing_score_segment_limit", 700.0))
+        and (
+            len(existing_segments) > int(cfg.get("exact_crossing_score_segment_limit", 700.0))
+            or operation_count > int(cfg.get("exact_contact_score_operation_limit", 60_000.0))
+        )
     ):
         different, same = _path_grid_contact_counts(path, occupied, net=net, grid=float(cfg["grid"]))
         return different, same, 0
