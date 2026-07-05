@@ -7635,6 +7635,171 @@ Critical resume facts:
 - Verification: `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q` passed with `34 passed, 30 subtests passed`; `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests` passed.
 - Pre-existing July 2 generated KiCad edits remain dirty and intentionally unstaged.
 
+## 2026-07-05 19:20:38 PKT - Terminal-Only Netlist Pass and Pin Alias Fix
+
+### User Request
+
+```text
+see how much of this u can fix quickly
+after that lets move on to other stuff.
+fix the netlist issue as much as u can quickly
+then retest, then start building the terminal only logic, after terminal only gives perfect results, and it should and be fast in building, perfect as in, quick, completely netlist pass, no overlapping of components , no components beign v far from each other and all names proeprly according to input json
+always when u test, test like real life, dont give guided inputs. guide inputsa re for building, when u are done buiilding give real inputs, real json entered into pipleline passing through component placer etc etc
+```
+
+### Visible Agent Responses
+
+```text
+Got it. I’ll do this in two passes...
+```
+
+```text
+I’ve got the shape now: quickest win is not “make the router smarter” first, it’s fixing pin identity mistakes that make the validator think the right physical symbol pin is the wrong logical pin. Then I’ll run a real terminal-only path through the same JSON pipeline instead of a hand-held shortcut.
+```
+
+```text
+The first real bug is pin aliases, not routing geometry: a few symbols are being resolved to the same KiCad pin for two different logical pins, which poisons netlist comparison. I’m checking the resolver and the actual library pin names before editing so this lands as a narrow fix.
+```
+
+```text
+This one is clean: the resolver was normalizing `a` and `A` to the same key, and `/Y` to `Y`, so display outputs and inverted outputs could collapse onto the wrong pin. I’m changing alias lookup to honor exact logical pin spelling first, then normalized fallbacks.
+```
+
+```text
+I’m also correcting the Micro SD card-detect alias: KiCad’s source symbol has `DAT3/CD` on pin 2 and a separate detect pin `DET` on pin 9. Our logical `CD` needs to mean the detect switch, not chip-select/data3.
+```
+
+```text
+One more pin-map correction surfaced while testing the fix: the 74LS174 KiCad symbol numbers the six flip-flops as D0/Q0 through D5/Q5. Our logical D5/Q5 aliases were swapped, so I’m correcting that too.
+```
+
+```text
+Now I’m adding a focused regression test so these exact pin identity mistakes don’t come back when we expand the catalogue. This is small, but it protects the validator from hallucinating shorts and missing pins.
+```
+
+```text
+I’m doing a cheap retest first against the existing generated schematics with the corrected validator/resolver. That tells us how much was fake netlist failure from pin identity before spending time on a fresh generation.
+```
+
+```text
+The first retest script tripped on a folder-name mismatch, not on the validator itself. I’m checking the run layout and then I’ll rerun it with the manifest’s own paths.
+```
+
+```text
+`jq` isn’t installed here, so I’m switching that bit to Python. Tiny tooling wrinkle, nothing structural.
+```
+
+```text
+After the quick alias fix, the fake “same physical pin” conflicts are gone. The remaining failures are actual disconnected/merged wire groups, so I’m not going to burn the turn pretending the router is magically solved; I’m moving into terminal-only now, where netlist correctness should come from explicit same-name terminal labels on every endpoint.
+```
+
+```text
+The terminal stage exists but it was just a thin wrapper over the wire planner. I’m going to keep the shared endpoint contract, but make the generator call `terminal_placer` explicitly for terminal runs so the folder/project records prove the terminal stage is actually in the pipeline.
+```
+
+```text
+I found the generator was still asking the wire planner for terminal-mode plans directly. I’m wiring in the terminal placer as the owner for terminal runs; the backend still uses the same KiCad label-stub emitter, but the record will say `stage: terminal_placer` and stay replaceable.
+```
+
+```text
+Next I’m adding a generation test for terminal mode that starts with final JSON, runs the placer/arrangement path, goes through `terminal_placer`, writes KiCad projects, and checks local netlist pass. That matches the “real input through pipeline” rule.
+```
+
+```text
+The terminal-mode unit test passed, so I’m running the real 11-circuit hard pack now from the saved final JSON folder, through placement and terminal generation. This is the honest check: no guided manual pin lists, just the pipeline input.
+```
+
+```text
+The full terminal run passed all local netlist checks: 11/11, zero failed nets, zero floating pins, zero merged nets, zero overlaps. I’m doing one polish pass before committing so future terminal runs don’t confusingly name the opened files `WIRED`.
+```
+
+```text
+The code now names terminal generated projects as `TERMINAL` and fresh run folders as `final_json_terminal_project_run...`. I’m rerunning the focused tests, then I’ll regenerate the terminal pack once more so the saved example has the corrected names.
+```
+
+```text
+The focused tests are green. I’m producing the real terminal-only pack again with the fixed naming, keeping the previous run untouched as a record.
+```
+
+```text
+The real terminal pack is clean: 448 components, 1,532 terminal labels, zero netlist failures, zero floating pins, zero merged nets, zero component overlaps. I’m running the broader local test set now before I write the record and commit.
+```
+
+```text
+The main KiCad tests passed. I’m doing the compile check next, then I’ll update the repo log and push the checkpoint.
+```
+
+```text
+Compile passed too. I’m appending the turn record now with the exact user request, visible progress notes, files changed, generated folder, and test results so the next resume does not depend on chat memory.
+```
+
+```text
+I’ll include both terminal runs as records, with v2 as the clean named one. The v1 folder is still useful evidence: it proves the terminal logic passed before the naming polish, so I’m not erasing it.
+```
+
+### Implementation Notes
+
+- Verified at turn start that local `HEAD` and `origin/main` both pointed at `78833d00174abbdd7e94121bf6cb6b8bcef29e76`; pre-existing generated v4 example modifications were left unstaged.
+- Fixed exact pin alias resolution in `kicad_wire_maker.py` so case-sensitive pins and active-low names are honored before normalized fallback matching. This prevents logical pins like `4511.a`, `74HC151./Y`, and `74HC174.D5/Q5` from collapsing onto the wrong physical KiCad pins.
+- Corrected `MICRO_SD_SOCKET.CD` to resolve to KiCad `DET` pin 9 instead of the shared `DAT3/CD` pin 2 used by chip select/data3.
+- Corrected `74HC174` D5/Q5 aliases for the KiCad `74LS174` source symbol.
+- Revalidated the existing v8 wired schematics with the corrected resolver. Physical pin conflicts dropped to zero, proving the false same-pin conflicts are fixed. Remaining wired failures are real disconnected/merged wire groups, not pin-alias artifacts.
+- Made terminal generation call `terminal_placer.place_terminals()` explicitly when `routing_mode=terminal`, instead of directly using the wire planner terminal branch.
+- Made terminal-mode project outputs use `TERMINAL` in `.kicad_pro`/`.kicad_sch` names and fresh generated folders use `final_json_terminal_project_run_...`.
+- Added focused tests for exact alias resolution and real final-JSON terminal generation through the pipeline.
+
+### Generated Records
+
+- Initial terminal pass before naming polish:
+  `kicad/examples/final_json_wired_project_run_2026_07_05_191749_terminal_only_v1_real_pipeline_after_alias_fix`
+- Clean terminal-only pass after naming polish:
+  `kicad/examples/final_json_terminal_project_run_2026_07_05_191908_terminal_only_v2_real_pipeline_named`
+
+Clean terminal run metrics:
+
+- `project_count=11`
+- `total_components=448`
+- `total_symbol_instances=480`
+- `total_labels=1532`
+- `total_wire_objects=0`
+- `total_unresolved_pins=0`
+- `total_routing_unresolved_pins=0`
+- `total_component_body_overlaps=0`
+- `total_local_netlist_blocking_failures=0`
+- `total_local_netlist_physical_pin_conflicts=0`
+- `total_local_netlist_failed_nets=0`
+- `total_local_netlist_merged_nets=0`
+- `total_local_netlist_power_ground_shorts=0`
+- `total_local_netlist_floating_expected_pins=0`
+- Every saved wire plan in v2 has `stage: terminal_placer`.
+
+### Verification
+
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py::KiCadWireMakerTests::test_exact_pin_aliases_preserve_case_and_active_low_identity -q`
+  - Passed: `1 passed, 4 subtests passed`.
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py::KiCadWireMakerTests::test_generate_terminal_projects_from_final_json_uses_terminal_placer_and_passes_netlist -q`
+  - Passed: `1 passed`.
+- `PYTHONPATH=. .venv/bin/python -m kicad.pipeline.kicad_wire_maker kicad/examples/final_json_wired_project_run_2026_07_05_zeroroute_v8_pin_escape_motion/final_json --examples-root kicad/examples --label terminal_only_v2_real_pipeline_named --routing-mode terminal`
+  - Passed with clean terminal run metrics above.
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q`
+  - Passed: `36 passed, 34 subtests passed`.
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad`
+  - Passed.
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+- `kicad/examples/final_json_wired_project_run_2026_07_05_191749_terminal_only_v1_real_pipeline_after_alias_fix/`
+- `kicad/examples/final_json_terminal_project_run_2026_07_05_191908_terminal_only_v2_real_pipeline_named/`
+
+### Unstaged Pre-existing Dirt Preserved
+
+- `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_pro`
+- `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t01/OPEN_THIS_PROJECT__t01__WIRED.kicad_sch`
+- `kicad/examples/final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4/projects/t03/OPEN_THIS_PROJECT__t03__WIRED.kicad_pro`
+
 ## 2026-07-05 15:37:47 PKT - KiCad Wire Planner Zero Unrouted/Partial V8
 
 ### User Request

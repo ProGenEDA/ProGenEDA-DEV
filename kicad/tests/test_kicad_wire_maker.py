@@ -14,13 +14,31 @@ from kicad.pipeline.final_circuit_builder import (
     build_proteus_alias_routed_circuits,
     placer_ready_circuit,
 )
-from kicad.pipeline.kicad_wire_maker import generate_wired_projects_from_final_json, make_kicad_wires
+from kicad.pipeline.kicad_symbol_library import KiCadSymbolLibrary
+from kicad.pipeline.kicad_wire_maker import _pin_geometries, _resolve_pin_geometry, generate_wired_projects_from_final_json, make_kicad_wires
 from kicad.pipeline.terminal_placer import place_terminals
 from kicad.pipeline.placer_pipeline import run_placer_pipeline
 from kicad.pipeline.wire_planner import plan_wire_routes
 
 
 class KiCadWireMakerTests(unittest.TestCase):
+    def test_exact_pin_aliases_preserve_case_and_active_low_identity(self) -> None:
+        library = KiCadSymbolLibrary()
+        cases = {
+            ("MICRO_SD_SOCKET", "Connector:Micro_SD_Card_Det1"): {"CS": "2", "CD": "9"},
+            ("4511", "4xxx_IEEE:4511"): {"A": "7", "a": "13"},
+            ("74HC151", "74xx:74LS151"): {"Y": "5", "/Y": "6"},
+            ("74HC174", "74xx:74LS174"): {"D5": "13", "D6": "14", "Q5": "12", "Q6": "15"},
+        }
+        for (kind, lib_id), expected in cases.items():
+            geometries = _pin_geometries(library.load(lib_id).text)
+            with self.subTest(kind=kind):
+                for pin, number in expected.items():
+                    geometry, status = _resolve_pin_geometry(ref="U1", kind=kind, pin=pin, geometries=geometries)
+                    self.assertEqual(status, "resolved")
+                    self.assertIsNotNone(geometry)
+                    self.assertEqual(geometry.number, number, pin)
+
     def test_wire_maker_strict_wire_mode_emits_no_terminal_labels(self) -> None:
         circuit = build_final_test_circuits()[0]
         ctx = run_placer_pipeline(placer_ready_circuit(circuit), write_trace=False)
@@ -104,6 +122,36 @@ class KiCadWireMakerTests(unittest.TestCase):
                 self.assertTrue((root / "wired_run" / result["open_this"]).exists())
                 self.assertIn("wires, labels, and junctions are generated", schematic.read_text(encoding="utf-8"))
                 self.assertGreater(result["wire_object_count"], 0)
+
+    def test_generate_terminal_projects_from_final_json_uses_terminal_placer_and_passes_netlist(self) -> None:
+        circuits = build_final_test_circuits()[:2]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "final_json"
+            source.mkdir()
+            for circuit in circuits:
+                (source / f"{circuit['circuit_id']}.json").write_text(json.dumps(circuit, indent=2), encoding="utf-8")
+            summary = generate_wired_projects_from_final_json(
+                source,
+                examples_root=root,
+                label="unit_test_terminal",
+                run_dir=root / "terminal_run",
+                routing_mode="terminal",
+            )
+            self.assertEqual(summary["project_count"], 2)
+            self.assertTrue(summary["all_static_checks_ok"])
+            self.assertTrue(summary["all_component_body_overlap_ok"])
+            self.assertEqual(summary["total_component_body_overlaps"], 0)
+            self.assertTrue(summary["all_local_netlist_ok"])
+            self.assertEqual(summary["total_local_netlist_failed_nets"], 0)
+            self.assertGreater(summary["total_labels"], 0)
+            for result in summary["results"]:
+                project_dir = root / "terminal_run" / result["project_dir"]
+                wire_plan = next((root / "terminal_run" / "wire_plans").glob(f"{result['circuit_id']}*_wire_plan.json"))
+                self.assertEqual(json.loads(wire_plan.read_text(encoding="utf-8"))["stage"], "terminal_placer")
+                manifest = json.loads((project_dir / "manifest.json").read_text(encoding="utf-8"))
+                self.assertEqual(manifest["wire_maker"]["routing_mode"], "terminal")
+                self.assertTrue(manifest["local_netlist_validation"]["ok"])
 
     def test_proteus_alias_mixed_wired_projects_obey_geometry_rules(self) -> None:
         circuits = build_proteus_alias_mixed_circuits()[:2]

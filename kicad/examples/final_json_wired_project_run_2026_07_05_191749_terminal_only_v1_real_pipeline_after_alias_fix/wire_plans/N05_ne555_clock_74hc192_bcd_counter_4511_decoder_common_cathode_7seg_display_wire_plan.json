@@ -1,0 +1,1681 @@
+{
+  "schema": "progen-kicad-terminal-plan/v0.1",
+  "stage": "terminal_placer",
+  "version": "progen-kicad-terminal-placer/v0.1",
+  "routing_mode": "terminal",
+  "terminal_backend": "kicad_local_labels",
+  "contract": {
+    "owns_local_labels": true,
+    "wire_mode_must_not_use_this_as_fallback": true
+  },
+  "nets": {
+    "NET_CLOCK_GATED": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC00",
+          "pin": "2Y",
+          "side": "right",
+          "point": [
+            355.6,
+            160.02
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit2:pin6"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "UP_CLK",
+          "side": "left",
+          "point": [
+            472.44,
+            154.94
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin5"
+        },
+        {
+          "ref": "R_220_CLOCK_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            237.49
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_CLOCK_NAND": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC00",
+          "pin": "1Y",
+          "side": "right",
+          "point": [
+            355.6,
+            147.32
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit1:pin3"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "2A",
+          "side": "left",
+          "point": [
+            340.36,
+            157.48
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit2:pin4"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "2B",
+          "side": "left",
+          "point": [
+            340.36,
+            162.56
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit2:pin5"
+        }
+      ],
+      "routes": []
+    },
+    "NET_CLOCK_RAW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "NE555",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            449.58,
+            147.32
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin3"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "1A",
+          "side": "left",
+          "point": [
+            340.36,
+            144.78
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_LED_INDICATOR_CLOCK_ANODE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "LED_INDICATOR_CLOCK",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            527.05,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "R_220_CLOCK_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            229.87
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_4511_A": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "4511",
+          "pin": "a",
+          "side": "right",
+          "point": [
+            403.86,
+            139.7
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin13"
+        },
+        {
+          "ref": "R_SEG_A",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            123.19
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_4511_B": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "4511",
+          "pin": "b",
+          "side": "right",
+          "point": [
+            403.86,
+            142.24
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin12"
+        },
+        {
+          "ref": "R_SEG_B",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_4511_C": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "4511",
+          "pin": "c",
+          "side": "right",
+          "point": [
+            403.86,
+            144.78
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin11"
+        },
+        {
+          "ref": "R_SEG_C",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_4511_D": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "4511",
+          "pin": "d",
+          "side": "right",
+          "point": [
+            403.86,
+            147.32
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin10"
+        },
+        {
+          "ref": "R_SEG_D",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            176.53
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_4511_E": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "4511",
+          "pin": "e",
+          "side": "right",
+          "point": [
+            403.86,
+            149.86
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin9"
+        },
+        {
+          "ref": "R_SEG_E",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            194.31
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_4511_F": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "4511",
+          "pin": "f",
+          "side": "right",
+          "point": [
+            403.86,
+            152.4
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin15"
+        },
+        {
+          "ref": "R_SEG_F",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            212.09
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_4511_G": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "4511",
+          "pin": "g",
+          "side": "right",
+          "point": [
+            403.86,
+            154.94
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin14"
+        },
+        {
+          "ref": "R_SEG_G",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            247.65
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_555_DISCH": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "NE555",
+          "pin": "DISCH",
+          "side": "left",
+          "point": [
+            429.26,
+            144.78
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin7"
+        },
+        {
+          "ref": "RES_555_RA",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            309.88,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_555_RB",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            52.07
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_555_TIMING": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "NE555",
+          "pin": "THRESH",
+          "side": "left",
+          "point": [
+            429.26,
+            149.86
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin6"
+        },
+        {
+          "ref": "NE555",
+          "pin": "TRIG",
+          "side": "left",
+          "point": [
+            429.26,
+            152.4
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin2"
+        },
+        {
+          "ref": "RES_555_RB",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            59.69
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            124.46,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_74HC00_3Y": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC00",
+          "pin": "3Y",
+          "side": "right",
+          "point": [
+            355.6,
+            172.72
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit3:pin8"
+        },
+        {
+          "ref": "TEST_POINT_NAND3",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            30.48,
+            73.66
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_74HC00_4Y": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC00",
+          "pin": "4Y",
+          "side": "right",
+          "point": [
+            355.6,
+            185.42
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit4:pin11"
+        },
+        {
+          "ref": "TEST_POINT_NAND4",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            30.48,
+            91.44
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_74HC192_BORROW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "BORROW",
+          "side": "right",
+          "point": [
+            497.84,
+            154.94
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin13"
+        },
+        {
+          "ref": "TEST_POINT_BORROW",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            30.48,
+            109.22
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_74HC192_CARRY": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "CARRY",
+          "side": "right",
+          "point": [
+            497.84,
+            149.86
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin12"
+        },
+        {
+          "ref": "TEST_POINT_CARRY",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            63.5,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        },
+        {
+          "ref": "R_220_CARRY_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            273.05
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BCD_A": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QA",
+          "side": "right",
+          "point": [
+            497.84,
+            137.16
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin3"
+        },
+        {
+          "ref": "4511",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            383.54,
+            142.24
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin7"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BCD_B": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QB",
+          "side": "right",
+          "point": [
+            497.84,
+            139.7
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin2"
+        },
+        {
+          "ref": "4511",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            383.54,
+            144.78
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BCD_C": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QC",
+          "side": "right",
+          "point": [
+            497.84,
+            142.24
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin6"
+        },
+        {
+          "ref": "4511",
+          "pin": "C",
+          "side": "left",
+          "point": [
+            383.54,
+            147.32
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BCD_D": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "QD",
+          "side": "right",
+          "point": [
+            497.84,
+            144.78
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin7"
+        },
+        {
+          "ref": "4511",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            383.54,
+            149.86
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin6"
+        }
+      ],
+      "routes": []
+    },
+    "NET_COUNTER_CLR": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "74HC192",
+          "pin": "CLR",
+          "side": "left",
+          "point": [
+            472.44,
+            160.02
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin14"
+        },
+        {
+          "ref": "R_COUNTER_CLR_PD",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            93.98,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "PUSH_BUTTON_CLEAR",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            180.34,
+            147.32
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_COUNT_ENABLE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "DIP_SWITCH",
+          "pin": "S1B",
+          "side": "left",
+          "point": [
+            238.76,
+            149.86
+          ],
+          "exact": true,
+          "source": "Switch:SW_DIP_x08:unit1:pin2"
+        },
+        {
+          "ref": "R_COUNT_ENABLE_PD",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            309.88,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "1B",
+          "side": "left",
+          "point": [
+            340.36,
+            149.86
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_LED_INDICATOR_CARRY_ANODE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "LED_INDICATOR_CARRY",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            600.71,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "R_220_CARRY_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            265.43
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_NE555_CTRL": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "NE555",
+          "pin": "CTRL",
+          "side": "top",
+          "point": [
+            439.42,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin5"
+        },
+        {
+          "ref": "C_100NF_555_CTRL",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            246.38,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_SEG_A_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "R_SEG_A",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            130.81
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            553.72,
+            139.7
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin7"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_SEG_B_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "7SEGCOMK",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            553.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin6"
+        },
+        {
+          "ref": "R_SEG_B",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_SEG_C_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "7SEGCOMK",
+          "pin": "C",
+          "side": "left",
+          "point": [
+            553.72,
+            144.78
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin4"
+        },
+        {
+          "ref": "R_SEG_C",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            166.37
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_SEG_D_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "7SEGCOMK",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            553.72,
+            147.32
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin2"
+        },
+        {
+          "ref": "R_SEG_D",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            184.15
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_SEG_E_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "7SEGCOMK",
+          "pin": "E",
+          "side": "left",
+          "point": [
+            553.72,
+            149.86
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin1"
+        },
+        {
+          "ref": "R_SEG_E",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            201.93
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_SEG_F_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "7SEGCOMK",
+          "pin": "F",
+          "side": "left",
+          "point": [
+            553.72,
+            152.4
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin9"
+        },
+        {
+          "ref": "R_SEG_F",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            219.71
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_SEG_G_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "7SEGCOMK",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            553.72,
+            154.94
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin10"
+        },
+        {
+          "ref": "R_SEG_G",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            255.27
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "PWR_5V",
+          "pin": "+",
+          "side": "top",
+          "point": [
+            30.48,
+            27.94
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "NE555",
+          "pin": "RESET",
+          "side": "left",
+          "point": [
+            429.26,
+            142.24
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin4"
+        },
+        {
+          "ref": "NE555",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            441.96,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin8"
+        },
+        {
+          "ref": "RES_555_RA",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            309.88,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "DIP_SWITCH",
+          "pin": "S1A",
+          "side": "left",
+          "point": [
+            238.76,
+            147.32
+          ],
+          "exact": true,
+          "source": "Switch:SW_DIP_x08:unit1:pin1"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            347.98,
+            185.42
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit5:pin14"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "/LOAD",
+          "side": "left",
+          "point": [
+            472.44,
+            149.86
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin11"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "DOWN_CLK",
+          "side": "left",
+          "point": [
+            472.44,
+            157.48
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin4"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            485.14,
+            129.54
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin16"
+        },
+        {
+          "ref": "PUSH_BUTTON_CLEAR",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            190.5,
+            147.32
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "4511",
+          "pin": "/BI",
+          "side": "left",
+          "point": [
+            383.54,
+            154.94
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin4"
+        },
+        {
+          "ref": "4511",
+          "pin": "/LT",
+          "side": "left",
+          "point": [
+            383.54,
+            152.4
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin3"
+        },
+        {
+          "ref": "4511",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            393.7,
+            134.62
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin16"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_555",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            154.94,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC00",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            215.9,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC192",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            279.4,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_4511",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            63.5,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "PWR_5V",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            30.48,
+            38.1
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "NE555",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            439.42,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin1"
+        },
+        {
+          "ref": "C_100NF_555_CTRL",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            246.38,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            124.46,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "R_COUNT_ENABLE_PD",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            309.88,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "3A",
+          "side": "left",
+          "point": [
+            340.36,
+            170.18
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit3:pin9"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "3B",
+          "side": "left",
+          "point": [
+            340.36,
+            175.26
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit3:pin10"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "4A",
+          "side": "left",
+          "point": [
+            340.36,
+            182.88
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit4:pin12"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "4B",
+          "side": "left",
+          "point": [
+            340.36,
+            187.96
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit4:pin13"
+        },
+        {
+          "ref": "74HC00",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            347.98,
+            210.82
+          ],
+          "exact": true,
+          "source": "74xx:74HC00:unit5:pin7"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            472.44,
+            137.16
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin15"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            472.44,
+            139.7
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin1"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "C",
+          "side": "left",
+          "point": [
+            472.44,
+            142.24
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin10"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            472.44,
+            144.78
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin9"
+        },
+        {
+          "ref": "74HC192",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            485.14,
+            167.64
+          ],
+          "exact": true,
+          "source": "74xx:74HC192:unit1:pin8"
+        },
+        {
+          "ref": "R_COUNTER_CLR_PD",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            93.98,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "4511",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            393.7,
+            160.02
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin8"
+        },
+        {
+          "ref": "4511",
+          "pin": "LE",
+          "side": "left",
+          "point": [
+            383.54,
+            139.7
+          ],
+          "exact": true,
+          "source": "4xxx_IEEE:4511:unit1:pin5"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "COM1",
+          "side": "right",
+          "point": [
+            568.96,
+            154.94
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin3"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "COM2",
+          "side": "right",
+          "point": [
+            568.96,
+            157.48
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin8"
+        },
+        {
+          "ref": "7SEGCOMK",
+          "pin": "DP",
+          "side": "left",
+          "point": [
+            553.72,
+            157.48
+          ],
+          "exact": true,
+          "source": "Display_Character:KCSC02-107:unit1:pin5"
+        },
+        {
+          "ref": "LED_INDICATOR_CLOCK",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            519.43,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "LED_INDICATOR_CARRY",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            593.09,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_555",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            154.94,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC00",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            215.9,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_74HC192",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            279.4,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_4511",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            63.5,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "metrics": {
+    "net_count": 34,
+    "wired_route_count": 0,
+    "lane_route_count": 0,
+    "astar_route_count": 0,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 0,
+    "crossing_risk_route_count": 0,
+    "dense_design_mode": false,
+    "segment_count": 0,
+    "different_net_crossing_count": 0,
+    "mst_total_length": 0,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 0,
+    "crossing_density_max_tile_crossings": 0,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 0,
+    "label_strategy_count": 34,
+    "wire_mode_terminal_net_count": 0,
+    "wire_mode_terminal_endpoint_count": 0,
+    "partial_wire_net_count": 0,
+    "unroutable_net_count": 0
+  },
+  "warnings": [],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": false,
+    "reason": "only strict wire mode uses partial-route component motion repair",
+    "pass_count": 0,
+    "passes": []
+  },
+  "arrangement_selection": {
+    "schema": "progen-kicad-routeable-arrangement-selection/v0.1",
+    "stage": "routeable_arrangement_selector",
+    "strategy": "parallel_variant_routeability_score",
+    "variant_count": 3,
+    "worker_count": 1,
+    "parallel_error": "",
+    "scoring_wire_config": {
+      "max_astar_expansions": 600.0,
+      "max_lane_candidates": 32.0,
+      "max_failed_endpoints_per_net": 1.0
+    },
+    "selected_variant": "base",
+    "selected_score": {
+      "score": 283479.57,
+      "square_fill": {
+        "width": 573.92,
+        "height": 243.47,
+        "aspect_ratio": 2.357,
+        "aspect_penalty": 330.45,
+        "fill_waste_area": 132855.177,
+        "score": 2653.728
+      },
+      "component_body_overlap_count": 0,
+      "estimated_blocked_endpoint_count": 0,
+      "estimated_partial_pressure": 0,
+      "estimated_body_hit_count": 0,
+      "estimated_routable_branch_count": 82,
+      "estimated_turn_count": 77,
+      "estimated_route_length": 17336.77
+    },
+    "final_score": {
+      "score": 0.0,
+      "complete_wire_net_count": 0,
+      "unroutable_net_count": 0,
+      "partial_wire_net_count": 0,
+      "label_strategy_count": 0,
+      "route_body_hit_count": 0,
+      "route_forbidden_contact_count": 0,
+      "component_shadow_count": 0,
+      "route_turn_count": 0,
+      "route_length": 0,
+      "different_net_crossing_count": 0
+    },
+    "variants": [
+      {
+        "name": "base",
+        "ok": true,
+        "score": {
+          "score": 283479.57,
+          "square_fill": {
+            "width": 573.92,
+            "height": 243.47,
+            "aspect_ratio": 2.357,
+            "aspect_penalty": 330.45,
+            "fill_waste_area": 132855.177,
+            "score": 2653.728
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 82,
+          "estimated_turn_count": 77,
+          "estimated_route_length": 17336.77
+        },
+        "elapsed_seconds": 0.368,
+        "coordinate_edit_count": 33,
+        "error": null
+      },
+      {
+        "name": "square_fill_compact",
+        "ok": true,
+        "score": {
+          "score": 340661.31,
+          "square_fill": {
+            "width": 634.88,
+            "height": 271.41,
+            "aspect_ratio": 2.339,
+            "aspect_penalty": 363.47,
+            "fill_waste_area": 165435.656,
+            "score": 3208.475
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 82,
+          "estimated_turn_count": 76,
+          "estimated_route_length": 19053.81
+        },
+        "elapsed_seconds": 0.146,
+        "coordinate_edit_count": 33,
+        "error": null
+      },
+      {
+        "name": "square_fill_balanced",
+        "ok": true,
+        "score": {
+          "score": 405443.51,
+          "square_fill": {
+            "width": 695.84,
+            "height": 301.89,
+            "aspect_ratio": 2.305,
+            "aspect_penalty": 393.95,
+            "fill_waste_area": 203190.013,
+            "score": 3835.75
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 82,
+          "estimated_turn_count": 77,
+          "estimated_route_length": 21098.51
+        },
+        "elapsed_seconds": 0.141,
+        "coordinate_edit_count": 33,
+        "error": null
+      }
+    ]
+  }
+}

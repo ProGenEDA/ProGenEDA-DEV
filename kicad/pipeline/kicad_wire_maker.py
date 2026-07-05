@@ -234,7 +234,7 @@ PIN_ALIAS_BY_KIND.update(
             **{f"L{index}": (f"A{index}",) for index in range(1, 9)},
             **{f"H{index}": (f"B{index}",) for index in range(1, 9)},
         },
-        "MICRO_SD_SOCKET": {"VCC": ("VDD", "4"), "GND": ("VSS", "6"), "SCK": ("CLK", "5"), "MOSI": ("CMD", "3"), "MISO": ("DAT0", "7"), "CS": ("DAT3", "2"), "CD": ("DET_A", "CD")},
+        "MICRO_SD_SOCKET": {"VCC": ("VDD", "4"), "GND": ("VSS", "6"), "SCK": ("CLK", "5"), "MOSI": ("CMD", "3"), "MISO": ("DAT0", "7"), "CS": ("DAT3", "2"), "CD": ("DET", "9")},
         "I2C_HEADER": {"VCC": ("1",), "GND": ("2",), "SDA": ("3",), "SCL": ("4",)},
         "UART_HEADER": {"VCC": ("1",), "GND": ("2",), "RX": ("3",), "TX": ("4",), "RTS": ("5",), "CTS": ("5",)},
         "PWM_HEADER": {"VCC": ("1",), "GND": ("2",), "PWM1": ("3",), "PWM2": ("4",), "PWM3": ("5",), "PWM4": ("6",), "PWM5": ("7",)},
@@ -274,7 +274,7 @@ PIN_ALIAS_BY_KIND.update(
         "74HC192": {"VCC": ("16",), "GND": ("8",), "A": ("15",), "B": ("1",), "C": ("10",), "D": ("9",), "QA": ("3",), "QB": ("2",), "QC": ("6",), "QD": ("7",), "UP_CLK": ("5",), "DOWN_CLK": ("4",), "/LOAD": ("11",), "CLR": ("14",), "CARRY": ("12",), "BORROW": ("13",)},
         "74HC283": {"VCC": ("16",), "GND": ("8",), "A1": ("5",), "B1": ("6",), "S1": ("4",), "A2": ("3",), "B2": ("2",), "S2": ("1",), "A3": ("14",), "B3": ("15",), "S3": ("13",), "A4": ("12",), "B4": ("11",), "S4": ("10",), "C0": ("7",), "C4": ("9",)},
         "74HC85": {"VCC": ("16",), "GND": ("8",), "A0": ("10",), "A1": ("12",), "A2": ("13",), "A3": ("15",), "B0": ("9",), "B1": ("11",), "B2": ("14",), "B3": ("1",), "I_A_LT_B": ("2",), "I_A_EQ_B": ("3",), "I_A_GT_B": ("4",), "O_A_GT_B": ("5",), "O_A_EQ_B": ("6",), "O_A_LT_B": ("7",)},
-        "74HC174": {"VCC": ("16",), "GND": ("8",), "/CLR": ("1",), "CLK": ("9",), "D1": ("3",), "D2": ("4",), "D3": ("6",), "D4": ("11",), "D5": ("12",), "D6": ("14",), "Q1": ("2",), "Q2": ("5",), "Q3": ("7",), "Q4": ("10",), "Q5": ("13",), "Q6": ("15",)},
+        "74HC174": {"VCC": ("16",), "GND": ("8",), "/CLR": ("1",), "CLK": ("9",), "D1": ("3",), "D2": ("4",), "D3": ("6",), "D4": ("11",), "D5": ("13",), "D6": ("14",), "Q1": ("2",), "Q2": ("5",), "Q3": ("7",), "Q4": ("10",), "Q5": ("12",), "Q6": ("15",)},
         "MCP2515": {"VCC": ("VDD", "18"), "GND": ("VSS", "9"), "TXCAN": ("TXCAN", "1"), "RXCAN": ("RXCAN", "2"), "SCK": ("SCK", "13"), "SI": ("SI", "14"), "SO": ("SO", "15"), "CS": ("CS", "16"), "RESET": ("RESET", "17"), "INT": ("INT", "12")},
         "TJA1050": {"VCC": ("VCC", "3"), "GND": ("GND", "2"), "TXD": ("D", "1"), "RXD": ("R", "4"), "CANL": ("CANL", "6"), "CANH": ("CANH", "7"), "RS": ("RS", "8")},
         "ACS712": {"VCC": ("VCC", "8"), "GND": ("GND", "5"), "OUT": ("VIOUT", "7"), "IP+": ("IP+", "1"), "IP-": ("IP-", "4")},
@@ -537,6 +537,27 @@ def _unit_hint(ref: str, pin: str, geometries: tuple[PinGeometry, ...]) -> int |
     return units[0]
 
 
+def _pin_alias_candidates(kind: str, pin: str) -> list[str]:
+    aliases_by_pin = PIN_ALIAS_BY_KIND.get(kind, {})
+    raw_pin = str(pin)
+    desired = _norm_pin(raw_pin)
+    candidates: list[str] = []
+
+    exact_aliases = aliases_by_pin.get(raw_pin)
+    if exact_aliases is not None:
+        candidates.extend(_norm_pin(alias) for alias in exact_aliases)
+        candidates.append(desired)
+        return [candidate for candidate in candidates if candidate]
+
+    for raw_key, aliases in aliases_by_pin.items():
+        if _norm_pin(raw_key) == desired:
+            candidates.append(desired)
+            candidates.extend(_norm_pin(alias) for alias in aliases)
+            return [candidate for candidate in candidates if candidate]
+
+    return [desired] if desired else []
+
+
 def _resolve_pin_geometry(
     *,
     ref: str,
@@ -544,12 +565,7 @@ def _resolve_pin_geometry(
     pin: str,
     geometries: tuple[PinGeometry, ...],
 ) -> tuple[PinGeometry | None, str]:
-    desired = _norm_pin(pin)
-    candidates = [desired]
-    for raw_key, aliases in PIN_ALIAS_BY_KIND.get(kind, {}).items():
-        if _norm_pin(raw_key) == desired:
-            candidates.extend(_norm_pin(alias) for alias in aliases)
-            break
+    candidates = _pin_alias_candidates(kind, pin)
     unit_hint = _unit_hint(ref, pin, geometries)
     scored: list[tuple[int, PinGeometry]] = []
     for geometry in geometries:
@@ -2262,13 +2278,22 @@ def write_wired_project(
     wire_result: WireMakerResult | None = None,
 ) -> dict[str, Any]:
     result = wire_result or make_kicad_wires(circuit, placement, wire_plan)
+    routing_mode = _wire_plan_routing_mode(wire_plan)
+    project_suffix = "TERMINAL" if routing_mode == "terminal" else "WIRED"
+    mode = "terminal_by_kicad_terminal_placer" if routing_mode == "terminal" else "wired_by_kicad_wire_maker"
+    note = (
+        "This KiCad schematic was generated from final JSON with real embedded symbols plus terminal/local-label stubs "
+        "produced through terminal_placer. Local labels are the intended terminal backend for this run."
+        if routing_mode == "terminal"
+        else "This KiCad schematic was generated from final JSON with real embedded symbols and connection objects produced by kicad_wire_maker. In strict wire mode, local labels are forbidden and any unroutable nets are recorded in this manifest."
+    )
     manifest = write_placement_project(
         circuit,
         placement,
         out_dir,
-        project_suffix="WIRED",
-        mode="wired_by_kicad_wire_maker",
-        note="This KiCad schematic was generated from final JSON with real embedded symbols and connection objects produced by kicad_wire_maker. In strict wire mode, local labels are forbidden and any unroutable nets are recorded in this manifest.",
+        project_suffix=project_suffix,
+        mode=mode,
+        note=note,
         extra_schematic_objects=result.schematic_objects,
         extra_manifest={"wire_maker": result.report},
     )
@@ -2304,9 +2329,9 @@ def write_wired_project(
     return manifest
 
 
-def _fresh_run_dir(examples_root: Path, label: str) -> Path:
+def _fresh_run_dir(examples_root: Path, label: str, *, run_kind: str = "wired") -> Path:
     stamp = dt.datetime.now().strftime("%Y_%m_%d_%H%M%S")
-    base = examples_root / f"final_json_wired_project_run_{stamp}_{slugify(label).lower()}"
+    base = examples_root / f"final_json_{slugify(run_kind).lower()}_project_run_{stamp}_{slugify(label).lower()}"
     candidate = base
     suffix = 2
     while candidate.exists():
@@ -2325,9 +2350,16 @@ def generate_wired_projects_from_final_json(
     routing_mode: str | None = None,
 ) -> dict[str, Any]:
     files = _final_json_files(source)
-    run_path = run_dir or _fresh_run_dir(examples_root, label)
+    cfg: dict[str, Any] = dict(STAGE_REPORT_WIRE_CONFIG)
+    if wire_config:
+        cfg.update(wire_config)
+    if routing_mode:
+        cfg["routing_mode"] = normalize_routing_mode(routing_mode)
+    cfg.setdefault("strict_forbidden_contact_filter", 0.0)
+    run_kind = "terminal" if normalize_routing_mode(cfg.get("routing_mode", "wire")) == "terminal" else "wired"
+    run_path = run_dir or _fresh_run_dir(examples_root, label, run_kind=run_kind)
     if run_path.exists():
-        raise FileExistsError(f"Refusing to overwrite existing wired project run folder: {run_path}")
+        raise FileExistsError(f"Refusing to overwrite existing {run_kind} project run folder: {run_path}")
 
     final_json_dir = run_path / "final_json"
     placement_input_dir = run_path / "placement_inputs"
@@ -2339,13 +2371,6 @@ def generate_wired_projects_from_final_json(
     projects_dir.mkdir()
     routing_input_dir.mkdir()
     wire_plan_dir.mkdir()
-
-    cfg: dict[str, Any] = dict(STAGE_REPORT_WIRE_CONFIG)
-    if wire_config:
-        cfg.update(wire_config)
-    if routing_mode:
-        cfg["routing_mode"] = normalize_routing_mode(routing_mode)
-    cfg.setdefault("strict_forbidden_contact_filter", 0.0)
 
     results: list[dict[str, Any]] = []
     for source_file in files:
@@ -2371,7 +2396,12 @@ def generate_wired_projects_from_final_json(
         planned = plan_wiring(placement_dict, circuit, wire_config=arrangement_cfg)
         beautified = planned["routing_placement"]
         beautified, placement, routing_placement, body_overlap_report = _settle_actual_symbol_body_placement(circuit, beautified)
-        wire_plan = plan_wire_routes(routing_placement, circuit, config=cfg)
+        if normalize_routing_mode(cfg.get("routing_mode", "wire")) == "terminal":
+            from .terminal_placer import place_terminals
+
+            wire_plan = place_terminals(routing_placement, circuit, config=cfg)
+        else:
+            wire_plan = plan_wire_routes(routing_placement, circuit, config=cfg)
         wire_plan, placement, routing_placement, partial_motion_report = _repair_strict_partial_routes_by_motion(
             circuit,
             routing_placement,
@@ -2476,9 +2506,9 @@ def generate_wired_projects_from_final_json(
     }
     (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     (run_path / "README.md").write_text(
-        "# Final JSON To KiCad Wired Project Run\n\n"
+        f"# Final JSON To KiCad {run_kind.title()} Project Run\n\n"
         "This folder is an immutable generated record. It takes connected final JSON files, "
-        "runs the arrangement decider, beautifier, wire planner, and KiCad wire maker, then "
+        "runs the arrangement decider, beautifier, routing/terminal planner, and KiCad backend emitter, then "
         "writes openable KiCad projects with real embedded symbols plus wire objects. Terminal/local-label "
         "objects are only valid when the run is generated in terminal or combination mode.\n\n"
         "The wire planner is fed exact KiCad source-symbol pin points through `routing_inputs/` "
