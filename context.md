@@ -7867,6 +7867,50 @@ Retry succeeded. I’m doing the required remote hash verification now.
 Remote verification succeeded: local and `origin/main` both point at `9a7baeb`. I need one tiny follow-up context entry for the push result itself, then I’ll commit and push that small log-only update too.
 ```
 
+## 2026-07-06 00:58:09 PKT - Clarify 100 Terminal/Combination Passes
+
+### User Request
+
+```text
+does this mean combo n terminal passed are we ready to move on? y did u say 2 passed? y not all 100
+```
+
+### Visible Agent Responses
+
+```text
+I’ll verify the repo checkpoint first, then I’ll answer this directly because the wording is confusing: the “2 passed” was test functions, not circuit count.
+
+Confirmed from the manifests: terminal generated 100/100 projects clean, and combination generated 100/100 projects clean. I’m adding this clarification to the project log so the “2 passed” wording does not confuse the next resume.
+```
+
+### Answer To User
+
+```text
+Yes. Terminal and combination both passed 100/100 generated circuits.
+
+The `2 passed` line was from pytest, meaning two Python test functions passed. One of those tests also ran `100 subtests`. Separately, the real generated run manifests say:
+
+- Terminal: `input_count=100`, `project_count=100`, all clean.
+- Combination: `input_count=100`, `project_count=100`, all clean.
+
+Both have `0` unresolved pins, `0` component overlaps, `0` geometry violations, `0` unrouted/partial nets, and `0` local netlist failures.
+
+So yes, terminal mode and combination mode are ready enough to move on. Wire-only is not the thing to chase right now.
+```
+
+### Verification
+
+- Turn start verified `HEAD`, upstream, and `origin/main` all at `57e6a93958af117014bb039034e2dc97073ba76f`.
+- Remaining dirty files are still only the pre-existing July 2 generated KiCad project edits.
+- Re-read final manifests:
+  - `kicad/examples/final_json_terminal_project_run_2026_07_05_204701_main_json_catalog_100_terminal_v6_threshold6_contract/run_manifest.json`
+  - `kicad/examples/final_json_combination_project_run_2026_07_05_204835_main_json_catalog_100_combination_v5_threshold6_contract/run_manifest.json`
+- Both report `input_count=100`, `project_count=100`, `all_static_checks_ok=true`, `all_component_body_overlap_ok=true`, `all_geometry_ok=true`, `all_strict_wire_ok=true`, `all_local_netlist_ok=true`, and zero unresolved/unrouted/partial/failed-net totals.
+
+### Files Edited
+
+- `context.md`
+
 ## 2026-07-05 19:20:38 PKT - Terminal-Only Netlist Pass and Pin Alias Fix
 
 ### User Request
