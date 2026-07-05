@@ -45,9 +45,17 @@ Combination path:
 Decision -> Combination Decider -> Wire Planner <-> Beautifier loop -> Wire Maker -> Terminal Placer -> Terminal Validator -> Value Editor -> Value Validator -> Final Validator -> Output
 ```
 
+Final output path:
+
+```text
+Final Validator -> Output Packager -> user_project + internal_bundle
+```
+
 The active proven stages are the component placer, arrangement decider,
-beautifier, wire planner, and first KiCad wire maker. Keep later stages as
-independent placeholders until the previous stage is proven.
+beautifier, wire planner, terminal placer, combination fallback, first KiCad
+wire maker, hosted expected-net validator, and output packager. Keep later
+value/simulation/user-facing stages as independent placeholders until the
+previous stage is proven.
 
 The first deterministic main-JSON compiler is:
 
@@ -158,6 +166,7 @@ kicad/pipeline/beautifier.py
 kicad/pipeline/wire_planner.py
 kicad/pipeline/kicad_wire_maker.py
 kicad/pipeline/terminal_placer.py
+kicad/pipeline/output_packager.py
 ```
 
 `arrangement_decider.py` decides first-pass coordinates from topology,
@@ -209,8 +218,17 @@ strict-wire connectivity validation, hosted expected-net comparison, and
 geometry validation in manifests.
 
 `terminal_placer.py` is the current placeholder/foundation for terminal-style
-connectivity. For KiCad its current backend is local labels with short pin
-stubs. Strict wire mode must not invoke it implicitly as a fallback.
+connectivity. For KiCad its current backend is local labels at pin points, with
+short collision-avoidance stubs only when needed. Strict wire mode must not
+invoke it implicitly as a fallback.
+
+`output_packager.py` owns the final two-artifact boundary. Each complete
+project generation must produce a user-downloadable project archive plus an
+internal-only bundle keyed by a ProGenEDA-style serial. The internal bundle must
+retain the main input JSON, every generated stage JSON, validation reports,
+metadata, and all arrangement/routing variants with the accepted variant clearly
+marked. The user-facing artifact must not expose internal JSON or validation
+metadata.
 
 `wire_geometry_validator.py` validates the actual wire segments emitted by the
 wire maker against orthogonality and wire/body-contact rules. It is a

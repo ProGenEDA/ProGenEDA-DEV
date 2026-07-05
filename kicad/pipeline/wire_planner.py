@@ -3285,11 +3285,13 @@ def select_routeable_arrangement(
         {
             "name": item.get("name"),
             "ok": bool(item.get("ok")),
+            "accepted": item.get("name") == selected.get("name"),
             "score": item.get("score", {}),
             "elapsed_seconds": item.get("elapsed_seconds"),
             "coordinate_edit_count": len(item.get("coordinate_plan", {}).get("coordinate_edits", []))
             if isinstance(item.get("coordinate_plan"), dict)
             else 0,
+            "coordinate_plan": item.get("coordinate_plan", {}),
             "error": item.get("error"),
         }
         for item in results

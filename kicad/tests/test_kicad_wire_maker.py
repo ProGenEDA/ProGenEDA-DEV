@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 from kicad.pipeline.arrangement_decider import decide_arrangement
@@ -147,11 +148,31 @@ class KiCadWireMakerTests(unittest.TestCase):
             self.assertGreater(summary["total_labels"], 0)
             for result in summary["results"]:
                 project_dir = root / "terminal_run" / result["project_dir"]
+                artifacts = result["output_artifacts"]
+                self.assertTrue(artifacts["serial"].startswith("KC-A-"))
+                user_project = root / "terminal_run" / artifacts["user_project"]["path"]
+                internal_bundle = root / "terminal_run" / artifacts["internal_bundle"]["path"]
+                self.assertTrue(user_project.exists())
+                self.assertTrue(internal_bundle.exists())
+                self.assertEqual(artifacts["user_project"]["storage_visibility"], "user_downloadable")
+                self.assertEqual(artifacts["internal_bundle"]["storage_visibility"], "internal_only")
+                with zipfile.ZipFile(user_project) as archive:
+                    names = set(archive.namelist())
+                    self.assertTrue(any(name.endswith(".kicad_pro") for name in names))
+                    self.assertTrue(any(name.endswith(".kicad_sch") for name in names))
+                    self.assertFalse(any(name.startswith("internal/") for name in names))
+                with zipfile.ZipFile(internal_bundle) as archive:
+                    names = set(archive.namelist())
+                    self.assertIn("internal/main-input.json", names)
+                    self.assertIn("internal/wire-plan.json", names)
+                    self.assertIn("internal/arrangement-variants.json", names)
+                    self.assertTrue(any(name.startswith("all_generated_json/") for name in names))
                 wire_plan = next((root / "terminal_run" / "wire_plans").glob(f"{result['circuit_id']}*_wire_plan.json"))
                 self.assertEqual(json.loads(wire_plan.read_text(encoding="utf-8"))["stage"], "terminal_placer")
                 manifest = json.loads((project_dir / "manifest.json").read_text(encoding="utf-8"))
                 self.assertEqual(manifest["wire_maker"]["routing_mode"], "terminal")
                 self.assertTrue(manifest["local_netlist_validation"]["ok"])
+                self.assertEqual(manifest["output_artifacts"]["serial"], artifacts["serial"])
 
     def test_proteus_alias_mixed_wired_projects_obey_geometry_rules(self) -> None:
         circuits = build_proteus_alias_mixed_circuits()[:2]

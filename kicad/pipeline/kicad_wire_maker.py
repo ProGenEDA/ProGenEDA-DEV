@@ -26,6 +26,7 @@ from .arrangement_decider import decide_arrangement, extract_connection_nets
 from .beautifier import apply_coordinate_edits
 from .final_circuit_builder import STAGE_REPORT_WIRE_CONFIG, _final_json_files, placer_ready_circuit
 from .kicad_symbol_library import KiCadSymbolLibrary, _balanced_block, _child_head, _direct_child_blocks
+from .output_packager import package_generated_project
 from .placement_catalog import CatalogPlacementPlan, PlacedCatalogComponent, resolve_placement_spec
 from .placement_project_writer import write_placement_project
 from .placer_pipeline import run_placer_pipeline
@@ -2541,6 +2542,12 @@ def generate_wired_projects_from_final_json(
             {
                 "circuit_id": cid,
                 "circuit_name": circuit.get("circuit_name"),
+                "final_json": str((final_json_dir / source_file.name).relative_to(run_path)),
+                "placement_input": str(placement_input_path.relative_to(run_path)),
+                "routing_input": str((routing_input_dir / f"{stem}_routing_input.json").relative_to(run_path)),
+                "wire_plan": str((wire_plan_dir / f"{stem}_wire_plan.json").relative_to(run_path)),
+                "project_manifest": str((project_dir / "manifest.json").relative_to(run_path)),
+                "component_body_overlap_report_file": str(body_report_path.relative_to(run_path)),
                 "project_dir": str(project_dir.relative_to(run_path)),
                 "open_this": str((project_dir / manifest["open_this"]).relative_to(run_path)),
                 "schematic_file": str((project_dir / manifest["schematic_file"]).relative_to(run_path)),
@@ -2621,6 +2628,41 @@ def generate_wired_projects_from_final_json(
         "results": results,
     }
     (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    output_artifacts: list[dict[str, Any]] = []
+    for result in results:
+        project_dir = run_path / result["project_dir"]
+        artifact_metadata = package_generated_project(
+            run_dir=run_path,
+            circuit_id=str(result["circuit_id"]),
+            project_dir=project_dir,
+            final_json_path=run_path / result["final_json"],
+            placement_input_path=run_path / result["placement_input"],
+            routing_input_path=run_path / result["routing_input"],
+            wire_plan_path=run_path / result["wire_plan"],
+            project_manifest_path=run_path / result["project_manifest"],
+            run_manifest_path=run_path / "run_manifest.json",
+            component_body_report_path=run_path / result["component_body_overlap_report_file"],
+        )
+        result["output_artifacts"] = {
+            "serial": artifact_metadata["serial"],
+            "user_project": artifact_metadata["user_project"],
+            "internal_bundle": artifact_metadata["internal_bundle"],
+            "retained_variants": artifact_metadata["retained_variants"],
+        }
+        project_manifest_path = run_path / result["project_manifest"]
+        project_manifest = json.loads(project_manifest_path.read_text(encoding="utf-8"))
+        if isinstance(project_manifest, dict):
+            project_manifest["output_artifacts"] = result["output_artifacts"]
+            project_manifest_path.write_text(json.dumps(project_manifest, indent=2), encoding="utf-8")
+        output_artifacts.append(artifact_metadata)
+    summary["output_artifact_contract"] = {
+        "schema": "progen-kicad-run-output-artifacts/v0.1",
+        "user_visible_artifact": "user_project",
+        "internal_only_artifact": "internal_bundle",
+        "artifact_count": len(output_artifacts),
+    }
+    summary["output_artifacts"] = output_artifacts
+    (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     (run_path / "README.md").write_text(
         f"# Final JSON To KiCad {run_kind.title()} Project Run\n\n"
         "This folder is an immutable generated record. It takes connected final JSON files, "
@@ -2632,7 +2674,12 @@ def generate_wired_projects_from_final_json(
         "geometry when possible. Any unresolved "
         "pin aliases, unroutable nets, strict-wire connectivity violations, local expected-net "
         "comparison failures, wire crossings, and wire/component body contacts are recorded in "
-        "each project manifest.\n",
+        "each project manifest.\n\n"
+        "Each project also has a two-artifact output boundary under `outputs/<circuit_id>/`: "
+        "`user_project/PROGEN_KICAD_PROJECT.zip` is the only user-downloadable export, while "
+        "`internal/internal_bundle.zip` is backend-only metadata containing the main input JSON, "
+        "all generated stage JSON, validation reports, and retained arrangement variants with the "
+        "accepted variant marked.\n",
         encoding="utf-8",
     )
     return summary
