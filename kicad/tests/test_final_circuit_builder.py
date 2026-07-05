@@ -7,6 +7,7 @@ from pathlib import Path
 
 from kicad.pipeline.beautifier import apply_coordinate_edits
 from kicad.pipeline.final_circuit_builder import (
+    MAIN_JSON_CATALOG_100_SUITE,
     PROTEUS_ALIAS_MIXED_SUITE,
     PROTEUS_ALIAS_ROUTED_SUITE,
     available_final_circuit_suites,
@@ -112,6 +113,26 @@ class FinalCircuitBuilderTests(unittest.TestCase):
                 self.assertEqual(circuit["validation"]["status"], "pass")
                 self.assertEqual(circuit["validation"]["errors"], [])
                 self.assertEqual(circuit["validation"]["warnings"], [])
+                self.assertTrue(all(component["pins"] for component in circuit["components"]))
+
+    def test_main_json_catalog_100_compiles_to_locked_combination_inputs(self) -> None:
+        self.assertIn(MAIN_JSON_CATALOG_100_SUITE, available_final_circuit_suites())
+        circuits = build_final_circuits(MAIN_JSON_CATALOG_100_SUITE)
+        self.assertEqual(len(circuits), 100)
+        self.assertEqual(circuits[0]["circuit_id"], "MJ001")
+        self.assertEqual(circuits[-1]["circuit_id"], "MJ100")
+        self.assertGreaterEqual(sum(len(circuit["components"]) for circuit in circuits), 8000)
+        self.assertGreaterEqual(min(len(circuit["components"]) for circuit in circuits), 40)
+        for circuit in circuits:
+            with self.subTest(cid=circuit["circuit_id"]):
+                self.assertEqual(circuit["main_json_contract"]["schema"], "progeneda-main-json-contract/v1")
+                self.assertTrue(circuit["main_json_contract"]["single_generator_input"])
+                self.assertFalse(circuit["main_json_contract"]["backend_cli_required"])
+                self.assertEqual(circuit["routing"]["mode"], "combination")
+                self.assertEqual(circuit["routing"]["terminal_policy"]["high_fanout_threshold"], 6)
+                self.assertEqual(circuit["validation"]["status"], "pass")
+                self.assertEqual(circuit["validation"]["errors"], [])
+                self.assertEqual(len(circuit["expected_netlist"]["nets"]), len(circuit["nets"]))
                 self.assertTrue(all(component["pins"] for component in circuit["components"]))
 
     def test_node_spec_text_compiles_to_valid_final_json(self) -> None:

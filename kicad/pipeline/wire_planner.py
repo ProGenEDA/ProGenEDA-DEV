@@ -129,6 +129,7 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "terminal_nets": (),
     "wire_mode_terminal_power_ground": 0.0,
     "wire_mode_terminal_high_fanout_threshold": 0.0,
+    "combination_terminal_high_fanout_threshold": 6.0,
 }
 
 
@@ -1378,7 +1379,8 @@ def _terminalized_net_reason(net: str, endpoints: list[dict[str, Any]], routing_
         return "terminal_mode_all_nets"
     if upper in POWER_NETS or upper in GROUND_NETS:
         return "combination_power_ground_terminal"
-    if len(endpoints) >= 7:
+    high_fanout_threshold = int(float(cfg.get("combination_terminal_high_fanout_threshold", 6.0)))
+    if high_fanout_threshold > 0 and len(endpoints) >= high_fanout_threshold:
         return "combination_high_fanout_terminal"
     return None
 
@@ -1661,7 +1663,7 @@ def plan_wire_routes(
             continue
         if len(routes) >= max_wired_routes:
             warnings.append(f"wire_route_limit_deferred: {net} skipped after {max_wired_routes} routed connections.")
-            strategy = "unroutable_after_route_limit" if routing_mode == "wire" else "deferred_after_route_limit"
+            strategy = "unroutable_after_route_limit" if routing_mode == "wire" else "local_labels_after_router_failure"
             nets_out[net] = {"strategy": strategy, "endpoints": endpoints, "routes": [], "failure_warnings": ["wire_route_limit_deferred"]}
             continue
 

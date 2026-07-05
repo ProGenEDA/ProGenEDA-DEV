@@ -140,9 +140,13 @@ PIN_ALIAS_BY_KIND: dict[str, dict[str, tuple[str, ...]]] = {
         "LIN": ("INL", "7"),
         "RIN": ("INR", "10"),
         "LOUTPLUS": ("LOUT+", "1"),
+        "LOUT_PLUS": ("LOUT+", "1"),
         "LOUTMINUS": ("LOUT-", "3"),
+        "LOUT_MINUS": ("LOUT-", "3"),
         "ROUTPLUS": ("ROUT+", "16"),
+        "ROUT_PLUS": ("ROUT+", "16"),
         "ROUTMINUS": ("ROUT-", "14"),
+        "ROUT_MINUS": ("ROUT-", "14"),
         "VCC": ("VDD", "PVDD", "4", "6", "13"),
         "GND": ("GND", "PGND", "2", "11", "15"),
     },
@@ -162,7 +166,7 @@ PIN_ALIAS_BY_KIND: dict[str, dict[str, tuple[str, ...]]] = {
         "OE": ("OE", "13"),
     },
     "LM358": {"IN_PLUS": ("+", "3", "5"), "IN_MINUS": ("-", "2", "6"), "OUT": ("1", "7"), "VCC": ("V+", "8"), "GND": ("V-", "4")},
-    "RESISTOR_NETWORK": {"COM": ("common", "1")},
+    "RESISTOR_NETWORK": {"COM": ("16", "common")},
     "CH340": {"DPLUS": ("UD+", "5"), "DMINUS": ("UD-", "6"), "VDD": ("VCC", "16"), "VBUS": ("VCC", "16")},
 }
 
@@ -261,10 +265,15 @@ PIN_ALIAS_BY_KIND.update(
         "LED_ARRAY": {
             **{f"LED{index}_ANODE": (str((index - 1) * 2 + 1),) for index in range(1, 9)},
             **{f"LED{index}_CATHODE": (str((index - 1) * 2 + 2),) for index in range(1, 9)},
+            **{f"A{index}": (str(index + 1),) for index in range(0, 8)},
+            **{f"K{index}": (str(index + 9),) for index in range(0, 8)},
+            "COM_K": ("16",),
+            "COM_A": ("1",),
         },
         "RESISTOR_NETWORK": {
             **{f"R{index}": (str((index - 1) * 2 + 1),) for index in range(1, 9)},
             **{f"C{index}": (str((index - 1) * 2 + 2),) for index in range(1, 9)},
+            "COM": ("16",),
         },
         "4511": {"VCC": ("16", "VDD"), "GND": ("8", "VSS"), "A": ("7",), "B": ("1",), "C": ("2",), "D": ("6",), "LE": ("5",), "LT": ("3",), "BI": ("4",), "a": ("13",), "b": ("12",), "c": ("11",), "d": ("10",), "e": ("9",), "f": ("15",), "g": ("14",), "/LT": ("3",), "/BI": ("4",)},
         "7SEGCOMK": {"A": ("7",), "B": ("6",), "C": ("4",), "D": ("2",), "E": ("1",), "F": ("9",), "G": ("10",), "DP": ("5",), "COM1": ("3",), "COM2": ("8",)},
@@ -370,9 +379,9 @@ PIN_ALIAS_BY_KIND.setdefault("ARDUINO_NANO", {}).update(
 )
 
 PIN_ALIAS_BY_KIND.setdefault("CP2102", {}).update({"VIO": ("VDD", "6")})
-PIN_ALIAS_BY_KIND.setdefault("W25Q64", {}).update({"/HOLD_IO3": ("HOLD", "IO3", "7"), "/WP_IO2": ("WP", "IO2", "3")})
+PIN_ALIAS_BY_KIND.setdefault("W25Q64", {}).update({"CLK": ("CLK", "SCK", "6"), "/HOLD_IO3": ("HOLD", "IO3", "7"), "/WP_IO2": ("WP", "IO2", "3")})
 PIN_ALIAS_BY_KIND.setdefault("SSD1306_OLED", {}).update({"RESET": ("RES", "14")})
-PIN_ALIAS_BY_KIND.setdefault("74HC595_SHIFT_REGISTER", {}).update({"DS": ("SER", "14"), "VCC": ("VCC", "16"), "GND": ("GND", "8")})
+PIN_ALIAS_BY_KIND.setdefault("74HC595_SHIFT_REGISTER", {}).update({"SER": ("SER", "DS", "14"), "DS": ("SER", "14"), "VCC": ("VCC", "16"), "GND": ("GND", "8")})
 
 PIN_ALIAS_BY_KIND.setdefault("ESP32_WROOM", {}).update(
     {
@@ -1445,6 +1454,11 @@ def _label_direction(
     return _side_vector(side)
 
 
+def _terminal_label_point(pin_point: tuple[float, float], side: str) -> tuple[float, float]:
+    dx, dy = _side_vector(side)
+    return (round(pin_point[0] + dx * 7.62, 3), round(pin_point[1] + dy * 7.62, 3))
+
+
 def _reserved_label_point(
     *,
     net: str,
@@ -1458,9 +1472,22 @@ def _reserved_label_point(
 ) -> tuple[tuple[float, float], bool]:
     candidate = raw_label
     owner = used_label_points.get(candidate)
-    if owner in (None, net):
+    if candidate == pin_point and owner in (None, net):
         used_label_points[candidate] = net
         return candidate, False
+    validation_bodies = tuple(body for body in component_bodies if body.ref != ref)
+    if owner in (None, net):
+        candidate_segment = WireGeometrySegment(
+            net=net,
+            start=pin_point,
+            end=candidate,
+            allowed_touches=(AllowedTouch(ref, pin_point),),
+            source=f"{net}:reserved_label_candidate:{ref}",
+        )
+        report = validate_wire_geometry([candidate_segment], validation_bodies)
+        if report["ok"] and not _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments):
+            used_label_points[candidate] = net
+            return candidate, False
 
     primary = _label_direction(pin_point, raw_label, side)
     directions = [primary, (1.0, 0.0), (-1.0, 0.0), (0.0, -1.0), (0.0, 1.0)]
@@ -1469,11 +1496,11 @@ def _reserved_label_point(
         if direction not in unique_directions:
             unique_directions.append(direction)
 
-    for step in range(1, 9):
+    for step in range(1, 17):
         for direction in unique_directions:
             candidate = (
-                round(pin_point[0] + direction[0] * 2.54 * step, 3),
-                round(pin_point[1] + direction[1] * 2.54 * step, 3),
+                round(pin_point[0] + direction[0] * 5.08 * step, 3),
+                round(pin_point[1] + direction[1] * 5.08 * step, 3),
             )
             if used_label_points.get(candidate) not in (None, net):
                 continue
@@ -1484,10 +1511,27 @@ def _reserved_label_point(
                 allowed_touches=(AllowedTouch(ref, pin_point),),
                 source=f"{net}:reserved_label_candidate:{ref}",
             )
-            report = validate_wire_geometry([candidate_segment], component_bodies)
+            if _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments):
+                continue
+            report = validate_wire_geometry([candidate_segment], validation_bodies)
             if report["ok"]:
                 used_label_points[candidate] = net
                 return candidate, True
+
+    if used_label_points.get(pin_point) in (None, net):
+        used_label_points[pin_point] = net
+        return pin_point, True
+
+    for step in range(17, 33):
+        for direction in unique_directions:
+            candidate = (
+                round(pin_point[0] + direction[0] * 5.08 * step, 3),
+                round(pin_point[1] + direction[1] * 5.08 * step, 3),
+            )
+            if used_label_points.get(candidate) not in (None, net):
+                continue
+            used_label_points[candidate] = net
+            return candidate, True
 
     used_label_points[raw_label] = net
     return raw_label, False
@@ -1853,27 +1897,29 @@ def make_kicad_wires(
                 continue
             for endpoint in endpoints:
                 pin_point = endpoint_point(endpoint)
-                raw_label = endpoint.get("point", [pin_point[0] + 5.08, pin_point[1]])
                 ref = str(endpoint.get("ref") or "")
+                side = str(endpoint.get("side") or "")
+                raw_label = pin_point
                 label_point, label_moved = _reserved_label_point(
                     net=net_name,
                     ref=ref,
                     pin_point=pin_point,
-                    raw_label=(round(float(raw_label[0]), 3), round(float(raw_label[1]), 3)),
-                    side=str(endpoint.get("side") or ""),
+                    raw_label=raw_label,
+                    side=side,
                     used_label_points=used_label_points,
                     existing_segments=geometry_segments,
                     component_bodies=component_bodies,
                 )
                 if label_moved:
                     label_collision_avoidance_count += 1
-                label_path = _orthogonal_points(pin_point, label_point)
-                add_segments(
-                    net=net_name,
-                    points=label_path,
-                    allowed_touches=(AllowedTouch(str(endpoint.get("ref") or ""), pin_point),),
-                    source=f"{net_name}:local_label:{endpoint.get('ref')}.{endpoint.get('pin')}",
-                )
+                if label_point != pin_point:
+                    label_path = _orthogonal_points(pin_point, label_point)
+                    add_segments(
+                        net=net_name,
+                        points=label_path,
+                        allowed_touches=(AllowedTouch(str(endpoint.get("ref") or ""), pin_point),),
+                        source=f"{net_name}:local_label:{endpoint.get('ref')}.{endpoint.get('pin')}",
+                    )
                 labels.append({"net": net_name, "at": label_point, "anchor": pin_point})
             continue
         for route in net_data.get("routes", []):
@@ -2046,6 +2092,14 @@ def _geometry_violation_nets(report: dict[str, Any]) -> set[str]:
     return chosen
 
 
+def _invalid_actual_route_nets(report: dict[str, Any]) -> set[str]:
+    nets: set[str] = set()
+    for item in report.get("invalid_actual_routes", []):
+        if isinstance(item, dict) and item.get("net"):
+            nets.add(str(item["net"]))
+    return nets
+
+
 def _wire_plan_with_geometry_fallbacks(wire_plan: dict[str, Any], fallback_nets: set[str]) -> dict[str, Any]:
     repaired = deepcopy(wire_plan)
     nets = repaired.get("nets", {})
@@ -2057,7 +2111,7 @@ def _wire_plan_with_geometry_fallbacks(wire_plan: dict[str, Any], fallback_nets:
             continue
         endpoints = net_data.get("endpoints", [])
         failure_warnings = list(net_data.get("failure_warnings", [])) if isinstance(net_data.get("failure_warnings"), list) else []
-        failure_warnings.append("geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure.")
+        failure_warnings.append("combination_terminal_fallback: net converted to local labels after route geometry or emitter validation failure.")
         nets[net] = {
             "strategy": "local_labels_after_geometry_violation",
             "endpoints": endpoints if isinstance(endpoints, list) else [],
@@ -2076,6 +2130,10 @@ def _wire_plan_with_geometry_fallbacks(wire_plan: dict[str, Any], fallback_nets:
     if isinstance(metrics, dict):
         metrics["wired_route_count"] = len(routes)
         metrics["segment_count"] = sum(len(route.get("segments", [])) for route in routes if isinstance(route, dict))
+        metrics["combination_terminal_fallback_net_count"] = len(fallback_nets)
+        metrics["label_strategy_count"] = sum(
+            1 for item in nets.values() if isinstance(item, dict) and item.get("strategy") in LABEL_STRATEGIES
+        )
     return repaired
 
 
@@ -2097,9 +2155,9 @@ def repair_wire_plan_geometry(
         result.report["geometry_repair_fallback_disabled"] = "strict wire mode forbids conversion of failed wires to terminal/local-label strategy"
         return repaired_plan, result
     for pass_index in range(1, max_passes + 1):
-        if result.report["geometry_ok"]:
+        if result.report["geometry_ok"] and int(result.report.get("invalid_actual_route_count", 0)) == 0:
             break
-        fallback_nets = _geometry_violation_nets(result.report) - already_fallback
+        fallback_nets = (_geometry_violation_nets(result.report) | _invalid_actual_route_nets(result.report)) - already_fallback
         if not fallback_nets:
             break
         repair_passes.append(
@@ -2107,6 +2165,7 @@ def repair_wire_plan_geometry(
                 "pass": pass_index,
                 "fallback_nets": sorted(fallback_nets),
                 "geometry_violation_count_before": result.report["geometry_violation_count"],
+                "invalid_actual_route_count_before": result.report.get("invalid_actual_route_count", 0),
             }
         )
         already_fallback.update(fallback_nets)
@@ -2122,7 +2181,7 @@ def _settle_actual_symbol_body_placement(
     circuit: dict[str, Any],
     placement_dict: dict[str, Any],
     *,
-    max_passes: int = 4,
+    max_passes: int = 12,
 ) -> tuple[dict[str, Any], CatalogPlacementPlan, dict[str, Any], dict[str, Any]]:
     current = deepcopy(placement_dict)
     passes: list[dict[str, Any]] = []
@@ -2147,7 +2206,7 @@ def _settle_actual_symbol_body_placement(
         coordinate_plan = decide_arrangement(
             final_routing_placement,
             circuit,
-            config={"component_clearance": 25.4, "column_gap": 35.56, "row_gap": 20.32},
+            config={"component_clearance": 50.8, "column_gap": 63.5, "row_gap": 38.1},
         )
         if not coordinate_plan.get("coordinate_edits"):
             break
@@ -2279,12 +2338,20 @@ def write_wired_project(
 ) -> dict[str, Any]:
     result = wire_result or make_kicad_wires(circuit, placement, wire_plan)
     routing_mode = _wire_plan_routing_mode(wire_plan)
-    project_suffix = "TERMINAL" if routing_mode == "terminal" else "WIRED"
-    mode = "terminal_by_kicad_terminal_placer" if routing_mode == "terminal" else "wired_by_kicad_wire_maker"
+    project_suffix = "TERMINAL" if routing_mode == "terminal" else "COMBINATION" if routing_mode == "combination" else "WIRED"
+    mode = (
+        "terminal_by_kicad_terminal_placer"
+        if routing_mode == "terminal"
+        else "combination_by_kicad_wire_maker_and_terminal_placer"
+        if routing_mode == "combination"
+        else "wired_by_kicad_wire_maker"
+    )
     note = (
         "This KiCad schematic was generated from final JSON with real embedded symbols plus terminal/local-label stubs "
         "produced through terminal_placer. Local labels are the intended terminal backend for this run."
         if routing_mode == "terminal"
+        else "This KiCad schematic was generated from final JSON with real embedded symbols, physical wires where routable, and terminal/local-label fallback for selected combination-mode nets."
+        if routing_mode == "combination"
         else "This KiCad schematic was generated from final JSON with real embedded symbols and connection objects produced by kicad_wire_maker. In strict wire mode, local labels are forbidden and any unroutable nets are recorded in this manifest."
     )
     manifest = write_placement_project(
@@ -2353,10 +2420,28 @@ def generate_wired_projects_from_final_json(
     cfg: dict[str, Any] = dict(STAGE_REPORT_WIRE_CONFIG)
     if wire_config:
         cfg.update(wire_config)
+    if routing_mode is None and files:
+        first_circuit = json.loads(files[0].read_text(encoding="utf-8"))
+        first_routing = first_circuit.get("routing") if isinstance(first_circuit, dict) else None
+        if isinstance(first_routing, dict) and first_routing.get("mode"):
+            cfg["routing_mode"] = normalize_routing_mode(first_routing.get("mode"))
     if routing_mode:
         cfg["routing_mode"] = normalize_routing_mode(routing_mode)
     cfg.setdefault("strict_forbidden_contact_filter", 0.0)
-    run_kind = "terminal" if normalize_routing_mode(cfg.get("routing_mode", "wire")) == "terminal" else "wired"
+    mode_for_run = normalize_routing_mode(cfg.get("routing_mode", "wire"))
+    if mode_for_run == "combination":
+        cfg["max_astar_expansions"] = min(float(cfg.get("max_astar_expansions", 50_000.0)), 3_000.0)
+        cfg["strict_fallback_max_astar_expansions"] = min(
+            float(cfg.get("strict_fallback_max_astar_expansions", cfg["max_astar_expansions"])),
+            3_000.0,
+        )
+        cfg["salvage_astar_expansions"] = min(float(cfg.get("salvage_astar_expansions", 200_000.0)), 6_000.0)
+        cfg["max_salvage_astar_attempts"] = min(float(cfg.get("max_salvage_astar_attempts", 12.0)), 3.0)
+        cfg["max_endpoint_retry_attempts"] = min(float(cfg.get("max_endpoint_retry_attempts", 4.0)), 2.0)
+        cfg["max_failed_endpoints_per_net"] = min(float(cfg.get("max_failed_endpoints_per_net", 1000.0)), 4.0)
+        cfg["max_wired_routes"] = min(float(cfg.get("max_wired_routes", 10_000.0)), 8.0)
+        cfg.setdefault("combination_terminal_high_fanout_threshold", 6.0)
+    run_kind = "terminal" if mode_for_run == "terminal" else "combination" if mode_for_run == "combination" else "wired"
     run_path = run_dir or _fresh_run_dir(examples_root, label, run_kind=run_kind)
     if run_path.exists():
         raise FileExistsError(f"Refusing to overwrite existing {run_kind} project run folder: {run_path}")
@@ -2393,8 +2478,29 @@ def generate_wired_projects_from_final_json(
         arrangement_cfg = dict(cfg)
         arrangement_cfg["arrangement_final_wire_route"] = 0.0
         arrangement_cfg["max_arrangement_variants"] = min(float(arrangement_cfg.get("max_arrangement_variants", 5.0)), 3.0)
-        planned = plan_wiring(placement_dict, circuit, wire_config=arrangement_cfg)
-        beautified = planned["routing_placement"]
+        current_routing_mode = normalize_routing_mode(cfg.get("routing_mode", "wire"))
+        if current_routing_mode in {"terminal", "combination"}:
+            fast_arrangement_cfg = {
+                key: value for key, value in arrangement_cfg.items() if isinstance(value, (int, float))
+            }
+            coordinate_plan = decide_arrangement(placement_dict, circuit, config=fast_arrangement_cfg)
+            beautified = apply_coordinate_edits(placement_dict, coordinate_plan)
+            planned = {
+                "coordinate_plan": coordinate_plan,
+                "routing_placement": beautified,
+                "wire_plan": {},
+                "arrangement_selection": {
+                    "mode": f"{current_routing_mode}_fast_arrangement",
+                    "reason": (
+                        "terminal-only generation does not need wire-routeable arrangement search"
+                        if current_routing_mode == "terminal"
+                        else "combination generation terminalizes hard nets and bounds route attempts instead of searching for a wire-perfect arrangement"
+                    ),
+                },
+            }
+        else:
+            planned = plan_wiring(placement_dict, circuit, wire_config=arrangement_cfg)
+            beautified = planned["routing_placement"]
         beautified, placement, routing_placement, body_overlap_report = _settle_actual_symbol_body_placement(circuit, beautified)
         if normalize_routing_mode(cfg.get("routing_mode", "wire")) == "terminal":
             from .terminal_placer import place_terminals
@@ -2422,6 +2528,15 @@ def generate_wired_projects_from_final_json(
 
         project_dir = projects_dir / slugify(cid).lower()
         manifest = write_wired_project(circuit, placement, wire_plan, project_dir, wire_result=wire_result)
+        body_report_path = project_dir / "component_body_overlap_report.json"
+        body_report_path.write_text(json.dumps(body_overlap_report, indent=2), encoding="utf-8")
+        manifest["component_body_overlap_report"] = {
+            "ok": bool(body_overlap_report["ok"]),
+            "report": body_report_path.name,
+            "pass_count": body_overlap_report["pass_count"],
+            "overlap_count": body_overlap_report["component_body_overlap_count"],
+        }
+        (project_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
         results.append(
             {
                 "circuit_id": cid,
@@ -2438,6 +2553,7 @@ def generate_wired_projects_from_final_json(
                 "routing_unresolved_pin_count": routing_placement["routing_metadata"]["unresolved_pin_count"],
                 "component_body_overlap_ok": bool(body_overlap_report["ok"]),
                 "component_body_overlap_count": body_overlap_report["component_body_overlap_count"],
+                "component_body_overlaps": body_overlap_report["component_body_overlaps"],
                 "component_body_overlap_pass_count": body_overlap_report["pass_count"],
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
                 "unrouted_net_count": manifest["wire_maker"]["unrouted_net_count"],

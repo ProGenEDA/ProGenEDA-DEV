@@ -1,0 +1,1328 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "mj048",
+    "title": "Main JSON Catalog 048: Routed Old-New Embedded Mini Board + I2C SPI Sensor Hub + Dual MOSFET And Relay Driver Board",
+    "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "MJ048",
+  "circuit_name": "Main JSON Catalog 048: Routed Old-New Embedded Mini Board + I2C SPI Sensor Hub + Dual MOSFET And Relay Driver Board",
+  "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "decision_source": "deterministic_catalog_policy_combination_default",
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 5,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "clustered_blocks_square_fill",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "components[].block and blocks[]",
+    "keep_related_blocks_close": true
+  },
+  "components": [
+    {
+      "id": "B1_G1",
+      "ref": "B1_G1",
+      "kind": "GROUND",
+      "value": "GND"
+    },
+    {
+      "id": "B1_V1",
+      "ref": "B1_V1",
+      "kind": "VDC",
+      "value": "5V source"
+    },
+    {
+      "id": "B1_MCU",
+      "ref": "B1_MCU",
+      "kind": "ARDUINO_NANO",
+      "value": "Arduino Nano"
+    },
+    {
+      "id": "B1_ESP",
+      "ref": "B1_ESP",
+      "kind": "ESP32_WROOM",
+      "value": "ESP32-WROOM"
+    },
+    {
+      "id": "B1_BME",
+      "ref": "B1_BME",
+      "kind": "BME280",
+      "value": "BME280"
+    },
+    {
+      "id": "B1_OLED",
+      "ref": "B1_OLED",
+      "kind": "SSD1306_OLED",
+      "value": "SSD1306 OLED"
+    },
+    {
+      "id": "B1_FLASH",
+      "ref": "B1_FLASH",
+      "kind": "W25Q64",
+      "value": "W25Q64"
+    },
+    {
+      "id": "B1_RS485",
+      "ref": "B1_RS485",
+      "kind": "MAX485",
+      "value": "MAX485"
+    },
+    {
+      "id": "B1_J1",
+      "ref": "B1_J1",
+      "kind": "TERMINAL",
+      "value": "RS485 terminal"
+    },
+    {
+      "id": "B1_SW1",
+      "ref": "B1_SW1",
+      "kind": "SWITCH",
+      "value": "Input switch"
+    },
+    {
+      "id": "B1_D1",
+      "ref": "B1_D1",
+      "kind": "1N4148",
+      "value": "1N4148"
+    },
+    {
+      "id": "B1_DZ1",
+      "ref": "B1_DZ1",
+      "kind": "BZX55C5",
+      "value": "5.1V zener"
+    },
+    {
+      "id": "B1_R1",
+      "ref": "B1_R1",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "B1_R2",
+      "ref": "B1_R2",
+      "kind": "RESISTOR",
+      "value": "120 ohm"
+    },
+    {
+      "id": "B1_C1",
+      "ref": "B1_C1",
+      "kind": "CAP",
+      "value": "100nF"
+    },
+    {
+      "id": "B1_C2",
+      "ref": "B1_C2",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B1_TP1",
+      "ref": "B1_TP1",
+      "kind": "TEST_POINT",
+      "value": "Debug point"
+    },
+    {
+      "id": "B2_U1",
+      "ref": "B2_U1",
+      "kind": "BME280",
+      "value": "BME280"
+    },
+    {
+      "id": "B2_U2",
+      "ref": "B2_U2",
+      "kind": "SSD1306_OLED",
+      "value": "SSD1306 OLED"
+    },
+    {
+      "id": "B2_U3",
+      "ref": "B2_U3",
+      "kind": "DS3231",
+      "value": "DS3231 RTC"
+    },
+    {
+      "id": "B2_U4",
+      "ref": "B2_U4",
+      "kind": "W25Q64",
+      "value": "W25Q64"
+    },
+    {
+      "id": "B2_R1",
+      "ref": "B2_R1",
+      "kind": "R_4K7_PULLUP",
+      "value": "4.7k pullup"
+    },
+    {
+      "id": "B2_R2",
+      "ref": "B2_R2",
+      "kind": "R_4K7_PULLUP",
+      "value": "4.7k pullup"
+    },
+    {
+      "id": "B2_R3",
+      "ref": "B2_R3",
+      "kind": "RESISTOR",
+      "value": "SPI pullup"
+    },
+    {
+      "id": "B2_R4",
+      "ref": "B2_R4",
+      "kind": "RESISTOR",
+      "value": "SPI pullup"
+    },
+    {
+      "id": "B2_C1",
+      "ref": "B2_C1",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B2_C2",
+      "ref": "B2_C2",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B2_C3",
+      "ref": "B2_C3",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B2_C4",
+      "ref": "B2_C4",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B2_C5",
+      "ref": "B2_C5",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B2_C6",
+      "ref": "B2_C6",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B2_J1",
+      "ref": "B2_J1",
+      "kind": "JST_CONNECTOR",
+      "value": "JST connector"
+    },
+    {
+      "id": "B2_J2",
+      "ref": "B2_J2",
+      "kind": "JST_CONNECTOR",
+      "value": "JST connector"
+    },
+    {
+      "id": "B2_J3",
+      "ref": "B2_J3",
+      "kind": "I2C_HEADER",
+      "value": "I2C header"
+    },
+    {
+      "id": "B2_J4",
+      "ref": "B2_J4",
+      "kind": "I2C_HEADER",
+      "value": "I2C header"
+    },
+    {
+      "id": "B2_J5",
+      "ref": "B2_J5",
+      "kind": "SPI_HEADER_FLASH",
+      "value": "SPI header"
+    },
+    {
+      "id": "B2_BT1",
+      "ref": "B2_BT1",
+      "kind": "COIN_CELL_HOLDER",
+      "value": "CR2032 holder"
+    },
+    {
+      "id": "B2_TP1",
+      "ref": "B2_TP1",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "B2_TP2",
+      "ref": "B2_TP2",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "B2_TP3",
+      "ref": "B2_TP3",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "B2_TP4",
+      "ref": "B2_TP4",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "B2_TP5",
+      "ref": "B2_TP5",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "B2_TP6",
+      "ref": "B2_TP6",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "B3_Q1",
+      "ref": "B3_Q1",
+      "kind": "IRLZ44N",
+      "value": "IRLZ44N"
+    },
+    {
+      "id": "B3_Q2",
+      "ref": "B3_Q2",
+      "kind": "IRLZ44N",
+      "value": "IRLZ44N"
+    },
+    {
+      "id": "B3_Q3",
+      "ref": "B3_Q3",
+      "kind": "BC547",
+      "value": "BC547"
+    },
+    {
+      "id": "B3_Q4",
+      "ref": "B3_Q4",
+      "kind": "BC547",
+      "value": "BC547"
+    },
+    {
+      "id": "B3_K1",
+      "ref": "B3_K1",
+      "kind": "RELAY_5V",
+      "value": "5V relay"
+    },
+    {
+      "id": "B3_K2",
+      "ref": "B3_K2",
+      "kind": "RELAY_5V",
+      "value": "5V relay"
+    },
+    {
+      "id": "B3_D1",
+      "ref": "B3_D1",
+      "kind": "FLYBACK_DIODE",
+      "value": "Flyback diode"
+    },
+    {
+      "id": "B3_D2",
+      "ref": "B3_D2",
+      "kind": "FLYBACK_DIODE",
+      "value": "Flyback diode"
+    },
+    {
+      "id": "B3_D3",
+      "ref": "B3_D3",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "value": "Relay flyback diode"
+    },
+    {
+      "id": "B3_D4",
+      "ref": "B3_D4",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "value": "Relay flyback diode"
+    },
+    {
+      "id": "B3_M1",
+      "ref": "B3_M1",
+      "kind": "DC_MOTOR",
+      "value": "DC Motor"
+    },
+    {
+      "id": "B3_J1",
+      "ref": "B3_J1",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw terminal 2-pin"
+    },
+    {
+      "id": "B3_J2",
+      "ref": "B3_J2",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw terminal 2-pin"
+    },
+    {
+      "id": "B3_J3",
+      "ref": "B3_J3",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw terminal 2-pin"
+    },
+    {
+      "id": "B3_J4",
+      "ref": "B3_J4",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw terminal 2-pin"
+    },
+    {
+      "id": "B3_J5",
+      "ref": "B3_J5",
+      "kind": "PWM_HEADER",
+      "value": "PWM/control header"
+    },
+    {
+      "id": "B3_J6",
+      "ref": "B3_J6",
+      "kind": "PWM_HEADER",
+      "value": "PWM/control header"
+    },
+    {
+      "id": "B3_D5",
+      "ref": "B3_D5",
+      "kind": "LED_INDICATOR",
+      "value": "Indicator LED"
+    },
+    {
+      "id": "B3_D6",
+      "ref": "B3_D6",
+      "kind": "LED_INDICATOR",
+      "value": "Indicator LED"
+    },
+    {
+      "id": "B3_D7",
+      "ref": "B3_D7",
+      "kind": "LED_INDICATOR",
+      "value": "Indicator LED"
+    },
+    {
+      "id": "B3_D8",
+      "ref": "B3_D8",
+      "kind": "LED_INDICATOR",
+      "value": "Indicator LED"
+    },
+    {
+      "id": "B3_R1",
+      "ref": "B3_R1",
+      "kind": "RESISTOR",
+      "value": "Driver resistor"
+    },
+    {
+      "id": "B3_R2",
+      "ref": "B3_R2",
+      "kind": "RESISTOR",
+      "value": "Driver resistor"
+    },
+    {
+      "id": "B3_R3",
+      "ref": "B3_R3",
+      "kind": "RESISTOR",
+      "value": "Driver resistor"
+    },
+    {
+      "id": "B3_R4",
+      "ref": "B3_R4",
+      "kind": "RESISTOR",
+      "value": "Driver resistor"
+    },
+    {
+      "id": "B3_R5",
+      "ref": "B3_R5",
+      "kind": "RESISTOR",
+      "value": "Driver resistor"
+    },
+    {
+      "id": "B3_R6",
+      "ref": "B3_R6",
+      "kind": "RESISTOR",
+      "value": "Driver resistor"
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "B1_V1.1",
+      "B1_MCU.5V",
+      "B1_RS485.VCC",
+      "B1_SW1.1",
+      "B3_J1.1",
+      "B3_J2.1",
+      "B3_K1.COIL_PLUS",
+      "B3_K2.COIL_PLUS",
+      "B3_D1.K",
+      "B3_D2.K",
+      "B3_D3.K",
+      "B3_D4.K",
+      "B3_D5.A",
+      "B3_D6.A",
+      "B3_D7.A",
+      "B3_D8.A",
+      "B3_J5.1",
+      "B3_J6.1",
+      "B3_M1.1"
+    ],
+    "+3V3": [
+      "B1_ESP.3V3",
+      "B1_BME.VCC",
+      "B1_OLED.VCC",
+      "B1_FLASH.VCC",
+      "B1_C1.1",
+      "B1_C2.1",
+      "B2_U1.VCC",
+      "B2_U2.VCC",
+      "B2_U3.VCC",
+      "B2_U4.VCC",
+      "B2_R1.1",
+      "B2_R2.1",
+      "B2_R3.1",
+      "B2_R4.1",
+      "B2_C1.1",
+      "B2_C2.1",
+      "B2_C3.1",
+      "B2_C4.1",
+      "B2_C5.1",
+      "B2_C6.1",
+      "B2_J1.1",
+      "B2_J2.1",
+      "B2_J3.1",
+      "B2_J4.1",
+      "B2_J5.1",
+      "B2_TP1.1",
+      "B2_U1.CSB"
+    ],
+    "GND": [
+      "B1_G1.1",
+      "B1_V1.2",
+      "B1_MCU.GND",
+      "B1_ESP.GND",
+      "B1_BME.GND",
+      "B1_OLED.GND",
+      "B1_FLASH.GND",
+      "B1_RS485.GND",
+      "B1_J1.2",
+      "B1_C1.2",
+      "B1_C2.2",
+      "B1_DZ1.2",
+      "B2_U1.GND",
+      "B2_U2.GND",
+      "B2_U3.GND",
+      "B2_U4.GND",
+      "B2_C1.2",
+      "B2_C2.2",
+      "B2_C3.2",
+      "B2_C4.2",
+      "B2_C5.2",
+      "B2_C6.2",
+      "B2_J1.2",
+      "B2_J2.2",
+      "B2_J3.4",
+      "B2_J4.4",
+      "B2_J5.6",
+      "B2_BT1.NEG",
+      "B2_TP2.1",
+      "B3_Q1.S",
+      "B3_Q2.S",
+      "B3_Q3.E",
+      "B3_Q4.E",
+      "B3_R2.2",
+      "B3_R4.2",
+      "B3_J5.2",
+      "B3_J6.2",
+      "B2_U1.SDO"
+    ],
+    "B1_I2C_SDA": [
+      "B1_MCU.SDA",
+      "B1_BME.SDA",
+      "B1_OLED.SDA"
+    ],
+    "B1_I2C_SCL": [
+      "B1_MCU.SCL",
+      "B1_BME.SCL",
+      "B1_OLED.SCL"
+    ],
+    "B1_SPI_MOSI": [
+      "B1_MCU.MOSI",
+      "B1_FLASH.DI"
+    ],
+    "B1_SPI_MISO": [
+      "B1_MCU.MISO",
+      "B1_FLASH.DO"
+    ],
+    "B1_SPI_SCK": [
+      "B1_MCU.SCK",
+      "B1_FLASH.CLK"
+    ],
+    "B1_SPI_CS": [
+      "B1_MCU.D10",
+      "B1_FLASH.CS"
+    ],
+    "B1_UART_TX": [
+      "B1_MCU.TX0",
+      "B1_RS485.DI"
+    ],
+    "B1_UART_RX": [
+      "B1_MCU.RX0",
+      "B1_RS485.RO"
+    ],
+    "B1_RS485_DE": [
+      "B1_ESP.IO23",
+      "B1_RS485.DE",
+      "B1_RS485.RE"
+    ],
+    "B1_RS485_A": [
+      "B1_RS485.A",
+      "B1_J1.1",
+      "B1_R2.1"
+    ],
+    "B1_RS485_B": [
+      "B1_RS485.B",
+      "B1_R2.2"
+    ],
+    "B1_BUTTON_NET": [
+      "B1_MCU.D2",
+      "B1_SW1.2",
+      "B1_R1.1"
+    ],
+    "B1_BUTTON_RETURN": [
+      "B1_R1.2",
+      "B1_D1.1"
+    ],
+    "B1_PROTECT_OUT": [
+      "B1_D1.2",
+      "B1_DZ1.1",
+      "B1_TP1.1"
+    ],
+    "B2_I2C_SDA": [
+      "B2_U1.SDA",
+      "B2_U2.SDA",
+      "B2_U3.SDA",
+      "B2_R1.2",
+      "B2_J1.3",
+      "B2_J2.3",
+      "B2_J3.2",
+      "B2_J4.2",
+      "B2_TP3.1"
+    ],
+    "B2_I2C_SCL": [
+      "B2_U1.SCL",
+      "B2_U2.SCL",
+      "B2_U3.SCL",
+      "B2_R2.2",
+      "B2_J1.4",
+      "B2_J2.4",
+      "B2_J3.3",
+      "B2_J4.3",
+      "B2_TP4.1"
+    ],
+    "B2_RTC_VBAT": [
+      "B2_U3.VBAT",
+      "B2_BT1.POS"
+    ],
+    "B2_SPI_MOSI": [
+      "B2_U4.DI",
+      "B2_J5.4"
+    ],
+    "B2_SPI_MISO": [
+      "B2_U4.DO",
+      "B2_J5.5"
+    ],
+    "B2_SPI_SCK": [
+      "B2_U4.CLK",
+      "B2_J5.3",
+      "B2_TP6.1"
+    ],
+    "B2_SPI_CS_FLASH": [
+      "B2_U4.CS",
+      "B2_R3.2",
+      "B2_J5.2",
+      "B2_TP5.1"
+    ],
+    "B2_FLASH_WP_HOLD": [
+      "B2_U4.WP",
+      "B2_U4.HOLD",
+      "B2_R4.2"
+    ],
+    "B3_PWM_MOTOR_1": [
+      "B3_J5.3",
+      "B3_R1.1"
+    ],
+    "B3_MOSFET1_GATE": [
+      "B3_R1.2",
+      "B3_Q1.G",
+      "B3_R2.1"
+    ],
+    "B3_MOTOR_LOW": [
+      "B3_Q1.D",
+      "B3_M1.2",
+      "B3_D1.A",
+      "B3_D5.K"
+    ],
+    "B3_PWM_LOAD_2": [
+      "B3_J6.3",
+      "B3_R3.1"
+    ],
+    "B3_MOSFET2_GATE": [
+      "B3_R3.2",
+      "B3_Q2.G",
+      "B3_R4.1"
+    ],
+    "B3_LOAD2_LOW": [
+      "B3_Q2.D",
+      "B3_J2.2",
+      "B3_D2.A",
+      "B3_D6.K"
+    ],
+    "B3_RELAY1_CTRL": [
+      "B3_J5.4",
+      "B3_R5.1"
+    ],
+    "B3_RELAY1_BASE": [
+      "B3_R5.2",
+      "B3_Q3.B"
+    ],
+    "B3_RELAY1_COIL_LOW": [
+      "B3_Q3.C",
+      "B3_K1.COIL_MINUS",
+      "B3_D3.A",
+      "B3_D7.K"
+    ],
+    "B3_RELAY2_CTRL": [
+      "B3_J6.4",
+      "B3_R6.1"
+    ],
+    "B3_RELAY2_BASE": [
+      "B3_R6.2",
+      "B3_Q4.B"
+    ],
+    "B3_RELAY2_COIL_LOW": [
+      "B3_Q4.C",
+      "B3_K2.COIL_MINUS",
+      "B3_D4.A",
+      "B3_D8.K"
+    ],
+    "B3_RELAY1_COM": [
+      "B3_K1.COM",
+      "B3_J3.1"
+    ],
+    "B3_RELAY1_NO": [
+      "B3_K1.NO",
+      "B3_J3.2"
+    ],
+    "B3_RELAY2_COM": [
+      "B3_K2.COM",
+      "B3_J4.1"
+    ],
+    "B3_RELAY2_NO": [
+      "B3_K2.NO",
+      "B3_J4.2"
+    ]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {
+        "name": "+5V",
+        "members": [
+          "B1_V1.1",
+          "B1_MCU.5V",
+          "B1_RS485.VCC",
+          "B1_SW1.1",
+          "B3_J1.1",
+          "B3_J2.1",
+          "B3_K1.COIL_PLUS",
+          "B3_K2.COIL_PLUS",
+          "B3_D1.K",
+          "B3_D2.K",
+          "B3_D3.K",
+          "B3_D4.K",
+          "B3_D5.A",
+          "B3_D6.A",
+          "B3_D7.A",
+          "B3_D8.A",
+          "B3_J5.1",
+          "B3_J6.1",
+          "B3_M1.1"
+        ],
+        "member_count": 19
+      },
+      {
+        "name": "+3V3",
+        "members": [
+          "B1_ESP.3V3",
+          "B1_BME.VCC",
+          "B1_OLED.VCC",
+          "B1_FLASH.VCC",
+          "B1_C1.1",
+          "B1_C2.1",
+          "B2_U1.VCC",
+          "B2_U2.VCC",
+          "B2_U3.VCC",
+          "B2_U4.VCC",
+          "B2_R1.1",
+          "B2_R2.1",
+          "B2_R3.1",
+          "B2_R4.1",
+          "B2_C1.1",
+          "B2_C2.1",
+          "B2_C3.1",
+          "B2_C4.1",
+          "B2_C5.1",
+          "B2_C6.1",
+          "B2_J1.1",
+          "B2_J2.1",
+          "B2_J3.1",
+          "B2_J4.1",
+          "B2_J5.1",
+          "B2_TP1.1",
+          "B2_U1.CSB"
+        ],
+        "member_count": 27
+      },
+      {
+        "name": "GND",
+        "members": [
+          "B1_G1.1",
+          "B1_V1.2",
+          "B1_MCU.GND",
+          "B1_ESP.GND",
+          "B1_BME.GND",
+          "B1_OLED.GND",
+          "B1_FLASH.GND",
+          "B1_RS485.GND",
+          "B1_J1.2",
+          "B1_C1.2",
+          "B1_C2.2",
+          "B1_DZ1.2",
+          "B2_U1.GND",
+          "B2_U2.GND",
+          "B2_U3.GND",
+          "B2_U4.GND",
+          "B2_C1.2",
+          "B2_C2.2",
+          "B2_C3.2",
+          "B2_C4.2",
+          "B2_C5.2",
+          "B2_C6.2",
+          "B2_J1.2",
+          "B2_J2.2",
+          "B2_J3.4",
+          "B2_J4.4",
+          "B2_J5.6",
+          "B2_BT1.NEG",
+          "B2_TP2.1",
+          "B3_Q1.S",
+          "B3_Q2.S",
+          "B3_Q3.E",
+          "B3_Q4.E",
+          "B3_R2.2",
+          "B3_R4.2",
+          "B3_J5.2",
+          "B3_J6.2",
+          "B2_U1.SDO"
+        ],
+        "member_count": 38
+      },
+      {
+        "name": "B1_I2C_SDA",
+        "members": [
+          "B1_MCU.SDA",
+          "B1_BME.SDA",
+          "B1_OLED.SDA"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_I2C_SCL",
+        "members": [
+          "B1_MCU.SCL",
+          "B1_BME.SCL",
+          "B1_OLED.SCL"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_SPI_MOSI",
+        "members": [
+          "B1_MCU.MOSI",
+          "B1_FLASH.DI"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SPI_MISO",
+        "members": [
+          "B1_MCU.MISO",
+          "B1_FLASH.DO"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SPI_SCK",
+        "members": [
+          "B1_MCU.SCK",
+          "B1_FLASH.CLK"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SPI_CS",
+        "members": [
+          "B1_MCU.D10",
+          "B1_FLASH.CS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_UART_TX",
+        "members": [
+          "B1_MCU.TX0",
+          "B1_RS485.DI"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_UART_RX",
+        "members": [
+          "B1_MCU.RX0",
+          "B1_RS485.RO"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RS485_DE",
+        "members": [
+          "B1_ESP.IO23",
+          "B1_RS485.DE",
+          "B1_RS485.RE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RS485_A",
+        "members": [
+          "B1_RS485.A",
+          "B1_J1.1",
+          "B1_R2.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RS485_B",
+        "members": [
+          "B1_RS485.B",
+          "B1_R2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_BUTTON_NET",
+        "members": [
+          "B1_MCU.D2",
+          "B1_SW1.2",
+          "B1_R1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BUTTON_RETURN",
+        "members": [
+          "B1_R1.2",
+          "B1_D1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_PROTECT_OUT",
+        "members": [
+          "B1_D1.2",
+          "B1_DZ1.1",
+          "B1_TP1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_I2C_SDA",
+        "members": [
+          "B2_U1.SDA",
+          "B2_U2.SDA",
+          "B2_U3.SDA",
+          "B2_R1.2",
+          "B2_J1.3",
+          "B2_J2.3",
+          "B2_J3.2",
+          "B2_J4.2",
+          "B2_TP3.1"
+        ],
+        "member_count": 9
+      },
+      {
+        "name": "B2_I2C_SCL",
+        "members": [
+          "B2_U1.SCL",
+          "B2_U2.SCL",
+          "B2_U3.SCL",
+          "B2_R2.2",
+          "B2_J1.4",
+          "B2_J2.4",
+          "B2_J3.3",
+          "B2_J4.3",
+          "B2_TP4.1"
+        ],
+        "member_count": 9
+      },
+      {
+        "name": "B2_RTC_VBAT",
+        "members": [
+          "B2_U3.VBAT",
+          "B2_BT1.POS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SPI_MOSI",
+        "members": [
+          "B2_U4.DI",
+          "B2_J5.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SPI_MISO",
+        "members": [
+          "B2_U4.DO",
+          "B2_J5.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SPI_SCK",
+        "members": [
+          "B2_U4.CLK",
+          "B2_J5.3",
+          "B2_TP6.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_SPI_CS_FLASH",
+        "members": [
+          "B2_U4.CS",
+          "B2_R3.2",
+          "B2_J5.2",
+          "B2_TP5.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B2_FLASH_WP_HOLD",
+        "members": [
+          "B2_U4.WP",
+          "B2_U4.HOLD",
+          "B2_R4.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_PWM_MOTOR_1",
+        "members": [
+          "B3_J5.3",
+          "B3_R1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_MOSFET1_GATE",
+        "members": [
+          "B3_R1.2",
+          "B3_Q1.G",
+          "B3_R2.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_MOTOR_LOW",
+        "members": [
+          "B3_Q1.D",
+          "B3_M1.2",
+          "B3_D1.A",
+          "B3_D5.K"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B3_PWM_LOAD_2",
+        "members": [
+          "B3_J6.3",
+          "B3_R3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_MOSFET2_GATE",
+        "members": [
+          "B3_R3.2",
+          "B3_Q2.G",
+          "B3_R4.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_LOAD2_LOW",
+        "members": [
+          "B3_Q2.D",
+          "B3_J2.2",
+          "B3_D2.A",
+          "B3_D6.K"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B3_RELAY1_CTRL",
+        "members": [
+          "B3_J5.4",
+          "B3_R5.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RELAY1_BASE",
+        "members": [
+          "B3_R5.2",
+          "B3_Q3.B"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RELAY1_COIL_LOW",
+        "members": [
+          "B3_Q3.C",
+          "B3_K1.COIL_MINUS",
+          "B3_D3.A",
+          "B3_D7.K"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B3_RELAY2_CTRL",
+        "members": [
+          "B3_J6.4",
+          "B3_R6.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RELAY2_BASE",
+        "members": [
+          "B3_R6.2",
+          "B3_Q4.B"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RELAY2_COIL_LOW",
+        "members": [
+          "B3_Q4.C",
+          "B3_K2.COIL_MINUS",
+          "B3_D4.A",
+          "B3_D8.K"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B3_RELAY1_COM",
+        "members": [
+          "B3_K1.COM",
+          "B3_J3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RELAY1_NO",
+        "members": [
+          "B3_K1.NO",
+          "B3_J3.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RELAY2_COM",
+        "members": [
+          "B3_K2.COM",
+          "B3_J4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RELAY2_NO",
+        "members": [
+          "B3_K2.NO",
+          "B3_J4.2"
+        ],
+        "member_count": 2
+      }
+    ],
+    "important_nets": [
+      "+3V3",
+      "+5V",
+      "GND"
+    ]
+  },
+  "stage_contracts": {
+    "component_placer": {
+      "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+      "output": "placed-design contract with component bounds and resolved pin descriptors"
+    },
+    "arrangement_decider": {
+      "input": "components, blocks, nets, layout_intent",
+      "output": "coordinate edit JSON; may rotate components"
+    },
+    "beautifier": {
+      "input": "placed-design contract plus coordinate edits",
+      "output": "same components with revised coordinates/rotations"
+    },
+    "wire_planner": {
+      "input": "placed-design contract plus expected_netlist",
+      "output": "wire route plan and terminal fallback plan"
+    },
+    "terminal_placer": {
+      "input": "placed-design contract plus terminal nets",
+      "output": "terminal/local-label endpoint plan"
+    },
+    "validators": {
+      "input": "generated schematic plus expected_netlist",
+      "output": "validation_report.json"
+    }
+  },
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "Routed Old-New Embedded Mini Board",
+      "source_circuit_id": "R03",
+      "component_count": 17,
+      "net_count": 17
+    },
+    {
+      "id": "B2",
+      "name": "I2C SPI Sensor Hub",
+      "source_circuit_id": "T05",
+      "component_count": 26,
+      "net_count": 13
+    },
+    {
+      "id": "B3",
+      "name": "Dual MOSFET And Relay Driver Board",
+      "source_circuit_id": "T04",
+      "component_count": 27,
+      "net_count": 23
+    }
+  ],
+  "generation_notes": {
+    "source": "deterministic_main_json_catalog_100",
+    "compiler_repairs": [
+      {
+        "kind": "net_alias_merged",
+        "from": "B2_BME280_CSB",
+        "to": "+3V3"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B2_BME280_SDO",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B2_SPI_TEST",
+        "to": "B2_SPI_SCK"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B3_MOTOR_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B3_LED_MOTOR1",
+        "to": "B3_MOTOR_LOW"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B3_LED_MOTOR2",
+        "to": "B3_LOAD2_LOW"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B3_LED_RELAY1",
+        "to": "B3_RELAY1_COIL_LOW"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B3_LED_RELAY2",
+        "to": "B3_RELAY2_COIL_LOW"
+      }
+    ],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "composed_supported_raw_specs",
+    "source_line_count": null
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 70,
+    "net_count": 41,
+    "endpoint_count": 194,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

@@ -1,8 +1,9 @@
 """Terminal/label placement foundation for KiCad pipeline routing.
 
 This stage owns terminal-style connectivity. For KiCad schematics the current
-terminal backend is local labels with short pin stubs. The strict wire path must
-not call this implicitly; combination/terminal routing can use this explicitly.
+terminal backend is local labels at pin points, with short collision-avoidance
+stubs only when a label point is already occupied. The strict wire path must not
+call this implicitly; combination/terminal routing can use this explicitly.
 """
 
 from __future__ import annotations
@@ -24,8 +25,8 @@ def place_terminals(
     """Return a pure JSON terminal plan.
 
     The plan deliberately mirrors the wire-plan endpoint contract so a KiCad
-    backend can draw short terminal stubs/labels from the same resolved pin
-    coordinates. It does not generate schematic objects itself.
+    backend can draw local labels from the same resolved pin coordinates. It
+    does not generate schematic objects itself.
     """
 
     terminal_config = dict(config or {})

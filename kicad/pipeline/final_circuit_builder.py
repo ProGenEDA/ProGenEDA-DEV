@@ -37,6 +37,7 @@ NODE_SPEC_COMPILER_VERSION = "progeneda-node-spec-compiler/v0.1"
 DEFAULT_FINAL_CIRCUIT_SUITE = "t01_t10"
 PROTEUS_ALIAS_MIXED_SUITE = "proteus_alias_mixed"
 PROTEUS_ALIAS_ROUTED_SUITE = "proteus_alias_routed"
+MAIN_JSON_CATALOG_100_SUITE = "main_json_catalog_100"
 
 POWER_NET_PRIORITY = ("GND", "+5V", "+3V3", "VCC", "VDD", "VIN", "VBUS", "VBAT")
 POWER_NETS = set(POWER_NET_PRIORITY)
@@ -384,6 +385,22 @@ def compile_raw_circuit(raw: dict[str, Any]) -> dict[str, Any]:
         "schema_version": SCHEMA_VERSION,
         "compatible_schema": "progen-kicad-placer-ir/v0.2",
         "progeneda_circuit_version": "v1",
+        "main_json_contract": {
+            "schema": "progeneda-main-json-contract/v1",
+            "single_generator_input": True,
+            "backend": "kicad",
+            "backend_cli_required": False,
+            "stable_sections": [
+                "project",
+                "routing",
+                "layout_intent",
+                "components",
+                "nets",
+                "expected_netlist",
+                "stage_contracts",
+                "validation",
+            ],
+        },
         "compiler": {
             "name": "final_circuit_builder",
             "version": COMPILER_VERSION,
@@ -402,10 +419,59 @@ def compile_raw_circuit(raw: dict[str, Any]) -> dict[str, Any]:
         "routing": {
             "mode": str(raw.get("routing_mode") or "wire"),
             "allowed_modes": ["wire", "terminal", "combination"],
+            "decision_source": str(raw.get("routing_decision_source") or "deterministic_final_json_compiler"),
             "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+            "terminal_policy": {
+                "power_and_ground_terminal": True,
+                "high_fanout_threshold": int(raw.get("high_fanout_terminal_threshold") or 6),
+                "fallback_unroutable_or_invalid_wires_to_terminal": str(raw.get("routing_mode") or "wire") == "combination",
+                "terminal_stage_runs_after_wiring": True,
+            },
+        },
+        "layout_intent": {
+            "arrangement_style": str(raw.get("arrangement_style") or "clustered_blocks_square_fill"),
+            "square_fill_preferred": True,
+            "allow_component_rotation": True,
+            "block_order_source": "components[].block and blocks[]",
+            "keep_related_blocks_close": True,
         },
         "components": final_components,
         "nets": compiled_nets,
+        "expected_netlist": {
+            "schema": "progeneda-expected-netlist/v1",
+            "source": "compiled_main_json_nets",
+            "nets": [
+                {"name": net, "members": members, "member_count": len(members)}
+                for net, members in compiled_nets.items()
+            ],
+            "important_nets": sorted(net for net in compiled_nets if net.upper() in POWER_NETS or net.upper() in {"GND", "0"}),
+        },
+        "stage_contracts": {
+            "component_placer": {
+                "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+                "output": "placed-design contract with component bounds and resolved pin descriptors",
+            },
+            "arrangement_decider": {
+                "input": "components, blocks, nets, layout_intent",
+                "output": "coordinate edit JSON; may rotate components",
+            },
+            "beautifier": {
+                "input": "placed-design contract plus coordinate edits",
+                "output": "same components with revised coordinates/rotations",
+            },
+            "wire_planner": {
+                "input": "placed-design contract plus expected_netlist",
+                "output": "wire route plan and terminal fallback plan",
+            },
+            "terminal_placer": {
+                "input": "placed-design contract plus terminal nets",
+                "output": "terminal/local-label endpoint plan",
+            },
+            "validators": {
+                "input": "generated schematic plus expected_netlist",
+                "output": "validation_report.json",
+            },
+        },
         "blocks": raw.get("blocks", []),
         "generation_notes": {
             "source": str(raw.get("source") or "user-supplied connected T01-T10 test specification"),
@@ -829,7 +895,12 @@ def build_final_circuits_from_node_spec_text(text: str, *, source: str = "user_n
 
 
 def available_final_circuit_suites() -> tuple[str, ...]:
-    return (DEFAULT_FINAL_CIRCUIT_SUITE, PROTEUS_ALIAS_MIXED_SUITE, PROTEUS_ALIAS_ROUTED_SUITE)
+    return (
+        DEFAULT_FINAL_CIRCUIT_SUITE,
+        PROTEUS_ALIAS_MIXED_SUITE,
+        PROTEUS_ALIAS_ROUTED_SUITE,
+        MAIN_JSON_CATALOG_100_SUITE,
+    )
 
 
 def _raw_specs_for_suite(suite: str) -> list[dict[str, Any]]:
@@ -839,6 +910,8 @@ def _raw_specs_for_suite(suite: str) -> list[dict[str, Any]]:
         return _build_raw_proteus_alias_mixed_specs()
     if suite == PROTEUS_ALIAS_ROUTED_SUITE:
         return _build_raw_proteus_alias_routed_specs()
+    if suite == MAIN_JSON_CATALOG_100_SUITE:
+        return _build_raw_main_json_catalog_100_specs()
     known = ", ".join(available_final_circuit_suites())
     raise ValueError(f"Unknown final circuit suite {suite!r}; expected one of: {known}")
 
@@ -1203,8 +1276,8 @@ def _t07() -> dict[str, Any]:
         "AUDIO_R_AC": ["C2.2", "RV2.3"],
         "AUDIO_L_VOL": ["RV1.2", "R1.1"],
         "AUDIO_R_VOL": ["RV2.2", "R3.1"],
-        "LM358_L_IN": ["R1.2", "U1A.IN_PLUS"],
-        "LM358_R_IN": ["R3.2", "U1B.IN_PLUS"],
+        "LM358_L_IN": ["R1.2", "U1A.IN_PLUS", "R5.2", "R6.1"],
+        "LM358_R_IN": ["R3.2", "U1B.IN_PLUS", "R7.2", "R8.1"],
         "LM358_L_FEEDBACK": ["U1A.OUT", "U1A.IN_MINUS", "R2.1"],
         "LM358_R_FEEDBACK": ["U1B.OUT", "U1B.IN_MINUS", "R4.1"],
         "AMP_L_IN_COUPLED": ["U1A.OUT", "C3.1"],
@@ -1219,10 +1292,8 @@ def _t07() -> dict[str, Any]:
         "AMP_BYPASS_L": ["C7.1", "U3.LIN"],
         "AMP_BYPASS_R": ["C8.1", "U3.RIN"],
         "AUDIO_L_BIAS_TOP": ["R5.1", "+5V"],
-        "AUDIO_L_BIAS": ["R5.2", "R6.1", "U1A.BIAS"],
         "AUDIO_L_BIAS_GND": ["R6.2", "GND"],
         "AUDIO_R_BIAS_TOP": ["R7.1", "+5V"],
-        "AUDIO_R_BIAS": ["R7.2", "R8.1", "U1B.BIAS"],
         "AUDIO_R_BIAS_GND": ["R8.2", "GND"],
     }
     return _raw_spec("T07", "Stereo Audio Control PAM8403 Amplifier", "analog-style placement with passives around ICs", components, nets)
@@ -1272,8 +1343,14 @@ def _t08() -> dict[str, Any]:
             "C4.2",
             "J1.2",
             "J2.6",
-            "SW1.COM",
-            "SW2.COM",
+            "SW1.S1B",
+            "SW1.S2B",
+            "SW1.S3B",
+            "SW1.S4B",
+            "SW2.S1B",
+            "SW2.S2B",
+            "SW2.S3B",
+            "SW2.S4B",
             "DARR1.COM_K",
             "DARR2.COM_K",
             *_range_endpoints("D", "K", 1, 8),
@@ -1289,8 +1366,8 @@ def _t08() -> dict[str, Any]:
     for index in range(4):
         nets[f"LED_B{index}"] = [f"U2.Q{index}", f"RN2.{index + 1}", f"DARR2.A{index}"]
     for index in range(1, 5):
-        nets[f"DIP1_{index}"] = [f"SW1.{index}", f"R{index}.2", f"J1.{index + 5}"]
-        nets[f"DIP2_{index}"] = [f"SW2.{index}", f"R{index + 4}.2", f"J1.{index + 9}"]
+        nets[f"DIP1_{index}"] = [f"SW1.S{index}A", f"R{index}.2", f"J1.{index + 5}"]
+        nets[f"DIP2_{index}"] = [f"SW2.S{index}A", f"R{index + 4}.2", f"J1.{index + 9}"]
     return _raw_spec("T08", "74HC595 Logic LED Display Board", "repeated IC rows and symmetry", components, nets)
 
 
@@ -1421,36 +1498,38 @@ def _t10() -> dict[str, Any]:
         "SPI_MOSI": ["MCU.MOSI", "W25Q64_1.DI", "W25Q64_2.DI", "MCP2515.SI", "J_SPI.4", "TP3.1"],
         "SPI_MISO": ["MCU.MISO", "W25Q64_1.DO", "W25Q64_2.DO", "MCP2515.SO", "J_SPI.5", "TP4.1"],
         "SPI_SCK": ["MCU.SCK", "W25Q64_1.CLK", "W25Q64_2.CLK", "MCP2515.SCK", "J_SPI.3", "TP5.1"],
-        "CS_FLASH1": ["MCU.GPIO_CS1", "W25Q64_1.CS"],
-        "CS_FLASH2": ["MCU.GPIO_CS2", "W25Q64_2.CS"],
-        "CS_CAN": ["MCU.GPIO_CS_CAN", "MCP2515.CS"],
-        "CAN_INT": ["MCU.GPIO_CAN_INT", "MCP2515.INT", "TP6.1"],
+        "CS_FLASH1": ["MCU.D8", "W25Q64_1.CS"],
+        "CS_FLASH2": ["MCU.D9", "W25Q64_2.CS"],
+        "CS_CAN": ["MCU.D10", "MCP2515.CS"],
+        "CAN_INT": ["ESP32.GPIO16", "MCP2515.INT", "TP6.1"],
         "CAN_TXD": ["MCP2515.TXCAN", "TJA1050.TXD"],
         "CAN_RXD": ["MCP2515.RXCAN", "TJA1050.RXD"],
         "CANH": ["TJA1050.CANH", "J_CAN.1", "TP8.1"],
         "CANL": ["TJA1050.CANL", "J_CAN.2", "TP9.1"],
-        "RS485_RO": ["MAX485.RO", "MCU.GPIO_RS485_RX"],
-        "RS485_DI": ["MAX485.DI", "MCU.GPIO_RS485_TX"],
-        "RS485_DE_RE": ["MAX485.DE", "MAX485.RE", "MCU.GPIO_RS485_DE", "TP7.1"],
+        "RS485_RO": ["MAX485.RO", "ESP32.GPIO18"],
+        "RS485_DI": ["MAX485.DI", "ESP32.GPIO19"],
+        "RS485_DE_RE": ["MAX485.DE", "MAX485.RE", "ESP32.GPIO23", "TP7.1"],
         "RS485_A": ["MAX485.A", "J_RS485.1", "TP10.1"],
         "RS485_B": ["MAX485.B", "J_RS485.2", "TP11.1"],
         "SHIFT_MOSI": ["MCU.MOSI", "U595_1.SER"],
         "SHIFT_CLK": ["MCU.SCK", "U595_1.SHCP", "U595_2.SHCP", "U595_3.SHCP", "U595_4.SHCP"],
-        "SHIFT_LATCH": ["MCU.GPIO_LATCH", "U595_1.STCP", "U595_2.STCP", "U595_3.STCP", "U595_4.STCP", "TP12.1"],
+        "SHIFT_LATCH": ["ESP32.GPIO17", "U595_1.STCP", "U595_2.STCP", "U595_3.STCP", "U595_4.STCP", "TP12.1"],
         "SHIFT_CHAIN_1": ["U595_1.Q7S", "U595_2.SER"],
         "SHIFT_CHAIN_2": ["U595_2.Q7S", "U595_3.SER"],
         "SHIFT_CHAIN_3": ["U595_3.Q7S", "U595_4.SER"],
         "SHIFT_ENABLE": ["U595_1.OE", "U595_2.OE", "U595_3.OE", "U595_4.OE", "GND", "TP13.1"],
         "SHIFT_RESET": ["U595_1.MR", "U595_2.MR", "U595_3.MR", "U595_4.MR", "+5V"],
     }
+    mosfet_control_pins = ("ESP32.GPIO25", "ESP32.GPIO26", "ESP32.GPIO27", "ESP32.GPIO32")
+    relay_control_pins = ("ESP32.GPIO33", "ESP32.GPIO34", "ESP32.GPIO35", "ESP32.GPIO36")
     for index in range(1, 5):
-        nets[f"MOSFET{index}_CTRL"] = [f"MCU.GPIO_PWM_{index}", f"R_GATE_{index}.1"]
+        nets[f"MOSFET{index}_CTRL"] = [mosfet_control_pins[index - 1], f"R_GATE_{index}.1"]
         nets[f"MOSFET{index}_GATE"] = [f"R_GATE_{index}.2", f"Q_MOSFET_{index}.G", f"R_PULLDOWN_{index}.1"]
         nets[f"MOSFET{index}_PULLDOWN"] = [f"R_PULLDOWN_{index}.2", "GND"]
         nets[f"MOSFET{index}_LOW"] = [f"Q_MOSFET_{index}.D", f"J_LOAD_{index}.2", f"D_FLYBACK_{index}.A"]
         nets[f"MOSFET{index}_HIGH"] = [f"J_LOAD_{index}.1", f"D_FLYBACK_{index}.K", "+5V"]
         nets[f"MOSFET{index}_SOURCE"] = [f"Q_MOSFET_{index}.S", "GND"]
-        nets[f"RELAY{index}_CTRL"] = [f"MCU.GPIO_RELAY_{index}", f"R_BASE_{index}.1"]
+        nets[f"RELAY{index}_CTRL"] = [relay_control_pins[index - 1], f"R_BASE_{index}.1"]
         nets[f"RELAY{index}_BASE"] = [f"R_BASE_{index}.2", f"Q_NPN_{index}.B"]
         nets[f"RELAY{index}_EMITTER"] = [f"Q_NPN_{index}.E", "GND"]
         nets[f"RELAY{index}_COIL_LOW"] = [f"Q_NPN_{index}.C", f"K_RELAY_{index}.COIL_MINUS", f"D_RELAY_{index}.A"]
@@ -1466,14 +1545,14 @@ def _t10() -> dict[str, Any]:
         nets[f"EXP1_Q{index}"] = [f"U595_3.Q{index}", f"J_EXP1.{index + 1}"]
         nets[f"EXP2_Q{index}"] = [f"U595_4.Q{index}", f"J_EXP2.{index + 1}"]
     for index in range(1, 7):
-        nets[f"BUTTON{index}_NET"] = [f"MCU.GPIO_BTN_{index}", f"SW_BTN_{index}.1", f"R_BTN_PD_{index}.1"]
+        nets[f"BUTTON{index}_NET"] = [f"MCU.D{index + 1}", f"SW_BTN_{index}.1", f"R_BTN_PD_{index}.1"]
         nets[f"BUTTON{index}_GND"] = [f"R_BTN_PD_{index}.2", "GND"]
         nets[f"BUTTON{index}_5V"] = [f"SW_BTN_{index}.2", "+5V"]
     for index in range(1, 5):
         nets[f"ANALOG{index}_INPUT"] = [f"J_ANALOG.{index}", f"RV{index}.3"]
         nets[f"ANALOG{index}_WIPER"] = [f"RV{index}.2", f"U_LM358_CHANNEL_{index}.IN_PLUS"]
         nets[f"ANALOG{index}_GND"] = [f"RV{index}.1", "GND"]
-        nets[f"ANALOG{index}_BUFFER"] = [f"U_LM358_CHANNEL_{index}.OUT", f"U_LM358_CHANNEL_{index}.IN_MINUS", f"MCU.ADC{index}"]
+        nets[f"ANALOG{index}_BUFFER"] = [f"U_LM358_CHANNEL_{index}.OUT", f"U_LM358_CHANNEL_{index}.IN_MINUS", f"MCU.A{index - 1}"]
     for index in range(1, 25):
         if index % 2:
             nets["+5V"].append(f"C_DECOUPLE_{index}.1")
@@ -1481,13 +1560,14 @@ def _t10() -> dict[str, Any]:
             nets["+3V3"].append(f"C_DECOUPLE_{index}.1")
         nets["GND"].append(f"C_DECOUPLE_{index}.2")
     for index in range(1, 9):
-        nets[f"GPIO_EXT_{index}_MCU"] = [f"MCU.GPIO_EXT_{index}", f"R_PROT_{index}.1"]
-        nets[f"GPIO_EXT_{index}_HEADER"] = [f"R_PROT_{index}.2", f"J_HEADER_{index}.1", f"TP{16 + index}.1"]
+        nets[f"GPIO_EXT_{index}_IN"] = [f"R_PROT_{index}.1", f"TP{16 + index}.1"]
+        nets[f"GPIO_EXT_{index}_HEADER"] = [f"R_PROT_{index}.2", f"J_HEADER_{index}.1"]
         nets["+5V"].append(f"J_HEADER_{index}.2")
         nets["GND"].append(f"J_HEADER_{index}.3")
         nets["+3V3"].append(f"J_HEADER_{index}.4")
+    mode_control_pins = ("ESP32.GPIO4", "ESP32.GPIO5", "ESP32.GPIO12", "ESP32.GPIO13", "ESP32.GPIO14", "ESP32.GPIO15")
     for index in range(1, 7):
-        nets[f"MODE{index}_NET"] = [f"MCU.GPIO_MODE_{index}", f"JP_MODE_{index}.1"]
+        nets[f"MODE{index}_NET"] = [mode_control_pins[index - 1], f"JP_MODE_{index}.1"]
         nets[f"MODE{index}_GND"] = [f"JP_MODE_{index}.2", "GND"]
     return _raw_spec(
         "T10",
@@ -2020,6 +2100,112 @@ def _build_raw_proteus_alias_routed_specs() -> list[dict[str, Any]]:
     return [_r01(), _r02(), _r03()]
 
 
+def _prefixed_endpoint(endpoint: str, *, prefix: str, refs: set[str], raw_net_names: set[str]) -> str:
+    text = str(endpoint).strip()
+    if "." not in text:
+        if text in raw_net_names and text.upper() not in POWER_NETS and text.upper() not in {"GND", "0"}:
+            return f"{prefix}{text}"
+        return text
+    ref, pin = text.split(".", 1)
+    if ref in refs:
+        return f"{prefix}{ref}.{pin}"
+    return text
+
+
+def _prefixed_raw_block(raw: dict[str, Any], *, prefix: str, block_index: int) -> dict[str, Any]:
+    refs = {str(component["ref"]) for component in raw.get("components", []) if isinstance(component, dict)}
+    components: list[dict[str, str]] = []
+    for component in raw.get("components", []):
+        if not isinstance(component, dict):
+            continue
+        components.append(
+            _c(
+                f"{prefix}{component['ref']}",
+                str(component["kind"]),
+                str(component["value"]),
+                str(component.get("role", "")),
+                f"b{block_index}_{component.get('block', '')}".strip("_"),
+            )
+        )
+
+    nets: dict[str, list[str]] = {}
+    for net, endpoints in raw.get("nets", {}).items():
+        net_name = str(net)
+        upper = net_name.upper()
+        out_name = net_name if upper in POWER_NETS or upper in {"GND", "0"} else f"{prefix}{net_name}"
+        nets.setdefault(out_name, [])
+        for endpoint in endpoints:
+            nets[out_name].append(_prefixed_endpoint(str(endpoint), prefix=prefix, refs=refs, raw_net_names=set(raw.get("nets", {}))))
+
+    return {"components": components, "nets": nets}
+
+
+def _merge_raw_blocks(catalog_index: int, raws: list[dict[str, Any]]) -> dict[str, Any]:
+    components: list[dict[str, str]] = []
+    nets: dict[str, list[str]] = defaultdict(list)
+    blocks: list[dict[str, Any]] = []
+    titles: list[str] = []
+    for block_index, raw in enumerate(raws, 1):
+        prefix = f"B{block_index}_"
+        titles.append(str(raw["name"]))
+        prefixed = _prefixed_raw_block(raw, prefix=prefix, block_index=block_index)
+        components.extend(prefixed["components"])
+        for net, endpoints in prefixed["nets"].items():
+            nets[net].extend(endpoints)
+        blocks.append(
+            {
+                "id": f"B{block_index}",
+                "name": str(raw["name"]),
+                "source_circuit_id": str(raw["circuit_id"]),
+                "component_count": len(prefixed["components"]),
+                "net_count": len(prefixed["nets"]),
+            }
+        )
+
+    raw = _raw_spec(
+        f"MJ{catalog_index:03d}",
+        f"Main JSON Catalog {catalog_index:03d}: " + " + ".join(titles[:3]),
+        "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+        components,
+        dict(nets),
+        blocks=blocks,
+    )
+    raw["source"] = "deterministic_main_json_catalog_100"
+    raw["source_format"] = "composed_supported_raw_specs"
+    raw["routing_mode"] = "combination"
+    raw["routing_decision_source"] = "deterministic_catalog_policy_combination_default"
+    raw["high_fanout_terminal_threshold"] = 6
+    raw["arrangement_style"] = "clustered_blocks_square_fill"
+    return raw
+
+
+def _build_raw_main_json_catalog_100_specs() -> list[dict[str, Any]]:
+    base_specs = (
+        _build_raw_test_specs()
+        + _build_raw_proteus_alias_mixed_specs()
+        + _build_raw_proteus_alias_routed_specs()
+    )
+    specs: list[dict[str, Any]] = []
+    base_count = len(base_specs)
+    for index in range(1, 101):
+        if index % 10 == 0:
+            selected_indices = [9, (index + 2) % base_count, (index * 3 + 5) % base_count]
+        elif index % 4 == 0:
+            selected_indices = [(index - 1) % base_count, (index + 4) % base_count, (index * 2 + 3) % base_count]
+        else:
+            selected_indices = [(index - 1) % base_count, (index + 5) % base_count]
+        selected: list[dict[str, Any]] = []
+        seen: set[int] = set()
+        for selected_index in selected_indices:
+            normalized = selected_index % base_count
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            selected.append(base_specs[normalized])
+        specs.append(_merge_raw_blocks(index, selected))
+    return specs
+
+
 def _overlap_pairs(obstacles: list[dict[str, Any]]) -> list[tuple[str, str]]:
     pairs: list[tuple[str, str]] = []
     for index, left in enumerate(obstacles):
@@ -2078,6 +2264,7 @@ def _write_final_json_run(
     suite: str,
     readme_title: str,
     readme_source_note: str,
+    run_stage_reports: bool = True,
 ) -> dict[str, Any]:
     run_path = run_dir or _fresh_run_dir(examples_root, label)
     if run_path.exists():
@@ -2100,46 +2287,67 @@ def _write_final_json_run(
         final_path.write_text(json.dumps(circuit, indent=2), encoding="utf-8")
         placement_path.write_text(json.dumps(placement_input, indent=2), encoding="utf-8")
 
-        ctx = run_placer_pipeline(placement_input, write_trace=False)
-        placement = ctx.placement_plan.as_dict()
-        planned = plan_wiring(placement, circuit, wire_config=STAGE_REPORT_WIRE_CONFIG)
-        coordinate_plan = planned["coordinate_plan"]
-        beautified = planned["routing_placement"]
-        wire_plan = planned["wire_plan"]
-        overlaps = _overlap_pairs(beautified.get("obstacles", []))
-
         report = {
             "circuit_id": cid,
             "circuit_name": circuit["circuit_name"],
             "final_json": str(final_path.relative_to(run_path)),
             "placement_input": str(placement_path.relative_to(run_path)),
             "validation": circuit["validation"],
-            "placement_ok": ctx.pipeline_summary()["ok"],
             "component_count": len(circuit["components"]),
             "net_count": len(circuit["nets"]),
             "endpoint_count": circuit["validation"]["endpoint_count"],
-            "coordinate_edit_count": len(coordinate_plan.get("coordinate_edits", [])),
-            "post_beautifier_overlap_count": len(overlaps),
-            "post_beautifier_overlaps": overlaps,
-            "wire_metrics": wire_plan["metrics"],
-            "wire_warnings": wire_plan["warnings"],
-            "arrangement_selection": planned["arrangement_selection"],
+            "stage_reports_enabled": run_stage_reports,
         }
+        if run_stage_reports:
+            ctx = run_placer_pipeline(placement_input, write_trace=False)
+            placement = ctx.placement_plan.as_dict()
+            planned = plan_wiring(placement, circuit, wire_config=STAGE_REPORT_WIRE_CONFIG)
+            coordinate_plan = planned["coordinate_plan"]
+            beautified = planned["routing_placement"]
+            wire_plan = planned["wire_plan"]
+            overlaps = _overlap_pairs(beautified.get("obstacles", []))
+            report.update(
+                {
+                    "placement_ok": ctx.pipeline_summary()["ok"],
+                    "coordinate_edit_count": len(coordinate_plan.get("coordinate_edits", [])),
+                    "post_beautifier_overlap_count": len(overlaps),
+                    "post_beautifier_overlaps": overlaps,
+                    "wire_metrics": wire_plan["metrics"],
+                    "wire_warnings": wire_plan["warnings"],
+                    "arrangement_selection": planned["arrangement_selection"],
+                }
+            )
+        else:
+            report.update(
+                {
+                    "placement_ok": None,
+                    "coordinate_edit_count": None,
+                    "post_beautifier_overlap_count": None,
+                    "post_beautifier_overlaps": [],
+                    "wire_metrics": {},
+                    "wire_warnings": [],
+                    "arrangement_selection": {},
+                    "stage_report_skipped_reason": "locked JSON catalogue writer defers placement/routing verification to generated project runs",
+                }
+            )
         (stage_report_dir / f"{stem}_stage_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
         results.append(report)
 
+    placements_ok = all(item["placement_ok"] for item in results) if run_stage_reports else None
+    overlaps_ok = all(item["post_beautifier_overlap_count"] == 0 for item in results) if run_stage_reports else None
     summary = {
         "schema": "progen-kicad-final-json-run/v0.1",
         "run_dir": str(run_path),
         "label": label,
         "suite": suite,
+        "stage_reports_enabled": run_stage_reports,
         "circuit_count": len(results),
         "all_final_json_valid": all(item["validation"]["status"] == "pass" for item in results),
-        "all_placements_ok": all(item["placement_ok"] for item in results),
-        "all_beautified_without_overlaps": all(item["post_beautifier_overlap_count"] == 0 for item in results),
+        "all_placements_ok": placements_ok,
+        "all_beautified_without_overlaps": overlaps_ok,
         "total_components": sum(item["component_count"] for item in results),
         "total_nets": sum(item["net_count"] for item in results),
-        "total_wired_routes": sum(item["wire_metrics"]["wired_route_count"] for item in results),
+        "total_wired_routes": sum(int(item.get("wire_metrics", {}).get("wired_route_count", 0)) for item in results),
         "results": results,
     }
     (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
@@ -2164,6 +2372,7 @@ def generate_final_json_run(
     label: str = "t01_t10_connected_v1",
     run_dir: Path | None = None,
     suite: str = DEFAULT_FINAL_CIRCUIT_SUITE,
+    run_stage_reports: bool = True,
 ) -> dict[str, Any]:
     """Generate a fresh immutable final-JSON examples run and stage report."""
     return _write_final_json_run(
@@ -2174,6 +2383,7 @@ def generate_final_json_run(
         suite=suite,
         readme_title=f"Connected Final JSON Run: {suite}",
         readme_source_note="The final JSON was compiled from a named deterministic built-in suite.",
+        run_stage_reports=run_stage_reports,
     )
 
 
@@ -2302,6 +2512,11 @@ def main() -> None:
     )
     parser.add_argument("--prompt", help="Optional prompt to clean/enhance and print instead of generating files.")
     parser.add_argument(
+        "--skip-stage-reports",
+        action="store_true",
+        help="Write validated final JSON/placement inputs without expensive arrangement/wire-planner stage probes.",
+    )
+    parser.add_argument(
         "--node-spec-from-text",
         help="Path to pasted CIRCUIT/REF.PIN -> NET text; writes a fresh final JSON run from that source.",
     )
@@ -2342,6 +2557,7 @@ def main() -> None:
         label=args.label,
         run_dir=Path(args.run_dir) if args.run_dir else None,
         suite=args.suite,
+        run_stage_reports=not args.skip_stage_reports,
     )
     print(json.dumps(summary, indent=2))
 

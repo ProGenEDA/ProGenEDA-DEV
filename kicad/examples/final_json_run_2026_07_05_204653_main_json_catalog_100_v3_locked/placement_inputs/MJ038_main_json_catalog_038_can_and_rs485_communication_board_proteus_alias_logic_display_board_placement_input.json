@@ -1,0 +1,1504 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "mj038",
+    "title": "Main JSON Catalog 038: CAN And RS485 Communication Board + Proteus Alias Logic Display Board",
+    "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "MJ038",
+  "circuit_name": "Main JSON Catalog 038: CAN And RS485 Communication Board + Proteus Alias Logic Display Board",
+  "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "decision_source": "deterministic_catalog_policy_combination_default",
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 6,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "clustered_blocks_square_fill",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "components[].block and blocks[]",
+    "keep_related_blocks_close": true
+  },
+  "components": [
+    {
+      "id": "B1_U1",
+      "ref": "B1_U1",
+      "kind": "MCP2515",
+      "value": "MCP2515"
+    },
+    {
+      "id": "B1_U2",
+      "ref": "B1_U2",
+      "kind": "TJA1050",
+      "value": "TJA1050"
+    },
+    {
+      "id": "B1_U3",
+      "ref": "B1_U3",
+      "kind": "MAX485",
+      "value": "MAX485"
+    },
+    {
+      "id": "B1_Y1",
+      "ref": "B1_Y1",
+      "kind": "CRYSTAL_16MHZ",
+      "value": "16MHz crystal"
+    },
+    {
+      "id": "B1_C1",
+      "ref": "B1_C1",
+      "kind": "C_22PF_X1",
+      "value": "22pF"
+    },
+    {
+      "id": "B1_C2",
+      "ref": "B1_C2",
+      "kind": "C_22PF_X2",
+      "value": "22pF"
+    },
+    {
+      "id": "B1_C3",
+      "ref": "B1_C3",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B1_C4",
+      "ref": "B1_C4",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B1_C5",
+      "ref": "B1_C5",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B1_C6",
+      "ref": "B1_C6",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B1_C7",
+      "ref": "B1_C7",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "B1_R1",
+      "ref": "B1_R1",
+      "kind": "R_120_CAN",
+      "value": "120 ohm CAN termination"
+    },
+    {
+      "id": "B1_R2",
+      "ref": "B1_R2",
+      "kind": "R_120_RS485",
+      "value": "120 ohm RS485 termination"
+    },
+    {
+      "id": "B1_D1",
+      "ref": "B1_D1",
+      "kind": "TVS_DIODE_RS485",
+      "value": "TVS diode"
+    },
+    {
+      "id": "B1_D2",
+      "ref": "B1_D2",
+      "kind": "TVS_DIODE_RS485",
+      "value": "TVS diode"
+    },
+    {
+      "id": "B1_J1",
+      "ref": "B1_J1",
+      "kind": "CAN_TERMINAL",
+      "value": "CAN terminal"
+    },
+    {
+      "id": "B1_J2",
+      "ref": "B1_J2",
+      "kind": "RS485_TERMINAL",
+      "value": "RS485 terminal"
+    },
+    {
+      "id": "B1_J3",
+      "ref": "B1_J3",
+      "kind": "SPI_HEADER_FLASH",
+      "value": "SPI header"
+    },
+    {
+      "id": "B1_J4",
+      "ref": "B1_J4",
+      "kind": "UART_HEADER",
+      "value": "UART/control header"
+    },
+    {
+      "id": "B1_J5",
+      "ref": "B1_J5",
+      "kind": "PIN_HEADER",
+      "value": "Power header"
+    },
+    {
+      "id": "B1_JP1",
+      "ref": "B1_JP1",
+      "kind": "CHIP_SELECT_JUMPER",
+      "value": "Jumper"
+    },
+    {
+      "id": "B1_JP2",
+      "ref": "B1_JP2",
+      "kind": "CHIP_SELECT_JUMPER",
+      "value": "Jumper"
+    },
+    {
+      "id": "B1_JP3",
+      "ref": "B1_JP3",
+      "kind": "CHIP_SELECT_JUMPER",
+      "value": "Jumper"
+    },
+    {
+      "id": "B2_G1",
+      "ref": "B2_G1",
+      "kind": "GROUND",
+      "value": "GND"
+    },
+    {
+      "id": "B2_V1",
+      "ref": "B2_V1",
+      "kind": "VDC",
+      "value": "5V logic supply"
+    },
+    {
+      "id": "B2_J1",
+      "ref": "B2_J1",
+      "kind": "PROGRAMMING_HEADER",
+      "value": "Control header"
+    },
+    {
+      "id": "B2_J2",
+      "ref": "B2_J2",
+      "kind": "SPI_HEADER_FLASH",
+      "value": "SPI/debug header"
+    },
+    {
+      "id": "B2_DS1",
+      "ref": "B2_DS1",
+      "kind": "7SEGCOMA",
+      "value": "Common-anode display"
+    },
+    {
+      "id": "B2_DS2",
+      "ref": "B2_DS2",
+      "kind": "7SEGCOMK",
+      "value": "Common-cathode display"
+    },
+    {
+      "id": "B2_U4027",
+      "ref": "B2_U4027",
+      "kind": "4027",
+      "value": "CD4027"
+    },
+    {
+      "id": "B2_U4511",
+      "ref": "B2_U4511",
+      "kind": "4511",
+      "value": "CD4511"
+    },
+    {
+      "id": "B2_U7447",
+      "ref": "B2_U7447",
+      "kind": "7447",
+      "value": "7447"
+    },
+    {
+      "id": "B2_U7490",
+      "ref": "B2_U7490",
+      "kind": "7490",
+      "value": "7490"
+    },
+    {
+      "id": "B2_U00",
+      "ref": "B2_U00",
+      "kind": "74HC00",
+      "value": "74HC00"
+    },
+    {
+      "id": "B2_U02",
+      "ref": "B2_U02",
+      "kind": "74HC02",
+      "value": "74HC02"
+    },
+    {
+      "id": "B2_U04",
+      "ref": "B2_U04",
+      "kind": "74HC04",
+      "value": "74HC04"
+    },
+    {
+      "id": "B2_U08",
+      "ref": "B2_U08",
+      "kind": "74HC08",
+      "value": "74HC08"
+    },
+    {
+      "id": "B2_U32",
+      "ref": "B2_U32",
+      "kind": "74HC32",
+      "value": "74HC32"
+    },
+    {
+      "id": "B2_U74",
+      "ref": "B2_U74",
+      "kind": "74HC74",
+      "value": "74HC74"
+    },
+    {
+      "id": "B2_U76",
+      "ref": "B2_U76",
+      "kind": "74HC76",
+      "value": "74HC76"
+    },
+    {
+      "id": "B2_U85",
+      "ref": "B2_U85",
+      "kind": "74HC85",
+      "value": "74HC85"
+    },
+    {
+      "id": "B2_U86",
+      "ref": "B2_U86",
+      "kind": "74HC86",
+      "value": "74HC86"
+    },
+    {
+      "id": "B2_U151",
+      "ref": "B2_U151",
+      "kind": "74HC151",
+      "value": "74HC151"
+    },
+    {
+      "id": "B2_U157",
+      "ref": "B2_U157",
+      "kind": "74HC157",
+      "value": "74HC157"
+    },
+    {
+      "id": "B2_U160",
+      "ref": "B2_U160",
+      "kind": "74HC160",
+      "value": "74HC160"
+    },
+    {
+      "id": "B2_U174",
+      "ref": "B2_U174",
+      "kind": "74HC174",
+      "value": "74HC174"
+    },
+    {
+      "id": "B2_U192",
+      "ref": "B2_U192",
+      "kind": "74HC192",
+      "value": "74HC192"
+    },
+    {
+      "id": "B2_U266",
+      "ref": "B2_U266",
+      "kind": "74HC266",
+      "value": "74HC266"
+    },
+    {
+      "id": "B2_U283",
+      "ref": "B2_U283",
+      "kind": "74HC283",
+      "value": "74HC283"
+    },
+    {
+      "id": "B2_U595",
+      "ref": "B2_U595",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595"
+    },
+    {
+      "id": "B2_SW1",
+      "ref": "B2_SW1",
+      "kind": "DIP_SWITCH",
+      "value": "DIP switch"
+    },
+    {
+      "id": "B2_RN1",
+      "ref": "B2_RN1",
+      "kind": "RESISTOR_NETWORK",
+      "value": "Resistor network"
+    },
+    {
+      "id": "B2_DARR1",
+      "ref": "B2_DARR1",
+      "kind": "LED_ARRAY",
+      "value": "RGB LED array"
+    },
+    {
+      "id": "B2_LED1",
+      "ref": "B2_LED1",
+      "kind": "LED_INDICATOR",
+      "value": "Logic LED"
+    },
+    {
+      "id": "B2_R1",
+      "ref": "B2_R1",
+      "kind": "R_220",
+      "value": "220 ohm"
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "B1_U2.VCC",
+      "B1_U3.VCC",
+      "B1_C4.1",
+      "B1_C5.1",
+      "B1_C6.1",
+      "B1_C7.1",
+      "B1_J5.1",
+      "B2_V1.1",
+      "B2_J1.1",
+      "B2_J2.1",
+      "B2_DS1.10",
+      "B2_U4027.16",
+      "B2_U4511.16",
+      "B2_U00.14",
+      "B2_U02.14",
+      "B2_U04.14",
+      "B2_U08.14",
+      "B2_U32.14",
+      "B2_U74.14",
+      "B2_U76.5",
+      "B2_U85.16",
+      "B2_U86.14",
+      "B2_U151.16",
+      "B2_U157.16",
+      "B2_U160.16",
+      "B2_U174.16",
+      "B2_U192.16",
+      "B2_U266.14",
+      "B2_U283.16",
+      "B2_U595.16",
+      "B2_U595.MR",
+      "B2_RN1.COM",
+      "B2_R1.1"
+    ],
+    "+3V3": [
+      "B1_U1.VDD",
+      "B1_C3.1",
+      "B1_J3.1"
+    ],
+    "GND": [
+      "B1_U1.VSS",
+      "B1_U2.GND",
+      "B1_U3.GND",
+      "B1_C1.2",
+      "B1_C2.2",
+      "B1_C3.2",
+      "B1_C4.2",
+      "B1_C5.2",
+      "B1_C6.2",
+      "B1_C7.2",
+      "B1_D1.2",
+      "B1_D2.2",
+      "B1_J3.6",
+      "B1_J4.5",
+      "B1_J5.2",
+      "B2_G1.1",
+      "B2_V1.2",
+      "B2_J1.2",
+      "B2_J2.6",
+      "B2_DS2.10",
+      "B2_U4027.8",
+      "B2_U4511.8",
+      "B2_U00.7",
+      "B2_U02.7",
+      "B2_U04.7",
+      "B2_U08.7",
+      "B2_U32.7",
+      "B2_U74.7",
+      "B2_U76.13",
+      "B2_U85.8",
+      "B2_U86.7",
+      "B2_U151.8",
+      "B2_U157.8",
+      "B2_U160.8",
+      "B2_U174.8",
+      "B2_U192.8",
+      "B2_U266.7",
+      "B2_U283.8",
+      "B2_U595.8",
+      "B2_U595.OE",
+      "B2_SW1.1",
+      "B2_DARR1.4",
+      "B2_LED1.K"
+    ],
+    "B1_CAN_SPI_MOSI": [
+      "B1_U1.SI",
+      "B1_J3.4"
+    ],
+    "B1_CAN_SPI_MISO": [
+      "B1_U1.SO",
+      "B1_J3.5"
+    ],
+    "B1_CAN_SPI_SCK": [
+      "B1_U1.SCK",
+      "B1_J3.3"
+    ],
+    "B1_CAN_SPI_CS": [
+      "B1_U1.CS",
+      "B1_J3.2"
+    ],
+    "B1_CAN_INT": [
+      "B1_U1.INT",
+      "B1_J3.7"
+    ],
+    "B1_MCP_OSC1": [
+      "B1_U1.OSC1",
+      "B1_Y1.1",
+      "B1_C1.1"
+    ],
+    "B1_MCP_OSC2": [
+      "B1_U1.OSC2",
+      "B1_Y1.2",
+      "B1_C2.1"
+    ],
+    "B1_CAN_TXD": [
+      "B1_U1.TXCAN",
+      "B1_U2.TXD"
+    ],
+    "B1_CAN_RXD": [
+      "B1_U1.RXCAN",
+      "B1_U2.RXD"
+    ],
+    "B1_CANH": [
+      "B1_U2.CANH",
+      "B1_J1.1",
+      "B1_R1.1",
+      "B1_D1.1",
+      "B1_JP1.1"
+    ],
+    "B1_CANL": [
+      "B1_U2.CANL",
+      "B1_J1.2",
+      "B1_R1.2",
+      "B1_D2.1",
+      "B1_JP1.2"
+    ],
+    "B1_RS485_RO": [
+      "B1_U3.RO",
+      "B1_J4.1"
+    ],
+    "B1_RS485_DI": [
+      "B1_U3.DI",
+      "B1_J4.2"
+    ],
+    "B1_RS485_DE_RE": [
+      "B1_U3.DE",
+      "B1_U3.RE",
+      "B1_J4.3",
+      "B1_JP3.1"
+    ],
+    "B1_RS485_A": [
+      "B1_U3.A",
+      "B1_J2.1",
+      "B1_R2.1",
+      "B1_JP2.1"
+    ],
+    "B1_RS485_B": [
+      "B1_U3.B",
+      "B1_J2.2",
+      "B1_R2.2",
+      "B1_JP2.2"
+    ],
+    "B2_CLK": [
+      "B2_J1.3",
+      "B2_U4027.3",
+      "B2_U7490.14",
+      "B2_U160.2",
+      "B2_U192.4",
+      "B2_U74.3",
+      "B2_U76.1",
+      "B2_U595.SHCP"
+    ],
+    "B2_DATA_A": [
+      "B2_SW1.2",
+      "B2_U00.1",
+      "B2_U02.1",
+      "B2_U04.1",
+      "B2_U08.1",
+      "B2_U32.1",
+      "B2_U86.1",
+      "B2_U266.1",
+      "B2_U151.4",
+      "B2_U157.2",
+      "B2_U283.5"
+    ],
+    "B2_DATA_B": [
+      "B2_SW1.3",
+      "B2_U00.2",
+      "B2_U02.2",
+      "B2_U08.2",
+      "B2_U32.2",
+      "B2_U86.2",
+      "B2_U266.2",
+      "B2_U151.3",
+      "B2_U157.3",
+      "B2_U283.3"
+    ],
+    "B2_NAND_OUT": [
+      "B2_U00.3",
+      "B2_U74.2",
+      "B2_RN1.2"
+    ],
+    "B2_NOR_OUT": [
+      "B2_U02.3",
+      "B2_U76.2",
+      "B2_RN1.3"
+    ],
+    "B2_INV_OUT": [
+      "B2_U04.2",
+      "B2_U85.10",
+      "B2_RN1.4"
+    ],
+    "B2_AND_OUT": [
+      "B2_U08.3",
+      "B2_RN1.5"
+    ],
+    "B2_OR_OUT": [
+      "B2_U32.3",
+      "B2_RN1.6"
+    ],
+    "B2_XOR_OUT": [
+      "B2_U86.3",
+      "B2_U174.3",
+      "B2_RN1.7"
+    ],
+    "B2_XNOR_OUT": [
+      "B2_U266.3",
+      "B2_RN1.8"
+    ],
+    "B2_JK_Q": [
+      "B2_U4027.1",
+      "B2_U595.SER"
+    ],
+    "B2_SHIFT_LATCH": [
+      "B2_J2.2",
+      "B2_U595.STCP"
+    ],
+    "B2_BCD_A": [
+      "B2_U160.14",
+      "B2_U4511.7",
+      "B2_U7447.7"
+    ],
+    "B2_BCD_B": [
+      "B2_U160.13",
+      "B2_U4511.1",
+      "B2_U7447.1"
+    ],
+    "B2_BCD_C": [
+      "B2_U160.12",
+      "B2_U4511.2",
+      "B2_U7447.2"
+    ],
+    "B2_BCD_D": [
+      "B2_U160.11",
+      "B2_U4511.6",
+      "B2_U7447.6"
+    ],
+    "B2_RIPPLE_Q0": [
+      "B2_U7490.12",
+      "B2_J1.5"
+    ],
+    "B2_RIPPLE_Q1": [
+      "B2_U7490.9",
+      "B2_J1.6"
+    ],
+    "B2_RIPPLE_Q2": [
+      "B2_U7490.8",
+      "B2_J1.7"
+    ],
+    "B2_RIPPLE_Q3": [
+      "B2_U7490.11",
+      "B2_J1.8"
+    ],
+    "B2_SHIFT_Q0": [
+      "B2_U595.Q0",
+      "B2_J1.9"
+    ],
+    "B2_SHIFT_Q1": [
+      "B2_U595.Q1",
+      "B2_J1.10"
+    ],
+    "B2_SHIFT_Q2": [
+      "B2_U595.Q2",
+      "B2_J1.11"
+    ],
+    "B2_SHIFT_Q3": [
+      "B2_U595.Q3",
+      "B2_J1.12"
+    ],
+    "B2_SEG_CA_A": [
+      "B2_U7447.13",
+      "B2_DS1.1"
+    ],
+    "B2_SEG_CA_B": [
+      "B2_U7447.12",
+      "B2_DS1.2"
+    ],
+    "B2_SEG_CA_C": [
+      "B2_U7447.11",
+      "B2_DS1.3"
+    ],
+    "B2_SEG_CA_D": [
+      "B2_U7447.10",
+      "B2_DS1.4"
+    ],
+    "B2_SEG_CA_E": [
+      "B2_U7447.9",
+      "B2_DS1.5"
+    ],
+    "B2_SEG_CA_F": [
+      "B2_U7447.15",
+      "B2_DS1.6"
+    ],
+    "B2_SEG_CA_G": [
+      "B2_U7447.14",
+      "B2_DS1.7"
+    ],
+    "B2_SEG_CK_A": [
+      "B2_U4511.13",
+      "B2_DS2.1"
+    ],
+    "B2_SEG_CK_B": [
+      "B2_U4511.12",
+      "B2_DS2.2"
+    ],
+    "B2_SEG_CK_C": [
+      "B2_U4511.11",
+      "B2_DS2.3"
+    ],
+    "B2_SEG_CK_D": [
+      "B2_U4511.10",
+      "B2_DS2.4"
+    ],
+    "B2_SEG_CK_E": [
+      "B2_U4511.9",
+      "B2_DS2.5"
+    ],
+    "B2_SEG_CK_F": [
+      "B2_U4511.15",
+      "B2_DS2.6"
+    ],
+    "B2_SEG_CK_G": [
+      "B2_U4511.14",
+      "B2_DS2.7"
+    ],
+    "B2_LED_LOGIC_A": [
+      "B2_R1.2",
+      "B2_LED1.A",
+      "B2_U595.Q7"
+    ],
+    "B2_RGB_R": [
+      "B2_U174.2",
+      "B2_DARR1.1"
+    ],
+    "B2_RGB_G": [
+      "B2_U174.5",
+      "B2_DARR1.2"
+    ],
+    "B2_RGB_B": [
+      "B2_U174.6",
+      "B2_DARR1.3"
+    ],
+    "B2_MUX_OUT": [
+      "B2_U151.6",
+      "B2_J2.3"
+    ],
+    "B2_MUX_B_OUT": [
+      "B2_U157.7",
+      "B2_J1.13"
+    ],
+    "B2_COUNTER_LOAD": [
+      "B2_U192.11",
+      "B2_J1.4"
+    ],
+    "B2_ADDER_SUM0": [
+      "B2_U283.10",
+      "B2_J2.4"
+    ],
+    "B2_ADDER_SUM1": [
+      "B2_U283.11",
+      "B2_J1.14"
+    ]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {
+        "name": "+5V",
+        "members": [
+          "B1_U2.VCC",
+          "B1_U3.VCC",
+          "B1_C4.1",
+          "B1_C5.1",
+          "B1_C6.1",
+          "B1_C7.1",
+          "B1_J5.1",
+          "B2_V1.1",
+          "B2_J1.1",
+          "B2_J2.1",
+          "B2_DS1.10",
+          "B2_U4027.16",
+          "B2_U4511.16",
+          "B2_U00.14",
+          "B2_U02.14",
+          "B2_U04.14",
+          "B2_U08.14",
+          "B2_U32.14",
+          "B2_U74.14",
+          "B2_U76.5",
+          "B2_U85.16",
+          "B2_U86.14",
+          "B2_U151.16",
+          "B2_U157.16",
+          "B2_U160.16",
+          "B2_U174.16",
+          "B2_U192.16",
+          "B2_U266.14",
+          "B2_U283.16",
+          "B2_U595.16",
+          "B2_U595.MR",
+          "B2_RN1.COM",
+          "B2_R1.1"
+        ],
+        "member_count": 33
+      },
+      {
+        "name": "+3V3",
+        "members": [
+          "B1_U1.VDD",
+          "B1_C3.1",
+          "B1_J3.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "GND",
+        "members": [
+          "B1_U1.VSS",
+          "B1_U2.GND",
+          "B1_U3.GND",
+          "B1_C1.2",
+          "B1_C2.2",
+          "B1_C3.2",
+          "B1_C4.2",
+          "B1_C5.2",
+          "B1_C6.2",
+          "B1_C7.2",
+          "B1_D1.2",
+          "B1_D2.2",
+          "B1_J3.6",
+          "B1_J4.5",
+          "B1_J5.2",
+          "B2_G1.1",
+          "B2_V1.2",
+          "B2_J1.2",
+          "B2_J2.6",
+          "B2_DS2.10",
+          "B2_U4027.8",
+          "B2_U4511.8",
+          "B2_U00.7",
+          "B2_U02.7",
+          "B2_U04.7",
+          "B2_U08.7",
+          "B2_U32.7",
+          "B2_U74.7",
+          "B2_U76.13",
+          "B2_U85.8",
+          "B2_U86.7",
+          "B2_U151.8",
+          "B2_U157.8",
+          "B2_U160.8",
+          "B2_U174.8",
+          "B2_U192.8",
+          "B2_U266.7",
+          "B2_U283.8",
+          "B2_U595.8",
+          "B2_U595.OE",
+          "B2_SW1.1",
+          "B2_DARR1.4",
+          "B2_LED1.K"
+        ],
+        "member_count": 43
+      },
+      {
+        "name": "B1_CAN_SPI_MOSI",
+        "members": [
+          "B1_U1.SI",
+          "B1_J3.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CAN_SPI_MISO",
+        "members": [
+          "B1_U1.SO",
+          "B1_J3.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CAN_SPI_SCK",
+        "members": [
+          "B1_U1.SCK",
+          "B1_J3.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CAN_SPI_CS",
+        "members": [
+          "B1_U1.CS",
+          "B1_J3.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CAN_INT",
+        "members": [
+          "B1_U1.INT",
+          "B1_J3.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MCP_OSC1",
+        "members": [
+          "B1_U1.OSC1",
+          "B1_Y1.1",
+          "B1_C1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_MCP_OSC2",
+        "members": [
+          "B1_U1.OSC2",
+          "B1_Y1.2",
+          "B1_C2.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_CAN_TXD",
+        "members": [
+          "B1_U1.TXCAN",
+          "B1_U2.TXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CAN_RXD",
+        "members": [
+          "B1_U1.RXCAN",
+          "B1_U2.RXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CANH",
+        "members": [
+          "B1_U2.CANH",
+          "B1_J1.1",
+          "B1_R1.1",
+          "B1_D1.1",
+          "B1_JP1.1"
+        ],
+        "member_count": 5
+      },
+      {
+        "name": "B1_CANL",
+        "members": [
+          "B1_U2.CANL",
+          "B1_J1.2",
+          "B1_R1.2",
+          "B1_D2.1",
+          "B1_JP1.2"
+        ],
+        "member_count": 5
+      },
+      {
+        "name": "B1_RS485_RO",
+        "members": [
+          "B1_U3.RO",
+          "B1_J4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RS485_DI",
+        "members": [
+          "B1_U3.DI",
+          "B1_J4.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RS485_DE_RE",
+        "members": [
+          "B1_U3.DE",
+          "B1_U3.RE",
+          "B1_J4.3",
+          "B1_JP3.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B1_RS485_A",
+        "members": [
+          "B1_U3.A",
+          "B1_J2.1",
+          "B1_R2.1",
+          "B1_JP2.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B1_RS485_B",
+        "members": [
+          "B1_U3.B",
+          "B1_J2.2",
+          "B1_R2.2",
+          "B1_JP2.2"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B2_CLK",
+        "members": [
+          "B2_J1.3",
+          "B2_U4027.3",
+          "B2_U7490.14",
+          "B2_U160.2",
+          "B2_U192.4",
+          "B2_U74.3",
+          "B2_U76.1",
+          "B2_U595.SHCP"
+        ],
+        "member_count": 8
+      },
+      {
+        "name": "B2_DATA_A",
+        "members": [
+          "B2_SW1.2",
+          "B2_U00.1",
+          "B2_U02.1",
+          "B2_U04.1",
+          "B2_U08.1",
+          "B2_U32.1",
+          "B2_U86.1",
+          "B2_U266.1",
+          "B2_U151.4",
+          "B2_U157.2",
+          "B2_U283.5"
+        ],
+        "member_count": 11
+      },
+      {
+        "name": "B2_DATA_B",
+        "members": [
+          "B2_SW1.3",
+          "B2_U00.2",
+          "B2_U02.2",
+          "B2_U08.2",
+          "B2_U32.2",
+          "B2_U86.2",
+          "B2_U266.2",
+          "B2_U151.3",
+          "B2_U157.3",
+          "B2_U283.3"
+        ],
+        "member_count": 10
+      },
+      {
+        "name": "B2_NAND_OUT",
+        "members": [
+          "B2_U00.3",
+          "B2_U74.2",
+          "B2_RN1.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_NOR_OUT",
+        "members": [
+          "B2_U02.3",
+          "B2_U76.2",
+          "B2_RN1.3"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_INV_OUT",
+        "members": [
+          "B2_U04.2",
+          "B2_U85.10",
+          "B2_RN1.4"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_AND_OUT",
+        "members": [
+          "B2_U08.3",
+          "B2_RN1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_OR_OUT",
+        "members": [
+          "B2_U32.3",
+          "B2_RN1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_XOR_OUT",
+        "members": [
+          "B2_U86.3",
+          "B2_U174.3",
+          "B2_RN1.7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_XNOR_OUT",
+        "members": [
+          "B2_U266.3",
+          "B2_RN1.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_JK_Q",
+        "members": [
+          "B2_U4027.1",
+          "B2_U595.SER"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SHIFT_LATCH",
+        "members": [
+          "B2_J2.2",
+          "B2_U595.STCP"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_BCD_A",
+        "members": [
+          "B2_U160.14",
+          "B2_U4511.7",
+          "B2_U7447.7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_BCD_B",
+        "members": [
+          "B2_U160.13",
+          "B2_U4511.1",
+          "B2_U7447.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_BCD_C",
+        "members": [
+          "B2_U160.12",
+          "B2_U4511.2",
+          "B2_U7447.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_BCD_D",
+        "members": [
+          "B2_U160.11",
+          "B2_U4511.6",
+          "B2_U7447.6"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_RIPPLE_Q0",
+        "members": [
+          "B2_U7490.12",
+          "B2_J1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RIPPLE_Q1",
+        "members": [
+          "B2_U7490.9",
+          "B2_J1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RIPPLE_Q2",
+        "members": [
+          "B2_U7490.8",
+          "B2_J1.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RIPPLE_Q3",
+        "members": [
+          "B2_U7490.11",
+          "B2_J1.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SHIFT_Q0",
+        "members": [
+          "B2_U595.Q0",
+          "B2_J1.9"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SHIFT_Q1",
+        "members": [
+          "B2_U595.Q1",
+          "B2_J1.10"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SHIFT_Q2",
+        "members": [
+          "B2_U595.Q2",
+          "B2_J1.11"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SHIFT_Q3",
+        "members": [
+          "B2_U595.Q3",
+          "B2_J1.12"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CA_A",
+        "members": [
+          "B2_U7447.13",
+          "B2_DS1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CA_B",
+        "members": [
+          "B2_U7447.12",
+          "B2_DS1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CA_C",
+        "members": [
+          "B2_U7447.11",
+          "B2_DS1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CA_D",
+        "members": [
+          "B2_U7447.10",
+          "B2_DS1.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CA_E",
+        "members": [
+          "B2_U7447.9",
+          "B2_DS1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CA_F",
+        "members": [
+          "B2_U7447.15",
+          "B2_DS1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CA_G",
+        "members": [
+          "B2_U7447.14",
+          "B2_DS1.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CK_A",
+        "members": [
+          "B2_U4511.13",
+          "B2_DS2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CK_B",
+        "members": [
+          "B2_U4511.12",
+          "B2_DS2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CK_C",
+        "members": [
+          "B2_U4511.11",
+          "B2_DS2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CK_D",
+        "members": [
+          "B2_U4511.10",
+          "B2_DS2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CK_E",
+        "members": [
+          "B2_U4511.9",
+          "B2_DS2.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CK_F",
+        "members": [
+          "B2_U4511.15",
+          "B2_DS2.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SEG_CK_G",
+        "members": [
+          "B2_U4511.14",
+          "B2_DS2.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_LED_LOGIC_A",
+        "members": [
+          "B2_R1.2",
+          "B2_LED1.A",
+          "B2_U595.Q7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_RGB_R",
+        "members": [
+          "B2_U174.2",
+          "B2_DARR1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RGB_G",
+        "members": [
+          "B2_U174.5",
+          "B2_DARR1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RGB_B",
+        "members": [
+          "B2_U174.6",
+          "B2_DARR1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_MUX_OUT",
+        "members": [
+          "B2_U151.6",
+          "B2_J2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_MUX_B_OUT",
+        "members": [
+          "B2_U157.7",
+          "B2_J1.13"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_COUNTER_LOAD",
+        "members": [
+          "B2_U192.11",
+          "B2_J1.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_ADDER_SUM0",
+        "members": [
+          "B2_U283.10",
+          "B2_J2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_ADDER_SUM1",
+        "members": [
+          "B2_U283.11",
+          "B2_J1.14"
+        ],
+        "member_count": 2
+      }
+    ],
+    "important_nets": [
+      "+3V3",
+      "+5V",
+      "GND"
+    ]
+  },
+  "stage_contracts": {
+    "component_placer": {
+      "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+      "output": "placed-design contract with component bounds and resolved pin descriptors"
+    },
+    "arrangement_decider": {
+      "input": "components, blocks, nets, layout_intent",
+      "output": "coordinate edit JSON; may rotate components"
+    },
+    "beautifier": {
+      "input": "placed-design contract plus coordinate edits",
+      "output": "same components with revised coordinates/rotations"
+    },
+    "wire_planner": {
+      "input": "placed-design contract plus expected_netlist",
+      "output": "wire route plan and terminal fallback plan"
+    },
+    "terminal_placer": {
+      "input": "placed-design contract plus terminal nets",
+      "output": "terminal/local-label endpoint plan"
+    },
+    "validators": {
+      "input": "generated schematic plus expected_netlist",
+      "output": "validation_report.json"
+    }
+  },
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "CAN And RS485 Communication Board",
+      "source_circuit_id": "T06",
+      "component_count": 23,
+      "net_count": 19
+    },
+    {
+      "id": "B2",
+      "name": "Proteus Alias Logic Display Board",
+      "source_circuit_id": "M02",
+      "component_count": 32,
+      "net_count": 49
+    }
+  ],
+  "generation_notes": {
+    "source": "deterministic_main_json_catalog_100",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "composed_supported_raw_specs",
+    "source_line_count": null
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 55,
+    "net_count": 66,
+    "endpoint_count": 251,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}
