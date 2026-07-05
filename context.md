@@ -7839,6 +7839,34 @@ PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_final_circuit_builder.p
 - `kicad/examples/final_json_terminal_project_run_2026_07_05_204701_main_json_catalog_100_terminal_v6_threshold6_contract`
 - `kicad/examples/final_json_combination_project_run_2026_07_05_204835_main_json_catalog_100_combination_v5_threshold6_contract`
 
+### Push Verification
+
+- Created commit `9a7baeb363ad7a564f0856961364b643a97a9d42` with message `Lock KiCad main JSON catalog`.
+- First push attempt failed with HTTP 408 before the remote updated.
+- Retried with `git -c http.postBuffer=1048576000 push origin main`.
+- Verified `origin/main` matched local `HEAD` at `9a7baeb363ad7a564f0856961364b643a97a9d42`.
+- The only remaining dirty worktree files are the pre-existing July 2 generated KiCad edits, intentionally left untouched.
+
+### Additional Visible Agent Responses After Main Context Entry
+
+```text
+The generated records are large but manageable: 7,720 files, about 580 MB including failed evidence and final proofs. `diff --check` only found two trailing spaces in the verbatim user block, so I’m cleaning those before staging.
+
+Staging completed; the old July 2 dirty files remain unstaged as intended. I’m running the staged diff check and a compact staged summary, then I’ll commit.
+
+A full staged `git diff --check` is noisy because KiCad schematic S-expressions contain tab indentation that Git flags as whitespace; the source/report/context diff-check already passed. I’m committing the staged checkpoint now.
+
+Commit created: `9a7baeb`. I’m pushing to `origin/main` now and then I’ll verify the remote hash matches local HEAD.
+
+The first push ended with an HTTP 408, but Git also printed `Everything up-to-date`, which can happen after the remote accepted objects but the connection died during the response. I’m checking the remote branch hash directly before deciding whether to retry.
+
+Remote is still at the old hash, so the push did not land. I’m retrying with a larger HTTP post buffer; if GitHub keeps timing out on this 580 MB record commit, I’ll report that clearly.
+
+Retry succeeded. I’m doing the required remote hash verification now.
+
+Remote verification succeeded: local and `origin/main` both point at `9a7baeb`. I need one tiny follow-up context entry for the push result itself, then I’ll commit and push that small log-only update too.
+```
+
 ## 2026-07-05 19:20:38 PKT - Terminal-Only Netlist Pass and Pin Alias Fix
 
 ### User Request
