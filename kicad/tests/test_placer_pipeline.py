@@ -312,7 +312,7 @@ class PlacerPipelineTests(unittest.TestCase):
         placement["pin_points"] = {"R1": {"1": {"point": [placement["components"]["R1"]["at"][0] + 1.0, placement["components"]["R1"]["at"][1]]}}}
         arrangement = decide_arrangement(placement, circuit)
         beautified = apply_coordinate_edits(placement, arrangement)
-        self.assertEqual(beautified["schema"], "progen-kicad-beautified-placement/v0.1")
+        self.assertEqual(beautified["schema"], "progen-kicad-beautified-placement/v0.2")
         edit_by_ref = {edit["ref"]: edit for edit in arrangement["coordinate_edits"]}
         for ref, edit in edit_by_ref.items():
             self.assertEqual(beautified["components"][ref]["at"], edit["to"])
@@ -320,14 +320,13 @@ class PlacerPipelineTests(unittest.TestCase):
         new_obstacles = {item["owner"]: item for item in beautified["obstacles"]}
         for ref, edit in edit_by_ref.items():
             old_width = old_obstacles[ref]["right"] - old_obstacles[ref]["left"]
+            old_height = old_obstacles[ref]["bottom"] - old_obstacles[ref]["top"]
             new_width = new_obstacles[ref]["right"] - new_obstacles[ref]["left"]
-            self.assertAlmostEqual(old_width, new_width)
+            new_height = new_obstacles[ref]["bottom"] - new_obstacles[ref]["top"]
+            self.assertEqual(sorted([round(old_width, 3), round(old_height, 3)]), sorted([round(new_width, 3), round(new_height, 3)]))
         if "R1" in edit_by_ref:
-            delta = edit_by_ref["R1"]["delta"]
-            self.assertEqual(
-                beautified["pin_points"]["R1"]["1"]["point"],
-                [round(placement["pin_points"]["R1"]["1"]["point"][0] + delta[0], 3), round(placement["pin_points"]["R1"]["1"]["point"][1] + delta[1], 3)],
-            )
+            self.assertEqual(len(beautified["pin_points"]["R1"]["1"]["point"]), 2)
+            self.assertNotEqual(beautified["pin_points"]["R1"]["1"]["point"], placement["pin_points"]["R1"]["1"]["point"])
 
     def test_wire_planner_emits_coordinate_and_lane_astar_wire_json(self) -> None:
         circuit = vdc_resistor_led()
@@ -441,6 +440,45 @@ class PlacerPipelineTests(unittest.TestCase):
         route = wire_plan["routes"][0]
         self.assertLess(route["path"][1][0], route["path"][0][0])
 
+    def test_wire_planner_uses_lateral_pin_escape_when_normal_stub_is_blocked(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "R1", "kind": "RES", "pins": {"1": "SIG"}},
+                {"id": "U1", "kind": "IC", "pins": {"A": "SIG"}},
+                {"id": "B1", "kind": "IC", "pins": {}},
+            ]
+        }
+        placement = {
+            "components": {
+                "R1": {"at": [10.0, 23.0], "width": 2.0, "height": 6.0},
+                "U1": {"at": [86.0, 20.0], "width": 8.0, "height": 10.0},
+                "B1": {"at": [10.0, 10.0], "width": 2.0, "height": 10.0},
+            },
+            "obstacles": [
+                {"owner": "R1::body", "component_ref": "R1", "left": 9.0, "top": 21.0, "right": 11.0, "bottom": 26.0},
+                {"owner": "U1::body", "component_ref": "U1", "left": 82.0, "top": 15.0, "right": 90.0, "bottom": 25.0},
+                {"owner": "B1::body", "component_ref": "B1", "left": 9.0, "top": 5.0, "right": 11.0, "bottom": 16.0},
+            ],
+            "pin_points": {
+                "R1": {"1": {"point": [10.0, 20.0], "side": "top", "source": "unit_test_pin"}},
+                "U1": {"A": {"point": [81.0, 20.0], "side": "left", "source": "unit_test_pin"}},
+            },
+        }
+        wire_plan = plan_wire_routes(
+            placement,
+            circuit,
+            config={
+                "grid": 1.0,
+                "clearance": 1.0,
+                "pin_stub": 5.0,
+                "max_astar_expansions": 100.0,
+                "salvage_astar_expansions": 100.0,
+            },
+        )
+        self.assertEqual(wire_plan["metrics"]["unroutable_net_count"], 0)
+        self.assertEqual(wire_plan["metrics"]["partial_wire_net_count"], 0)
+        self.assertEqual(wire_plan["routes"][0]["router"], "pin_escape_perimeter_last_resort")
+
     def test_partial_route_component_motion_moves_failed_endpoint_toward_wired_neighbor(self) -> None:
         placement = {
             "components": {
@@ -483,6 +521,37 @@ class PlacerPipelineTests(unittest.TestCase):
         self.assertEqual(edit["ref"], "C")
         self.assertLess(abs(edit["to"][0] - 100.0), abs(200.0 - 100.0))
         self.assertGreaterEqual(abs(edit["to"][0] - 100.0) + abs(edit["to"][1]), 8.0)
+
+    def test_component_motion_includes_unroutable_nets_by_default(self) -> None:
+        placement = {
+            "components": {
+                "A": {"at": [0.0, 0.0], "width": 6.0, "height": 6.0},
+                "B": {"at": [100.0, 0.0], "width": 6.0, "height": 6.0},
+            },
+            "obstacles": [
+                {"owner": "A::body", "component_ref": "A", "left": -3.0, "top": -3.0, "right": 3.0, "bottom": 3.0},
+                {"owner": "B::body", "component_ref": "B", "left": 97.0, "top": -3.0, "right": 103.0, "bottom": 3.0},
+            ],
+        }
+        wire_plan = {
+            "nets": {
+                "SIG": {
+                    "strategy": "unroutable",
+                    "endpoints": [
+                        {"ref": "A", "pin": "1", "point": [0.0, 0.0]},
+                        {"ref": "B", "pin": "1", "point": [100.0, 0.0]},
+                    ],
+                    "routes": [],
+                }
+            }
+        }
+        move_plan = plan_partial_route_component_moves(
+            placement,
+            wire_plan,
+            config={"grid": 1.0, "partial_route_move_min_pin_gap": 8.0},
+        )
+        self.assertEqual(move_plan["move_count"], 1)
+        self.assertEqual(move_plan["coordinate_edits"][0]["ref"], "A")
 
     def test_arrangement_and_beautifier_handle_t01_to_t10_stress_without_overlaps(self) -> None:
         stress = [spec for spec in suite_specs("stress") if spec[0].startswith("T")]

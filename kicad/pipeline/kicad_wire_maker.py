@@ -2160,7 +2160,7 @@ def _repair_strict_partial_routes_by_motion(
     wire_plan: dict[str, Any],
     cfg: dict[str, Any],
     *,
-    max_passes: int = 3,
+    max_passes: int = 8,
 ) -> tuple[dict[str, Any], CatalogPlacementPlan, dict[str, Any], dict[str, Any]]:
     routing_mode = _wire_plan_routing_mode(wire_plan)
     max_passes = max(0, int(float(cfg.get("strict_partial_route_repair_passes", max_passes))))
@@ -2190,7 +2190,14 @@ def _repair_strict_partial_routes_by_motion(
         before_metrics = current_wire_plan.get("metrics", {}) if isinstance(current_wire_plan.get("metrics"), dict) else {}
         if _incomplete_wire_net_count(current_wire_plan) <= 0:
             break
-        move_plan = plan_partial_route_component_moves(current_routing_placement, current_wire_plan, config=cfg)
+        motion_cfg = dict(cfg)
+        motion_cfg.setdefault("partial_route_move_include_unroutable", 1.0)
+        moves_per_pass = max(1, int(float(motion_cfg.get("partial_route_motion_moves_per_pass", 1.0))))
+        motion_cfg["max_partial_route_component_moves"] = min(
+            max(1, int(float(motion_cfg.get("max_partial_route_component_moves", moves_per_pass)))),
+            moves_per_pass,
+        )
+        move_plan = plan_partial_route_component_moves(current_routing_placement, current_wire_plan, config=motion_cfg)
         if not move_plan.get("coordinate_edits"):
             passes.append(
                 {

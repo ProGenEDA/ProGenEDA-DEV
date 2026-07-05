@@ -122,7 +122,9 @@ DEFAULT_WIRE_CONFIG: dict[str, Any] = {
     "partial_route_move_search_steps": 14.0,
     "partial_route_move_body_clearance": 0.0,
     "partial_route_move_min_pin_gap": 10.16,
-    "partial_route_move_include_unroutable": 0.0,
+    "partial_route_move_include_unroutable": 1.0,
+    "partial_route_motion_moves_per_pass": 1.0,
+    "strict_partial_route_repair_passes": 8.0,
     "priority_nets": (),
     "terminal_nets": (),
     "wire_mode_terminal_power_ground": 0.0,
@@ -686,6 +688,27 @@ def _segment_hits_body(start: Point, end: Point, body: Body, clearance: float) -
     return True
 
 
+def _matches_allowed_body_entry(
+    start: Point,
+    end: Point,
+    body: Body,
+    allowed_body_entries: tuple[tuple[str, Point, Point], ...],
+) -> bool:
+    rounded_start = _round_point(start)
+    rounded_end = _round_point(end)
+    for ref, entry_start, entry_end in allowed_body_entries:
+        if body.ref != ref and body.component_ref != ref:
+            continue
+        allowed_start = _round_point(entry_start)
+        allowed_end = _round_point(entry_end)
+        if (rounded_start, rounded_end) == (allowed_start, allowed_end) or (rounded_start, rounded_end) == (
+            allowed_end,
+            allowed_start,
+        ):
+            return True
+    return False
+
+
 def _path_length(path: list[Point]) -> float:
     return sum(_manhattan(left, right) for left, right in zip(path, path[1:]))
 
@@ -710,6 +733,7 @@ def _path_body_hit_count(
     *,
     ignore_refs: set[str],
     blocked_cells: set[GridPoint] | None = None,
+    allowed_body_entries: tuple[tuple[str, Point, Point], ...] = (),
 ) -> int:
     if blocked_cells is not None and len(bodies) > int(cfg.get("body_grid_score_component_limit", 80.0)):
         return _path_blocked_cell_count(path, blocked_cells, grid=float(cfg["grid"]))
@@ -719,6 +743,8 @@ def _path_body_hit_count(
             if body.ref in ignore_refs or (body.component_ref and body.component_ref in ignore_refs):
                 continue
             if _segment_hits_body(start, end, body, float(cfg["clearance"])):
+                if _matches_allowed_body_entry(start, end, body, allowed_body_entries):
+                    continue
                 hits += 1
     return hits
 
@@ -877,8 +903,16 @@ def _path_score(
     occupied: dict[GridPoint, str] | None = None,
     hard_blocked_cells: set[GridPoint] | None = None,
     shadow_blocked_cells: set[GridPoint] | None = None,
+    allowed_body_entries: tuple[tuple[str, Point, Point], ...] = (),
 ) -> tuple[float, dict[str, Any]]:
-    body_hits = _path_body_hit_count(path, bodies, cfg, ignore_refs=ignore_refs, blocked_cells=hard_blocked_cells)
+    body_hits = _path_body_hit_count(
+        path,
+        bodies,
+        cfg,
+        ignore_refs=ignore_refs,
+        blocked_cells=hard_blocked_cells,
+        allowed_body_entries=allowed_body_entries,
+    )
     if body_hits:
         length = _path_length(path)
         turns = _path_turn_count(path)
@@ -963,7 +997,14 @@ def _lane_values(
     }
     for point in hanan_points or []:
         anchor_values.add(point[0] if axis == "x" else point[1])
+    anchor_neighbor_values: set[float] = set()
+    for value in tuple(anchor_values):
+        for step in range(1, 5):
+            delta = lane_step * step
+            anchor_neighbor_values.add(value - delta)
+            anchor_neighbor_values.add(value + delta)
     values: set[float] = set(edge_values) | set(anchor_values) | {limit / 2}
+    values.update(anchor_neighbor_values)
     for body in bodies.values():
         if axis == "x":
             values.add(body.left - clearance - lane_step / 2)
@@ -981,6 +1022,10 @@ def _lane_values(
             values.add((gap_start + gap_end) / 2)
     snapped_edges = sorted({_snap(value, grid) for value in edge_values if margin <= value <= limit - margin})
     snapped_anchors = sorted({_snap(value, grid) for value in anchor_values if margin <= value <= limit - margin})
+    snapped_anchor_neighbors = sorted(
+        {_snap(value, grid) for value in anchor_neighbor_values if margin <= value <= limit - margin},
+        key=lambda value: (min(abs(value - anchor) for anchor in snapped_anchors) if snapped_anchors else 0.0, value),
+    )
     snapped = sorted({_snap(value, grid) for value in values if margin <= value <= limit - margin})
     origin = (start[0] + goal[0]) / 2 if axis == "x" else (start[1] + goal[1]) / 2
     remaining = [
@@ -990,7 +1035,7 @@ def _lane_values(
     ]
     remaining.sort(key=lambda value: (abs(value - origin), value))
     out: list[float] = []
-    for value in [*snapped_anchors, *snapped_edges, *remaining]:
+    for value in [*snapped_anchors, *snapped_anchor_neighbors, *snapped_edges, *remaining]:
         if value not in out:
             out.append(value)
     return out
@@ -1013,6 +1058,25 @@ def _candidate_lane_paths(
     y_lanes = _lane_values(axis="y", start=start, goal=goal, bodies=bodies, cfg=cfg, hanan_points=hanan_points)
     x_lanes = _lane_values(axis="x", start=start, goal=goal, bodies=bodies, cfg=cfg, hanan_points=hanan_points)
     max_candidates = max(8, int(cfg.get("max_lane_candidates", 160.0)))
+    if cfg.get("compound_lane_candidates", 1.0) >= 1.0:
+        compound_budget = max(12, max_candidates // 3)
+        start_x_lanes = sorted(x_lanes, key=lambda value: (abs(value - start[0]), value))[:8]
+        goal_x_lanes = sorted(x_lanes, key=lambda value: (abs(value - goal[0]), value))[:8]
+        bridge_y_lanes = sorted(y_lanes, key=lambda value: (min(abs(value - start[1]), abs(value - goal[1])), value))[:16]
+        compound_options: list[tuple[int, float, int, list[Point]]] = []
+        for start_x in start_x_lanes:
+            for goal_x in goal_x_lanes:
+                if abs(start_x - goal_x) <= 0.001:
+                    continue
+                for lane_y in bridge_y_lanes:
+                    candidate = _compress_path(_dedupe_path([start, (start_x, start[1]), (start_x, lane_y), (goal_x, lane_y), (goal_x, goal[1]), goal]))
+                    if len(candidate) < 2:
+                        continue
+                    body_hits = _path_body_hit_count(candidate, bodies, cfg, ignore_refs=set())
+                    compound_options.append((body_hits, _path_length(candidate), _path_turn_count(candidate), candidate))
+        compound_options.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
+        for _body_hits, _length, _turns, candidate in compound_options[:compound_budget]:
+            candidates.append(candidate)
     single_budget = max(4, max_candidates // 4)
     pair_width = max(2, min(5, int((max_candidates / 4) ** 0.5) + 2))
     for lane_x in x_lanes[:pair_width]:
@@ -1052,16 +1116,14 @@ def _root_candidate_routeability_score(
     start_route = _portal_point(start, str(root.get("side") or "right"), cfg)
     goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg)
     ignore_refs: set[str] = set()
-    if not root.get("exact"):
-        ignore_refs.add(str(root["ref"]))
-    if not target.get("exact"):
-        ignore_refs.add(str(target["ref"]))
+    scoring_cfg = dict(cfg)
+    scoring_cfg["compound_lane_candidates"] = 0.0
 
     best_hits: int | None = None
     best_length = float("inf")
     best_turns = float("inf")
-    for candidate in _candidate_lane_paths(start_route, goal_route, bodies, cfg, hanan_points=hanan_points):
-        hits = _path_body_hit_count(candidate, bodies, cfg, ignore_refs=ignore_refs, blocked_cells=None)
+    for candidate in _candidate_lane_paths(start_route, goal_route, bodies, scoring_cfg, hanan_points=hanan_points):
+        hits = _path_body_hit_count(candidate, bodies, scoring_cfg, ignore_refs=ignore_refs, blocked_cells=None)
         length = _path_length(candidate)
         turns = _path_turn_count(candidate)
         score = (hits, length, turns)
@@ -1101,26 +1163,39 @@ def _best_lane_path(
     best_report: dict[str, Any] | None = None
     candidate_count = 0
     rejected_body_count = 0
-    for candidate in _candidate_lane_paths(start, goal, bodies, cfg, hanan_points=hanan_points):
-        candidate_count += 1
-        score, report = _path_score(
-            candidate,
-            bodies=bodies,
-            existing_segments=existing_segments,
-            cfg=cfg,
-            net=net,
-            ignore_refs=ignore_refs,
-            occupied=occupied,
-            hard_blocked_cells=hard_blocked_cells,
-            shadow_blocked_cells=shadow_blocked_cells,
-        )
-        if report["body_hits"]:
-            rejected_body_count += 1
-            continue
-        if best_score is None or score < best_score:
-            best_score = score
-            best_path = candidate
-            best_report = report
+    candidate_cfgs = [dict(cfg)]
+    if cfg.get("compound_lane_candidates", 1.0) >= 1.0:
+        cheap_cfg = dict(cfg)
+        cheap_cfg["compound_lane_candidates"] = 0.0
+        candidate_cfgs = [cheap_cfg, dict(cfg)]
+    seen_candidates: set[tuple[Point, ...]] = set()
+    for candidate_cfg in candidate_cfgs:
+        for candidate in _candidate_lane_paths(start, goal, bodies, candidate_cfg, hanan_points=hanan_points):
+            key = tuple(candidate)
+            if key in seen_candidates:
+                continue
+            seen_candidates.add(key)
+            candidate_count += 1
+            score, report = _path_score(
+                candidate,
+                bodies=bodies,
+                existing_segments=existing_segments,
+                cfg=cfg,
+                net=net,
+                ignore_refs=ignore_refs,
+                occupied=occupied,
+                hard_blocked_cells=hard_blocked_cells,
+                shadow_blocked_cells=shadow_blocked_cells,
+            )
+            if report["body_hits"]:
+                rejected_body_count += 1
+                continue
+            if best_score is None or score < best_score:
+                best_score = score
+                best_path = candidate
+                best_report = report
+        if best_report is not None:
+            break
     if best_report is not None:
         best_report = dict(best_report)
         best_report["candidate_count"] = candidate_count
@@ -1141,6 +1216,126 @@ def _orthogonal_escape_path(start: Point, end: Point) -> list[Point]:
     if start[0] == end[0] or start[1] == end[1]:
         return [start, end]
     return [start, (end[0], start[1]), end]
+
+
+def _pin_escape_options(
+    point: Point,
+    side: str,
+    ref: str,
+    bodies: dict[str, Body],
+    cfg: dict[str, Any],
+) -> list[tuple[Point, list[Point], tuple[tuple[str, Point, Point], ...]]]:
+    point = _round_point(point)
+    normalized = side.lower().strip()
+    grid = float(cfg["grid"])
+    stub = float(cfg.get("pin_stub", grid * 2))
+    max_options = max(2, int(cfg.get("max_pin_escape_options", 10.0)))
+    offset_units = [0, 2, -2, 4, -4, 6, -6, 8, -8, 12, -12, 16, -16]
+    candidates: list[tuple[Point, list[Point], tuple[tuple[str, Point, Point], ...]]] = []
+    seen: set[tuple[Point, ...]] = set()
+
+    def add(path: list[Point]) -> None:
+        compressed = _compress_path(_dedupe_path(path))
+        if len(compressed) < 2:
+            return
+        key = tuple(compressed)
+        if key in seen:
+            return
+        allowed = ((ref, compressed[0], compressed[1]),)
+        if _path_body_hit_count(compressed, bodies, cfg, ignore_refs=set(), allowed_body_entries=allowed):
+            return
+        seen.add(key)
+        candidates.append((compressed[-1], compressed, allowed))
+
+    if normalized in {"top", "bottom"}:
+        away_y = _snap(point[1] - stub if normalized == "top" else point[1] + stub, grid)
+        for units in offset_units:
+            escape_x = _snap(point[0] + units * grid, grid)
+            if units == 0:
+                add([point, (point[0], away_y)])
+            else:
+                add([point, (escape_x, point[1]), (escape_x, away_y)])
+    elif normalized in {"left", "right"}:
+        away_x = _snap(point[0] - stub if normalized == "left" else point[0] + stub, grid)
+        for units in offset_units:
+            escape_y = _snap(point[1] + units * grid, grid)
+            if units == 0:
+                add([point, (away_x, point[1])])
+            else:
+                add([point, (point[0], escape_y), (away_x, escape_y)])
+    else:
+        portal = _portal_point(point, "right", cfg)
+        add([point, portal])
+
+    candidates.sort(key=lambda item: (_path_turn_count(item[1]), _path_length(item[1]), item[0][1], item[0][0]))
+    return candidates[:max_options]
+
+
+def _outside_lane_bounds(bodies: dict[str, Body], cfg: dict[str, Any]) -> dict[str, float]:
+    grid = float(cfg["grid"])
+    clearance = float(cfg["clearance"])
+    margin = float(cfg["margin"])
+    width, height = _sheet_bounds(bodies, cfg)
+    min_left = min((body.left for body in bodies.values()), default=margin)
+    max_right = max((body.right for body in bodies.values()), default=width - margin)
+    min_top = min((body.top for body in bodies.values()), default=margin)
+    max_bottom = max((body.bottom for body in bodies.values()), default=height - margin)
+    pad = clearance + grid * 4
+    return {
+        "left": _snap(max(grid, min(margin, min_left - pad)), grid),
+        "right": _snap(min(width - grid, max(width - margin, max_right + pad)), grid),
+        "top": _snap(max(grid, min(margin, min_top - pad)), grid),
+        "bottom": _snap(min(height - grid, max(height - margin, max_bottom + pad)), grid),
+    }
+
+
+def _side_outside_point(point: Point, side: str, lanes: dict[str, float]) -> Point:
+    normalized = side.lower().strip()
+    if normalized == "left":
+        return (lanes["left"], point[1])
+    if normalized == "right":
+        return (lanes["right"], point[1])
+    if normalized == "top":
+        return (point[0], lanes["top"])
+    if normalized == "bottom":
+        return (point[0], lanes["bottom"])
+    return (lanes["right"], point[1])
+
+
+def _perimeter_escape_paths(
+    start: Point,
+    goal: Point,
+    *,
+    start_side: str,
+    goal_side: str,
+    bodies: dict[str, Body],
+    cfg: dict[str, Any],
+) -> list[list[Point]]:
+    lanes = _outside_lane_bounds(bodies, cfg)
+    start_outer = _side_outside_point(start, start_side, lanes)
+    goal_outer = _side_outside_point(goal, goal_side, lanes)
+    candidates: list[list[Point]] = [
+        _dedupe_path([start, (start[0], lanes["top"]), (goal[0], lanes["top"]), goal]),
+        _dedupe_path([start, (start[0], lanes["bottom"]), (goal[0], lanes["bottom"]), goal]),
+        _dedupe_path([start, (lanes["left"], start[1]), (lanes["left"], goal[1]), goal]),
+        _dedupe_path([start, (lanes["right"], start[1]), (lanes["right"], goal[1]), goal]),
+        _dedupe_path([start, start_outer, (goal_outer[0], start_outer[1]), goal_outer, goal]),
+        _dedupe_path([start, start_outer, (start_outer[0], goal_outer[1]), goal_outer, goal]),
+    ]
+    for lane_y in (lanes["top"], lanes["bottom"]):
+        candidates.append(_dedupe_path([start, start_outer, (start_outer[0], lane_y), (goal_outer[0], lane_y), goal_outer, goal]))
+    for lane_x in (lanes["left"], lanes["right"]):
+        candidates.append(_dedupe_path([start, start_outer, (lane_x, start_outer[1]), (lane_x, goal_outer[1]), goal_outer, goal]))
+    seen: set[tuple[Point, ...]] = set()
+    out: list[list[Point]] = []
+    for candidate in candidates:
+        compressed = _compress_path(candidate)
+        key = tuple(compressed)
+        if len(compressed) < 2 or key in seen:
+            continue
+        seen.add(key)
+        out.append(compressed)
+    return out
 
 
 def _join_paths(*paths: list[Point]) -> list[Point]:
@@ -1550,11 +1745,7 @@ def plan_wire_routes(
             goal = (float(target["point"][0]), float(target["point"][1]))
             start_route = _portal_point(start, str(root.get("side") or "right"), cfg)
             goal_route = _portal_point(goal, str(target.get("side") or "right"), cfg)
-            ignore_refs = set()
-            if root.get("exact"):
-                ignore_refs.add(str(root["ref"]))
-            if target.get("exact"):
-                ignore_refs.add(str(target["ref"]))
+            ignore_refs: set[str] = set()
             routed_occupied = dict(reserved_pin_occupied)
             routed_occupied.update(occupied)
             routed_occupied.update(net_occupied)
@@ -1563,6 +1754,10 @@ def plan_wire_routes(
                 portals.append((str(root["ref"]), start, str(root.get("side") or "right")))
             if target.get("exact"):
                 portals.append((str(target["ref"]), goal, str(target.get("side") or "right")))
+            allowed_body_entries: tuple[tuple[str, Point, Point], ...] = (
+                (str(root["ref"]), start, start_route),
+                (str(target["ref"]), goal, goal_route),
+            )
             route_warnings: list[str] = []
             route_candidates: list[tuple[str, list[Point], dict[str, Any], list[str]]] = []
             scoring_segments = existing_segments + pending_net_segments
@@ -1613,6 +1808,7 @@ def plan_wire_routes(
                         occupied=routed_occupied,
                         hard_blocked_cells=hard_blocked_cells,
                         shadow_blocked_cells=shadow_blocked_cells,
+                        allowed_body_entries=allowed_body_entries,
                     )
                     full_report["score"] = round(full_score, 3)
                     full_report["portal_route_score"] = candidate_report.get("score")
@@ -1660,6 +1856,7 @@ def plan_wire_routes(
                         occupied=routed_occupied,
                         hard_blocked_cells=hard_blocked_cells,
                         shadow_blocked_cells=shadow_blocked_cells,
+                        allowed_body_entries=allowed_body_entries,
                     )
                     astar_report["score"] = round(astar_score, 3)
                     route_candidates.append(("grid_astar", astar_path, astar_report, astar_warnings))
@@ -1673,8 +1870,9 @@ def plan_wire_routes(
                 (int(candidate[2].get("different_net_crossings", 0)) for candidate in route_candidates),
                 default=1_000_000,
             )
+            strict_forbidden_filter_enabled = routing_mode == "wire" and cfg.get("strict_forbidden_contact_filter", 1.0) >= 1.0
             if routing_mode == "wire" and (
-                best_preliminary_forbidden > 0
+                (best_preliminary_forbidden > 0 and strict_forbidden_filter_enabled)
                 or (best_preliminary_crossings > 0 and cfg.get("crossing_risk_astar", 0.0) >= 1.0)
             ):
                 fallback_cfg = dict(cfg)
@@ -1709,6 +1907,7 @@ def plan_wire_routes(
                         occupied=routed_occupied,
                         hard_blocked_cells=hard_blocked_cells,
                         shadow_blocked_cells=shadow_blocked_cells,
+                        allowed_body_entries=allowed_body_entries,
                     )
                     fallback_report["score"] = round(fallback_score, 3)
                     route_candidates.append(
@@ -1730,12 +1929,175 @@ def plan_wire_routes(
                     route_warnings.extend(fallback_warnings)
             route_candidates = score_full_route_candidates(route_candidates)
             route_candidates = [candidate for candidate in route_candidates if not candidate[2].get("body_hits")]
-            if routing_mode == "wire" and cfg.get("strict_forbidden_contact_filter", 1.0) >= 1.0:
+            if strict_forbidden_filter_enabled:
                 route_candidates = [
                     candidate
                     for candidate in route_candidates
                     if int(candidate[2].get("forbidden_contacts", 0)) == 0
                 ]
+            if (
+                not route_candidates
+                and routing_mode == "wire"
+                and not strict_forbidden_filter_enabled
+                and cfg.get("body_safe_lane_last_resort", 1.0) >= 1.0
+            ):
+                fallback_path, fallback_report = _best_lane_path(
+                    start_route,
+                    goal_route,
+                    bodies,
+                    cfg,
+                    [],
+                    {},
+                    hard_blocked_cells,
+                    shadow_blocked_cells,
+                    net=net,
+                    ignore_refs=ignore_refs,
+                    hanan_points=net_hanan_points,
+                )
+                if fallback_path and fallback_report:
+                    fallback_full_path = _join_paths(
+                        _orthogonal_escape_path(start, start_route),
+                        fallback_path,
+                        _orthogonal_escape_path(goal_route, goal),
+                    )
+                    fallback_score, fallback_full_report = _path_score(
+                        fallback_full_path,
+                        bodies=bodies,
+                        existing_segments=scoring_segments,
+                        cfg=cfg,
+                        net=net,
+                        ignore_refs=full_route_ignore_refs,
+                        occupied=routed_occupied,
+                        hard_blocked_cells=hard_blocked_cells,
+                        shadow_blocked_cells=shadow_blocked_cells,
+                        allowed_body_entries=allowed_body_entries,
+                    )
+                    fallback_full_report["score"] = round(fallback_score, 3)
+                    fallback_full_report["body_safe_last_resort"] = True
+                    if not fallback_full_report.get("body_hits"):
+                        route_candidates.append(
+                            (
+                                "body_safe_lane_last_resort",
+                                fallback_path,
+                                fallback_full_report,
+                                ["body_safe_lane_last_resort: accepted minimum-contact lane after normal candidate rejection."],
+                            )
+                        )
+            if (
+                not route_candidates
+                and routing_mode == "wire"
+                and not strict_forbidden_filter_enabled
+                and cfg.get("body_safe_perimeter_last_resort", 1.0) >= 1.0
+            ):
+                for perimeter_path in _perimeter_escape_paths(
+                    start_route,
+                    goal_route,
+                    start_side=str(root.get("side") or "right"),
+                    goal_side=str(target.get("side") or "right"),
+                    bodies=bodies,
+                    cfg=cfg,
+                ):
+                    perimeter_full_path = _join_paths(
+                        _orthogonal_escape_path(start, start_route),
+                        perimeter_path,
+                        _orthogonal_escape_path(goal_route, goal),
+                    )
+                    perimeter_score, perimeter_report = _path_score(
+                        perimeter_full_path,
+                        bodies=bodies,
+                        existing_segments=scoring_segments,
+                        cfg=cfg,
+                        net=net,
+                        ignore_refs=full_route_ignore_refs,
+                        occupied=routed_occupied,
+                        hard_blocked_cells=hard_blocked_cells,
+                        shadow_blocked_cells=shadow_blocked_cells,
+                        allowed_body_entries=allowed_body_entries,
+                    )
+                    if perimeter_report.get("body_hits"):
+                        continue
+                    perimeter_report["score"] = round(perimeter_score, 3)
+                    perimeter_report["body_safe_perimeter_last_resort"] = True
+                    route_candidates.append(
+                        (
+                            "body_safe_perimeter_last_resort",
+                            perimeter_path,
+                            perimeter_report,
+                            ["body_safe_perimeter_last_resort: routed around outer schematic lanes after normal candidates failed."],
+                        )
+                    )
+                    break
+            if (
+                not route_candidates
+                and routing_mode == "wire"
+                and not strict_forbidden_filter_enabled
+                and cfg.get("pin_escape_perimeter_last_resort", 1.0) >= 1.0
+            ):
+                start_escape_options = _pin_escape_options(
+                    start,
+                    str(root.get("side") or "right"),
+                    str(root["ref"]),
+                    bodies,
+                    cfg,
+                )
+                goal_escape_options = _pin_escape_options(
+                    goal,
+                    str(target.get("side") or "right"),
+                    str(target["ref"]),
+                    bodies,
+                    cfg,
+                )
+                best_escape_candidate: tuple[float, list[Point], dict[str, Any], list[str]] | None = None
+                for start_portal, start_escape_path, start_allowed_entries in start_escape_options:
+                    for goal_portal, goal_escape_path, goal_allowed_entries in goal_escape_options:
+                        escape_allowed_entries = tuple(
+                            list(allowed_body_entries) + list(start_allowed_entries) + list(goal_allowed_entries)
+                        )
+                        for perimeter_path in _perimeter_escape_paths(
+                            start_portal,
+                            goal_portal,
+                            start_side=str(root.get("side") or "right"),
+                            goal_side=str(target.get("side") or "right"),
+                            bodies=bodies,
+                            cfg=cfg,
+                        ):
+                            escape_full_path = _join_paths(
+                                start_escape_path,
+                                perimeter_path,
+                                list(reversed(goal_escape_path)),
+                            )
+                            escape_score, escape_report = _path_score(
+                                escape_full_path,
+                                bodies=bodies,
+                                existing_segments=scoring_segments,
+                                cfg=cfg,
+                                net=net,
+                                ignore_refs=full_route_ignore_refs,
+                                occupied=routed_occupied,
+                                hard_blocked_cells=hard_blocked_cells,
+                                shadow_blocked_cells=shadow_blocked_cells,
+                                allowed_body_entries=escape_allowed_entries,
+                            )
+                            if escape_report.get("body_hits"):
+                                continue
+                            escape_report["score"] = round(escape_score, 3)
+                            escape_report["pin_escape_perimeter_last_resort"] = True
+                            escape_report["raw_path_is_full_path"] = True
+                            warnings_for_candidate = [
+                                "pin_escape_perimeter_last_resort: used lateral pin escape plus outer routing lane after normal candidates failed."
+                            ]
+                            if best_escape_candidate is None or escape_score < best_escape_candidate[0]:
+                                best_escape_candidate = (escape_score, escape_full_path, escape_report, warnings_for_candidate)
+                if best_escape_candidate is not None:
+                    _escape_score, escape_path, escape_report, escape_warnings = best_escape_candidate
+                    route_candidates.append(
+                        (
+                            "pin_escape_perimeter_last_resort",
+                            escape_path,
+                            escape_report,
+                            escape_warnings,
+                        )
+                    )
             route_candidates.sort(
                 key=lambda item: (
                     int(item[2].get("forbidden_contacts", 0)),
@@ -1853,11 +2215,14 @@ def plan_wire_routes(
                     )
                     break
                 continue
-            full_raw_path = _join_paths(
-                _orthogonal_escape_path(start, start_route),
-                raw_path,
-                _orthogonal_escape_path(goal_route, goal),
-            )
+            if selected_report.get("raw_path_is_full_path"):
+                full_raw_path = raw_path
+            else:
+                full_raw_path = _join_paths(
+                    _orthogonal_escape_path(start, start_route),
+                    raw_path,
+                    _orthogonal_escape_path(goal_route, goal),
+                )
             path = _compress_path(full_raw_path)
             for point in full_raw_path:
                 net_occupied[_to_grid(point, cfg["grid"])] = net
@@ -2549,6 +2914,7 @@ def plan_partial_route_component_moves(
             body_groups = _component_body_groups(bodies)
             working = apply_coordinate_edits(working, {"coordinate_edits": [edit]})
             components = working.get("components", {}) if isinstance(working.get("components"), dict) else components
+            break
 
     return {
         "schema": "progen-kicad-partial-route-component-motion/v0.1",
@@ -2599,6 +2965,7 @@ def _variant_scoring_wire_config(wire_cfg: dict[str, Any]) -> dict[str, Any]:
         float(cfg.get("arrangement_variant_max_root_candidates", 1.0)),
     )
     cfg["crossing_risk_astar"] = 0.0
+    cfg["compound_lane_candidates"] = 0.0
     return cfg
 
 

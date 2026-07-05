@@ -7616,6 +7616,145 @@ Commit made: `32830c7`. I’m pushing it and then I’ll verify local and remote
 
 - `context.md`
 
+## 2026-07-05 15:44:20 PKT - Latest Checkpoint Pointer
+
+The detailed record for the latest implementation turn is the section titled:
+
+```text
+2026-07-05 15:37:47 PKT - KiCad Wire Planner Zero Unrouted/Partial V8
+```
+
+It was accidentally inserted earlier in this file near the PDF-reader checkpoint, but this tail pointer preserves the latest resume state.
+
+Critical resume facts:
+
+- Fresh generated pack: `kicad/examples/final_json_wired_project_run_2026_07_05_zeroroute_v8_pin_escape_motion`
+- Full 11-circuit result: `total_unrouted_nets=0`, `total_partial_wire_nets=0`, `total_geometry_violations=0`
+- Remaining non-route metrics recorded honestly: `total_strict_wire_violations=338`, `total_local_netlist_failed_nets=151`, `total_labels=660`
+- Main code changes: lateral pin-escape perimeter fallback, full-path pin-entry scoring, endpoint-column/row perimeter bridges, unroutable-net motion repair by default, one endpoint move per net, one coordinate edit per strict repair reroute pass.
+- Verification: `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q` passed with `34 passed, 30 subtests passed`; `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests` passed.
+- Pre-existing July 2 generated KiCad edits remain dirty and intentionally unstaged.
+
+## 2026-07-05 15:37:47 PKT - KiCad Wire Planner Zero Unrouted/Partial V8
+
+### User Request
+
+```text
+then continue
+fix this, keep testing till no unrouted or partial remains
+196 unrouted nets remain.
+29 partial wire nets remain.
+```
+
+### Visible Agent Responses
+
+```text
+Yeah, that dragged way too long. I’ve got the state now: the last full run improved from `196 unrouted / 29 partial` down to `27 unrouted / 3 partial`, but that’s still not the bar you set, so I’m continuing from there instead of pretending it’s done. First I’m checking the last router patch landed cleanly, then I’ll target the remaining failing nets and only regenerate a fresh example pack once the planner proves cleaner.
+```
+
+```text
+The perimeter helper did land in the file, but it isn’t necessarily wired into the branch selection yet. I’m reading that part now and then I’ll use the existing v7 routing inputs to reproduce the exact remaining failures quickly before doing another full generation.
+```
+
+```text
+I found one real bug in the current patch: the branch selector scores the complete pin-to-pin path without passing the “allowed pin entry” exemption, so it can reject a route for touching the component at the one pin it is supposed to touch. I’m fixing that and adding the outer-perimeter fallback into the actual selection path now.
+```
+
+```text
+The failing shape is clear now. The “perimeter” fallback was routing to the outer sheet edge and then cutting horizontally into the target pin, which still crosses every body in that row. For side pins it needs to travel on the outer lane, then drop on the target pin’s own outside x/y corridor, so I’m adding those endpoint-column/endpoint-row perimeter bridges.
+```
+
+```text
+A bigger issue surfaced: a few pins are physically boxed in by neighboring symbols, so the router is correctly refusing to “escape” through those bodies. The existing component-motion repair only handled partial nets by default; I’m going to turn that into a real reroute loop for unroutable nets too, because this is exactly where moving symbols must come before pretending more path search will solve it.
+```
+
+```text
+The cleaner fix is not to shove parts around first. I’m adding a pin-escape fallback: when a pin’s normal outward stub is blocked by nearby symbols, the planner may leave the pin sideways along the pin edge, then climb to a clear routing lane. That keeps the “do not cross component bodies” rule while avoiding giant symbol swaps.
+```
+
+```text
+End-to-end run finished: `total_unrouted_nets = 0`, `total_partial_wire_nets = 0`, and `total_geometry_violations = 0` in the fresh v8 pack. I’m adding focused tests for the pin-escape/motion behavior now, then I’ll run the compile/tests and commit the checkpoint.
+```
+
+```text
+Verification passed: `34 passed, 30 subtests passed`, and compile is clean. I’m checking the generated record folders now, including the interrupted probe, so the repository history explains what each run was.
+```
+
+### Implementation Notes
+
+- Verified at turn start that local `HEAD` and `origin/main` both pointed at `aaf568009b6d41c43bff7b94ecfd7e2105ea55ae`; the pre-existing July 2 generated KiCad file modifications were left untouched and unstaged.
+- Fixed full-path route scoring so exact pin body-entry exemptions are passed when scoring complete pin-to-pin candidate paths.
+- Added outer perimeter route candidates that bridge through endpoint columns/rows instead of cutting across the whole sheet into side pins.
+- Added lateral pin-escape fallback for blocked pin stubs. When a normal outward pin stub is blocked by another component body, the planner can leave the pin sideways along the pin edge, then route to an outside lane while still rejecting component body crossings.
+- Marked full-path escape candidates so final route assembly does not prepend the blocked normal stub again.
+- Enabled unroutable nets for component-motion repair by default and added one-move-per-net guarding inside `plan_partial_route_component_moves`.
+- Updated KiCad wire-maker strict repair to run up to 8 passes by default and to use one coordinate edit per reroute pass. This fixed physically impossible placements such as N08 `R_CHG_LED` being trapped against the USB-C connector body.
+- Updated stale beautifier test expectations for current `progen-kicad-beautified-placement/v0.2` rotation-aware behavior.
+- Added regression tests for lateral pin escape and unroutable-net component motion.
+
+### Generated Records
+
+- `kicad/examples/final_json_wired_project_run_2026_07_05_141922_node_spec_n07_relaxed_probe_v1`
+  - N07 relaxed probe; completed with remaining unrouted nets before exact body/pin-entry fixes.
+- `kicad/examples/final_json_wired_project_run_2026_07_05_142358_node_spec_n07_exact_body_fix_probe_v1`
+  - N07 probe after exact-pin body transparency fix.
+- `kicad/examples/final_json_wired_project_run_2026_07_05_143407_node_spec_n07_lane_entry_fix_probe_v1`
+  - N07 probe after endpoint-neighbor lane and allowed body-entry scoring fixes.
+- `kicad/examples/final_json_wired_project_run_2026_07_05_144934_node_spec_n07_no_unrouted_probe_v1`
+  - Interrupted N07 probe; added `INTERRUPTED_ATTEMPT.md`.
+- `kicad/examples/final_json_wired_project_run_2026_07_05_145925_node_spec_n07_no_unrouted_probe_v2`
+  - Completed N07 probe with zero unrouted and zero partial wire nets.
+- `kicad/examples/final_json_wired_project_run_2026_07_05_150045_node_spec_2026_07_05_wired_v7_no_unrouted_partial`
+  - Full 11-circuit v7 run after N07 fixes. Totals: `27` unrouted, `3` partial, `0` geometry violations.
+- `kicad/examples/final_json_wired_project_run_2026_07_05_zeroroute_v8_pin_escape_motion`
+  - Fresh full 11-circuit v8 run after pin escape and motion repair. Totals: `0` unrouted, `0` partial, `0` geometry violations.
+
+### V8 Result
+
+```text
+project_count: 11
+total_unrouted_nets: 0
+total_partial_wire_nets: 0
+total_geometry_violations: 0
+total_strict_wire_violations: 338
+total_local_netlist_failed_nets: 151
+total_labels: 660
+```
+
+Per circuit in `final_json_wired_project_run_2026_07_05_zeroroute_v8_pin_escape_motion`:
+
+```text
+N01 0 unrouted, 0 partial, 0 geometry violations
+N02 0 unrouted, 0 partial, 0 geometry violations
+N03 0 unrouted, 0 partial, 0 geometry violations
+N04 0 unrouted, 0 partial, 0 geometry violations
+N05 0 unrouted, 0 partial, 0 geometry violations
+N06 0 unrouted, 0 partial, 0 geometry violations
+N07 0 unrouted, 0 partial, 0 geometry violations
+N08 0 unrouted, 0 partial, 0 geometry violations
+N09 0 unrouted, 0 partial, 0 geometry violations
+N10 0 unrouted, 0 partial, 0 geometry violations
+N11 0 unrouted, 0 partial, 0 geometry violations
+```
+
+### Verification
+
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q`
+  - Passed: `34 passed, 30 subtests passed in 51.12s`.
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests`
+  - Passed.
+- Fresh generator run:
+  - `generate_wired_projects_from_final_json(... run_dir=kicad/examples/final_json_wired_project_run_2026_07_05_zeroroute_v8_pin_escape_motion, routing_mode="wire")`
+  - Completed in `250.35s`.
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_placer_pipeline.py`
+- `kicad/examples/final_json_wired_project_run_2026_07_05_144934_node_spec_n07_no_unrouted_probe_v1/INTERRUPTED_ATTEMPT.md`
+
 ## 2026-07-05 14:12 PKT - Node-Spec 11-Circuit KiCad Generation, Alias Fixes, and Router Scoring Cap
 
 ### User Request
@@ -9111,3 +9250,22 @@ what form of improvement can we expect
 ### Files Edited
 
 - `context.md`
+
+## 2026-07-05 15:44:20 PKT - Latest Checkpoint Pointer
+
+The detailed record for the latest implementation turn is the section titled:
+
+```text
+2026-07-05 15:37:47 PKT - KiCad Wire Planner Zero Unrouted/Partial V8
+```
+
+It was accidentally inserted earlier in this file near the PDF-reader checkpoint, but this tail pointer preserves the latest resume state.
+
+Critical resume facts:
+
+- Fresh generated pack: `kicad/examples/final_json_wired_project_run_2026_07_05_zeroroute_v8_pin_escape_motion`
+- Full 11-circuit result: `total_unrouted_nets=0`, `total_partial_wire_nets=0`, `total_geometry_violations=0`
+- Remaining non-route metrics recorded honestly: `total_strict_wire_violations=338`, `total_local_netlist_failed_nets=151`, `total_labels=660`
+- Main code changes: lateral pin-escape perimeter fallback, full-path pin-entry scoring, endpoint-column/row perimeter bridges, unroutable-net motion repair by default, one endpoint move per net, one coordinate edit per strict repair reroute pass.
+- Verification: `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q` passed with `34 passed, 30 subtests passed`; `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests` passed.
+- Pre-existing July 2 generated KiCad edits remain dirty and intentionally unstaged.
