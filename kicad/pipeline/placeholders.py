@@ -28,9 +28,6 @@ FUTURE_STAGE_NAMES = (
     "wire_maker",
     "terminal_placer",
     "terminal_validator",
-    "value_editor",
-    "value_validator",
-    "final_validator",
 )
 
 

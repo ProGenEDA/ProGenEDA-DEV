@@ -7787,6 +7787,160 @@ The repeat checks are still clean. I’m adding that small CLI consistency note 
 - `kicad/pipeline/OUTPUT_ARTIFACT_CONTRACT.md`
 - `kicad/tests/test_kicad_wire_maker.py`
 
+## 2026-07-06 01:24:46 PKT - KiCad Tail Stages Completed
+
+### User Request
+
+```text
+finish up the remaining then give me overview of archietecture
+```
+
+### Visible Agent Responses
+
+```text
+I’ll finish the deterministic tail of the workflow first: value editor, value validator, final validator, and manifest/report wiring. I’ll verify the repo checkpoint before touching anything, then I’ll inspect the current pipeline so the new stages plug into the existing JSON flow cleanly.
+```
+
+```text
+The checkpoint is clean against `origin/main`; only the old generated July 2 examples remain dirty, and I’ll keep them out of this work. I’m reading the existing validators/manifests now so the finishing stages produce real reports instead of decorative placeholders.
+```
+
+```text
+The hosted netlist validator is already real and source-backed, so the remaining tail can be deterministic: apply values, prove values/references/components, aggregate netlist and geometry reports, then package. I found one older placeholder file still listing value/final stages as inactive, so I’ll replace that with concrete stage modules and tests.
+```
+
+```text
+This is now a small implementation pass, not routing surgery. I’ll keep the new stages backend-neutral where possible, and only the final validator will know about KiCad manifest/report fields.
+```
+
+```text
+One integration detail: component-body overlap is only written after the project itself exists, so final validation belongs in the run generator after that body report is saved. Value editing/validation can run inside project writing because it only needs the schematic and main JSON.
+```
+
+```text
+I’m also going to make the internal bundle collect every generated JSON under the run, not just the handful I listed last turn. That closes a real gap: local netlist reports and the new value/final reports must be private database artifacts too.
+```
+
+```text
+The three tail-stage modules are added. Next I’m wiring them into generation: value editor/validator during project writing, final validator after body-overlap evidence, then the packager sweeps all generated JSON into the internal zip.
+```
+
+```text
+The generator now runs the tail stages and records their summaries. I’m updating the package/docs/tests next so the new reports are part of the locked output contract instead of hidden loose files.
+```
+
+```text
+Tests now check the generated run summary and internal bundle boundary. I’m adding one focused value-stage unit test too, because the editor should prove it can repair a stale schematic value instead of only passing when values were already right.
+```
+
+```text
+The basic value repair test is in. I’m running the focused suite now; if something shakes loose it should be around final-validator strictness or the zip sweep, both easy to tune.
+```
+
+```text
+The first run found a circular import: the netlist validator imports wire-maker pin geometry, while the wire maker imported the value validator at module load. I’m making those value/final imports lazy so the stages stay independent at runtime.
+```
+
+```text
+The circular import is removed by loading value/final stages only when the project writer actually reaches them. I’m rerunning the same focused tests now.
+```
+
+```text
+The failure is honest rather than a crash: the strict-wire sample still does not meet the full final-validator contract, so that assertion was too strong. I’m keeping final validation strict and only requiring all-final-ok for terminal/validated paths, not pretending strict wire is complete.
+```
+
+```text
+The test now reflects reality: strict wire can produce an evidence record even when final validation is not green; terminal and combination are the validated completion path. Running the focused checks again.
+```
+
+```text
+Focused tests and compile pass. I’m running the full KiCad test suite now; that gives us a cleaner “remaining stages are wired” checkpoint before I write the architecture overview.
+```
+
+```text
+The full suite is still running; it’s in the heavier routing tests now. I’m waiting for it to finish rather than stopping at the smaller green subset.
+```
+
+```text
+Still running, no failure output yet. This part can be slow because some tests generate and route actual KiCad projects, but it’s exactly the confidence check we want after touching the tail of the pipeline.
+```
+
+```text
+The full suite is taking a while but remains quiet; I’m letting it complete so I don’t leave a test process behind.
+```
+
+```text
+Still no failure output. The full run is probably in the routing/project-generation cases; I’ll give it another poll and then inspect if it appears stuck.
+```
+
+```text
+It’s still running, which is longer than the focused checks but not impossible for the large routing tests. I’m checking the process from the side while leaving it alive.
+```
+
+```text
+The process is alive and using CPU, so it isn’t hung. I’ll let it finish.
+```
+
+```text
+Still going. Since it is actively consuming CPU, I’m giving it a little more time; the focused tests that cover the new stages already passed.
+```
+
+```text
+This has crossed the “long but plausible” line; I’ll do one more poll, then if it’s still running I’ll report the full-suite timeout risk and rely on the focused green set rather than spending the turn indefinitely.
+```
+
+```text
+Full suite finished clean: `73 passed, 160 subtests passed`. I’m checking the final diff now, then I’ll log the turn, commit, push, and give you the architecture overview.
+```
+
+```text
+The diff is scoped: new value/final stages, generator wiring, package contract updates, and tests. I’m adding one small doc touch to the main JSON contract so the value/final stages are named there too, then I’ll do final hygiene checks.
+```
+
+```text
+Hygiene is clean: compileall and diff-check pass after the doc touch. I’m writing the turn record to `context.md` now, including the full-suite result and files edited.
+```
+
+### Implementation Notes
+
+- Verified at turn start that local `HEAD`, upstream, and `origin/main` all pointed at `d1db0d41e1e64fa2b1be41be45eeb416644eec9e`; the pre-existing July 2 generated KiCad file edits were left unstaged.
+- Added `kicad/pipeline/value_editor.py`. It applies main JSON component values to generated KiCad schematic symbol `Value` properties and instance values, then writes `value_edit_report.json`.
+- Added `kicad/pipeline/value_validator.py`. It reparses the generated schematic, compares actual reference/value pairs against the main JSON, and writes `value_validation_report.json`.
+- Added `kicad/pipeline/final_validator.py`. It aggregates file validity, component/reference/value checks, pin existence, hosted expected-net comparison, optional ERC evidence, wire geometry, component-body overlap, and routing-mode contract checks into `final_validation_report.json`.
+- Wired value editing/validation into `write_wired_project()` after KiCad objects are emitted and before netlist/value checks are summarized.
+- Wired final validation into `generate_wired_projects_from_final_json()` after component-body overlap evidence is written and before output packaging.
+- Updated `output_packager.py` so the internal bundle sweeps every generated JSON under the run, excluding `outputs/`, and exposes named internal aliases for local netlist, value edit, value validation, final validation, and body-overlap reports.
+- Updated `AGENTS.md`, `pipeline/README.md`, `MAIN_INPUT_JSON_CONTRACT.md`, and `OUTPUT_ARTIFACT_CONTRACT.md` so the architecture names the now-active tail stages.
+- Kept strict-wire final validation honest: strict wire runs may generate openable/evidence records while still reporting final-validator failures if the full physical netlist contract is not met.
+
+### Verification
+
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_netlist_validator.py kicad/tests/test_kicad_wire_maker.py::KiCadWireMakerTests::test_generate_terminal_projects_from_final_json_uses_terminal_placer_and_passes_netlist kicad/tests/test_kicad_wire_maker.py::KiCadWireMakerTests::test_generate_wired_projects_from_final_json_writes_projects kicad/tests/test_kicad_wire_maker.py::KiCadWireMakerTests::test_proteus_alias_mixed_wired_projects_obey_geometry_rules -q`
+  - Passed: 8 tests.
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests -q`
+  - Passed: 73 tests, 160 subtests in 268.46 seconds.
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests`
+  - Passed.
+- `git diff --check -- kicad/AGENTS.md kicad/pipeline kicad/tests context.md`
+  - Passed.
+
+### Files Edited
+
+- `context.md`
+- `kicad/AGENTS.md`
+- `kicad/pipeline/MAIN_INPUT_JSON_CONTRACT.md`
+- `kicad/pipeline/OUTPUT_ARTIFACT_CONTRACT.md`
+- `kicad/pipeline/README.md`
+- `kicad/pipeline/__init__.py`
+- `kicad/pipeline/final_validator.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/output_packager.py`
+- `kicad/pipeline/placeholders.py`
+- `kicad/pipeline/value_editor.py`
+- `kicad/pipeline/value_validator.py`
+- `kicad/tests/test_kicad_netlist_validator.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+
 ## 2026-07-05 20:52:10 PKT - Main JSON Catalogue 100, Terminal Proof, and Combination Fallback Proof
 
 ### User Request

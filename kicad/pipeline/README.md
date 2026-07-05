@@ -7,7 +7,7 @@ This package is being built incrementally.
 Current proven flow:
 
 ```text
-CircuitIR JSON -> Placement Input Validator -> Component Placer -> Placement Validator -> Arrangement Decider -> Beautifier -> Wire Planner -> KiCad Wire Maker -> KiCad project
+CircuitIR JSON -> Placement Input Validator -> Component Placer -> Placement Validator -> Arrangement Decider -> Beautifier -> Wire Planner/Terminal Placer -> KiCad Wire Maker -> Value Editor -> Value Validator -> Final Validator -> Output Packager -> KiCad project + internal bundle
 ```
 
 The active stages are independent:
@@ -28,6 +28,15 @@ The active stages are independent:
   and emits real KiCad wire/junction objects in strict wire mode. Terminal or
   combination modes may emit local-label terminal objects through the terminal
   stage contract.
+- `value_editor.apply_value_edits(circuit, schematic_path)`
+  applies main JSON component values to generated KiCad schematic symbols.
+- `value_validator.validate_component_values(circuit, schematic_path)`
+  reparses the generated schematic and validates reference/value correctness.
+- `final_validator.validate_final_project(circuit, project_dir)`
+  aggregates file, value, pin, expected-net, optional ERC, geometry, body
+  overlap, and routing-contract evidence into `final_validation_report.json`.
+- `output_packager.package_generated_project(...)`
+  emits the user-downloadable project zip and the internal-only metadata bundle.
 
 This active placer slice does not require KiCad to be installed. It uses
 embedded Python metadata from the repository:
@@ -47,6 +56,10 @@ future full output validation stack is:
 6. ERC
 7. Optional PDF/SVG preview export
 8. Final validation_report.json
+
+The active hosted final validator currently implements steps 1, 2, 3, 5, 6 as
+optional evidence, and 8 without requiring KiCad CLI. The internal bundle keeps
+the full report history for database storage.
 ```
 
 ## Arrangement, Beautifier, Wire Planner, And Wire Maker

@@ -53,9 +53,9 @@ Final Validator -> Output Packager -> user_project + internal_bundle
 
 The active proven stages are the component placer, arrangement decider,
 beautifier, wire planner, terminal placer, combination fallback, first KiCad
-wire maker, hosted expected-net validator, and output packager. Keep later
-value/simulation/user-facing stages as independent placeholders until the
-previous stage is proven.
+wire maker, value editor, value validator, hosted expected-net validator, final
+validator, and output packager. Keep later simulation/user-facing stages as
+independent placeholders until the previous stage is proven.
 
 The first deterministic main-JSON compiler is:
 
@@ -166,6 +166,9 @@ kicad/pipeline/beautifier.py
 kicad/pipeline/wire_planner.py
 kicad/pipeline/kicad_wire_maker.py
 kicad/pipeline/terminal_placer.py
+kicad/pipeline/value_editor.py
+kicad/pipeline/value_validator.py
+kicad/pipeline/final_validator.py
 kicad/pipeline/output_packager.py
 ```
 
@@ -221,6 +224,16 @@ geometry validation in manifests.
 connectivity. For KiCad its current backend is local labels at pin points, with
 short collision-avoidance stubs only when needed. Strict wire mode must not
 invoke it implicitly as a fallback.
+
+`value_editor.py` applies the main JSON component values to generated KiCad
+schematics and records whether any schematic value properties had to be
+changed. `value_validator.py` reparses the schematic and proves every expected
+reference has the expected displayed value.
+
+`final_validator.py` aggregates file validity, component/reference/value
+checks, pin existence, hosted expected-net comparison, optional ERC evidence,
+wire geometry, body-overlap evidence, and routing-mode contract checks into the
+final report consumed by the output packager.
 
 `output_packager.py` owns the final two-artifact boundary. Each complete
 project generation must produce a user-downloadable project archive plus an

@@ -2337,6 +2337,9 @@ def write_wired_project(
     *,
     wire_result: WireMakerResult | None = None,
 ) -> dict[str, Any]:
+    from .value_editor import apply_value_edits
+    from .value_validator import validate_component_values
+
     result = wire_result or make_kicad_wires(circuit, placement, wire_plan)
     routing_mode = _wire_plan_routing_mode(wire_plan)
     project_suffix = "TERMINAL" if routing_mode == "terminal" else "COMBINATION" if routing_mode == "combination" else "WIRED"
@@ -2365,7 +2368,23 @@ def write_wired_project(
         extra_schematic_objects=result.schematic_objects,
         extra_manifest={"wire_maker": result.report},
     )
-    schematic = (out_dir / manifest["schematic_file"]).read_text(encoding="utf-8")
+    schematic_path = out_dir / manifest["schematic_file"]
+    value_edit_report_path = out_dir / "value_edit_report.json"
+    value_edit_report = apply_value_edits(
+        circuit=circuit,
+        schematic_path=schematic_path,
+        output_report=value_edit_report_path,
+    )
+    manifest["value_editor"] = {
+        "schema": value_edit_report["schema"],
+        "ok": bool(value_edit_report["ok"]),
+        "report": value_edit_report_path.name,
+        "changed": bool(value_edit_report["changed"]),
+        "edited_component_count": int(value_edit_report["edited_component_count"]),
+        "missing_ref_count": len(value_edit_report["missing_refs"]),
+    }
+
+    schematic = schematic_path.read_text(encoding="utf-8")
     manifest["static_checks"] = validate_schematic(schematic)
     manifest["static_checks"]["wire_maker"] = True
     from .kicad_netlist_validator import validate_schematic_netlist, write_validation_report
@@ -2379,6 +2398,20 @@ def write_wired_project(
     )
     local_netlist_report_path = out_dir / "local_netlist_validation_report.json"
     write_validation_report(local_netlist_report, local_netlist_report_path)
+    value_validation_report_path = out_dir / "value_validation_report.json"
+    value_validation_report = validate_component_values(
+        circuit=circuit,
+        schematic_path=schematic_path,
+        output_report=value_validation_report_path,
+    )
+    manifest["value_validator"] = {
+        "schema": value_validation_report["schema"],
+        "ok": bool(value_validation_report["ok"]),
+        "report": value_validation_report_path.name,
+        "missing_ref_count": int(value_validation_report["missing_ref_count"]),
+        "value_mismatch_count": int(value_validation_report["value_mismatch_count"]),
+        "duplicate_actual_value_count": int(value_validation_report["duplicate_actual_value_count"]),
+    }
     expected_net_check = local_netlist_report.get("checks", {}).get("expected_net_comparison", {})
     physical_pin_check = local_netlist_report.get("checks", {}).get("physical_pin_assignment", {})
     manifest["local_netlist_validation"] = {
@@ -2537,6 +2570,22 @@ def generate_wired_projects_from_final_json(
             "pass_count": body_overlap_report["pass_count"],
             "overlap_count": body_overlap_report["component_body_overlap_count"],
         }
+        from .final_validator import validate_final_project
+
+        final_validation_report_path = project_dir / "final_validation_report.json"
+        final_validation_report = validate_final_project(
+            circuit=circuit,
+            project_dir=project_dir,
+            manifest=manifest,
+            output_report=final_validation_report_path,
+        )
+        manifest["final_validator"] = {
+            "schema": final_validation_report["schema"],
+            "ok": bool(final_validation_report["ok"]),
+            "ready_for_output": bool(final_validation_report["ready_for_output"]),
+            "report": final_validation_report_path.name,
+            "blocking_failure_count": int(final_validation_report["blocking_failure_count"]),
+        }
         (project_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
         results.append(
             {
@@ -2548,6 +2597,9 @@ def generate_wired_projects_from_final_json(
                 "wire_plan": str((wire_plan_dir / f"{stem}_wire_plan.json").relative_to(run_path)),
                 "project_manifest": str((project_dir / "manifest.json").relative_to(run_path)),
                 "component_body_overlap_report_file": str(body_report_path.relative_to(run_path)),
+                "value_edit_report_file": str((project_dir / "value_edit_report.json").relative_to(run_path)),
+                "value_validation_report_file": str((project_dir / "value_validation_report.json").relative_to(run_path)),
+                "final_validation_report_file": str(final_validation_report_path.relative_to(run_path)),
                 "project_dir": str(project_dir.relative_to(run_path)),
                 "open_this": str((project_dir / manifest["open_this"]).relative_to(run_path)),
                 "schematic_file": str((project_dir / manifest["schematic_file"]).relative_to(run_path)),
@@ -2583,6 +2635,11 @@ def generate_wired_projects_from_final_json(
                 "local_netlist_merged_net_count": manifest["local_netlist_validation"]["merged_net_count"],
                 "local_netlist_power_ground_short_count": manifest["local_netlist_validation"]["power_ground_short_count"],
                 "local_netlist_floating_expected_pin_count": manifest["local_netlist_validation"]["floating_expected_pin_count"],
+                "value_edit_ok": bool(manifest["value_editor"]["ok"]),
+                "value_validation_ok": bool(manifest["value_validator"]["ok"]),
+                "value_mismatch_count": int(manifest["value_validator"]["value_mismatch_count"]),
+                "final_validation_ok": bool(manifest["final_validator"]["ok"]),
+                "final_validation_blocking_failure_count": int(manifest["final_validator"]["blocking_failure_count"]),
                 "static_checks_ok": bool(manifest["static_checks"]["ok"]),
             }
         )
@@ -2594,6 +2651,13 @@ def generate_wired_projects_from_final_json(
         "input_count": len(files),
         "project_count": len(results),
         "all_static_checks_ok": all(item["static_checks_ok"] for item in results),
+        "all_value_edits_ok": all(item["value_edit_ok"] for item in results),
+        "all_value_validation_ok": all(item["value_validation_ok"] for item in results),
+        "total_value_mismatches": sum(int(item["value_mismatch_count"]) for item in results),
+        "all_final_validation_ok": all(item["final_validation_ok"] for item in results),
+        "total_final_validation_blocking_failures": sum(
+            int(item["final_validation_blocking_failure_count"]) for item in results
+        ),
         "total_components": sum(int(item["component_count"]) for item in results),
         "total_symbol_instances": sum(int(item["symbol_instance_count"]) for item in results),
         "total_wire_objects": sum(int(item["wire_object_count"]) for item in results),

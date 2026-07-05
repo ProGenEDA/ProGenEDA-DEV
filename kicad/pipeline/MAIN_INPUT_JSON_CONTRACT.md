@@ -230,7 +230,10 @@ Current stage keys:
 - `beautifier`
 - `wire_planner`
 - `terminal_placer`
+- `value_editor`
+- `value_validator`
 - `validators`
+- `final_validator`
 
 Contract rule:
 

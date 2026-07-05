@@ -65,12 +65,31 @@ def write_validation_report(*args, **kwargs):
 
     return _write_validation_report(*args, **kwargs)
 
+
+def apply_value_edits(*args, **kwargs):
+    from .value_editor import apply_value_edits as _apply_value_edits
+
+    return _apply_value_edits(*args, **kwargs)
+
+
+def validate_component_values(*args, **kwargs):
+    from .value_validator import validate_component_values as _validate_component_values
+
+    return _validate_component_values(*args, **kwargs)
+
+
+def validate_final_project(*args, **kwargs):
+    from .final_validator import validate_final_project as _validate_final_project
+
+    return _validate_final_project(*args, **kwargs)
+
 __all__ = [
     "PipelineContext",
     "PipelineError",
     "StageResult",
     "LiveRoutingState",
     "apply_coordinate_edits",
+    "apply_value_edits",
     "build_live_routing_state",
     "build_validation_report",
     "compare_expected_netlist",
@@ -90,6 +109,8 @@ __all__ = [
     "run_optional_kicad_erc",
     "validate_placement",
     "validate_placement_input",
+    "validate_component_values",
+    "validate_final_project",
     "validate_schematic_netlist",
     "write_validation_report",
     "write_wire_planner_jsons",

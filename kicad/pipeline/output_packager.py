@@ -158,8 +158,13 @@ def build_kicad_serial(circuit: dict[str, Any]) -> dict[str, Any]:
 def _write_zip(zip_path: Path, entries: list[tuple[str, bytes]]) -> None:
     zip_path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        seen: set[str] = set()
         for name, content in entries:
-            archive.writestr(name.replace("\\", "/").lstrip("/"), content)
+            normalized = name.replace("\\", "/").lstrip("/")
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            archive.writestr(normalized, content)
 
 
 def _project_export_entries(project_dir: Path) -> tuple[list[tuple[str, bytes]], str]:
@@ -261,19 +266,11 @@ def package_generated_project(
     user_sha = sha256_bytes(user_project_bytes)
 
     variant_metadata = _variant_metadata(wire_plan)
-    generated_json_entries: list[tuple[str, bytes]] = []
-    for source in (
-        final_json_path,
-        placement_input_path,
-        routing_input_path,
-        wire_plan_path,
-        project_manifest_path,
-        run_manifest_path,
-        component_body_report_path,
-    ):
-        if source is None or not source.exists():
+    generated_json_entries: dict[str, bytes] = {}
+    for source in sorted(run_dir.rglob("*.json")):
+        if "outputs" in source.relative_to(run_dir).parts:
             continue
-        generated_json_entries.append((f"all_generated_json/{source.relative_to(run_dir)}", source.read_bytes()))
+        generated_json_entries[f"all_generated_json/{source.relative_to(run_dir)}"] = source.read_bytes()
 
     metadata = {
         "schema": OUTPUT_ARTIFACT_SCHEMA,
@@ -350,8 +347,18 @@ def package_generated_project(
         ("internal/arrangement-variants.json", _json_bytes(variant_metadata)),
         ("internal/component-summary.json", _json_bytes(serial_info["component_summary"])),
         (f"export/{SERIAL_SERVICE}/{user_project_zip.name}", user_project_bytes),
-        *generated_json_entries,
+        *generated_json_entries.items(),
     ]
+    project_report_aliases = {
+        "local_netlist_validation_report.json": "internal/local-netlist-validation-report.json",
+        "value_edit_report.json": "internal/value-edit-report.json",
+        "value_validation_report.json": "internal/value-validation-report.json",
+        "final_validation_report.json": "internal/final-validation-report.json",
+    }
+    for file_name, bundle_name in project_report_aliases.items():
+        report_path = project_dir / file_name
+        if report_path.exists():
+            internal_entries.append((bundle_name, report_path.read_bytes()))
     if component_body_report_path and component_body_report_path.exists():
         internal_entries.append(("internal/component-body-overlap-report.json", component_body_report_path.read_bytes()))
 

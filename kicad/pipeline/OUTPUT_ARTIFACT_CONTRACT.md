@@ -110,6 +110,10 @@ internal/project-manifest.json
 internal/run-manifest.json
 internal/arrangement-variants.json
 internal/component-summary.json
+internal/local-netlist-validation-report.json
+internal/value-edit-report.json
+internal/value-validation-report.json
+internal/final-validation-report.json
 internal/component-body-overlap-report.json
 all_generated_json/<all per-circuit generated JSON files>
 export/KC/PROGEN_KICAD_PROJECT.zip

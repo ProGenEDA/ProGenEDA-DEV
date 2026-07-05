@@ -6,6 +6,8 @@ from pathlib import Path
 
 from kicad.pipeline.beautifier import apply_coordinate_edits
 from kicad.pipeline.kicad_netlist_validator import validate_schematic_netlist
+from kicad.pipeline.value_editor import apply_value_edits
+from kicad.pipeline.value_validator import validate_component_values
 
 
 MINIMAL_RESISTOR_SCHEMATIC = """(kicad_sch
@@ -87,6 +89,21 @@ class KiCadNetlistValidatorTests(unittest.TestCase):
         self.assertTrue(report["ok"], report["blocking_failures"])
         self.assertFalse(report["kicad_cli_required"])
         self.assertEqual(report["checks"]["expected_net_comparison"]["passed_net_count"], 1)
+
+    def test_value_editor_repairs_and_validator_confirms_values(self) -> None:
+        circuit = resistor_circuit(["R1.2", "R2.1"])
+        circuit["components"][0]["value"] = "4.7k"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            schematic = Path(temp_dir) / "pair.kicad_sch"
+            schematic.write_text(MINIMAL_RESISTOR_SCHEMATIC, encoding="utf-8")
+
+            edit_report = apply_value_edits(circuit=circuit, schematic_path=schematic)
+            validation_report = validate_component_values(circuit=circuit, schematic_path=schematic)
+
+        self.assertTrue(edit_report["ok"])
+        self.assertTrue(edit_report["changed"])
+        self.assertEqual(edit_report["edited_component_count"], 1)
+        self.assertTrue(validation_report["ok"], validation_report["value_mismatches"])
 
     def test_local_netlist_comparison_fails_missing_expected_member(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
