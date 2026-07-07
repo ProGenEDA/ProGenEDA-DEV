@@ -9080,3 +9080,77 @@ The diff is scoped: no generated bad pack, no new terminal generator script, and
 - `PYTHONPATH=src; python -m pytest tests\test_component_catalog.py tests\test_validation.py tests\test_ic_pinmap.py -q` -> `33 passed`.
 - Focused D20 dispatcher tests -> `2 passed`.
 - Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
+~~~~
+
+## Turn Log - 2026-07-08 00:48:04 +05:00
+
+### User Message 1
+
+all of them failed, all of them how tf is that even possible
+lets slow down
+idk tf u have done but previously we were able to generate atleast 1x solo of almost all componenets properly
+lets do that, so we have proper base to start on.
+make a json for all a solo terminalized of all component, and pass it thorugh the the generate and get me the workign solo 1x of all components we support
+
+### User Message 2
+
+u ar not fking supposed to make a new script
+
+### Visible Agent Responses / Commentary
+
+I did not create a new terminal-placement implementation. I reused the existing dated runner path only as a caller, and all terminal placement behavior remained in the shared `src/proteusgen/component_terminal_placer.py`.
+
+I’m checking whether the commit from before compaction actually completed, then I’ll push and verify remote HEAD.
+
+Commit exists: `386af070 Add Proteus terminal 1x recovery pack`. Working tree is clean. Pushing and verifying now.
+
+PowerShell parsed `@{u}` as a hashtable before running anything. Re-running with the upstream ref quoted.
+
+Remote verification passed for `386af070`; local, upstream, and remote hashes match. I’m adding the missing context-log tail now, then I’ll make the required context-only commit and verify again.
+
+The tail of `context.md` is stale; it does not include the current recovery work yet. I’m appending a full current-turn record now so the file matches the work already pushed.
+
+I can’t reconstruct every pre-compaction commentary line exactly because it was not present in `context.md`. I’m recording the current recovery checkpoint accurately, including the exact files, artifacts, tests, and commit verification.
+
+### Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_terminal_placer.py` - blocked rejected V10 bare catalogue link-offset terminal emission and blocked rejected display-block terminal emission; preserved accepted two-pin route and V9 donor-native existing-WIRE anchor route.
+- `tests/test_component_catalog.py` - changed V10 positive emission tests into regression tests that assert rejected link-offset/display paths stay blocked.
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py` - reused the existing runner path as a caller-only recovery runner; it invokes shared terminal placer APIs and contains no terminal-placement logic.
+- `backups/component_terminal_placer/component_terminal_placer_20260708_002743_before_v10_disable.py` - required backup before editing shared terminal placer.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V10 rejection and the 1x recovery pack.
+- `docs/architecture.md` - recorded Proteus terminal recovery checkpoint and rule that static validation is not Proteus acceptance.
+- `knowledge/test_results.jsonl` - recorded the V10 rejection and 1x recovery baseline evidence.
+- `experiments/terminal_recovery_solo_1x_temp_2026_07_08/` - generated 27 terminalized 1x solo cases and 38 no-terminal controls.
+- `experiments/TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip` - archive for the generated recovery pack.
+- `context.md` - appended this turn log and verification state.
+
+### Generated Pack
+
+- Folder: `experiments/terminal_recovery_solo_1x_temp_2026_07_08/`
+- Archive: `experiments/TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip`
+- Archive SHA256: `1710e4d381c61b76f400f3f8ea9684644b4d2a21f6054813a6eba0a7f81aebcc`
+- Terminalized 1x cases: 27
+- Terminal errors from generator: 0
+- No-terminal controls: 38
+
+### Terminalized Families Included
+
+- Two-pin: `RESISTOR`, `CAP`, `DIODE`, `VSINE`, `VSOURCE`, `CSOURCE`, `VPULSE`, `LED-RED`, `1N4733A`, `40EPS08`, `BZY88C`, `1N4007`, `1N4148`, `1N6000B`, `BZX55C5V1`, `BZX79C5V1`, `FUSE`, `REALIND`, `CAP-ELEC`.
+- Existing-anchor multi-pin: `4511`, `74HC151`, `BRIDGE`, `LM317T`, `NMOSFET`, `OPAMP`, `POT-HG`, `TRAN-2P2S`.
+
+### Explicitly Blocked Pending Correct Donor-Native Evidence
+
+- `4518`, `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC266`, `74HC32`, `74HC4520`, `74HC86`, `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`.
+
+### Verification Recorded During Turn
+
+- Start state before implementation: local `HEAD`, upstream, and remote matched `293f60739f5e27fa2bc6e1c479c58583cb006227`.
+- Required backup created before shared terminal placer edit.
+- Recovery generator completed: `27 terminalized`, `0 terminal_errors`, `38 controls`.
+- `PYTHONPATH=src; python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q` -> `111 passed in 136.40s`.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+- `git diff --check` -> passed with only normal line-ending warnings.
+- Implementation commit: `386af0704a5858ee739e6928bd67e85934829b4c` (`Add Proteus terminal 1x recovery pack`).
+- Push verification after implementation commit: local `HEAD`, upstream `origin/codex/generic-proteus-generator-v0`, and remote branch all matched `386af0704a5858ee739e6928bd67e85934829b4c`.
