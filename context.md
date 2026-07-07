@@ -7948,6 +7948,132 @@ Verification command results:
 - `origin/codex/generic-proteus-generator-v0`: `170c9d4f6974acbe718a59ef29c9c3328bccd98f`.
 - Working tree after push verification: clean.
 
+~~~~
+
+## User Message - 2026-07-08 00:?? +05:00
+
+all of them failed, all of them how tf is that even possible
+lets slow down
+idk tf u have done but previously we were able to generate atleast 1x solo of almost all componenets properly
+lets do that, so we have proper base to start on.
+make a json for all a solo terminalized of all component, and pass it thorugh the the generate and get me the workign solo 1x of all components we support
+
+## Agent Responses - 2026-07-08 00:43 +05:00
+
+I’ll slow it down to a 1x-only recovery pack. First I’m verifying the required git checkpoint, then I’ll generate only single-component solo cases through the existing Proteus pipeline and avoid multi-count/mixed until a 1x base is proven again.
+
+Git checkpoint is verified: local HEAD, upstream, and remote all match `293f6073`; working tree is clean. I’m now finding the last known-good 1x solo generation path and the supported-family list instead of iterating on the failed V10 pack.
+
+I found the likely divergence point: V10 changed emission substantially and all failed, while V7/V8/V9 packs existed before that. I’m comparing those summaries now and will produce a 1x-only pack from the safest earlier path, not from the failed V10 multi-count/mixed path.
+
+The previous V9 summary shows only 8 catalogue-terminal 1x families were treated as safe then; gates/displays were explicitly blocked. V10 promoted those blocked groups and all failed in Proteus, so I’m not going to trust V10 promotion. I’m going to rebuild a recovery pack with: accepted two-pin 1x solos + the V9 safe multi-pin 1x solos + no-terminal 1x controls for the rest.
+
+Important correction I’m applying: “all supported” cannot mean the V10 promoted list, because user Proteus feedback just invalidated that promotion. For this recovery pack I’m classifying support as “already passed or last-known-safe generated path,” and I’ll mark anything else as a no-terminal control/blocker instead of pretending it works.
+
+I’m keeping terminalized output limited to families with a specific shared handler that existed before the V10 promotion: 19 two-pin families through `attach_component_bidir_terminals_to_project`, and the V9-safe multi-pin subset if it still reproduces. Everything else gets an explicit no-terminal control, not a fake terminalized file.
+
+The concrete V9/V10 difference is clear: V9 safe solos reused donor-native existing WIRE/terminal anchor units (`CATALOGUE/existing-wire-v1`); V10 tried bare-packet link-offset + newly appended WIRE (`CATALOGUE/link-offset-wire-v1`). Since all V10 failed, the recovery pack must use the V9 existing-native-anchor method for multi-pin, not V10 bare appending.
+
+I’m going to disable the V10 bare link-offset catalogue emitter before generating recovery files. That path just failed in Proteus. Existing donor-native terminal/WIRE-anchor emission stays available, and the accepted two-pin route stays unchanged. I’m making the required shared-placer backup first.
+
+Backup created. I’m patching only the catalogue fallback guard: no newly synthesized catalogue WIRE/link-offset multi-pin output until it has Proteus acceptance.
+
+Patching now. This will make HC04/gates/displays block again instead of producing bad “valid” terminal files.
+
+The V10 bare-emitter path is disabled. Next I’m updating the recovery runner to output only 1x solos: accepted two-pin terminalized files plus V9 existing-anchor multi-pin terminalized files, with JSON input beside every case.
+
+I’m replacing the V10 bulk runner with a V11 recovery runner in the same existing file. It will not create any terminal logic; it only feeds JSON requests into component placement and the shared terminal functions.
+
+The old V10 runner file is removed in the patch; I’m adding back the recovery version at the same path.
+
+I caught a packaging issue before running it: archive hashes are self-referential if written into README before zipping. I’m removing the hash from README and keeping the computed hash in the final `summary.json` outside the zip.
+
+## User Message - 2026-07-08 00:?? +05:00
+
+u ar not fking supposed to make a new script
+
+## Agent Responses - 2026-07-08 00:43 +05:00
+
+You’re right to enforce that. I did not create a new script path. I replaced the existing runner at `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py`; terminal logic is still only in `src/proteusgen/component_terminal_placer.py`.
+
+I’ll keep this constrained: same existing runner, JSON inputs written per case, shared generator/placer only.
+
+I’m running the recovery generator now from that existing runner. If any family blocks, it will be recorded as blocked instead of producing a fake terminalized file.
+
+The first recovery run exposed a real issue in my payload: RESISTOR, CAP, and REALIND selected older terminal-bearing donors, so the shared native route correctly refused them as non-bare. The old V12 accepted two-pin runner forced the new-component mega donor. I’m patching the existing runner to do the same for all two-pin solos and regenerating.
+
+Regenerating the 1x recovery pack with the forced bare two-pin donor.
+
+CAP-ELEC is the remaining blocker. The accepted V12 route used the new-component donor plus `component_offsets: {"CAP-ELEC": 21}` to skip bad early electrolytic packets. I’m applying that exact solo offset and regenerating.
+
+Regenerating again; target is zero terminal generation errors for the recovery-supported set.
+
+Recovery generation is clean now: terminal error list is empty. It produced 27 terminalized 1x cases: 19 accepted two-pin + 8 V9 existing-anchor multi-pin. I’m running focused validation/compile next.
+
+The generated recovery summary is clean: 27 terminalized solos, 38 no-terminal controls, zero terminal generation errors. Running focused tests and compile now.
+
+Focused tests caught one remaining V10 path: the display block handler was still allowed. I’m blocking that too; displays will remain no-terminal controls until we have accepted donor-native display terminal evidence.
+
+Display V10 path is blocked. Re-running the focused test suite.
+
+Focused tests and compile pass. I’m recording this as a recovery checkpoint and marking V10 link-offset/display emission as rejected so it is not reused accidentally.
+
+I’m updating docs/evidence now, then I’ll commit/push the recovery pack and verify remote.
+
+I’m appending the rejection/recovery notes instead of rewriting history: V10 remains as failed evidence; V11 recovery is the current test pack.
+
+Status doc now records V10 as rejected and the 1x recovery pack as the current test baseline.
+
+I’m appending the architecture note at EOF.
+
+Architecture doc now has the V10 rejection/recovery policy. I’m appending the machine-readable evidence record.
+
+Appending V10 rejection + V11 recovery evidence.
+
+Evidence record is appended. I’m updating `context.md` with this turn’s user messages, visible responses, files edited, and verification before commit.
+
+I’m appending the context log now.
+
+## Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_terminal_placer.py` - disabled the rejected V10 catalogue link-offset fallback for pins without donor-native WIRE anchors; disabled the V10 display link-offset block; existing V9 donor-native WIRE-anchor catalogue terminalization remains enabled; accepted two-pin path remains enabled.
+- `backups/component_terminal_placer/component_terminal_placer_20260708_002743_before_v10_disable.py` - required backup before editing the shared terminal placer.
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py` - same existing runner path updated to generate the 1x recovery pack only; it writes `input.json` for each case and calls shared placement/terminal APIs only.
+- `tests/test_component_catalog.py` - updated V10 tests from accepting link-offset/display output to blocking those rejected paths.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - marked V10 rejected and documented the 1x recovery pack.
+- `docs/architecture.md` - added Proteus terminal recovery architecture rule: no bare link-offset catalogue terminal output until accepted Proteus oracle exists.
+- `knowledge/test_results.jsonl` - appended V10 rejection plus recovery pack evidence.
+- `experiments/terminal_recovery_solo_1x_temp_2026_07_08/` - generated 1x recovery output, README, summary, terminal reports, placement manifests, and per-case input JSON files.
+- `experiments/TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip` - generated user-test archive.
+- `context.md` - appended this continuation log.
+
+## Verification Recorded During Turn
+
+- Start checkpoint verified: branch `codex/generic-proteus-generator-v0`, local `HEAD`, upstream, and remote all matched `293f60739f5e27fa2bc6e1c479c58583cb006227`; working tree was clean before edits.
+- Recovery generator command:
+  `PYTHONPATH=src python tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py`
+- Recovery pack generated:
+  `experiments/terminal_recovery_solo_1x_temp_2026_07_08/`.
+- Recovery archive generated:
+  `experiments/TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip`.
+- Archive SHA256:
+  `1710e4d381c61b76f400f3f8ea9684644b4d2a21f6054813a6eba0a7f81aebcc`.
+- Recovery terminalized cases: 27.
+- Recovery terminal errors: 0.
+- No-terminal controls: 38.
+- Terminalized set:
+  `RESISTOR`, `CAP`, `DIODE`, `VSINE`, `VSOURCE`, `CSOURCE`, `VPULSE`,
+  `LED-RED`, `1N4733A`, `40EPS08`, `BZY88C`, `1N4007`, `1N4148`,
+  `1N6000B`, `BZX55C5V1`, `BZX79C5V1`, `FUSE`, `REALIND`, `CAP-ELEC`,
+  `4511`, `74HC151`, `BRIDGE`, `LM317T`, `NMOSFET`, `OPAMP`, `POT-HG`,
+  `TRAN-2P2S`.
+- Blocked terminalized families:
+  `4518`, `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC266`, `74HC32`,
+  `74HC4520`, `74HC86`, `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`.
+- `PYTHONPATH=src python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q` -> `111 passed`.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+- Commit and push verification: pending at this context-update moment; final answer should report commit hash and remote verification.
+
 ---
 
 ## Restart Context Continuation - Proteus Catalogue Terminal V10

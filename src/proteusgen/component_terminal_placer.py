@@ -1166,6 +1166,12 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             family == "7SEG-COM-CAT-BLUE"
             and (requested is None or family in requested)
         ):
+            raise ValueError(
+                "7SEG catalogue display terminalization is disabled at this "
+                "checkpoint. The V10 display/link-offset emitter generated "
+                "Proteus-rejected files; D20/display grouping needs a "
+                "donor-native accepted route before re-enabling."
+            )
             cathode_groups: list[Any] = []
             block_group_indices: list[int] = []
             cursor = group_index
@@ -1503,24 +1509,13 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 existing_wire_marker_offset = int(existing_wire["marker_offset"])
                 wire_count_rewritten += 1
             else:
-                raw_link_offset = raw_geometry.get(
-                    "component_link_offset_from_component_end"
+                raise ValueError(
+                    f"{family} {key} pin {pin_name} has no donor-native WIRE "
+                    "anchor in the placed stream. The V10 catalogue link-offset "
+                    "emitter generated Proteus-rejected files and is disabled "
+                    "until this byte path is re-researched from an accepted "
+                    "Proteus-opened example."
                 )
-                if raw_link_offset is None:
-                    raise ValueError(
-                        f"{family} {key} pin {pin_name} lacks an existing WIRE "
-                        "anchor and catalogue component-link offset."
-                    )
-                patched_data, component_link_position, old_suffix, component_link_trailer = (
-                    _patch_component_link_from_catalogue_offset(
-                        patched_data,
-                        new_suffix=temporary_suffix,
-                        offset_from_component_end=int(raw_link_offset),
-                        trailer_hex=raw_geometry.get("component_link_trailer"),
-                    )
-                )
-                appended_wire_records.append(bytes.fromhex(short_wire["record"]))
-                wire_count_added += 1
             terminal_dict = dict(row["terminal"])
             terminal_dict["suffix"] = f"{temporary_suffix:04x}"
             terminal_records.append(

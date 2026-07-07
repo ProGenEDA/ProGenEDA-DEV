@@ -381,3 +381,31 @@ blocked until the D20/display grouping path is integrated. The requested
 9x/15x/23x and mixed 3x packs remain intentionally ungenerated because current
 safe donor evidence provides one active WIRE/link skeleton per promoted family;
 component packet cloning is still not allowed.
+
+## 2026-07-08 Proteus terminal recovery checkpoint
+
+User Proteus testing rejected the V10 catalogue link-offset pack: all generated
+terminal files failed. The architecture consequence is explicit:
+
+- Do not treat static terminal validation as Proteus acceptance.
+- Do not generate catalogue multi-pin terminals from bare component packets by
+  patching link offsets and appending new WIRE records until that exact byte
+  route has a Proteus-opened oracle.
+- Use only accepted two-pin terminal mechanics and donor-native existing WIRE
+  anchor mechanics for the current recovery baseline.
+
+The recovery test pack is
+`experiments/terminal_recovery_solo_1x_temp_2026_07_08/` with archive
+`experiments/TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip`.
+
+It is intentionally 1x-only:
+
+- 19 accepted two-pin families through component placer, beautifier, and the
+  shared terminal placer.
+- 8 V9 existing-anchor multi-pin families through component placer and the
+  shared catalogue terminal placer.
+- No mixed pack and no scaling.
+- Every case includes the JSON request passed to generation.
+
+The blocked families stay blocked until donor-native evidence or a new
+Proteus-opened byte oracle exists.

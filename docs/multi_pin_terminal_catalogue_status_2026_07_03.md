@@ -321,3 +321,77 @@ Result: focused tests `2 passed`; component/catalogue regression suite
 
 Status: pending user Proteus open/render testing. Static binary validation is
 clean, but Proteus UI acceptance is the final authority.
+
+## V10 Rejected / 1x Recovery Pack - 2026-07-08
+
+User Proteus testing reported that all V10 generated terminal files failed.
+The V10 approach is therefore rejected despite static validation passing.
+
+Rejected V10 mechanism:
+
+- Catalogue `component_link_offset_from_component_end` on bare
+  component-placer packets.
+- Newly appended catalogue WIRE records for multi-pin/gate/display families.
+- Display block link-offset emission for `7SEG-COM-CAT-BLUE` /
+  `7SEG-COM-AN-BLUE`.
+
+Current guardrail:
+
+- `src/proteusgen/component_terminal_placer.py` now refuses catalogue
+  terminalization when a pin has no donor-native existing WIRE anchor.
+- The display V10 link-offset block is disabled until there is accepted
+  donor-native display evidence.
+- Existing V9 donor-native WIRE-anchor catalogue emission remains enabled.
+- Accepted two-pin terminal emission remains enabled through
+  `attach_component_bidir_terminals_to_project`.
+
+Generated recovery pack:
+
+- Folder: `experiments/terminal_recovery_solo_1x_temp_2026_07_08/`
+- Archive: `experiments/TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip`
+- Archive SHA256:
+  `1710e4d381c61b76f400f3f8ea9684644b4d2a21f6054813a6eba0a7f81aebcc`
+- Runner:
+  `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py`
+
+Recovery scope:
+
+- 1x only; no multi-count and no mixed pack.
+- Every generated case includes `input.json`.
+- 27 terminalized solo cases, 0 terminal generation errors.
+- 19 accepted two-pin families generated through the current component placer,
+  beautifier, and shared terminal placer using the accepted two-pin route:
+  `RESISTOR`, `CAP`, `DIODE`, `VSINE`, `VSOURCE`, `CSOURCE`, `VPULSE`,
+  `LED-RED`, `1N4733A`, `40EPS08`, `BZY88C`, `1N4007`, `1N4148`,
+  `1N6000B`, `BZX55C5V1`, `BZX79C5V1`, `FUSE`, `REALIND`, `CAP-ELEC`.
+- 8 V9 existing-anchor multi-pin families generated through donor-native
+  terminal/WIRE skeletons: `4511`, `74HC151`, `BRIDGE`, `LM317T`,
+  `NMOSFET`, `OPAMP`, `POT-HG`, `TRAN-2P2S`.
+- 38 no-terminal controls generated for comparison.
+
+Still blocked for terminalized output:
+
+- `4518`
+- `74HC00`
+- `74HC02`
+- `74HC04`
+- `74HC08`
+- `74HC266`
+- `74HC32`
+- `74HC4520`
+- `74HC86`
+- `7SEG-COM-AN-BLUE`
+- `7SEG-COM-CAT-BLUE`
+
+Verification run:
+
+```powershell
+$env:PYTHONPATH = "src"
+python tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py
+python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q
+python -m compileall -q src tests tools/proteus_generation
+```
+
+Result: recovery generation produced 27 terminalized 1x cases and 0 terminal
+errors; catalogue/component regression suite `111 passed`; compile check
+passed.
