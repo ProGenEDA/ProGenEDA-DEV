@@ -395,3 +395,66 @@ python -m compileall -q src tests tools/proteus_generation
 Result: recovery generation produced 27 terminalized 1x cases and 0 terminal
 errors; catalogue/component regression suite `111 passed`; compile check
 passed.
+
+## V10 Failure Root Cause / Clean Catalogue V2 - 2026-07-08
+
+User Proteus testing of the 1x recovery pack reported that every existing-anchor
+case except `4511` failed; `74HC151` still had terminal geometry issues and the
+remaining anchor cases did not open. The important root cause found in the repo
+was that the generated `_placed` inputs for those anchor cases were not clean
+component-placer outputs: they already contained donor `$TERBIDIR` and WIRE
+records from the terminalized evidence donors. That violated the placed-design
+contract.
+
+Correction:
+
+- Terminalized donors are now evidence only.
+- Catalogue multi-pin generation starts from normal clean component-placer
+  output.
+- The shared terminal placer computes current pin coordinates from catalogue
+  component-relative geometry and the placed packet's current anchor.
+- The terminal contact is snapped to the Proteus grid, moved outward from the
+  exact pin, connected with a short WIRE, and linked by final ROOT.DSN WIRE
+  address rebasing.
+- The user-test artifact retains only final `*_sa.pdsprj` terminalized files;
+  temporary `_placed`/work projects are deleted.
+
+Generated clean recovery pack:
+
+- Folder:
+  `experiments/terminal_recovery_solo_1x_catalogue_v2_temp_2026_07_08/`
+- Archive:
+  `experiments/TERMINAL_RECOVERY_SOLO_1X_CATALOGUE_V2_TEMP_2026_07_08.zip`
+- Archive SHA256:
+  `4010508a7bbb8fad2f0af66211d7b0f3bc6ffacceaceea2b93c591c45060c21d`
+- Terminalized final `_sa` cases: 34.
+- Terminal generation errors: 0.
+- Temporary `_placed` projects and work manifests retained: 0.
+- Catalogue donor-comparison reports: valid for every catalogue multi-pin case.
+
+Terminalized scope:
+
+- 19 accepted two-pin families.
+- 15 catalogue bare-pin multi-pin families:
+  `4511`, `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC151`, `74HC266`,
+  `74HC32`, `74HC86`, `BRIDGE`, `LM317T`, `NMOSFET`, `OPAMP`, `POT-HG`,
+  `TRAN-2P2S`.
+
+Still blocked:
+
+- `4518` and `74HC4520`: no accepted terminal/link evidence in the current
+  catalogue.
+- `7SEG-COM-AN-BLUE`: component-link offsets exist, but donor label/source
+  evidence is incomplete, so it is not shipped as a good terminalized case.
+- `7SEG-COM-CAT-BLUE`: D20/display grouping remains blocked.
+
+Verification run:
+
+```powershell
+$env:PYTHONPATH = "src"
+python tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py
+python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q
+python -m compileall -q src tests tools/proteus_generation
+```
+
+Result: `111 passed`; compile check passed.

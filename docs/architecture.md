@@ -409,3 +409,32 @@ It is intentionally 1x-only:
 
 The blocked families stay blocked until donor-native evidence or a new
 Proteus-opened byte oracle exists.
+
+## 2026-07-08 clean catalogue terminal checkpoint
+
+Follow-up user testing showed the previous anchor recovery pack was still
+wrong because the multi-pin "placed" inputs were generated from terminalized
+evidence donors and already contained `$TERBIDIR`/WIRE records. That is not a
+valid placed-design contract.
+
+The corrected Proteus terminal architecture is:
+
+- main catalogue stores component-relative pin geometry, pin side/name/role,
+  component-link offsets/trailers, and donor evidence;
+- runtime planning builds a temporary placed-component view from the current
+  component packet coordinates/anchor;
+- terminal placement consumes that temporary pin map, snaps the terminal
+  contact to the Proteus grid, offsets it outward horizontally, emits a short
+  WIRE to the exact pin, and rebases links from final ROOT.DSN WIRE addresses;
+- terminalized donor projects are evidence inputs only, not placement donors;
+- final user-test packs should expose only `*_sa.pdsprj` terminalized projects,
+  not intermediate component-placer work files.
+
+The clean V2 recovery pack is
+`experiments/terminal_recovery_solo_1x_catalogue_v2_temp_2026_07_08/` with
+archive
+`experiments/TERMINAL_RECOVERY_SOLO_1X_CATALOGUE_V2_TEMP_2026_07_08.zip`.
+It contains 34 final `_sa` terminalized cases, 0 terminal errors, and no
+retained `_placed` projects or work manifests. `7SEG-COM-AN-BLUE`,
+`7SEG-COM-CAT-BLUE`, `4518`, and `74HC4520` remain blocked for terminalized
+output pending complete donor/catalogue evidence.

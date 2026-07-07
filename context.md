@@ -9154,3 +9154,129 @@ I can’t reconstruct every pre-compaction commentary line exactly because it wa
 - `git diff --check` -> passed with only normal line-ending warnings.
 - Implementation commit: `386af0704a5858ee739e6928bd67e85934829b4c` (`Add Proteus terminal 1x recovery pack`).
 - Push verification after implementation commit: local `HEAD`, upstream `origin/codex/generic-proteus-generator-v0`, and remote branch all matched `386af0704a5858ee739e6928bd67e85934829b4c`.
+
+~~~~
+
+## Turn Log - 2026-07-08 01:42:28 +05:00
+
+### User Message
+
+all the anchor accept 4511 failed
+there is an issue in 151, remaining alll didnt even open
+and y are u generating 2? only the _sa ones are the correct ones
+i think all these problems have been fixed, so y dont u first look at chat history and see what was fixed n how
+adn tell me which ones u dont have donor for? i mean u said 27 terminalized and 38 no terminal
+and even after that u must surely be missing something no? isnt total number of supported components(this means placable using compoent placer) 50+? answer
+and i think u have completly fked the reason for there being a catelogue.
+and u are also completly missing many of the things i specified that might be causing the issues.
+heres is what u need to do
+catelogue is there for u to analysis all the donor and built a catelogue of all the components,
+It keeps information like pin to component relative distance pin information which pin is which, alll all such information there at one place
+there is such a thing as temp catelogue, it takes in the current cordinates of a component, and uses the pin to component relative cordiantes information to find the location/cordinates of the pin, then that information will be passed to terminal placer, which will use that information to place the terminal but frist it will appropiate the cordinates given to it into the grid lines only placement rule, so that it is placed on the closed horizontal gridline(or in simpler words move in vertical direction till it is on a line) then the terminal placer will move it in horizontal direction too, as the cordinates it recieved will be dead on the pin, so it will move it back a v small distance to place the small wire to attach the terminal with the pin. OBV Main catelogue will also have information about which pin is left pin i.e. requires 180, n which pin isnt which it will learn from donors, and yes this catelogue will be easily updrageable
+terminal placer will also receive the information from temp catelogue of which pin it actually is, and the terminal placer will name it according to the input json.
+this is the right smooth way to do this.
+lets just implement it, then ull generate the circuits, then ull compare them with the donors in C:\Users\Empty\Documents\Progentotal\protuesgen\experiments\multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04, if u find and error, ull fix it then regenerate all the solo circuits again to make sure this fix hasnt fked anything else up and this will continue till the generator is fully working for all components solo 1x.
+after this we will move on to bigger ones, then mix, and if u do it right and quick and perfect, i might just be able to get my terminal placer ready, so that we can do other stuff, import somewiring in, then happily ship it for mvp
+
+### Visible Agent Responses / Commentary
+
+I’ll first verify the repo/remote state as required, then I’ll inspect `context.md`, the current catalogue/terminal placer, and the July 4 donor-base folder before touching code. The immediate target is 1x `_sa` only, catalogue-derived pin coordinates, and no alternate terminal script path.
+
+Start check passed: branch `codex/generic-proteus-generator-v0`, local/upstream/remote all match `bb022873`. Working tree is clean.
+
+I’m checking the existing recovery notes and scripts now. I’m not going into KiCad code; this is Proteus/context/donor evidence only.
+
+First evidence pass confirms the old fix was not “existing-anchor for everything”; that path was exactly the unsafe shortcut. I’m narrowing now to: supported component list, donor-base coverage, and where catalogue geometry is currently used versus bypassed.
+
+The runner is currently producing both `_placed` and `_sa` files because it saves the intermediate component-placer output. For your testing pack I’ll stop exposing/copying the intermediate as a test artifact; `_sa` is the only terminalized output that matters.
+
+Direct answer to one count issue from the current repo: the catalogue has 74 entries, but that includes non-placeable logical terminals and aliases/inherited models. The placer-supported set is separate; I’m extracting that from the trusted donor manifest and actual donor inspection now, not assuming from catalogue count.
+
+Important correction from the code: the catalogue planner already has the intended architecture shape — main catalogue offsets + runtime placed component anchor -> current pin coordinates -> grid terminal + short wire. The failure is in the binary emission route and which donor evidence it relies on, not the high-level catalogue idea itself.
+
+I’m now comparing the generated `_sa` cases against the July 4 donor-base projects at object-stream level. This should show whether the failure is terminal geometry, active link patching, record ordering, or component-placer input.
+
+I’m checking whether the intermediate component-placement output for anchor families is actually clean. If it already contains donor terminals/wires, the terminal placer is not starting from the contract you described.
+
+Root cause found for the failed anchor pack: those “anchor” `_placed` files were not clean component-placer outputs. They already contained donor terminals and WIRE records. That is not the stage contract you specified. The fix is to use terminalized donors only as catalogue evidence, but place from the actual component placer / mega donor, then terminalize the clean placed packet.
+
+Before editing the shared terminal placer again, I’m making the required backup.
+
+Backup created. I’m patching only the shared terminal placer and existing runner.
+
+I’m re-enabling catalogue bare-packet emission, but only with stricter gates: clean placed component packet, catalogue component-link offset present, generated terminal + short WIRE emitted beside that component, then final ROOT.DSN address rebasing. No donor terminals in the placed input.
+
+I’m changing the existing runner so multi-pin cases use a clean component-placer output as the temporary input and delete that temporary file after producing `_sa`. The terminalized donor path remains evidence-only for catalogue facts.
+
+The runner now uses clean placement for catalogue families and deletes the temporary placed project. I’m running focused tests; failures here will show which catalogue offsets/donors are still incomplete.
+
+The expected regression changed: the old test was asserting the bare-packet path stayed blocked. Since that path is now the requested implementation, I’m converting the test to assert clean input/no donor terminals and generated terminal/wire/link validity.
+
+I’m keeping the display block test blocked for common-cathode/D20, but changing 74HC04 to prove the new clean catalogue path.
+
+Updating the test now.
+
+Running the focused tests again, then I’ll regenerate the 1x pack.
+
+Focused tests pass. Regenerating the clean 1x `_sa`-only pack now.
+
+Generation succeeded: 35 terminalized `_sa` cases, 0 terminal errors. I noticed HC04’s summary evidence donor is misleading because the July 4 M05 control is clean/no-terminal; the actual HC04 terminal evidence is the old accepted HC04 donor already in the catalogue. I’m correcting the runner metadata and regenerating once.
+
+Regenerating after the HC04 evidence metadata correction.
+
+The regeneration completed and left zero `_placed`/work files; my temp-output summary parse failed because PowerShell redirection didn’t write where expected. I’m reading the generated `summary.json` directly.
+
+The only static donor-comparison failure is `7SEG-COM-AN-BLUE`; its generated report is terminal-valid, but comparison says one or more catalogue evidence fields are incomplete. I’m checking that now instead of leaving a “valid-looking” weak case.
+
+For AN display, geometry has link offsets but lacks source-project/donor-label metadata, so comparison fails. Since your rule is donor-backed catalogue evidence, I’m going to block that case for now rather than ship it as “good” with incomplete evidence.
+
+Removing AN display from the terminalized set until the catalogue has complete donor-label evidence; the no-terminal control will remain.
+
+Regenerating after blocking the weak AN display case.
+
+Clean V2 pack now has 34 `_sa` terminalized cases, 0 terminal errors, all catalogue donor-comparison checks valid, and no `_placed`/work files. Running compile and focused tests again.
+
+The stat exposed another packaging issue: the component placer writes `_component_placer_work.pdsprj.manifest.json`. Iâ€™m deleting that too so terminalized case folders expose only final `_sa`, input, placement manifest, terminal report, and donor comparison.
+
+Regenerating once more so the archive/folder no longer contains work manifests.
+
+The clean package now has zero `_placed` files and zero work manifests. Archive SHA changed; Iâ€™m updating docs/evidence/context with the final SHA.
+
+Tests/compile pass. I’m updating the status docs, evidence log, and context, then I’ll commit/push/verify.
+
+The old docs still say the bare catalogue path is rejected globally. I’m updating them to the narrower truth from this turn: the failed pack used terminalized donor streams as placement; V2 uses clean placed packets plus catalogue link offsets.
+
+Status doc updated. I’m updating architecture and evidence log next.
+
+Appending evidence record.
+
+Evidence is updated. I’m appending the current turn to `context.md` now.
+
+Writing the context entry with the exact user request, the visible response/update sequence, edited files, and verification.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - enabled clean bare-packet catalogue terminal emission when catalogue component-link offsets/trailers exist; rejects mixed dirty terminalized input for this path; still emits grid-snapped terminal contacts, short WIREs, and final ROOT.DSN link rebasing through the shared placer.
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py` - reused the existing runner; no new script. It now treats terminalized donors as evidence only, generates from clean component-placer output, retains only final `*_sa.pdsprj` terminalized projects, writes `donor_comparison.json` for catalogue cases, and blocks weak display cases.
+- `tests/test_component_catalog.py` - updated the old block test to assert clean bare-packet catalogue emission for `74HC04`.
+- `backups/component_terminal_placer/component_terminal_placer_20260708_012219_before_catalogue_bare_pin_emit.py` - backup before editing the shared terminal placer.
+- `experiments/terminal_recovery_solo_1x_catalogue_v2_temp_2026_07_08/` - generated V2 clean 1x terminal pack.
+- `experiments/TERMINAL_RECOVERY_SOLO_1X_CATALOGUE_V2_TEMP_2026_07_08.zip` - generated V2 archive.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded user failure report, root cause, V2 correction, scope, blocked families, and verification.
+- `docs/architecture.md` - recorded clean catalogue terminal checkpoint and the stage contract.
+- `knowledge/test_results.jsonl` - appended V2 evidence.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, local/upstream/remote matched `bb022873f7ac860ee0913083c9e666d890fff0db`; working tree was clean.
+- Component placer supported-family manifest union: `45` placeable families in current trusted donors, not 50+ from the current manifest.
+- Current catalogue entries: `74`, including non-placeable terminals and inherited/alias profiles.
+- Root cause check: previous anchor pack's `_placed` multi-pin inputs already contained `$TERBIDIR` and WIRE records.
+- Generated clean V2 pack: `34` final `_sa` terminalized cases, `0` terminal errors, `0` retained `_placed` files, `0` retained `_component_placer_work.pdsprj` files, and `0` retained `_component_placer_work.pdsprj.manifest.json` files.
+- Archive SHA256: `4010508a7bbb8fad2f0af66211d7b0f3bc6ffacceaceea2b93c591c45060c21d`.
+- Catalogue donor-comparison reports: valid for every shipped catalogue multi-pin case.
+- Blocked terminalized families: `4518`, `74HC4520`, `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`.
+- `PYTHONPATH=src; python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q` -> `111 passed`.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+- Commit/push verification: pending at this context-update moment.

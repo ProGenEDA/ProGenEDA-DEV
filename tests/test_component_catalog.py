@@ -441,7 +441,7 @@ def test_catalogue_pin_emitter_strips_old_partial_terminals_before_74hc74(tmp_pa
     assert report["wire_count_before"] == report["wire_count_after"] == 12
 
 
-def test_catalogue_pin_emitter_blocks_rejected_link_offset_generation(tmp_path) -> None:
+def test_catalogue_pin_emitter_uses_clean_bare_component_stream(tmp_path) -> None:
     source = tmp_path / "catalogue_74hc04_main_donor_bare.pdsprj"
     output = tmp_path / "catalogue_74hc04_main_donor_terminalized.pdsprj"
     result = generate_component_placement_project(
@@ -453,13 +453,26 @@ def test_catalogue_pin_emitter_blocks_rejected_link_offset_generation(tmp_path) 
         full_cdb=True,
     )
 
-    with pytest.raises(ValueError, match="V10 catalogue link-offset emitter"):
-        attach_catalogue_pin_bidir_terminals_to_project(
-            source,
-            output,
-            result.selected_groups,
-            terminal_families=["74HC04"],
-        )
+    source_chunk = _extract_object_chunk(read_internal_file(source, "ROOT.DSN"))
+    assert b"$TERBIDIR" not in source_chunk
+    assert b"\x7fWIRE" not in source_chunk
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["74HC04"],
+    )
+
+    output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    assert report["valid"]
+    assert report["family_handler"] == "CATALOGUE/link-offset-wire-v1"
+    assert report["stripped_existing_terminal_count"] == 0
+    assert report["wire_count_added"] == 12
+    assert report["wire_count_rewritten"] == 0
+    assert report["terminal_count_added"] == 12
+    assert output_chunk.count(b"$TERBIDIR") == 12
+    assert output_chunk.count(b"\x7fWIRE") == 12
 
 
 def test_catalogue_display_block_link_offset_generation_remains_blocked(tmp_path) -> None:

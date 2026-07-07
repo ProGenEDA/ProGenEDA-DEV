@@ -5,12 +5,13 @@ feeds JSON requests into the component placer and then calls only the shared
 terminal-placement APIs:
 
 * accepted two-pin families -> ``attach_component_bidir_terminals_to_project``
-* V9-safe multi-pin existing-anchor families ->
+* catalogue-backed multi-pin families ->
   ``attach_catalogue_pin_bidir_terminals_to_project``
 
-The V10 catalogue link-offset/bare-WIRE path is excluded because user Proteus
-testing rejected every generated V10 file.  This pack rebuilds a small, testable
-1x baseline before any count scaling or mixed packs are attempted again.
+The runner is intentionally not a terminal-placement implementation.  It keeps
+terminalized donors as catalogue/evidence inputs only; generated terminalized
+projects are produced from clean component-placer output and only the final
+``*_sa.pdsprj`` is retained for user testing.
 """
 
 from __future__ import annotations
@@ -42,8 +43,8 @@ from proteusgen.component_terminal_placer import (  # noqa: E402
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 
 
-OUTPUT_ROOT = REPO / "experiments" / "terminal_recovery_solo_1x_temp_2026_07_08"
-ARCHIVE = REPO / "experiments" / "TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip"
+OUTPUT_ROOT = REPO / "experiments" / "terminal_recovery_solo_1x_catalogue_v2_temp_2026_07_08"
+ARCHIVE = REPO / "experiments" / "TERMINAL_RECOVERY_SOLO_1X_CATALOGUE_V2_TEMP_2026_07_08.zip"
 
 DONOR_BASE = REPO / "experiments" / "multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04"
 TWO_PIN_DONOR = _repo_path(NEW_COMPONENT_MEGA_DONOR)
@@ -70,11 +71,19 @@ ACCEPTED_TWO_PIN_FAMILIES = (
     "CAP-ELEC",
 )
 
-# These are the V9 families that used donor-native existing WIRE/terminal
-# anchors.  They are kept separate from the V10 link-offset promoted list.
-V9_EXISTING_ANCHOR_MULTI_PIN_FAMILIES = (
+# These families have catalogue pin geometry plus component-link offsets.  The
+# terminalized donor projects are evidence only; placement comes from the normal
+# component placer/mega donors.
+CATALOGUE_BARE_PIN_MULTI_PIN_FAMILIES = (
     "4511",
+    "74HC00",
+    "74HC02",
+    "74HC04",
+    "74HC08",
     "74HC151",
+    "74HC266",
+    "74HC32",
+    "74HC86",
     "BRIDGE",
     "LM317T",
     "NMOSFET",
@@ -85,15 +94,8 @@ V9_EXISTING_ANCHOR_MULTI_PIN_FAMILIES = (
 
 BLOCKED_TERMINAL_FAMILIES = {
     "4518": "no accepted existing-anchor terminal evidence; ignored previously",
-    "74HC00": "V10 bare link-offset promotion rejected by Proteus",
-    "74HC02": "V10 bare link-offset promotion rejected by Proteus",
-    "74HC04": "V10 bare link-offset promotion rejected by Proteus",
-    "74HC08": "V10 bare link-offset promotion rejected by Proteus",
-    "74HC266": "V10 bare link-offset promotion rejected by Proteus",
-    "74HC32": "V10 bare link-offset promotion rejected by Proteus",
     "74HC4520": "no accepted existing-anchor terminal evidence; ignored previously",
-    "74HC86": "V10 bare link-offset promotion rejected by Proteus",
-    "7SEG-COM-AN-BLUE": "display V10 link-offset path rejected; needs accepted donor-native route",
+    "7SEG-COM-AN-BLUE": "catalogue link offsets exist, but donor label/source evidence is incomplete",
     "7SEG-COM-CAT-BLUE": "display V10 link-offset path rejected; D20/display grouping still needs accepted route",
 }
 
@@ -156,9 +158,97 @@ def _donor_cases() -> dict[str, Path]:
     return cases
 
 
+def _terminal_evidence_donor_for_family(
+    family: str,
+    donor_cases: dict[str, Path],
+) -> Path | None:
+    if family == "74HC04":
+        # The July 4 M05 file is a clean no-terminal control.  HC04 terminal
+        # geometry/link evidence currently lives in the older accepted HC04
+        # all-six donor already recorded in the catalogue.
+        return (
+            REPO
+            / "experiments"
+            / "ic_hc04_all7_v1_temp_2026_06_08"
+            / "T02_74HC04_ALL6_NOT"
+            / "T02_74HC04_ALL6_NOT.pdsprj"
+        )
+    return donor_cases.get(family)
+
+
 def _donor_is_clean_no_terminal_source(donor: Path) -> bool:
     chunk = _extract_object_chunk(read_internal_file(donor, "ROOT.DSN"))
     return chunk.count(BIDIR_MARKER) == 0 and chunk.count(b"\x7fWIRE") == 0
+
+
+def _remove_component_placer_work_files(path: Path) -> None:
+    path.unlink(missing_ok=True)
+    Path(str(path) + ".manifest.json").unlink(missing_ok=True)
+
+
+def _catalogue_donor_comparison(report: dict[str, Any]) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    for family_report in report.get("family_reports", []):
+        for terminal_pin in family_report.get("terminal_pins", []):
+            geometry = terminal_pin.get("catalogue_geometry", {})
+            pin = terminal_pin.get("pin", {})
+            terminal = terminal_pin.get("terminal", {})
+            short_wire = terminal_pin.get("short_wire", {})
+            start = short_wire.get("start", {})
+            end = short_wire.get("end", {})
+            pin_x = int(pin.get("x", 0))
+            pin_y = int(pin.get("y", 0))
+            side = str(pin.get("side", "")).lower()
+            expected_angle = 1800 if side == "left" else 0 if side == "right" else None
+            rows.append(
+                {
+                    "component_key": terminal_pin.get("component_key"),
+                    "component_family": terminal_pin.get("component_family"),
+                    "pin": pin.get("name"),
+                    "role": pin.get("role"),
+                    "source_project": geometry.get("source_project"),
+                    "donor_terminal_label": geometry.get("donor_terminal_label"),
+                    "donor_wire_marker_offset": geometry.get("donor_wire_marker_offset"),
+                    "component_link_offset_from_component_end": geometry.get(
+                        "component_link_offset_from_component_end"
+                    ),
+                    "component_link_trailer": geometry.get("component_link_trailer"),
+                    "side": side,
+                    "side_angle_valid": (
+                        expected_angle is not None
+                        and int(terminal.get("angle_tenths", -1)) == expected_angle
+                    ),
+                    "terminal_contact_grid_aligned": (
+                        int(start.get("x", 1)) % 254_000 == 0
+                        and int(start.get("y", 1)) % 254_000 == 0
+                    ),
+                    "wire_to_pin": (
+                        int(end.get("x", 0)) == pin_x
+                        and int(end.get("y", 0)) == pin_y
+                    ),
+                    "wire_is_nonzero": (
+                        int(start.get("x", 0)) != int(end.get("x", 0))
+                        or int(start.get("y", 0)) != int(end.get("y", 0))
+                    ),
+                    "coordinate_source": terminal_pin.get("coordinate_source"),
+                }
+            )
+    return {
+        "stage": "catalogue_donor_comparison",
+        "row_count": len(rows),
+        "valid": bool(rows)
+        and all(
+            row["source_project"]
+            and row["donor_terminal_label"]
+            and row["component_link_offset_from_component_end"] is not None
+            and row["side_angle_valid"]
+            and row["terminal_contact_grid_aligned"]
+            and row["wire_to_pin"]
+            and row["wire_is_nonzero"]
+            for row in rows
+        ),
+        "rows": rows,
+    }
 
 
 def _generate_two_pin_terminal_case(
@@ -168,7 +258,7 @@ def _generate_two_pin_terminal_case(
 ) -> dict[str, object]:
     case_dir.mkdir(parents=True, exist_ok=True)
     payload = _payload(family, force_two_pin_donor=True)
-    placed = case_dir / f"{case_dir.name}_placed.pdsprj"
+    placed = case_dir / "_component_placer_work.pdsprj"
     final = case_dir / f"{case_dir.name}_sa.pdsprj"
 
     placement = generate_component_placement_project(payload, placed, donor_path=TWO_PIN_DONOR)
@@ -182,12 +272,12 @@ def _generate_two_pin_terminal_case(
     _write_json(case_dir / "input.json", payload)
     _write_json(case_dir / "placement_manifest.json", placement.as_dict())
     _write_json(case_dir / "terminal_report.json", terminal_report)
+    _remove_component_placer_work_files(placed)
     return {
         "case": case_dir.name,
         "family": family,
         "kind": "accepted_two_pin",
         "input_json": str((case_dir / "input.json").relative_to(REPO)),
-        "placed_project": str(placed.relative_to(REPO)),
         "final_project": str(final.relative_to(REPO)),
         "placement_valid": placement.valid,
         "terminal_valid": bool(terminal_report["valid"]),
@@ -202,7 +292,7 @@ def _generate_two_pin_terminal_case(
     }
 
 
-def _generate_existing_anchor_terminal_case(
+def _generate_catalogue_bare_pin_terminal_case(
     *,
     family: str,
     donor: Path,
@@ -210,10 +300,10 @@ def _generate_existing_anchor_terminal_case(
 ) -> dict[str, object]:
     case_dir.mkdir(parents=True, exist_ok=True)
     payload = _payload(family, donor=donor)
-    placed = case_dir / f"{case_dir.name}_placed.pdsprj"
+    placed = case_dir / "_component_placer_work.pdsprj"
     final = case_dir / f"{case_dir.name}_sa.pdsprj"
 
-    placement = generate_component_placement_project(payload, placed, donor_path=donor)
+    placement = generate_component_placement_project(payload, placed)
     terminal_report = attach_catalogue_pin_bidir_terminals_to_project(
         placed,
         final,
@@ -224,12 +314,14 @@ def _generate_existing_anchor_terminal_case(
     _write_json(case_dir / "input.json", payload)
     _write_json(case_dir / "placement_manifest.json", placement.as_dict())
     _write_json(case_dir / "terminal_report.json", terminal_report)
+    donor_comparison = _catalogue_donor_comparison(terminal_report)
+    _write_json(case_dir / "donor_comparison.json", donor_comparison)
+    _remove_component_placer_work_files(placed)
     return {
         "case": case_dir.name,
         "family": family,
-        "kind": "v9_existing_anchor_multi_pin",
+        "kind": "catalogue_bare_pin_multi_pin",
         "input_json": str((case_dir / "input.json").relative_to(REPO)),
-        "placed_project": str(placed.relative_to(REPO)),
         "final_project": str(final.relative_to(REPO)),
         "placement_valid": placement.valid,
         "terminal_valid": bool(terminal_report["valid"]),
@@ -240,7 +332,9 @@ def _generate_existing_anchor_terminal_case(
         "terminal_suffix_links_valid": terminal_report["terminal_suffix_links_valid"],
         "wire_path_contacts_valid": terminal_report["wire_path_contacts_valid"],
         "terminal_grid_alignment_valid": terminal_report["terminal_grid_alignment_valid"],
-        "donor": str(donor.relative_to(REPO)),
+        "donor_comparison_valid": donor_comparison["valid"],
+        "evidence_donor": str(donor.relative_to(REPO)),
+        "placement_donor": str(placement.donor.relative_to(REPO)),
         "status": "generated",
     }
 
@@ -299,9 +393,10 @@ def _readme(summary: dict[str, object]) -> str:
     terminal_cases = list(summary["terminal_cases"])  # type: ignore[index]
     blocked = dict(summary["blocked_terminal_families"])  # type: ignore[index]
     return (
-        "# Terminal recovery solo 1x - 2026-07-08\n\n"
-        "This pack is a rollback-style recovery baseline after user Proteus "
-        "testing rejected the V10 catalogue link-offset pack.\n\n"
+        "# Terminal recovery solo 1x catalogue V2 - 2026-07-08\n\n"
+        "This pack is a clean-component recovery baseline. Terminalized donor "
+        "projects are used only as catalogue/evidence inputs; the generated "
+        "terminalized projects come from normal component-placer output.\n\n"
         "Every terminalized case is a 1x solo. No multi-count and no mixed pack "
         "is generated here.\n\n"
         f"- Terminalized 1x cases: {len(terminal_cases)}\n"
@@ -352,23 +447,23 @@ def main() -> None:
             )
         index += 1
 
-    for family in V9_EXISTING_ANCHOR_MULTI_PIN_FAMILIES:
-        case_dir = OUTPUT_ROOT / _case_name("S", index, family, "EXISTING_ANCHOR_TERMINAL")
-        donor = donor_cases.get(family)
-        if donor is None:
+    for family in CATALOGUE_BARE_PIN_MULTI_PIN_FAMILIES:
+        case_dir = OUTPUT_ROOT / _case_name("S", index, family, "CATALOGUE_TERMINAL")
+        donor = _terminal_evidence_donor_for_family(family, donor_cases)
+        if donor is None or not donor.exists():
             terminal_errors.append(
                 {
                     "case": case_dir.name,
                     "family": family,
-                    "kind": "v9_existing_anchor_multi_pin",
+                    "kind": "catalogue_bare_pin_multi_pin",
                     "status": "blocked",
-                    "error": "donor-base project missing",
+                    "error": "terminalized evidence donor project missing",
                 }
             )
         else:
             try:
                 terminal_cases.append(
-                    _generate_existing_anchor_terminal_case(
+                    _generate_catalogue_bare_pin_terminal_case(
                         family=family,
                         donor=donor,
                         case_dir=case_dir,
@@ -379,7 +474,7 @@ def main() -> None:
                     {
                         "case": case_dir.name,
                         "family": family,
-                        "kind": "v9_existing_anchor_multi_pin",
+                        "kind": "catalogue_bare_pin_multi_pin",
                         "status": "blocked",
                         "error": f"{type(exc).__name__}: {exc}",
                         "donor": str(donor.relative_to(REPO)),
@@ -389,7 +484,7 @@ def main() -> None:
 
     control_families = sorted(
         set(ACCEPTED_TWO_PIN_FAMILIES)
-        | set(V9_EXISTING_ANCHOR_MULTI_PIN_FAMILIES)
+        | set(CATALOGUE_BARE_PIN_MULTI_PIN_FAMILIES)
         | set(BLOCKED_TERMINAL_FAMILIES)
         | set(donor_cases)
     )
@@ -406,22 +501,23 @@ def main() -> None:
         family: reason
         for family, reason in BLOCKED_TERMINAL_FAMILIES.items()
         if family not in ACCEPTED_TWO_PIN_FAMILIES
-        and family not in V9_EXISTING_ANCHOR_MULTI_PIN_FAMILIES
+        and family not in CATALOGUE_BARE_PIN_MULTI_PIN_FAMILIES
     }
     for row in terminal_errors:
         blocked.setdefault(str(row["family"]), str(row["error"]))
 
     summary: dict[str, object] = {
         "experiment": OUTPUT_ROOT.name,
-        "purpose": "1x-only Proteus terminal recovery baseline after V10 rejection",
+        "purpose": "1x-only Proteus terminal recovery baseline using clean component placer output",
         "accepted_two_pin_families": list(ACCEPTED_TWO_PIN_FAMILIES),
-        "v9_existing_anchor_multi_pin_families": list(V9_EXISTING_ANCHOR_MULTI_PIN_FAMILIES),
+        "catalogue_bare_pin_multi_pin_families": list(CATALOGUE_BARE_PIN_MULTI_PIN_FAMILIES),
         "terminal_cases": terminal_cases,
         "terminal_errors": terminal_errors,
         "no_terminal_controls": controls,
         "blocked_terminal_families": blocked,
         "notes": [
-            "V10 catalogue link-offset/bare-WIRE generation is disabled.",
+            "Terminalized donors are evidence only; generated terminalized files start from clean component-placer output.",
+            "Only final *_sa.pdsprj files are retained for terminalized cases.",
             "No mixed pack and no count scaling is generated in this recovery checkpoint.",
             "This runner contains no terminal-placement logic.",
             "Every case stores input.json beside the generated project.",

@@ -1509,13 +1509,32 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 existing_wire_marker_offset = int(existing_wire["marker_offset"])
                 wire_count_rewritten += 1
             else:
-                raise ValueError(
-                    f"{family} {key} pin {pin_name} has no donor-native WIRE "
-                    "anchor in the placed stream. The V10 catalogue link-offset "
-                    "emitter generated Proteus-rejected files and is disabled "
-                    "until this byte path is re-researched from an accepted "
-                    "Proteus-opened example."
+                if original_group_data.count(BIDIR_MARKER) or data_wire_rows:
+                    raise ValueError(
+                        f"{family} {key} pin {pin_name} has no matched "
+                        "donor-native WIRE anchor, but the placed packet still "
+                        "contains terminal/WIRE infrastructure. Refusing to mix "
+                        "existing-anchor and clean bare-packet emission."
+                    )
+                raw_link_offset = raw_geometry.get(
+                    "component_link_offset_from_component_end"
                 )
+                if raw_link_offset is None:
+                    raise ValueError(
+                        f"{family} {key} pin {pin_name} lacks catalogue "
+                        "component-link offset for clean bare-packet emission."
+                    )
+                patched_data, component_link_position, old_suffix, trailer = (
+                    _patch_component_link_from_catalogue_offset(
+                        patched_data,
+                        new_suffix=temporary_suffix,
+                        offset_from_component_end=int(raw_link_offset),
+                        trailer_hex=raw_geometry.get("component_link_trailer"),
+                    )
+                )
+                component_link_trailer = trailer
+                appended_wire_records.append(bytes.fromhex(short_wire["record"]))
+                wire_count_added += 1
             terminal_dict = dict(row["terminal"])
             terminal_dict["suffix"] = f"{temporary_suffix:04x}"
             terminal_records.append(
