@@ -180,10 +180,12 @@ checkpoint:
    accepted terminalized donors with pin-named terminals, or backend library
    metadata. Do not infer reset, clock, enable, supply, input, or output only
    from geometry.
-5. Import the KiCad wire-planner architecture later as backend-neutral JSON:
-   placement + CircuitIR nets -> coordinate-plan JSON for the beautifier plus
-   wire-plan JSON for the backend-specific wire maker. Proteus should get its
-   own wire maker that consumes the same plan and writes Proteus-native records.
+5. Repurpose the backend-neutral parts of the KiCad wire-planner architecture
+   later; do not import KiCad backend assumptions into Proteus. The useful
+   contract is placement + CircuitIR nets -> coordinate-plan JSON for the
+   beautifier plus wire-plan JSON for a backend-specific wire maker. Proteus
+   must keep its own wire maker that consumes the same abstract plan and writes
+   Proteus-native records.
 6. Add route and geometry validators equivalent to the KiCad work: no
    unintended wire/body contact, no different-net crossings, same-net junctions
    explicit, unresolved pin aliases reported, and final netlist/ERC comparison
@@ -238,8 +240,31 @@ every family emitted by the component placer. Pin-terminal test labels are
 deterministic (`PIN<number><ROLE>`, falling back to `PIN<number>`), so IC and
 multi-pin solo checks can be inspected without guessing which pin a terminal
 targets. Seven-segment D20 bridge packets and display sentinels are Proteus
-infrastructure and must stay byte-preserved rather than being treated as normal
-diodes.
+infrastructure, not user components, and must not receive terminals.
+
+V10 on 2026-07-07 promotes Proteus-specific catalogue link offsets rather than
+KiCad data. The shared terminal placer can now attach active terminals to bare
+main/component-placer packets that have no donor WIRE records by reading
+`component_link_offset_from_component_end` and `component_link_trailer` from
+`knowledge/component_catalog_v0.json`, patching the component pin-link fields,
+appending canonical short WIRE records, and rebasing links from final ROOT.DSN
+addresses. Complete-package IC donor selection now routes HC04/quad gates to
+the main mega donor before registry fallback. The V10 evidence pack is:
+
+- Folder: `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/`
+- Archive: `experiments/CATALOGUE_TERMINAL_MAIN_DONOR_V10_TEMP_2026_07_07.zip`
+- Static result: 68 terminalized solo cases generated for 17 promoted
+  families at `1x/9x/15x/23x`, 68 matching no-terminal controls, zero terminal
+  errors, and one mixed 3x all-promoted pack with 444 active terminals/WIREs.
+
+Promoted families in this V10 pack are `4511`, `74HC00`, `74HC02`, `74HC04`,
+`74HC08`, `74HC151`, `74HC266`, `74HC32`, `74HC86`,
+`7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`, `BRIDGE`, `LM317T`, `NMOSFET`,
+`OPAMP`, `POT-HG`, and `TRAN-2P2S`. `4518` and `74HC4520` remain intentionally
+unpromoted. Common-cathode seven-segment display links are a Proteus-specific
+boundary case: one link field crosses into the following display/sentinel
+packet, so the shared placer terminalizes consecutive display packets as one
+display block while still ignoring `D20` and display sentinels as user pins.
 
 The rejected `multi_pin_terminal_solo_v1_temp_2026_07_03` pack must not be
 used as future evidence. Its donor-native attached cases did not open in

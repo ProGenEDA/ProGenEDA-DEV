@@ -1035,6 +1035,62 @@ def _patch_component_link_before_wire(
     return bytes(patched), suffix_position, old_suffix
 
 
+def _patch_component_link_from_catalogue_offset(
+    data: bytes,
+    *,
+    new_suffix: int,
+    offset_from_component_end: int,
+    trailer_hex: str | None = None,
+) -> tuple[bytes, int, int, bytes]:
+    """Patch a donor-proven bare-packet link slot.
+
+    Some main/component-placer donor packets contain the same reserved pin-link
+    slots as the terminalized donor evidence, but they do not carry old terminal
+    suffixes or WIRE records.  The catalogue stores those slots as offsets from
+    the end of the bare component packet so reference-length shifts do not make
+    the absolute positions brittle.
+    """
+
+    position = len(data) + int(offset_from_component_end)
+    return _patch_component_link_at_position(
+        data,
+        new_suffix=new_suffix,
+        position=position,
+        trailer_hex=trailer_hex,
+    )
+
+
+def _patch_component_link_at_position(
+    data: bytes,
+    *,
+    new_suffix: int,
+    position: int,
+    trailer_hex: str | None = None,
+) -> tuple[bytes, int, int, bytes]:
+    """Patch a component pin-link field at an absolute packet/block offset."""
+
+    trailer = (
+        bytes.fromhex(str(trailer_hex))
+        if trailer_hex is not None
+        else COMPONENT_PIN_LINK_TRAILERS[0]
+    )
+    if trailer not in COMPONENT_PIN_LINK_TRAILERS:
+        raise ValueError(
+            f"Unsupported component pin-link trailer {trailer.hex()} from catalogue."
+        )
+    if position < 0 or position + 4 > len(data):
+        raise ValueError(
+            "Catalogue component pin-link position is outside the component packet: "
+            f"position={position}, packet_size={len(data)}."
+        )
+    old_suffix = struct.unpack("<H", data[position : position + 2])[0]
+    patched = bytearray(data)
+    patched[position : position + 4] = (
+        struct.pack("<H", new_suffix & 0xFFFF) + trailer
+    )
+    return bytes(patched), position, old_suffix, trailer
+
+
 def _current_bidir_suffixes_by_pin(
     data: bytes,
     profile: Any,
@@ -1100,11 +1156,231 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     preserved_rows: list[dict[str, Any]] = []
     suffix = suffix_start
     terminalized_count = 0
-    for group in ordered_groups:
+    skipped_group_indices: set[int] = set()
+    for group_index, group in enumerate(ordered_groups):
+        if group_index in skipped_group_indices:
+            continue
         family = _group_family(group)
         key = _group_key(group)
+        if (
+            family == "7SEG-COM-CAT-BLUE"
+            and (requested is None or family in requested)
+        ):
+            cathode_groups: list[Any] = []
+            block_group_indices: list[int] = []
+            cursor = group_index
+            while (
+                cursor < len(ordered_groups)
+                and _group_family(ordered_groups[cursor]) == "7SEG-COM-CAT-BLUE"
+            ):
+                cathode_groups.append(ordered_groups[cursor])
+                block_group_indices.append(cursor)
+                cursor += 1
+            anode_groups: list[Any] = []
+            while (
+                cursor < len(ordered_groups)
+                and _group_family(ordered_groups[cursor]) == "7SEG-COM-AN-BLUE"
+                and _group_key(ordered_groups[cursor]) != "DISPLAY_ANODE_SENTINEL"
+            ):
+                anode_groups.append(ordered_groups[cursor])
+                block_group_indices.append(cursor)
+                cursor += 1
+            sentinel_group = (
+                ordered_groups[cursor]
+                if cursor < len(ordered_groups)
+                and _group_key(ordered_groups[cursor]) == "DISPLAY_ANODE_SENTINEL"
+                else None
+            )
+            if sentinel_group is not None:
+                block_group_indices.append(cursor)
+            if cathode_groups and (sentinel_group is not None or anode_groups):
+                block_groups = [
+                    *cathode_groups,
+                    *anode_groups,
+                    *([sentinel_group] if sentinel_group is not None else []),
+                ]
+                block_data = b"".join(bytes(getattr(item, "data", b"")) for item in block_groups)
+                patched_block = block_data
+                terminal_records: list[bytes] = []
+                appended_wire_records: list[bytes] = []
+                block_family_reports: list[dict[str, Any]] = []
+                base_offset = 0
+                block_terminalized_count = 0
+                for display_group in block_groups:
+                    display_key = _group_key(display_group)
+                    display_family = _group_family(display_group)
+                    display_data = bytes(getattr(display_group, "data", b""))
+                    terminalize_display = (
+                        display_key != "DISPLAY_ANODE_SENTINEL"
+                        and display_family in {"7SEG-COM-CAT-BLUE", "7SEG-COM-AN-BLUE"}
+                        and (requested is None or display_family in requested)
+                    )
+                    if not terminalize_display:
+                        base_offset += len(display_data)
+                        continue
+                    profile = catalog.get_profile(display_family)
+                    geometry = (
+                        profile.proteus.get("pin_geometry", {})
+                        if profile is not None
+                        else {}
+                    )
+                    pins = geometry.get("pins", {}) if isinstance(geometry, dict) else {}
+                    if profile is None or not isinstance(pins, dict) or not pins:
+                        raise ValueError(
+                            f"{display_family} display block lacks catalogue pin geometry."
+                        )
+                    planning_data = _strip_bidir_records_from_chunk(display_data)
+                    planning_group = replace(display_group, data=planning_data)
+                    plan = plan_catalogue_pin_bidir_terminals(
+                        [planning_group],
+                        catalog=catalog,
+                        suffix_start=suffix,
+                    )
+                    if not plan["valid"]:
+                        raise ValueError(
+                            f"Catalogue terminal plan for {display_family} {display_key} "
+                            f"is incomplete: {plan['missing_geometry']}."
+                        )
+                    terminal_pins: list[dict[str, Any]] = []
+                    group_wire_count = 0
+                    for row in plan["terminal_plans"]:
+                        pin_name = str(row["pin"]["name"])
+                        raw_geometry = pins[pin_name]
+                        raw_link_offset = raw_geometry.get(
+                            "component_link_offset_from_component_end"
+                        )
+                        if raw_link_offset is None:
+                            raise ValueError(
+                                f"{display_family} {display_key} pin {pin_name} lacks "
+                                "catalogue component-link offset."
+                            )
+                        component_link_position = (
+                            base_offset + len(planning_data) + int(raw_link_offset)
+                        )
+                        temporary_suffix = suffix & 0xFFFF
+                        suffix += 1
+                        patched_block, component_link_position, old_suffix, trailer = (
+                            _patch_component_link_at_position(
+                                patched_block,
+                                new_suffix=temporary_suffix,
+                                position=component_link_position,
+                                trailer_hex=raw_geometry.get("component_link_trailer"),
+                            )
+                        )
+                        short_wire = row["short_wire"]
+                        start = short_wire["start"]
+                        end = short_wire["end"]
+                        appended_wire_records.append(bytes.fromhex(short_wire["record"]))
+                        group_wire_count += 1
+                        terminal_dict = dict(row["terminal"])
+                        terminal_dict["suffix"] = f"{temporary_suffix:04x}"
+                        terminal_records.append(
+                            build_bidir_record(
+                                terminal_templates,
+                                label=str(terminal_dict["label"]),
+                                symbol_x=int(terminal_dict["symbol_x"]),
+                                symbol_y=int(terminal_dict["symbol_y"]),
+                                angle_tenths=int(terminal_dict["angle_tenths"]),
+                                suffix=temporary_suffix,
+                                active_link=True,
+                            )
+                        )
+                        terminal_pins.append(
+                            {
+                                "component_key": display_key,
+                                "component_family": display_family,
+                                "pin": row["pin"],
+                                "terminal": terminal_dict,
+                                "short_wire": {
+                                    "start": dict(start),
+                                    "end": dict(end),
+                                },
+                                "catalogue_geometry": dict(raw_geometry),
+                                "component_bbox": dict(row.get("component_bbox", {})),
+                                "component_anchor": (
+                                    dict(row["component_anchor"])
+                                    if isinstance(row.get("component_anchor"), dict)
+                                    else None
+                                ),
+                                "existing_wire": None,
+                                "old_suffix": f"{old_suffix:04x}",
+                                "temporary_suffix": f"{temporary_suffix:04x}",
+                                "component_link_position": component_link_position,
+                                "existing_wire_marker_offset": None,
+                                "component_link_trailer": trailer.hex(),
+                                "coordinate_source": row["coordinate_source"],
+                            }
+                        )
+                    block_family_reports.append(
+                        {
+                            "family_handler": f"{display_family}/catalogue-display-block-link-offset-wire-v1",
+                            "component_key": display_key,
+                            "component_family": display_family,
+                            "component_count": 1,
+                            "combined_infrastructure": {
+                                "block_group_keys": [
+                                    _group_key(item) for item in block_groups
+                                ],
+                                "reason": (
+                                    "common-cathode display link fields can cross "
+                                    "the following display/sentinel packet boundary; "
+                                    "immediately following anode display packets are "
+                                    "kept in the same block when present"
+                                ),
+                            },
+                            "terminal_count": len(terminal_pins),
+                            "wire_count": group_wire_count,
+                            "wire_count_added": group_wire_count,
+                            "wire_count_rewritten": 0,
+                            "stripped_existing_terminal_count": 0,
+                            "terminal_pins": terminal_pins,
+                        }
+                    )
+                    block_terminalized_count += 1
+                    base_offset += len(display_data)
+                local_records.extend(terminal_records)
+                local_records.append(b"\x00")
+                local_records.append(patched_block + b"".join(appended_wire_records))
+                terminalized_count += block_terminalized_count
+                family_reports.extend(block_family_reports)
+                if sentinel_group is not None:
+                    preserved_rows.append(
+                        {
+                            "component_key": _group_key(sentinel_group),
+                            "component_family": _group_family(sentinel_group),
+                            "reason": "combined_common_cathode_display_sentinel",
+                            "byte_preserved": True,
+                        }
+                    )
+                skipped_group_indices.update(
+                    index
+                    for index in block_group_indices
+                    if index != group_index
+                )
+                continue
         original_group_data = bytes(getattr(group, "data", b""))
+        planning_group_data = original_group_data
+        combined_infrastructure: dict[str, Any] | None = None
+        if (
+            family == "7SEG-COM-CAT-BLUE"
+            and group_index + 1 < len(ordered_groups)
+            and _group_key(ordered_groups[group_index + 1])
+            == "DISPLAY_ANODE_SENTINEL"
+        ):
+            sentinel = ordered_groups[group_index + 1]
+            original_group_data += bytes(getattr(sentinel, "data", b""))
+            skipped_group_indices.add(group_index + 1)
+            combined_infrastructure = {
+                "key": _group_key(sentinel),
+                "family": _group_family(sentinel),
+                "reason": (
+                    "common-cathode display pin-link table crosses the "
+                    "required anode sentinel boundary; sentinel packet is "
+                    "preserved inside the patched display stream"
+                ),
+            }
         data = _strip_bidir_records_from_chunk(original_group_data)
+        planning_data = _strip_bidir_records_from_chunk(planning_group_data)
         stripped_existing_terminals = (
             original_group_data.count(BIDIR_MARKER) - data.count(BIDIR_MARKER)
         )
@@ -1149,7 +1425,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             original_group_data,
             profile,
         )
-        planning_group = replace(group, data=data)
+        planning_group = replace(group, data=planning_data)
         plan = plan_catalogue_pin_bidir_terminals(
             [planning_group],
             catalog=catalog,
@@ -1168,20 +1444,13 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         ]
         terminal_records: list[bytes] = []
         terminal_pins: list[dict[str, Any]] = []
+        appended_wire_records: list[bytes] = []
+        wire_count_added = 0
+        wire_count_rewritten = 0
         for row in plan["terminal_plans"]:
             pin_name = str(row["pin"]["name"])
             raw_geometry = pins[pin_name]
             existing_wire = row.get("existing_wire")
-            if not isinstance(existing_wire, dict):
-                raise ValueError(
-                    f"{family} {key} pin {pin_name} lacks an existing WIRE anchor."
-                )
-            wire_order_index = int(existing_wire["wire_order_index"])
-            after_offset = (
-                0
-                if wire_order_index <= 0
-                else wire_marker_offsets[wire_order_index - 1] + 27
-            )
             raw_donor_old_suffix = raw_geometry.get("donor_terminal_suffix")
             donor_old_suffix = (
                 int(raw_donor_old_suffix)
@@ -1194,31 +1463,64 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
             temporary_suffix = suffix & 0xFFFF
             suffix += 1
-            patched_data, component_link_position, old_suffix = (
-                _patch_component_link_before_wire(
-                patched_data,
-                new_suffix=temporary_suffix,
-                before_offset=int(existing_wire["marker_offset"]),
-                after_offset=after_offset,
-                preferred_old_suffix=preferred_old_suffix,
-                preferred_old_suffixes=(
-                    value
-                    for value in (preferred_old_suffix, donor_old_suffix)
-                    if value is not None
-                ),
-            )
-            )
             short_wire = row["short_wire"]
             start = short_wire["start"]
             end = short_wire["end"]
-            patched_data = _patch_wire_record_coordinates(
-                patched_data,
-                marker_offset=int(existing_wire["marker_offset"]),
-                start_x=int(start["x"]),
-                start_y=int(start["y"]),
-                end_x=int(end["x"]),
-                end_y=int(end["y"]),
-            )
+            component_link_trailer: bytes | None = None
+            existing_wire_marker_offset: int | None = None
+            if isinstance(existing_wire, dict):
+                wire_order_index = int(existing_wire["wire_order_index"])
+                after_offset = (
+                    0
+                    if wire_order_index <= 0
+                    else wire_marker_offsets[wire_order_index - 1] + 27
+                )
+                patched_data, component_link_position, old_suffix = (
+                    _patch_component_link_before_wire(
+                        patched_data,
+                        new_suffix=temporary_suffix,
+                        before_offset=int(existing_wire["marker_offset"]),
+                        after_offset=after_offset,
+                        preferred_old_suffix=preferred_old_suffix,
+                        preferred_old_suffixes=(
+                            value
+                            for value in (preferred_old_suffix, donor_old_suffix)
+                            if value is not None
+                        ),
+                    )
+                )
+                component_link_trailer = patched_data[
+                    component_link_position + 2 : component_link_position + 4
+                ]
+                patched_data = _patch_wire_record_coordinates(
+                    patched_data,
+                    marker_offset=int(existing_wire["marker_offset"]),
+                    start_x=int(start["x"]),
+                    start_y=int(start["y"]),
+                    end_x=int(end["x"]),
+                    end_y=int(end["y"]),
+                )
+                existing_wire_marker_offset = int(existing_wire["marker_offset"])
+                wire_count_rewritten += 1
+            else:
+                raw_link_offset = raw_geometry.get(
+                    "component_link_offset_from_component_end"
+                )
+                if raw_link_offset is None:
+                    raise ValueError(
+                        f"{family} {key} pin {pin_name} lacks an existing WIRE "
+                        "anchor and catalogue component-link offset."
+                    )
+                patched_data, component_link_position, old_suffix, component_link_trailer = (
+                    _patch_component_link_from_catalogue_offset(
+                        patched_data,
+                        new_suffix=temporary_suffix,
+                        offset_from_component_end=int(raw_link_offset),
+                        trailer_hex=raw_geometry.get("component_link_trailer"),
+                    )
+                )
+                appended_wire_records.append(bytes.fromhex(short_wire["record"]))
+                wire_count_added += 1
             terminal_dict = dict(row["terminal"])
             terminal_dict["suffix"] = f"{temporary_suffix:04x}"
             terminal_records.append(
@@ -1249,26 +1551,41 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         if isinstance(row.get("component_anchor"), dict)
                         else None
                     ),
-                    "existing_wire": dict(existing_wire),
+                    "existing_wire": dict(existing_wire)
+                    if isinstance(existing_wire, dict)
+                    else None,
                     "old_suffix": f"{old_suffix:04x}",
                     "temporary_suffix": f"{temporary_suffix:04x}",
                     "component_link_position": component_link_position,
-                    "existing_wire_marker_offset": int(existing_wire["marker_offset"]),
+                    "existing_wire_marker_offset": existing_wire_marker_offset,
+                    "component_link_trailer": (
+                        component_link_trailer.hex()
+                        if component_link_trailer is not None
+                        else None
+                    ),
                     "coordinate_source": row["coordinate_source"],
                 }
             )
         local_records.extend(terminal_records)
         local_records.append(b"\x00")
-        local_records.append(patched_data)
+        local_records.append(patched_data + b"".join(appended_wire_records))
         terminalized_count += 1
+        family_handler = (
+            f"{family}/catalogue-existing-wire-v1"
+            if wire_count_added == 0
+            else f"{family}/catalogue-link-offset-wire-v1"
+        )
         family_reports.append(
             {
-                "family_handler": f"{family}/catalogue-existing-wire-v1",
+                "family_handler": family_handler,
                 "component_key": key,
                 "component_family": family,
                 "component_count": 1,
+                "combined_infrastructure": combined_infrastructure,
                 "terminal_count": len(terminal_records),
                 "wire_count": len(terminal_records),
+                "wire_count_added": wire_count_added,
+                "wire_count_rewritten": wire_count_rewritten,
                 "stripped_existing_terminal_count": stripped_existing_terminals,
                 "terminal_pins": terminal_pins,
             }
@@ -1285,6 +1602,12 @@ def attach_catalogue_pin_bidir_terminals_to_project(
 
     terminal_count = sum(report["terminal_count"] for report in family_reports)
     wire_count = sum(report["wire_count"] for report in family_reports)
+    wire_count_added = sum(
+        int(report.get("wire_count_added", 0)) for report in family_reports
+    )
+    wire_count_rewritten = sum(
+        int(report.get("wire_count_rewritten", 0)) for report in family_reports
+    )
     wire_path_checks: list[dict[str, Any]] = []
     for report in family_reports:
         for row in report["terminal_pins"]:
@@ -1322,18 +1645,22 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
     report = {
         "stage": "terminal_placer",
-        "family_handler": "CATALOGUE/existing-wire-v1",
+        "family_handler": (
+            "CATALOGUE/link-offset-wire-v1"
+            if wire_count_added
+            else "CATALOGUE/existing-wire-v1"
+        ),
         "status": "pending_proteus_user_acceptance",
         "attachment_policy": (
-            "catalogue_pin_identity_existing_wire_anchor_grid_short_wire"
+            "catalogue_pin_identity_component_link_offset_grid_short_wire"
         ),
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
         "terminal_record_encoder": "embedded_proteus_813_schema",
-        "wire_record_encoder": "rewrite_existing_donor_wire_records",
+        "wire_record_encoder": "rewrite_existing_or_append_catalogue_short_wire_records",
         "terminal_count_added": terminal_count,
-        "wire_count_added": 0,
-        "wire_count_rewritten": wire_count,
+        "wire_count_added": wire_count_added,
+        "wire_count_rewritten": wire_count_rewritten,
         "terminalized_component_count": terminalized_count,
         "preserved_component_count": len(preserved_rows),
         "preserved_groups": preserved_rows,
@@ -5278,10 +5605,10 @@ def _rebase_terminal_links_to_final_wire_addresses(
             and report["terminal_suffix_links_valid"]
         ),
     }
-    expected_wire_count = report.get("wire_count_added")
-    if not expected_wire_count and report.get("wire_count_rewritten") is not None:
-        expected_wire_count = report.get("wire_count_rewritten")
-    require_double_ff = report.get("family_handler") == "CATALOGUE/existing-wire-v1"
+    expected_wire_count = int(report.get("wire_count_added") or 0) + int(
+        report.get("wire_count_rewritten") or 0
+    )
+    require_double_ff = str(report.get("family_handler", "")).startswith("CATALOGUE/")
     report["valid"] = bool(
         report["terminal_suffixes_unique"]
         and report["terminal_suffix_links_valid"]

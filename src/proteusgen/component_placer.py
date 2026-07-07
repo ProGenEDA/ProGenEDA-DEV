@@ -1587,6 +1587,14 @@ def _select_generation_donor(request: dict[str, int], donor_path: str | Path | N
     requested = set(donor_request)
     if requested & NEW_COMPONENT_ONLY_FAMILIES:
         return _repo_path(NEW_COMPONENT_MEGA_DONOR)
+    if requested & set(COMPLETE_PACKAGE_REF_COUNTS):
+        # Complete-package IC families (quad gates and HC04) must come from the
+        # main mega donor, where each logical IC package is present as one
+        # complete grouped packet set.  Registry fallback donors may contain
+        # individual subparts but not enough same-reference groups, which makes
+        # _select_complete_package_window fail even though the canonical mega
+        # donor is valid.
+        return _repo_path(MAIN_MEGA_NO_SOURCE_DONOR)
     if "CAP-ELEC" in requested:
         # The semimega CAP-ELEC packets selected by the generic registry have
         # non-final record tails. They work as donor-middle packets but cannot

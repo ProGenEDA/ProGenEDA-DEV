@@ -7866,6 +7866,142 @@ Timestamp: `2026-07-03T13:07:25.4686974+05:00` (Pakistan; recorded during turn)
 
 ~~~~
 
+## User Message - 2026-07-07 23:?? +05:00
+
+dont just import it, repurpose it and the catelogue for proteus, dont important kicad stuff here, as kicad is fundamentaly differnt from proteus
+
+## Agent Response - 2026-07-08 00:06 +05:00
+
+I treated KiCad as architecture reference only. No KiCad backend facts or implementation were imported. The Proteus work is its own catalogue/profile layer, Proteus binary/link evidence, and the shared Proteus terminal placer.
+
+## User Message - 2026-07-08 00:?? +05:00
+
+continue, just have the teminal properly build and working man
+so that we can move on towards finalizing proteus for MVP
+
+## Agent Responses - 2026-07-08 00:06 +05:00
+
+I’m resuming from the completed V10 implementation state: terminal pack generated, focused tests passed, context already updated. I’m doing the required final git check/commit/push verification now.
+
+The first git check hit PowerShell’s `@{}` parsing. I’m rerunning it with the upstream ref quoted.
+
+Remote checkpoint is clean relative to the last committed `HEAD`; the remaining work is the V10 Proteus terminal implementation and generated evidence pack. I’m checking file scope before committing.
+
+The V10 pack is large but expected: 413 generated experiment files plus the zip. I’m verifying the pack summary and then I’ll stage exactly these scoped changes.
+
+I’m not touching KiCad code. The committed implementation is Proteus-specific: shared terminal placer, Proteus component catalogue, Proteus experiment runner, and generated Proteus `.pdsprj` evidence.
+
+The generated README confirms 17 promoted families, 1x/9x/15x/23x terminalized solos, matching no-terminal controls, and one mixed 3x all-promoted pack. I’m recording this last continuation in `context.md` before commit.
+
+## Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_terminal_placer.py` - updated the shared Proteus terminal placer to emit catalogue-driven active terminals and short WIRE records from component-relative pin/link evidence, including active suffix/link rebasing and 7SEG cathode/anode block handling.
+- `src/proteusgen/component_placer.py` - routed complete-package families such as HC04/gate packages through the main mega donor path instead of ad-hoc donor fallback.
+- `knowledge/component_catalog_v0.json` - expanded Proteus catalogue/profile evidence for promoted multi-pin, display, transistor, regulator, bridge, op-amp, and potentiometer families; added Proteus-specific backend policy notes.
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py` - updated the existing dated runner so it only calls the shared component placer and shared terminal placer; no terminal-placement logic lives in this runner.
+- `tests/test_component_catalog.py` - added focused tests proving HC04 bare packets can receive appended short-WIRE terminal attachments from catalogue link offsets, and display blocks avoid D20 while preserving valid active links.
+- `docs/architecture.md` - documented the V10 Proteus-specific terminal checkpoint and clarified that KiCad ideas are only repurposed architecturally.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V10 implementation/evidence status, promoted families, generated pack paths, and pending Proteus UI verification.
+- `knowledge/test_results.jsonl` - appended the V10 static-pass evidence record.
+- `backups/component_terminal_placer/component_terminal_placer_20260707_171644.py` - required backup before editing the shared terminal placer.
+- `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/` - generated V10 Proteus solos, no-terminal controls, mixed pack, manifests, README, and summary.
+- `experiments/CATALOGUE_TERMINAL_MAIN_DONOR_V10_TEMP_2026_07_07.zip` - zipped V10 Proteus evidence pack for user testing.
+- `context.md` - appended this continuation log.
+
+## Verification Recorded During Turn
+
+- Start checkpoint verified: branch `codex/generic-proteus-generator-v0`, local `HEAD` and upstream `origin/codex/generic-proteus-generator-v0` both at `a635fa9b8a1568247fd25c5ec9f63bdd826cd27e`.
+- Generated V10 pack: `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/`.
+- Generated V10 archive: `experiments/CATALOGUE_TERMINAL_MAIN_DONOR_V10_TEMP_2026_07_07.zip`.
+- Archive SHA256 recorded in docs/evidence: `9b75825902d5b9dd7f0b15f85a0d2920251c8dbde5e0bceaf4a2535d4b033217`.
+- Static generation summary: 68 terminalized solo cases, 68 no-terminal controls, 0 terminal generation errors.
+- Mixed case generated: `MIXED_3X_ALL_PROMOTED_CATALOGUE_TERMINAL`, static-valid, 444 active terminals and 444 WIRE records.
+- Focused tests: `tests/test_component_catalog.py::test_catalogue_pin_emitter_appends_wires_from_main_donor_link_offsets` and `tests/test_component_catalog.py::test_catalogue_display_block_handles_cathode_links_before_anode_packets` passed.
+- Regression tests: `python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q` -> `111 passed`.
+- Compile check: `python -m compileall -q src tests tools/proteus_generation` -> passed.
+- Full `python -m pytest -q` is blocked by the pre-existing stale temp test `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main/test_inductor.py`, which imports removed `proteusgen.inductor`; this is unrelated to the V10 Proteus terminal checkpoint.
+- Commit/push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
+---
+
+## Restart Context Continuation - Proteus Catalogue Terminal V10
+
+### User Message 1
+
+Timestamp: `2026-07-08T00:03:44.2359161+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+dont just import it, repurpose it and the catelogue for proteus, dont important kicad stuff here, as kicad is fundamentaly differnt from proteus
+~~~~
+
+### Visible Agent Response
+
+Timestamp: `2026-07-08T00:03:44.2359161+05:00` (Pakistan; recorded during turn)
+
+~~~~text
+Correct. I’m not importing KiCad code or KiCad backend facts. I’m only repurposing the catalogue pattern for Proteus: normalized aliases/pins/stage contracts, with Proteus-specific body geometry, terminal-link offsets, donor evidence, D20 caveats, and binary backend profiles.
+~~~~
+
+### User Message 2
+
+Timestamp: `2026-07-08T00:03:44.2359161+05:00` (Pakistan; recorded during turn)
+
+~~~~markdown
+continue, just have the teminal properly build and working man
+so that we can move on towards finalizing proteus for MVP
+~~~~
+
+### Visible Agent Responses During This Turn
+
+Timestamp: `2026-07-08T00:03:44.2359161+05:00` (Pakistan; recorded during turn)
+
+~~~~text
+I’ll finish this as a Proteus terminal checkpoint: verify Git state, finish status/docs/context, run final static validations, commit/push, and hand you the generated V10 pack paths. No KiCad code or backend facts are being imported.
+Git checkpoint verified: local and upstream both still at `a635fa9`; current working tree contains only the terminal/catologue work and generated V10 evidence that needs to be committed.
+Status doc now records V10 as a Proteus-specific catalogue/terminal checkpoint: 17 promoted families, 1x/9x/15x/23x solos, controls, and mixed 3x.
+Test-results log now has a V10 static-pass entry with archive hash, families, counts, mixed result, and tests run.
+I’m appending the current turn to `context.md` now: your Proteus-only correction, the terminal-finalization request, files changed, generated artifacts, and validation results.
+~~~~
+
+### Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_terminal_placer.py` - added catalogue-link-offset active terminal emission for bare main/component-placer packets; added display-block handling for common-cathode seven-segment display packets whose link field crosses into the following display/sentinel packet; preserved D20/display infrastructure; kept emission inside the unified shared terminal placer.
+- `src/proteusgen/component_placer.py` - fixed complete-package IC donor selection so HC04/quad gates use the main mega donor before registry fallback.
+- `knowledge/component_catalog_v0.json` - promoted Proteus-specific component pin-link offsets/trailers and donor evidence for the V10 promoted families; corrected `74HC266` to its own open-drain XNOR pin model; recorded Proteus display/D20 caveats and backend-neutral catalogue policy without importing KiCad backend facts.
+- `tests/test_component_catalog.py` - added regression tests for bare no-WIRE main-donor link-offset terminal emission and mixed display-block terminal emission.
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py` - updated the existing runner in place so it calls only the shared component placer and shared terminal placer; generated scalable 1x/9x/15x/23x solos, controls, and mixed 3x pack.
+- `docs/architecture.md` - clarified that KiCad ideas are to be repurposed only as backend-neutral architecture; recorded Proteus-specific V10 terminal/catologue checkpoint.
+- `docs/multi_pin_terminal_catalogue_status_2026_07_03.md` - recorded V10 status, promoted families, generated artifacts, tests, and remaining unpromoted families.
+- `knowledge/test_results.jsonl` - appended V10 static-pass evidence.
+- `backups/component_terminal_placer/component_terminal_placer_20260707_171644.py` - required pre-edit backup of the shared terminal placer.
+- `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/` - generated V10 terminalized Proteus projects and matching no-terminal controls.
+- `experiments/CATALOGUE_TERMINAL_MAIN_DONOR_V10_TEMP_2026_07_07.zip` - zipped V10 user-test pack.
+- `context.md` - appended this log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, local/upstream matched `a635fa9b8a1568247fd25c5ec9f63bdd826cd27e`.
+- Generated V10 pack static audit:
+  - 68 terminalized solo cases, 0 invalid.
+  - 68 no-terminal controls, 0 invalid.
+  - 0 terminal generation errors.
+  - Mixed 3x all-promoted pack generated and static-valid.
+  - Mixed 3x terminal count: 444 active terminals and 444 WIRE records.
+- V10 archive SHA256: `9b75825902d5b9dd7f0b15f85a0d2920251c8dbde5e0bceaf4a2535d4b033217`.
+- Focused tests:
+  - `test_catalogue_pin_emitter_appends_wires_from_main_donor_link_offsets`
+  - `test_catalogue_display_block_handles_cathode_links_before_anode_packets`
+  - Result: `2 passed`.
+- Regression tests:
+  - `python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q`
+  - Result: `111 passed`.
+- Compile check:
+  - `python -m compileall -q src tests tools/proteus_generation`
+  - Result: passed.
+- Commit and push verification: pending at this context-update moment; final answer should report the resulting commit hash and remote verification.
+
+~~~~
+
 ## Conversation Turn - 2026-07-07 16:55:46 +05:00
 
 ### User Message

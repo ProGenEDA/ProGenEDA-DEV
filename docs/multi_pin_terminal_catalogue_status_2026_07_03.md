@@ -233,3 +233,91 @@ Blocked at this checkpoint:
 - 15x and mixed multi-pin generation remain blocked for families whose selected
   packets lack complete active WIRE/link evidence. No unsafe fake mixed pack was
   emitted.
+
+## V10 main/component-placer donor scalable terminal pack - 2026-07-07
+
+V10 supersedes the V8/V9 scaled-generation blockers for the promoted families.
+The fix is Proteus-specific: no KiCad backend data or KiCad emitters were
+imported. The KiCad work was used only as an architectural reminder to keep one
+normalized catalogue and backend-specific profiles.
+
+Implementation changes:
+
+- Complete-package ICs (`74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`,
+  `74HC86`, `74HC266`) now select the main mega donor before registry fallback,
+  so HC04/gates are produced by the component placer from complete same-ref
+  package groups.
+- `knowledge/component_catalog_v0.json` now stores Proteus
+  `component_link_offset_from_component_end` and `component_link_trailer`
+  evidence for promoted multi-pin families.
+- `src/proteusgen/component_terminal_placer.py` can terminalize clean bare
+  component-placer packets that contain no old WIRE records: it patches the
+  catalogue-proven component pin-link fields, appends canonical short WIRE
+  records, and rebases terminal/component links from final ROOT.DSN WIRE
+  addresses.
+- Common-cathode seven-segment displays are handled as a Proteus display block
+  because the common-cathode link field crosses into the following
+  display/sentinel packet. `D20` and display sentinels remain infrastructure
+  and are never terminalized as user components.
+- `74HC266` no longer inherits the `74HC08` pin model. It has its own corrected
+  open-drain XNOR pin order: pin 4 is `2Y`, pins 5/6 are `2A`/`2B`.
+
+Generated V10 pack:
+
+- Folder: `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/`
+- Archive: `experiments/CATALOGUE_TERMINAL_MAIN_DONOR_V10_TEMP_2026_07_07.zip`
+- Archive SHA256:
+  `9b75825902d5b9dd7f0b15f85a0d2920251c8dbde5e0bceaf4a2535d4b033217`
+- Runner:
+  `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py`
+
+Static result:
+
+- 68 terminalized solo cases generated and statically valid.
+- 68 matching no-terminal controls generated and statically valid.
+- Counts generated for each promoted family: `1x`, `9x`, `15x`, `23x`.
+- Mixed 3x all-promoted pack generated and statically valid.
+- Mixed 3x terminal count: 444 active `$TERBIDIR` terminals and 444 WIRE
+  records.
+- All terminal reports show valid grid contacts, WIRE-to-pin endpoints, final
+  suffix rebasing, and double-`FF` object stream termination.
+
+Promoted V10 families:
+
+- `4511`
+- `74HC00`
+- `74HC02`
+- `74HC04`
+- `74HC08`
+- `74HC151`
+- `74HC266`
+- `74HC32`
+- `74HC86`
+- `7SEG-COM-AN-BLUE`
+- `7SEG-COM-CAT-BLUE`
+- `BRIDGE`
+- `LM317T`
+- `NMOSFET`
+- `OPAMP`
+- `POT-HG`
+- `TRAN-2P2S`
+
+Still not promoted:
+
+- `4518`
+- `74HC4520`
+
+Verification run:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m pytest tests/test_component_catalog.py::test_catalogue_pin_emitter_appends_wires_from_main_donor_link_offsets tests/test_component_catalog.py::test_catalogue_display_block_handles_cathode_links_before_anode_packets -q
+python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q
+python -m compileall -q src tests tools/proteus_generation
+```
+
+Result: focused tests `2 passed`; component/catalogue regression suite
+`111 passed`; compile check passed.
+
+Status: pending user Proteus open/render testing. Static binary validation is
+clean, but Proteus UI acceptance is the final authority.

@@ -439,6 +439,78 @@ def test_catalogue_pin_emitter_strips_old_partial_terminals_before_74hc74(tmp_pa
     assert report["wire_count_before"] == report["wire_count_after"] == 12
 
 
+def test_catalogue_pin_emitter_appends_wires_from_main_donor_link_offsets(tmp_path) -> None:
+    source = tmp_path / "catalogue_74hc04_main_donor_bare.pdsprj"
+    output = tmp_path / "catalogue_74hc04_main_donor_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {"74HC04": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        source,
+        full_cdb=True,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["74HC04"],
+    )
+
+    assert report["valid"]
+    assert report["family_handler"] == "CATALOGUE/link-offset-wire-v1"
+    assert report["terminal_count_added"] == 12
+    assert report["wire_count_before"] == 0
+    assert report["wire_count_added"] == 12
+    assert report["wire_count_rewritten"] == 0
+    assert report["wire_count_after"] == 12
+    assert report["terminal_suffix_links_valid"]
+    assert report["wire_path_contacts_valid"]
+
+
+def test_catalogue_display_block_handles_cathode_links_before_anode_packets(tmp_path) -> None:
+    source = tmp_path / "catalogue_display_mixed_bare.pdsprj"
+    output = tmp_path / "catalogue_display_mixed_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {
+                "7SEG-COM-CAT-BLUE": 3,
+                "7SEG-COM-AN-BLUE": 3,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        source,
+        full_cdb=True,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["7SEG-COM-CAT-BLUE", "7SEG-COM-AN-BLUE"],
+    )
+
+    assert report["valid"]
+    assert report["terminal_count_added"] == 48
+    assert report["wire_count_added"] == 48
+    assert report["wire_count_after"] == 48
+    assert report["terminal_suffix_links_valid"]
+    assert report["wire_path_contacts_valid"]
+    assert report["terminal_grid_alignment_valid"]
+    assert not any(
+        row["component_key"] == "D20"
+        for family_report in report["family_reports"]
+        for row in family_report["terminal_pins"]
+    )
+    assert any(
+        family_report["family_handler"].endswith(
+            "catalogue-display-block-link-offset-wire-v1"
+        )
+        for family_report in report["family_reports"]
+    )
+
+
 def test_validation_pin_vocabulary_comes_from_catalogue() -> None:
     assert COMPONENT_PINS["RESISTOR"] == {"1", "2"}
     assert COMPONENT_PINS["74HC08"] == {
