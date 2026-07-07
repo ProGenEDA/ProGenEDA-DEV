@@ -47,6 +47,7 @@ PROTEUS_TERMINAL_GRID = 254_000
 DONOR_TERMINAL_WIRE_ENDPOINT_TOLERANCE = PROTEUS_TERMINAL_GRID
 LEFT_SIDE_ANGLE = 1800
 RIGHT_SIDE_ANGLE = 0
+COMPONENT_PIN_LINK_TRAILERS = (b"\x01\x00", b"\x02\x00")
 RESISTOR_PIN_SPAN = 1_270_000
 CAP_PIN_HALF_SPAN = 508_000
 CAP_TERMINAL_SYMBOL_TO_PIN = 254_000
@@ -834,6 +835,20 @@ def plan_catalogue_pin_bidir_terminals(
                     if existing_wire is not None
                     else "component_bbox_min_offset"
                 )
+            snap_axes_raw = raw_pin_geometry.get("pin_endpoint_snap_axes", ())
+            if isinstance(snap_axes_raw, str):
+                snap_axes = {snap_axes_raw.lower()}
+            else:
+                snap_axes = {str(axis).lower() for axis in snap_axes_raw}
+            snapped_axes: list[str] = []
+            if "x" in snap_axes:
+                pin_x = snap_to_proteus_terminal_grid(pin_x)
+                snapped_axes.append("x")
+            if "y" in snap_axes:
+                pin_y = snap_to_proteus_terminal_grid(pin_y)
+                snapped_axes.append("y")
+            if snapped_axes:
+                coordinate_source += "_pin_endpoint_snap_" + "".join(snapped_axes)
             terminal = TerminalSpec(
                 label=_catalogue_terminal_label(key, pin.name, pin.role),
                 symbol_x=pin_x,
@@ -941,20 +956,22 @@ def _patch_component_link_suffix(
     before_offset: int,
     after_offset: int = 0,
 ) -> tuple[bytes, int]:
-    pattern = struct.pack("<H", old_suffix & 0xFFFF) + b"\x01\x00"
     candidates: list[int] = []
-    cursor = 0
-    while True:
-        position = data.find(pattern, cursor)
-        if position < 0:
-            break
-        if after_offset <= position < before_offset:
-            candidates.append(position)
-        cursor = position + 1
+    suffix = struct.pack("<H", old_suffix & 0xFFFF)
+    for trailer in COMPONENT_PIN_LINK_TRAILERS:
+        pattern = suffix + trailer
+        cursor = 0
+        while True:
+            position = data.find(pattern, cursor)
+            if position < 0:
+                break
+            if after_offset <= position < before_offset:
+                candidates.append(position)
+            cursor = position + 1
     if not candidates:
         raise ValueError(
             f"Could not find component pin-link field {old_suffix:04x} before "
-            f"WIRE offset {before_offset}."
+            f"WIRE offset {before_offset} using known link trailers."
         )
     position = max(candidates)
     patched = bytearray(data)
@@ -988,20 +1005,21 @@ def _patch_component_link_before_wire(
 
     wire_spans = _wire_record_spans(data)
     candidates: list[int] = []
-    cursor = 0
-    while True:
-        position = data.find(b"\x01\x00", cursor)
-        if position < 0:
-            break
-        suffix_position = position - 2
-        if (
-            suffix_position >= 0
-            and suffix_position >= after_offset
-            and suffix_position < before_offset
-            and not _position_in_spans(suffix_position, wire_spans)
-        ):
-            candidates.append(suffix_position)
-        cursor = position + 1
+    for trailer in COMPONENT_PIN_LINK_TRAILERS:
+        cursor = 0
+        while True:
+            position = data.find(trailer, cursor)
+            if position < 0:
+                break
+            suffix_position = position - 2
+            if (
+                suffix_position >= 0
+                and suffix_position >= after_offset
+                and suffix_position < before_offset
+                and not _position_in_spans(suffix_position, wire_spans)
+            ):
+                candidates.append(suffix_position)
+            cursor = position + 1
     if not candidates:
         raise ValueError(
             f"Could not locate a component pin-link field before WIRE offset "
@@ -4733,7 +4751,13 @@ def analyse_terminalized_donor_pin_geometry(
     }
 
     component_chunk = _component_only_chunk_from_terminalized_chunk(chunk)
-    pairs = layout_coordinate_pairs(component_chunk, family)
+    try:
+        pairs = layout_coordinate_pairs(component_chunk, family)
+    except ValueError:
+        if component_chunk.startswith(b"\x00\x08\xff"):
+            pairs = layout_coordinate_pairs(component_chunk[2:], family)
+        else:
+            raise
     bbox = coordinate_bbox(component_chunk, pairs) if pairs else {
         "min_x": 0,
         "min_y": 0,
@@ -5112,15 +5136,17 @@ def _rebase_terminal_links_to_final_wire_addresses(
     patch_positions: dict[int, tuple[int, int]] = {}
     for allocation in allocations:
         old_suffix = allocation["old_suffix"]
-        pattern = struct.pack("<H", old_suffix) + b"\x01\x00"
         positions: list[int] = []
-        cursor = 0
-        while True:
-            position = chunk.find(pattern, cursor)
-            if position < 0:
-                break
-            positions.append(position)
-            cursor = position + 1
+        suffix = struct.pack("<H", old_suffix)
+        for trailer in COMPONENT_PIN_LINK_TRAILERS:
+            pattern = suffix + trailer
+            cursor = 0
+            while True:
+                position = chunk.find(pattern, cursor)
+                if position < 0:
+                    break
+                positions.append(position)
+                cursor = position + 1
         terminal_label = str(allocation["terminal"]["label"])
         terminal_positions = terminal_suffix_positions.get(
             (terminal_label, old_suffix),
@@ -5183,11 +5209,35 @@ def _rebase_terminal_links_to_final_wire_addresses(
         for suffix in new_suffixes
     ]
     report["terminal_suffixes_unique"] = len(new_suffixes) == len(set(new_suffixes))
+    suffix_link_checks: list[dict[str, Any]] = []
+    for allocation in allocations:
+        terminal_position, component_position = patch_positions[allocation["old_suffix"]]
+        suffix_bytes = struct.pack("<H", allocation["new_suffix"])
+        terminal_field = written_chunk[terminal_position : terminal_position + 4]
+        component_field = written_chunk[component_position : component_position + 4]
+        terminal_valid = terminal_field == suffix_bytes + b"\x01\x00"
+        component_valid = (
+            component_field[:2] == suffix_bytes
+            and component_field[2:4] in COMPONENT_PIN_LINK_TRAILERS
+        )
+        suffix_link_checks.append(
+            {
+                "component_key": allocation["component_key"],
+                "component_family": allocation["component_family"],
+                "role": allocation["role"],
+                "suffix": f"{allocation['new_suffix']:04x}",
+                "terminal_suffix_position": terminal_position,
+                "component_link_position": component_position,
+                "terminal_trailer": terminal_field[2:4].hex(),
+                "component_trailer": component_field[2:4].hex(),
+                "terminal_valid": terminal_valid,
+                "component_valid": component_valid,
+            }
+        )
+    report["terminal_suffix_link_checks"] = suffix_link_checks
     report["terminal_suffix_links_valid"] = all(
-        written_chunk[position : position + 4]
-        == struct.pack("<H", allocation["new_suffix"]) + b"\x01\x00"
-        for allocation in allocations
-        for position in patch_positions[allocation["old_suffix"]]
+        row["terminal_valid"] and row["component_valid"]
+        for row in suffix_link_checks
     )
     report["wire_address_label_jitter"] = {
         "applied": bool(label_jitter_events),
@@ -5215,6 +5265,10 @@ def _rebase_terminal_links_to_final_wire_addresses(
                 "wire_absolute_marker": allocation["wire_absolute_marker"],
                 "terminal_suffix_position": allocation["terminal_suffix_position"],
                 "component_link_position": allocation["component_link_position"],
+                "component_link_trailer": written_chunk[
+                    allocation["component_link_position"] + 2
+                    : allocation["component_link_position"] + 4
+                ].hex(),
                 "coordinates": list(allocation["coordinates"]),
             }
             for allocation in allocations

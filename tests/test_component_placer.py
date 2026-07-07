@@ -86,6 +86,20 @@ def test_terminal_grid_snap_is_nearest_with_deterministic_ties(
     assert terminal_placer.snap_to_proteus_terminal_grid(value) == expected
 
 
+def test_component_pin_link_patch_accepts_type_02_trailer() -> None:
+    data = b"prefix" + struct.pack("<H", 0x3456) + b"\x02\x00" + b"\x7fWIRE"
+
+    patched, position = terminal_placer._patch_component_link_suffix(
+        data,
+        old_suffix=0x3456,
+        new_suffix=0x789A,
+        before_offset=data.index(b"\x7fWIRE"),
+    )
+
+    assert position == len(b"prefix")
+    assert patched[position : position + 4] == struct.pack("<H", 0x789A) + b"\x02\x00"
+
+
 def _active_terminal_suffixes(chunk: bytes) -> list[int]:
     suffixes: list[int] = []
     for marker, length_offset, base_size in (

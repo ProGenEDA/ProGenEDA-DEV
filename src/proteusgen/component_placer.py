@@ -1131,6 +1131,37 @@ def _select_cdb_backed(
     return tuple(groups[:count])
 
 
+def _select_pot_hg_groups(
+    groups_by_family: dict[str, list[RawComponentGroup]],
+    cdb_refs: set[str],
+    count: int,
+    *,
+    offset: int = 0,
+) -> tuple[RawComponentGroup, ...]:
+    try:
+        return _select_cdb_backed(
+            groups_by_family,
+            cdb_refs,
+            "POT-HG",
+            count,
+            offset=offset,
+            lengths={431, 432},
+            tail=b"\x08",
+        )
+    except ValueError as strict_error:
+        terminalized_evidence = [
+            group
+            for group in groups_by_family.get("POT-HG", [])
+            if group.key in cdb_refs
+            and _is_finalizable(group)
+            and group.data.count(b"\x7fWIRE") >= 3
+        ]
+        terminalized_evidence = terminalized_evidence[offset:]
+        if len(terminalized_evidence) < count:
+            raise strict_error
+        return tuple(terminalized_evidence[:count])
+
+
 def _select_cap_elec_groups(
     groups_by_family: dict[str, list[RawComponentGroup]],
     cdb_refs: set[str],
@@ -1497,14 +1528,11 @@ def _select_raw_groups(
             selected.extend(_select_window(diode_groups, family, count, offset=family_offset))
         elif family == "POT-HG":
             selected.extend(
-                _select_cdb_backed(
+                _select_pot_hg_groups(
                     groups_by_family,
                     cdb_refs,
-                    family,
                     count,
                     offset=family_offset,
-                    lengths={431, 432},
-                    tail=b"\x08",
                 )
             )
         elif family == "CAP-ELEC":
@@ -2332,7 +2360,15 @@ def validate_generated_component_output(
                     )
                 )
                 continue
-            if not entry.get("translated"):
+            bbox = entry.get("after_bbox")
+            already_at_target = (
+                isinstance(bbox, dict)
+                and entry.get("target_min_x") is not None
+                and entry.get("target_min_y") is not None
+                and int(bbox.get("min_x", 0)) == int(entry["target_min_x"])
+                and int(bbox.get("min_y", 0)) == int(entry["target_min_y"])
+            )
+            if not entry.get("translated") and not already_at_target:
                 errors.append(
                     ValidationIssue(
                         "E_OUTPUT_LAYOUT_NOT_TRANSLATED",
@@ -2357,9 +2393,18 @@ def validate_generated_component_output(
         placed_entries: list[tuple[str, dict[str, Any]]] = []
         visible_keys = {group.key for group in visible_groups}
         for key, entry in entries_by_key.items():
-            if key not in visible_keys or not entry.get("translated"):
-                continue
             bbox = entry.get("after_bbox")
+            already_at_target = (
+                isinstance(bbox, dict)
+                and entry.get("target_min_x") is not None
+                and entry.get("target_min_y") is not None
+                and int(bbox.get("min_x", 0)) == int(entry["target_min_x"])
+                and int(bbox.get("min_y", 0)) == int(entry["target_min_y"])
+            )
+            if key not in visible_keys or (
+                not entry.get("translated") and not already_at_target
+            ):
+                continue
             if isinstance(bbox, dict) and {"min_x", "min_y", "max_x", "max_y"} <= set(bbox):
                 placed_entries.append((key, bbox))
         overlaps: list[tuple[str, str]] = []

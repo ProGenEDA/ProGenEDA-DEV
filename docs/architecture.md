@@ -328,3 +328,31 @@ placer path selects a mega donor whose bare component packets lack the donor
 WIRE/link skeleton required by the safe catalogue emitter. Solving mixed and
 multi-copy cases requires component-placer contract work or new donor/link
 evidence, not a new terminal-placement script.
+
+The V9 checkpoint
+`experiments/new_catalogue_terminal_solo_v9_validated_temp_2026_07_04` promotes
+the latest user terminalized donor evidence for `BRIDGE`, `NMOSFET`, `OPAMP`,
+`POT-HG`, and `TRAN-2P2S`, keeps the accepted `4511` and corrected `74HC151`
+paths, and adds `LM317T`. The shared terminal placer now accepts donor-derived
+component pin-link trailers `01 00` and `02 00`: terminal records still use the
+active `01 00` suffix trailer, while component pin-link fields preserve the
+donor's trailer. V9 static validation passes for `4511`, `74HC151`, `BRIDGE`,
+`LM317T`, `NMOSFET`, `OPAMP`, `POT-HG`, and `TRAN-2P2S`; each emitted case goes
+through the component placer first, strips old bidirectional terminals, rewrites
+the existing donor WIRE skeleton into grid-contact short wires, and rebases
+active links from final ROOT.DSN WIRE addresses. `74HC151` pin endpoints snap Y
+coordinates to the Proteus terminal grid to remove the previous diagonal wire
+artifact. `POT-HG` keeps canonical pins `1/2/3`; donor labels `VCC`, `OUT`, and
+`GND` are aliases/test labels, not hard-coded electrical assumptions.
+
+The V9 pack also includes no-terminal controls where they can be generated
+safely. `74HC04` has a valid no-terminal control from the clean M05 donor-base
+file, but active HC04 terminal emission remains blocked because there is still
+no clean shared-placeable WIRE/link skeleton for the HC04 package. Quad gates
+`74HC00`, `74HC02`, `74HC08`, `74HC32`, `74HC86`, and `74HC266` remain blocked:
+their user terminalized donor files contain useful labels/WIRE geometry, but
+only partial active component pin-link tables. The display families remain
+blocked until the D20/display grouping path is integrated. The requested
+9x/15x/23x and mixed 3x packs remain intentionally ungenerated because current
+safe donor evidence provides one active WIRE/link skeleton per promoted family;
+component packet cloning is still not allowed.
