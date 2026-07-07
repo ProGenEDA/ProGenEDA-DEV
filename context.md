@@ -9279,4 +9279,5 @@ Writing the context entry with the exact user request, the visible response/upda
 - Blocked terminalized families: `4518`, `74HC4520`, `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`.
 - `PYTHONPATH=src; python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q` -> `111 passed`.
 - `python -m compileall -q src tests tools/proteus_generation` -> passed.
-- Commit/push verification: pending at this context-update moment.
+- Implementation commit: `b02ab4a36ee63b6aaa2577b914db99953bffac82` (`Fix clean catalogue terminal solos`).
+- Push verification after implementation commit: local `HEAD`, upstream `origin/codex/generic-proteus-generator-v0`, and remote branch all matched `b02ab4a36ee63b6aaa2577b914db99953bffac82`.
