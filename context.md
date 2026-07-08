@@ -9386,3 +9386,45 @@ Docs are corrected. I’m adding the context entry, then I’ll commit/push/veri
 - Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `a35ca4684e33452ede6953948bd30b5e2e5cb9b0`.
 - Direct `generate_component_placement_project()` probe succeeded for every highlighted family: `4017`, `4020`, `4518`, `74HC161`, `74HC163`, `74HC165`, `74HC193`, `74HC273`, `74HC4024`, `74HC4040`, `74HC4060`, `74HC4520`, `74HC595`, and `SWITCH`.
 - The earlier exclusion was caused by scanning selected mega donors instead of the full trusted component-placer selection route.
+
+---
+
+## Turn Log - 2026-07-08 13:15:19 +05:00
+
+### User Message
+
+explain
+
+Selected text:
+
+routed through native-registry donors, not one mega
+
+### Visible Agent Response During Turn
+
+I’ll verify the remote checkpoint first, then I’ll explain the donor-routing distinction directly.
+
+Checkpoint is clean and pushed. I’m updating `context.md` for this answer-only turn, then I’ll commit that log and give you the concise explanation.
+
+I’m appending the clarification turn to `context.md` now.
+
+### Files Edited By Agent In Response To This Message
+
+- `context.md` - appended this clarification turn log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `bd06b043d9d58b0b2d5cc0e9ffeb91fcd905f14a`.
+- No source code or donor files were changed.
+
+### Explanation To User
+
+`routed through native-registry donors, not one mega` means the component placer
+does not always take components from a single huge all-components donor. It
+normalizes the requested family, loads the trusted donor registry, then picks a
+donor that has enough real Proteus packets for that family. For many ICs like
+`4017`, `4020`, `74HC161`, `74HC595`, etc., that selected donor is a small
+family-specific saved Proteus project under `proteus_ic/donors/...`, not the
+big mega donor. This is still donor-based byte copying; it is not byte-forming
+from scratch and not Proteus library insertion. `native-registry` means a
+registered real Proteus donor containing native component packets for that
+family. The mega donor is only one donor source among several.
