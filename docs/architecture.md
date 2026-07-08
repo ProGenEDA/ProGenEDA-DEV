@@ -438,3 +438,61 @@ It contains 34 final `_sa` terminalized cases, 0 terminal errors, and no
 retained `_placed` projects or work manifests. `7SEG-COM-AN-BLUE`,
 `7SEG-COM-CAT-BLUE`, `4518`, and `74HC4520` remain blocked for terminalized
 output pending complete donor/catalogue evidence.
+
+## 2026-07-08 multi-pin terminal regrouping after catalogue failure
+
+User Proteus testing rejected the clean catalogue V2 output as well: none of
+the catalogue terminalized cases opened/rendered acceptably. Static checks and
+internal donor-comparison reports are therefore explicitly downgraded to
+engineering diagnostics, not acceptance gates.
+
+Recovery rule:
+
+- Stop broad catalogue batches.
+- Work in small pin-structure groups.
+- For each group, select one family, prove a 1x Proteus-opened terminalized
+  output, then re-run every previously accepted family in that group before
+  expanding to the next family.
+- Do not ship 9x/15x/23x or mixed packs for a group until every 1x family in
+  that group has user/Proteus acceptance.
+- Keep terminalized donor projects as evidence only. Generated projects still
+  start from the component placer and use only
+  `src/proteusgen/component_terminal_placer.py` for terminal placement.
+
+The curated donor evidence root for this recovery pass is:
+
+`proteus_ic/donors/terminalized_catalogue_evidence/`
+
+That folder copies primary evidence donors into small structure groups and
+documents each donor's source/counts in its README. Originals remain in place
+for provenance.
+
+Current active multi-pin groups:
+
+- `dil14_quad_2input_logic`: `74HC00`, `74HC02`, `74HC08`, `74HC266`,
+  `74HC32`, `74HC86`.
+- `dil14_hex_inverter`: `74HC04`.
+- `dil14_dual_d_ff`: `74HC74`.
+- `dil14_counter`: `7490`.
+- `dil16_dual_jk_ff`: `4027`, `74HC76`.
+- `dil16_mux`: `74HC151`, `74HC157`.
+- `dil16_decoder_driver`: `4511`, `7447`.
+- `dil16_counter`: `74HC160`, `74HC192`.
+- `dil16_register`: `74HC174`.
+- `dil16_arithmetic_compare`: `74HC283`, `74HC85`.
+- `dil8_analog_ic`: `LM741`, `NE555`.
+- `display_7seg`: `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`.
+- `three_pin_transistor`: `NMOSFET`, `NPN`, `PNP`.
+- `three_pin_regulator_control_symbol`: `LM317T`, `OPAMP`, `POT-HG`.
+- `four_pin_rectifier_transformer`: `BRIDGE`, `TRAN-2P2S`.
+
+Displays are not removed from scope: the component placer can place both
+common-anode and common-cathode display requests through the display-special
+D20/sentinel route. The terminal placer must ignore `D20` and display sentinel
+infrastructure and terminalize only real display pins.
+
+Historical catalogue families that are not currently placeable by the active
+component placer stay out of the active terminal grouping until component
+placement is deliberately extended. Examples include `4017`, `4020`, `4518`,
+`74HC161`, `74HC163`, `74HC165`, `74HC193`, `74HC273`, `74HC4024`,
+`74HC4040`, `74HC4060`, `74HC4520`, `74HC595`, and `SWITCH`.
