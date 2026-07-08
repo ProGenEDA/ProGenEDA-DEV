@@ -1684,14 +1684,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             ):
                 attachment_units.append(terminal_record)
                 attachment_units.append(wire_record)
-            local_records.append(
-                _insert_attachment_units_before_packet_terminator(
-                    patched_data,
-                    attachment_units,
-                    family=family,
-                    key=key,
-                )
-            )
+            local_records.append(patched_data + b"".join(attachment_units))
         else:
             local_records.extend(terminal_records)
             local_records.append(b"\x00")
@@ -5169,31 +5162,6 @@ def _ensure_double_ff_object_stream_terminator(chunk: bytes) -> bytes:
     if chunk.endswith(b"\xff"):
         return chunk + b"\xff"
     return chunk + b"\xff\xff"
-
-
-def _insert_attachment_units_before_packet_terminator(
-    component_packet: bytes,
-    attachment_units: Iterable[bytes],
-    *,
-    family: str,
-    key: str,
-) -> bytes:
-    """Splice terminal/WIRE units at the donor-proven packet boundary.
-
-    Accepted catalogue donors keep the component packet first, but the short
-    terminal/WIRE attachment units replace the selected packet's final byte.
-    The component placer's final ROOT.DSN stream overwrites that selected byte
-    with the object-stream ``FF`` terminator, so preserving or moving the stale
-    selected byte creates a malformed object tail that Proteus can open as an
-    empty/faulty sheet.
-    """
-
-    if not component_packet:
-        raise ValueError(
-            f"{family} {key} component packet is empty; cannot perform "
-            "terminal attachment splicing."
-        )
-    return component_packet[:-1] + b"".join(attachment_units)
 
 
 def _pin_label_parts(label: str) -> tuple[str, str]:

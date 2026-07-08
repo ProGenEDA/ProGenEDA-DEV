@@ -802,3 +802,44 @@ output object chunk headers match their no-terminal bases (`POT-HG` `0008ff`,
 units, and terminal symbol coordinate/angle multisets match the curated
 terminalized donor evidence. Proteus open/render acceptance is pending user
 testing.
+
+User Proteus testing rejected V16 as still faulty. The next donor comparison
+showed that preserving the component prefix was necessary but incomplete:
+V16 appended the terminal/WIRE units after the selected component packet's
+boundary. The accepted user donors place the first terminal at the byte position
+where the no-terminal ROOT.DSN stream has its final object terminator:
+
+- `POT-HG`: first terminal starts at byte `432`; no-terminal base length is
+  `433`.
+- `LM317T`: first terminal starts at byte `377`; no-terminal base length is
+  `378`.
+- `OPAMP`: first terminal starts at byte `397`; no-terminal base length is
+  `398`.
+
+The selected component group data also carries one stale final byte that is not
+present in the no-terminal ROOT.DSN stream (`08` for `POT-HG`, `00` for
+`LM317T`/`OPAMP`). Moving that byte after the terminal/WIRE units is also wrong.
+The shared catalogue clean-packet route now splices terminal/WIRE units by
+dropping the selected group's stale final byte and letting the final
+object-stream terminator be emitted normally.
+
+Focused V18 checkpoint:
+
+`experiments/three_pin_control_terminal_v18_packet_splice_temp_2026_07_09/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V18_PACKET_SPLICE_TEMP_2026_07_09.zip`
+
+V18 contains only:
+
+- `POT-HG` 1x `_sa`
+- `LM317T` 1x `_sa`
+- `OPAMP` 1x `_sa`
+- matching no-terminal controls
+
+Static result: 3 generated cases, 3 base-valid, 3 terminal-valid, all three
+output object chunk headers match their no-terminal bases, all three first
+terminal starts match the curated donor boundary, and all three terminal symbol
+coordinate/angle multisets match the curated terminalized donor evidence.
+Proteus open/render acceptance is pending user testing.

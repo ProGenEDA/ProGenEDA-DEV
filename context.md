@@ -10033,3 +10033,121 @@ I’m appending the full turn record into `context.md` now, including the user r
 ### Final Response To User
 
 Planned summary: V15 was wrongly treated as static-valid because donor/base framing was not checked. Root cause was dropped object-stream byte 1 before the component packet, producing empty sheets. V16 prefix-preserve 1x repair pack generated at `experiments/three_pin_control_terminal_v16_prefix_preserve_temp_2026_07_08/` with archive `experiments/THREE_PIN_CONTROL_TERMINAL_V16_PREFIX_PRESERVE_TEMP_2026_07_08.zip`; test only the three `_sa` files first.
+
+
+---
+
+## 2026-07-09T00:29:30+05:00 - User Message
+
+still faulty
+
+### Visible Agent Response During Turn
+
+I’m treating V16 as rejected. First I’ll verify the pushed checkpoint as required, then I’ll compare V16 against the no-terminal base and the user terminalized donor at record-boundary level instead of relying on marker checks.
+
+Checkpoint is cleanly pushed: local/upstream/remote all `87628008`. The remaining dirty files are the same unrelated user-side files, and I’m leaving them out.
+
+The new comparison shows V16 no longer has the empty-sheet header issue, but that does not prove the active links are right. I’m now checking the terminal suffixes and component pin-link fields against the final WIRE record addresses; a one-byte prefix repair can still leave link fields off if rebasing happened before insertion.
+
+I found the likely next failure mode: V16’s terminal labels are much longer than the accepted user donors (`RV1PIN1VCC` vs `vcc`, etc.). That changes terminal record sizes and every following WIRE address. Rebase may handle the addresses, but Proteus may still be sensitive to record shape/label length in this donor-native route. I’m checking that now before changing it.
+
+The deeper donor comparison found the real structural mismatch now: V16 appends the first terminal after the component packet’s final `FF`. The accepted donor inserts the terminal/WIRE units before that final packet terminator.
+
+For POT-HG:
+- accepted donor first terminal record starts at byte `432`;
+- V16 first terminal record starts at byte `433`;
+- base component chunk length is `433`, so V16 put attachments after the packet terminator.
+
+That explains “still faulty” better than label length. I’m fixing the shared catalogue clean-packet route to splice terminal/WIRE units before the component packet’s final `FF`, then regenerate another 1x-only pack.
+
+I’m taking the required backup before editing `component_terminal_placer.py` again.
+
+The splice helper is in the shared placer. Now I’m changing the clean catalogue append path to use it instead of appending after the packet terminator.
+
+I’m adding the exact regression: for these clean catalogue packets, the first terminal record must start one byte before the no-terminal base chunk ends, matching the accepted donor structure.
+
+The first splice attempt exposed an important detail: the selected component packet does not include the final stream `FF`; the byte that must move after the attachments is the selected packet’s own last byte (`08` for POT-HG, `00` for LM317T/OPAMP). I’m adjusting the splice to match the donor boundary: insert before the selected packet’s final byte, not before an `FF` that is not present there.
+
+The splice now follows the actual donor boundary. I’m rerunning the focused tests and will inspect the first terminal starts before regenerating.
+
+Focused tests now pass with the donor-boundary rule. I’m generating V17 as another 1x-only repair pack; still no scaling until you confirm these open/render.
+
+V17 generated. The first terminal record now matches the donor boundary for all three:
+
+- POT-HG: output/donor `432`, base length `433`
+- LM317T: output/donor `377`, base length `378`
+- OPAMP: output/donor `397`, base length `398`
+
+Running full regression and compile now.
+
+One more check before I hand it over: the donor boundary now matches, but I’m checking whether the moved boundary byte lands in the same final position as the accepted donor. If that byte is still wrong, I’ll correct it before committing.
+
+The selected-group byte stream is not identical to the final no-terminal chunk slice at the very end; that is why this is fragile. I’m comparing the actual selected packet tail against the no-terminal ROOT.DSN slice and the accepted donor tail now.
+
+The boundary byte comparison found a stronger issue: the selected group’s last byte is not present in the no-terminal ROOT.DSN; the component placer replaces that position with the stream `FF`. V17 moved that stale selected byte to the end (`08` for POT-HG, `00` for LM317T/OPAMP), which is also not donor-native.
+
+I’m correcting the splice to drop that stale selected-packet byte and let the final object-stream terminator be emitted normally.
+
+The correction remains in the shared placer; I’m changing only the clean catalogue splice semantics.
+
+Now the selected stale byte is dropped instead of moved. Running focused tests again.
+
+V17 was only an intermediate generated check and is not the pack to test. I’m generating V18 with the stale selected byte dropped, which matches the no-terminal ROOT.DSN boundary more closely.
+
+V18 has the corrected splice: donor boundary matches and the stale selected byte is no longer moved to the tail. I’m removing the intermediate V17 evidence pack from this turn, then rerunning full tests/compile on the final patch.
+
+Full regression is clean on the final V18 patch: 98 tests passed and compileall passed. I’m recording V16 as rejected and V18 as the current pending Proteus-test checkpoint in the architecture notes.
+
+Architecture notes are updated. I’m appending the turn record to `context.md`, including the V16 rejection, the donor-boundary finding, V18 paths, and the tests.
+
+One more detail for the log: I generated and discarded V17 during this turn because it moved the selected packet’s stale final byte to the tail. V18 is the retained pack.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - fixed the catalogue clean-packet terminal splice so terminal/WIRE units replace the selected group’s stale final byte instead of being appended after the selected packet or moving that stale byte to the tail.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_002001_before_catalogue_packet_terminator_splice.py` - backup taken before editing the shared terminal placer.
+- `tests/test_component_placer.py` - strengthened the three-pin catalogue regression so the first terminal record must start at `len(no-terminal-base-chunk) - 1`.
+- `docs/architecture.md` - recorded V16 rejection, the donor-boundary root cause, and the V18 repair checkpoint.
+- `experiments/three_pin_control_terminal_v18_packet_splice_temp_2026_07_09/` - generated 1x-only V18 repair pack and no-terminal controls.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V18_PACKET_SPLICE_TEMP_2026_07_09.zip` - generated V18 repair archive.
+- `context.md` - appended this turn log.
+
+### Generated And Discarded During Turn
+
+- `experiments/three_pin_control_terminal_v17_packet_boundary_temp_2026_07_09/` - generated as an intermediate boundary check, then deleted because it moved the selected group’s stale final byte to the tail.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V17_PACKET_BOUNDARY_TEMP_2026_07_09.zip` - generated as the matching intermediate archive, then deleted.
+
+### Verification Recorded During Turn
+
+- Start checkpoint: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `87628008674c7f9b4b378c35c42eb7d33e98714c`.
+- Working tree had unrelated user-side 74HC04 movement/deletion and fixed display/mixed evidence files; these were not staged or modified.
+- V16 donor-boundary comparison:
+  - `POT-HG`: V16 first terminal start `433`; accepted donor first terminal start `432`; base length `433`.
+  - `LM317T`: V16 first terminal start `378`; accepted donor first terminal start `377`; base length `378`.
+  - `OPAMP`: V16 first terminal start `398`; accepted donor first terminal start `397`; base length `398`.
+- Selected group tail comparison:
+  - `POT-HG` selected group final byte `08`; final no-terminal ROOT.DSN slice has `FF` at that position.
+  - `LM317T` selected group final byte `00`; final no-terminal ROOT.DSN slice has `FF` at that position.
+  - `OPAMP` selected group final byte `00`; final no-terminal ROOT.DSN slice has `FF` at that position.
+- Focused tests passed after final patch:
+  - `python -m pytest tests/test_component_placer.py::test_catalogue_three_pin_terminals_use_donor_contact_offsets -q` -> 3 passed.
+  - `python -m pytest tests/test_component_placer.py::test_shared_terminal_dispatcher_terminalizes_all_two_pin_families -q` -> 1 passed.
+- Generated V18 repair pack:
+  - `01_terminalized_sa/R001_POT_HG_1x_PACKET_SPLICE_sa.pdsprj`
+  - `01_terminalized_sa/R002_LM317T_1x_PACKET_SPLICE_sa.pdsprj`
+  - `01_terminalized_sa/R003_OPAMP_1x_PACKET_SPLICE_sa.pdsprj`
+  - Matching no-terminal controls in `00_no_terminal_controls/`.
+- V18 static report:
+  - 3 generated cases.
+  - 3 base-valid.
+  - 3 terminal-static-valid.
+  - 3 output object chunk headers match their no-terminal bases.
+  - 3 first terminal starts match the curated donor boundary.
+  - 3 donor terminal-symbol multisets match curated evidence.
+  - First terminal starts: `POT-HG` output/donor `432`, base length `433`; `LM317T` output/donor `377`, base length `378`; `OPAMP` output/donor `397`, base length `398`.
+- Full component placer tests passed: `python -m pytest tests/test_component_placer.py -q` -> 98 passed.
+- Compile passed: `python -m compileall -q src tests tools/proteus_generation`.
+
+### Final Response To User
+
+Planned summary: V16 is rejected; root cause was not active-link rebasing but attachment-unit packet boundary. V18 1x-only packet-splice repair generated at `experiments/three_pin_control_terminal_v18_packet_splice_temp_2026_07_09/` with archive `experiments/THREE_PIN_CONTROL_TERMINAL_V18_PACKET_SPLICE_TEMP_2026_07_09.zip`; test only the three `_sa` files first.

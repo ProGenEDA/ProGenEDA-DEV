@@ -2280,7 +2280,9 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
         assert row["short_wire"]["start"] != row["short_wire"]["end"]
     first_component_marker = chunk.find(family.encode("ascii"))
     first_terminal_marker = chunk.find(b"$TERBIDIR")
+    first_terminal_start = first_terminal_marker - 14
     assert 0 <= first_component_marker < first_terminal_marker
+    assert first_terminal_start == len(base_chunk) - 1
     attachment_events: list[tuple[int, str]] = []
     for marker, label in ((b"$TERBIDIR", "terminal"), (b"\x7fWIRE", "wire")):
         cursor = 0
