@@ -9690,3 +9690,100 @@ Tests:
 
 - `tests/test_component_placer.py` → 94 passed
 - compileall passed
+---
+
+## 2026-07-08T19:33:41+05:00 - User Message
+
+goood just improve the beautifier validator a bit more more distance between differnet type of componet
+and lets continue terminal placer
+yk how to deal with it? test the 2 pined and their combinations frist including switch, then take a group a small one, fix terminal placer for it, test its combinations with the already tested(in this case 2 pined,) then next n next till all are done
+and also update archietecture.md with limits of each component
+
+### Visible Agent Response During Turn
+
+I’ll keep this Proteus-only, improve the shared layout validator/spacing first, then add SWITCH into the existing shared terminal placer as a profiled two-pin family and regenerate focused 2-pin/SWITCH packs. No new terminal-placement script.
+
+The first Git check command hit PowerShell’s `@{}` parsing. Re-running it quoted; no repo changes were made by that failed check.
+
+Checkpoint is clean against remote (`e43748f5`) apart from your fixed Proteus evidence files and my temporary probe files. I’m removing only the `tmp_probe_*` files now.
+
+Next I’m editing the real spacing producer plus validator, not just the generated pack: family changes will become separate layout blocks, and the validator will detect different-family spacing violations.
+
+I found the current tests already cover multipart spreading and mixed spacing, but only at a weak global spacing threshold. I’m tightening this with a separate “different family” spacing rule so same-family packs can stay compact while unlike components get more separation.
+
+Implementing this as actual stage behavior now: family-change row breaks in the beautifier, plus an error-level validator rule for different-family bbox spacing.
+
+Spacing implementation detail: I’m making unlike families start on separated family blocks, not merely nudging coordinates. That is safer for mixed IC/non-IC packs and easier for the validator to prove.
+
+The validator/producer change is in place. I’m running the focused layout tests before touching terminal placement, so terminal work starts from a known-good placement baseline.
+
+Layout focused tests pass. I’m now backing up the shared terminal placer before adding SWITCH support, as required.
+
+SWITCH uses the same anonymous linked-packet tail shape as FUSE: component anchor at the final `SWITCH` marker coordinates, and link fields at anchor+25/+29. I’m adding it to the existing generic two-pin profile path.
+
+One caveat I’m encoding explicitly: this makes SWITCH terminalized through the same active-suffix + short-wire route as other accepted two-pin families. It is still Proteus-pending until you open the generated pack.
+
+SWITCH is now wired into the existing generic two-pin terminal dispatcher and marked pending in the catalogue. Running focused tests for SWITCH plus the full two-pin dispatcher.
+
+The focused SWITCH solo profiles passed. The mixed two-pin test failed only on selected-group order after adding SWITCH, not terminal validity; I’m checking the order contract and updating the test to assert the actual dispatcher guarantees instead of a stale list position.
+
+The component placer’s stable selection order places `SWITCH` before `40EPS08`; I’m aligning the test fixture to that real locked-mega order, not changing terminal behavior.
+
+Two-pin terminal unit coverage is green, including SWITCH solo and all two-pin mixed dispatch. I’m updating docs now with the locked-mega limits and the new spacing/terminal strategy before regenerating evidence packs.
+
+For limits, I’m documenting the current locked-mega practical generation limits, not pretending they are permanent library limits. Anything not specially capped is documented as “validated target 20” until Proteus feedback raises it.
+
+I’m extracting the current capped mixed manifest to avoid hand-writing the supported-family list incorrectly.
+
+Current locked-mega capped manifest confirms these practical limits: every supported family hit 20 except `74HC00=8`, `74HC02=12`, `74HC04=15`, `74HC08=15`, and `74HC74=19`. I’m adding that to architecture.
+
+Generating a focused evidence pack now: SWITCH solo, all two-pin families including SWITCH, and a mixed “two-pin plus non-terminal controls” case. Outputs will include `_sa.pdsprj` terminalized files plus no-terminal controls.
+
+Generated pack is static-valid. I’m adding its exact folder/archive to architecture so the next turn has a concrete checkpoint.
+
+Running the full component-placer test file and compile checks now. This catches whether the stronger different-family validator breaks older placement paths.
+
+Full component-placer tests pass: 95/95. Running compile checks next.
+
+Compile check passed. I’m checking the diff and generated files before logging context and committing.
+
+I’m updating `context.md` now with this turn’s user request, visible status messages, files changed, tests, and generated pack. Then I’ll commit and push.
+
+`context.md` will record this checkpoint as Proteus-pending, not accepted, because SWITCH still needs your Proteus open/render result.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_beautifier.py` - added different-family layout gap/min-spacing constants.
+- `src/proteusgen/beautifier_validator.py` - added different-family spacing detection and error-level validation.
+- `src/proteusgen/component_placer.py` - starts a new separated row when the visible family changes, records family block metadata, and applies the stricter validator.
+- `src/proteusgen/component_terminal_placer.py` - added `SWITCH` to the existing generic two-pin profile, accepted terminal order, and two-pin allow-list.
+- `backups/component_terminal_placer/component_terminal_placer_20260708_192142_before_switch_two_pin.py` - backup taken before editing the shared terminal placer.
+- `tests/test_component_placer.py` - imported the new different-family spacing helper, tightened mixed spacing expectations, and added `SWITCH` into the all-two-pin terminal dispatcher test order.
+- `knowledge/component_catalog_v0.json` - marked `SWITCH` terminal support as Proteus-pending V13 two-pin profile.
+- `docs/architecture.md` - documented the stronger validator/spacing behavior, the SWITCH terminal checkpoint, and current locked-mega per-family generation limits.
+- `experiments/two_pin_switch_terminal_v13_temp_2026_07_08/` - generated no-terminal controls, terminalized `_sa` projects, reports, and README.
+- `experiments/TWO_PIN_SWITCH_TERMINAL_V13_TEMP_2026_07_08.zip` - generated archive for Proteus testing.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start checkpoint: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `e43748f5b27c157b4c66181afa6a5ad6c5637d33`.
+- Removed only temporary probe files: `tmp_probe_FUSE.pdsprj`, `tmp_probe_FUSE.pdsprj.manifest.json`, `tmp_probe_POT_HG.pdsprj`, `tmp_probe_POT_HG.pdsprj.manifest.json`, `tmp_probe_SWITCH.pdsprj`, `tmp_probe_SWITCH.pdsprj.manifest.json`.
+- Focused layout tests passed: `python -m pytest tests/test_component_placer.py::test_mixed_layout_keeps_large_visual_spacing_between_types tests/test_component_placer.py::test_multipart_subparts_are_spread_with_large_internal_gap -q` -> 2 passed.
+- First focused terminal run: solo generic two-pin profiles passed; mixed dispatcher failed only due stale expected selected-family order after adding `SWITCH`.
+- Corrected expected all-two-pin order to match the locked component placer order (`SWITCH` before `40EPS08`).
+- Focused terminal tests passed: `python -m pytest tests/test_component_placer.py::test_generic_two_pin_terminal_profiles_attach_solo_components tests/test_component_placer.py::test_shared_terminal_dispatcher_terminalizes_all_two_pin_families -q` -> 13 passed.
+- Generated `experiments/two_pin_switch_terminal_v13_temp_2026_07_08/`:
+  - `T001_SWITCH_1x`: base_valid true, terminal_valid true, 2 terminals, 2 wires.
+  - `T002_SWITCH_3x`: base_valid true, terminal_valid true, 6 terminals, 6 wires.
+  - `T003_SWITCH_9x`: base_valid true, terminal_valid true, 18 terminals, 18 wires.
+  - `T004_ALL_TWO_PIN_PLUS_SWITCH_1x_each`: base_valid true, terminal_valid true, 40 terminals, 40 wires.
+  - `T005_ALL_TWO_PIN_PLUS_SWITCH_3x_each`: base_valid true, terminal_valid true, 120 terminals, 120 wires.
+  - `T006_TWO_PIN_WITH_UNSUPPORTED_CONTROLS`: base_valid true, terminal_valid true; terminalized only `RESISTOR`, `CAP`, `SWITCH`, `FUSE`; skipped/preserved `74HC151`, `NPN`, `POT-HG`; 16 terminals, 16 wires.
+- Locked-mega limit extraction from `V2C0017_all_min20_or_available_each.pdsprj.manifest.json`: every supported family reached 20 except `74HC00=8`, `74HC02=12`, `74HC04=15`, `74HC08=15`, and `74HC74=19`.
+- Full component placer tests passed: `python -m pytest tests/test_component_placer.py -q` -> 95 passed.
+- Compile passed: `python -m compileall -q src tests tools/proteus_generation`.
+
+### Final Response To User
+
+Planned summary: report that spacing validator/producer was strengthened, SWITCH was added through the shared two-pin terminal placer, the V13 pack is generated at `experiments/two_pin_switch_terminal_v13_temp_2026_07_08/` with archive `experiments/TWO_PIN_SWITCH_TERMINAL_V13_TEMP_2026_07_08.zip`, tests passed, and Proteus acceptance is pending your open/render test.

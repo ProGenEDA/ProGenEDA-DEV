@@ -158,13 +158,6 @@ GENERIC_TWO_PIN_PROFILES = {
         "right_pin_hint": "pin:2",
         "terminal_contact_outward_grid_steps": 1,
     },
-    "SWITCH": {
-        "label_prefix": "W",
-        "suffix_base": 0x6800,
-        "left_pin_hint": "pin:1",
-        "right_pin_hint": "pin:2",
-        "terminal_contact_outward_grid_steps": 1,
-    },
 }
 # Dispatcher allow-list for the shared native terminal route.  The R/C/L/source
 # families are user-accepted checkpoints; the generic diode/fuse/LED/signal
@@ -190,7 +183,6 @@ ACCEPTED_TERMINAL_FAMILY_ORDER = (
     "BZY88C",
     "LED-RED",
     "FUSE",
-    "SWITCH",
 )
 NATIVE_WIRE_PREFIX = bytes.fromhex(
     "1d00000000c09e00000040000001ffffff00ffffff00027f"
@@ -238,7 +230,6 @@ TWO_PIN_FAMILIES = {
     "BZY88C",
     "LED-RED",
     "FUSE",
-    "SWITCH",
     "VSOURCE",
     "CSOURCE",
     "VSINE",

@@ -620,3 +620,51 @@ Follow-up layout rules:
 - The regenerated focused V2 evidence pack now has zero true bbox overlaps and
   zero too-close pairs at a 2,540,000-coordinate visual margin in the large
   mixed manifests.
+
+## 2026-07-08 spacing-validator and two-pin terminal continuation
+
+The beautifier now treats different component families as separate visual
+blocks. A family change starts a new row with an extra
+5,080,000-coordinate vertical gap. The validator also has an error-level
+different-family spacing rule: unlike-family visible bboxes must be at least
+3,810,000 coordinates apart. Same-family arrays may remain denser, but mixed
+type overlap/near-overlap is now a generated-output validation failure.
+
+Terminal work resumes from the accepted two-pin baseline before returning to
+multi-pin groups. The first continuation target is `SWITCH`, because it is a
+placeable two-pin component in the locked donor and has the same generic
+tail/link-field structure as `FUSE`: body anchor at the final family marker,
+component pin-link fields at anchor+25 and anchor+29, terminal contacts snapped
+to the Proteus grid, one-grid outward offset, and short WIREs back to the exact
+pins. `SWITCH` is therefore routed through the existing shared
+`component_terminal_placer.py` generic two-pin profile; it is still
+Proteus-pending until the generated evidence pack is opened.
+
+The generated checkpoint is:
+
+`experiments/two_pin_switch_terminal_v13_temp_2026_07_08/`
+
+with archive:
+
+`experiments/TWO_PIN_SWITCH_TERMINAL_V13_TEMP_2026_07_08.zip`
+
+It contains `SWITCH` 1x/3x/9x solos, all two-pin-plus-`SWITCH` 1x-each and
+3x-each mixes, and a mixed control case proving the dispatcher terminalizes
+only allowed two-pin families while preserving `POT-HG`, `NPN`, and `74HC151`.
+Static reports show 0 base errors, 0 terminal errors, valid suffix rebasing,
+valid terminal grid alignment, and valid short-WIRE contacts. Proteus open/render
+acceptance is still pending.
+
+Current locked-mega practical placement limits from the V2 capped matrix are:
+
+| Limit | Families |
+| --- | --- |
+| 8 | `74HC00` |
+| 12 | `74HC02` |
+| 15 | `74HC04`, `74HC08` |
+| 19 | `74HC74` |
+| 20 validated target | `1N4007`, `1N4148`, `1N4733A`, `1N6000B`, `2N3904`, `2N4401`, `2N7000`, `4027`, `40EPS08`, `4511`, `7447`, `7490`, `74HC151`, `74HC157`, `74HC160`, `74HC174`, `74HC192`, `74HC266`, `74HC283`, `74HC32`, `74HC76`, `74HC85`, `74HC86`, `7SEG-COM-AN-BLUE`/user alias `7SEG-COM-AN-RED`, `7SEG-COM-CAT-BLUE`, `BRIDGE`, `BS170`, `BZX55C5V1`, `BZX79C5V1`, `BZY88C`, `CAP`, `CAP-ELEC`, `CSOURCE`, `DIODE`, `FUSE`, `LED-RED`, `LM317T`, `LM741`, `NE555`, `NMOSFET`, `NPN`, `OPAMP`, `PNP`, `POT-HG`, `REALIND`, `RESISTOR`, `SWITCH`, `TRAN-2P2S`, `VPULSE`, `VSINE`, `VSOURCE` |
+
+These are current safe generation/testing limits, not permanent component
+library limits. Raising a cap requires a focused no-terminal Proteus-opened
+control first, then terminal and mixed stress packs.

@@ -43,6 +43,8 @@ from .component_value_changer import (
 )
 from .component_beautifier import (
     DEFAULT_HIDDEN_COORDINATE_MODE,
+    DIFFERENT_FAMILY_LAYOUT_GAP_Y,
+    DIFFERENT_FAMILY_LAYOUT_MIN_SPACING,
     D20_SMALL_COORD_DX,
     D20_SMALL_COORD_DY,
     HIDDEN_PACKET_START,
@@ -1422,6 +1424,8 @@ def _apply_binary_beautifier(
         )
         shelf_right = VISIBLE_LAYOUT_ORIGIN_X + VISIBLE_LAYOUT_SHELF_WIDTH
         band_max_y = band_origin_y
+        previous_family: str | None = None
+        family_block_index = 0
 
         for group in band_groups:
             layout_source_data, multipart_spread = spread_multipart_subpart_coordinates(
@@ -1443,6 +1447,20 @@ def _apply_binary_beautifier(
             else:
                 allocation_width = VISIBLE_LAYOUT_SLOT_X + VISIBLE_LAYOUT_MARGIN_X
                 allocation_height = VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y
+            family_changed = previous_family is not None and group.family != previous_family
+            if family_changed and (cursor_x != VISIBLE_LAYOUT_ORIGIN_X or row_height):
+                cursor_x = VISIBLE_LAYOUT_ORIGIN_X
+                cursor_y += (
+                    max(
+                        row_height,
+                        VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y,
+                    )
+                    + DIFFERENT_FAMILY_LAYOUT_GAP_Y
+                )
+                row_height = 0
+                row_index += 1
+                column_index = 0
+                family_block_index += 1
             if (
                 cursor_x != VISIBLE_LAYOUT_ORIGIN_X
                 and cursor_x + allocation_width > shelf_right
@@ -1479,6 +1497,8 @@ def _apply_binary_beautifier(
             entry["ref_count"] = len(group.refs)
             entry["layout_band"] = band_name
             entry["mixed_band_separation"] = use_separate_bands
+            entry["family_block_index"] = family_block_index
+            entry["family_row_break"] = bool(family_changed)
             if not known_refs_unchanged:
                 raise ValueError(
                     f"Beautifier changed references for {group.key}; "
@@ -1495,6 +1515,7 @@ def _apply_binary_beautifier(
             row_height = max(row_height, allocation_height)
             column_index += 1
             slot += 1
+            previous_family = group.family
 
         if use_separate_bands and band_name == "ic":
             band_origin_y = band_max_y + MIXED_LAYOUT_BAND_GAP_Y
@@ -2477,6 +2498,7 @@ def validate_generated_component_output(
         for issue in validate_beautifier_layout_entries(
             layout_entries,
             visible_keys=visible_keys,
+            different_family_min_spacing=DIFFERENT_FAMILY_LAYOUT_MIN_SPACING,
         ):
             code = (
                 "E_OUTPUT_LAYOUT_OVERLAP"

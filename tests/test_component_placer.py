@@ -30,6 +30,7 @@ from proteusgen.component_beautifier import (
     layout_coordinate_pairs,
 )
 from proteusgen.beautifier_validator import (
+    layout_different_family_spacing_pairs,
     layout_overlap_pairs,
     layout_spacing_pairs,
     validate_beautifier_layout_entries,
@@ -768,6 +769,8 @@ def test_mixed_layout_keeps_large_visual_spacing_between_types(tmp_path: Path) -
     assert result.valid
     assert layout_overlap_pairs(entries) == []
     assert layout_spacing_pairs(entries, min_spacing=1_524_000) == []
+    assert layout_different_family_spacing_pairs(entries, min_spacing=3_810_000) == []
+    assert any(entry.get("family_row_break") for entry in entries)
     assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
@@ -2026,6 +2029,7 @@ def test_shared_terminal_dispatcher_terminalizes_all_two_pin_families(
         "VPULSE",
         "LED-RED",
         "1N4733A",
+        "SWITCH",
         "40EPS08",
         "BZY88C",
         "1N4007",
