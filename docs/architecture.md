@@ -719,3 +719,42 @@ Static result: 14 generated cases, 14 base-valid, 14 terminal-valid, all
 terminal contact sources are `donor_terminal_contact_anchor_offset`. The three
 1x solos match the curated donor terminal-symbol coordinate/angle multisets.
 Proteus open/render acceptance is pending user testing.
+
+User Proteus testing immediately rejected V14: `POT-HG`, `LM317T`, and `OPAMP`
+1x files did not open at all. The byte-level comparison identified a structural
+ordering error, not a coordinate error:
+
+- V14 emitted all `$TERBIDIR` records before the component packet.
+- Curated terminalized donors emit the component packet first, then
+  terminal/WIRE attachment units.
+
+The V15 repair changes only the catalogue bare-packet/link-offset emission
+order. For clean component packets with appended WIRE records, the shared
+terminal placer now emits:
+
+`component packet -> terminal -> WIRE -> terminal -> WIRE -> ...`
+
+It no longer emits:
+
+`terminal -> terminal -> ... -> component packet -> WIRE -> WIRE -> ...`
+
+The focused V15 checkpoint is intentionally 1x-only until Proteus open/render
+acceptance is restored:
+
+`experiments/three_pin_control_terminal_v15_component_first_temp_2026_07_08/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V15_COMPONENT_FIRST_TEMP_2026_07_08.zip`
+
+V15 contains:
+
+- `POT-HG` 1x
+- `LM317T` 1x
+- `OPAMP` 1x
+- matching no-terminal controls
+
+Static result: 3 generated cases, 3 base-valid, 3 terminal-valid, donor terminal
+symbol coordinate/angle multisets still match, and marker-order reports prove
+the first component marker appears before the first `$TERBIDIR`, followed by
+terminal/WIRE pairs. Proteus acceptance is pending user testing.

@@ -2256,6 +2256,7 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
         result.selected_groups,
         terminal_families=(family,),
     )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
     terminals_by_pin = {
         row["pin"]["name"]: row
         for family_report in report["family_reports"]
@@ -2275,3 +2276,24 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
         ) == (symbol_x, symbol_y, angle)
         assert row["terminal_contact_source"] == "donor_terminal_contact_anchor_offset"
         assert row["short_wire"]["start"] != row["short_wire"]["end"]
+    first_component_marker = chunk.find(family.encode("ascii"))
+    first_terminal_marker = chunk.find(b"$TERBIDIR")
+    assert 0 <= first_component_marker < first_terminal_marker
+    attachment_events: list[tuple[int, str]] = []
+    for marker, label in ((b"$TERBIDIR", "terminal"), (b"\x7fWIRE", "wire")):
+        cursor = 0
+        while True:
+            marker_offset = chunk.find(marker, cursor)
+            if marker_offset < 0:
+                break
+            if marker_offset > first_component_marker:
+                attachment_events.append((marker_offset, label))
+            cursor = marker_offset + 1
+    assert [label for _offset, label in sorted(attachment_events)] == [
+        "terminal",
+        "wire",
+        "terminal",
+        "wire",
+        "terminal",
+        "wire",
+    ]

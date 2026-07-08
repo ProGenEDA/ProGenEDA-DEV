@@ -9890,3 +9890,71 @@ Only my current files plus the new V14 pack/backup are modified; your older untr
 ### Final Response To User
 
 Planned summary: selected and completed the first small non-2-pin group (`POT-HG`, `LM317T`, `OPAMP`) through the shared catalogue terminal placer; generated V14 pack at `experiments/three_pin_control_terminal_v14_temp_2026_07_08/` and archive `experiments/THREE_PIN_CONTROL_TERMINAL_V14_TEMP_2026_07_08.zip`; tests passed; Proteus open/render acceptance pending.
+
+---
+
+## 2026-07-08T23:38:02+05:00 - User Message
+
+none worked, at all, didnt even open
+
+### Visible Agent Response During Turn
+
+I’ll treat V14 as rejected. First I’m verifying the pushed checkpoint, then I’ll compare the failed generated 1x files against the curated terminalized donor files at the object-stream level. The likely issue is not placement coordinates now; it is the active multi-pin byte structure/link ordering.
+
+Checkpoint is pushed (`2820a451`), but the working tree now has unrelated user-side changes: two 74HC04 files are deleted/moved and your older fixed evidence files are untracked. I’m leaving those untouched and only inspecting the rejected V14 outputs plus donor evidence.
+
+The comparison shows the structural bug: V14 emits all `$TERBIDIR` records before the component packet. The curated donor order is component packet first, then terminal/WIRE attachment units. That ordering difference is a credible “doesn’t open” cause. I’m going to change only the catalogue multi-pin bare/link-offset route to emit component-first attachment units, then regenerate the rejected group.
+
+I’m limiting the fix pack to 1x solos first. Since 1x didn’t open, generating 9x/15x/20x again would just produce more bad evidence. After you confirm the new 1x files open, I’ll scale that group.
+
+I’m taking the required backup before changing `component_terminal_placer.py` again. Then I’ll alter only the catalogue bare-packet/link-offset emission order from `terminals → component → wires` to donor-native `component → terminal/WIRE units`.
+
+Code now emits bare catalogue multi-pin packets as `component → terminal/WIRE units`, matching donor object order. I’m strengthening the regression to fail if `$TERBIDIR` appears before the component again.
+
+Running focused tests now, then I’ll generate a new 1x-only V15 pack for your Proteus check.
+
+Focused tests pass. Generating V15 1x-only repair pack now with no-terminal controls and final `_sa` files.
+
+V15 1x pack is generated. Static marker order now matches donor pattern: component first, then terminal/WIRE pairs. Running full tests and compile before I commit it.
+
+Full tests pass: 98/98. Running compile check.
+
+Compile passed. I’m documenting V14 as rejected and V15 as the component-first repair checkpoint, then I’ll update context and commit/push.
+
+Architecture updated. I’m appending this rejection/fix turn to `context.md` now.
+
+The context entry will mark V14 rejected and V15 as the new pending repair, with the object-order finding recorded.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - changed catalogue bare/link-offset multi-pin emission order to component-first, then terminal/WIRE attachment units.
+- `backups/component_terminal_placer/component_terminal_placer_20260708_233356_before_catalogue_component_first_order.py` - backup taken before editing the shared terminal placer.
+- `tests/test_component_placer.py` - strengthened the three-pin regression so `$TERBIDIR` must appear after the component marker and attachment events must alternate terminal/WIRE.
+- `docs/architecture.md` - recorded V14 rejection, root cause, and V15 repair checkpoint.
+- `experiments/three_pin_control_terminal_v15_component_first_temp_2026_07_08/` - generated 1x-only repair pack and no-terminal controls.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V15_COMPONENT_FIRST_TEMP_2026_07_08.zip` - generated V15 repair archive.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start checkpoint: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `2820a4515a60b2727f10fbeec2d3d0241125b2bc`.
+- Working tree had unrelated user-side 74HC04 file movement/deletion and older fixed evidence files; these were not touched.
+- V14 object-order comparison:
+  - Generated V14 `POT-HG`: `$TERBIDIR` markers at offsets 15/126/237, component markers later at 477/722.
+  - Curated `POT-HG` donor: component markers at 144/389, then `$TERBIDIR`/WIRE units at 446/560, 600/714, 770/884.
+  - Same ordering problem observed for `LM317T`.
+- Focused tests passed after patch: `python -m pytest tests/test_component_placer.py::test_catalogue_three_pin_terminals_use_donor_contact_offsets tests/test_component_placer.py::test_shared_terminal_dispatcher_terminalizes_all_two_pin_families -q` -> 4 passed.
+- Generated V15 repair pack:
+  - `R001_POT_HG_1x_COMPONENT_FIRST_sa.pdsprj`
+  - `R002_LM317T_1x_COMPONENT_FIRST_sa.pdsprj`
+  - `R003_OPAMP_1x_COMPONENT_FIRST_sa.pdsprj`
+  - All 3 base-valid and terminal-valid.
+  - All 3 have `first_component_before_first_terminal = true`.
+  - All 3 attachment event labels after the first component are `terminal, wire, terminal, wire, terminal, wire`.
+  - Donor terminal-symbol multiset still matches for all 3.
+- Full component placer tests passed: `python -m pytest tests/test_component_placer.py -q` -> 98 passed.
+- Compile passed: `python -m compileall -q src tests tools/proteus_generation`.
+
+### Final Response To User
+
+Planned summary: V14 is rejected and root cause was terminal/component object order; V15 component-first 1x repair pack generated at `experiments/three_pin_control_terminal_v15_component_first_temp_2026_07_08/` with archive `experiments/THREE_PIN_CONTROL_TERMINAL_V15_COMPONENT_FIRST_TEMP_2026_07_08.zip`; test only the three 1x `_sa` files first.

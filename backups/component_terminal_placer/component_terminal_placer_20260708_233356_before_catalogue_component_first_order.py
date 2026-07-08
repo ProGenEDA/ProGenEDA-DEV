@@ -1666,29 +1666,9 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     ),
                 }
             )
-        if wire_count_added:
-            if wire_count_rewritten:
-                raise ValueError(
-                    f"{family} {key} mixed existing-WIRE rewriting and appended "
-                    "WIRE emission in one packet; refusing unsafe object order."
-                )
-            if len(appended_wire_records) != len(terminal_records):
-                raise ValueError(
-                    f"{family} {key} has {len(terminal_records)} terminals but "
-                    f"{len(appended_wire_records)} appended WIRE records."
-                )
-            attachment_units: list[bytes] = []
-            for terminal_record, wire_record in zip(
-                terminal_records,
-                appended_wire_records,
-            ):
-                attachment_units.append(terminal_record)
-                attachment_units.append(wire_record)
-            local_records.append(patched_data + b"".join(attachment_units))
-        else:
-            local_records.extend(terminal_records)
-            local_records.append(b"\x00")
-            local_records.append(patched_data)
+        local_records.extend(terminal_records)
+        local_records.append(b"\x00")
+        local_records.append(patched_data + b"".join(appended_wire_records))
         terminalized_count += 1
         family_handler = (
             f"{family}/catalogue-existing-wire-v1"
