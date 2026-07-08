@@ -9958,3 +9958,78 @@ The context entry will mark V14 rejected and V15 as the new pending repair, with
 ### Final Response To User
 
 Planned summary: V14 is rejected and root cause was terminal/component object order; V15 component-first 1x repair pack generated at `experiments/three_pin_control_terminal_v15_component_first_temp_2026_07_08/` with archive `experiments/THREE_PIN_CONTROL_TERMINAL_V15_COMPONENT_FIRST_TEMP_2026_07_08.zip`; test only the three 1x `_sa` files first.
+
+
+---
+
+## 2026-07-08T23:53:28+05:00 - User Message
+
+nope nothing, it opens but sheets are complelty empty. y are u not comparing with donor to see the problem? n how are u declaring these flawed as valid
+
+### Visible Agent Response During Turn
+
+I’m checking the actual patch state first, then I’ll generate a corrected 1x repair pack only after the output byte stream matches the donor/base framing. The empty sheet points to invalid DSN object framing, not terminal geometry.
+
+The patch did apply, and it matches the failure mechanism: the generated object chunk was missing byte 1 of the component packet. I’m creating a pre-fix backup from `HEAD` now because that backup should have existed before this edit.
+
+Remote verification passed: local `HEAD`, upstream, and `origin` are all `7dfe6d3c`. I’m leaving the unrelated dirty 74HC04/user-fixed files untouched.
+
+I found the concrete flaw: the previous checks verified terminal markers, donor contact coordinates, and wire ordering, but not that the rebuilt object stream preserved the base component packet prefix. I’m adding that guard now so this exact empty-sheet failure can’t pass as “valid” again.
+
+I am not adding a new terminal script. The repair is inside the shared placer, and the pack generation will be an inline runner that calls the existing component placer plus `attach_catalogue_pin_bidir_terminals_to_project`.
+
+The generated V16 pack will contain only fresh 1x controls for `POT-HG`, `LM317T`, and `OPAMP`, plus reports comparing the output against the no-terminal base and the curated terminalized donors. No scale-up until these open/render.
+
+Test coverage now checks the rebuilt terminalized file preserves the no-terminal component stream prefix (`chunk[:3]`), which is exactly what V15 broke. Running the focused checks now.
+
+V16 generation completed and passed the new donor/base-framing checks. The key headers now match:
+
+- POT-HG base/output: `0008ff...`
+- LM317T base/output: `0000ff...`
+- OPAMP base/output: `0000ff...`
+
+That is the exact byte area V15 corrupted. Next I’m running the broader regression tests, then I’ll update the docs/context and commit.
+
+Regression passed: `tests/test_component_placer.py` has 98 passing tests and compileall is clean. I’m recording the V15 rejection/V16 root-cause fix in the architecture notes now.
+
+I’m appending the full turn record into `context.md` now, including the user rejection, why V15 was wrongly declared static-valid, the V16 repair, files edited, and tests run.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - fixed catalogue terminal object-stream reconstruction to preserve `original_chunk[1:2]` before the first emitted component packet instead of dropping it.
+- `backups/component_terminal_placer/component_terminal_placer_20260708_234805_before_prefix_preserve_fix.py` - pre-fix shared terminal placer backup restored from `HEAD` after noticing the backup should have existed before the edit.
+- `tests/test_component_placer.py` - strengthened the three-pin catalogue regression so terminalized output must preserve the no-terminal base object chunk prefix (`chunk[:3]`).
+- `docs/architecture.md` - recorded V15 as rejected, identified the dropped component-prefix byte as the empty-sheet cause, and documented V16.
+- `experiments/three_pin_control_terminal_v16_prefix_preserve_temp_2026_07_08/` - generated 1x-only V16 repair pack and no-terminal controls.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V16_PREFIX_PRESERVE_TEMP_2026_07_08.zip` - generated V16 repair archive.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start checkpoint: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `7dfe6d3c549de50353161c267ab0bdd5042b521e`.
+- Working tree had unrelated user-side 74HC04 movement/deletion and fixed display/mixed evidence files; these were not staged or modified.
+- V15 vs base/donor object-chunk comparison:
+  - V15 `POT-HG` chunk started `00 FF 03 RV1...`; working/base chunk started `00 08 FF 03 RV1...`.
+  - V15 `LM317T` chunk started `00 FF 04 U132...`; working/base chunk started `00 00 FF 04 U132...`.
+  - V15 `OPAMP` chunk started `00 FF 04 U107...`; working/base chunk started `00 00 FF 04 U107...`.
+- Focused tests passed:
+  - `python -m pytest tests/test_component_placer.py::test_catalogue_three_pin_terminals_use_donor_contact_offsets -q` -> 3 passed.
+  - `python -m pytest tests/test_component_placer.py::test_shared_terminal_dispatcher_terminalizes_all_two_pin_families -q` -> 1 passed.
+- Generated V16 repair pack:
+  - `01_terminalized_sa/R001_POT_HG_1x_PREFIX_PRESERVE_sa.pdsprj`
+  - `01_terminalized_sa/R002_LM317T_1x_PREFIX_PRESERVE_sa.pdsprj`
+  - `01_terminalized_sa/R003_OPAMP_1x_PREFIX_PRESERVE_sa.pdsprj`
+  - Matching no-terminal controls in `00_no_terminal_controls/`.
+- V16 static report:
+  - 3 generated cases.
+  - 3 base-valid.
+  - 3 terminal-static-valid.
+  - 3 output object chunk headers match their no-terminal bases.
+  - 3 donor terminal-symbol multisets match curated evidence.
+  - Headers: `POT-HG` base/output `0008ff...`, `LM317T` base/output `0000ff...`, `OPAMP` base/output `0000ff...`.
+- Full component placer tests passed: `python -m pytest tests/test_component_placer.py -q` -> 98 passed.
+- Compile passed: `python -m compileall -q src tests tools/proteus_generation`.
+
+### Final Response To User
+
+Planned summary: V15 was wrongly treated as static-valid because donor/base framing was not checked. Root cause was dropped object-stream byte 1 before the component packet, producing empty sheets. V16 prefix-preserve 1x repair pack generated at `experiments/three_pin_control_terminal_v16_prefix_preserve_temp_2026_07_08/` with archive `experiments/THREE_PIN_CONTROL_TERMINAL_V16_PREFIX_PRESERVE_TEMP_2026_07_08.zip`; test only the three `_sa` files first.

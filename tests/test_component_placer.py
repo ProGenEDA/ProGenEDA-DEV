@@ -2257,6 +2257,7 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
         terminal_families=(family,),
     )
     chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    base_chunk = _extract_object_chunk(read_internal_file(base, "ROOT.DSN"))
     terminals_by_pin = {
         row["pin"]["name"]: row
         for family_report in report["family_reports"]
@@ -2265,6 +2266,7 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
 
     assert result.valid
     assert report["valid"] is True
+    assert chunk[:3] == base_chunk[:3]
     assert set(terminals_by_pin) == set(expected_symbols)
     for pin_name, (symbol_x, symbol_y, angle) in expected_symbols.items():
         row = terminals_by_pin[pin_name]

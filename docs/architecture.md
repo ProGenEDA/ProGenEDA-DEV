@@ -758,3 +758,47 @@ Static result: 3 generated cases, 3 base-valid, 3 terminal-valid, donor terminal
 symbol coordinate/angle multisets still match, and marker-order reports prove
 the first component marker appears before the first `$TERBIDIR`, followed by
 terminal/WIRE pairs. Proteus acceptance is pending user testing.
+
+User Proteus testing rejected V15 too: the files opened but the schematic sheets
+were empty. The static V15 checks were insufficient because they compared marker
+order, terminal coordinates, and WIRE alternation, but not the rebuilt object
+stream framing against the no-terminal base packet.
+
+Byte comparison against the no-terminal controls and curated donor evidence
+showed the exact failure:
+
+- working/base `POT-HG` chunks start `00 08 FF ...`; V15 started `00 FF ...`;
+- working/base `LM317T` and `OPAMP` chunks start `00 00 FF ...`; V15 started
+  `00 FF ...`;
+- the catalogue emitter preserved `original_chunk[:1]` but dropped byte 1 of
+  the component packet when rebuilding from selected component records.
+
+The V16 repair keeps the V15 component-first attachment order and additionally
+preserves the original object-stream component prefix byte by inserting
+`original_chunk[1:2]` immediately before the first emitted component packet.
+The regression test
+`test_catalogue_three_pin_terminals_use_donor_contact_offsets` now asserts that
+the terminalized output and no-terminal base share the same first three object
+chunk bytes, so this empty-sheet failure cannot pass static validation again.
+
+Focused V16 checkpoint:
+
+`experiments/three_pin_control_terminal_v16_prefix_preserve_temp_2026_07_08/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V16_PREFIX_PRESERVE_TEMP_2026_07_08.zip`
+
+V16 contains only:
+
+- `POT-HG` 1x `_sa`
+- `LM317T` 1x `_sa`
+- `OPAMP` 1x `_sa`
+- matching no-terminal controls
+
+Static result: 3 generated cases, 3 base-valid, 3 terminal-valid, all three
+output object chunk headers match their no-terminal bases (`POT-HG` `0008ff`,
+`LM317T`/`OPAMP` `0000ff`), component packets precede terminal/WIRE attachment
+units, and terminal symbol coordinate/angle multisets match the curated
+terminalized donor evidence. Proteus open/render acceptance is pending user
+testing.

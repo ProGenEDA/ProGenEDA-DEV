@@ -1,4 +1,4 @@
-"""Bidirectional terminal placement for component-placer output.
+﻿"""Bidirectional terminal placement for component-placer output.
 
 This stage adds schema-encoded `$TERBIDIR` and short-WIRE records to an already
 generated, beautified component-placement project.
@@ -1713,25 +1713,8 @@ def attach_catalogue_pin_bidir_terminals_to_project(
 
     if not family_reports:
         raise ValueError("No catalogue-backed terminalized component was emitted.")
-    rebuilt_records: list[bytes] = []
-    object_component_prefix = original_chunk[1:2]
-    component_prefix_inserted = not bool(object_component_prefix)
-    for record in local_records:
-        if (
-            not component_prefix_inserted
-            and record.startswith(b"\xff")
-        ):
-            rebuilt_records.append(object_component_prefix + record)
-            component_prefix_inserted = True
-        else:
-            rebuilt_records.append(record)
-    if not component_prefix_inserted:
-        raise ValueError(
-            "Catalogue terminal attachment did not emit a component packet "
-            "that can receive the original object-stream component prefix."
-        )
     new_chunk = _ensure_double_ff_object_stream_terminator(
-        original_chunk[:1] + b"".join(rebuilt_records)
+        original_chunk[:1] + b"".join(local_records)
     )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
