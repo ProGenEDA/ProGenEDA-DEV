@@ -29,7 +29,11 @@ from proteusgen.component_beautifier import (
     MIXED_LAYOUT_BAND_GAP_Y,
     layout_coordinate_pairs,
 )
-from proteusgen.beautifier_validator import layout_overlap_pairs, validate_beautifier_layout_entries
+from proteusgen.beautifier_validator import (
+    layout_overlap_pairs,
+    layout_spacing_pairs,
+    validate_beautifier_layout_entries,
+)
 from proteusgen.component_arrangement import next_start_slot_after_layout_entries
 from proteusgen.bidirectional import extract_bidir_records, load_production_templates
 from proteusgen.component_terminal_placer import (
@@ -699,6 +703,72 @@ def test_beautifier_validator_flags_multipart_packet_without_failing_layout() ->
 
     assert [issue.code for issue in issues] == ["W_BEAUTIFIER_MULTIPART_PACKET_NOT_SPLIT"]
     assert issues[0].severity == "warning"
+
+
+def test_beautifier_validator_accepts_spread_multipart_packet() -> None:
+    issues = validate_beautifier_layout_entries(
+        [
+            {
+                "key": "U1",
+                "translated": True,
+                "refs": ["U1:A", "U1:B"],
+                "multipart_subpart_spread": {"applied": True},
+                "after_bbox": {"min_x": 0, "min_y": 0, "max_x": 1, "max_y": 1},
+            }
+        ]
+    )
+
+    assert issues == []
+
+
+def test_multipart_subparts_are_spread_with_large_internal_gap(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"4027": 1, "74HC266": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "multipart_spread_large_gap.pdsprj",
+        full_cdb=True,
+    )
+    entries = {
+        entry["family"]: entry
+        for entry in result.layout_plan["actual_binary_placements"]
+        if entry["family"] in {"4027", "74HC266"}
+    }
+
+    assert result.valid
+    assert entries["4027"]["multipart_subpart_spread"]["applied"] is True
+    assert entries["74HC266"]["multipart_subpart_spread"]["applied"] is True
+    ff_boxes = entries["4027"]["multipart_subpart_spread"]["subpart_bboxes_after"]
+    assert ff_boxes["U13:B"]["min_y"] - ff_boxes["U13:A"]["max_y"] >= 5_080_000
+    logic_boxes = entries["74HC266"]["multipart_subpart_spread"]["subpart_bboxes_after"]
+    assert logic_boxes["U77:B"]["min_x"] - logic_boxes["U77:A"]["max_x"] >= 5_080_000
+    assert logic_boxes["U77:C"]["min_y"] - logic_boxes["U77:A"]["max_y"] >= 5_080_000
+    assert result.validation_reports["generated_output_validator"]["valid"] is True
+
+
+def test_mixed_layout_keeps_large_visual_spacing_between_types(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {
+                "4027": 3,
+                "74HC266": 3,
+                "OPAMP": 3,
+                "LM317T": 3,
+                "TRAN-2P2S": 3,
+                "CAP": 3,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "mixed_large_visual_spacing.pdsprj",
+        full_cdb=True,
+    )
+    entries = result.layout_plan["actual_binary_placements"]
+
+    assert result.valid
+    assert layout_overlap_pairs(entries) == []
+    assert layout_spacing_pairs(entries, min_spacing=1_524_000) == []
+    assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
 def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> None:

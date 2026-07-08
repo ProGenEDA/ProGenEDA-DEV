@@ -12,7 +12,8 @@ This V2 pack focuses on the user-reported display bad-object and mixed-layout ov
 - display DSN final rows use the Proteus-saved `00 FF` tail;
 - display-containing mixed designs keep the display-compatible `00 00` object chunk prefix;
 - display rows start after actual previous layout bboxes, not after a count-derived slot;
-- multipart A/B/C native packets are still diagnostics only; they are not split by this pack.
+- visual layout margins are deliberately larger than the true parsed bboxes;
+- multipart A/B/C native packets are spread by parsed-coordinate subpart clusters.
 
 Rows: 18
 Generated OK: 18

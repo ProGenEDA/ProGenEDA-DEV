@@ -122,6 +122,9 @@ def multipart_packet_issues(
 
     issues: list[BeautifierValidationIssue] = []
     for entry in layout_entries:
+        spread = entry.get("multipart_subpart_spread")
+        if isinstance(spread, dict) and spread.get("applied") is True:
+            continue
         refs = entry.get("refs")
         if not isinstance(refs, list):
             continue

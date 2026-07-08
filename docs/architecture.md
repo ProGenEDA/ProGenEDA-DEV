@@ -599,8 +599,24 @@ Pack result: 18 generated rows, 18 static-valid outputs, 0 invalid outputs, 0
 generation failures, and donor `ROOT.CDB` preserved byte-for-byte in every
 generated project.
 
-Known remaining beautifier limitation: native multipart packets such as
-`4027` and `74HC266` still move as native packets. The validator now reports
-multipart A/B/C packets as diagnostics, but splitting subparts into independently
-arranged gates requires a separate proven binary packet-splitting/mutation
-method and is not claimed by this V2 no-terminal display fix.
+Follow-up user testing showed the previous diagnostic-only multipart handling
+was not enough: A/B/C subparts needed much larger spacing, and visual overlap
+could still happen between different component types even when true parsed
+bboxes did not intersect.
+
+Follow-up layout rules:
+
+- The visible layout margin is now deliberately larger than one grid slot.
+  Static validation must check not only true bbox intersection, but also
+  visual closeness with a realistic margin.
+- Native multipart packets such as `4027`, `74HC00`, `74HC04`, and `74HC266`
+  are still emitted as one donor-native packet, but their parsed subpart
+  coordinate clusters are spread inside that packet before the packet is placed
+  on the global shelf. This is DSN coordinate mutation only; it does not split
+  packages, alter CDB, or synthesize new component records.
+- Subpart spreading uses length-prefixed subpart labels such as `U13:A` and
+  keeps each subpart's local label/body coordinates together while increasing
+  A/B/C spacing.
+- The regenerated focused V2 evidence pack now has zero true bbox overlaps and
+  zero too-close pairs at a 2,540,000-coordinate visual margin in the large
+  mixed manifests.

@@ -28,10 +28,12 @@ VISIBLE_LAYOUT_ORIGIN_Y = -5_080_000
 VISIBLE_LAYOUT_SLOT_X = 3_810_000
 VISIBLE_LAYOUT_SLOT_Y = 2_540_000
 VISIBLE_LAYOUT_COLUMNS = 10
-VISIBLE_LAYOUT_MARGIN_X = 1_270_000
-VISIBLE_LAYOUT_MARGIN_Y = 1_270_000
+VISIBLE_LAYOUT_MARGIN_X = 3_810_000
+VISIBLE_LAYOUT_MARGIN_Y = 3_810_000
 VISIBLE_LAYOUT_SHELF_WIDTH = VISIBLE_LAYOUT_SLOT_X * 16
 MIXED_LAYOUT_BAND_GAP_Y = 5_080_000
+MULTIPART_SUBPART_GAP_X = 5_080_000
+MULTIPART_SUBPART_GAP_Y = 5_080_000
 SCAN_COORD_LIMIT = 30_000_000
 MIN_COORD_ABS = 50_000
 SAFE_PACKET_COORD_LIMIT = 700_000_000
@@ -520,6 +522,144 @@ def coordinate_bbox(fragment: bytes, pairs: list[tuple[int, int, str]]) -> dict[
         "max_y": max(ys),
         "width": max(xs) - min(xs),
         "height": max(ys) - min(ys),
+    }
+
+
+def _subpart_refs(refs: tuple[str, ...] | list[str] | None) -> tuple[str, ...]:
+    if not refs:
+        return ()
+    out: list[str] = []
+    for ref in refs:
+        text = str(ref)
+        if ":" in text and text not in out:
+            out.append(text)
+    return tuple(out)
+
+
+def _multipart_columns(count: int) -> int:
+    if count <= 1:
+        return 1
+    if count == 2:
+        return 1
+    if count <= 4:
+        return 2
+    return 3
+
+
+def spread_multipart_subpart_coordinates(
+    data: bytes,
+    family: str,
+    refs: tuple[str, ...] | list[str] | None,
+    *,
+    gap_x: int = MULTIPART_SUBPART_GAP_X,
+    gap_y: int = MULTIPART_SUBPART_GAP_Y,
+) -> tuple[bytes, dict[str, Any]]:
+    """Spread native A/B/C subpart clusters inside one Proteus packet.
+
+    The component placer currently receives several logic/FF packages as one
+    donor-native packet containing refs like ``U1:A`` and ``U1:B``.  Moving the
+    whole packet preserves bytes but leaves the subparts at donor-native spacing.
+    This helper keeps each subpart's internal text/body offsets together while
+    increasing the spacing between subpart clusters.  It only edits coordinate
+    fields already accepted by the parsed-coordinate beautifier.
+    """
+
+    subpart_refs = _subpart_refs(refs)
+    if len(subpart_refs) < 2:
+        return data, {"applied": False, "reason": "not_multipart"}
+
+    pairs = layout_coordinate_pairs(data, family)
+    if not pairs:
+        return data, {"applied": False, "reason": "no_layout_coordinate_pairs"}
+
+    label_starts: list[tuple[int, str]] = []
+    wanted = set(subpart_refs)
+    for x_offset, _y_offset, reason in pairs:
+        if not reason.startswith("length_prefixed_text:"):
+            continue
+        label = reason.removeprefix("length_prefixed_text:")
+        if label in wanted:
+            label_starts.append((x_offset, label))
+    label_starts.sort()
+    if len(label_starts) < len(subpart_refs):
+        return data, {
+            "applied": False,
+            "reason": "missing_subpart_label_coordinate",
+            "subpart_refs": list(subpart_refs),
+            "found_labels": [label for _offset, label in label_starts],
+        }
+
+    clusters: dict[str, list[tuple[int, int, str]]] = {label: [] for _offset, label in label_starts}
+    unassigned: list[tuple[int, int, str]] = []
+    sorted_starts = list(label_starts)
+    for pair in pairs:
+        x_offset = pair[0]
+        selected_label: str | None = None
+        for index, (start, label) in enumerate(sorted_starts):
+            next_start = sorted_starts[index + 1][0] if index + 1 < len(sorted_starts) else None
+            if x_offset >= start and (next_start is None or x_offset < next_start):
+                selected_label = label
+                break
+        if selected_label is None:
+            unassigned.append(pair)
+        else:
+            clusters[selected_label].append(pair)
+
+    if any(not cluster for cluster in clusters.values()):
+        return data, {
+            "applied": False,
+            "reason": "empty_subpart_cluster",
+            "subpart_refs": list(subpart_refs),
+        }
+
+    before_all = coordinate_bbox(data, pairs)
+    cluster_before = {
+        label: coordinate_bbox(data, cluster)
+        for label, cluster in clusters.items()
+    }
+    max_width = max(int(bbox["width"]) for bbox in cluster_before.values())
+    max_height = max(int(bbox["height"]) for bbox in cluster_before.values())
+    columns = _multipart_columns(len(clusters))
+    out = bytearray(data)
+    cluster_after: dict[str, dict[str, int]] = {}
+    for cluster_index, (label, cluster) in enumerate(clusters.items()):
+        row = cluster_index // columns
+        column = cluster_index % columns
+        bbox = cluster_before[label]
+        target_min_x = before_all["min_x"] + column * (max_width + gap_x)
+        target_min_y = before_all["min_y"] + row * (max_height + gap_y)
+        dx = target_min_x - int(bbox["min_x"])
+        dy = target_min_y - int(bbox["min_y"])
+        for x_offset, y_offset, _reason in cluster:
+            _put_s32_at(out, x_offset, _s32_at(out, x_offset) + dx)
+            _put_s32_at(out, y_offset, _s32_at(out, y_offset) + dy)
+        cluster_after[label] = {
+            "min_x": target_min_x,
+            "min_y": target_min_y,
+            "max_x": target_min_x + int(bbox["width"]),
+            "max_y": target_min_y + int(bbox["height"]),
+            "width": int(bbox["width"]),
+            "height": int(bbox["height"]),
+            "dx": dx,
+            "dy": dy,
+            "row": row,
+            "column": column,
+        }
+
+    translated = bytes(out)
+    after_pairs = layout_coordinate_pairs(translated, family)
+    return translated, {
+        "applied": translated != data,
+        "method": "subpart_label_offset_clusters",
+        "subpart_refs": list(clusters),
+        "columns": columns,
+        "gap_x": gap_x,
+        "gap_y": gap_y,
+        "before_bbox": before_all,
+        "after_bbox": coordinate_bbox(translated, after_pairs),
+        "subpart_bboxes_before": cluster_before,
+        "subpart_bboxes_after": cluster_after,
+        "unassigned_coordinate_pair_count": len(unassigned),
     }
 
 

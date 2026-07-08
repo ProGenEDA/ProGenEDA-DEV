@@ -59,6 +59,7 @@ from .component_beautifier import (
     hide_packet,
     is_ic_layout_family,
     layout_coordinate_pairs,
+    spread_multipart_subpart_coordinates,
     translate_packet_by_delta,
     translate_packet_to_position,
 )
@@ -1423,9 +1424,14 @@ def _apply_binary_beautifier(
         band_max_y = band_origin_y
 
         for group in band_groups:
-            pairs = layout_coordinate_pairs(group.data, group.family)
+            layout_source_data, multipart_spread = spread_multipart_subpart_coordinates(
+                group.data,
+                group.family,
+                group.refs,
+            )
+            pairs = layout_coordinate_pairs(layout_source_data, group.family)
             if pairs:
-                before = coordinate_bbox(group.data, pairs)
+                before = coordinate_bbox(layout_source_data, pairs)
                 allocation_width = (
                     max(int(before["width"]), VISIBLE_LAYOUT_SLOT_X)
                     + VISIBLE_LAYOUT_MARGIN_X
@@ -1450,7 +1456,7 @@ def _apply_binary_beautifier(
                 row_index += 1
                 column_index = 0
             data, entry = translate_packet_to_position(
-                group.data,
+                layout_source_data,
                 slot=slot,
                 key=group.key,
                 family=group.family,
@@ -1466,6 +1472,7 @@ def _apply_binary_beautifier(
                 == data.count(ref.encode("ascii"))
                 for ref in group.refs
             )
+            entry["multipart_subpart_spread"] = multipart_spread
             entry["known_refs_unchanged"] = known_refs_unchanged
             entry["refs_unchanged"] = known_refs_unchanged
             entry["refs"] = list(group.refs)
