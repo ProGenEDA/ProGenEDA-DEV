@@ -85,6 +85,8 @@ FORBIDDEN_GENERATION_MODES = {
     "copy_full_cdb_after_delete",
 }
 NEW_COMPONENT_MEGA_DONOR = Path("proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj")
+LOCK_COMPONENT_PLACER_TO_NEW_COMPONENT_MEGA = True
+LOCKED_COMPONENT_PLACER_DONOR = NEW_COMPONENT_MEGA_DONOR
 MAIN_MEGA_NO_SOURCE_DONOR = Path(
     "proteus_ic/donors/main_mega_20260618/"
     "Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj"
@@ -915,18 +917,34 @@ def _anode_block_final_as_middle(row: bytes) -> bytes:
     return row[:-2]
 
 
-def _true_final_anode(rows: list[bytes]) -> bytes:
+def _true_final_anode(rows: list[bytes]) -> bytes | None:
     for row in reversed(rows):
         if row.endswith(b"\xff"):
             return row
-    raise ValueError("Display generation needs a donor-final common-anode row; selected donor does not contain one.")
+    return None
+
+
+def _display_row_as_middle(row: bytes) -> bytes:
+    if row.endswith(b"\xff"):
+        raise ValueError("Cannot use a donor-final display row as a middle display row.")
+    if len(row) == 399 and row.endswith(b"\x00\x00"):
+        return _anode_block_final_as_middle(row)
+    return row
+
+
+def _display_row_as_final(row: bytes) -> bytes:
+    if row.endswith(b"\xff"):
+        return row
+    if row and row[-1] in (0x00, 0x08):
+        return row[:-1] + b"\xff"
+    raise ValueError(f"Cannot finalize display row with unexpected tail {row[-8:].hex()}.")
 
 
 def _display_rows_for_request(records: dict[str, list[bytes]], request: dict[str, int]) -> tuple[tuple[RawComponentGroup, ...], tuple[str, ...]]:
     notes: list[str] = []
     anode_rows = records.get("7SEG-COM-AN-BLUE", [])
     cathode_rows = records.get("7SEG-COM-CAT-BLUE", [])
-    final_anode = _true_final_anode(anode_rows) if request.keys() & DISPLAY_FAMILIES else b""
+    final_anode = _true_final_anode(anode_rows) if request.keys() & DISPLAY_FAMILIES else None
     anode_count = request.get("7SEG-COM-AN-BLUE", 0)
     cathode_count = request.get("7SEG-COM-CAT-BLUE", 0)
 
@@ -954,43 +972,50 @@ def _display_rows_for_request(records: dict[str, list[bytes]], request: dict[str
         )
 
     if cathode_count:
-        for index, row in enumerate(cathode_rows[:cathode_count], start=1):
+        cathode_selection = cathode_rows[:cathode_count]
+        for index, row in enumerate(cathode_selection, start=1):
+            is_last_without_anode_finalizer = not anode_count and final_anode is None and index == len(cathode_selection)
             append_row(
                 key=f"DISPLAY_CC_{index:03d}",
                 family="7SEG-COM-CAT-BLUE",
                 ref=f"CC{index}",
-                row=row,
+                row=_display_row_as_final(row) if is_last_without_anode_finalizer else _display_row_as_middle(row),
             )
         notes.append("common-cathode displays use individually placeable mega cathode middle rows")
 
     if anode_count:
-        for index in range(anode_count - 1):
-            row = anode_rows[index]
+        selected_anode_rows = anode_rows[:anode_count]
+        for index, row in enumerate(selected_anode_rows, start=1):
+            is_last = index == len(selected_anode_rows)
             append_row(
-                key=f"DISPLAY_AN_{index + 1:03d}",
+                key=f"DISPLAY_AN_{index:03d}" if not is_last else f"DISPLAY_AN_{index:03d}_FINAL",
                 family="7SEG-COM-AN-BLUE",
-                ref=f"AN{index + 1}",
-                row=_anode_block_final_as_middle(row) if len(row) == 399 and not row.endswith(b"\xff") else row,
+                ref=f"AN{index}" if not is_last else f"AN{index}:FINAL",
+                row=_display_row_as_middle(row) if not is_last else _display_row_as_final(final_anode or row),
             )
-        append_row(
-            key=f"DISPLAY_AN_{anode_count:03d}_TRUE_FINAL",
-            family="7SEG-COM-AN-BLUE",
-            ref=f"AN{anode_count}:TRUE_FINAL",
-            row=final_anode,
-        )
-        notes.append(
-            "common-anode red displays use individually placeable rows plus the true donor-final anode row"
-        )
+        if final_anode:
+            notes.append(
+                "common-anode displays use individually placeable rows plus the true donor-final anode row"
+            )
+        else:
+            notes.append(
+                "common-anode displays use locked-donor rows with the last selected row finalized in-place"
+            )
     elif cathode_count:
-        append_row(
-            key="DISPLAY_ANODE_SENTINEL",
-            family="7SEG-COM-AN-BLUE",
-            ref="ANODE_SENTINEL",
-            row=final_anode,
-        )
-        notes.append(
-            "common-cathode-only displays retain the true donor-final red-anode sentinel as hidden infrastructure"
-        )
+        if final_anode:
+            append_row(
+                key="DISPLAY_ANODE_SENTINEL",
+                family="7SEG-COM-AN-BLUE",
+                ref="ANODE_SENTINEL",
+                row=final_anode,
+            )
+            notes.append(
+                "common-cathode-only displays retain the true donor-final red-anode sentinel as hidden infrastructure"
+            )
+        else:
+            notes.append(
+                "common-cathode-only displays finalize the last selected locked-donor cathode row"
+            )
 
     if not selected:
         return (), ()
@@ -1176,6 +1201,7 @@ def _select_cap_elec_groups(
         accepted_full_packet = len(group.data) == 379 and _is_finalizable(group) and group.data.endswith(b"\x00")
         accepted_semimega_packet = (
             len(group.data) == 352
+            and _is_finalizable(group)
             and b"CAP-ELEC" in group.data
             and b"ELEC-RAD10" in group.data
             and b"1uF" in group.data
@@ -1571,6 +1597,26 @@ def _select_raw_groups(
 
 def _select_generation_donor(request: dict[str, int], donor_path: str | Path | None) -> Path:
     donor_request = {family: count for family, count in request.items() if family not in TERMINAL_FAMILIES}
+    if LOCK_COMPONENT_PLACER_TO_NEW_COMPONENT_MEGA:
+        locked = _repo_path(LOCKED_COMPONENT_PLACER_DONOR)
+        if donor_path is not None:
+            requested_donor = _resolve_explicit_donor(donor_path)
+            if requested_donor.resolve() != locked.resolve():
+                raise ValueError(
+                    "Component placer is locked to "
+                    f"{locked}. Requested donor {requested_donor} is not allowed in the current stability pass."
+                )
+        counts = _inspect_donor_counts_for_selection(locked, _generation_markers())
+        missing = {
+            family: {"required": required, "available": counts.get(family, 0)}
+            for family, required in donor_request.items()
+            if counts.get(family, 0) < required
+        }
+        if missing:
+            raise ValueError(
+                f"Locked donor {locked} does not contain enough requested packets: {missing}"
+            )
+        return locked
     if donor_path is not None:
         donor = _resolve_explicit_donor(donor_path)
         counts = _inspect_donor_counts_for_selection(donor, _generation_markers())
@@ -1857,6 +1903,8 @@ def generate_component_placement_project(
             display_groups, display_notes = _display_rows_for_request(_display_records_from_chunk(display_chunk_source), display_request)
             display_bridge = _load_d20_display_bridge(display_chunk_source)
         except ValueError:
+            if LOCK_COMPONENT_PLACER_TO_NEW_COMPONENT_MEGA:
+                raise
             display_donor = _repo_path(MAIN_MEGA_NO_SOURCE_DONOR)
             display_chunk_source = _extract_object_chunk(read_internal_file(display_donor, "ROOT.DSN"))
             display_groups, display_notes = _display_rows_for_request(_display_records_from_chunk(display_chunk_source), display_request)

@@ -9428,3 +9428,59 @@ big mega donor. This is still donor-based byte copying; it is not byte-forming
 from scratch and not Proteus library insertion. `native-registry` means a
 registered real Proteus donor containing native component packets for that
 family. The mega donor is only one donor source among several.
+
+---
+
+## Turn Log - 2026-07-08 14:28:31 +05:00
+
+### User Messages
+
+this is the supported list
+okk okk thats fine, but rn i believe that might cause issues and unstability, so rn just completly lockin the C:/Users/Empty/Documents/Progentotal/protuesgen/proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj, as the only donor used, this will provide stability. and in pictures is the supported list, colloect their terminalized donor in a properly named folder with properly arranged n name folder tree inside C:\Users\Empty\Documents\Progentotal\protuesgen\proteus_ic\donors.
+n deep resreach into giving me a target plan which group to target, and if u have enough donor to continue. mind u target is simple frsit test 1x solo, tel larger solo componet circuit, then mix of all components, 1x and larger upto 20x each allowing us to make sure a circuit containing all the components using terminals is possible
+
+now generate the none terminalized too so that i can test if we have managed to fk componet placer too
+
+not just 1x solo, we need to make sure all combinatin larger component number all are working properly for componet placer
+
+y id display not supported, both blue cath n red anode,  are their in the mega donor
+
+y? is it fixable?
+
+### Visible Agent Response During Turn
+
+I verified the pushed checkpoint first, locked the component placer to
+`new_components_5x_mega.pdsprj`, curated terminalized evidence into
+`proteus_ic/donors/new_component_mega_supported_terminalized_evidence_20260708/`,
+and generated no-terminal component-placer control packs. I initially reported
+displays as blocked because the locked donor had display rows but no donor-final
+display row; after checking the emitter, I fixed the component placer to
+finalize the last selected display row from the same locked donor instead of
+falling back to a second donor.
+
+For `74HC00 >8`, I explained that the limit comes from an intentional safe
+default offset of 8 for `new_components_5x_mega`: previous Proteus evidence
+said offsets 0 and 4 failed/crashed while offsets 8 and 12 opened/simulated.
+I generated a no-terminal offset diagnostic pack for offsets 0/4/8/12. Static
+generation succeeds even for offset 0 with 16 packages, but the production
+default remains unchanged until Proteus open testing confirms those earlier
+blocks are safe.
+
+### Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_placer.py` - locked generation to the new-component mega donor, fixed CAP-ELEC locked-donor filtering, disabled hidden donor fallback under lock, and added same-donor display-row finalization.
+- `tests/test_component_placer.py` - updated expectations for strict donor lock, same-donor displays, locked-donor reference names, and 74HC00/CAP-ELEC/REALIND locked-donor behavior.
+- `docs/architecture.md` - documented the locked-donor stability pass, same-donor display behavior, and 74HC00 offset diagnostic policy.
+- `proteus_ic/donors/new_component_mega_supported_terminalized_evidence_20260708/` - added curated donor evidence tree and README.
+- `experiments/locked_mega_no_terminal_matrix_temp_2026_07_08/` - generated no-terminal component-placer matrix controls and README.
+- `experiments/locked_mega_no_terminal_matrix_temp_2026_07_08.zip` - zipped the no-terminal matrix controls.
+- `experiments/locked_mega_74hc00_offset_probe_no_terminal_temp_2026_07_08/` - generated 74HC00 no-terminal offset diagnostics.
+- `experiments/locked_mega_74hc00_offset_probe_no_terminal_temp_2026_07_08.zip` - zipped the 74HC00 offset diagnostics.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start checkpoint: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `970477de9d77904a1cb158de89494c0aa1ca6f04`.
+- Locked donor display scan: `7SEG-COM-AN-BLUE` had 100 rows, `7SEG-COM-CAT-BLUE` had 100 rows, both had 0 donor-final display rows, and D20 bridge existed.
+- `python -m pytest tests/test_component_placer.py -q` passed: 86 passed.
+- `python -m compileall -q src tests tools/proteus_generation` passed.

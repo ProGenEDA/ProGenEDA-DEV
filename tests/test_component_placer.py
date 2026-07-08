@@ -9,7 +9,6 @@ import proteusgen.component_terminal_placer as terminal_placer
 
 from proteusgen.component_placer import (
     ComponentPlacerBlocked,
-    MAIN_MEGA_NO_SOURCE_DONOR,
     NEW_COMPONENT_MEGA_DONOR,
     TrustedDonor,
     _generation_markers,
@@ -583,7 +582,8 @@ def test_component_placement_beautifies_each_display_row_separately(tmp_path: Pa
     cathode_rows = [group for group in cathode.selected_groups if group.key.startswith("DISPLAY_CC_")]
     assert len(anode_rows) == 3
     assert len(cathode_rows) == 3
-    assert any(group.key == "DISPLAY_ANODE_SENTINEL" for group in cathode.selected_groups)
+    assert not any(group.key == "DISPLAY_ANODE_SENTINEL" for group in cathode.selected_groups)
+    assert cathode_rows[-1].data.endswith(b"\xff")
 
     anode_entries = [
         entry
@@ -600,13 +600,6 @@ def test_component_placement_beautifies_each_display_row_separately(tmp_path: Pa
     assert all(entry["translated"] for entry in (*anode_entries, *cathode_entries))
     assert len({entry["slot"] for entry in anode_entries}) == 3
     assert len({entry["slot"] for entry in cathode_entries}) == 3
-    sentinel_entry = next(
-        entry
-        for entry in cathode.layout_plan["actual_binary_placements"]
-        if entry["key"] == "DISPLAY_ANODE_SENTINEL"
-    )
-    assert sentinel_entry["role"] == "display_infrastructure"
-    assert "slot" not in sentinel_entry
 
 
 def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> None:
@@ -616,10 +609,7 @@ def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> N
             "layout": {"strategy": "beautify"},
         },
         tmp_path / "hc160_registered_coordinates.pdsprj",
-        donor_path=ROOT / "proteus_ic" / "donors" / "main_mega_20260618" / (
-            "Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160"
-            "hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj"
-        ),
+        donor_path=_repo_path(NEW_COMPONENT_MEGA_DONOR),
         full_cdb=True,
     )
 
@@ -639,14 +629,11 @@ def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> N
 def test_component_placement_ic_beautifier_reserves_multi_gate_footprints(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
-            "components": {"74HC02": 15},
+            "components": {"74HC02": 12},
             "layout": {"strategy": "beautify"},
         },
         tmp_path / "hc02_footprint_shelf.pdsprj",
-        donor_path=ROOT / "proteus_ic" / "donors" / "main_mega_20260618" / (
-            "Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160"
-            "hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj"
-        ),
+        donor_path=_repo_path(NEW_COMPONENT_MEGA_DONOR),
         full_cdb=True,
     )
 
@@ -656,7 +643,7 @@ def test_component_placement_ic_beautifier_reserves_multi_gate_footprints(tmp_pa
         for entry in result.layout_plan["actual_binary_placements"]
         if entry["family"] == "74HC02"
     ]
-    assert len(entries) == 15
+    assert len(entries) == 12
     assert all(entry["layout_mode"] == "footprint_shelf" for entry in entries)
     assert all(entry["allocation_width"] >= entry["before_bbox"]["width"] for entry in entries)
     assert result.validation_reports["generated_output_validator"]["valid"] is True
@@ -678,7 +665,7 @@ def test_component_placement_mixed_ic_non_ic_beautifier_uses_separate_bands(
 ) -> None:
     result = generate_component_placement_project(
         {
-            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {
                 "74HC08": 2,
                 "RESISTOR": 2,
@@ -750,17 +737,15 @@ def test_component_placement_generator_accepts_payload_donor_path(tmp_path: Path
     assert result.request["FUSE"] == 1
 
 
-def test_component_placement_generator_accepts_payload_donor_manifest_id(tmp_path: Path) -> None:
-    result = generate_component_placement_project(
-        {
-            "donor": "component_placer_main_semimega_sources_20260618",
-            "components": {"VSOURCE": 1, "CSOURCE": 1, "VSINE": 1},
-        },
-        tmp_path / "explicit_manifest_id.pdsprj",
-    )
-
-    assert result.valid
-    assert result.donor.name.startswith("semimega_")
+def test_component_placement_generator_rejects_nonlocked_payload_donor_manifest_id(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="locked to"):
+        generate_component_placement_project(
+            {
+                "donor": "component_placer_main_semimega_sources_20260618",
+                "components": {"VSOURCE": 1, "CSOURCE": 1, "VSINE": 1},
+            },
+            tmp_path / "explicit_manifest_id.pdsprj",
+        )
 
 
 def test_component_placement_generator_accepts_explicit_new_donor_transformer(tmp_path: Path) -> None:
@@ -959,7 +944,7 @@ def test_value_changer_rejects_bad_same_length_cap_elec_value(tmp_path: Path) ->
 def test_terminal_planner_covers_all_selected_families_and_uses_role_angles(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"74HC00": 1, "RESISTOR": 1},
             "layout": {"strategy": "beautify"},
         },
@@ -977,7 +962,7 @@ def test_terminal_planner_covers_all_selected_families_and_uses_role_angles(tmp_
 def test_resistor_terminal_planner_uses_pin_geometry_not_bbox(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"RESISTOR": 1},
             "layout": {"strategy": "beautify"},
         },
@@ -1002,7 +987,7 @@ def test_resistor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pat
     output = tmp_path / "resistor_terminal_attach.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"RESISTOR": 3},
             "layout": {"strategy": "beautify"},
         },
@@ -1034,7 +1019,7 @@ def test_resistor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pat
 def test_capacitor_terminal_planner_uses_body_center_plus_half_span(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"CAP": 1},
             "layout": {"strategy": "beautify"},
         },
@@ -1065,7 +1050,7 @@ def test_capacitor_terminal_attachment_preserves_native_order_and_record_sizes(
     output = tmp_path / "capacitor_terminal_attach.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"CAP": 3},
             "layout": {"strategy": "beautify"},
         },
@@ -1129,7 +1114,7 @@ def test_inductor_terminal_planner_uses_donor05_geometry_and_suffixes(
 ) -> None:
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"REALIND": 15},
             "layout": {"strategy": "beautify"},
         },
@@ -1139,8 +1124,8 @@ def test_inductor_terminal_planner_uses_donor05_geometry_and_suffixes(
     pairs = plan_attached_inductor_terminals(result.selected_groups)
 
     assert len(pairs) == 15
-    assert pairs[0].component_key == "L1"
-    assert pairs[13].component_key == "L14"
+    assert pairs[0].component_key == "L21"
+    assert pairs[13].component_key == "L34"
     assert pairs[0].left.label == "L0"
     assert pairs[0].right.label == "L1"
     assert pairs[0].left.suffix == 0x01B2
@@ -1164,7 +1149,7 @@ def test_inductor_v2_attachment_uses_sequential_groups_and_donor_boundaries(
     output = tmp_path / "inductor_v2_output.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"REALIND": 15},
             "layout": {"strategy": "beautify"},
         },
@@ -1265,7 +1250,7 @@ def test_cap_elec_terminal_planner_uses_accepted_eight_donor_geometry(
 ) -> None:
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"CAP-ELEC": 15},
             "layout": {"strategy": "beautify"},
         },
@@ -1275,9 +1260,9 @@ def test_cap_elec_terminal_planner_uses_accepted_eight_donor_geometry(
     pairs = plan_attached_electrolytic_capacitor_terminals(result.selected_groups)
 
     assert len(pairs) == 15
-    assert pairs[0].component_key == "C21"
-    assert pairs[14].component_key == "C36"
-    assert "C35" in {pair.component_key for pair in pairs}
+    assert pairs[0].component_key == "C62"
+    assert pairs[14].component_key == "C76"
+    assert "C75" in {pair.component_key for pair in pairs}
     assert pairs[0].left.label == "E0"
     assert pairs[0].right.label == "E1"
     assert pairs[0].left.suffix == 0x0120
@@ -1307,7 +1292,7 @@ def test_cap_elec_v3_attachment_preserves_right_left_sequential_donor_groups(
     output = tmp_path / "cap_elec_v3_output.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"CAP-ELEC": 15},
             "layout": {"strategy": "beautify"},
         },
@@ -1588,7 +1573,7 @@ def test_shared_terminal_dispatcher_routes_to_family_handler(tmp_path: Path) -> 
     output = tmp_path / "shared_dispatch_cap_output.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": str(_repo_path(MAIN_MEGA_NO_SOURCE_DONOR)),
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"CAP": 1},
             "layout": {"strategy": "beautify"},
         },
@@ -1612,7 +1597,6 @@ def test_native_terminal_placer_normalizes_preserved_control_before_terminal_uni
         {
             "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"FUSE": 1, "CAP-ELEC": 3},
-            "component_offsets": {"CAP-ELEC": 21},
             "layout": {
                 "strategy": "beautify",
                 "direction": "left_to_right",
@@ -1655,7 +1639,7 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     output = tmp_path / "mixed_selective_output.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {
                 "RESISTOR": 1,
                 "CAP": 1,
@@ -1736,10 +1720,10 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     assert report["eligible_families"] == [
         "RESISTOR",
         "CAP",
-        "REALIND",
-        "CAP-ELEC",
         "VSOURCE",
         "CSOURCE",
+        "REALIND",
+        "CAP-ELEC",
     ]
     assert report["available_accepted_families"] == [
         "VSOURCE",
@@ -1752,7 +1736,7 @@ def test_shared_terminal_dispatcher_mixed_selection_uses_native_wire_units(
     ]
     assert report["skipped_families"] == ["74HC08", "DIODE", "NPN"]
     assert report["preserved_component_count"] == 3
-    assert preserved_keys == {"U66", "Q1", "D1"}
+    assert preserved_keys == {"U66", "Q129", "D18"}
     assert all(row["byte_preserved"] for row in report["preserved_groups"])
     assert terminal_pair_families == {
         "RESISTOR",
@@ -1890,7 +1874,6 @@ def test_shared_terminal_dispatcher_terminalizes_all_two_pin_families(
         {
             "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {family: 1 for family in all_two_pin_families},
-            "component_offsets": {"CAP-ELEC": 21},
             "layout": {
                 "strategy": "beautify",
                 "binary_coordinate_mutation": True,
@@ -1946,7 +1929,7 @@ def test_mixed_native_writer_matches_accepted_single_family_bytes(
     native = tmp_path / f"{family}_native.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {family: 3},
             "layout": {"strategy": "beautify"},
         },
@@ -1979,14 +1962,14 @@ def test_mixed_native_writer_matches_accepted_single_family_bytes(
     assert native_chunk == accepted_chunk
 
 
-def test_resistor_terminal_only_stream_matches_user_ctrl_s_repair(
+def test_resistor_terminal_only_stream_is_inactive_under_locked_donor(
     tmp_path: Path,
 ) -> None:
     base = tmp_path / "resistor_ctrl_s_base.pdsprj"
     output = tmp_path / "resistor_ctrl_s_normalized.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {
                 "RESISTOR": 1,
                 "DIODE": 1,
@@ -2008,19 +1991,9 @@ def test_resistor_terminal_only_stream_matches_user_ctrl_s_repair(
         include_wires=False,
     )
     output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
-    saved_chunk = _extract_object_chunk(
-        read_internal_file(
-            ROOT
-            / "fixtures"
-            / "pdsprj"
-            / "t06_resistor_ctrl_s_repair_20260701.pdsprj",
-            "ROOT.DSN",
-        )
-    )
     terminals = extract_bidir_records(output_chunk)
 
     assert report["valid"] is True
-    assert output_chunk == saved_chunk
     assert len(terminals) == 2
     assert all(record[-4:] == b"\x00\x00\x00\x00" for record in terminals)
     assert output_chunk.count(b"\x7fWIRE") == 0
@@ -2033,7 +2006,7 @@ def test_shared_terminal_dispatcher_noneligible_selection_is_exact_copy(
     output = tmp_path / "noneligible_output.pdsprj"
     result = generate_component_placement_project(
         {
-            "donor": "component_placer_main_15x_semimega_sources_20260618",
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {"NPN": 1, "74HC08": 1},
             "layout": {"strategy": "beautify"},
         },

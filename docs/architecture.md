@@ -501,3 +501,53 @@ must be derived from `generate_component_placement_project()` or the trusted
 donor manifest, not from scanning one mega donor. These families need their
 own terminal-evidence curation/grouping pass; they must not be removed from
 scope for placement reasons.
+
+## 2026-07-08 locked new-component mega stability pass
+
+The current stability pass intentionally overrides the broader native-registry
+donor routing. Component placement is locked to:
+
+`proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`
+
+This is a temporary stability rule requested by the user so that terminal
+recovery can be debugged against one known placement source. While the lock is
+active:
+
+- explicit placement donors other than the locked mega donor are rejected;
+- native-registry fallback is bypassed;
+- downstream stages must still treat the component placer as replaceable and
+  consume placed-design data, not donor slot numbers or template coordinates;
+- terminalized donors remain evidence only and must not replace the locked
+  placement donor as generation input.
+
+The curated evidence tree for the locked pass is:
+
+`proteus_ic/donors/new_component_mega_supported_terminalized_evidence_20260708/`
+
+The locked donor scan has enough packets for the user-provided supported list.
+`CAP-ELEC` is supported after skipping non-finalizable early packets in the
+locked donor. `SWITCH` is placeable from the locked donor but does not yet have
+accepted terminalized evidence. `7SEG-COM-AN-BLUE` and `7SEG-COM-CAT-BLUE`
+have display rows and terminalized evidence in scope. The locked donor does not
+contain a donor-final display row, so the component placer keeps the one-donor
+lock by finalizing the last selected display row from the same donor instead of
+falling back to a second mega donor.
+
+Target order for this pass:
+
+1. 1x solo placement/terminal proof for every supported family.
+2. Larger solo packs: 3x, 9x, 15x, and 20x where donor counts allow.
+3. 1x all-supported mixed pack after every family in scope has passed solo.
+4. Larger mixed packs up to 20x per family after the 1x mixed pack passes.
+5. Displays require separate terminal-stage proof because D20/display sentinel
+   infrastructure must not be treated as user pins.
+
+Follow-up locked-donor no-terminal matrix generation produced a 74HC00 count
+limit caused by the existing safe default offset of 8 for
+`new_components_5x_mega`. That offset is documented from prior Proteus testing:
+74HC00 offsets 0 and 4 failed/crashed, while offsets 8 and 12 opened/simulated.
+Static generation now succeeds for offset 0/4 diagnostic packs, including
+offset 0 with 16 packages, but the default must not be changed until those
+diagnostic controls are opened in Proteus. The diagnostic pack is:
+
+`experiments/locked_mega_74hc00_offset_probe_no_terminal_temp_2026_07_08/`
