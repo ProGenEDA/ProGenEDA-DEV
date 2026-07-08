@@ -491,8 +491,13 @@ common-anode and common-cathode display requests through the display-special
 D20/sentinel route. The terminal placer must ignore `D20` and display sentinel
 infrastructure and terminalize only real display pins.
 
-Historical catalogue families that are not currently placeable by the active
-component placer stay out of the active terminal grouping until component
-placement is deliberately extended. Examples include `4017`, `4020`, `4518`,
-`74HC161`, `74HC163`, `74HC165`, `74HC193`, `74HC273`, `74HC4024`,
-`74HC4040`, `74HC4060`, `74HC4520`, `74HC595`, and `SWITCH`.
+Correction from direct component-placer probing in the next user turn: `4017`,
+`4020`, `4518`, `74HC161`, `74HC163`, `74HC165`, `74HC193`, `74HC273`,
+`74HC4024`, `74HC4040`, `74HC4060`, `74HC4520`, `74HC595`, and `SWITCH` are
+currently placeable. They were wrongly excluded because the earlier check only
+inspected selected mega donors instead of the actual component-placer selection
+path, which also uses trusted native-registry donors. Active terminal scope
+must be derived from `generate_component_placement_project()` or the trusted
+donor manifest, not from scanning one mega donor. These families need their
+own terminal-evidence curation/grouping pass; they must not be removed from
+scope for placement reasons.

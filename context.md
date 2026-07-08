@@ -9347,3 +9347,42 @@ The context update is the last file change for this turn; after that I’ll run 
 - Current component placer can place both `7SEG-COM-AN-BLUE` and `7SEG-COM-CAT-BLUE`; displays remain active scope, with D20/sentinel treated as infrastructure.
 - Current curated active multi-pin evidence families: 32.
 - Historical terminalized donor evidence found for previously missing current-placeable families including `4027`, `7447`, `7490`, `74HC157`, `74HC160`, `74HC174`, `74HC192`, `74HC283`, `74HC74`, `74HC76`, `74HC85`, `LM741`, `NE555`, `NPN`, and `PNP`.
+
+---
+
+## Turn Log - 2026-07-08 13:11:13 +05:00
+
+### User Message
+
+are u sure these are not in component placer?
+give me the mega donor so i may open n check myself
+
+Selected text:
+
+4017, 4020, 4518, 74HC161, 74HC163, 74HC165, 74HC193, 74HC273, 74HC4024, 74HC4040, 74HC4060, 74HC4520, 74HC595, SWITCH
+
+### Visible Agent Response During Turn
+
+I’ll verify the pushed checkpoint first, then I’ll test those exact families through the current component placer and give you the actual donor paths to open.
+
+Correction from the actual probe: every family in that highlighted list is currently accepted by `generate_component_placement_project`. My previous “not supported” statement was wrong because I only checked the newer mega-donor union and missed native-registry donors plus `SWITCH` in the new-component mega.
+
+I’m also checking which “mega” files are relevant. The current placer uses a trusted donor manifest; for this list most parts route to native-registry donors, while `SWITCH` routes to `new_components_5x_mega.pdsprj`.
+
+I’m going to update `context.md` because the repo rule requires it even for this correction, then I’ll commit/push that note.
+
+I’m correcting the docs I just wrote: those families are component-placer supported. The error was using only selected mega-donor scans instead of the actual component-placer route.
+
+Docs are corrected. I’m adding the context entry, then I’ll commit/push/verify this correction.
+
+### Files Edited By Agent In Response To This Message
+
+- `docs/architecture.md` - corrected the previous active-scope error and recorded that the highlighted families are currently component-placer placeable via the actual selection path/native-registry donors.
+- `proteus_ic/donors/terminalized_catalogue_evidence/README.md` - corrected the out-of-scope section to say these families are placeable but not yet curated in that folder.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start-of-turn Git check: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `a35ca4684e33452ede6953948bd30b5e2e5cb9b0`.
+- Direct `generate_component_placement_project()` probe succeeded for every highlighted family: `4017`, `4020`, `4518`, `74HC161`, `74HC163`, `74HC165`, `74HC193`, `74HC273`, `74HC4024`, `74HC4040`, `74HC4060`, `74HC4520`, `74HC595`, and `SWITCH`.
+- The earlier exclusion was caused by scanning selected mega donors instead of the full trusted component-placer selection route.

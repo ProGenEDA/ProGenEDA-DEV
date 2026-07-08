@@ -80,12 +80,17 @@ signals only; Proteus open/render remains the acceptance test.
 | `NPN` | `three_pin_transistor/NPN/NPN_terminalized_primary.pdsprj` | 4 | 7 | Historical terminalized donor found under `analog_misc_batch1`. |
 | `PNP` | `three_pin_transistor/PNP/PNP_terminalized_primary.pdsprj` | 4 | 7 | Historical terminalized donor found under `analog_misc_batch1`. |
 
-## Out of active scope for this folder
+## Correction: placeable but not yet curated in this folder
 
-These families may appear in old catalogue/history notes, but they are not in
-the current active component-placer supported set for this terminal recovery
-grouping unless the component placer is explicitly extended later:
+Direct component-placer probing after this folder was created showed the list
+below is currently placeable. They were wrongly called out of scope because the
+earlier check scanned selected mega donors instead of the actual component
+placer, which also uses trusted native-registry donors.
 
 `4017`, `4020`, `4518`, `74HC161`, `74HC163`, `74HC165`, `74HC193`,
 `74HC273`, `74HC4024`, `74HC4040`, `74HC4060`, `74HC4520`, `74HC595`, and
 `SWITCH`.
+
+They should remain in active terminal scope and need a follow-up donor-evidence
+curation/grouping pass. Do not remove them from terminal-planning scope merely
+because they are not in one specific mega donor.
