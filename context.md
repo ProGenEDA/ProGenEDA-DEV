@@ -9787,3 +9787,106 @@ I’m updating `context.md` now with this turn’s user request, visible status 
 ### Final Response To User
 
 Planned summary: report that spacing validator/producer was strengthened, SWITCH was added through the shared two-pin terminal placer, the V13 pack is generated at `experiments/two_pin_switch_terminal_v13_temp_2026_07_08/` with archive `experiments/TWO_PIN_SWITCH_TERMINAL_V13_TEMP_2026_07_08.zip`, tests passed, and Proteus acceptance is pending your open/render test.
+
+---
+
+## 2026-07-08T22:29:44+05:00 - User Message
+
+okk these work and pothg is not 2 pined.
+now let work on making terminalized version of all the remaining components, group by group
+yk how this goes.
+u use donor to improve terminal placer, then u generate solo, then u compare then u fix stuff, repeat till generation is perfect
+then u attempt at all others of the group for solo 1x. then when all these are working
+u make ur best attempt at solo 9x 15x 23x(or whatever the limit allows)
+make sure here too the ABC are treated sperately and are wiring accordingly.
+so now select one and continue
+
+### Visible Agent Response During Turn
+
+I’ll start from the smallest non-2-pin group instead of jumping into gates: 3-pin/control-style parts. First I’ll verify the pushed checkpoint, then inspect the existing donor evidence and current shared terminal placer so I can pick one concrete family and generate a Proteus-pending solo pack from the same shared path.
+
+Checkpoint verified: local/upstream/remote all match `523f6d8e`; only your older fixed display/mixed evidence files are untracked. I’ll treat `POT-HG` as non-2-pin now and start with the small 3-pin/control-symbol group because it already has curated donor evidence: `LM317T`, `OPAMP`, `POT-HG`.
+
+I’m not going to use the two-pin dispatcher for `POT-HG`. For this group the route is the catalogue-backed multi-pin path inside the same `component_terminal_placer.py`: component placer emits the placed packet, catalogue gives pin geometry/link slots, terminal placer emits grid-snapped terminals and short wires.
+
+The current catalogue path can statically emit `POT-HG`, `LM317T`, and `OPAMP` 1x, but the quick probe shows this is the old link-offset route (`CATALOGUE/link-offset-wire-v1`). Since that broad route was previously rejected, I’m comparing it against the curated terminalized donor evidence before I generate a pack for you.
+
+The donor parser call needed a chunk-start argument; re-running the donor comparison with that fixed.
+
+Comparison found the first real issue in this group: existing catalogue geometry inherited a one-grid outward contact offset, but the curated donors for `POT-HG`, `LM317T`, and `OPAMP` place the terminal contact at the donor’s contact X/Y and then use a short wire to the exact pin. I’m checking whether this is purely a catalogue geometry flag fix or needs shared placer logic.
+
+The donor comparison is concrete: generated terminals are valid structurally but not donor-matching visually. Examples: `POT-HG` generated terminal symbols are one grid step farther out than the donor; `LM317T` pin 1 terminal should sit below the pin like donor, not level with it. This is catalogue geometry/profile data, not a reason to create a new workflow.
+
+The clean fix is to make the shared catalogue planner honor donor-derived terminal contact offsets when present. The catalogue already stores `terminal_contact_x/y`; the planner was ignoring those and recalculating a generic outward contact. I’m patching that in the shared placer and backing it up first.
+
+I’ll preserve exact-pin endpoints from the catalogue, but derive terminal symbol placement from donor terminal-contact offsets where available. That keeps the accepted “wire to exact pin” rule while matching the donor’s visual terminal positions.
+
+Before editing `component_terminal_placer.py`, I’m taking the required timestamp backup.
+
+Now patching the shared catalogue planner so terminal contact can come from donor-relative contact geometry, then falling back to the generic grid-contact rule when no donor contact is recorded.
+
+This change uses donor contact coordinates only when catalogue evidence has both the donor contact and donor component anchor; otherwise it leaves the old generic grid-contact behavior in place.
+
+Planner patch is in. I’m threading the contact-source evidence into reports too, then I’ll re-run the same donor comparison.
+
+Re-running the 1x donor comparison for `POT-HG`, `LM317T`, and `OPAMP`; expected result is generated label/contact coordinates match the curated donor contact positions while pin endpoints stay exact.
+
+The contact-offset fix now makes terminal symbol coordinates match the donors for the group. WIRE direction/order is normalized by the emitter, so comparisons should treat each short wire as an undirected terminal-contact↔pin segment. I’m adding a regression test for donor contact placement before generating the user pack.
+
+The test insert context moved; I’m placing the regression near the existing noneligible terminal dispatcher test after checking exact local lines.
+
+That test is at EOF, so I’ll append the new regression after it and add the missing import.
+
+Regression is added. Running focused tests for the three-pin contact-offset route plus the two-pin dispatcher to make sure the previous accepted path is untouched.
+
+The focused regression passes and two-pin dispatcher still passes. I’ll now generate the group evidence pack: 1x/9x/15x/20x solos for `POT-HG`, `LM317T`, and `OPAMP`, plus a small group mix. I’m keeping two-pin combination generation separate because the current two-pin and catalogue multi-pin emitters are two different shared entrypoints; I won’t fake a combined stream until I can prove the composition safely.
+
+Generating the V14 three-pin/control evidence pack now. The pack will include no-terminal controls so you can separate component-placement errors from terminal-placement errors, and final `_sa` terminalized files for Proteus opening.
+
+V14 generated: 14 cases, 0 invalid. I’m inspecting summary for contact-source/donor-comparison details before running full tests.
+
+Summary looks consistent: all 1x donor terminal-symbol multisets match; all generated rows use donor-contact anchor offsets; 14/14 static-valid. Running full component tests and compile now.
+
+Full component-placer tests pass: 98/98. Running compile check.
+
+Compile passed. I’m updating architecture with the V14 group checkpoint and the rule that catalogue multi-pin terminal contacts must honor donor-derived contact offsets.
+
+Architecture updated. I’m checking status, then appending this turn to `context.md` before committing/pushing.
+
+Only my current files plus the new V14 pack/backup are modified; your older untracked fixed evidence remains untouched. Appending the turn log now.
+
+`context.md` will record your V13 result as user-tested working, and V14 as generated/static-valid but Proteus-pending.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - shared catalogue planner now honors donor-derived terminal contact offsets when present, reports the contact source, and falls back to the old generic grid-contact rule when contact evidence is absent.
+- `backups/component_terminal_placer/component_terminal_placer_20260708_222157_before_catalogue_contact_offsets.py` - backup taken before editing the shared terminal placer.
+- `tests/test_component_placer.py` - added regression coverage proving `POT-HG`, `LM317T`, and `OPAMP` terminal symbols use donor contact offsets; kept two-pin dispatcher coverage passing.
+- `docs/architecture.md` - documented V14 three-pin/control route, donor contact rule, pack path, static results, and Proteus-pending status.
+- `experiments/three_pin_control_terminal_v14_temp_2026_07_08/` - generated no-terminal controls, final `_sa` terminalized projects, reports, and README.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V14_TEMP_2026_07_08.zip` - generated archive for Proteus testing.
+- `context.md` - appended this turn log.
+
+### Verification Recorded During Turn
+
+- Start checkpoint: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `523f6d8e25d187e89e46dbd7b9965d8cf804ebfa`.
+- User reported previous V13 two-pin/SWITCH pack worked; `POT-HG` is not treated as two-pin.
+- Initial static probe showed `POT-HG`, `LM317T`, and `OPAMP` could emit through `CATALOGUE/link-offset-wire-v1`, but generated terminal symbol positions did not match curated donor contacts.
+- Donor comparison evidence:
+  - `POT-HG`: generated symbols were one grid step outward before the fix.
+  - `LM317T`: generated pin 1 symbol was level with the pin before the fix; donor places it at the lower terminal contact.
+  - `OPAMP`: donor contact data already matched the intended left/right terminal locations.
+- After patch, generated 1x terminal symbol coordinate/angle multisets match curated donors for `POT-HG`, `LM317T`, and `OPAMP`.
+- Focused tests passed: `python -m pytest tests/test_component_placer.py::test_catalogue_three_pin_terminals_use_donor_contact_offsets tests/test_component_placer.py::test_shared_terminal_dispatcher_terminalizes_all_two_pin_families -q` -> 4 passed.
+- Generated `experiments/three_pin_control_terminal_v14_temp_2026_07_08/` with 14 cases and 0 invalid:
+  - `POT-HG`, `LM317T`, `OPAMP` solos at 1x/9x/15x/20x.
+  - Group mixes at 1x each and 3x each.
+  - Matching no-terminal controls.
+  - All terminal contact sources: `donor_terminal_contact_anchor_offset`.
+  - 1x solo donor terminal-symbol multiset matches: true for all three families.
+- Full component placer tests passed: `python -m pytest tests/test_component_placer.py -q` -> 98 passed.
+- Compile passed: `python -m compileall -q src tests tools/proteus_generation`.
+
+### Final Response To User
+
+Planned summary: selected and completed the first small non-2-pin group (`POT-HG`, `LM317T`, `OPAMP`) through the shared catalogue terminal placer; generated V14 pack at `experiments/three_pin_control_terminal_v14_temp_2026_07_08/` and archive `experiments/THREE_PIN_CONTROL_TERMINAL_V14_TEMP_2026_07_08.zip`; tests passed; Proteus open/render acceptance pending.

@@ -52,6 +52,7 @@ from proteusgen.component_terminal_placer import (
     TERMINAL_CONTACT_TO_PIN,
     TERMINAL_SYMBOL_TO_PIN,
     attach_capacitor_bidir_terminals_to_project,
+    attach_catalogue_pin_bidir_terminals_to_project,
     attach_component_bidir_terminals_to_project,
     attach_mixed_overlay_bidir_terminals_to_project,
     attach_mixed_native_bidir_terminals_to_project,
@@ -2201,3 +2202,76 @@ def test_shared_terminal_dispatcher_noneligible_selection_is_exact_copy(
     assert report["terminal_count_added"] == 0
     assert report["wire_count_added"] == 0
     assert base.read_bytes() == output.read_bytes()
+
+
+@pytest.mark.parametrize(
+    ("family", "expected_symbols"),
+    [
+        (
+            "POT-HG",
+            {
+                "1": (-6604000, -3302000, 1800),
+                "2": (-5588000, -4064000, 0),
+                "3": (-6604000, -4826000, 1800),
+            },
+        ),
+        (
+            "LM317T",
+            {
+                "1": (-4826000, -6604000, 0),
+                "2": (-3302000, -5080000, 0),
+                "3": (-7366000, -5080000, 1800),
+            },
+        ),
+        (
+            "OPAMP",
+            {
+                "OUT": (-4572000, -4064000, 0),
+                "IN+": (-7112000, -3810000, 1800),
+                "IN-": (-7112000, -4572000, 1800),
+            },
+        ),
+    ],
+)
+def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
+    tmp_path: Path,
+    family: str,
+    expected_symbols: dict[str, tuple[int, int, int]],
+) -> None:
+    base = tmp_path / f"{family}_donor_contact_base.pdsprj"
+    output = tmp_path / f"{family}_donor_contact_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+    )
+    terminals_by_pin = {
+        row["pin"]["name"]: row
+        for family_report in report["family_reports"]
+        for row in family_report["terminal_pins"]
+    }
+
+    assert result.valid
+    assert report["valid"] is True
+    assert set(terminals_by_pin) == set(expected_symbols)
+    for pin_name, (symbol_x, symbol_y, angle) in expected_symbols.items():
+        row = terminals_by_pin[pin_name]
+        terminal = row["terminal"]
+        assert (
+            int(terminal["symbol_x"]),
+            int(terminal["symbol_y"]),
+            int(terminal["angle_tenths"]),
+        ) == (symbol_x, symbol_y, angle)
+        assert row["terminal_contact_source"] == "donor_terminal_contact_anchor_offset"
+        assert row["short_wire"]["start"] != row["short_wire"]["end"]

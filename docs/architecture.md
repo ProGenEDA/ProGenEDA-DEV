@@ -668,3 +668,54 @@ Current locked-mega practical placement limits from the V2 capped matrix are:
 These are current safe generation/testing limits, not permanent component
 library limits. Raising a cap requires a focused no-terminal Proteus-opened
 control first, then terminal and mixed stress packs.
+
+## 2026-07-08 three-pin control terminal V14
+
+After `SWITCH` V13 user testing passed, `POT-HG` was explicitly moved out of
+the two-pin scope. The next small group is:
+
+- `POT-HG`
+- `LM317T`
+- `OPAMP`
+
+The existing catalogue route could already emit active terminals for these
+families, but it still used a generic outward contact calculation. Donor
+comparison showed that this was visually wrong: the curated terminalized donors
+already prove terminal contact positions that are not always the generic
+nearest/outward contact from the pin endpoint.
+
+The shared catalogue planner now follows this rule:
+
+1. Keep the exact pin endpoint from catalogue component-relative geometry.
+2. If catalogue evidence has `terminal_contact_x/y` and a donor component
+   anchor, transform that donor terminal contact by the current placed component
+   anchor.
+3. Snap that contact to the Proteus terminal grid.
+4. Derive the bidirectional terminal symbol from the contact and terminal
+   angle.
+5. Emit the short WIRE from the terminal contact to the exact pin endpoint.
+6. Fall back to the old generic grid-contact rule only when donor contact
+   evidence is absent.
+
+This keeps all terminal behavior in
+`src/proteusgen/component_terminal_placer.py`; no family-specific terminal
+script was added.
+
+Generated checkpoint:
+
+`experiments/three_pin_control_terminal_v14_temp_2026_07_08/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V14_TEMP_2026_07_08.zip`
+
+Pack contents:
+
+- `POT-HG`, `LM317T`, and `OPAMP` solos at 1x/9x/15x/20x.
+- Group mixes at 1x each and 3x each.
+- Matching no-terminal controls for every case.
+
+Static result: 14 generated cases, 14 base-valid, 14 terminal-valid, all
+terminal contact sources are `donor_terminal_contact_anchor_offset`. The three
+1x solos match the curated donor terminal-symbol coordinate/angle multisets.
+Proteus open/render acceptance is pending user testing.

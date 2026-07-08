@@ -533,45 +533,6 @@ def _terminal_at_grid_contact(
     )
 
 
-def _terminal_at_explicit_grid_contact(
-    terminal: TerminalSpec,
-    *,
-    contact_x: int,
-    contact_y: int,
-) -> tuple[TerminalSpec, int, int]:
-    """Place a terminal from donor-derived contact coordinates.
-
-    Catalogue multi-pin donors may prove a terminal contact that is not the
-    nearest generic outward contact from the exact pin endpoint.  Keep the
-    contact on the Proteus grid, derive the symbol from the terminal angle, and
-    let the short WIRE run from that proven contact to the exact pin.
-    """
-
-    contact_x = snap_to_proteus_terminal_grid(contact_x)
-    contact_y = snap_to_proteus_terminal_grid(contact_y)
-    if terminal.angle_tenths == LEFT_SIDE_ANGLE:
-        symbol_x = contact_x - TERMINAL_CONTACT_TO_PIN
-    elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
-        symbol_x = contact_x + TERMINAL_CONTACT_TO_PIN
-    else:
-        raise ValueError(
-            f"Explicit grid terminal placement does not support angle "
-            f"{terminal.angle_tenths}."
-        )
-    return (
-        replace(
-            terminal,
-            symbol_x=symbol_x,
-            symbol_y=contact_y,
-            attachment_policy=(
-                "donor_contact_grid_with_short_wire_to_exact_pin"
-            ),
-        ),
-        contact_x,
-        contact_y,
-    )
-
-
 def _snap_terminal_pair_to_grid(
     pair: ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair,
 ) -> ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair:
@@ -897,26 +858,6 @@ def plan_catalogue_pin_bidir_terminals(
                 snapped_axes.append("y")
             if snapped_axes:
                 coordinate_source += "_pin_endpoint_snap_" + "".join(snapped_axes)
-            explicit_contact: tuple[int, int] | None = None
-            terminal_contact_source = "generic_grid_contact"
-            donor_anchor = geometry.get("component_anchor")
-            if (
-                component_anchor is not None
-                and isinstance(donor_anchor, dict)
-                and raw_pin_geometry.get("terminal_contact_x") is not None
-                and raw_pin_geometry.get("terminal_contact_y") is not None
-                and donor_anchor.get("x") is not None
-                and donor_anchor.get("y") is not None
-            ):
-                explicit_contact = (
-                    int(component_anchor["x"])
-                    + int(raw_pin_geometry["terminal_contact_x"])
-                    - int(donor_anchor["x"]),
-                    int(component_anchor["y"])
-                    + int(raw_pin_geometry["terminal_contact_y"])
-                    - int(donor_anchor["y"]),
-                )
-                terminal_contact_source = "donor_terminal_contact_anchor_offset"
             terminal = TerminalSpec(
                 label=_catalogue_terminal_label(key, pin.name, pin.role),
                 symbol_x=pin_x,
@@ -928,23 +869,14 @@ def plan_catalogue_pin_bidir_terminals(
                 pin_hint=f"{pin.name}:{pin.role}",
                 attachment_policy="catalogue_pin_geometry_grid_short_wire",
             )
-            if explicit_contact is not None:
-                terminal, wire_start_x, wire_start_y = (
-                    _terminal_at_explicit_grid_contact(
-                        terminal,
-                        contact_x=explicit_contact[0],
-                        contact_y=explicit_contact[1],
-                    )
-                )
-            else:
-                terminal, wire_start_x, wire_start_y = _terminal_at_grid_contact(
-                    terminal,
-                    pin_x=pin_x,
-                    pin_y=pin_y,
-                    outward_grid_steps=int(
-                        raw_pin_geometry.get("terminal_contact_outward_grid_steps", 1)
-                    ),
-                )
+            terminal, wire_start_x, wire_start_y = _terminal_at_grid_contact(
+                terminal,
+                pin_x=pin_x,
+                pin_y=pin_y,
+                outward_grid_steps=int(
+                    raw_pin_geometry.get("terminal_contact_outward_grid_steps", 1)
+                ),
+            )
             terminal_plans.append(
                 {
                     "terminal": terminal.as_dict(),
@@ -972,7 +904,6 @@ def plan_catalogue_pin_bidir_terminals(
                         dict(component_anchor) if component_anchor is not None else None
                     ),
                     "coordinate_source": coordinate_source,
-                    "terminal_contact_source": terminal_contact_source,
                     "existing_wire": (
                         {
                             "wire_order_index": wire_order_index,
@@ -1393,10 +1324,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                                 "existing_wire_marker_offset": None,
                                 "component_link_trailer": trailer.hex(),
                                 "coordinate_source": row["coordinate_source"],
-                                "terminal_contact_source": row.get(
-                                    "terminal_contact_source",
-                                    "generic_grid_contact",
-                                ),
                             }
                         )
                     block_family_reports.append(
@@ -1660,10 +1587,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         else None
                     ),
                     "coordinate_source": row["coordinate_source"],
-                    "terminal_contact_source": row.get(
-                        "terminal_contact_source",
-                        "generic_grid_contact",
-                    ),
                 }
             )
         local_records.extend(terminal_records)
