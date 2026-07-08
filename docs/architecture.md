@@ -551,3 +551,56 @@ offset 0 with 16 packages, but the default must not be changed until those
 diagnostic controls are opened in Proteus. The diagnostic pack is:
 
 `experiments/locked_mega_74hc00_offset_probe_no_terminal_temp_2026_07_08/`
+
+## 2026-07-08 locked-mega display/no-terminal layout V2
+
+User Proteus testing of the locked-mega no-terminal matrix found three
+placement-side issues before returning to terminals:
+
+- Common-anode displays were labelled as blue in generated filenames even
+  though common-anode is the red display family in the current donor set.
+- 7-segment display solos and display-containing mixed packs could open with
+  Bad Object Record warnings even though the schematic rendered.
+- Large mixed packs could place display rows over non-IC/control packets
+  because display placement was appended using a count-derived slot rather than
+  the actual maximum Y coordinate of the previously beautified layout.
+
+The V2 fix is deliberately DSN/layout-only. `ROOT.CDB` remains untouched and
+full-donor CDB preservation is still required for this locked stability pass.
+Do not repair display Bad Object Record reports by pruning, rebuilding, or
+otherwise modifying `ROOT.CDB` unless the user explicitly reopens CDB work.
+
+Implemented placement-side rules:
+
+- `7SEG-COM-AN-RED` is accepted as a user/catalogue alias for the existing
+  internal `7SEG-COM-AN-BLUE` Proteus marker. The internal marker stays for
+  donor compatibility; generated evidence filenames use the corrected red
+  terminology.
+- Locked-donor display finalization appends the Proteus-saved display final
+  row tail `00 FF` instead of replacing the last byte with `FF`.
+- Any request containing display rows uses the donor/display object chunk
+  prefix instead of the SWITCH/POT-HG control prefix.
+- Display rows appended after another beautified packet stream start after the
+  actual emitted `after_bbox.max_y` plus a band gap, not after the numeric
+  group count.
+- `src/proteusgen/component_arrangement.py` now owns reusable arrangement
+  metadata helpers; `src/proteusgen/beautifier_validator.py` owns reusable
+  overlap/spacing/multipart diagnostics.
+
+The regenerated focused evidence pack is:
+
+`experiments/locked_mega_no_terminal_matrix_v2_temp_2026_07_08/`
+
+with archive:
+
+`experiments/LOCKED_MEGA_NO_TERMINAL_MATRIX_V2_TEMP_2026_07_08.zip`
+
+Pack result: 18 generated rows, 18 static-valid outputs, 0 invalid outputs, 0
+generation failures, and donor `ROOT.CDB` preserved byte-for-byte in every
+generated project.
+
+Known remaining beautifier limitation: native multipart packets such as
+`4027` and `74HC266` still move as native packets. The validator now reports
+multipart A/B/C packets as diagnostics, but splitting subparts into independently
+arranged gates requires a separate proven binary packet-splitting/mutation
+method and is not claimed by this V2 no-terminal display fix.

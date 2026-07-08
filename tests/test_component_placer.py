@@ -29,6 +29,8 @@ from proteusgen.component_beautifier import (
     MIXED_LAYOUT_BAND_GAP_Y,
     layout_coordinate_pairs,
 )
+from proteusgen.beautifier_validator import layout_overlap_pairs, validate_beautifier_layout_entries
+from proteusgen.component_arrangement import next_start_slot_after_layout_entries
 from proteusgen.bidirectional import extract_bidir_records, load_production_templates
 from proteusgen.component_terminal_placer import (
     CAP_ELEC_PIN_HALF_SPAN,
@@ -413,6 +415,7 @@ def test_raw_component_scanner_uses_encoded_ref_lengths() -> None:
 
 def test_component_placer_normalizes_display_aliases_to_raw_markers() -> None:
     assert normalize_component("7segcomanode") == "7SEG-COM-AN-BLUE"
+    assert normalize_component("7SEG-COM-AN-RED") == "7SEG-COM-AN-BLUE"
     assert normalize_component("7segcomk") == "7SEG-COM-CAT-BLUE"
     assert normalize_component("7SEG-COM-ANC") == "7SEG-COM-AN-BLUE"
     assert normalize_component("7SEG-COM-CAT") == "7SEG-COM-CAT-BLUE"
@@ -600,6 +603,102 @@ def test_component_placement_beautifies_each_display_row_separately(tmp_path: Pa
     assert all(entry["translated"] for entry in (*anode_entries, *cathode_entries))
     assert len({entry["slot"] for entry in anode_entries}) == 3
     assert len({entry["slot"] for entry in cathode_entries}) == 3
+
+
+def test_locked_display_finalizer_matches_proteus_saved_row_tail(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"7SEG-COM-AN-RED": 9},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "anode_red_display_final_tail.pdsprj",
+        full_cdb=True,
+    )
+
+    final_display = next(
+        group
+        for group in result.selected_groups
+        if group.key.startswith("DISPLAY_AN_") and group.key.endswith("_FINAL")
+    )
+    chunk = _extract_object_chunk(read_internal_file(result.output, "ROOT.DSN"))
+
+    assert result.valid
+    assert result.request == {"7SEG-COM-AN-BLUE": 9}
+    assert final_display.data.endswith(b"\x00\xff")
+    assert final_display.source_is_final is True
+    assert final_display.data in chunk
+
+
+def test_display_mixed_request_keeps_display_dsn_prefix(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {
+                "7SEG-COM-AN-RED": 1,
+                "SWITCH": 1,
+                "POT-HG": 1,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "display_with_controls_prefix.pdsprj",
+        full_cdb=True,
+    )
+    chunk = _extract_object_chunk(read_internal_file(result.output, "ROOT.DSN"))
+
+    assert result.valid
+    assert chunk[:2] == b"\x00\x00"
+
+
+def test_display_band_starts_after_actual_mixed_layout_bbox(tmp_path: Path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {
+                "OPAMP": 20,
+                "LM317T": 20,
+                "TRAN-2P2S": 20,
+                "7SEG-COM-AN-RED": 5,
+            },
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "display_after_tall_mixed_layout.pdsprj",
+        full_cdb=True,
+    )
+    entries = result.layout_plan["actual_binary_placements"]
+
+    assert result.valid
+    assert layout_overlap_pairs(entries) == []
+    assert result.validation_reports["generated_output_validator"]["valid"] is True
+
+
+def test_arrangement_next_start_slot_uses_actual_bbox_max_y() -> None:
+    entries = [{"after_bbox": {"max_y": 10_160_000}}]
+
+    next_slot = next_start_slot_after_layout_entries(
+        entries,
+        fallback_slot=3,
+        origin_y=-5_080_000,
+        slot_y=2_540_000,
+        columns=10,
+        gap_y=5_080_000,
+    )
+
+    assert next_slot > 3
+    assert next_slot % 10 == 0
+
+
+def test_beautifier_validator_flags_multipart_packet_without_failing_layout() -> None:
+    issues = validate_beautifier_layout_entries(
+        [
+            {
+                "key": "U1",
+                "translated": True,
+                "refs": ["U1:A", "U1:B"],
+                "after_bbox": {"min_x": 0, "min_y": 0, "max_x": 1, "max_y": 1},
+            }
+        ]
+    )
+
+    assert [issue.code for issue in issues] == ["W_BEAUTIFIER_MULTIPART_PACKET_NOT_SPLIT"]
+    assert issues[0].severity == "warning"
 
 
 def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> None:

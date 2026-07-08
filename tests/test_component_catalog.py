@@ -57,6 +57,7 @@ def test_catalog_normalizes_component_and_pin_aliases() -> None:
 
     assert catalog.normalize_part("LED") == "LED-RED"
     assert catalog.normalize_part("74HC90") == "7490"
+    assert catalog.normalize_part("7SEG-COM-AN-RED") == "7SEG-COM-AN-BLUE"
     assert catalog.profile("74HC08").normalize_pin("1A").name == "1"
     assert catalog.profile("74HC08").normalize_pin("Pin 14").hidden
     assert catalog.profile("74HC08").normalize_pin("+5V").role == "VCC"

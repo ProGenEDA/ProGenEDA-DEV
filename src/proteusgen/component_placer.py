@@ -62,6 +62,8 @@ from .component_beautifier import (
     translate_packet_by_delta,
     translate_packet_to_position,
 )
+from .beautifier_validator import validate_beautifier_layout_entries
+from .component_arrangement import next_start_slot_after_layout_entries
 from .templates import FixtureRegistry, repository_root
 
 TRUSTED_DONOR_MANIFEST_PATH = Path("proteus_ic/registry/trusted_donor_manifest.json")
@@ -194,6 +196,8 @@ COMPONENT_PLACER_EXTRA_ALIASES = {
     "7SEGCOMMONANODE": "7SEG-COM-AN-BLUE",
     "7SEGCOMAN": "7SEG-COM-AN-BLUE",
     "7SEGCOMANBLUE": "7SEG-COM-AN-BLUE",
+    "7SEGCOMANRED": "7SEG-COM-AN-BLUE",
+    "7SEG-COM-AN-RED": "7SEG-COM-AN-BLUE",
     "7SEGCOMK": "7SEG-COM-CAT-BLUE",
     "7SEGCOMCATHODE": "7SEG-COM-CAT-BLUE",
     "7SEGCOMMONCATHODE": "7SEG-COM-CAT-BLUE",
@@ -935,8 +939,10 @@ def _display_row_as_middle(row: bytes) -> bytes:
 def _display_row_as_final(row: bytes) -> bytes:
     if row.endswith(b"\xff"):
         return row
+    if len(row) == 399 and row.endswith(b"\x00\x00"):
+        return row[:-2] + b"\x00\xff"
     if row and row[-1] in (0x00, 0x08):
-        return row[:-1] + b"\xff"
+        return row + b"\x00\xff"
     raise ValueError(f"Cannot finalize display row with unexpected tail {row[-8:].hex()}.")
 
 
@@ -1462,6 +1468,8 @@ def _apply_binary_beautifier(
             )
             entry["known_refs_unchanged"] = known_refs_unchanged
             entry["refs_unchanged"] = known_refs_unchanged
+            entry["refs"] = list(group.refs)
+            entry["ref_count"] = len(group.refs)
             entry["layout_band"] = band_name
             entry["mixed_band_separation"] = use_separate_bands
             if not known_refs_unchanged:
@@ -1496,6 +1504,8 @@ def _apply_binary_beautifier(
                     "translated": False,
                     "layout_band": "hidden",
                     "reason": "hidden dummy control kept in accepted donor packet position",
+                    "refs": list(group.refs),
+                    "ref_count": len(group.refs),
                 }
             )
             continue
@@ -1661,6 +1671,8 @@ def _select_generation_donor(request: dict[str, int], donor_path: str | Path | N
 
 
 def _chunk_prefix_for_request(request: dict[str, int], donor_chunk: bytes) -> bytes:
+    if set(request) & DISPLAY_FAMILIES:
+        return donor_chunk[:2] if len(donor_chunk) >= 2 else NO_TERMINAL_OBJECT_CHUNK_PREFIX
     if set(request) & CONTROL_PREFIX_FAMILIES:
         return OBJECT_CHUNK_PREFIX
     if len(donor_chunk) >= 2:
@@ -1937,11 +1949,19 @@ def generate_component_placement_project(
         visible_display_groups = tuple(
             group for group in display_groups if group.key != "DISPLAY_ANODE_SENTINEL"
         )
+        display_start_slot = next_start_slot_after_layout_entries(
+            selected_layout_entries,
+            next_slot,
+            origin_y=VISIBLE_LAYOUT_ORIGIN_Y,
+            slot_y=VISIBLE_LAYOUT_SLOT_Y,
+            columns=VISIBLE_LAYOUT_COLUMNS,
+            gap_y=MIXED_LAYOUT_BAND_GAP_Y,
+        )
         visible_display_groups, display_layout_entries, _next_slot = _apply_binary_beautifier(
             payload,
             visible_display_groups,
             (),
-            start_slot=next_slot,
+            start_slot=display_start_slot,
         )
         if display_sentinel is not None:
             if hide_display_bridge:
@@ -2446,39 +2466,22 @@ def validate_generated_component_output(
                         f"{group.key} reference text changed during coordinate translation.",
                     )
                 )
-        placed_entries: list[tuple[str, dict[str, Any]]] = []
         visible_keys = {group.key for group in visible_groups}
-        for key, entry in entries_by_key.items():
-            bbox = entry.get("after_bbox")
-            already_at_target = (
-                isinstance(bbox, dict)
-                and entry.get("target_min_x") is not None
-                and entry.get("target_min_y") is not None
-                and int(bbox.get("min_x", 0)) == int(entry["target_min_x"])
-                and int(bbox.get("min_y", 0)) == int(entry["target_min_y"])
+        for issue in validate_beautifier_layout_entries(
+            layout_entries,
+            visible_keys=visible_keys,
+        ):
+            code = (
+                "E_OUTPUT_LAYOUT_OVERLAP"
+                if issue.code == "E_BEAUTIFIER_LAYOUT_OVERLAP"
+                else issue.code
             )
-            if key not in visible_keys or (
-                not entry.get("translated") and not already_at_target
-            ):
-                continue
-            if isinstance(bbox, dict) and {"min_x", "min_y", "max_x", "max_y"} <= set(bbox):
-                placed_entries.append((key, bbox))
-        overlaps: list[tuple[str, str]] = []
-        for left_index, (left_key, left_bbox) in enumerate(placed_entries):
-            for right_key, right_bbox in placed_entries[left_index + 1 :]:
-                separated = (
-                    int(left_bbox["max_x"]) <= int(right_bbox["min_x"])
-                    or int(right_bbox["max_x"]) <= int(left_bbox["min_x"])
-                    or int(left_bbox["max_y"]) <= int(right_bbox["min_y"])
-                    or int(right_bbox["max_y"]) <= int(left_bbox["min_y"])
-                )
-                if not separated:
-                    overlaps.append((left_key, right_key))
-        if overlaps:
-            errors.append(
+            target = warnings if issue.severity == "warning" else errors
+            target.append(
                 ValidationIssue(
-                    "E_OUTPUT_LAYOUT_OVERLAP",
-                    f"Beautified visible packet bboxes overlap: {overlaps[:20]}",
+                    code,
+                    issue.message,
+                    issue.severity,
                 )
             )
 
