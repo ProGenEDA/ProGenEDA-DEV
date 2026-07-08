@@ -632,63 +632,6 @@ def _catalogue_terminal_label(component_key: str, pin: str, role: str) -> str:
     return f"{key_token}PIN{pin_token}"[:60]
 
 
-def _catalogue_donor_label(
-    component_key: str,
-    pin: str,
-    role: str,
-    raw_pin_geometry: dict[str, Any],
-) -> str:
-    for key in ("terminal_label", "donor_terminal_label"):
-        value = raw_pin_geometry.get(key)
-        if value:
-            return str(value)
-    return _catalogue_terminal_label(component_key, pin, role)
-
-
-def _catalogue_link_trailer(raw_pin_geometry: dict[str, Any]) -> bytes:
-    trailer_hex = str(
-        raw_pin_geometry.get("terminal_link_trailer")
-        or raw_pin_geometry.get("component_link_trailer")
-        or COMPONENT_PIN_LINK_TRAILERS[0].hex()
-    )
-    trailer = bytes.fromhex(trailer_hex)
-    if trailer not in COMPONENT_PIN_LINK_TRAILERS:
-        raise ValueError(f"Unsupported catalogue terminal link trailer {trailer_hex!r}.")
-    return trailer
-
-
-def _transform_catalogue_wire_coordinates(
-    raw_pin_geometry: dict[str, Any],
-    *,
-    component_anchor: dict[str, Any] | None,
-    donor_anchor: dict[str, Any] | None,
-) -> tuple[tuple[int, int, int, int], tuple[int, int] | None] | None:
-    raw_coordinates = raw_pin_geometry.get("wire_coordinates")
-    if (
-        not isinstance(raw_coordinates, (list, tuple))
-        or len(raw_coordinates) != 4
-        or component_anchor is None
-        or not isinstance(donor_anchor, dict)
-        or donor_anchor.get("x") is None
-        or donor_anchor.get("y") is None
-    ):
-        return None
-    dx = int(component_anchor["x"]) - int(donor_anchor["x"])
-    dy = int(component_anchor["y"]) - int(donor_anchor["y"])
-    coordinates = tuple(
-        int(value) + (dx if index % 2 == 0 else dy)
-        for index, value in enumerate(raw_coordinates)
-    )
-    matched_x = raw_pin_geometry.get("matched_wire_endpoint_x")
-    matched_y = raw_pin_geometry.get("matched_wire_endpoint_y")
-    matched = (
-        (int(matched_x) + dx, int(matched_y) + dy)
-        if matched_x is not None and matched_y is not None
-        else None
-    )
-    return coordinates, matched
-
-
 def _component_body_bbox_for_catalogue(data: bytes, family: str) -> dict[str, int]:
     """Return the bbox for the component packet without terminal/WIRE stubs.
 
@@ -975,7 +918,7 @@ def plan_catalogue_pin_bidir_terminals(
                 )
                 terminal_contact_source = "donor_terminal_contact_anchor_offset"
             terminal = TerminalSpec(
-                label=_catalogue_donor_label(key, pin.name, pin.role, raw_pin_geometry),
+                label=_catalogue_terminal_label(key, pin.name, pin.role),
                 symbol_x=pin_x,
                 symbol_y=pin_y,
                 angle_tenths=angle,
@@ -1002,39 +945,9 @@ def plan_catalogue_pin_bidir_terminals(
                         raw_pin_geometry.get("terminal_contact_outward_grid_steps", 1)
                     ),
                 )
-            wire_end_x = pin_x
-            wire_end_y = pin_y
-            wire_terminal_contact = {"x": wire_start_x, "y": wire_start_y}
-            wire_pin_contact = {"x": pin_x, "y": pin_y}
-            transformed_wire = _transform_catalogue_wire_coordinates(
-                raw_pin_geometry,
-                component_anchor=component_anchor,
-                donor_anchor=donor_anchor if isinstance(donor_anchor, dict) else None,
-            )
-            if transformed_wire is not None:
-                wire_coordinates, matched_wire_endpoint = transformed_wire
-                wire_start_x, wire_start_y, wire_end_x, wire_end_y = wire_coordinates
-                endpoints = ((wire_start_x, wire_start_y), (wire_end_x, wire_end_y))
-                if matched_wire_endpoint in endpoints:
-                    wire_terminal_contact = {
-                        "x": matched_wire_endpoint[0],
-                        "y": matched_wire_endpoint[1],
-                    }
-                    other_endpoint = (
-                        endpoints[1]
-                        if endpoints[0] == matched_wire_endpoint
-                        else endpoints[0]
-                    )
-                    wire_pin_contact = {"x": other_endpoint[0], "y": other_endpoint[1]}
-                else:
-                    wire_pin_contact = {"x": pin_x, "y": pin_y}
-            terminal_dict = terminal.as_dict()
-            terminal_dict["link_trailer"] = _catalogue_link_trailer(
-                raw_pin_geometry
-            ).hex()
             terminal_plans.append(
                 {
-                    "terminal": terminal_dict,
+                    "terminal": terminal.as_dict(),
                     "pin": {
                         "name": pin.name,
                         "role": pin.role,
@@ -1045,14 +958,12 @@ def plan_catalogue_pin_bidir_terminals(
                     },
                     "short_wire": {
                         "start": {"x": wire_start_x, "y": wire_start_y},
-                        "end": {"x": wire_end_x, "y": wire_end_y},
-                        "terminal_contact": wire_terminal_contact,
-                        "pin_contact": wire_pin_contact,
+                        "end": {"x": pin_x, "y": pin_y},
                         "record": _build_native_short_wire(
                             wire_start_x,
                             wire_start_y,
-                            wire_end_x,
-                            wire_end_y,
+                            pin_x,
+                            pin_y,
                         ).hex(),
                     },
                     "catalogue_geometry": dict(raw_pin_geometry),
@@ -1071,23 +982,9 @@ def plan_catalogue_pin_bidir_terminals(
                         if existing_wire is not None
                         else None
                     ),
-                    "wire_order_index": (
-                        int(wire_order_index)
-                        if isinstance(wire_order_index, int)
-                        else None
-                    ),
                 }
             )
             suffix += 1
-    terminal_plans.sort(
-        key=lambda row: (
-            1_000_000
-            if row.get("wire_order_index") is None
-            else int(row["wire_order_index"]),
-            str(row.get("component_key", "")),
-            str(row.get("pin", {}).get("name", "")),
-        )
-    )
     return {
         "stage": "catalogue_pin_terminal_planner",
         "terminal_count": len(terminal_plans),
@@ -1461,20 +1358,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         group_wire_count += 1
                         terminal_dict = dict(row["terminal"])
                         terminal_dict["suffix"] = f"{temporary_suffix:04x}"
-                        terminal_link_trailer = bytes.fromhex(
-                            str(
-                                terminal_dict.get(
-                                    "link_trailer",
-                                    COMPONENT_PIN_LINK_TRAILERS[0].hex(),
-                                )
-                            )
-                        )
-                        if terminal_link_trailer not in COMPONENT_PIN_LINK_TRAILERS:
-                            raise ValueError(
-                                f"{display_family} {display_key} pin {pin_name} "
-                                f"uses unsupported terminal link trailer "
-                                f"{terminal_link_trailer.hex()}."
-                            )
                         terminal_records.append(
                             build_bidir_record(
                                 terminal_templates,
@@ -1484,8 +1367,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                                 angle_tenths=int(terminal_dict["angle_tenths"]),
                                 suffix=temporary_suffix,
                                 active_link=True,
-                            )[:-2]
-                            + terminal_link_trailer
+                            )
                         )
                         terminal_pins.append(
                             {
@@ -1496,26 +1378,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                                 "short_wire": {
                                     "start": dict(start),
                                     "end": dict(end),
-                                    **(
-                                        {
-                                            "terminal_contact": dict(
-                                                short_wire["terminal_contact"]
-                                            )
-                                        }
-                                        if isinstance(
-                                            short_wire.get("terminal_contact"),
-                                            dict,
-                                        )
-                                        else {}
-                                    ),
-                                    **(
-                                        {"pin_contact": dict(short_wire["pin_contact"])}
-                                        if isinstance(
-                                            short_wire.get("pin_contact"),
-                                            dict,
-                                        )
-                                        else {}
-                                    ),
                                 },
                                 "catalogue_geometry": dict(raw_geometry),
                                 "component_bbox": dict(row.get("component_bbox", {})),
@@ -1757,19 +1619,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 wire_count_added += 1
             terminal_dict = dict(row["terminal"])
             terminal_dict["suffix"] = f"{temporary_suffix:04x}"
-            terminal_link_trailer = bytes.fromhex(
-                str(
-                    terminal_dict.get(
-                        "link_trailer",
-                        COMPONENT_PIN_LINK_TRAILERS[0].hex(),
-                    )
-                )
-            )
-            if terminal_link_trailer not in COMPONENT_PIN_LINK_TRAILERS:
-                raise ValueError(
-                    f"{family} {key} pin {pin_name} uses unsupported terminal "
-                    f"link trailer {terminal_link_trailer.hex()}."
-                )
             terminal_records.append(
                 build_bidir_record(
                     terminal_templates,
@@ -1779,8 +1628,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     angle_tenths=int(terminal_dict["angle_tenths"]),
                     suffix=temporary_suffix,
                     active_link=True,
-                )[:-2]
-                + terminal_link_trailer
+                )
             )
             terminal_pins.append(
                 {
@@ -1791,16 +1639,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     "short_wire": {
                         "start": dict(start),
                         "end": dict(end),
-                        **(
-                            {"terminal_contact": dict(short_wire["terminal_contact"])}
-                            if isinstance(short_wire.get("terminal_contact"), dict)
-                            else {}
-                        ),
-                        **(
-                            {"pin_contact": dict(short_wire["pin_contact"])}
-                            if isinstance(short_wire.get("pin_contact"), dict)
-                            else {}
-                        ),
                     },
                     "catalogue_geometry": dict(raw_geometry),
                     "component_bbox": dict(row.get("component_bbox", {})),
@@ -1926,25 +1764,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 contact_x = int(terminal["symbol_x"]) - TERMINAL_CONTACT_TO_PIN
             else:
                 contact_x = int(terminal["symbol_x"])
-            wire_start = (int(wire["start"]["x"]), int(wire["start"]["y"]))
-            wire_end = (int(wire["end"]["x"]), int(wire["end"]["y"]))
-            wire_endpoints = {wire_start, wire_end}
-            planned_terminal_contact = wire.get(
-                "terminal_contact",
-                {"x": contact_x, "y": int(terminal["symbol_y"])},
-            )
-            planned_pin_contact = wire.get(
-                "pin_contact",
-                {"x": int(row["pin"]["x"]), "y": int(row["pin"]["y"])},
-            )
-            planned_terminal_contact_xy = (
-                int(planned_terminal_contact["x"]),
-                int(planned_terminal_contact["y"]),
-            )
-            planned_pin_contact_xy = (
-                int(planned_pin_contact["x"]),
-                int(planned_pin_contact["y"]),
-            )
             wire_path_checks.append(
                 {
                     "component_key": row["component_key"],
@@ -1954,9 +1773,18 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         contact_x % PROTEUS_TERMINAL_GRID == 0
                         and int(terminal["symbol_y"]) % PROTEUS_TERMINAL_GRID == 0
                     ),
-                    "terminal_to_wire": planned_terminal_contact_xy in wire_endpoints,
-                    "wire_to_pin": planned_pin_contact_xy in wire_endpoints,
-                    "wire_is_nonzero": wire_start != wire_end,
+                    "terminal_to_wire": (
+                        contact_x == int(wire["start"]["x"])
+                        and int(terminal["symbol_y"]) == int(wire["start"]["y"])
+                    ),
+                    "wire_to_pin": (
+                        int(wire["end"]["x"]) == int(row["pin"]["x"])
+                        and int(wire["end"]["y"]) == int(row["pin"]["y"])
+                    ),
+                    "wire_is_nonzero": (
+                        int(wire["start"]["x"]) != int(wire["end"]["x"])
+                        or int(wire["start"]["y"]) != int(wire["end"]["y"])
+                    ),
                 }
             )
     report = {
@@ -5614,10 +5442,7 @@ def _bidir_terminal_suffix_positions(chunk: bytes) -> dict[tuple[str, int], list
                 f"Truncated bidirectional terminal suffix for {record['label']}."
             )
         suffix = struct.unpack("<H", chunk[suffix_position : suffix_position + 2])[0]
-        active = (
-            chunk[suffix_position + 2 : suffix_position + 4]
-            in COMPONENT_PIN_LINK_TRAILERS
-        )
+        active = chunk[suffix_position + 2 : suffix_position + 4] == b"\x01\x00"
         if active:
             positions.setdefault((str(record["label"]), suffix), []).append(
                 suffix_position
@@ -5886,10 +5711,7 @@ def _rebase_terminal_links_to_final_wire_addresses(
         suffix_bytes = struct.pack("<H", allocation["new_suffix"])
         terminal_field = written_chunk[terminal_position : terminal_position + 4]
         component_field = written_chunk[component_position : component_position + 4]
-        terminal_valid = (
-            terminal_field[:2] == suffix_bytes
-            and terminal_field[2:4] in COMPONENT_PIN_LINK_TRAILERS
-        )
+        terminal_valid = terminal_field == suffix_bytes + b"\x01\x00"
         component_valid = (
             component_field[:2] == suffix_bytes
             and component_field[2:4] in COMPONENT_PIN_LINK_TRAILERS

@@ -2271,11 +2271,16 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
     for pin_name, (symbol_x, symbol_y, angle) in expected_symbols.items():
         row = terminals_by_pin[pin_name]
         terminal = row["terminal"]
+        catalogue_geometry = row["catalogue_geometry"]
         assert (
             int(terminal["symbol_x"]),
             int(terminal["symbol_y"]),
             int(terminal["angle_tenths"]),
         ) == (symbol_x, symbol_y, angle)
+        if catalogue_geometry.get("terminal_label"):
+            assert terminal["label"] == catalogue_geometry["terminal_label"]
+        if catalogue_geometry.get("component_link_trailer"):
+            assert terminal["link_trailer"] == catalogue_geometry["component_link_trailer"]
         assert row["terminal_contact_source"] == "donor_terminal_contact_anchor_offset"
         assert row["short_wire"]["start"] != row["short_wire"]["end"]
     first_component_marker = chunk.find(family.encode("ascii"))

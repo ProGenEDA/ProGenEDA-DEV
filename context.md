@@ -10151,3 +10151,110 @@ One more detail for the log: I generated and discarded V17 during this turn beca
 ### Final Response To User
 
 Planned summary: V16 is rejected; root cause was not active-link rebasing but attachment-unit packet boundary. V18 1x-only packet-splice repair generated at `experiments/three_pin_control_terminal_v18_packet_splice_temp_2026_07_09/` with archive `experiments/THREE_PIN_CONTROL_TERMINAL_V18_PACKET_SPLICE_TEMP_2026_07_09.zip`; test only the three `_sa` files first.
+
+
+---
+
+## 2026-07-09T00:51:46+05:00 - User Message
+
+they all opened and were visual correct with limitations which is a good direction
+problems are, 1 all gave bad object record error, error is small, tho i have mad fix for u to check n fix this issue.
+2, only one terminal was placed, not all 3. fix that
+3, even that 1 terminal wasnt actually corrected to the pin using wire as they are supposed to be
+4, these placed terminals looked awfully alot like a copy paste job from the donor, which is not allowed, i hope u actually placed the terminal and their identical position to where i placed them is a just a coincidence
+
+### Visible Agent Response During Turn
+
+I’ll treat V18 as partially accepted but still rejected for correctness. I’m verifying the pushed checkpoint first, then I’ll search for your fixed copy and compare it against V18 at the object-record level.
+
+Checkpoint is pushed: local/upstream/remote all `171f40bc`. I found your fixed copies in the V18 folder, so I’m comparing those directly against the generated `_sa` files and the original donors now.
+
+The fixed files confirm Proteus is discarding the malformed tail: your fixed copies contain only one inactive terminal and no WIRE records. So the fix is not to copy that output; it’s evidence that the generated tail after the first terminal is invalid.
+
+The likely causes are now concrete from donor comparison:
+1. catalogue route uses generated long labels instead of the donor-proven terminal labels;
+2. terminal active trailer is `01 00`, while these donors use `02 00`;
+3. WIRE direction/coordinates are recomputed, but donor evidence gives exact per-pin WIRE coordinates and order.
+
+I’m going to make the catalogue route consume those catalogue facts instead of recomputing them.
+
+I’m backing up the current shared placer before this next edit, then I’ll patch the catalogue planner to use donor-proven label, WIRE coordinates/order, and terminal trailer from the catalogue.
+
+One correction to my previous suspicion: the user-fixed files are not the target output; they show Proteus kept one inactive terminal and removed the rest. That means the generated terminal/WIRE sequence after the first terminal is what Proteus is rejecting.
+
+I’m patching the planner helpers now; the first patch just missed the exact insertion point.
+
+Now I’m switching the catalogue plan from recomputed WIREs to donor-transformed WIREs, while keeping the terminal symbols generated through the embedded schema.
+
+The emitted terminal records now preserve the catalogue trailer. I’m updating the rebase validator so it recognizes both accepted link trailers (`01 00` and `02 00`) instead of only the two-pin-style trailer.
+
+Now I’m updating the catalogue wire-contact validation to validate the donor-proven WIRE endpoint contacts rather than the old recomputed terminal-contact formula.
+
+I’m strengthening the test to assert the emitted labels/trailers come from the catalogue evidence, then I’ll run the focused tests.
+
+Focused tests next. If those pass, I’ll generate a fresh 1x-only pack and compare it to donor/fixed evidence before full regression.
+
+The focused regression failed because the report validity logic is now stricter than the old recomputed-contact assumptions. I’m inspecting the exact failed report rows rather than weakening it blindly.
+
+The emitted bytes are now link-valid; the failing validity rows are from the report dropping the donor `terminal_contact`/`pin_contact` metadata before validation. I’m preserving that metadata in the terminal report.
+
+Report metadata preservation is patched. Re-running focused tests.
+
+Focused tests pass. I’m generating V19 now: same 1x-only scope, but with donor labels, donor WIRE order/coordinates, and `02 00` link trailers from the catalogue.
+
+V19 generation passed the donor-shape checks: three terminals, three WIREs, donor labels/order, `02 00` trailers, and donor WIRE coordinates/order all match. Running full regression and compile now.
+
+Full tests and compile passed. V19 output still uses generated terminal records, not copied donor records; it now uses donor-derived catalogue facts for label/trailer/WIRE geometry because those fields appear to be part of the accepted Proteus record shape. I’m documenting that distinction and the V19 checkpoint.
+
+Architecture is updated. I’m appending this turn to `context.md`, including your four reported issues, the fixed-file comparison, and V19 output paths.
+
+After context update I’ll stage only the shared placer/test/docs/context/V19 evidence and the new backup. The user-fixed V18 files will stay untracked evidence unless you explicitly want them committed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - changed catalogue terminal planning to use donor-derived labels, link trailers, WIRE order, transformed donor WIRE coordinates, and donor-proven WIRE endpoint contacts from the component catalogue; retained generated terminal/WIRE record emission through shared encoders.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_004445_before_catalogue_donor_wire_shape.py` - backup taken before editing the shared terminal placer.
+- `tests/test_component_placer.py` - strengthened the three-pin catalogue regression so labels and link trailers must match catalogue evidence.
+- `docs/architecture.md` - recorded V18 partial acceptance/rejection, fixed-file comparison, no-copy distinction, and V19 repair checkpoint.
+- `experiments/three_pin_control_terminal_v19_donor_wire_shape_temp_2026_07_09/` - generated 1x-only V19 repair pack and no-terminal controls.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V19_DONOR_WIRE_SHAPE_TEMP_2026_07_09.zip` - generated V19 repair archive.
+- `context.md` - appended this turn log.
+
+### User Evidence Read But Not Committed
+
+- `experiments/three_pin_control_terminal_v18_packet_splice_temp_2026_07_09/01_terminalized_sa/fixedR001_POT_HG_1x_PACKET_SPLICE_sa.pdsprj`
+- `experiments/three_pin_control_terminal_v18_packet_splice_temp_2026_07_09/01_terminalized_sa/fixR002_LM317T_1x_PACKET_SPLICE_sa.pdsprj`
+- `experiments/three_pin_control_terminal_v18_packet_splice_temp_2026_07_09/01_terminalized_sa/fixR003_OPAMP_1x_PACKET_SPLICE_sa.pdsprj`
+
+These fixed files show Proteus kept one inactive terminal and removed the remaining terminal/WIRE tail, so they were used as diagnostic evidence only.
+
+### Verification Recorded During Turn
+
+- Start checkpoint: branch `codex/generic-proteus-generator-v0`, upstream `origin/codex/generic-proteus-generator-v0`, local HEAD/upstream/remote all matched `171f40bce59ff472119918176f75ed724e13fcb6`.
+- Working tree had unrelated user-side 74HC04 movement/deletion, fixed display/mixed evidence files, and user-fixed V18 files; these were not staged or modified.
+- V18 generated vs user-fixed comparison:
+  - Generated V18 files had 3 `$TERBIDIR` records and 3 WIRE records.
+  - User-fixed files had 1 inactive `$TERBIDIR` record and 0 WIRE records.
+  - This indicates Proteus discarded the malformed sequence after the first terminal rather than preserving it.
+- V19 static generation checks:
+  - 3 generated cases.
+  - 3 base-valid.
+  - 3 terminal-static-valid.
+  - 3 output object chunk headers match their no-terminal bases.
+  - 3 first terminal starts match the curated donor boundary.
+  - 3 donor terminal-symbol multisets match curated evidence.
+  - 3 donor label order matches:
+    - `POT-HG`: `vcc`, `gnd`, `out`
+    - `LM317T`: `Pin2VO`, `Pin1ADJ`, `Pin3VI`
+    - `OPAMP`: `output`, `inputpos`, `inputneg`
+  - All terminal trailers match accepted donor evidence: `02 00`.
+  - All WIRE coordinate/order sequences match accepted donor evidence.
+- Focused tests passed after final patch:
+  - `python -m pytest tests/test_component_placer.py::test_catalogue_three_pin_terminals_use_donor_contact_offsets -q` -> 3 passed.
+  - `python -m pytest tests/test_component_placer.py::test_shared_terminal_dispatcher_terminalizes_all_two_pin_families -q` -> 1 passed.
+- Full component placer tests passed: `python -m pytest tests/test_component_placer.py -q` -> 98 passed.
+- Compile passed: `python -m compileall -q src tests tools/proteus_generation`.
+
+### Final Response To User
+
+Planned summary: V18 was partially accepted but still structurally wrong. V19 uses the shared placer and generated records, but now consumes catalogue/donor facts for label, link trailer, WIRE order, and WIRE coordinates. Test only the three V19 `_sa` files first.

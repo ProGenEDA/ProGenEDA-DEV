@@ -843,3 +843,48 @@ output object chunk headers match their no-terminal bases, all three first
 terminal starts match the curated donor boundary, and all three terminal symbol
 coordinate/angle multisets match the curated terminalized donor evidence.
 Proteus open/render acceptance is pending user testing.
+
+User Proteus testing of V18 was directionally better: all three files opened and
+looked visually close, but all still raised Bad Object Record, only one terminal
+survived, and no short WIRE rendered as attached. User-saved fixed copies in the
+V18 folder proved Proteus was discarding the malformed tail: the saved files kept
+only one inactive `$TERBIDIR` record and no WIRE records.
+
+The V19 repair keeps generated terminal records but stops recomputing donor-
+native catalogue details. For promoted catalogue clean-packet families, the
+shared placer now consumes these catalogue facts extracted from accepted donor
+evidence:
+
+- terminal label/order;
+- terminal link trailer (`02 00` for this group);
+- WIRE order;
+- exact WIRE coordinates, transformed relative to the current component anchor;
+- donor-proven WIRE endpoint contacts for validation.
+
+This is not a terminal-record copy/paste path. The `$TERBIDIR` record is still
+emitted by the embedded Proteus schema encoder and then patched with the
+catalogue link trailer; the WIRE record is still emitted by the shared native
+WIRE encoder using catalogue coordinates. Donor projects remain evidence inputs,
+not placement donors.
+
+Focused V19 checkpoint:
+
+`experiments/three_pin_control_terminal_v19_donor_wire_shape_temp_2026_07_09/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V19_DONOR_WIRE_SHAPE_TEMP_2026_07_09.zip`
+
+V19 contains only:
+
+- `POT-HG` 1x `_sa`
+- `LM317T` 1x `_sa`
+- `OPAMP` 1x `_sa`
+- matching no-terminal controls
+
+Static result: 3 generated cases, 3 base-valid, 3 terminal-valid, all three
+output object chunk headers match their no-terminal bases, all three first
+terminal starts match the curated donor boundary, all three terminal label
+orders match accepted evidence, all terminal trailers are `02 00`, and all WIRE
+coordinate/order sequences match accepted evidence. Proteus open/render
+acceptance is pending user testing.
