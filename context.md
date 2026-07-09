@@ -11489,3 +11489,21 @@ I need to add the later verification messages to `context.md` before committing,
 - `python -m pytest -q` -> failed during collection on stale temp tool test `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main/test_inductor.py`, which imports removed `proteusgen.inductor`.
 - `python -m pytest tests -q` -> 283 passed, 78 subtests passed, 9 failed. Failures are pre-existing/out-of-scope for this Proteus transistor turn: locked-mega donor catalogue tests for unsupported `4017`, old catalogue label/coordinate expectations, `74HC74` missing link-offset evidence, and `tests/test_kicad_target_pack.py`.
 - Relevant V32 checks remain: `tests/test_component_placer.py -q` -> 110 passed; `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Commit And Push Verification
+
+Context log is now complete for the turn. I’m committing the scoped V32 changes and will push/verify the remote hash after that.
+
+Commit created: `5ba4988a Add transistor catalogue terminals`. Pushing and verifying local/remote hash now.
+
+The status command raced with the push and still showed “ahead 1”; I’m verifying again from git hashes.
+
+Remote verification passed: local HEAD, upstream, and `ls-remote` all match `5ba4988a3bc83a1e3e0efead42e868960849d12f`. I’m adding that final verification to `context.md` as a small follow-up log commit.
+
+### Additional Files Edited By Agent After First Commit
+
+- `context.md` - appended commit/push verification for this turn.
+
+### Final Response To User
+
+Planned summary: V32 transistor group is generated and committed. Main test path is `experiments/three_pin_transistor_terminal_v32_temp_2026_07_10/`: test solo `_sa`, transistor-group mixed `_sa`, then all-accepted-plus-transistors `_sa`. Transistor-only reaches 20x; all-accepted-plus-transistors stops at 15x because 20x hits native high-index source/two-pin packet limits. Commit `5ba4988a` is pushed and verified.
