@@ -1081,3 +1081,43 @@ regression test now checks terminal-leading order and preserved component
 packet presence instead of the rejected V23 prefix equality. `tests/test_component_placer.py`
 reported 98 passed and `python -m compileall -q src tests tools/proteus_generation`
 passed. Proteus open/render acceptance is pending user testing.
+
+User result on 2026-07-09: V24 was rejected. All terminalized files failed.
+The terminal-leading assumption was wrong. The accepted V20 1x evidence did
+not put terminals before components; it preserved the no-terminal component
+stream header and placed the first terminal at `len(no-terminal-base) - 1`.
+
+V25 V20-style component-stream append replacement:
+
+`experiments/three_pin_control_terminal_v25_component_stream_append_temp_2026_07_09/`
+
+V25 changes the shared catalogue clean-packet emission again:
+
+1. Preserve the complete component-placer stream first.
+2. Patch component pin-link fields in those component packets.
+3. Replace only the final stream terminator position with appended terminal/WIRE
+   attachment units.
+4. Append terminal/WIRE units after the full component stream, not after each
+   component and not before components.
+5. Finish with the final object-stream `FF` terminator and rebase links from
+   final WIRE addresses.
+
+This matches the user-accepted V20 1x boundary rule at scale:
+`first_terminal_start == len(no_terminal_control_chunk) - 1`.
+
+Generated V25 terminalized scaled solos:
+
+- `POT-HG`: 9x, 15x, 23x.
+- `LM317T`: 9x, 15x, 23x.
+- `OPAMP`: 9x, 15x, 23x.
+
+V25 static result: 9 generated cases, 9 compact no-terminal controls, 9
+terminalized outputs, and 9/9 static audits passed. Each terminalized output
+preserves the base object chunk prefix, has all component packets before the
+first terminal, has first terminal start equal to `len(no-terminal-control)-1`,
+has distinct component-anchor count equal to the requested generated count,
+and has exactly `3 * component_count` `$TERBIDIR` records plus exactly
+`3 * component_count` WIRE records. `tests/test_component_placer.py` now has
+101 passing tests, including scaled catalogue regressions for `POT-HG`,
+`LM317T`, and `OPAMP`; `python -m compileall -q src tests tools/proteus_generation`
+passed. Proteus open/render acceptance is pending user testing.

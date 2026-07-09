@@ -2266,12 +2266,7 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
 
     assert result.valid
     assert report["valid"] is True
-    component_key = result.selected_groups[0].key.encode("ascii")
-    component_prefix = b"\xff" + bytes([len(component_key)]) + component_key
-    component_start = chunk.find(component_prefix)
-    assert chunk.startswith(b"\x00\x10")
-    assert component_start >= 0
-    assert base_chunk.find(component_prefix) >= 0
+    assert chunk[:3] == base_chunk[:3]
     assert set(terminals_by_pin) == set(expected_symbols)
     for pin_name, (symbol_x, symbol_y, angle) in expected_symbols.items():
         row = terminals_by_pin[pin_name]
@@ -2288,8 +2283,11 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
             assert terminal["link_trailer"] == catalogue_geometry["component_link_trailer"]
         assert row["terminal_contact_source"] == "donor_terminal_contact_anchor_offset"
         assert row["short_wire"]["start"] != row["short_wire"]["end"]
+    first_component_marker = chunk.find(family.encode("ascii"))
     first_terminal_marker = chunk.find(b"$TERBIDIR")
-    assert 0 <= first_terminal_marker < component_start
+    first_terminal_start = first_terminal_marker - 14
+    assert 0 <= first_component_marker < first_terminal_marker
+    assert first_terminal_start == len(base_chunk) - 1
     attachment_events: list[tuple[int, str]] = []
     for marker, label in ((b"$TERBIDIR", "terminal"), (b"\x7fWIRE", "wire")):
         cursor = 0
@@ -2297,19 +2295,54 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
             marker_offset = chunk.find(marker, cursor)
             if marker_offset < 0:
                 break
-            attachment_events.append((marker_offset, label))
+            if marker_offset > first_component_marker:
+                attachment_events.append((marker_offset, label))
             cursor = marker_offset + 1
-    ordered_attachment_labels = [label for _offset, label in sorted(attachment_events)]
-    assert ordered_attachment_labels == [
-        "terminal",
-        "terminal",
+    assert [label for _offset, label in sorted(attachment_events)] == [
         "terminal",
         "wire",
+        "terminal",
         "wire",
+        "terminal",
         "wire",
     ]
-    terminal_offsets = [
-        offset for offset, label in attachment_events if label == "terminal"
-    ]
-    wire_offsets = [offset for offset, label in attachment_events if label == "wire"]
-    assert max(terminal_offsets) < component_start < min(wire_offsets)
+
+
+@pytest.mark.parametrize("family", ["POT-HG", "LM317T", "OPAMP"])
+def test_catalogue_three_pin_scaled_terminals_append_after_component_stream(
+    tmp_path: Path,
+    family: str,
+) -> None:
+    base = tmp_path / f"{family}_scaled_base.pdsprj"
+    output = tmp_path / f"{family}_scaled_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 3},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=False,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    base_chunk = _extract_object_chunk(read_internal_file(base, "ROOT.DSN"))
+
+    assert result.valid
+    assert report["valid"] is True
+    assert chunk[:3] == base_chunk[:3]
+    assert chunk.count(b"$TERBIDIR") == 9
+    assert chunk.count(b"\x7fWIRE") == 9
+    assert chunk.find(b"$TERBIDIR") - 14 == len(base_chunk) - 1
+    for group in result.selected_groups:
+        key = group.key.encode("ascii")
+        component_prefix = b"\xff" + bytes([len(key)]) + key
+        assert chunk.find(component_prefix) >= 0
+        assert chunk.find(component_prefix) < chunk.find(b"$TERBIDIR")

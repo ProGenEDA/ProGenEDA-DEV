@@ -1389,7 +1389,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     terminal_templates = NATIVE_BIDIR_TEMPLATES
 
     local_records: list[bytes] = []
-    trailing_attachment_records: list[bytes] = []
     family_reports: list[dict[str, Any]] = []
     preserved_rows: list[dict[str, Any]] = []
     suffix = suffix_start
@@ -1911,13 +1910,18 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     f"{family} {key} has {len(terminal_records)} terminals but "
                     f"{len(appended_wire_records)} appended WIRE records."
                 )
+            # Keep the component packet as a separate Proteus object.  The
+            # rejected V23 scaled pack inserted terminal/WIRE bytes before the
+            # component packet terminator; Proteus then rendered only the first
+            # component because the following attachment bytes could be parsed
+            # as part of that component record.  This mirrors the accepted
+            # native two-pin shape instead: terminal records, component packet,
+            # then short WIRE records, with the component packet separator
+            # preserved.
+            local_records.extend(terminal_records)
+            local_records.append(b"\x00")
             local_records.append(patched_data)
-            for terminal_record, wire_record in zip(
-                terminal_records,
-                appended_wire_records,
-            ):
-                trailing_attachment_records.append(terminal_record)
-                trailing_attachment_records.append(wire_record)
+            local_records.extend(appended_wire_records)
         else:
             local_records.extend(terminal_records)
             local_records.append(b"\x00")
@@ -1946,26 +1950,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
 
     if not family_reports:
         raise ValueError("No catalogue-backed terminalized component was emitted.")
-    if trailing_attachment_records:
-        if not local_records or not all(record.startswith(b"\xff") for record in local_records):
-            raise ValueError(
-                "Catalogue clean-packet trailing attachment emission requires "
-                "a complete component stream before terminal/WIRE units."
-            )
-        object_component_prefix = original_chunk[1:2]
-        if not object_component_prefix:
-            raise ValueError(
-                "Catalogue clean-packet trailing attachment emission could not "
-                "recover the original component stream prefix."
-            )
-        component_stream = (
-            original_chunk[:1]
-            + object_component_prefix
-            + b"".join(local_records[:-1])
-            + local_records[-1][:-1]
-        )
-        new_chunk = component_stream + b"".join(trailing_attachment_records) + b"\xff"
-    elif local_records and not local_records[0].startswith(b"\xff"):
+    if local_records and not local_records[0].startswith(b"\xff"):
         # Terminal-leading object streams use the same initial shape as the
         # accepted native two-pin route: the stream starts with the first byte
         # of the original object chunk, then terminal records, then the

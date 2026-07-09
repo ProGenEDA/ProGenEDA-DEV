@@ -10635,3 +10635,94 @@ Validation run:
 ### Final Response To User
 
 Planned summary: V23 was wrong because its byte-count audit missed an object-boundary failure. Use V24 instead. It changes the shared placer to terminal-leading order while preserving component packets, and regenerates POT-HG/LM317T/OPAMP 9x/15x/23x.
+
+---
+
+## User Message - 2026-07-09 18:11:01 +05:00
+
+nope all failed. the hell man, do it properly plz
+
+## Agent Visible Responses - 2026-07-09 18:11:01 +05:00 onwards
+
+I treated V24 as rejected and first verified the previous checkpoint. Local
+`HEAD`, upstream, and `origin/codex/generic-proteus-generator-v0` all matched
+`a2dc00d225a41df05018ff4b65d8068afb16c38c`.
+
+I compared the user-accepted V20 1x files against V23/V24 at object-stream
+level. The concrete correction:
+
+- V20 accepted shape: complete no-terminal component stream first, then
+  terminal/WIRE attachment units appended at `len(no-terminal-base)-1`.
+- V23 rejected shape: component 1 + attachments + component 2 + attachments.
+- V24 rejected shape: terminals before components.
+
+So V25 changes the clean catalogue multi-pin route to preserve the full patched
+component stream first, then append all terminal/WIRE units after the final
+component boundary, matching the accepted V20 boundary rule at scale.
+
+Before editing the shared terminal placer I created the required backup:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260709_180459_before_v25_component_stream_then_attachments.py`
+
+Files changed:
+
+- `src/proteusgen/component_terminal_placer.py`
+  - clean catalogue packets now accumulate patched component packets first;
+  - terminal/WIRE units are appended after the complete component stream;
+  - final links still rebase from final WIRE addresses.
+- `tests/test_component_placer.py`
+  - restored the V20 1x boundary invariant;
+  - added scaled 3x regressions for `POT-HG`, `LM317T`, and `OPAMP` proving
+    first terminal starts at `len(no-terminal-base)-1` after all components.
+
+Focused validation:
+
+- `python -m pytest tests/test_component_placer.py::test_catalogue_three_pin_terminals_use_donor_contact_offsets tests/test_component_placer.py::test_catalogue_three_pin_scaled_terminals_append_after_component_stream -q` -> 6 passed.
+
+Generated V25 pack:
+
+- `experiments/three_pin_control_terminal_v25_component_stream_append_temp_2026_07_09/`
+
+Use only:
+
+- `experiments/three_pin_control_terminal_v25_component_stream_append_temp_2026_07_09/02_terminalized_sa_test_these/`
+
+Generated terminalized `_sa` files:
+
+- `V25_01_POT_HG_9x_sa.pdsprj`
+- `V25_01_POT_HG_15x_sa.pdsprj`
+- `V25_01_POT_HG_23x_sa.pdsprj`
+- `V25_02_LM317T_9x_sa.pdsprj`
+- `V25_02_LM317T_15x_sa.pdsprj`
+- `V25_02_LM317T_23x_sa.pdsprj`
+- `V25_03_OPAMP_9x_sa.pdsprj`
+- `V25_03_OPAMP_15x_sa.pdsprj`
+- `V25_03_OPAMP_23x_sa.pdsprj`
+
+V25 static audit:
+
+- all 9 outputs preserve the no-terminal base prefix;
+- all 9 first terminals start at `len(no-terminal-control)-1`;
+- all component packets appear before the first terminal;
+- 9x files have 27 terminals and 27 WIRE records;
+- 15x files have 45 terminals and 45 WIRE records;
+- 23x files have 69 terminals and 69 WIRE records.
+
+Full validation:
+
+- `python -m pytest tests/test_component_placer.py -q` -> 101 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - fixed clean catalogue multi-pin order to V20-style full component stream then attachments.
+- `tests/test_component_placer.py` - restored V20 boundary regression and added scaled 3x boundary regressions.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_180459_before_v25_component_stream_then_attachments.py` - backup before shared placer edit.
+- `experiments/three_pin_control_terminal_v25_component_stream_append_temp_2026_07_09/` - generated V25 raw evidence, compact no-terminal controls, terminalized `_sa` outputs, and reports.
+- `docs/architecture.md` - recorded V24 rejection/root cause and V25 replacement.
+- `knowledge/test_results.jsonl` - appended V25 static test-result record.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V24 was wrong because terminal-leading order contradicted V20. Use V25 instead. It preserves the full component stream first and appends terminals/wires at the exact V20 boundary rule, scaled to 9x/15x/23x.
