@@ -1288,3 +1288,35 @@ invalid boundary checks, final `FF FF` object-stream endings, and link
 allocation counts equal to terminal counts. `tests/test_component_placer.py`
 reported 103 passed and `python -m compileall -q src tests tools/proteus_generation`
 passed. Proteus open/render acceptance of V29 is pending user testing.
+
+User result on 2026-07-10: V29 failed. Treat the V29 all-in-one mixed pack as
+rejected. The next step is isolation, not another combined-order guess.
+
+V30 terminal isolation pack:
+
+`experiments/terminal_isolation_solo_mixed_v30_temp_2026_07_10/`
+
+V30 intentionally splits the currently relevant accepted terminal scope into
+separate Proteus test layers:
+
+1. `01_solo_1x_sa_test_first`: one 1x terminalized solo for every family in
+   scope:
+   `RESISTOR`, `CAP`, `DIODE`, `VSINE`, `VSOURCE`, `CSOURCE`, `VPULSE`,
+   `LED-RED`, `1N4733A`, `SWITCH`, `40EPS08`, `BZY88C`, `1N4007`, `1N4148`,
+   `1N6000B`, `BZX55C5V1`, `BZX79C5V1`, `FUSE`, `REALIND`, `CAP-ELEC`,
+   `POT-HG`, `LM317T`, and `OPAMP`.
+2. `02_mixed_two_pin_only_sa`: all accepted two-pin families mixed at
+   1x/9x/15x/24x-capped.
+3. `03_mixed_pothg_lm_op_sa`: `POT-HG + LM317T + OPAMP` mixed at
+   1x/9x/15x/24x.
+
+The 24x two-pin-only mixed case uses the known locked-mega terminalizable caps:
+`CAP-ELEC=21`, `DIODE=22`, `CSOURCE=21`, `FUSE=22`, `REALIND=20`; all other
+two-pin families remain 24.
+
+V30 static result: 31 generated cases and 31/31 terminal reports valid. The
+solo cases all have expected terminal/WIRE counts. The mixed two-pin-only cases
+and the mixed three-control-only cases all have expected terminal/WIRE counts
+and valid suffix-link allocation reports. `python -m compileall -q src tests
+tools/proteus_generation` passed. Proteus open/render acceptance of V30 is
+pending user testing.

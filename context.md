@@ -11159,3 +11159,85 @@ Validation:
 Planned summary: V28 is rejected. Test V29 instead; the concrete fix is the
 native WIRE separator boundary before the appended LM317T/OPAMP catalogue
 terminal/WIRE units.
+
+---
+
+## User Message - 2026-07-10 00:01:02 +05:00
+
+failed
+can u make solos of all component then mixed, mixed keep failing solo will make sure thats not the problem and mixed 2 pinned as well make that too
+n fix mixed 2 pinned n these 3
+
+## Agent Visible Responses - 2026-07-10 00:01:02 +05:00 onwards
+
+I treated V29 as rejected and switched to isolation rather than another
+all-in-one mixed guess.
+
+At the start of the turn I verified the previous checkpoint:
+
+- branch: `codex/generic-proteus-generator-v0`
+- upstream: `origin/codex/generic-proteus-generator-v0`
+- local/remote HEAD matched: `6e4073c13f758052dfae8d2616b852bb0fddf0a0`
+
+I left unrelated existing dirty files alone.
+
+Generated V30 isolation pack:
+
+- `experiments/terminal_isolation_solo_mixed_v30_temp_2026_07_10/`
+
+Purpose:
+
+- isolate whether the failure is individual-family terminalization,
+  mixed two-pin-only behavior, or mixed `POT-HG + LM317T + OPAMP` behavior.
+
+Test folders in order:
+
+1. `01_solo_1x_sa_test_first`
+   - 23 solo 1x terminalized files:
+     - 20 accepted two-pin families;
+     - `POT-HG`;
+     - `LM317T`;
+     - `OPAMP`.
+2. `02_mixed_two_pin_only_sa`
+   - all accepted two-pin families mixed at 1x, 9x, 15x, and 24x-capped.
+3. `03_mixed_pothg_lm_op_sa`
+   - `POT-HG + LM317T + OPAMP` mixed at 1x, 9x, 15x, and 24x.
+
+The 24x two-pin-only mixed case uses the known locked-mega terminalizable caps:
+
+- `CAP-ELEC=21`
+- `DIODE=22`
+- `CSOURCE=21`
+- `FUSE=22`
+- `REALIND=20`
+
+All other two-pin families remain 24 in the capped two-pin mixed file.
+
+V30 static audit:
+
+- 31 generated cases;
+- 31/31 terminal reports valid;
+- all cases have expected terminal/WIRE counts;
+- mixed two-pin-only cases have valid suffix-link allocation reports;
+- mixed three-control-only cases have valid suffix-link allocation reports.
+
+Validation:
+
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `experiments/terminal_isolation_solo_mixed_v30_temp_2026_07_10/` - generated
+  V30 no-terminal controls, solo terminalized files, mixed two-pin-only files,
+  mixed POT-HG/LM317T/OPAMP files, reports, README, and summary.
+- `experiments/terminal_isolation_solo_mixed_v30_temp_2026_07_10.zip` - archive
+  of the V30 pack.
+- `docs/architecture.md` - recorded V29 rejection and V30 isolation plan.
+- `knowledge/test_results.jsonl` - appended V30 static result.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V29 is rejected. Test V30 in order: solos first, then mixed
+two-pin-only, then mixed POT-HG/LM317T/OPAMP. This will show exactly which
+layer breaks before the all-in-one mixed circuit is attempted again.
