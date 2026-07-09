@@ -2161,6 +2161,7 @@ def test_mixed_two_pin_and_catalogue_terminalizer_handles_lm_op_combo(
     assert report["terminal_suffix_links_valid"] is True
     assert report["wire_path_contacts_valid"] is True
     assert report["terminal_grid_alignment_valid"] is True
+    assert report["native_wire_boundaries_valid"] is True
     assert report["object_chunk_double_ff_valid"] is True
     assert chunk.count(b"$TERBIDIR") == expected_terminals
     assert chunk.count(b"\x7fWIRE") == expected_terminals

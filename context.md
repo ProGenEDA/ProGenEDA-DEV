@@ -11043,3 +11043,119 @@ Validation:
 Planned summary: V28 mixed pack generated. Test the four `_sa` files in
 `01_terminalized_sa_test_these`; 24x is capped only where the locked mega donor
 lacks clean terminalizable packets.
+
+---
+
+## User Message - 2026-07-09 23:53:44 +05:00
+
+failed
+
+## Agent Visible Responses - 2026-07-09 23:53:44 +05:00 onwards
+
+I treated V28 as rejected. I first verified the previous checkpoint:
+
+- branch: `codex/generic-proteus-generator-v0`
+- upstream: `origin/codex/generic-proteus-generator-v0`
+- local/remote HEAD matched: `33a31a820de1f1bb8182ab9a8eafac39b64ca2ef`
+
+I left unrelated existing dirty files alone.
+
+Likely V28 root cause:
+
+- the combined V28 writer reused the accepted two-pin WIRE trimming rule;
+- then it appended LM317T/OPAMP catalogue terminal/WIRE records after the
+  native two-pin WIRE records;
+- that left the final native two-pin WIRE before the first catalogue terminal
+  without its separator byte;
+- marker counts and link rebasing still passed, but Proteus could parse the
+  object boundary as malformed.
+
+Before editing the shared terminal placer I backed it up to:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260709_235006_before_v29_mixed_wire_boundary.py`
+
+Implemented V29 repair in:
+
+- `src/proteusgen/component_terminal_placer.py`
+
+Fix:
+
+- preserve the separator byte on the final native two-pin WIRE whenever
+  catalogue records follow;
+- add `native_wire_boundary_checks`;
+- add `native_wire_boundaries_valid`;
+- include that check in the combined writer validity gate.
+
+Updated regression coverage in:
+
+- `tests/test_component_placer.py`
+
+The mixed 1x/9x regression now asserts `native_wire_boundaries_valid`.
+
+Generated V29 replacement pack:
+
+- `experiments/mixed_two_pin_lm_op_terminal_v29_wire_boundary_temp_2026_07_09/`
+
+Use only:
+
+- `experiments/mixed_two_pin_lm_op_terminal_v29_wire_boundary_temp_2026_07_09/01_terminalized_sa_test_these/`
+
+Generated terminalized `_sa` files:
+
+- `V29_01_ALL_2PIN_LM_OP_1x_sa.pdsprj`
+- `V29_02_ALL_2PIN_LM_OP_9x_sa.pdsprj`
+- `V29_03_ALL_2PIN_LM_OP_15x_sa.pdsprj`
+- `V29_04_ALL_2PIN_LM_OP_24x_CAPPED_sa.pdsprj`
+
+The 1x, 9x, and 15x files are exact requested counts. The 24x stress file keeps
+the same caps as V28 because the locked mega donor lacks clean terminalizable
+high-index packets:
+
+- `CAP-ELEC=21`
+- `DIODE=22`
+- `CSOURCE=21`
+- `FUSE=22`
+- `REALIND=20`
+
+All other listed families remain 24 in that file.
+
+V29 static audit:
+
+- 1x: 22 components, 46 terminals, 46 WIRE records.
+- 9x: 198 components, 414 terminals, 414 WIRE records.
+- 15x: 330 components, 690 terminals, 690 WIRE records.
+- 24x capped: 514 components, 1076 terminals, 1076 WIRE records.
+- all terminal reports valid;
+- all suffix links valid;
+- all suffixes unique;
+- catalogue wire-path/grid checks valid;
+- native WIRE boundaries valid;
+- native invalid boundary count is 0;
+- all outputs end with `FF FF`;
+- link allocation count equals terminal count for every case.
+
+Validation:
+
+- focused mixed regression: 2 passed;
+- `python -m pytest tests/test_component_placer.py -q` -> 103 passed;
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - fixed final native WIRE
+  separator handling when catalogue records follow, and added native WIRE
+  boundary validation.
+- `tests/test_component_placer.py` - asserted valid native WIRE boundaries in
+  mixed native/catalogue regression.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_235006_before_v29_mixed_wire_boundary.py` - pre-edit backup.
+- `experiments/mixed_two_pin_lm_op_terminal_v29_wire_boundary_temp_2026_07_09/` - generated V29 no-terminal controls, terminalized `_sa` outputs, reports, README, and summary.
+- `experiments/mixed_two_pin_lm_op_terminal_v29_wire_boundary_temp_2026_07_09.zip` - archive of the V29 pack.
+- `docs/architecture.md` - recorded V28 rejection and V29 repair.
+- `knowledge/test_results.jsonl` - appended V29 static result.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V28 is rejected. Test V29 instead; the concrete fix is the
+native WIRE separator boundary before the appended LM317T/OPAMP catalogue
+terminal/WIRE units.

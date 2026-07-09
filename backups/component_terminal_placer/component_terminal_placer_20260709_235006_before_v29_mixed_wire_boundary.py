@@ -2478,13 +2478,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         + local_records[-1][:-1]
     )
     native_wire_records: list[bytes] = []
-    for index, (first_wire, second_wire) in enumerate(native_wire_pairs):
+    for first_wire, second_wire in native_wire_pairs:
         native_wire_records.append(first_wire)
-        is_last_native_wire_pair = index == len(native_wire_pairs) - 1
-        if is_last_native_wire_pair and catalogue_attachment_records:
-            native_wire_records.append(second_wire)
-        else:
-            native_wire_records.append(second_wire[:-1])
+        native_wire_records.append(second_wire[:-1])
     new_chunk = _ensure_double_ff_object_stream_terminator(
         component_stream
         + b"".join(native_terminal_records)
@@ -2494,17 +2490,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
-    native_wire_boundary_checks: list[dict[str, Any]] = []
-    for start, end in _wire_record_spans(final_chunk):
-        if start < len(final_chunk) and final_chunk[start] == 0x1D:
-            native_wire_boundary_checks.append(
-                {
-                    "start": start,
-                    "end": end,
-                    "separator": final_chunk[end - 1],
-                    "valid": final_chunk[end - 1] in (0x00, 0xFF),
-                }
-            )
 
     expected_terminals = sum(int(report["terminal_count"]) for report in family_reports)
     expected_wires = sum(int(report["wire_count"]) for report in family_reports)
@@ -2605,10 +2590,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ),
         "component_stream_prefix_preserved": final_chunk.startswith(component_stream),
         "component_record_order_mutation": False,
-        "native_wire_boundary_checks": native_wire_boundary_checks,
-        "native_wire_boundaries_valid": all(
-            row["valid"] for row in native_wire_boundary_checks
-        ),
         "bidir_count_before": original_chunk.count(BIDIR_MARKER),
         "bidir_count_after": final_chunk.count(BIDIR_MARKER),
         "wire_count_before": original_chunk.count(b"\x7fWIRE"),
@@ -2623,7 +2604,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             and final_chunk.count(b"\x7fWIRE") == expected_wires
             and final_chunk.startswith(component_stream)
             and final_chunk.endswith(b"\xff\xff")
-            and all(row["valid"] for row in native_wire_boundary_checks)
         ),
     }
     return _rebase_terminal_links_to_final_wire_addresses(destination, report)

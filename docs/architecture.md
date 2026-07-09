@@ -1248,3 +1248,43 @@ catalogue wire-path/grid checks valid, final `FF FF` object-stream endings,
 and link allocation counts equal to terminal counts. `tests/test_component_placer.py`
 reported 103 passed and `python -m compileall -q src tests tools/proteus_generation`
 passed. Proteus open/render acceptance of V28 is pending user testing.
+
+User result on 2026-07-09: V28 failed. Treat the V28 mixed pack as rejected.
+
+Likely V28 root cause: the combined writer reused the accepted two-pin mixed
+wire trimming rule, then appended catalogue terminal/WIRE units after those
+native wires. This left the final native two-pin WIRE before the first
+catalogue terminal without a separator byte. Marker-count audits still saw all
+`$TERBIDIR` and WIRE records, but the object boundary was malformed for
+Proteus.
+
+V29 mixed two-pin + LM317T/OPAMP wire-boundary repair:
+
+`experiments/mixed_two_pin_lm_op_terminal_v29_wire_boundary_temp_2026_07_09/`
+
+V29 keeps the same scope and 24x caps as V28, but changes the shared combined
+writer so that the final native two-pin WIRE keeps its separator byte whenever
+catalogue records follow. It also adds `native_wire_boundary_checks` and
+`native_wire_boundaries_valid` to the mixed report so native WIRE spans cannot
+consume the first byte of a following terminal record without being detected.
+
+V29 generated files for Proteus testing:
+
+- `V29_01_ALL_2PIN_LM_OP_1x_sa.pdsprj`
+- `V29_02_ALL_2PIN_LM_OP_9x_sa.pdsprj`
+- `V29_03_ALL_2PIN_LM_OP_15x_sa.pdsprj`
+- `V29_04_ALL_2PIN_LM_OP_24x_CAPPED_sa.pdsprj`
+
+The 1x/9x/15x cases are exact requested counts. The 24x stress case remains
+capped where the locked mega donor selected non-terminalizable high-index
+packets: `CAP-ELEC=21`, `DIODE=22`, `CSOURCE=21`, `FUSE=22`, and
+`REALIND=20`; all other listed families remain 24.
+
+V29 static result: all 4 generated cases passed. Terminal/WIRE counts are
+46/46 for 1x, 414/414 for 9x, 690/690 for 15x, and 1076/1076 for the capped
+24x stress case. All reports have valid terminal suffix links, unique suffixes,
+catalogue wire-path/grid checks valid, native WIRE boundaries valid with zero
+invalid boundary checks, final `FF FF` object-stream endings, and link
+allocation counts equal to terminal counts. `tests/test_component_placer.py`
+reported 103 passed and `python -m compileall -q src tests tools/proteus_generation`
+passed. Proteus open/render acceptance of V29 is pending user testing.
