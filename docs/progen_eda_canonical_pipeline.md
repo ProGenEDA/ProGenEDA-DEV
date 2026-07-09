@@ -103,7 +103,7 @@ first, then terminals are attached to the remaining selected pins.
 | Wire Planner | Partial intent only | `component_pipeline.py` |
 | Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
-| Terminal Placer | V12 accepted two-pin families; catalogue-driven multi-pin planner pending binary emission | `component_terminal_placer.py` |
+| Terminal Placer | V31 accepted current mixed scope pending Proteus confirmation; V32 transistor catalogue terminals statically pass through 20x transistor-only | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
 | Value Editor | Lightly tested | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |

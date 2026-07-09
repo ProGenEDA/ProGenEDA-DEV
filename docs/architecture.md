@@ -1375,3 +1375,51 @@ reported 6 passed:
 `test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo`.
 `python -m compileall -q src tests tools/proteus_generation` passed. Proteus
 open/render acceptance of V31 is pending user testing.
+
+V32 three-pin transistor terminal pack:
+
+`experiments/three_pin_transistor_terminal_v32_temp_2026_07_10/`
+
+V32 adds the next catalogue-driven component group:
+
+- `NPN`
+- `PNP`
+- `NMOSFET`
+- `2N3904`
+- `2N4401`
+- `2N7000`
+- `BS170`
+
+The implementation keeps all terminal emission in
+`src/proteusgen/component_terminal_placer.py`. The new terminal behavior is a
+catalogue policy only: transistor pin WIRE geometry is computed from the final
+grid-snapped terminal contact to the exact recalculated component pin instead
+of reusing donor WIRE endpoints that do not always meet the final terminal
+contact. The catalogue stores each transistor marker's pin side, component-link
+offset/trailer, and component-relative pin offsets in
+`knowledge/component_catalog_v0.json`.
+
+V32 generated files:
+
+1. `00_no_terminal_controls`: transistor-only component-placer controls at
+   1x/9x/15x/20x.
+2. `01_terminalized_solo_sa`: transistor solo terminalized outputs at
+   1x/9x/15x/20x.
+3. `02_mixed_transistor_group_sa`: all seven transistor families mixed at
+   1x/9x/15x/20x each.
+4. `03_mixed_all_accepted_plus_transistors_sa`: all V31 accepted terminal
+   families plus the transistor group mixed at 1x/9x/15x each.
+
+V32 static result: 63 `.pdsprj` cases generated and all terminal reports valid.
+Transistor-only 20x is valid. The combined all-accepted-plus-transistors 20x
+case is intentionally not emitted in V32: adding the transistor group changes
+the locked mega-donor packet selection for several native source/two-pin
+families, and some selected high-index `VSOURCE`, `CSOURCE`, `VPULSE`, and
+`1N4148` packets do not expose the structural body anchor required by the
+already accepted native terminal handlers. Treat that as a native packet-cap
+issue, not a transistor-terminal failure.
+
+Regression checks: `test_three_pin_transistor_catalogue_terminal_attachment`
+passes for all seven families, `tests/test_component_placer.py` reports
+110 passed, and `python -m compileall -q src tests tools/proteus_generation`
+passes. Proteus open/render acceptance of V32 is pending user testing.

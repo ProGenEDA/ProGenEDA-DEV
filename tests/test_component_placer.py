@@ -1190,6 +1190,44 @@ def test_resistor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pat
             assert chunk.count(little_endian_suffix) >= 2
 
 
+@pytest.mark.parametrize(
+    "family",
+    ["NPN", "PNP", "NMOSFET", "2N3904", "2N4401", "2N7000", "BS170"],
+)
+def test_three_pin_transistor_catalogue_terminal_attachment(
+    tmp_path: Path,
+    family: str,
+) -> None:
+    base = tmp_path / f"{family}_catalogue_terminal_base.pdsprj"
+    output = tmp_path / f"{family}_catalogue_terminal_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 3},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=[family],
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == 9
+    assert report["wire_count_added"] == 9
+    assert report["terminalized_component_count"] == 3
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert chunk.count(b"\x7fWIRE") == 9
+
+
 def test_capacitor_terminal_planner_uses_body_center_plus_half_span(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {

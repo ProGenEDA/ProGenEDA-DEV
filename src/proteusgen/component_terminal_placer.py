@@ -1069,11 +1069,23 @@ def plan_catalogue_pin_bidir_terminals(
             wire_end_y = pin_y
             wire_terminal_contact = {"x": wire_start_x, "y": wire_start_y}
             wire_pin_contact = {"x": pin_x, "y": pin_y}
-            transformed_wire = _transform_catalogue_wire_coordinates(
-                raw_pin_geometry,
-                component_anchor=component_anchor,
-                donor_anchor=donor_anchor if isinstance(donor_anchor, dict) else None,
+            wire_coordinates_policy = str(
+                raw_pin_geometry.get(
+                    "wire_coordinates_policy",
+                    geometry.get("wire_coordinates_policy", "donor_coordinates"),
+                )
             )
+            if wire_coordinates_policy == "computed_terminal_contact_to_pin":
+                transformed_wire = None
+                terminal_contact_source = (
+                    f"{terminal_contact_source}_computed_wire_to_pin"
+                )
+            else:
+                transformed_wire = _transform_catalogue_wire_coordinates(
+                    raw_pin_geometry,
+                    component_anchor=component_anchor,
+                    donor_anchor=donor_anchor if isinstance(donor_anchor, dict) else None,
+                )
             if transformed_wire is not None:
                 wire_coordinates, matched_wire_endpoint = transformed_wire
                 endpoints = _wire_coordinate_points(wire_coordinates)
