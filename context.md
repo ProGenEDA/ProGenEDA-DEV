@@ -10258,3 +10258,84 @@ These fixed files show Proteus kept one inactive terminal and removed the remain
 ### Final Response To User
 
 Planned summary: V18 was partially accepted but still structurally wrong. V19 uses the shared placer and generated records, but now consumes catalogue/donor facts for label, link trailer, WIRE order, and WIRE coordinates. Test only the three V19 `_sa` files first.
+
+---
+
+## User Message - 2026-07-09 15:48:50 +05:00
+
+complete failures
+
+## Agent Visible Responses - 2026-07-09 15:48:50 +05:00 onwards
+
+I treated V19 as rejected and inspected the generated files against accepted donor evidence.
+
+Key finding: V19 matched terminal labels/symbols and first-segment WIRE endpoint coordinates, but it did not reproduce the full donor WIRE unit record shape. POT-HG `gnd` uses a 4-point WIRE polyline, LM317T `Pin1ADJ` uses a 3-point WIRE polyline, and OPAMP uses normal 2-point WIRE units. The previous static comparison was therefore too weak.
+
+I backed up the shared placer before editing:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260709_005851_before_catalogue_wire_unit_encoder.py`
+
+I patched only the shared terminal placer path, not a new terminal script:
+
+- Added catalogue WIRE unit encoding that preserves full point count and all polyline coordinates.
+- Updated donor WIRE parsing to preserve `full_coordinates`.
+- Updated catalogue planning to prefer `wire_unit_coordinates` over legacy first-segment `wire_coordinates`.
+- Updated final link rebasing to match emitted WIRE records by full coordinate list, not only first segment.
+- Updated contact validation to check all polyline vertices and the real terminal/pin contact endpoints.
+- Corrected catalogue evidence for POT-HG `gnd` and LM317T `Pin1ADJ` terminal-contact endpoints.
+
+Generated clean V20 repair pack:
+
+- `experiments/three_pin_control_terminal_v20_wire_unit_shape_temp_2026_07_09/`
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V20_WIRE_UNIT_SHAPE_TEMP_2026_07_09.zip`
+
+V20 files for Proteus testing:
+
+- `experiments/three_pin_control_terminal_v20_wire_unit_shape_temp_2026_07_09/01_terminalized_sa/R001_POT_HG_1x_WIRE_UNIT_SHAPE_sa.pdsprj`
+- `experiments/three_pin_control_terminal_v20_wire_unit_shape_temp_2026_07_09/01_terminalized_sa/R002_LM317T_1x_WIRE_UNIT_SHAPE_sa.pdsprj`
+- `experiments/three_pin_control_terminal_v20_wire_unit_shape_temp_2026_07_09/01_terminalized_sa/R003_OPAMP_1x_WIRE_UNIT_SHAPE_sa.pdsprj`
+
+V20 static result:
+
+- 3 generated cases.
+- 3 base-valid.
+- 3 terminal-static-valid.
+- 3 terminal suffix-link-valid.
+- 3 wire-path-contact-valid.
+- 3 full WIRE-unit byte-for-byte donor-evidence matches.
+- 3 static-accept gates passed.
+
+Focused tests passed:
+
+- `python -m pytest tests/test_component_catalog.py::test_terminalized_donor_geometry_preserves_three_pin_wire_polylines tests/test_component_catalog.py::test_catalogue_three_pin_planner_emits_donor_wire_unit_shapes -q` -> 2 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+Broader tests were also run and still have unrelated existing failures in current repo state:
+
+- `tests/test_component_catalog.py` has failures caused by the current locked-donor stability pass lacking 4017, old tests expecting existing-wire identity on catalogue families now emitted through clean link-offset WIRE units, and 74HC74 lacking catalogue component-link offsets.
+- Full `python -m pytest -q` also collects an old temp inductor test under `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main/test_inductor.py` that imports removed `proteusgen.inductor`.
+
+## User Message - 2026-07-09 15:48:50 +05:00
+
+continue
+
+## Agent Visible Responses - continuation
+
+Continuing. I checked the repo checkpoint/remotes first as required. Local HEAD, upstream, and origin all matched `b9dffc15d532d7a875146e5d189f876c97679f4e`; the working tree contained scoped V20 changes plus unrelated user artifacts that were not touched.
+
+I finished the V20 repair by fixing the remaining static validation issue: catalogue contact evidence and the validation path had to treat POT-HG/LM317T WIREs as polylines. After patching, V20 regenerated cleanly and passed the stricter full WIRE-unit gate.
+
+### Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_terminal_placer.py` - full WIRE-unit encoder/parser/planner/rebase/contact validation support for catalogue terminalization.
+- `knowledge/component_catalog_v0.json` - added/updated `wire_unit_coordinates` and corrected terminal-contact endpoint evidence for POT-HG `gnd` and LM317T `Pin1ADJ`.
+- `tests/test_component_catalog.py` - added focused regression coverage for full WIRE polyline preservation and correct terminal/pin contacts.
+- `docs/architecture.md` - marked V19 rejected and documented V20 full-WIRE-unit repair.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_005851_before_catalogue_wire_unit_encoder.py` - backup before shared placer edit.
+- `experiments/three_pin_control_terminal_v20_wire_unit_shape_temp_2026_07_09/` - generated V20 repair pack and report.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V20_WIRE_UNIT_SHAPE_TEMP_2026_07_09.zip` - generated V20 archive.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V20 is the replacement for rejected V19. Test only the three V20 `_sa` files first. Static gates are much stricter now and compare full WIRE unit records byte-for-byte against donor evidence.

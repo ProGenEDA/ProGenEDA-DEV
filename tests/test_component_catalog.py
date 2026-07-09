@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from proteusgen.component_placer import generate_component_placement_project, load_component_aliases
@@ -139,6 +141,48 @@ def test_terminalized_donor_geometry_extracts_4017_pin_coordinates() -> None:
     assert report["pins"]["3"]["side"] == "right"
 
 
+def test_terminalized_donor_geometry_preserves_three_pin_wire_polylines() -> None:
+    pot_report = analyse_terminalized_donor_pin_geometry(
+        Path(
+            "proteus_ic/donors/terminalized_catalogue_evidence/"
+            "three_pin_regulator_control_symbol/POT-HG/"
+            "POT-HG_user_terminalized_july04.pdsprj"
+        ),
+        family="POT-HG",
+    )
+    lm317_report = analyse_terminalized_donor_pin_geometry(
+        Path(
+            "proteus_ic/donors/terminalized_catalogue_evidence/"
+            "three_pin_regulator_control_symbol/LM317T/"
+            "LM317T_user_terminalized_july04.pdsprj"
+        ),
+        family="LM317T",
+    )
+
+    assert pot_report["valid"]
+    assert pot_report["pins"]["gnd"]["wire_unit_coordinates"] == [
+        -6350000,
+        -4805680,
+        -6096000,
+        -4805680,
+        -6096000,
+        -4826000,
+        -6350000,
+        -4826000,
+    ]
+    assert pot_report["pins"]["gnd"]["pin_y"] == -4805680
+    assert lm317_report["valid"]
+    assert lm317_report["pins"]["1"]["wire_unit_coordinates"] == [
+        -5313680,
+        -6350000,
+        -5313680,
+        -6604000,
+        -5080000,
+        -6604000,
+    ]
+    assert lm317_report["pins"]["1"]["pin_x"] == -5313680
+
+
 def test_catalogue_pin_planner_uses_grid_short_wire_for_4017(tmp_path) -> None:
     result = generate_component_placement_project(
         {
@@ -166,6 +210,65 @@ def test_catalogue_pin_planner_uses_grid_short_wire_for_4017(tmp_path) -> None:
         assert start["y"] % PROTEUS_TERMINAL_GRID == 0
         assert end["x"] == row["pin"]["x"]
         assert end["y"] == row["pin"]["y"]
+
+
+def test_catalogue_three_pin_planner_emits_donor_wire_unit_shapes(tmp_path) -> None:
+    catalog = load_component_catalog()
+    expected = {
+        ("POT-HG", "3"): {
+            "coordinates": [
+                -6350000,
+                -4805680,
+                -6096000,
+                -4805680,
+                -6096000,
+                -4826000,
+                -6350000,
+                -4826000,
+            ],
+            "terminal_contact": {"x": -6350000, "y": -4826000},
+            "pin_contact": {"x": -6350000, "y": -4805680},
+        },
+        ("LM317T", "1"): {
+            "coordinates": [
+                -5313680,
+                -6350000,
+                -5313680,
+                -6604000,
+                -5080000,
+                -6604000,
+            ],
+            "terminal_contact": {"x": -5080000, "y": -6604000},
+            "pin_contact": {"x": -5313680, "y": -6350000},
+        },
+    }
+
+    for (family, pin_name), expectation in expected.items():
+        result = generate_component_placement_project(
+            {
+                "components": {family: 1},
+                "layout": {"strategy": "beautify"},
+            },
+            tmp_path / f"{family}_polyline_wire_unit_plan.pdsprj",
+            full_cdb=True,
+        )
+        plan = plan_catalogue_pin_bidir_terminals(
+            result.selected_groups,
+            catalog=catalog,
+        )
+        by_pin = {
+            row["pin"]["name"]: row
+            for row in plan["terminal_plans"]
+        }
+        row = by_pin[pin_name]
+        record = bytes.fromhex(row["short_wire"]["record"])
+
+        assert plan["valid"]
+        assert row["short_wire"]["coordinates"] == expectation["coordinates"]
+        assert row["short_wire"]["terminal_contact"] == expectation["terminal_contact"]
+        assert row["short_wire"]["pin_contact"] == expectation["pin_contact"]
+        assert record.find(b"\x7fWIRE") == 24
+        assert int.from_bytes(record[32:34], "little") == len(expectation["coordinates"]) // 2
 
 
 def test_catalogue_pin_planner_coordinates_are_component_relative(tmp_path) -> None:

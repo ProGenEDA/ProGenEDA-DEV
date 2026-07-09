@@ -662,14 +662,11 @@ def _transform_catalogue_wire_coordinates(
     *,
     component_anchor: dict[str, Any] | None,
     donor_anchor: dict[str, Any] | None,
-) -> tuple[tuple[int, ...], tuple[int, int] | None] | None:
-    raw_coordinates = raw_pin_geometry.get("wire_unit_coordinates")
-    if raw_coordinates is None:
-        raw_coordinates = raw_pin_geometry.get("wire_coordinates")
+) -> tuple[tuple[int, int, int, int], tuple[int, int] | None] | None:
+    raw_coordinates = raw_pin_geometry.get("wire_coordinates")
     if (
         not isinstance(raw_coordinates, (list, tuple))
-        or len(raw_coordinates) < 4
-        or len(raw_coordinates) % 2 != 0
+        or len(raw_coordinates) != 4
         or component_anchor is None
         or not isinstance(donor_anchor, dict)
         or donor_anchor.get("x") is None
@@ -690,40 +687,6 @@ def _transform_catalogue_wire_coordinates(
         else None
     )
     return coordinates, matched
-
-
-def _wire_coordinate_points(coordinates: Iterable[int]) -> tuple[tuple[int, int], ...]:
-    values = tuple(int(value) for value in coordinates)
-    if len(values) < 4 or len(values) % 2 != 0:
-        raise ValueError("WIRE coordinate list must contain at least two points.")
-    return tuple(
-        (values[index], values[index + 1])
-        for index in range(0, len(values), 2)
-    )
-
-
-def _opposite_polyline_endpoint(
-    coordinates: Iterable[int],
-    matched_endpoint: tuple[int, int],
-) -> tuple[int, int]:
-    """Return the component-side endpoint opposite a terminal contact.
-
-    Proteus donor WIRE records are not always single-segment lines.  POT-HG
-    ground and LM317T adjust use routed polylines.  The terminal contact is
-    normally one end of that polyline, so the component pin is the opposite
-    end.  If donor evidence ever points at a middle vertex, fall back to the
-    farther outer endpoint instead of selecting a neighbouring segment vertex.
-    """
-
-    points = _wire_coordinate_points(coordinates)
-    matched = (int(matched_endpoint[0]), int(matched_endpoint[1]))
-    if matched == points[0]:
-        return points[-1]
-    if matched == points[-1]:
-        return points[0]
-    first_distance = abs(points[0][0] - matched[0]) + abs(points[0][1] - matched[1])
-    last_distance = abs(points[-1][0] - matched[0]) + abs(points[-1][1] - matched[1])
-    return points[0] if first_distance >= last_distance else points[-1]
 
 
 def _component_body_bbox_for_catalogue(data: bytes, family: str) -> dict[str, int]:
@@ -1050,33 +1013,21 @@ def plan_catalogue_pin_bidir_terminals(
             )
             if transformed_wire is not None:
                 wire_coordinates, matched_wire_endpoint = transformed_wire
-                endpoints = _wire_coordinate_points(wire_coordinates)
-                wire_start_x, wire_start_y = endpoints[0]
-                wire_end_x, wire_end_y = endpoints[-1]
+                wire_start_x, wire_start_y, wire_end_x, wire_end_y = wire_coordinates
+                endpoints = ((wire_start_x, wire_start_y), (wire_end_x, wire_end_y))
                 if matched_wire_endpoint in endpoints:
                     wire_terminal_contact = {
                         "x": matched_wire_endpoint[0],
                         "y": matched_wire_endpoint[1],
                     }
-                    opposite_endpoint = _opposite_polyline_endpoint(
-                        wire_coordinates,
-                        matched_wire_endpoint,
+                    other_endpoint = (
+                        endpoints[1]
+                        if endpoints[0] == matched_wire_endpoint
+                        else endpoints[0]
                     )
-                    wire_pin_contact = {
-                        "x": opposite_endpoint[0],
-                        "y": opposite_endpoint[1],
-                    }
+                    wire_pin_contact = {"x": other_endpoint[0], "y": other_endpoint[1]}
                 else:
                     wire_pin_contact = {"x": pin_x, "y": pin_y}
-                wire_record = _build_catalogue_wire_unit(wire_coordinates)
-            else:
-                wire_coordinates = (wire_start_x, wire_start_y, wire_end_x, wire_end_y)
-                wire_record = _build_native_short_wire(
-                    wire_start_x,
-                    wire_start_y,
-                    wire_end_x,
-                    wire_end_y,
-                )
             terminal_dict = terminal.as_dict()
             terminal_dict["link_trailer"] = _catalogue_link_trailer(
                 raw_pin_geometry
@@ -1095,10 +1046,14 @@ def plan_catalogue_pin_bidir_terminals(
                     "short_wire": {
                         "start": {"x": wire_start_x, "y": wire_start_y},
                         "end": {"x": wire_end_x, "y": wire_end_y},
-                        "coordinates": list(wire_coordinates),
                         "terminal_contact": wire_terminal_contact,
                         "pin_contact": wire_pin_contact,
-                        "record": wire_record.hex(),
+                        "record": _build_native_short_wire(
+                            wire_start_x,
+                            wire_start_y,
+                            wire_end_x,
+                            wire_end_y,
+                        ).hex(),
                     },
                     "catalogue_geometry": dict(raw_pin_geometry),
                     "component_bbox": dict(bbox),
@@ -1542,14 +1497,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                                     "start": dict(start),
                                     "end": dict(end),
                                     **(
-                                        {"coordinates": list(short_wire["coordinates"])}
-                                        if isinstance(
-                                            short_wire.get("coordinates"),
-                                            (list, tuple),
-                                        )
-                                        else {}
-                                    ),
-                                    **(
                                         {
                                             "terminal_contact": dict(
                                                 short_wire["terminal_contact"]
@@ -1845,11 +1792,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         "start": dict(start),
                         "end": dict(end),
                         **(
-                            {"coordinates": list(short_wire["coordinates"])}
-                            if isinstance(short_wire.get("coordinates"), (list, tuple))
-                            else {}
-                        ),
-                        **(
                             {"terminal_contact": dict(short_wire["terminal_contact"])}
                             if isinstance(short_wire.get("terminal_contact"), dict)
                             else {}
@@ -1986,23 +1928,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 contact_x = int(terminal["symbol_x"])
             wire_start = (int(wire["start"]["x"]), int(wire["start"]["y"]))
             wire_end = (int(wire["end"]["x"]), int(wire["end"]["y"]))
-            raw_coordinates = wire.get("coordinates")
-            if (
-                isinstance(raw_coordinates, (list, tuple))
-                and len(raw_coordinates) >= 4
-                and len(raw_coordinates) % 2 == 0
-            ):
-                wire_points = set(_wire_coordinate_points(raw_coordinates))
-            else:
-                wire_points = {wire_start, wire_end}
-            actual_terminal_contact_xy = (
-                contact_x,
-                int(terminal["symbol_y"]),
-            )
-            actual_pin_contact_xy = (
-                int(row["pin"]["x"]),
-                int(row["pin"]["y"]),
-            )
+            wire_endpoints = {wire_start, wire_end}
             planned_terminal_contact = wire.get(
                 "terminal_contact",
                 {"x": contact_x, "y": int(terminal["symbol_y"])},
@@ -2028,15 +1954,9 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         contact_x % PROTEUS_TERMINAL_GRID == 0
                         and int(terminal["symbol_y"]) % PROTEUS_TERMINAL_GRID == 0
                     ),
-                    "terminal_to_wire": (
-                        actual_terminal_contact_xy in wire_points
-                        and planned_terminal_contact_xy in wire_points
-                    ),
-                    "wire_to_pin": (
-                        actual_pin_contact_xy in wire_points
-                        and planned_pin_contact_xy in wire_points
-                    ),
-                    "wire_is_nonzero": len(wire_points) > 1,
+                    "terminal_to_wire": planned_terminal_contact_xy in wire_endpoints,
+                    "wire_to_pin": planned_pin_contact_xy in wire_endpoints,
+                    "wire_is_nonzero": wire_start != wire_end,
                 }
             )
     report = {
@@ -3032,22 +2952,6 @@ def _build_native_short_wire(
     record = NATIVE_WIRE_PREFIX + struct.pack("<iiii", x1, y1, x2, y2) + b"\x00"
     if len(record) != 50 or record.find(b"\x7fWIRE") != 23:
         raise AssertionError("Canonical short-WIRE encoder produced an invalid record.")
-    return record
-
-
-def _build_catalogue_wire_unit(coordinates: Iterable[int]) -> bytes:
-    values = tuple(int(value) for value in coordinates)
-    if len(values) < 4 or len(values) % 2 != 0:
-        raise ValueError(
-            "Catalogue WIRE coordinates must contain at least two x/y points."
-        )
-    point_count = len(values) // 2
-    if not 2 <= point_count <= 255:
-        raise ValueError(f"Unsupported catalogue WIRE point count {point_count}.")
-    prefix = NATIVE_WIRE_PREFIX[:-2] + struct.pack("<H", point_count)
-    record = b"\x00" + prefix + struct.pack("<" + "i" * len(values), *values)
-    if record.find(b"\x7fWIRE") != 24:
-        raise AssertionError("Catalogue WIRE unit has an invalid marker position.")
     return record
 
 
@@ -5314,21 +5218,12 @@ def _wire_rows_from_chunk(
         coordinate_start = marker + 10
         if coordinate_start + 16 > len(chunk):
             raise ValueError(f"WIRE at object offset {marker} is truncated.")
-        point_count = int.from_bytes(chunk[marker + 8 : marker + 10], "little")
-        full_coordinate_end = coordinate_start + point_count * 8
-        if point_count < 2 or full_coordinate_end > len(chunk):
-            raise ValueError(f"WIRE at object offset {marker} has invalid point count.")
         rows.append(
             {
                 "marker_offset": marker,
                 "coordinates": struct.unpack(
                     "<iiii",
                     chunk[coordinate_start : coordinate_start + 16],
-                ),
-                "point_count": point_count,
-                "full_coordinates": struct.unpack(
-                    "<" + "i" * (point_count * 2),
-                    chunk[coordinate_start:full_coordinate_end],
                 ),
                 "suffix": (chunk_start + marker - 24) & 0xFFFF,
             }
@@ -5513,8 +5408,9 @@ def analyse_terminalized_donor_pin_geometry(
     wire_rows = _wire_rows_from_chunk(chunk, chunk_start=0)
     wires_by_endpoint: dict[tuple[int, int], list[dict[str, Any]]] = {}
     for row in wire_rows:
-        for endpoint in _wire_coordinate_points(row["full_coordinates"]):
-            wires_by_endpoint.setdefault(endpoint, []).append(row)
+        x1, y1, x2, y2 = row["coordinates"]
+        wires_by_endpoint.setdefault((int(x1), int(y1)), []).append(row)
+        wires_by_endpoint.setdefault((int(x2), int(y2)), []).append(row)
     wire_order_by_marker = {
         int(row["marker_offset"]): index
         for index, row in enumerate(
@@ -5550,7 +5446,8 @@ def analyse_terminalized_donor_pin_geometry(
         if not candidates:
             nearby_candidates: list[tuple[int, dict[str, Any], tuple[int, int]]] = []
             for row in wire_rows:
-                for endpoint in _wire_coordinate_points(row["full_coordinates"]):
+                x1, y1, x2, y2 = row["coordinates"]
+                for endpoint in ((int(x1), int(y1)), (int(x2), int(y2))):
                     distance = abs(contact[0] - endpoint[0]) + abs(contact[1] - endpoint[1])
                     if distance <= DONOR_TERMINAL_WIRE_ENDPOINT_TOLERANCE:
                         nearby_candidates.append((distance, row, endpoint))
@@ -5573,9 +5470,10 @@ def analyse_terminalized_donor_pin_geometry(
             continue
         _distance, wire, matched_endpoint = candidates[0]
         x1, y1, x2, y2 = wire["coordinates"]
-        other = _opposite_polyline_endpoint(
-            wire["full_coordinates"],
-            matched_endpoint,
+        other = (
+            (int(x2), int(y2))
+            if (int(x1), int(y1)) == matched_endpoint
+            else (int(x1), int(y1))
         )
         pin, signal = _pin_label_parts(str(terminal["label"]))
         pin_key = pin or signal
@@ -5599,9 +5497,6 @@ def analyse_terminalized_donor_pin_geometry(
             "matched_wire_endpoint_y": matched_endpoint[1],
             "matched_wire_endpoint_distance": int(_distance),
             "wire_coordinates": [int(x1), int(y1), int(x2), int(y2)],
-            "wire_unit_coordinates": [
-                int(value) for value in wire["full_coordinates"]
-            ],
             "wire_marker_offset": int(wire["marker_offset"]),
             "wire_order_index": wire_order_by_marker[int(wire["marker_offset"])],
             "evidence": "terminalized_donor_wire_endpoint",
@@ -5698,21 +5593,10 @@ def _wire_record_spans(chunk: bytes) -> list[tuple[int, int]]:
         marker = chunk.find(b"\x7fWIRE", cursor)
         if marker < 0:
             return spans
-        if marker >= 24 and chunk[marker - 24] == 0 and chunk[marker - 23] == 0x1D:
-            start = marker - 24
-            trailing_bytes = 0
-        else:
-            start = marker - 23
-            trailing_bytes = 1
-        if start < 0 or marker + 10 > len(chunk):
+        start = marker - 23
+        if start < 0:
             raise ValueError(f"WIRE marker at {marker} starts before object chunk.")
-        point_count = int.from_bytes(chunk[marker + 8 : marker + 10], "little")
-        if point_count < 2:
-            raise ValueError(f"WIRE marker at {marker} has invalid point count.")
-        end = marker + 10 + point_count * 8 + trailing_bytes
-        if end > len(chunk):
-            raise ValueError(f"WIRE marker at {marker} ends after object chunk.")
-        spans.append((start, end))
+        spans.append((start, marker + 27))
         cursor = marker + len(b"\x7fWIRE")
 
 
@@ -5805,27 +5689,18 @@ def _terminal_wire_bindings(report: dict[str, Any]) -> list[dict[str, Any]]:
                 )
             start = wire.get("start", {})
             end = wire.get("end", {})
-            raw_coordinates = wire.get("coordinates")
-            if (
-                isinstance(raw_coordinates, (list, tuple))
-                and len(raw_coordinates) >= 4
-                and len(raw_coordinates) % 2 == 0
-            ):
-                coordinates = tuple(int(value) for value in raw_coordinates)
-            else:
-                coordinates = (
-                    int(start["x"]),
-                    int(start["y"]),
-                    int(end["x"]),
-                    int(end["y"]),
-                )
             bindings.append(
                 {
                     "component_key": row.get("component_key"),
                     "component_family": row.get("component_family"),
                     "role": row.get("pin", {}).get("name"),
                     "old_suffix": int(terminal["suffix"], 16),
-                    "coordinates": coordinates,
+                    "coordinates": (
+                        int(start["x"]),
+                        int(start["y"]),
+                        int(end["x"]),
+                        int(end["y"]),
+                    ),
                     "terminal": terminal,
                 }
             )
@@ -5842,27 +5717,18 @@ def _terminal_wire_bindings(report: dict[str, Any]) -> list[dict[str, Any]]:
                     )
                 start = wire.get("start", {})
                 end = wire.get("end", {})
-                raw_coordinates = wire.get("coordinates")
-                if (
-                    isinstance(raw_coordinates, (list, tuple))
-                    and len(raw_coordinates) >= 4
-                    and len(raw_coordinates) % 2 == 0
-                ):
-                    coordinates = tuple(int(value) for value in raw_coordinates)
-                else:
-                    coordinates = (
-                        int(start["x"]),
-                        int(start["y"]),
-                        int(end["x"]),
-                        int(end["y"]),
-                    )
                 bindings.append(
                     {
                         "component_key": pair.get("component_key"),
                         "component_family": pair.get("component_family"),
                         "role": role,
                         "old_suffix": int(terminal["suffix"], 16),
-                        "coordinates": coordinates,
+                        "coordinates": (
+                            int(start["x"]),
+                            int(start["y"]),
+                            int(end["x"]),
+                            int(end["y"]),
+                        ),
                         "terminal": terminal,
                     }
                 )
@@ -5899,11 +5765,7 @@ def _rebase_terminal_links_to_final_wire_addresses(
         list[dict[str, Any]],
     ] = {}
     for row in wire_rows:
-        full_coordinates = row.get("full_coordinates", row["coordinates"])
-        available_by_coordinates.setdefault(
-            tuple(int(value) for value in full_coordinates),
-            [],
-        ).append(row)
+        available_by_coordinates.setdefault(row["coordinates"], []).append(row)
 
     old_suffixes = [binding["old_suffix"] for binding in bindings]
     if len(old_suffixes) != len(set(old_suffixes)):

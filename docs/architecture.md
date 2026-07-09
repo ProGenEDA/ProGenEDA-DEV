@@ -888,3 +888,42 @@ terminal starts match the curated donor boundary, all three terminal label
 orders match accepted evidence, all terminal trailers are `02 00`, and all WIRE
 coordinate/order sequences match accepted evidence. Proteus open/render
 acceptance is pending user testing.
+
+User result on 2026-07-09: V19 was a complete Proteus failure. The static
+checks were incomplete because they matched only the first two WIRE endpoints
+and not the full Proteus WIRE unit record.
+
+V20 repair:
+
+`experiments/three_pin_control_terminal_v20_wire_unit_shape_temp_2026_07_09/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V20_WIRE_UNIT_SHAPE_TEMP_2026_07_09.zip`
+
+V20 keeps the same three-file scope:
+
+- `POT-HG` 1x `_sa`
+- `LM317T` 1x `_sa`
+- `OPAMP` 1x `_sa`
+- matching no-terminal controls
+
+The shared terminal placer now distinguishes `wire_coordinates` from
+`wire_unit_coordinates`. `wire_coordinates` remains the legacy first-segment
+endpoint evidence, while `wire_unit_coordinates` preserves the complete donor
+WIRE unit polyline. This is required for POT-HG ground and LM317T adjust:
+
+- `POT-HG` `gnd`: 4-point WIRE unit.
+- `LM317T` `Pin1ADJ`: 3-point WIRE unit.
+- `OPAMP`: all three pins remain 2-point WIRE units, but still use the same
+  full-unit encoder.
+
+The catalogue planner/rebase path now carries full WIRE coordinate lists
+through planning, report validation, and final low-16 address rebasing. Contact
+validation checks all polyline vertices and verifies the actual terminal
+contact and component pin contact, not only the first segment.
+
+V20 static result: 3 generated cases, 3 base-valid, 3 terminal-static-valid,
+3 terminal suffix-link-valid, 3 wire-path-contact-valid, 3 full WIRE-unit
+byte-for-byte donor-evidence matches, and 3 final static-accept gates passed.
+Proteus open/render acceptance is pending user testing.
