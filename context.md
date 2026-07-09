@@ -10464,3 +10464,73 @@ Focused tests passed:
 ### Final Response To User
 
 Planned summary: You were right to reject V21. Use V22 instead. It has unique component-qualified labels and report-proven distinct component anchors for 9x/15x/23x.
+
+---
+
+## User Message - 2026-07-09 16:41:36 +05:00
+
+still only one
+are u sure u are generating 9 15 23 using component placer then adding in the terminals?
+i really dont understand y this is so hard for u, terminal placement for 2 pins is fully working, all u need to do is place now more then 2, then move their location using catelogue then attach them to pins like in 2 pinned
+
+## Agent Visible Responses - 2026-07-09 16:41:36 +05:00 onwards
+
+I treated V22 as rejected too and first verified the previous checkpoint. Local
+`HEAD`, upstream, and `origin/codex/generic-proteus-generator-v0` all matched
+`a0ab3a527ef01f1dcdbc3d51d99b6eea873c7b98`.
+
+I inspected the V22 scaled outputs and found that the raw files did contain
+multiple component objects, but the component placer/beautifier had allowed a
+very wide row layout. This made Proteus visual testing look like only one
+component was present. I regenerated V23 using this explicit order:
+
+1. Run the locked mega-donor component placer for each requested family/count.
+2. Keep the raw component-placer output as evidence only.
+3. Rewrite the selected placed component packets into a compact visible grid.
+4. Pass the compact placed groups into the shared
+   `src/proteusgen/component_terminal_placer.py` catalogue terminal path.
+
+Generated V23 pack:
+
+- `experiments/three_pin_control_terminal_v23_component_placer_grid_temp_2026_07_09/`
+
+Use only this folder for terminal testing:
+
+- `experiments/three_pin_control_terminal_v23_component_placer_grid_temp_2026_07_09/02_terminalized_sa_test_these/`
+
+Generated terminalized `_sa` files:
+
+- `V23_01_POT_HG_9x_sa.pdsprj`
+- `V23_01_POT_HG_15x_sa.pdsprj`
+- `V23_01_POT_HG_23x_sa.pdsprj`
+- `V23_02_LM317T_9x_sa.pdsprj`
+- `V23_02_LM317T_15x_sa.pdsprj`
+- `V23_02_LM317T_23x_sa.pdsprj`
+- `V23_03_OPAMP_9x_sa.pdsprj`
+- `V23_03_OPAMP_15x_sa.pdsprj`
+- `V23_03_OPAMP_23x_sa.pdsprj`
+
+Static audit summary from V23:
+
+- `POT-HG` 9x/15x/23x: 9/15/23 distinct component anchors, 27/45/69 terminals,
+  27/45/69 WIRE records.
+- `LM317T` 9x/15x/23x: 9/15/23 distinct component anchors, 27/45/69 terminals,
+  27/45/69 WIRE records.
+- `OPAMP` 9x/15x/23x: 9/15/23 distinct component anchors, 27/45/69 terminals,
+  27/45/69 WIRE records.
+
+Validation run:
+
+- `python -m pytest tests/test_component_placer.py -q` -> 98 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `experiments/three_pin_control_terminal_v23_component_placer_grid_temp_2026_07_09/` - generated raw component-placer evidence, compact no-terminal controls, terminalized `_sa` outputs, and static reports.
+- `docs/architecture.md` - recorded V22 rejection and V23 component-placer-grid replacement.
+- `knowledge/test_results.jsonl` - appended V23 static test-result record.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: You were right to question it. V23 now uses the component placer first, compacts the placed components into a visible grid, then applies the shared terminal placer. Test the files in `02_terminalized_sa_test_these/`.
