@@ -1039,3 +1039,45 @@ requested generated count. Each terminalized output has exactly
 WIRE records. `tests/test_component_placer.py` reported 98 passed and
 `python -m compileall -q src tests tools/proteus_generation` passed. Proteus
 open/render acceptance is pending user testing.
+
+User result on 2026-07-09: V23 was rejected. Proteus still showed only one
+terminalized component/valid terminal set. Root cause: the catalogue clean
+multi-pin branch inserted terminal/WIRE bytes before the component packet's
+final separator byte. Static byte searches still counted the requested
+components, terminals, and WIRE records, but Proteus could parse the appended
+attachment bytes as part of the first component packet. Therefore static
+terminal counts are not sufficient; the object stream must also preserve
+component packet boundaries.
+
+V24 terminal-leading component-grid replacement:
+
+`experiments/three_pin_control_terminal_v24_terminal_leading_grid_temp_2026_07_09/`
+
+V24 changes the shared catalogue clean-packet emission in
+`src/proteusgen/component_terminal_placer.py`:
+
+1. Terminal records are emitted first.
+2. A component separator is emitted.
+3. The complete patched component packet is preserved, including its separator.
+4. Short WIRE records are emitted after the component packet.
+5. Final terminal/component links are still rebased from final ROOT.DSN WIRE
+   addresses.
+
+This is intentionally closer to the accepted shared native/two-pin object
+order than V23's packet-splice shape.
+
+Generated V24 terminalized scaled solos:
+
+- `POT-HG`: 9x, 15x, 23x.
+- `LM317T`: 9x, 15x, 23x.
+- `OPAMP`: 9x, 15x, 23x.
+
+V24 static result: 9 generated cases, 9 compact no-terminal controls, 9
+terminalized outputs, and 9/9 static audits passed. Each terminalized stream is
+terminal-leading, each has distinct component-anchor count equal to the
+requested generated count, and each has exactly `3 * component_count`
+`$TERBIDIR` records plus exactly `3 * component_count` WIRE records. The
+regression test now checks terminal-leading order and preserved component
+packet presence instead of the rejected V23 prefix equality. `tests/test_component_placer.py`
+reported 98 passed and `python -m compileall -q src tests tools/proteus_generation`
+passed. Proteus open/render acceptance is pending user testing.

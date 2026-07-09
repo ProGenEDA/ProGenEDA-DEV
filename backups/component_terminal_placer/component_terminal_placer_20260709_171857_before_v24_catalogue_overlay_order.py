@@ -1910,18 +1910,21 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     f"{family} {key} has {len(terminal_records)} terminals but "
                     f"{len(appended_wire_records)} appended WIRE records."
                 )
-            # Keep the component packet as a separate Proteus object.  The
-            # rejected V23 scaled pack inserted terminal/WIRE bytes before the
-            # component packet terminator; Proteus then rendered only the first
-            # component because the following attachment bytes could be parsed
-            # as part of that component record.  This mirrors the accepted
-            # native two-pin shape instead: terminal records, component packet,
-            # then short WIRE records, with the component packet separator
-            # preserved.
-            local_records.extend(terminal_records)
-            local_records.append(b"\x00")
-            local_records.append(patched_data)
-            local_records.extend(appended_wire_records)
+            attachment_units: list[bytes] = []
+            for terminal_record, wire_record in zip(
+                terminal_records,
+                appended_wire_records,
+            ):
+                attachment_units.append(terminal_record)
+                attachment_units.append(wire_record)
+            local_records.append(
+                _insert_attachment_units_before_packet_terminator(
+                    patched_data,
+                    attachment_units,
+                    family=family,
+                    key=key,
+                )
+            )
         else:
             local_records.extend(terminal_records)
             local_records.append(b"\x00")
@@ -1950,37 +1953,26 @@ def attach_catalogue_pin_bidir_terminals_to_project(
 
     if not family_reports:
         raise ValueError("No catalogue-backed terminalized component was emitted.")
-    if local_records and not local_records[0].startswith(b"\xff"):
-        # Terminal-leading object streams use the same initial shape as the
-        # accepted native two-pin route: the stream starts with the first byte
-        # of the original object chunk, then terminal records, then the
-        # component packet separator and component packet.  Re-inserting the
-        # original component-prefix byte before the first component would
-        # create a Proteus-rejected hybrid stream.
-        new_chunk = _ensure_double_ff_object_stream_terminator(
-            original_chunk[:1] + b"".join(local_records)
+    rebuilt_records: list[bytes] = []
+    object_component_prefix = original_chunk[1:2]
+    component_prefix_inserted = not bool(object_component_prefix)
+    for record in local_records:
+        if (
+            not component_prefix_inserted
+            and record.startswith(b"\xff")
+        ):
+            rebuilt_records.append(object_component_prefix + record)
+            component_prefix_inserted = True
+        else:
+            rebuilt_records.append(record)
+    if not component_prefix_inserted:
+        raise ValueError(
+            "Catalogue terminal attachment did not emit a component packet "
+            "that can receive the original object-stream component prefix."
         )
-    else:
-        rebuilt_records: list[bytes] = []
-        object_component_prefix = original_chunk[1:2]
-        component_prefix_inserted = not bool(object_component_prefix)
-        for record in local_records:
-            if (
-                not component_prefix_inserted
-                and record.startswith(b"\xff")
-            ):
-                rebuilt_records.append(object_component_prefix + record)
-                component_prefix_inserted = True
-            else:
-                rebuilt_records.append(record)
-        if not component_prefix_inserted:
-            raise ValueError(
-                "Catalogue terminal attachment did not emit a component packet "
-                "that can receive the original object-stream component prefix."
-            )
-        new_chunk = _ensure_double_ff_object_stream_terminator(
-            original_chunk[:1] + b"".join(rebuilt_records)
-        )
+    new_chunk = _ensure_double_ff_object_stream_terminator(
+        original_chunk[:1] + b"".join(rebuilt_records)
+    )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))

@@ -10534,3 +10534,104 @@ Validation run:
 ### Final Response To User
 
 Planned summary: You were right to question it. V23 now uses the component placer first, compacts the placed components into a visible grid, then applies the shared terminal placer. Test the files in `02_terminalized_sa_test_these/`.
+
+---
+
+## User Message - 2026-07-09 17:27:16 +05:00
+
+no terminals were correct, terminal ones had only 1
+tf are u doing?
+
+## Agent Visible Responses - 2026-07-09 17:27:16 +05:00 onwards
+
+I treated V23 as rejected and first verified the previous checkpoint. Local
+`HEAD`, upstream, and `origin/codex/generic-proteus-generator-v0` all matched
+`241281e5918d91eedeff74bb7cdad3d74b377edd`.
+
+I inspected the V23 object stream and found the real failure mode:
+
+- V23 had byte-count evidence for multiple components/terminals/WIRE records.
+- But the catalogue clean multi-pin branch inserted terminal/WIRE bytes before
+  the component packet's final separator byte.
+- That can make Proteus parse following attachment bytes as part of the first
+  component packet, which explains the user result that only one terminalized
+  component/terminal set appeared.
+
+Before editing the shared terminal placer I created the required backup:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260709_171857_before_v24_catalogue_overlay_order.py`
+
+I updated the existing shared terminal placer only:
+
+- `src/proteusgen/component_terminal_placer.py`
+
+The clean catalogue multi-pin emission now uses terminal-leading object order:
+
+1. terminal records first,
+2. explicit separator,
+3. complete patched component packet with its separator preserved,
+4. short WIRE records after the component packet,
+5. final terminal/component links still rebased from final ROOT.DSN WIRE
+   addresses.
+
+This is closer to the accepted shared native/two-pin object shape and avoids
+the V23 packet-swallowing issue.
+
+I updated the regression in:
+
+- `tests/test_component_placer.py`
+
+The old regression expected the rejected V23 prefix. The new regression checks:
+
+- terminal-leading stream,
+- first terminal before first component,
+- component packet is still present,
+- WIRE records after the component packet,
+- catalogue donor contact offsets still match expected pin terminal positions.
+
+Generated V24 pack:
+
+- `experiments/three_pin_control_terminal_v24_terminal_leading_grid_temp_2026_07_09/`
+
+Use only:
+
+- `experiments/three_pin_control_terminal_v24_terminal_leading_grid_temp_2026_07_09/02_terminalized_sa_test_these/`
+
+Generated terminalized `_sa` files:
+
+- `V24_01_POT_HG_9x_sa.pdsprj`
+- `V24_01_POT_HG_15x_sa.pdsprj`
+- `V24_01_POT_HG_23x_sa.pdsprj`
+- `V24_02_LM317T_9x_sa.pdsprj`
+- `V24_02_LM317T_15x_sa.pdsprj`
+- `V24_02_LM317T_23x_sa.pdsprj`
+- `V24_03_OPAMP_9x_sa.pdsprj`
+- `V24_03_OPAMP_15x_sa.pdsprj`
+- `V24_03_OPAMP_23x_sa.pdsprj`
+
+V24 static audit:
+
+- all 9 terminalized streams are terminal-leading,
+- all 9 have distinct component-anchor count equal to requested count,
+- 9x files have 27 terminals and 27 WIRE records,
+- 15x files have 45 terminals and 45 WIRE records,
+- 23x files have 69 terminals and 69 WIRE records.
+
+Validation run:
+
+- `python -m pytest tests/test_component_placer.py -q` -> 98 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - fixed clean catalogue multi-pin object order to preserve component packet boundaries.
+- `tests/test_component_placer.py` - updated regression for terminal-leading fixed object order.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_171857_before_v24_catalogue_overlay_order.py` - backup before shared placer edit.
+- `experiments/three_pin_control_terminal_v24_terminal_leading_grid_temp_2026_07_09/` - generated V24 raw evidence, compact no-terminal controls, terminalized `_sa` outputs, and reports.
+- `docs/architecture.md` - recorded V23 rejection/root cause and V24 replacement.
+- `knowledge/test_results.jsonl` - appended V24 static test-result record.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V23 was wrong because its byte-count audit missed an object-boundary failure. Use V24 instead. It changes the shared placer to terminal-leading order while preserving component packets, and regenerates POT-HG/LM317T/OPAMP 9x/15x/23x.

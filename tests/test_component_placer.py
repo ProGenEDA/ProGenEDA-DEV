@@ -2266,7 +2266,12 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
 
     assert result.valid
     assert report["valid"] is True
-    assert chunk[:3] == base_chunk[:3]
+    component_key = result.selected_groups[0].key.encode("ascii")
+    component_prefix = b"\xff" + bytes([len(component_key)]) + component_key
+    component_start = chunk.find(component_prefix)
+    assert chunk.startswith(b"\x00\x10")
+    assert component_start >= 0
+    assert base_chunk.find(component_prefix) >= 0
     assert set(terminals_by_pin) == set(expected_symbols)
     for pin_name, (symbol_x, symbol_y, angle) in expected_symbols.items():
         row = terminals_by_pin[pin_name]
@@ -2283,11 +2288,8 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
             assert terminal["link_trailer"] == catalogue_geometry["component_link_trailer"]
         assert row["terminal_contact_source"] == "donor_terminal_contact_anchor_offset"
         assert row["short_wire"]["start"] != row["short_wire"]["end"]
-    first_component_marker = chunk.find(family.encode("ascii"))
     first_terminal_marker = chunk.find(b"$TERBIDIR")
-    first_terminal_start = first_terminal_marker - 14
-    assert 0 <= first_component_marker < first_terminal_marker
-    assert first_terminal_start == len(base_chunk) - 1
+    assert 0 <= first_terminal_marker < component_start
     attachment_events: list[tuple[int, str]] = []
     for marker, label in ((b"$TERBIDIR", "terminal"), (b"\x7fWIRE", "wire")):
         cursor = 0
@@ -2295,14 +2297,19 @@ def test_catalogue_three_pin_terminals_use_donor_contact_offsets(
             marker_offset = chunk.find(marker, cursor)
             if marker_offset < 0:
                 break
-            if marker_offset > first_component_marker:
-                attachment_events.append((marker_offset, label))
+            attachment_events.append((marker_offset, label))
             cursor = marker_offset + 1
-    assert [label for _offset, label in sorted(attachment_events)] == [
+    ordered_attachment_labels = [label for _offset, label in sorted(attachment_events)]
+    assert ordered_attachment_labels == [
+        "terminal",
+        "terminal",
         "terminal",
         "wire",
-        "terminal",
         "wire",
-        "terminal",
         "wire",
     ]
+    terminal_offsets = [
+        offset for offset, label in attachment_events if label == "terminal"
+    ]
+    wire_offsets = [offset for offset, label in attachment_events if label == "wire"]
+    assert max(terminal_offsets) < component_start < min(wire_offsets)
