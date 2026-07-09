@@ -10726,3 +10726,83 @@ Full validation:
 ### Final Response To User
 
 Planned summary: V24 was wrong because terminal-leading order contradicted V20. Use V25 instead. It preserves the full component stream first and appends terminals/wires at the exact V20 boundary rule, scaled to 9x/15x/23x.
+
+---
+
+## User Message - 2026-07-09 18:28:33 +05:00
+
+Pothg worked so lock that in, remaining 2 failed fix them
+
+## Agent Visible Responses - 2026-07-09 18:28:33 +05:00 onwards
+
+I locked `POT-HG` V25 as accepted and treated `LM317T`/`OPAMP` V25 as
+rejected. I first verified the previous checkpoint. Local `HEAD`, upstream,
+and `origin/codex/generic-proteus-generator-v0` all matched
+`99cec4d6ea68b69187a987fe62acada0bd246138`.
+
+The accepted/rejected split exposed the concrete issue:
+
+- Accepted V20 `POT-HG` base prefix: `00 08`.
+- V25 `POT-HG` compact/terminalized prefix: `00 08`.
+- Accepted V20 `LM317T` base prefix: `00 00`.
+- Accepted V20 `OPAMP` base prefix: `00 00`.
+- V25 `LM317T` and `OPAMP` raw component-placer outputs had prefix `00 00`,
+  but my compact-control rebuild accidentally changed them to `00 08`.
+
+That matches the Proteus result exactly: `POT-HG` worked because its prefix was
+preserved; `LM317T` and `OPAMP` failed because their prefix was changed.
+
+Generated V26 repair pack for only the failing families:
+
+- `experiments/three_pin_control_terminal_v26_lm_op_prefix_preserve_temp_2026_07_09/`
+
+Use only:
+
+- `experiments/three_pin_control_terminal_v26_lm_op_prefix_preserve_temp_2026_07_09/02_terminalized_sa_test_these/`
+
+Generated terminalized `_sa` files:
+
+- `V26_01_LM317T_9x_sa.pdsprj`
+- `V26_01_LM317T_15x_sa.pdsprj`
+- `V26_01_LM317T_23x_sa.pdsprj`
+- `V26_02_OPAMP_9x_sa.pdsprj`
+- `V26_02_OPAMP_15x_sa.pdsprj`
+- `V26_02_OPAMP_23x_sa.pdsprj`
+
+V26 keeps the V25/V20 object order:
+
+- full component stream first;
+- first terminal at `len(no-terminal-control)-1`;
+- terminal/WIRE units after the component stream.
+
+V26 fix:
+
+- compact controls now preserve `raw_chunk[:2]` when calling
+  `_object_chunk_from_groups(..., prefix=raw_chunk[:2])`;
+- `LM317T` and `OPAMP` compact and terminalized outputs now use prefix `00 00`,
+  matching their accepted V20 bases.
+
+V26 static audit:
+
+- all 6 outputs use prefix `0000`;
+- all 6 first terminals start at `len(no-terminal-control)-1`;
+- all component packets appear before the first terminal;
+- 9x files have 27 terminals and 27 WIRE records;
+- 15x files have 45 terminals and 45 WIRE records;
+- 23x files have 69 terminals and 69 WIRE records.
+
+Validation:
+
+- `python -m pytest tests/test_component_placer.py -q` -> 101 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `experiments/three_pin_control_terminal_v26_lm_op_prefix_preserve_temp_2026_07_09/` - generated V26 raw evidence, compact no-terminal controls, terminalized `_sa` outputs, and reports for `LM317T`/`OPAMP`.
+- `docs/architecture.md` - recorded `POT-HG` V25 acceptance, `LM317T`/`OPAMP` V25 rejection, root cause, and V26 repair.
+- `knowledge/test_results.jsonl` - appended V26 static test-result record.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: POT-HG V25 is locked. Test V26 for LM317T/OPAMP only; the fix preserves their required `00 00` object prefix while keeping the V20-style component-stream-then-attachments order.

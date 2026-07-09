@@ -1121,3 +1121,39 @@ and has exactly `3 * component_count` `$TERBIDIR` records plus exactly
 101 passing tests, including scaled catalogue regressions for `POT-HG`,
 `LM317T`, and `OPAMP`; `python -m compileall -q src tests tools/proteus_generation`
 passed. Proteus open/render acceptance is pending user testing.
+
+User result on 2026-07-09: V25 `POT-HG` worked and is locked in. V25
+`LM317T` and `OPAMP` failed. Do not alter the accepted `POT-HG` V25 behavior
+unless new evidence requires it.
+
+Root cause for `LM317T`/`OPAMP`: the compact control regeneration used
+`_object_chunk_from_groups(...)` without preserving the raw component-placer
+object prefix. This rebuilt their compact controls with prefix `00 08`, while
+the raw component placer and user-accepted V20 1x bases use prefix `00 00`.
+`POT-HG` was unaffected because both V20 and V25 use prefix `00 08`.
+
+V26 LM317T/OPAMP prefix-preserved repair:
+
+`experiments/three_pin_control_terminal_v26_lm_op_prefix_preserve_temp_2026_07_09/`
+
+V26 scope:
+
+- `POT-HG`: not regenerated; V25 is accepted.
+- `LM317T`: 9x, 15x, 23x regenerated.
+- `OPAMP`: 9x, 15x, 23x regenerated.
+
+V26 generation keeps the V25/V20-style terminal order, but compact control
+construction now passes the raw component-placer prefix into
+`_object_chunk_from_groups(..., prefix=raw_chunk[:2])`. For both repaired
+families the raw/control/terminalized prefix is `00 00`, matching the
+accepted V20 1x evidence.
+
+V26 static result: 6 generated cases, 6 compact no-terminal controls, 6
+terminalized outputs, and 6/6 static audits passed. Each terminalized output
+uses prefix `00 00`, has all component packets before the first terminal,
+has first terminal start equal to `len(no-terminal-control)-1`, has distinct
+component-anchor count equal to the requested generated count, and has exactly
+`3 * component_count` `$TERBIDIR` records plus exactly `3 * component_count`
+WIRE records. `tests/test_component_placer.py` reported 101 passed and
+`python -m compileall -q src tests tools/proteus_generation` passed. Proteus
+open/render acceptance is pending user testing.
