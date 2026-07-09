@@ -2338,6 +2338,7 @@ def test_catalogue_three_pin_scaled_terminals_append_after_component_stream(
     assert result.valid
     assert report["valid"] is True
     assert chunk[:3] == base_chunk[:3]
+    assert chunk.endswith(b"\xff\xff")
     assert chunk.count(b"$TERBIDIR") == 9
     assert chunk.count(b"\x7fWIRE") == 9
     assert chunk.find(b"$TERBIDIR") - 14 == len(base_chunk) - 1
@@ -2346,3 +2347,14 @@ def test_catalogue_three_pin_scaled_terminals_append_after_component_stream(
         component_prefix = b"\xff" + bytes([len(key)]) + key
         assert chunk.find(component_prefix) >= 0
         assert chunk.find(component_prefix) < chunk.find(b"$TERBIDIR")
+    labels = [record["label"] for record in terminal_placer._bidir_label_records(chunk)]
+    assert max(len(label) for label in labels) <= 16
+    first_key = result.selected_groups[0].key
+    expected_role_suffixes = {
+        "POT-HG": {"VCC", "OUT", "GND"},
+        "LM317T": {"OUT", "ADJ", "IN"},
+        "OPAMP": {"OUT", "INP", "INN"},
+    }[family]
+    assert {label for label in labels if label.startswith(first_key)} == {
+        f"{first_key}{suffix}" for suffix in expected_role_suffixes
+    }

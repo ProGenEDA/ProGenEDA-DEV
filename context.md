@@ -10806,3 +10806,114 @@ Validation:
 ### Final Response To User
 
 Planned summary: POT-HG V25 is locked. Test V26 for LM317T/OPAMP only; the fix preserves their required `00 00` object prefix while keeping the V20-style component-stream-then-attachments order.
+
+---
+
+## User Message - 2026-07-09 21:20:25 +05:00
+
+failed
+
+Selected text:
+
+```text
+LM317T: 9x, 15x, 23xOPAMP: 9x, 15x, 23x
+```
+
+## Agent Visible Responses - 2026-07-09 21:20:25 +05:00 onwards
+
+I treated V26 `LM317T`/`OPAMP` as rejected and kept `POT-HG` locked from V25
+because the user previously reported it worked.
+
+I first verified the previous checkpoint:
+
+- branch: `codex/generic-proteus-generator-v0`
+- upstream: `origin/codex/generic-proteus-generator-v0`
+- local/remote HEAD matched: `fabace5868e99f123d7173443572dc0b96b7fe6d`
+
+I left the unrelated existing dirty files alone.
+
+Local V26 audit found two concrete issues:
+
+- V26 `LM317T`/`OPAMP` terminal reports were invalid because
+  `object_chunk_double_ff_valid` was false.
+- V26 labels were much longer than the accepted 1x LM/OP evidence labels.
+
+Before changing the shared terminal placer I backed it up to:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260709_211225_before_v27_lm_op_finalizer_labels.py`
+
+Implemented V27 shared-placer repair in
+`src/proteusgen/component_terminal_placer.py`:
+
+- the catalogue component-stream append branch now finalizes with explicit
+  `FF FF`;
+- generated catalogue labels now use compact role aliases when donor labels
+  are disabled:
+  - `OUTPUT -> OUT`
+  - `ADJUST -> ADJ`
+  - `INPUT -> IN`
+  - `NONINVERTINGINPUT -> INP`
+  - `INVERTINGINPUT -> INN`
+  - plus other short aliases for common roles.
+
+Strengthened `tests/test_component_placer.py`:
+
+- scaled catalogue three-pin output must end in `FF FF`;
+- it must preserve component-before-terminal order;
+- it must emit all 9 terminals/wires for the 3x regression;
+- compact generated labels must stay <=16 chars and match expected first
+  component role labels.
+
+Generated V27 replacement pack for only the failed families:
+
+- `experiments/three_pin_control_terminal_v27_lm_op_finalizer_label_temp_2026_07_09/`
+
+Use only:
+
+- `experiments/three_pin_control_terminal_v27_lm_op_finalizer_label_temp_2026_07_09/02_terminalized_sa_test_these/`
+
+Terminalized `_sa` files generated:
+
+- `V27_01_LM317T_9x_sa.pdsprj`
+- `V27_01_LM317T_15x_sa.pdsprj`
+- `V27_01_LM317T_23x_sa.pdsprj`
+- `V27_02_OPAMP_9x_sa.pdsprj`
+- `V27_02_OPAMP_15x_sa.pdsprj`
+- `V27_02_OPAMP_23x_sa.pdsprj`
+
+V27 static audit:
+
+- all 6 terminal reports valid;
+- all 6 outputs preserve prefix `0000`;
+- all 6 outputs end with `FF FF`;
+- all component packets appear before the first terminal;
+- first terminal starts at `len(no-terminal-control)-1`;
+- 9x files have 27 terminals and 27 WIRE records;
+- 15x files have 45 terminals and 45 WIRE records;
+- 23x files have 69 terminals and 69 WIRE records;
+- first LM317T labels are `U132OUT`, `U132ADJ`, `U132IN`;
+- first OPAMP labels are `U107OUT`, `U107INP`, `U107INN`;
+- max generated label length is 7.
+
+Validation:
+
+- focused catalogue three-pin tests: 6 passed;
+- `python -m pytest tests/test_component_placer.py -q` -> 101 passed;
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - fixed catalogue
+  component-stream append finalization and compact generated labels.
+- `tests/test_component_placer.py` - added regression checks for `FF FF`,
+  append boundary, all scaled terminals/wires, and compact labels.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_211225_before_v27_lm_op_finalizer_labels.py` - pre-edit backup of the shared terminal placer.
+- `experiments/three_pin_control_terminal_v27_lm_op_finalizer_label_temp_2026_07_09/` - generated V27 raw evidence, compact no-terminal controls, terminalized `_sa` outputs, reports, README, and summary.
+- `experiments/three_pin_control_terminal_v27_lm_op_finalizer_label_temp_2026_07_09.zip` - archive of the V27 pack.
+- `docs/architecture.md` - recorded V26 rejection, root cause, and V27 repair.
+- `knowledge/test_results.jsonl` - appended V27 static result.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V26 is rejected. Test V27 for LM317T/OPAMP only; POT-HG remains locked from V25. The V27 fix adds explicit `FF FF` finalization and compact labels while preserving the V20-style component-stream append order and `0000` prefix.

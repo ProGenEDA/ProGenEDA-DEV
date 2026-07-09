@@ -1157,3 +1157,49 @@ component-anchor count equal to the requested generated count, and has exactly
 WIRE records. `tests/test_component_placer.py` reported 101 passed and
 `python -m compileall -q src tests tools/proteus_generation` passed. Proteus
 open/render acceptance is pending user testing.
+
+User result on 2026-07-09: V26 `LM317T` and `OPAMP` scaled packs failed.
+`POT-HG` remains locked accepted from V25 and was not regenerated.
+
+Local root cause for V26: the V26 prefix fix was necessary but incomplete.
+The generated V26 `LM317T`/`OPAMP` terminal reports were invalid because the
+catalogue component-stream append branch wrote only a single final object
+stream `FF`. Earlier Proteus-saved catalogue evidence showed this route needs
+an explicit `FF FF` tail; without it Proteus can report Bad Object Record. V26
+also used long generated labels such as component-key + full role names, while
+the accepted 1x donor-shaped examples used compact labels.
+
+V27 LM317T/OPAMP finalizer + compact-label repair:
+
+`experiments/three_pin_control_terminal_v27_lm_op_finalizer_label_temp_2026_07_09/`
+
+V27 scope:
+
+- `POT-HG`: not regenerated; V25 is accepted.
+- `LM317T`: 9x, 15x, 23x regenerated.
+- `OPAMP`: 9x, 15x, 23x regenerated.
+
+V27 keeps the V25/V20 component-first stream order and the V26 `00 00` raw
+prefix preservation, then adds:
+
+1. Explicit `FF FF` object-stream finalization for the catalogue
+   component-stream append branch.
+2. Compact generated labels when donor labels are disabled:
+   `OUT`, `ADJ`, `IN`, `INP`, and `INN` aliases are appended to the component
+   key, capped at 16 characters.
+
+Generated V27 terminalized scaled solos:
+
+- `LM317T`: 9x, 15x, 23x.
+- `OPAMP`: 9x, 15x, 23x.
+
+V27 static result: 6 generated cases, 6 compact no-terminal controls, 6
+terminalized outputs, and 6/6 strict audits passed. Each terminalized output
+uses prefix `00 00`, ends with `FF FF`, has all component packets before the
+first terminal, has first terminal start equal to `len(no-terminal-control)-1`,
+has exactly `3 * component_count` `$TERBIDIR` records plus exactly
+`3 * component_count` WIRE records, and has compact first-component labels:
+`U132OUT/U132ADJ/U132IN` for `LM317T` and `U107OUT/U107INP/U107INN` for
+`OPAMP`. `tests/test_component_placer.py` reported 101 passed and
+`python -m compileall -q src tests tools/proteus_generation` passed. Proteus
+open/render acceptance is pending user testing.

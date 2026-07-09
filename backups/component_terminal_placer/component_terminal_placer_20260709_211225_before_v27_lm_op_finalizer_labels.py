@@ -627,24 +627,8 @@ def _catalogue_terminal_label(component_key: str, pin: str, role: str) -> str:
     key_token = re.sub(r"[^A-Z0-9]", "", str(component_key).upper()) or "X"
     pin_token = re.sub(r"[^A-Z0-9]", "", str(pin).upper()) or "X"
     role_token = re.sub(r"[^A-Z0-9]", "", str(role).upper())
-    role_aliases = (
-        ("NONINVERTINGINPUT", "INP"),
-        ("INVERTINGINPUT", "INN"),
-        ("ADJUST", "ADJ"),
-        ("OUTPUT", "OUT"),
-        ("INPUT", "IN"),
-        ("GROUND", "GND"),
-        ("COMMON", "COM"),
-        ("RESET", "RST"),
-        ("CLOCK", "CLK"),
-        ("ENABLE", "EN"),
-    )
     if role_token and role_token != "UNKNOWN":
-        compact_role = next(
-            (alias for token, alias in role_aliases if token in role_token),
-            role_token[:4],
-        )
-        return f"{key_token}{compact_role}"[:16]
+        return f"{key_token}PIN{pin_token}{role_token}"[:60]
     return f"{key_token}PIN{pin_token}"[:60]
 
 
@@ -1980,9 +1964,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             + b"".join(local_records[:-1])
             + local_records[-1][:-1]
         )
-        new_chunk = _ensure_double_ff_object_stream_terminator(
-            component_stream + b"".join(trailing_attachment_records)
-        )
+        new_chunk = component_stream + b"".join(trailing_attachment_records) + b"\xff"
     elif local_records and not local_records[0].startswith(b"\xff"):
         # Terminal-leading object streams use the same initial shape as the
         # accepted native two-pin route: the stream starts with the first byte
