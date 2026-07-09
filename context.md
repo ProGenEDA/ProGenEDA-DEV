@@ -10339,3 +10339,59 @@ I finished the V20 repair by fixing the remaining static validation issue: catal
 ### Final Response To User
 
 Planned summary: V20 is the replacement for rejected V19. Test only the three V20 `_sa` files first. Static gates are much stricter now and compare full WIRE unit records byte-for-byte against donor evidence.
+
+---
+
+## User Message - 2026-07-09 15:58:28 +05:00
+
+well these work, are u sure u havent just given me my donors back? if not good now generate 9x15x23x(unless limit hit) of these
+
+## Agent Visible Responses - 2026-07-09 15:58:28 +05:00 onwards
+
+I verified the previous checkpoint first. Local `HEAD`, upstream, and remote all matched commit `a22e12bdff14441cc5e02c1beaf4da14a88a5367`. Existing unrelated user artifacts remained unstaged.
+
+I confirmed the V20 files were not returned donor projects. They were generated from no-terminal component-placement bases using the locked new-components mega donor, then terminalized through `src/proteusgen/component_terminal_placer.py`. The terminalized donor files are only evidence sources for catalogue facts such as labels, link trailers, contact endpoints, and WIRE-unit shapes.
+
+Locked mega availability for the requested families:
+
+- `POT-HG`: 100
+- `LM317T`: 80
+- `OPAMP`: 105
+
+No requested count hit a donor limit.
+
+Generated V21 scaled pack:
+
+- `experiments/three_pin_control_terminal_v21_scaled_temp_2026_07_09/`
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V21_SCALED_TEMP_2026_07_09.zip`
+
+Generated terminalized `_sa` files:
+
+- `POT-HG`: 9x, 15x, 23x
+- `LM317T`: 9x, 15x, 23x
+- `OPAMP`: 9x, 15x, 23x
+
+V21 static result:
+
+- 9 generated cases.
+- 9 no-terminal controls.
+- 9 terminalized outputs.
+- 9 static-accept gates passed.
+- 0 limit reductions.
+
+Focused tests passed:
+
+- `python -m pytest tests/test_component_catalog.py::test_terminalized_donor_geometry_preserves_three_pin_wire_polylines tests/test_component_catalog.py::test_catalogue_three_pin_planner_emits_donor_wire_unit_shapes -q` -> 2 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `experiments/three_pin_control_terminal_v21_scaled_temp_2026_07_09/` - generated scaled no-terminal controls and terminalized outputs.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V21_SCALED_TEMP_2026_07_09.zip` - generated scaled V21 archive.
+- `docs/architecture.md` - recorded V20 user acceptance and V21 scaled generation details.
+- `knowledge/test_results.jsonl` - appended V21 static test-result record.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V21 has 9 terminalized files for testing: POT-HG, LM317T, and OPAMP at 9x/15x/23x. None hit limits. These were generated through component placer + shared terminal placer, not by returning donor projects.

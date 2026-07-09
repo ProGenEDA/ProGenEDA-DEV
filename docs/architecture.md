@@ -927,3 +927,43 @@ V20 static result: 3 generated cases, 3 base-valid, 3 terminal-static-valid,
 3 terminal suffix-link-valid, 3 wire-path-contact-valid, 3 full WIRE-unit
 byte-for-byte donor-evidence matches, and 3 final static-accept gates passed.
 Proteus open/render acceptance is pending user testing.
+
+User result on 2026-07-09: V20 opened/rendered correctly for the three 1x
+families. The user asked whether the files were simply donor copies and then
+requested 9x/15x/23x scaled solos.
+
+V21 scaled repair pack:
+
+`experiments/three_pin_control_terminal_v21_scaled_temp_2026_07_09/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V21_SCALED_TEMP_2026_07_09.zip`
+
+V21 generation method:
+
+1. Generate no-terminal component-placement bases from the locked mega donor
+   `proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`.
+2. Pass the selected placed component groups through
+   `src/proteusgen/component_terminal_placer.py`.
+3. Use terminalized donors only as catalogue/evidence sources for labels,
+   link trailers, contacts, and WIRE-unit shapes. They are not used as output
+   projects.
+
+Locked mega donor availability for this group was sufficient: `POT-HG` 100,
+`LM317T` 80, `OPAMP` 105. Therefore no requested 9x/15x/23x target hit a
+limit.
+
+Generated terminalized scaled solos:
+
+- `POT-HG`: 9x, 15x, 23x.
+- `LM317T`: 9x, 15x, 23x.
+- `OPAMP`: 9x, 15x, 23x.
+
+V21 static result: 9 generated cases, 9 no-terminal controls, 9 terminalized
+outputs, 9 static-accept gates passed, zero limit reductions. Static checks
+include placement validity, terminal report validity, final suffix-link
+validity, wire-path contact validity, terminal grid alignment, expected
+`3 * component_count` terminals/WIREs, selected group count, and explicit
+double-FF object termination. Proteus open/render acceptance is pending user
+testing.
