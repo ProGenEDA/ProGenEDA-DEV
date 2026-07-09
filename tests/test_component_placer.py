@@ -56,6 +56,7 @@ from proteusgen.component_terminal_placer import (
     attach_component_bidir_terminals_to_project,
     attach_mixed_overlay_bidir_terminals_to_project,
     attach_mixed_native_bidir_terminals_to_project,
+    attach_mixed_component_and_catalogue_bidir_terminals_to_project,
     attach_resistor_bidir_terminals_to_project,
     plan_attached_capacitor_terminals,
     plan_attached_electrolytic_capacitor_terminals,
@@ -2088,6 +2089,82 @@ def test_shared_terminal_dispatcher_terminalizes_all_two_pin_families(
     assert terminal_pair_families == set(all_two_pin_families)
     assert chunk.count(b"$TERBIDIR") == len(all_two_pin_families) * 2
     assert chunk.count(b"\x7fWIRE") == len(all_two_pin_families) * 2
+
+
+@pytest.mark.parametrize("count", [1, 9])
+def test_mixed_two_pin_and_catalogue_terminalizer_handles_lm_op_combo(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    all_two_pin_families = [
+        "RESISTOR",
+        "CAP",
+        "DIODE",
+        "VSINE",
+        "VSOURCE",
+        "CSOURCE",
+        "VPULSE",
+        "LED-RED",
+        "1N4733A",
+        "SWITCH",
+        "40EPS08",
+        "BZY88C",
+        "1N4007",
+        "1N4148",
+        "1N6000B",
+        "BZX55C5V1",
+        "BZX79C5V1",
+        "FUSE",
+        "REALIND",
+        "CAP-ELEC",
+    ]
+    catalogue_families = ["LM317T", "OPAMP"]
+    base = tmp_path / "mixed_two_pin_lm_op_base.pdsprj"
+    output = tmp_path / "mixed_two_pin_lm_op_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                **{family: count for family in all_two_pin_families},
+                **{family: count for family in catalogue_families},
+            },
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=all_two_pin_families,
+        catalogue_terminal_families=catalogue_families,
+        use_donor_terminal_labels=False,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    expected_terminals = count * (
+        len(all_two_pin_families) * 2 + len(catalogue_families) * 3
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == expected_terminals
+    assert report["wire_count_added"] == expected_terminals
+    assert report["terminalized_component_count"] == (
+        count * (len(all_two_pin_families) + len(catalogue_families))
+    )
+    assert report["terminal_suffixes_unique"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["object_chunk_double_ff_valid"] is True
+    assert chunk.count(b"$TERBIDIR") == expected_terminals
+    assert chunk.count(b"\x7fWIRE") == expected_terminals
+    assert chunk.endswith(b"\xff\xff")
 
 
 @pytest.mark.parametrize(

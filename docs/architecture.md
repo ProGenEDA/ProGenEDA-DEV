@@ -1203,3 +1203,48 @@ has exactly `3 * component_count` `$TERBIDIR` records plus exactly
 `OPAMP`. `tests/test_component_placer.py` reported 101 passed and
 `python -m compileall -q src tests tools/proteus_generation` passed. Proteus
 open/render acceptance is pending user testing.
+
+User result on 2026-07-09: V27 `LM317T` and `OPAMP` 9x/15x/23x all worked.
+Treat `POT-HG` V25 and `LM317T`/`OPAMP` V27 as accepted checkpoints.
+
+V28 mixed two-pin + LM317T/OPAMP combination pack:
+
+`experiments/mixed_two_pin_lm_op_terminal_v28_temp_2026_07_09/`
+
+V28 scope:
+
+- accepted two-pin terminal families:
+  `RESISTOR`, `CAP`, `DIODE`, `VSINE`, `VSOURCE`, `CSOURCE`, `VPULSE`,
+  `LED-RED`, `1N4733A`, `SWITCH`, `40EPS08`, `BZY88C`, `1N4007`, `1N4148`,
+  `1N6000B`, `BZX55C5V1`, `BZX79C5V1`, `FUSE`, `REALIND`, `CAP-ELEC`;
+- accepted catalogue three-pin families: `LM317T`, `OPAMP`;
+- requested mixed counts: 1x, 9x, 15x, and 24x.
+
+The existing two-pin mixed terminalizer and catalogue terminalizer both require
+a bare component stream, so they cannot be chained one after the other. V28
+adds a shared combined entrypoint in `src/proteusgen/component_terminal_placer.py`:
+`attach_mixed_component_and_catalogue_bidir_terminals_to_project(...)`.
+It preserves the component-placer stream, patches all native two-pin and
+catalogue component pin-link fields in one pass, appends terminal/WIRE records
+once, and rebases every terminal/component link from final ROOT.DSN WIRE
+addresses. No component-specific terminal script was added.
+
+V28 generated files for Proteus testing:
+
+- `V28_01_ALL_2PIN_LM_OP_1x_sa.pdsprj`
+- `V28_02_ALL_2PIN_LM_OP_9x_sa.pdsprj`
+- `V28_03_ALL_2PIN_LM_OP_15x_sa.pdsprj`
+- `V28_04_ALL_2PIN_LM_OP_24x_CAPPED_sa.pdsprj`
+
+The 1x/9x/15x cases are exact requested counts. The 24x stress case is capped
+where the locked mega donor selected non-terminalizable high-index packets:
+`CAP-ELEC=21`, `DIODE=22`, `CSOURCE=21`, `FUSE=22`, and `REALIND=20`; all
+other listed families remain 24.
+
+V28 static result: all 4 generated cases passed. Terminal/WIRE counts are
+46/46 for 1x, 414/414 for 9x, 690/690 for 15x, and 1076/1076 for the capped
+24x stress case. All reports have valid terminal suffix links, unique suffixes,
+catalogue wire-path/grid checks valid, final `FF FF` object-stream endings,
+and link allocation counts equal to terminal counts. `tests/test_component_placer.py`
+reported 103 passed and `python -m compileall -q src tests tools/proteus_generation`
+passed. Proteus open/render acceptance of V28 is pending user testing.

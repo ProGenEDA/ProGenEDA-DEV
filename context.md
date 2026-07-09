@@ -10917,3 +10917,129 @@ Validation:
 ### Final Response To User
 
 Planned summary: V26 is rejected. Test V27 for LM317T/OPAMP only; POT-HG remains locked from V25. The V27 fix adds explicit `FF FF` finalization and compact labels while preserving the V20-style component-stream append order and `0000` prefix.
+
+---
+
+## User Message - 2026-07-09 21:25:00 +05:00
+
+they all worked v good. now generate their combinations with already accepted (i.e. the 2 pined ones)
+all the 2 pinned and these new. 1x 9x 15x 24x combination circuit
+
+## User Message - 2026-07-09 22:01:56 +05:00
+
+continue
+
+## Agent Visible Responses - 2026-07-09 21:25:00 +05:00 onwards
+
+I treated V27 `LM317T`/`OPAMP` as user-accepted and kept `POT-HG` locked from
+V25.
+
+At the start of the turn I verified the previous checkpoint:
+
+- branch: `codex/generic-proteus-generator-v0`
+- upstream: `origin/codex/generic-proteus-generator-v0`
+- local/remote HEAD matched: `bc8ef22524822fb181547db88373977ee7051b4b`
+
+I left unrelated existing dirty files alone.
+
+Before editing the shared terminal placer I created this backup:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260709_213727_before_v28_mixed_two_pin_lm_op.py`
+
+Implemented V28 shared mixed terminal support in:
+
+- `src/proteusgen/component_terminal_placer.py`
+
+Reason: the accepted native two-pin mixed terminalizer and the accepted
+catalogue terminalizer both require a bare component stream. They cannot be
+safely chained one after the other. V28 adds one shared combined entrypoint:
+
+- `attach_mixed_component_and_catalogue_bidir_terminals_to_project(...)`
+
+It does this:
+
+- consumes the bare component-placer project once;
+- preserves the component stream;
+- patches native two-pin and catalogue component pin-link fields in one pass;
+- reserves native temporary suffixes before assigning catalogue temporary
+  suffixes, fixing the scaled CSOURCE/catalogue collision at `7a00/7a32`;
+- appends terminal/WIRE records once;
+- rebases every terminal/component link from final ROOT.DSN WIRE addresses.
+
+Also updated `_update_report_terminal_label(...)` so label-jitter rebasing can
+update catalogue `terminal_pins` as well as native two-pin `terminal_pairs`.
+
+Added regression coverage in `tests/test_component_placer.py`:
+
+- mixed all accepted two-pin families plus `LM317T`/`OPAMP`;
+- tested at 1x and 9x to cover the scaled temporary-suffix collision.
+
+Generated V28 pack:
+
+- `experiments/mixed_two_pin_lm_op_terminal_v28_temp_2026_07_09/`
+
+Use only:
+
+- `experiments/mixed_two_pin_lm_op_terminal_v28_temp_2026_07_09/01_terminalized_sa_test_these/`
+
+Generated terminalized `_sa` files:
+
+- `V28_01_ALL_2PIN_LM_OP_1x_sa.pdsprj`
+- `V28_02_ALL_2PIN_LM_OP_9x_sa.pdsprj`
+- `V28_03_ALL_2PIN_LM_OP_15x_sa.pdsprj`
+- `V28_04_ALL_2PIN_LM_OP_24x_CAPPED_sa.pdsprj`
+
+The 1x, 9x, and 15x files are exact requested counts for all included
+families. The 24x stress case had to be capped because the locked mega donor
+selected non-terminalizable high-index packets for some accepted families:
+
+- `CAP-ELEC=21`
+- `DIODE=22`
+- `CSOURCE=21`
+- `FUSE=22`
+- `REALIND=20`
+
+All other listed families remain 24 in the 24x capped case.
+
+V28 static audit:
+
+- 1x: 22 components, 46 terminals, 46 WIRE records.
+- 9x: 198 components, 414 terminals, 414 WIRE records.
+- 15x: 330 components, 690 terminals, 690 WIRE records.
+- 24x capped: 514 components, 1076 terminals, 1076 WIRE records.
+- all terminal reports valid;
+- all suffix links valid;
+- all suffixes unique;
+- catalogue wire-path/grid checks valid;
+- all outputs end with `FF FF`;
+- link allocation count equals terminal count for every case.
+
+Validation:
+
+- focused mixed regression: 2 passed;
+- `python -m pytest tests/test_component_placer.py -q` -> 103 passed;
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - added shared combined
+  native-two-pin + catalogue terminal emitter and fixed label-jitter report
+  updates for catalogue terminal pins.
+- `tests/test_component_placer.py` - added mixed 1x/9x regression for all
+  accepted two-pin families plus `LM317T`/`OPAMP`.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_213727_before_v28_mixed_two_pin_lm_op.py` - pre-edit backup.
+- `experiments/mixed_two_pin_lm_op_terminal_v28_temp_2026_07_09/` - generated
+  V28 no-terminal controls, terminalized `_sa` outputs, reports, README, and
+  summary.
+- `experiments/mixed_two_pin_lm_op_terminal_v28_temp_2026_07_09.zip` - archive
+  of the V28 pack.
+- `docs/architecture.md` - recorded V27 acceptance, V28 mixed support, and 24x
+  stress caps.
+- `knowledge/test_results.jsonl` - appended V28 static result.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V28 mixed pack generated. Test the four `_sa` files in
+`01_terminalized_sa_test_these`; 24x is capped only where the locked mega donor
+lacks clean terminalizable packets.
