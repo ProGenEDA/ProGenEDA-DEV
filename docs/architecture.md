@@ -967,3 +967,39 @@ validity, wire-path contact validity, terminal grid alignment, expected
 `3 * component_count` terminals/WIREs, selected group count, and explicit
 double-FF object termination. Proteus open/render acceptance is pending user
 testing.
+
+User result on 2026-07-09: V21 was visually rejected. The user reported the
+scaled files appeared like the same 1x donor-looking circuit rather than real
+9x/15x/23x outputs. Raw V21 object counts showed the expected number of
+component packets/terminals/WIREs, but the donor-style repeated terminal labels
+(`vcc`, `gnd`, `out`, `Pin2VO`, etc.) made the output ambiguous and not
+acceptable for Proteus visual testing.
+
+V22 scaled unique-label replacement:
+
+`experiments/three_pin_control_terminal_v22_scaled_unique_labels_temp_2026_07_09/`
+
+Archive:
+
+`experiments/THREE_PIN_CONTROL_TERMINAL_V22_SCALED_UNIQUE_LABELS_TEMP_2026_07_09.zip`
+
+V22 keeps the same 9x/15x/23x scaled targets, but calls the shared catalogue
+terminal path with `use_donor_terminal_labels=False`. Terminal labels are now
+component-qualified:
+
+- `POT-HG`: labels such as `RV1PIN1VCC`, `RV1PIN3GND`, `RV1PIN2OUT`.
+- `LM317T`: labels such as `U132PIN1ADJUST`, `U132PIN2OUTPUT`,
+  `U132PIN3INPUT`.
+- `OPAMP`: labels such as `U107PINOUTOUTPUT`,
+  `U107PININNONINVERTINGINPUT`, and `U107PINININVERTINGINPUT` after
+  catalogue normalization.
+
+The default shared placer behavior remains donor-label mode for 1x accepted
+evidence matching. The qualified-label mode is explicit and used for scaled
+packs where repeated donor labels are not acceptable.
+
+V22 static result: 9 generated cases, 9 no-terminal controls, 9 terminalized
+outputs, 9 static-accept gates passed, zero limit reductions, 9/9 unique-label
+cases, and 9/9 visual-anchor audits where the distinct component-anchor count
+equals the requested generated count. Proteus open/render acceptance is pending
+user testing.

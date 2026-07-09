@@ -271,6 +271,36 @@ def test_catalogue_three_pin_planner_emits_donor_wire_unit_shapes(tmp_path) -> N
         assert int.from_bytes(record[32:34], "little") == len(expectation["coordinates"]) // 2
 
 
+def test_catalogue_three_pin_planner_can_qualify_scaled_labels(tmp_path) -> None:
+    result = generate_component_placement_project(
+        {
+            "components": {"POT-HG": 2},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "pot_hg_2x_qualified_label_plan.pdsprj",
+        full_cdb=True,
+    )
+
+    donor_label_plan = plan_catalogue_pin_bidir_terminals(result.selected_groups)
+    qualified_plan = plan_catalogue_pin_bidir_terminals(
+        result.selected_groups,
+        use_donor_terminal_labels=False,
+    )
+
+    donor_labels = [
+        row["terminal"]["label"]
+        for row in donor_label_plan["terminal_plans"]
+    ]
+    qualified_labels = [
+        row["terminal"]["label"]
+        for row in qualified_plan["terminal_plans"]
+    ]
+
+    assert donor_labels.count("vcc") == 2
+    assert len(set(qualified_labels)) == len(qualified_labels)
+    assert {"RV1PIN1VCC", "RV2PIN1VCC"} <= set(qualified_labels)
+
+
 def test_catalogue_pin_planner_coordinates_are_component_relative(tmp_path) -> None:
     result = generate_component_placement_project(
         {

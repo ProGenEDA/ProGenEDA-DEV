@@ -10395,3 +10395,72 @@ Focused tests passed:
 ### Final Response To User
 
 Planned summary: V21 has 9 terminalized files for testing: POT-HG, LM317T, and OPAMP at 9x/15x/23x. None hit limits. These were generated through component placer + shared terminal placer, not by returning donor projects.
+
+---
+
+## User Message - 2026-07-09 16:23:20 +05:00
+
+bro they are the same 1x, tf? not 9x or 15x or 23x, the basic 1x which looks suspecially like my donor
+
+## Agent Visible Responses - 2026-07-09 16:23:20 +05:00 onwards
+
+I treated V21 as rejected. I first verified the previous commit/remote checkpoint: local `HEAD`, upstream, and remote all matched `d24b49dd64b60c2b77fe42b7978c5bcb1877cfd9`.
+
+Inspection showed the raw V21 files did contain the expected object counts, for example POT-HG 9x had 9 selected groups, 27 `$TERBIDIR` records, and 27 WIRE records. However the user visual rejection is valid because the scaled outputs reused donor-style terminal labels (`vcc`, `gnd`, `out`, `Pin2VO`, etc.), making the outputs look like repeated/ambiguous donor evidence rather than clearly generated scaled circuits.
+
+I backed up the shared terminal placer before editing:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260709_162011_before_scaled_unique_labels.py`
+
+I updated the shared catalogue terminal path, not a new script:
+
+- Added `use_donor_terminal_labels` to `plan_catalogue_pin_bidir_terminals`.
+- Added `use_donor_terminal_labels` to `attach_catalogue_pin_bidir_terminals_to_project`.
+- Default behavior remains `True`, preserving V20 1x donor-label evidence matching.
+- Scaled generation uses `False`, producing component-qualified labels like `RV1PIN1VCC`, `RV2PIN1VCC`, `U132PIN1ADJUST`, and `U107PINOUTOUTPUT`.
+
+Generated replacement V22 scaled pack:
+
+- `experiments/three_pin_control_terminal_v22_scaled_unique_labels_temp_2026_07_09/`
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V22_SCALED_UNIQUE_LABELS_TEMP_2026_07_09.zip`
+
+V22 generated terminalized `_sa` files:
+
+- `POT-HG`: 9x, 15x, 23x
+- `LM317T`: 9x, 15x, 23x
+- `OPAMP`: 9x, 15x, 23x
+
+V22 static result:
+
+- 9 generated cases.
+- 9 no-terminal controls.
+- 9 terminalized outputs.
+- 9 static-accept gates passed.
+- 0 limit reductions.
+- 9/9 unique-label cases.
+- 9/9 visual-anchor audits where distinct component-anchor count equals the requested generated count.
+
+Concrete readback for POT-HG 9x:
+
+- First terminal labels include `RV1PIN1VCC`, `RV1PIN3GND`, `RV1PIN2OUT`, `RV2PIN1VCC`, `RV2PIN3GND`, `RV2PIN2OUT`, `RV3PIN1VCC`, `RV3PIN3GND`, `RV3PIN2OUT`.
+- Anchor audit reported `anchor_count: 9` and `distinct_anchor_count: 9`.
+
+Focused tests passed:
+
+- `python -m pytest tests/test_component_catalog.py::test_terminalized_donor_geometry_preserves_three_pin_wire_polylines tests/test_component_catalog.py::test_catalogue_three_pin_planner_emits_donor_wire_unit_shapes tests/test_component_catalog.py::test_catalogue_three_pin_planner_can_qualify_scaled_labels -q` -> 3 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - added explicit donor-label vs component-qualified-label mode in the shared catalogue terminal path.
+- `tests/test_component_catalog.py` - added regression for qualified scaled labels.
+- `backups/component_terminal_placer/component_terminal_placer_20260709_162011_before_scaled_unique_labels.py` - backup before shared placer edit.
+- `experiments/three_pin_control_terminal_v22_scaled_unique_labels_temp_2026_07_09/` - generated V22 scaled unique-label controls and terminalized outputs.
+- `experiments/THREE_PIN_CONTROL_TERMINAL_V22_SCALED_UNIQUE_LABELS_TEMP_2026_07_09.zip` - generated V22 archive.
+- `docs/architecture.md` - marked V21 visually rejected and documented V22 replacement.
+- `knowledge/test_results.jsonl` - appended V22 static test-result record.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: You were right to reject V21. Use V22 instead. It has unique component-qualified labels and report-proven distinct component anchors for 9x/15x/23x.

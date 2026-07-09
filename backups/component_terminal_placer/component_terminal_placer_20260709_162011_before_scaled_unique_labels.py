@@ -637,14 +637,11 @@ def _catalogue_donor_label(
     pin: str,
     role: str,
     raw_pin_geometry: dict[str, Any],
-    *,
-    use_donor_terminal_labels: bool = True,
 ) -> str:
-    if use_donor_terminal_labels:
-        for key in ("terminal_label", "donor_terminal_label"):
-            value = raw_pin_geometry.get(key)
-            if value:
-                return str(value)
+    for key in ("terminal_label", "donor_terminal_label"):
+        value = raw_pin_geometry.get(key)
+        if value:
+            return str(value)
     return _catalogue_terminal_label(component_key, pin, role)
 
 
@@ -852,7 +849,6 @@ def plan_catalogue_pin_bidir_terminals(
     *,
     catalog: Any | None = None,
     suffix_start: int = 0x7300,
-    use_donor_terminal_labels: bool = True,
 ) -> dict[str, Any]:
     """Plan multi-pin terminals from catalogue Proteus pin geometry.
 
@@ -1016,13 +1012,7 @@ def plan_catalogue_pin_bidir_terminals(
                 )
                 terminal_contact_source = "donor_terminal_contact_anchor_offset"
             terminal = TerminalSpec(
-                label=_catalogue_donor_label(
-                    key,
-                    pin.name,
-                    pin.role,
-                    raw_pin_geometry,
-                    use_donor_terminal_labels=use_donor_terminal_labels,
-                ),
+                label=_catalogue_donor_label(key, pin.name, pin.role, raw_pin_geometry),
                 symbol_x=pin_x,
                 symbol_y=pin_y,
                 angle_tenths=angle,
@@ -1353,7 +1343,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     catalog: Any | None = None,
     terminal_families: Iterable[str] | None = None,
     suffix_start: int = 0x7300,
-    use_donor_terminal_labels: bool = True,
 ) -> dict[str, Any]:
     """Attach catalogue-backed multi-pin terminals using placed WIRE skeletons.
 
@@ -1478,7 +1467,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         [planning_group],
                         catalog=catalog,
                         suffix_start=suffix,
-                        use_donor_terminal_labels=use_donor_terminal_labels,
                     )
                     if not plan["valid"]:
                         raise ValueError(
@@ -1721,7 +1709,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             [planning_group],
             catalog=catalog,
             suffix_start=suffix,
-            use_donor_terminal_labels=use_donor_terminal_labels,
         )
         if not plan["valid"]:
             raise ValueError(
