@@ -1320,3 +1320,58 @@ and the mixed three-control-only cases all have expected terminal/WIRE counts
 and valid suffix-link allocation reports. `python -m compileall -q src tests
 tools/proteus_generation` passed. Proteus open/render acceptance of V30 is
 pending user testing.
+
+User result on 2026-07-10: V30 worked. Treat the following as accepted evidence
+for the current terminal scope:
+
+- all supported solo 1x files in V30;
+- mixed two-pin-only 1x/9x/15x/24x-capped in V30;
+- mixed `POT-HG + LM317T + OPAMP` 1x/9x/15x/24x in V30.
+
+V31 all-supported mixed terminal pack:
+
+`experiments/terminal_all_supported_mixed_v31_temp_2026_07_10/`
+
+V31 combines the V30-accepted groups into one all-supported mixed terminal
+pack:
+
+- all accepted two-pin families;
+- `POT-HG`;
+- `LM317T`;
+- `OPAMP`.
+
+The shared `attach_mixed_component_and_catalogue_bidir_terminals_to_project`
+writer was changed to preserve the accepted native two-pin mixed object order
+instead of the rejected V28/V29 order. It now:
+
+1. builds the accepted native two-pin terminal/component/WIRE stream order;
+2. patches catalogue component pin-link fields in place;
+3. appends catalogue terminal/WIRE units after the accepted native-order stream;
+4. rebases every active terminal/component pin link from final ROOT.DSN WIRE
+   addresses.
+
+V31 generated files for Proteus testing:
+
+- `01_terminalized_sa_test_these/V31_01_ALL_SUPPORTED_2PIN_POT_LM_OP_1x_sa.pdsprj`
+- `01_terminalized_sa_test_these/V31_02_ALL_SUPPORTED_2PIN_POT_LM_OP_9x_sa.pdsprj`
+- `01_terminalized_sa_test_these/V31_03_ALL_SUPPORTED_2PIN_POT_LM_OP_15x_sa.pdsprj`
+- `01_terminalized_sa_test_these/V31_04_ALL_SUPPORTED_2PIN_POT_LM_OP_24x_CAPPED_sa.pdsprj`
+
+The 1x/9x/15x cases are exact requested counts. The 24x stress case is capped
+where the locked mega donor selected non-terminalizable high-index packets:
+`CAP-ELEC=21`, `DIODE=22`, `CSOURCE=21`, `FUSE=22`, `REALIND=20`,
+`1N6000B=20`, `BZX55C5V1=20`, and `BZX79C5V1=21`; all other listed families
+remain 24.
+
+V31 static result: all 4 generated cases passed. Terminal/WIRE counts are
+49/49 for 1x, 441/441 for 9x, 735/735 for 15x, and 1126/1126 for the capped
+24x stress case. All reports have valid terminal suffix links, unique suffixes,
+catalogue wire-path/grid checks valid, native WIRE boundaries valid, accepted
+native-order stream preserved, final `FF FF` object-stream endings, and link
+allocation counts equal to terminal counts. Focused terminal regression
+reported 6 passed:
+`test_shared_terminal_dispatcher_terminalizes_all_two_pin_families`,
+`test_catalogue_three_pin_scaled_terminals_append_after_component_stream`, and
+`test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo`.
+`python -m compileall -q src tests tools/proteus_generation` passed. Proteus
+open/render acceptance of V31 is pending user testing.

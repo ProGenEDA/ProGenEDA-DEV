@@ -11241,3 +11241,121 @@ Validation:
 Planned summary: V29 is rejected. Test V30 in order: solos first, then mixed
 two-pin-only, then mixed POT-HG/LM317T/OPAMP. This will show exactly which
 layer breaks before the all-in-one mixed circuit is attempted again.
+## User Message - 2026-07-10 00:19:45 +05:00
+
+okk these worked, now fix all supported mixed so we can move onto other groups
+
+## Agent Visible Responses - 2026-07-10 00:19:45 +05:00 onwards
+
+I treated V30 as accepted evidence and verified the pushed checkpoint before
+implementation:
+
+- branch: `codex/generic-proteus-generator-v0`
+- upstream: `origin/codex/generic-proteus-generator-v0`
+- local/remote HEAD matched: `18f8d154c05777ef1a76e5e425070bad1b975370`
+
+I left the pre-existing unrelated dirty donor/fixed files untouched.
+
+The concrete diagnosis was:
+
+- V30 proved the isolated layers worked:
+  - all supported solos;
+  - mixed two-pin-only;
+  - mixed `POT-HG + LM317T + OPAMP`.
+- V28/V29 used a rejected third object order for all-in-one mixed:
+  `component stream -> native terminal array -> native wires -> catalogue terminal/WIRE units`.
+- V31 changes the shared mixed writer to preserve the accepted native two-pin
+  mixed object order, patch catalogue component links in place, append catalogue
+  terminal/WIRE units afterward, and then rebase all active links from final
+  ROOT.DSN WIRE addresses.
+
+Per repository rule, before editing `src/proteusgen/component_terminal_placer.py`
+I created:
+
+- `backups/component_terminal_placer/component_terminal_placer_20260710_001129_before_v31_all_supported_mixed.py`
+
+The existing focused regression was updated so it now covers all three accepted
+three-control families:
+
+- `POT-HG`
+- `LM317T`
+- `OPAMP`
+
+V31 generation initially exposed high-index non-terminalizable packets in the
+24x all-supported selection. The added 24x caps are:
+
+- `1N6000B=20`
+- `BZX55C5V1=20`
+- `BZX79C5V1=21`
+
+Existing 24x caps remain:
+
+- `CAP-ELEC=21`
+- `DIODE=22`
+- `CSOURCE=21`
+- `FUSE=22`
+- `REALIND=20`
+
+Generated V31 all-supported mixed pack:
+
+- `experiments/terminal_all_supported_mixed_v31_temp_2026_07_10/`
+- `experiments/terminal_all_supported_mixed_v31_temp_2026_07_10.zip`
+
+Test only these terminalized files first:
+
+- `01_terminalized_sa_test_these/V31_01_ALL_SUPPORTED_2PIN_POT_LM_OP_1x_sa.pdsprj`
+- `01_terminalized_sa_test_these/V31_02_ALL_SUPPORTED_2PIN_POT_LM_OP_9x_sa.pdsprj`
+- `01_terminalized_sa_test_these/V31_03_ALL_SUPPORTED_2PIN_POT_LM_OP_15x_sa.pdsprj`
+- `01_terminalized_sa_test_these/V31_04_ALL_SUPPORTED_2PIN_POT_LM_OP_24x_CAPPED_sa.pdsprj`
+
+No-terminal controls are in:
+
+- `00_no_terminal_controls/`
+
+V31 static audit:
+
+- 4 generated terminalized cases;
+- 4/4 terminal reports valid;
+- terminal/WIRE counts:
+  - 1x: 49/49
+  - 9x: 441/441
+  - 15x: 735/735
+  - 24x-capped: 1126/1126
+- suffix links valid;
+- suffixes unique;
+- catalogue wire path/grid checks valid;
+- native WIRE boundaries valid;
+- accepted native-order stream preserved;
+- double-FF tails valid;
+- link allocation counts equal terminal counts.
+
+Validation:
+
+- `python -m pytest tests/test_component_placer.py::test_shared_terminal_dispatcher_terminalizes_all_two_pin_families tests/test_component_placer.py::test_catalogue_three_pin_scaled_terminals_append_after_component_stream tests/test_component_placer.py::test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo -q` -> 6 passed.
+- `python -m compileall -q src tests tools/proteus_generation` -> passed.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - changed the shared mixed
+  native/catalogue writer to preserve accepted native two-pin mixed object
+  order before appending catalogue terminal/WIRE units.
+- `tests/test_component_placer.py` - extended the mixed native/catalogue
+  regression from `LM317T + OPAMP` to `POT-HG + LM317T + OPAMP`.
+- `backups/component_terminal_placer/component_terminal_placer_20260710_001129_before_v31_all_supported_mixed.py` - required pre-edit backup.
+- `experiments/terminal_all_supported_mixed_v31_temp_2026_07_10/` - generated
+  V31 no-terminal controls, terminalized all-supported mixed files, reports,
+  README, and summary.
+- `experiments/terminal_all_supported_mixed_v31_temp_2026_07_10.zip` - archive
+  of the V31 pack.
+- `docs/architecture.md` - recorded V30 user acceptance, V31 fix, generated
+  files, caps, and validation.
+- `knowledge/test_results.jsonl` - appended V31 static result.
+- `context.md` - appended this turn log.
+
+### Final Response To User
+
+Planned summary: V31 all-supported mixed pack is ready. Test only the four
+`_sa` files in `01_terminalized_sa_test_these`, in order 1x, 9x, 15x,
+24x-capped. The combined writer now uses the V30-accepted native two-pin mixed
+order plus catalogue append/rebase, and the 24x case is capped for high-index
+non-terminalizable packets.

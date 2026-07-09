@@ -2092,7 +2092,7 @@ def test_shared_terminal_dispatcher_terminalizes_all_two_pin_families(
 
 
 @pytest.mark.parametrize("count", [1, 9])
-def test_mixed_two_pin_and_catalogue_terminalizer_handles_lm_op_combo(
+def test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo(
     tmp_path: Path,
     count: int,
 ) -> None:
@@ -2118,7 +2118,7 @@ def test_mixed_two_pin_and_catalogue_terminalizer_handles_lm_op_combo(
         "REALIND",
         "CAP-ELEC",
     ]
-    catalogue_families = ["LM317T", "OPAMP"]
+    catalogue_families = ["POT-HG", "LM317T", "OPAMP"]
     base = tmp_path / "mixed_two_pin_lm_op_base.pdsprj"
     output = tmp_path / "mixed_two_pin_lm_op_terminalized.pdsprj"
     result = generate_component_placement_project(

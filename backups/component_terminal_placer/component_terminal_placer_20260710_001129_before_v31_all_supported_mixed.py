@@ -2238,9 +2238,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
 
     terminal_templates = load_production_templates(FixtureRegistry.load())
     patched_by_id: dict[int, bytes] = {}
-    native_leading_records: list[bytes] = []
-    native_terminal_by_group_id: dict[int, tuple[bytes, ...]] = {}
-    native_wire_by_group_id: dict[int, tuple[bytes, bytes]] = {}
+    native_terminal_records: list[bytes] = []
+    native_wire_pairs: list[tuple[bytes, bytes]] = []
     catalogue_attachment_records: list[bytes] = []
     family_reports: list[dict[str, Any]] = []
     terminalized_count = 0
@@ -2267,29 +2266,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         )
         if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
             source_index_start += len(family_groups)
-        if family == "RESISTOR":
-            native_leading_records.extend(family_terminals)
-            for group, wires in zip(family_groups, family_wires, strict=True):
-                native_terminal_by_group_id[id(group)] = ()
-                native_wire_by_group_id[id(group)] = wires
-        elif family == "CAP":
-            component_count = len(family_groups)
-            native_leading_records.extend(family_terminals[:component_count])
-            for index, (group, wires) in enumerate(
-                zip(family_groups, family_wires, strict=True)
-            ):
-                native_terminal_by_group_id[id(group)] = (
-                    family_terminals[component_count + index],
-                )
-                native_wire_by_group_id[id(group)] = wires
-        else:
-            for index, (group, wires) in enumerate(
-                zip(family_groups, family_wires, strict=True)
-            ):
-                native_terminal_by_group_id[id(group)] = tuple(
-                    family_terminals[index * 2 : index * 2 + 2]
-                )
-                native_wire_by_group_id[id(group)] = wires
+        native_terminal_records.extend(family_terminals)
+        native_wire_pairs.extend(family_wires)
         overlap = set(patched_by_id) & set(family_patches)
         if overlap:
             raise ValueError(f"Duplicate native patch target for {family}.")
@@ -2470,87 +2448,48 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         )
         terminalized_count += 1
 
-    local_starts_with_terminal = [
-        bool(native_terminal_by_group_id.get(id(group), ()))
-        for group in ordered_groups
-    ]
     local_records: list[bytes] = []
     preserved_rows: list[dict[str, Any]] = []
-    boundary_normalizations = 0
     terminalized_ids = set(patched_by_id)
-    for index, group in enumerate(ordered_groups):
-        group_id = id(group)
-        family = _group_family(group)
-        next_starts_with_terminal = (
-            index + 1 < len(local_starts_with_terminal)
-            and local_starts_with_terminal[index + 1]
-        )
-        terminal_units_follow_stream = (
-            index == len(ordered_groups) - 1
-            and bool(catalogue_attachment_records)
-        )
-        trim_tail_before_terminal = (
-            next_starts_with_terminal or terminal_units_follow_stream
-        )
-        if group_id in native_wire_by_group_id:
-            terminals = native_terminal_by_group_id[group_id]
-            patched = patched_by_id[group_id]
-            first_wire, second_wire = native_wire_by_group_id[group_id]
-            if len(first_wire) != 50 or len(second_wire) != 50:
-                raise ValueError(
-                    f"{family} {getattr(group, 'key', '')} lacks full native "
-                    "wire records."
-                )
-            local_records.extend(terminals)
-            if family != "RESISTOR":
-                local_records.append(b"\x00")
-            local_records.extend((patched, first_wire))
-            local_records.append(
-                second_wire[:-1] if trim_tail_before_terminal else second_wire
-            )
-            if trim_tail_before_terminal:
-                boundary_normalizations += 1
-            continue
-
-        data = patched_by_id.get(group_id, bytes(getattr(group, "data", b"")))
-        emitted = data[:-1] if trim_tail_before_terminal else data
-        if not emitted:
-            raise ValueError(
-                f"{family} {getattr(group, 'key', '')} has no payload bytes "
-                "before an active terminal unit."
-            )
-        local_records.append(emitted)
-        if trim_tail_before_terminal:
-            boundary_normalizations += 1
-        if group_id not in terminalized_ids:
+    for group in ordered_groups:
+        data = patched_by_id.get(id(group), bytes(getattr(group, "data", b"")))
+        local_records.append(data)
+        if id(group) not in terminalized_ids:
             preserved_rows.append(
                 {
                     "component_key": _group_key(group),
-                    "component_family": family,
+                    "component_family": _group_family(group),
                     "packet_size": len(bytes(getattr(group, "data", b""))),
-                    "emitted_packet_size": len(emitted),
-                    "byte_preserved": emitted == bytes(getattr(group, "data", b""))
-                    or emitted == bytes(getattr(group, "data", b""))[:-1],
-                    "boundary_tail_normalized": trim_tail_before_terminal,
+                    "byte_preserved": True,
                 }
             )
-    if not original_chunk[:1]:
+    object_component_prefix = original_chunk[1:2]
+    if not object_component_prefix:
         raise ValueError(
             "Mixed native/catalogue attachment could not recover the original "
             "component stream prefix."
         )
     if not local_records:
         raise ValueError("Mixed native/catalogue attachment produced no component records.")
-    first_local_starts_with_terminal = local_starts_with_terminal[0]
-    separator = b"" if first_local_starts_with_terminal else b"\x00"
-    accepted_native_order_stream = (
+    component_stream = (
         original_chunk[:1]
-        + b"".join(native_leading_records)
-        + separator
-        + b"".join(local_records)
+        + object_component_prefix
+        + b"".join(local_records[:-1])
+        + local_records[-1][:-1]
     )
+    native_wire_records: list[bytes] = []
+    for index, (first_wire, second_wire) in enumerate(native_wire_pairs):
+        native_wire_records.append(first_wire)
+        is_last_native_wire_pair = index == len(native_wire_pairs) - 1
+        if is_last_native_wire_pair and catalogue_attachment_records:
+            native_wire_records.append(second_wire)
+        else:
+            native_wire_records.append(second_wire[:-1])
     new_chunk = _ensure_double_ff_object_stream_terminator(
-        accepted_native_order_stream + b"".join(catalogue_attachment_records)
+        component_stream
+        + b"".join(native_terminal_records)
+        + b"".join(native_wire_records)
+        + b"".join(catalogue_attachment_records)
     )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
@@ -2631,11 +2570,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "family_handler": "MIXED/native-two-pin-plus-catalogue-v1",
         "status": "pending_proteus_user_acceptance",
         "attachment_policy": (
-            "preserve_accepted_native_mixed_stream_then_append_catalogue_units"
+            "preserve_component_stream_patch_all_links_append_native_then_catalogue"
         ),
         "object_order": (
-            "accepted_two_pin_native_mixed_order_with_catalogue_components_"
-            "patched_in_place_then_catalogue_terminal_wire_units"
+            "component_stream_then_two_pin_terminals_then_two_pin_wires_"
+            "then_catalogue_terminal_wire_units"
         ),
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
@@ -2664,14 +2603,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             row.get("terminal_contact_grid_aligned", True)
             for row in catalogue_contact_checks
         ),
-        "component_stream_prefix_preserved": final_chunk.startswith(
-            accepted_native_order_stream
-        ),
-        "accepted_native_order_stream_preserved": final_chunk.startswith(
-            accepted_native_order_stream
-        ),
+        "component_stream_prefix_preserved": final_chunk.startswith(component_stream),
         "component_record_order_mutation": False,
-        "boundary_tail_normalizations": boundary_normalizations,
         "native_wire_boundary_checks": native_wire_boundary_checks,
         "native_wire_boundaries_valid": all(
             row["valid"] for row in native_wire_boundary_checks
@@ -2688,7 +2621,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             final_chunk == new_chunk
             and final_chunk.count(BIDIR_MARKER) == expected_terminals
             and final_chunk.count(b"\x7fWIRE") == expected_wires
-            and final_chunk.startswith(accepted_native_order_stream)
+            and final_chunk.startswith(component_stream)
             and final_chunk.endswith(b"\xff\xff")
             and all(row["valid"] for row in native_wire_boundary_checks)
         ),
