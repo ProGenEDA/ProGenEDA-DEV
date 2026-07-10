@@ -1237,8 +1237,12 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
         assert terminal_placer._bidir_label_records(chunk)[0]["start"] == (
             len(base_chunk) - 1
         )
-        assert report["object_stream_finalizer"] == "single_ff"
-        assert chunk.endswith(b"\xff") and not chunk.endswith(b"\xff\xff")
+        if family == "NPN":
+            assert report["object_stream_finalizer"] == "double_ff"
+            assert chunk.endswith(b"\xff\xff")
+        else:
+            assert report["object_stream_finalizer"] == "single_ff"
+            assert chunk.endswith(b"\xff") and not chunk.endswith(b"\xff\xff")
         wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
         assert all(
             tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])

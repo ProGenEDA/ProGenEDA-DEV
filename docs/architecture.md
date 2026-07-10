@@ -1629,3 +1629,19 @@ complete component packet -> CDB/device marker -> terminal/WIRE/link geometry`.
 
 This order prevents spending time on terminal coordinates when Proteus has not
 successfully decoded the component record yet.
+
+User Proteus result for V35: none of the four BJT files worked; Proteus reported
+an `lxlcore.dll` error. V35 had fixed the leading device frame (`00 00 FF`) but
+still copied the standalone donor's single final `FF`. Accepted locked-mega
+component-first NMOSFET and catalogue routes use an explicit `FF FF` finalizer.
+This proves the finalizer belongs to project-frame evidence too; it must not be
+copied independently from a standalone donor.
+
+The next checkpoint is intentionally one-file-only:
+
+`experiments/bjt_npn_double_ff_1x_v36_temp_2026_07_10/`
+
+V36 changes only the NPN finalizer from single `FF` to `FF FF`. Component
+prefix/order, attachment boundary, zero-length on-pin WIRE geometry, and final
+link allocation stay unchanged. PNP, 2N3904, and 2N4401 remain unmodified until
+this NPN structural hypothesis receives Proteus acceptance.

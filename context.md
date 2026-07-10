@@ -11615,6 +11615,42 @@ The permanent-learning commit is pushed and verified: local HEAD, upstream, and 
 - Documentation/catalogue commit: `80fafb539b58797985099f240b73ba3b28459ac5` (`Document Proteus donor frame lessons`).
 - Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `80fafb539b58797985099f240b73ba3b28459ac5`.
 
+## User Message - 2026-07-10 18:14:00 +05:00
+
+none of these work
+lxlcore.dll error
+
+## Agent Visible Responses - 2026-07-10 18:14:00 +05:00 onwards
+
+That changes the diagnosis again: `lxlcore.dll` means Proteus gets past the earlier garbage device-name parsing but still crashes while loading the malformed design/library object stream. The remaining shared structural difference is clear: V35 uses a single final `FF` copied from the standalone donor, while every accepted locked-mega component-first catalogue route uses `FF FF`. I’m verifying the checkpoint and official Proteus evidence, then I’ll test this as one NPN-only 1x repair before regenerating the other three.
+
+The local comparison isolates one remaining frame-level mismatch: accepted locked-mega component-first `NMOSFET` ends with `FF FF`, while failed V35 BJT ends with only one `FF`. That single terminator was copied from the standalone NPN/PNP donor—the same portability mistake, now at the tail instead of the prefix. I’m changing only `NPN` to locked-mega double-FF and generating one 1x probe; PNP and the aliases will wait for that result.
+
+The NPN-only regression now passes with the locked-mega frame on both ends: `0000ff` prefix and `ffff` trailer, while preserving the component-first boundary and three on-pin active WIRE units. I’m generating only this single NPN V36 probe so the double-FF hypothesis is tested in Proteus before touching PNP or either alias.
+
+V36 is intentionally one file. It preserves every V35 correction and changes only the finalizer from single `FF` to locked-mega `FF FF`; all seven transistor regressions still pass, so the accepted MOSFET route is unchanged. I’m packaging and logging this NPN-only checkpoint before asking you to test it.
+
+### Files Edited By Agent In Response To This Message
+
+- `knowledge/component_catalog_v0.json` - changed only NPN to locked-mega double-FF finalization and recorded its required trailer evidence.
+- `tests/test_component_placer.py` - added NPN double-FF assertion while retaining single-FF expectations for the three unmodified BJT profiles and full accepted MOSFET checks.
+- `docs/architecture.md` - recorded the V35 lxlcore.dll result, finalizer portability lesson, and NPN-only V36 scope.
+- `experiments/bjt_npn_double_ff_1x_v36_temp_2026_07_10/` - generated one NPN control, one NPN test `_sa`, request, report, README, and summary.
+- `experiments/BJT_NPN_DOUBLE_FF_1X_V36_TEMP_2026_07_10.zip` - V36 archive.
+- `knowledge/test_results.jsonl` - marked V35 rejected and appended V36 static evidence.
+- `context.md` - appended this user result, visible responses, validation, and edited-file record.
+
+### Validation
+
+- Focused NPN regression: 1 passed, 109 deselected.
+- All transistor regressions: 7 passed, 103 deselected.
+- `python -m compileall -q src tests tools/proteus_generation` passed.
+- V36 audit: prefix `0000ff`, trailer `ffff`, component-first attachment boundary correct, three on-pin WIRE units, and final links valid.
+
+### Planned Final Response To User
+
+Test only the single NPN V36 file. It changes only the project finalizer to double-FF; PNP and aliases remain untouched until this hypothesis is confirmed in Proteus.
+
 ## User Message - 2026-07-10 13:11:00 +05:00
 
 nope failure remained all 4 have the same error, as shown in the image
