@@ -11908,3 +11908,9 @@ Test only:
 `experiments/bjt_npn_frame_contract_1x_v38_temp_2026_07_10/01_test_this_one/T001_NPN_1x_FRAME_CONTRACT/T001_NPN_1x_FRAME_CONTRACT_sa.pdsprj`
 
 The accompanying `donor_contract_audit.json` records every checked project member, CDB/device definition, DSN pointer, record template/order, coordinate, link trailer, and final address. All 110 component-placer tests pass, but I am still treating Proteus open/render as the only acceptance.
+
+### Commit And Push Verification
+
+- Implementation/evidence commit: `c54cda2f8eb1dbc87738f406c48a28704ca630a1` (`Enforce donor-first NPN frame contract`).
+- Push verification before this log commit: local HEAD, upstream, and GitHub all matched `c54cda2f8eb1dbc87738f406c48a28704ca630a1`.
+- The unrelated HC04 deletions and user-provided fixed/untracked artifacts remained untouched and unstaged.
