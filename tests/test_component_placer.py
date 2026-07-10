@@ -1256,7 +1256,21 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
             row["label"]
             for row in terminal_placer._bidir_label_records(chunk)
         ]
-        assert terminal_labels == ["BASE", "COLLECTOR", "EMITTER"]
+        if family == "NPN":
+            assert terminal_labels == ["COLLECTOR", "EMITTER", "BASE"]
+            terminal_records = terminal_placer._bidir_label_records(chunk)
+            wire_spans = terminal_placer._wire_record_spans(chunk)
+            assert max(int(row["start"]) for row in terminal_records) < min(
+                start for start, _end in wire_spans
+            )
+            assert report["family_reports"][0][
+                "clean_packet_attachment_order"
+            ] == "component_stream_then_terminals_then_wires"
+            assert report["family_reports"][0][
+                "donor_terminal_record_order"
+            ] == ["C", "E", "B"]
+        else:
+            assert terminal_labels == ["BASE", "COLLECTOR", "EMITTER"]
     else:
         assert component_offset < terminal_offset < wire_offset
         assert report["object_stream_finalizer"] == "double_ff"

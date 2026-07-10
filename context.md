@@ -11582,6 +11582,70 @@ Remote verification passed: local HEAD, upstream, and GitHub all match `7eb5e926
 - Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `7eb5e926a67f3e8065b35f976038da1706d1ad63`.
 - Unrelated deleted/untracked donor and user-fixed files remained untouched and unstaged.
 
+## User Message - 2026-07-10 18:15:16 +05:00
+
+same error
+what are u doing wrong? u do realise u have C:\Users\Empty\Documents\Progentotal\protuesgen\proteus_ic\donors\terminalized_catalogue_evidence
+full of donor to match and keep testing to see ur flaw?
+
+## Agent Visible Responses - 2026-07-10 18:15:16 +05:00 onwards
+
+You’re right. I was changing one visible difference at a time instead of matching the complete donor contract. The concrete flaw I had not yet checked is the project CDB/library table: the BJT base component can open while the newly added `$TERBIDIR` device is absent or malformed in that base’s reduced CDB. A working NMOS file does not prove the NPN-generated base retained the same terminal library entry. I’m now comparing ROOT.DSN and every internal library/CDB part of the failed NPN against the accepted donors and the working NMOS case before making another output.
+
+The full-project comparison rules out the CDB hypothesis: failed NPN and accepted NMOS generation use the exact same locked-mega `ROOT.CDB`, and terminal placement never changes it. More importantly, the working generated NMOS `ROOT.DSN` is byte-for-byte shaped like its accepted donor, whereas NPN was only approximated from selected offsets. I’m now normalizing coordinates/addresses and comparing the complete NPN object grammar—especially the order of terminal records versus WIRE records—rather than borrowing NMOS ordering.
+
+The donor evidence exposes the actual missed contract:
+
+- Every accepted BJT is serialized as one grouped attachment: all three terminals in donor order `COLLECTOR, EMITTER, BASE`, then the component packet, then all three WIRE records in pin-link order `BASE, COLLECTOR, EMITTER`.
+- My failed component-first files instead serialized `component, BASE terminal, BASE wire, COLLECTOR terminal, COLLECTOR wire, EMITTER terminal, EMITTER wire`.
+- The catalogue already records `donor_terminal_record_order`, but the current emitter does not consume it. So I had the evidence and ignored a first-class catalogue field—the exact issue you called out.
+
+I’m checking the earlier V34 implementation/history now because its bytes show that donor terminal order was once emitted correctly, then lost when I changed object framing. The repair will preserve the locked-mega component prefix while restoring separate donor terminal order and WIRE order.
+
+The shared fix now emits the NPN byte sequence as:
+
+`locked-mega component packet → COLLECTOR terminal → EMITTER terminal → BASE terminal → BASE WIRE → COLLECTOR WIRE → EMITTER WIRE → finalizer`
+
+That is the first version which simultaneously preserves the component-placer frame and consumes the complete BJT donor ordering evidence. The focused test confirms all terminals precede all WIREs, final active links still rebase to their matching WIRE by coordinates, and all seven transistor regressions pass. I’m regenerating one NPN-only file through the existing component placer and shared terminal placer—no new terminal script.
+
+V37’s static stream now matches the donor’s two independent orderings and keeps the locked mega as the sole placement donor. The no-terminal control confirms the component placer is still valid. I’m running the full component-placer suite now because this shared ordering branch must not alter the already accepted NMOSF/2N7000/BS170 route or earlier terminal families.
+
+The focused regression is clean: 38 relevant tests passed, including the already accepted transistor families. One repository-wide command hit an unrelated stale June-1 test that imports the intentionally absent `proteusgen.inductor`; I’ve narrowed verification to the maintained `tests/` suite as specified by this repo’s own guidelines, while keeping that collection issue documented rather than masking it.
+
+### What Was Wrong
+
+The shared emitter ignored the catalogue’s `donor_terminal_record_order` after the V35 framing change and interleaved each terminal with its WIRE. Accepted BJT evidence requires terminal order and WIRE/pin-link order to be separate contracts. The CDB was byte-identical between failed NPN and working NMOS outputs, so it was not the cause.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - added catalogue-driven component-first grouped terminal-then-WIRE emission while preserving independent WIRE order.
+- `knowledge/component_catalog_v0.json` - selected the grouped policy for NPN and recorded complete donor grouping evidence.
+- `tests/test_component_placer.py` - asserted NPN donor terminal order, all-terminal-before-all-WIRE grouping, and preserved transistor regressions.
+- `backups/component_terminal_placer/component_terminal_placer_20260710_184848_before_bjt_grouped_attachment_v37.py` - required pre-edit shared placer backup.
+- `experiments/bjt_npn_grouped_attachment_1x_v37_temp_2026_07_10/` - generated the locked-mega no-terminal control, one NPN `_sa` test project, reports, README, and summary.
+- `experiments/BJT_NPN_GROUPED_ATTACHMENT_1X_V37_TEMP_2026_07_10.zip` - V37 test archive.
+- `docs/architecture.md` - recorded the V36 result, missed grouping contract, V37 scope, and complete donor-comparison rule.
+- `knowledge/test_results.jsonl` - marked V36 rejected and recorded V37 static evidence.
+- `context.md` - appended this user message, all visible responses, results, and edited-file information.
+
+### Validation
+
+- Exact V37 audit: prefix `0000ff`, finalizer `ffff`, one component, terminals `COLLECTOR/EMITTER/BASE`, WIRE order `BASE/COLLECTOR/EMITTER`, and valid final ROOT.DSN address links.
+- Focused maintained regressions: 38 passed, 72 deselected.
+- Maintained `tests/` suite: 283 passed, 9 unrelated/pre-existing failures, 78 subtests passed. The failures concern locked-out non-mega catalogue families, older catalogue expectations, and a KiCad target-pack test; none were introduced by the NPN grouping branch.
+- `python -m compileall -q src tests tools/proteus_generation` passed.
+- Archive SHA-256: `d5d7c21ec776b9a6a5d9e295930fe062ac90e5202e10d4e90bbdf64a9c3df070`.
+
+### Planned Final Response To User
+
+I found the actual flaw: I had the correct donor fact in the catalogue but the shared placer was ignoring it. It interleaved each terminal with a WIRE; accepted NPN donors group all terminals first, then all WIREs in a different pin-link order.
+
+Test this one V37 file:
+
+`experiments/bjt_npn_grouped_attachment_1x_v37_temp_2026_07_10/01_test_this_one/T001_NPN_1x_GROUPED_ATTACHMENT/T001_NPN_1x_GROUPED_ATTACHMENT_sa.pdsprj`
+
+It is generated from the locked mega through the normal component placer, then the same shared terminal placer—your donor is evidence only, not copied output. If this opens, I’ll apply the proven grouping to PNP/2N3904/2N4401 next.
+
 ## User Message - 2026-07-10 18:08:00 +05:00
 
 continue above, and make sure u write down everything u learned here too so next time we dont make these mistakes either

@@ -1645,3 +1645,51 @@ V36 changes only the NPN finalizer from single `FF` to `FF FF`. Component
 prefix/order, attachment boundary, zero-length on-pin WIRE geometry, and final
 link allocation stay unchanged. PNP, 2N3904, and 2N4401 remain unmodified until
 this NPN structural hypothesis receives Proteus acceptance.
+
+User Proteus result for V36: the NPN file still failed with the same
+`lxlcore.dll` error. The finalizer was therefore not the complete cause.
+
+Complete comparison against
+`proteus_ic/donors/terminalized_catalogue_evidence/three_pin_transistor/NPN/`
+found the missed structural contract. Accepted BJT donors do not interleave
+terminal and WIRE objects. One NPN attachment is serialized as:
+
+`COLLECTOR terminal -> EMITTER terminal -> BASE terminal -> component -> BASE WIRE -> COLLECTOR WIRE -> EMITTER WIRE`
+
+V35/V36 preserved the locked-mega component frame but emitted:
+
+`component -> BASE terminal -> BASE WIRE -> COLLECTOR terminal -> COLLECTOR WIRE -> EMITTER terminal -> EMITTER WIRE`
+
+The catalogue already contained `donor_terminal_record_order`, but the shared
+emitter stopped consuming it when the V35 component-first repair was made. The
+fix must retain two independent orderings:
+
+1. terminal records use the catalogue's donor terminal order;
+2. WIRE records use `wire_order_index`, which also matches component pin-link
+   order.
+
+These orderings must never be collapsed into positional terminal/WIRE pairs.
+Final address rebasing binds by component identity, pin identity, and WIRE
+coordinates, so record order does not need to be abused as the binding model.
+
+Focused V37 checkpoint:
+
+`experiments/bjt_npn_grouped_attachment_1x_v37_temp_2026_07_10/`
+
+V37 is deliberately NPN-only. It preserves the locked-mega `00 00 FF`
+component prefix and component-first frame, then emits all terminals in donor
+order and all WIREs in pin-link order. Static audit confirms one component,
+three terminals, three active on-pin WIRE units, complete terminal-before-WIRE
+grouping, final-address link validity, and `FF FF`. Proteus acceptance is still
+required before applying the policy to PNP/aliases or generating scaled/mixed
+packs.
+
+### Complete donor-contract comparison rule
+
+For each new multi-pin family, compare and catalogue all of the following
+before changing emission: project members, DSN device table, CDB identity,
+object prefix/finalizer, component boundary, terminal record order, WIRE record
+order, terminal template fields, component link offsets/trailers, WIRE topology,
+and final absolute-address links. A match on coordinates, counts, and suffixes
+is insufficient. A catalogue field is not evidence in practice unless the
+shared emitter consumes and tests it.
