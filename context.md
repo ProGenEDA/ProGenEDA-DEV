@@ -11646,6 +11646,12 @@ Test this one V37 file:
 
 It is generated from the locked mega through the normal component placer, then the same shared terminal placer—your donor is evidence only, not copied output. If this opens, I’ll apply the proven grouping to PNP/2N3904/2N4401 next.
 
+### Commit And Push Verification
+
+- Implementation/evidence commit: `d3acec49739f642150f3df1eed6283cc79bd4dcc` (`Restore grouped NPN terminal ordering`).
+- Push verification before this log commit: local HEAD, upstream, and GitHub all matched `d3acec49739f642150f3df1eed6283cc79bd4dcc`.
+- The unrelated HC04 deletions and user-provided fixed/untracked artifacts remained untouched and unstaged.
+
 ## User Message - 2026-07-10 18:08:00 +05:00
 
 continue above, and make sure u write down everything u learned here too so next time we dont make these mistakes either
