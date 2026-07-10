@@ -11582,6 +11582,32 @@ Remote verification passed: local HEAD, upstream, and GitHub all match `7eb5e926
 - Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `7eb5e926a67f3e8065b35f976038da1706d1ad63`.
 - Unrelated deleted/untracked donor and user-fixed files remained untouched and unstaged.
 
+## User Message - 2026-07-10 18:08:00 +05:00
+
+continue above, and make sure u write down everything u learned here too so next time we dont make these mistakes either
+
+## Agent Visible Responses - 2026-07-10 18:08:00 +05:00 onwards
+
+I’ll make the lesson permanent in both places: `architecture.md` will get the reusable donor-portability/error-signature checklist, and the four BJT catalogue profiles will record the required locked-mega prefix, attachment boundary, and the rejected terminal-leading failure signature. This keeps future work from treating a donor’s pin/WIRE facts and its whole-project object order as equally portable.
+
+The permanent record is now more explicit than a simple V34/V35 note. It separates portable component evidence from non-portable project framing, records the exact garbage-device diagnostic sequence, and adds a `project_frame_contract` to all four BJT catalogue profiles: required `0000ff` prefix, component-stream-first order, attachment at `len(control)-1`, one-component proof limit, and the rejected `0010` terminal-leading signature.
+
+### Files Edited By Agent In Response To This Message
+
+- `docs/architecture.md` - added the permanent donor-portability and garbage-device failure checklist, static false-positive warnings, diagnostic order, and scaling gate.
+- `knowledge/component_catalog_v0.json` - added explicit project-frame contracts to `NPN`, `PNP`, `2N3904`, and `2N4401`.
+- `knowledge/test_results.jsonl` - added a machine-readable architecture-learning checkpoint.
+- `context.md` - appended this request, visible responses, and edited-file record.
+
+### Validation
+
+- `knowledge/component_catalog_v0.json` parses successfully with `python -m json.tool`.
+- `git diff --check` passed.
+
+### Planned Final Response To User
+
+The V34/V35 lessons are now permanently recorded in both architecture and the component catalogue. V35 remains the four-file BJT 1x pack to test; scaling stays blocked until it passes Proteus.
+
 ## User Message - 2026-07-10 13:11:00 +05:00
 
 nope failure remained all 4 have the same error, as shown in the image

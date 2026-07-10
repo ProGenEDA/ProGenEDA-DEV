@@ -1576,3 +1576,56 @@ terminal record starts at `len(no-terminal-control)-1`; component precedes all
 terminal/WIRE units; and the finalizer remains the donor-proven single `FF`.
 The shared placer now enforces the one-component proof limit for every clean
 packet order, preventing premature BJT scaling until V35 passes Proteus.
+
+### Donor portability and garbage-device failure checklist
+
+The V34 failure adds the following permanent rules to all future Proteus
+terminal-family work:
+
+1. A terminalized donor contains two different classes of evidence. Pin names,
+   pin-relative coordinates, terminal side/angle, WIRE topology, link-field
+   offsets/trailers, and contact semantics are normally component-level facts.
+   ROOT.DSN prefix bytes, object ordering, packet separators, attachment
+   boundaries, finalizer count, CDB association, and surrounding infrastructure
+   are project-frame facts. Never transplant the second class merely because
+   the first class matches.
+2. Compare every generated terminalized candidate with its own no-terminal
+   component-placer control before comparing it with a terminalized donor. The
+   control defines the current project frame; the donor defines pin/link/WIRE
+   evidence. Both comparisons are required.
+3. Preserve the control's object prefix exactly unless a Proteus-opened oracle
+   from that same producer/frame proves another prefix. For the locked-mega BJT
+   outputs the required prefix is `00 00 FF`.
+4. Preserve the complete placed component stream before attachments when the
+   control uses component-first framing. The first attachment record must begin
+   at the control's final stream-terminator position, currently
+   `len(no-terminal-control)-1` for this BJT route.
+5. A Proteus message containing `Device '<garbage bytes>' used but not in
+   library` is primarily a record-boundary/prefix diagnostic. First inspect the
+   bytes before the first real component marker and the component/CDB framing;
+   do not immediately search for a missing library part or change pin geometry.
+6. Marker counts, valid suffix links, valid WIRE contacts, and even donor-shaped
+   geometry can all pass while Proteus decodes the wrong object type. Static
+   acceptance must therefore include prefix equality, component-before-
+   attachment order, complete packet preservation, and exact attachment-boundary
+   checks.
+7. If every family in a small group reports the same malformed device name or
+   the same pre-render dialog, investigate the shared stream writer before any
+   family geometry. Identical early parser errors are strong evidence of a
+   shared framing defect.
+8. Keep a failed route recorded as rejected evidence. Do not silently overwrite
+   its rationale: V34 proves that the standalone donor's terminal-leading order
+   was valid in its own project but invalid when transplanted into locked-mega
+   output.
+9. Scaling remains prohibited until the corrected 1x project opens and renders
+   in Proteus. After acceptance, raise the catalogue proof limit deliberately,
+   regenerate 9x/15x/23x, and recheck prefix/boundary/component-count invariants
+   for every copy before mixed testing.
+
+The fast diagnostic order for future `used but not in library` failures is:
+
+`control/output prefix -> first component marker -> first attachment start ->
+complete component packet -> CDB/device marker -> terminal/WIRE/link geometry`.
+
+This order prevents spending time on terminal coordinates when Proteus has not
+successfully decoded the component record yet.
