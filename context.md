@@ -11608,6 +11608,13 @@ The permanent record is now more explicit than a simple V34/V35 note. It separat
 
 The V34/V35 lessons are now permanently recorded in both architecture and the component catalogue. V35 remains the four-file BJT 1x pack to test; scaling stays blocked until it passes Proteus.
 
+### Commit And Push Verification
+
+The permanent-learning commit is pushed and verified: local HEAD, upstream, and GitHub all match `80fafb539b58797985099f240b73ba3b28459ac5`. I’m adding that verification to `context.md` in the final follow-up log commit.
+
+- Documentation/catalogue commit: `80fafb539b58797985099f240b73ba3b28459ac5` (`Document Proteus donor frame lessons`).
+- Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `80fafb539b58797985099f240b73ba3b28459ac5`.
+
 ## User Message - 2026-07-10 13:11:00 +05:00
 
 nope failure remained all 4 have the same error, as shown in the image
