@@ -7727,6 +7727,62 @@ Fresh broad pass is clean: 600/600 combination and 600/600 terminal smoke both p
 - `kicad/pipeline/input_json_validator_fixer.py`
 - `kicad/tests/test_input_json_validator_fixer.py`
 
+## 2026-07-10 19:28:42 PKT - KiCad Ship-Readiness Retest Repeated
+
+### User Request
+
+```text
+do thorough testing again to make sure
+```
+
+### Visible Agent Response Record
+
+```text
+I’ll do another real retest, not just reread yesterday’s manifest. First I’m verifying the pushed checkpoint and clean branch, then I’ll run compile, full unit discovery, the old-`N183` fixer smoke, and a fresh 600-circuit executable pass again.
+```
+
+```text
+Checkpoint is clean and pushed: local `HEAD`, upstream, and `origin/main` all match `8279c1efd`. I’m starting with compile plus unit discovery before the heavier executable runs.
+```
+
+```text
+Full unit discovery passed again: 83 tests in 308 seconds. I’m recreating the old-`N183` smoke input set now, then I’ll run it through the executable with combination plus terminal smoke.
+```
+
+```text
+Old-`N183` smoke is clean: 9/9 combination and 9/9 terminal smoke, with zero unresolved pins, zero local-netlist failures, zero geometry violations, and zero final-validation blocking failures. Next is the fresh 600-circuit executable retest.
+```
+
+```text
+Fresh 600 retest is clean again: 600/600 combination and 600/600 terminal smoke, all static/value/final/netlist/geometry/strict-wire checks true, and every blocking/failure counter is zero. I’m recording this in `context.md`, then I’ll commit/push the test record.
+```
+
+### Verification
+
+- Turn-start checkpoint:
+  - `git status --short --branch` showed `## main...origin/main`.
+  - Local `HEAD`, upstream, and `origin/main` all matched `8279c1efdeabfd9a4ccdb61a2eeeced6f2815de8`.
+- `PYTHONPATH=. python -m compileall -q kicad/pipeline kicad/tests kicad/generator kicad/automation kicad/tools`
+  - Passed.
+- `PYTHONPATH=. python -m unittest discover -s kicad/tests -v`
+  - Passed: 83 tests in 308.030 seconds.
+- Old-`N183` real executable smoke:
+  - Input folder rebuilt at `/tmp/kicad_retest_smoke_inputs_20260710`.
+  - Command: `PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run /tmp/kicad_retest_smoke_inputs_20260710 --output-root /tmp/kicad_retest_smoke_outputs_20260710 --label retest_real_jsons_old_n183_20260710 --routing-mode combination --terminal-smoke`.
+  - Manifest: `/tmp/kicad_retest_smoke_outputs_20260710/progen_kicad_executable_run_2026_07_10_190354_retest_real_jsons_old_n183_20260710/run_manifest.json`.
+  - Combination: 9/9 projects, `all_static_checks_ok=true`, `all_final_validation_ok=true`, `all_component_body_overlap_ok=true`, `all_geometry_ok=true`, `all_strict_wire_ok=true`, `all_local_netlist_ok=true`, `total_unresolved_pins=0`, `total_unrouted_nets=0`, `total_partial_wire_nets=0`, `total_geometry_violations=0`, `total_local_netlist_failed_nets=0`, `total_final_validation_blocking_failures=0`.
+  - Terminal smoke: 9/9 projects with the same all-green booleans and zero failure counters.
+- Fresh 600-circuit executable retest:
+  - Command: `PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run kicad/examples/final_json_run_2026_07_06_020659_main_json_catalog_600_combination_v2/final_json --output-root /tmp/kicad_retest_600_outputs_20260710 --label retest_600_20260710 --routing-mode combination --terminal-smoke`.
+  - Manifest: `/tmp/kicad_retest_600_outputs_20260710/progen_kicad_executable_run_2026_07_10_190435_retest_600_20260710/run_manifest.json`.
+  - Combination generation: 600/600 projects, `all_static_checks_ok=true`, `all_value_edits_ok=true`, `all_value_validation_ok=true`, `all_final_validation_ok=true`, `all_component_body_overlap_ok=true`, `all_geometry_ok=true`, `all_strict_wire_ok=true`, `all_local_netlist_ok=true`.
+  - Combination counted failures: `total_value_mismatches=0`, `total_final_validation_blocking_failures=0`, `total_unresolved_pins=0`, `total_routing_unresolved_pins=0`, `total_component_body_overlaps=0`, `total_deferred_nets=0`, `total_unrouted_nets=0`, `total_partial_wire_nets=0`, `total_geometry_violations=0`, `total_strict_wire_violations=0`, `total_local_netlist_blocking_failures=0`, `total_local_netlist_failed_nets=0`, `total_local_netlist_merged_nets=0`, `total_local_netlist_power_ground_shorts=0`, `total_local_netlist_floating_expected_pins=0`.
+  - Terminal generation: 600/600 projects with the same all-green booleans and zero counted failures.
+
+### Files Edited
+
+- `context.md`
+
 ## 2026-07-10 15:30 PKT - KiCad Finalization, Terminal Offset, Evidence Cleanup
 
 ### User Request
@@ -10569,3 +10625,20 @@ Critical resume facts:
 - Main code changes: lateral pin-escape perimeter fallback, full-path pin-entry scoring, endpoint-column/row perimeter bridges, unroutable-net motion repair by default, one endpoint move per net, one coordinate edit per strict repair reroute pass.
 - Verification: `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q` passed with `34 passed, 30 subtests passed`; `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests` passed.
 - Pre-existing July 2 generated KiCad edits remain dirty and intentionally unstaged.
+
+## 2026-07-10 19:28:42 PKT - Latest Checkpoint Pointer
+
+The detailed record for the latest retest is the section titled:
+
+```text
+2026-07-10 19:28:42 PKT - KiCad Ship-Readiness Retest Repeated
+```
+
+Critical resume facts:
+
+- Local, upstream, and `origin/main` matched `8279c1efdeabfd9a4ccdb61a2eeeced6f2815de8` at turn start.
+- Compile passed: `PYTHONPATH=. python -m compileall -q kicad/pipeline kicad/tests kicad/generator kicad/automation kicad/tools`.
+- Full unit discovery passed: `83 tests in 308.030 seconds`.
+- Old-`N183` real executable smoke passed for 9/9 combination and 9/9 terminal-smoke projects with zero unresolved pins, netlist failures, geometry violations, and final-validation blockers.
+- Fresh 600-circuit executable retest passed for 600/600 combination and 600/600 terminal-smoke projects. All static/value/final/netlist/geometry/strict-wire booleans were true and every counted blocking/failure metric was zero.
+- Fresh 600 manifest: `/tmp/kicad_retest_600_outputs_20260710/progen_kicad_executable_run_2026_07_10_190435_retest_600_20260710/run_manifest.json`.
