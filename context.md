@@ -11651,6 +11651,13 @@ V36 is intentionally one file. It preserves every V35 correction and changes onl
 
 Test only the single NPN V36 file. It changes only the project finalizer to double-FF; PNP and aliases remain untouched until this hypothesis is confirmed in Proteus.
 
+### Commit And Push Verification
+
+The NPN-only V36 commit is pushed and verified: local HEAD, upstream, and GitHub all match `e5dee30062352a717e4ded21a4332898406bb58e`. I’m recording that verification in the final context-log commit.
+
+- Implementation/evidence commit: `e5dee30062352a717e4ded21a4332898406bb58e` (`Probe NPN locked-frame finalizer`).
+- Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `e5dee30062352a717e4ded21a4332898406bb58e`.
+
 ## User Message - 2026-07-10 13:11:00 +05:00
 
 nope failure remained all 4 have the same error, as shown in the image
