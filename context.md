@@ -10822,3 +10822,27 @@ Now I’m writing the resumable record with the files changed, artifacts produce
 - `kicad/release/progen-kicad-portable-2026_07_10.zip`
 - `kicad/release/newwebsite-kicad-handoff-2026_07_10.zip`
 - `kicad/release/newwebsite_kicad_handoff_2026_07_10/**`
+
+### 2026-07-10T23:56:54+05:00
+
+User:
+
+> where are the 600 jsons?
+> Like give me the path
+
+Agent:
+
+> I’m checking the repository checkpoint and locating the generated JSON packs now, so I can give you the exact paths rather than guessing.
+
+> The canonical 600-source pack is present, and the repository checkpoint is clean and synchronized with GitHub. I’m confirming the exact file count and distinguishing the source JSON folder from the later generated-project folders.
+
+> Found them: the canonical source directory contains exactly 600 `.json` files. I’m recording this lookup in the repository log as required, then I’ll give you the direct paths for both the JSON source pack and its generated projects.
+
+Files edited:
+
+- `context.md`
+
+Verification:
+
+- Local `HEAD`, upstream, and `origin/main` matched before this log update.
+- Canonical 600 source folder contains exactly 600 JSON files.
