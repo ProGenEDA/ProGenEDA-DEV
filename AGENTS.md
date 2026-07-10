@@ -67,6 +67,26 @@ bypass licensing, or replace the removal-only component placer with speculative
 record synthesis. Update the existing implementation and experiment notes
 after every user result so another contributor can resume without chat context.
 
+For Proteus binary research, the actual user-accepted `.pdsprj` donor file is
+always the highest-priority and authoritative source. Catalogue entries, JSON,
+reports, manifests, tests, comments, architecture notes, prior agent claims,
+and inferred schemas are secondary caches that must be checked against the
+donor bytes; they never override or substitute for the donor. Start every
+family repair by reading and comparing the complete donor project, including
+every internal member, ROOT.DSN frame/device tables/object stream, ROOT.CDB,
+record boundaries/order, terminal fields, component pin-link fields, WIRE
+records, coordinates, trailers, separators, and finalizers. If written evidence
+disagrees with the accepted donor, fix the written evidence and implementation.
+
+Never stop after finding and repairing only the first plausible byte
+difference. Continue the donor-vs-generated comparison after each repair and
+enumerate every remaining unexplained structural difference before declaring a
+candidate ready. A generated pack requires focused regressions, an independent
+byte audit against the actual donor and its component-placer control, compile
+checks, and explicit acknowledgement that only a Proteus open/render test can
+accept it. Repeated static checks that merely restate emitter assumptions are
+not independent validation.
+
 Treat commit `a6deb648` as the last trusted terminal-placement checkpoint:
 `RESISTOR/v3` passed Proteus testing. Later terminal-family work is untrusted
 until separately revalidated. Keep all researched terminal behavior in

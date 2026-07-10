@@ -1684,6 +1684,42 @@ grouping, final-address link validity, and `FF FF`. Proteus acceptance is still
 required before applying the policy to PNP/aliases or generating scaled/mixed
 packs.
 
+User Proteus result for V37: failed. The grouped component-first hybrid was not
+an accepted frame contract. V37 also retained the standalone terminal-leading
+NPN donor's `01 00` active-link trailers.
+
+The actual donor files now have explicit priority over every catalogue or
+written conclusion. Exhaustive comparison established four separable facts:
+
+1. The actual NPN donor is authoritative for NPN terminal record templates,
+   relative pin/contact geometry, side/angle, labels, zero-length WIRE units,
+   WIRE record schema, and component pin-link offsets. Generated records match
+   those schemas byte-for-byte after masking only coordinates and allocated
+   addresses.
+2. The actual standalone NPN donor's terminal-leading object order, `01 00`
+   links, reduced CDB, and finalizer are one inseparable project-frame contract.
+   V34 proved that contract cannot replace the locked-mega control's prefix.
+3. The actual accepted component-first NMOSF donor and user-accepted generated
+   output prove the locked-mega frame contract: complete component first,
+   interleaved terminal/WIRE attachment units, `02 00` terminal and component
+   active links, and `FF FF`.
+4. No failed BJT candidate combined all of those compatible facts. V35 used
+   component-first/interleaved but single FF and NPN `01 00`; V36 fixed FF FF
+   but retained `01 00`; V37 retained `01 00` and changed to an unproven grouped
+   hybrid.
+
+Focused V38 checkpoint:
+
+`experiments/bjt_npn_frame_contract_1x_v38_temp_2026_07_10/`
+
+V38 uses the donor-exact NPN local schema inside the complete accepted
+locked-mega component-first frame. Its independent audit verifies every project
+member, unchanged CDB/device definition, ROOT.DSN rebuild and pointers, object
+prefix/order/finalizer, terminal/WIRE templates, pin coordinates, zero-length
+WIREs, link trailers, and final absolute-address allocation. All known binary
+differences are classified in `donor_contract_audit.json`; none are unexplained.
+This remains a Proteus test candidate, not an accepted result.
+
 ### Complete donor-contract comparison rule
 
 For each new multi-pin family, compare and catalogue all of the following

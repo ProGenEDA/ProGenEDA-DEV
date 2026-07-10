@@ -1826,6 +1826,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         )
         if clean_packet_attachment_order not in {
             "component_stream_then_attachment_units",
+            "component_stream_then_terminals_then_wires",
             "terminal_leading_component_then_wires",
         }:
             raise ValueError(
@@ -2077,12 +2078,54 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         "before each order has a Proteus-accepted combined oracle."
                     )
                 local_records.append(patched_data)
-                for terminal_record, wire_record in zip(
-                    terminal_records,
-                    appended_wire_records,
+                if (
+                    clean_packet_attachment_order
+                    == "component_stream_then_terminals_then_wires"
                 ):
-                    trailing_attachment_records.append(terminal_record)
-                    trailing_attachment_records.append(wire_record)
+                    raw_terminal_record_order = geometry.get(
+                        "donor_terminal_record_order"
+                    )
+                    if not isinstance(raw_terminal_record_order, (list, tuple)):
+                        raise ValueError(
+                            f"{family} grouped terminal/WIRE emission requires "
+                            "donor_terminal_record_order catalogue evidence."
+                        )
+                    terminal_record_order = [
+                        str(pin_name) for pin_name in raw_terminal_record_order
+                    ]
+                    terminal_records_by_pin = {
+                        str(pin_row["pin"]["name"]): terminal_record
+                        for pin_row, terminal_record in zip(
+                            terminal_pins,
+                            terminal_records,
+                            strict=True,
+                        )
+                    }
+                    if (
+                        len(terminal_record_order)
+                        != len(set(terminal_record_order))
+                        or set(terminal_record_order) != set(terminal_records_by_pin)
+                    ):
+                        raise ValueError(
+                            f"{family} donor_terminal_record_order "
+                            f"{terminal_record_order} does not exactly cover emitted "
+                            f"catalogue pins {sorted(terminal_records_by_pin)}."
+                        )
+                    trailing_attachment_records.extend(
+                        terminal_records_by_pin[pin_name]
+                        for pin_name in terminal_record_order
+                    )
+                    # BJT donors prove that terminal record order and
+                    # component-pin/WIRE order are independent contracts.
+                    # Keep WIREs in planner wire_order_index order.
+                    trailing_attachment_records.extend(appended_wire_records)
+                else:
+                    for terminal_record, wire_record in zip(
+                        terminal_records,
+                        appended_wire_records,
+                    ):
+                        trailing_attachment_records.append(terminal_record)
+                        trailing_attachment_records.append(wire_record)
         else:
             local_records.extend(terminal_records)
             local_records.append(b"\x00")
@@ -2098,7 +2141,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "family_handler": family_handler,
                 "component_key": key,
                 "component_family": family,
-                "catalogue_source_project": geometry.get("source_project"),
                 "component_count": 1,
                 "combined_infrastructure": combined_infrastructure,
                 "terminal_count": len(terminal_records),
@@ -2106,6 +2148,12 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "wire_count_added": wire_count_added,
                 "wire_count_rewritten": wire_count_rewritten,
                 "clean_packet_attachment_order": clean_packet_attachment_order,
+                "donor_terminal_record_order": (
+                    list(geometry.get("donor_terminal_record_order", ()))
+                    if clean_packet_attachment_order
+                    == "component_stream_then_terminals_then_wires"
+                    else None
+                ),
                 "object_stream_finalizer": object_stream_finalizer,
                 "allow_zero_length_wire_units": bool(
                     geometry.get("allow_zero_length_wire_units", False)

@@ -189,6 +189,9 @@ def _remove_component_placer_work_files(path: Path) -> None:
 def _catalogue_donor_comparison(report: dict[str, Any]) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     for family_report in report.get("family_reports", []):
+        zero_length_wire_allowed = bool(
+            family_report.get("allow_zero_length_wire_units", False)
+        )
         for terminal_pin in family_report.get("terminal_pins", []):
             geometry = terminal_pin.get("catalogue_geometry", {})
             pin = terminal_pin.get("pin", {})
@@ -206,7 +209,10 @@ def _catalogue_donor_comparison(report: dict[str, Any]) -> dict[str, Any]:
                     "component_family": terminal_pin.get("component_family"),
                     "pin": pin.get("name"),
                     "role": pin.get("role"),
-                    "source_project": geometry.get("source_project"),
+                    "source_project": (
+                        geometry.get("source_project")
+                        or family_report.get("catalogue_source_project")
+                    ),
                     "donor_terminal_label": geometry.get("donor_terminal_label"),
                     "donor_wire_marker_offset": geometry.get("donor_wire_marker_offset"),
                     "component_link_offset_from_component_end": geometry.get(
@@ -230,6 +236,7 @@ def _catalogue_donor_comparison(report: dict[str, Any]) -> dict[str, Any]:
                         int(start.get("x", 0)) != int(end.get("x", 0))
                         or int(start.get("y", 0)) != int(end.get("y", 0))
                     ),
+                    "zero_length_wire_allowed": zero_length_wire_allowed,
                     "coordinate_source": terminal_pin.get("coordinate_source"),
                 }
             )
@@ -244,7 +251,10 @@ def _catalogue_donor_comparison(report: dict[str, Any]) -> dict[str, Any]:
             and row["side_angle_valid"]
             and row["terminal_contact_grid_aligned"]
             and row["wire_to_pin"]
-            and row["wire_is_nonzero"]
+            and (
+                row["wire_is_nonzero"]
+                or row["zero_length_wire_allowed"]
+            )
             for row in rows
         ),
         "rows": rows,

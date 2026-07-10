@@ -11825,3 +11825,86 @@ Remote verification passed: local HEAD, upstream, and GitHub all match `6dc63169
 - Implementation/evidence commit: `6dc63169d08ccfa6d01936f2a4ee4972972c2c14` (`Repair BJT terminal 1x emission`).
 - Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `6dc63169d08ccfa6d01936f2a4ee4972972c2c14`.
 - Unrelated deleted/untracked donor and user-fixed files remained untouched and unstaged.
+
+## User Message - 2026-07-10 19:25:44 +05:00
+
+failed, the actual donor file is ur main source not anything written, write this is ur agent.md, always first always but the donor protues file as top priority, and for fk sake dont just fix one mistake n say yep good to go keep testing. and checking for mistakes.
+n fix this already
+
+## Agent Visible Responses - 2026-07-10 19:25:44 +05:00 onwards
+
+Understood. V37 is rejected. I treated the catalogue notes as equivalent to the binary donor and stopped after one repaired invariant; that was wrong. I’m adding a hard rule to `AGENTS.md`: the actual Proteus donor bytes outrank catalogue/docs/assumptions, and no candidate is ready until the entire donor contract has been exhaustively compared—not just the latest suspected field. I’ll verify Git first, then analyze the accepted NPN donor byte-for-byte against the failed output and its locked-mega base before generating anything else.
+
+The donor-first reset is already revealing why V37 was still premature. I had copied the donor’s `01 00` link trailer into a different component-first frame. In the accepted binaries, terminal-leading BJT uses `01 00`, while every accepted locked-mega component-first attachment I’ve checked uses `02 00`. That trailer is therefore not safely transferable independently of object framing. I’m not changing it yet; I’m continuing through terminal templates, separators, component-link fields, WIRE headers, absolute addresses, and DSN pointer tables so the next candidate includes the complete set of proven differences.
+
+The exhaustive comparison now separates family bytes from frame bytes:
+
+- NPN donor terminal templates and WIRE records are otherwise exact matches after masking only coordinates and final addresses.
+- The locked-mega NPN component packet is valid unchanged—the no-terminal control proves it.
+- `ROOT.CDB`, `$TERBIDIR` device definition, object-chunk absolute start, and final-address formula match the already accepted component-first project.
+- Accepted component-first donors serialize `component → terminal/WIRE pair → terminal/WIRE pair…`, use `02 00` for both terminal and component links, and end `FF FF`.
+- No failed BJT candidate combined all three. V36 had correct component-first pairing and `FF FF` but wrong `01 00`; V37 kept `01 00` and also introduced an unproven grouped hybrid.
+
+So I’m removing the rejected V37 grouping branch, switching NPN’s link fields to the component-first donor’s `02 00`, and retaining donor-exact NPN terminal/WIRE schemas and coordinates. Then I’ll audit every byte category again, not just run the same unit test.
+
+The first independent V38 audit found one more false-negative in our evidence tooling before I hand you anything: the dated donor-comparison runner still declares every zero-length WIRE invalid, even though the actual accepted NPN donor contains exactly three zero-length WIRE records. The shared placer correctly allows them only from catalogue-backed donor evidence, but the runner ignored that field. I’m fixing this generic validator too, regenerating the report, and rerunning the full binary audit so the evidence pack does not contain a contradictory “invalid” report.
+
+## User Message - 2026-07-10 23:42:25 +05:00
+
+continue
+
+## Agent Visible Responses - 2026-07-10 23:42:25 +05:00 onwards
+
+Continuing. I have not accepted V38 yet—the regenerated donor report is still false, so I’m tracing that remaining failed field instead of dismissing it. First I’m rechecking that the last completed GitHub checkpoint still matches remote; the current V38 work remains intentionally uncommitted until this audit is clean.
+
+The remaining false report is now concrete and unrelated to the circuit bytes: the shared report retained per-pin donor fields but dropped the family-level donor project path, while the validator incorrectly searched for that path inside each pin. I’m fixing the reporting contract so every emitted pin can be traced back to the actual `.pdsprj` evidence file. Then the validator will fail only for real donor-contract violations, not missing report plumbing.
+
+The donor comparison is now genuinely clean, not merely “static-valid”: all three emitted pins trace to the actual NPN donor path; terminal templates and WIRE schemas match that donor byte-for-byte after masking only coordinates/addresses; only `ROOT.DSN` changes from the component-placer control; CDB/device definitions are preserved; and the accepted component-first frame contract is matched as a whole. The 38 relevant regressions pass. I’m running the complete component-placer suite next and will record every known remaining difference explicitly before packaging.
+
+### Root Cause And Complete Repair Candidate
+
+V37 failed because it still used the standalone donor’s frame-specific `01 00`
+active links and added a grouped component-first ordering that no accepted
+component-first donor uses. The fix is not one isolated byte: V38 uses the
+actual NPN donor for all NPN-local terminal/WIRE/pin facts, while consuming the
+complete accepted locked-mega component-first frame contract as one unit:
+interleaved terminal/WIRE attachments, `02 00` terminal and component links,
+and `FF FF` finalization.
+
+### Files Edited By Agent In Response To These Messages
+
+- `AGENTS.md` - made actual user-accepted Proteus `.pdsprj` donor bytes authoritative over catalogue/docs/tests and required exhaustive comparison after every repair.
+- `src/proteusgen/component_terminal_placer.py` - removed the rejected V37 grouped-emission branch and added actual donor source traceability to shared reports.
+- `knowledge/component_catalog_v0.json` - pointed NPN at the organized actual donor, separated donor `0100` evidence from component-first `0200` emission, and recorded the complete frame contract and rejected variants.
+- `tests/test_component_placer.py` - replaced V37 grouping assertions with complete NPN frame/link/source evidence checks.
+- `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py` - fixed generic donor comparison to honor catalogue-proven zero-length WIREs and family-level source donor paths.
+- `backups/component_terminal_placer/component_terminal_placer_20260710_192846_before_remove_rejected_v37_grouping.py` - required pre-edit shared placer backup.
+- `experiments/bjt_npn_frame_contract_1x_v38_temp_2026_07_10/` - locked-mega control, one V38 NPN candidate, reports, complete donor-contract audit, README, and summary.
+- `experiments/BJT_NPN_FRAME_CONTRACT_1X_V38_TEMP_2026_07_10.zip` - V38 archive.
+- `docs/architecture.md` - recorded V37 rejection and the donor-local versus project-frame evidence model.
+- `knowledge/test_results.jsonl` - recorded V37 rejection and V38 evidence.
+- `context.md` - appended both user messages, every visible response, validation, and file information.
+
+### Exhaustive Validation
+
+- Actual NPN donor SHA-256: `ffcbcf427978fce1a3eb83ab3914ff58f15719f906f7fdcb1a1f0db114192f7c`.
+- Only `ROOT.DSN` differs from the component-placer control; every other project member and `ROOT.CDB` is byte-identical.
+- Candidate `ROOT.DSN` equals an independent rebuild from the control and candidate object chunk; all decoded pointers are consistent.
+- All three terminal templates and all three WIRE templates match the actual NPN donor byte-for-byte after masking only coordinates and allocated addresses.
+- Exactly three grid-aligned, donor-proven zero-length WIREs; final WIRE-address formula, uniqueness, terminal links, and component links all validate.
+- Actual donor path is present for every emitted pin and `donor_comparison_valid` is true.
+- No unexplained structural differences remain; intentional frame differences are listed in `donor_contract_audit.json`.
+- Relevant regressions: 38 passed, 72 deselected.
+- Full component-placer suite: 110 passed.
+- `python -m compileall -q src tests tools/proteus_generation` passed.
+- V38 archive SHA-256: `054736382b1693f7bb0f0151c71f9fd362e573f55ebc63c018f5277193b84e49`.
+
+### Planned Final Response To User
+
+V37 is rejected. I found and checked the complete error set rather than changing one more byte: it retained the standalone donor’s `01 00` link frame and used an unproven grouped ordering. V38 now uses actual NPN donor bytes as the primary source for every NPN-local fact, combined with the complete accepted locked-mega component-first frame (`terminal/WIRE` units, `02 00` links, `FF FF`).
+
+Test only:
+
+`experiments/bjt_npn_frame_contract_1x_v38_temp_2026_07_10/01_test_this_one/T001_NPN_1x_FRAME_CONTRACT/T001_NPN_1x_FRAME_CONTRACT_sa.pdsprj`
+
+The accompanying `donor_contract_audit.json` records every checked project member, CDB/device definition, DSN pointer, record template/order, coordinate, link trailer, and final address. All 110 component-placer tests pass, but I am still treating Proteus open/render as the only acceptance.
