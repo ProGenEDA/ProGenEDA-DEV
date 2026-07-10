@@ -45,6 +45,13 @@ WIRE_MAKER_VERSION = "progen-kicad-wire-maker/v0.1"
 POWER_LABEL_NETS = {"GND", "0", "VSS", "+5V", "5V", "+3V3", "3V3", "VCC", "VDD", "VIN", "VBUS"}
 UNROUTED_STRATEGY_PREFIXES = ("unroutable", "deferred")
 MAX_ACTUAL_PATH_CANDIDATES = 160
+VARIATION_ARRANGEMENT_PROFILES: dict[str, dict[str, float]] = {
+    "square_compact": {"column_gap": 0.9, "row_gap": 1.1, "component_clearance": 1.0},
+    "square_loose": {"column_gap": 1.2, "row_gap": 1.2, "component_clearance": 1.25},
+    "wide_bus": {"column_gap": 1.55, "row_gap": 0.95, "component_clearance": 1.15},
+    "tall_bus": {"column_gap": 0.95, "row_gap": 1.55, "component_clearance": 1.15},
+    "loose_channels": {"column_gap": 1.35, "row_gap": 1.7, "component_clearance": 1.45},
+}
 
 
 @dataclass(frozen=True)
@@ -303,6 +310,77 @@ for _kind in ("LED_INDICATOR", "POWER_LED", "RELAY_INDICATOR_LED", "CHARGING_LED
 
 for _kind in ("DIODE", "D_1N4007", "1N4007", "1N4148", "1N60", "BZX55C5", "BZX79C5", "FLYBACK_DIODE", "RELAY_FLYBACK_DIODE", "SCHOTTKY_DIODE_BUCK", "TVS_DIODE_RS485"):
     PIN_ALIAS_BY_KIND.setdefault(_kind, {}).update({"ANODE": ("A", "1"), "CATHODE": ("K", "2"), "A": ("A", "1"), "K": ("K", "2")})
+
+PIN_ALIAS_BY_KIND.setdefault("SCHOTTKY", {}).update({"ANODE": ("A", "1"), "CATHODE": ("K", "2"), "A": ("A", "1"), "K": ("K", "2")})
+
+for _kind in ("VDC", "VSOURCE", "CSOURCE", "VSIN", "VPULSE", "VAC", "IDC"):
+    PIN_ALIAS_BY_KIND.setdefault(_kind, {}).update(
+        {"PLUS": ("1",), "MINUS": ("2",), "+": ("1",), "-": ("2",), "POS": ("1",), "NEG": ("2",)}
+    )
+
+for _kind in ("OPAMP", "LM741"):
+    PIN_ALIAS_BY_KIND.setdefault(_kind, {}).update(
+        {"IN+": ("3",), "IN_PLUS": ("3",), "+": ("3",), "IN-": ("2",), "IN_MINUS": ("2",), "-": ("2",), "OUT": ("6",), "VCC": ("7", "V+"), "GND": ("4", "V-")}
+    )
+
+PIN_ALIAS_BY_KIND.setdefault("PROTECTION_IC", {}).update({"B+": ("5", "VCC"), "B-": ("6", "GND"), "P+": ("3", "OC"), "P-": ("1", "OD")})
+PIN_ALIAS_BY_KIND.setdefault("JST_CONNECTOR", {}).update({"+": ("1",), "PLUS": ("1",), "-": ("2",), "MINUS": ("2",), "VCC": ("1",), "GND": ("2",)})
+PIN_ALIAS_BY_KIND.setdefault("PWM_HEADER", {}).update({"PWM": ("3",), "SIG": ("3",), "SIGNAL": ("3",)})
+PIN_ALIAS_BY_KIND.setdefault("PROGRAMMING_HEADER", {}).update({"3V3": ("1",), "EN": ("5",), "BOOT": ("6",)})
+PIN_ALIAS_BY_KIND.setdefault("HEADER_CONNECTOR", {}).update({**_numbered_alias("P", 14), "3V3": ("1",), "VCC": ("1",), "GND": ("2",)})
+PIN_ALIAS_BY_KIND.setdefault("ARDUINO_NANO", {}).update({"GND": ("GND", "4", "29"), "GND1": ("4",), "GND2": ("29",), "VIN": ("30",)})
+PIN_ALIAS_BY_KIND.setdefault("LM317", {}).update({"GND": ("ADJ", "1")})
+PIN_ALIAS_BY_KIND.setdefault("7447", {}).update(
+    {
+        "VCC": ("16",),
+        "GND": ("8",),
+        "A": ("7",),
+        "B": ("1",),
+        "C": ("2",),
+        "D": ("6",),
+        "a": ("13", "~{a}"),
+        "b": ("12", "~{b}"),
+        "c": ("11", "~{c}"),
+        "d": ("10", "~{d}"),
+        "e": ("9", "~{e}"),
+        "f": ("15", "~{f}"),
+        "g": ("14", "~{g}"),
+        "/BI_RBO": ("4",),
+        "BI_RBO": ("4",),
+        "RBI": ("5",),
+        "LT": ("3",),
+        "/LT": ("3",),
+        "/BI": ("4",),
+    }
+)
+PIN_ALIAS_BY_KIND.setdefault("7490", {}).update({"VCC": ("5",), "GND": ("10",), "CP0": ("14",), "CP1": ("1",), "CLK0": ("14",), "CLK1": ("1",)})
+PIN_ALIAS_BY_KIND.setdefault("74HC160", {}).update(
+    {"VCC": ("16",), "GND": ("8",), "ENP": ("7",), "ENT": ("10",), "LOAD": ("9",), "/LOAD": ("9",), "CLK": ("2",), "CLR": ("1",), "/CLR": ("1",), "RCO": ("15",)}
+)
+PIN_ALIAS_BY_KIND.setdefault("74HC74", {}).update(
+    {
+        "VCC": ("14",),
+        "GND": ("7",),
+        "1/PRE": ("4",),
+        "1PRE": ("4",),
+        "1CLK": ("3",),
+        "1D": ("2",),
+        "1/CLR": ("1",),
+        "1CLR": ("1",),
+        "1Q": ("5",),
+        "1/Q": ("6",),
+        "1NQ": ("6",),
+        "2/PRE": ("10",),
+        "2PRE": ("10",),
+        "2CLK": ("11",),
+        "2D": ("12",),
+        "2/CLR": ("13",),
+        "2CLR": ("13",),
+        "2Q": ("9",),
+        "2/Q": ("8",),
+        "2NQ": ("8",),
+    }
+)
 
 for _kind in ("74HC00", "74HC02", "74HC08", "74HC32", "74HC86", "74HC266"):
     PIN_ALIAS_BY_KIND.setdefault(_kind, {}).update(
@@ -1639,6 +1717,30 @@ def _wire_mode_terminal_label_allowed(wire_plan: dict[str, Any], net: str, strat
     )
 
 
+def _generation_variation(circuit: dict[str, Any]) -> dict[str, Any]:
+    raw = circuit.get("generation_variation")
+    if isinstance(raw, dict) and raw.get("enabled"):
+        return raw
+    return {}
+
+
+def _apply_generation_variation_config(arrangement_cfg: dict[str, Any], circuit: dict[str, Any]) -> dict[str, Any]:
+    variation = _generation_variation(circuit)
+    if not variation:
+        return arrangement_cfg
+    profile = str(variation.get("profile") or "square_loose")
+    multipliers = VARIATION_ARRANGEMENT_PROFILES.get(profile, VARIATION_ARRANGEMENT_PROFILES["square_loose"])
+    out = dict(arrangement_cfg)
+    for key, multiplier in multipliers.items():
+        if isinstance(out.get(key), (int, float)):
+            out[key] = round(float(out[key]) * float(multiplier), 3)
+    out["variation_mode"] = 1.0
+    out["variation_index"] = float(variation.get("variation_index") or 0)
+    if bool(variation.get("disable_adaptive_cap", True)):
+        out["variation_disable_adaptive_cap"] = 1.0
+    return out
+
+
 def _strict_wire_connectivity_report(
     wire_plan: dict[str, Any],
     geometry_segments: list[WireGeometrySegment],
@@ -2464,6 +2566,7 @@ def generate_wired_projects_from_final_json(
     cfg.setdefault("strict_forbidden_contact_filter", 0.0)
     mode_for_run = normalize_routing_mode(cfg.get("routing_mode", "wire"))
     if mode_for_run == "combination":
+        variation_mode = bool(cfg.get("variation_mode", False))
         cfg["max_astar_expansions"] = min(float(cfg.get("max_astar_expansions", 50_000.0)), 3_000.0)
         cfg["strict_fallback_max_astar_expansions"] = min(
             float(cfg.get("strict_fallback_max_astar_expansions", cfg["max_astar_expansions"])),
@@ -2473,7 +2576,8 @@ def generate_wired_projects_from_final_json(
         cfg["max_salvage_astar_attempts"] = min(float(cfg.get("max_salvage_astar_attempts", 12.0)), 3.0)
         cfg["max_endpoint_retry_attempts"] = min(float(cfg.get("max_endpoint_retry_attempts", 4.0)), 2.0)
         cfg["max_failed_endpoints_per_net"] = min(float(cfg.get("max_failed_endpoints_per_net", 1000.0)), 4.0)
-        cfg["max_wired_routes"] = min(float(cfg.get("max_wired_routes", 10_000.0)), 8.0)
+        if not variation_mode:
+            cfg["max_wired_routes"] = min(float(cfg.get("max_wired_routes", 10_000.0)), 8.0)
         cfg.setdefault("combination_terminal_high_fanout_threshold", 6.0)
     run_kind = "terminal" if mode_for_run == "terminal" else "combination" if mode_for_run == "combination" else "wired"
     run_path = run_dir or _fresh_run_dir(examples_root, label, run_kind=run_kind)
@@ -2499,6 +2603,17 @@ def generate_wired_projects_from_final_json(
         circuit_routing = circuit.get("routing")
         if routing_mode is None and isinstance(circuit_routing, dict) and circuit_routing.get("mode"):
             cfg["routing_mode"] = normalize_routing_mode(circuit_routing.get("mode"))
+        if isinstance(circuit_routing, dict) and isinstance(circuit_routing.get("terminal_policy"), dict):
+            raw_terminal_nets = circuit_routing["terminal_policy"].get("terminal_nets") or ()
+            if isinstance(raw_terminal_nets, str):
+                raw_terminal_nets = [raw_terminal_nets]
+            if isinstance(raw_terminal_nets, (list, tuple, set)):
+                existing_terminal_nets = cfg.get("terminal_nets") or ()
+                if isinstance(existing_terminal_nets, str):
+                    existing_terminal_nets = [existing_terminal_nets]
+                if not isinstance(existing_terminal_nets, (list, tuple, set)):
+                    existing_terminal_nets = []
+                cfg["terminal_nets"] = sorted({*(str(item) for item in existing_terminal_nets), *(str(item) for item in raw_terminal_nets)})
         cid = str(circuit.get("circuit_id") or source_file.stem)
         stem = source_file.stem
         shutil.copy2(source_file, final_json_dir / source_file.name)
@@ -2510,6 +2625,7 @@ def generate_wired_projects_from_final_json(
         ctx = run_placer_pipeline(placement_input, write_trace=False)
         placement_dict = ctx.placement_plan.as_dict()
         arrangement_cfg = dict(cfg)
+        arrangement_cfg = _apply_generation_variation_config(arrangement_cfg, circuit)
         arrangement_cfg["arrangement_final_wire_route"] = 0.0
         arrangement_cfg["max_arrangement_variants"] = min(float(arrangement_cfg.get("max_arrangement_variants", 5.0)), 3.0)
         current_routing_mode = normalize_routing_mode(cfg.get("routing_mode", "wire"))

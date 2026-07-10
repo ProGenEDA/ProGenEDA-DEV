@@ -7635,6 +7635,110 @@ Critical resume facts:
 - Verification: `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q` passed with `34 passed, 30 subtests passed`; `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests` passed.
 - Pre-existing July 2 generated KiCad edits remain dirty and intentionally unstaged.
 
+## 2026-07-10 13:34:50 PKT - Latest Checkpoint Pointer
+
+The detailed record for the latest implementation turn is the section titled:
+
+```text
+2026-07-10 13:34:50 PKT - KiCad Input Fixer, Executable, 600-Circuit Validation, Terminal, And Variation Runs
+```
+
+It was inserted earlier in this file near the July 6 output-artifact checkpoint.
+This tail pointer preserves the latest resume state.
+
+Critical resume facts:
+
+- 600/600 combination projects passed final validation and hosted local-netlist comparison.
+- 600/600 terminal-only projects passed final validation and hosted local-netlist comparison.
+- 100 random new-500 circuits x 3 variations passed as 300/300 combination variation projects.
+- 7 curated demo circuits x 3 variations passed as 21/21 combination variation projects.
+- New executable commands: `run`, `run-variations`, and `combine-sources`.
+- Main code changes: general input JSON validator/fixer, guessed terminal nets, physical-pin alias conflict repair, source-backed symbol resolution, output packaging, executable wrapper, and variation metadata/profile support.
+
+## 2026-07-10 13:34:50 PKT - KiCad Input Fixer, Executable, 600-Circuit Validation, Terminal, And Variation Runs
+
+### User Request
+
+```text
+no json fixer is not baised on these 500, make it independent with shit tone of rules n information, of all components n which pins usually go where so it can make best case decision and also make the node/terminal as guess
+make sure the nets it fixes are always terminals and are mentioned in name as guess
+```
+
+### Continuation Request
+
+```text
+continue
+```
+
+### Visible Agent Response Summary
+
+- Confirmed the fixer must be general and independent of the 500-circuit corpus.
+- Verified the branch started synced to `origin/main` at `512445731f82212ccb6e1345796d539c0ddc3f37`.
+- Tightened guessed terminal rail behavior so repaired/inferred nets are named `GUESS_TERMINAL_*` and forced into terminal handling.
+- Fixed over-aggressive rail merging so relay/contact `COM` is not treated as ground.
+- Added physical-pin ownership repair: explicit user/input nets win over inferred guessed-terminal endpoints when aliases resolve to the same physical pin.
+- Fixed 7447 case-sensitive input/output pin resolution so `A` and `a` stay distinct.
+- Confirmed 3-case smoke, full 600 combination, full 600 terminal, random 100x3 variations, and curated demo 7x3 variations passed.
+- Noted that uncapped variation generation is correct but slow and should be parallelized/sharded later for live UX.
+- Kept old generated folders immutable and created fresh generated evidence folders for every run.
+
+### Implementation Notes
+
+- Added `kicad/pipeline/input_json_validator_fixer.py` as the general deterministic input JSON validator/fixer.
+- Added `kicad/pipeline/progen_kicad_executable.py` as the single executable wrapper.
+- Added `kicad/tools/progen-kicad` and made it executable.
+- Added `kicad/pipeline/INPUT_JSON_VALIDATOR_FIXER.md`.
+- Added `kicad/tests/test_input_json_validator_fixer.py`.
+- Updated `kicad/pipeline/kicad_wire_maker.py` with alias fixes and variation arrangement profiles.
+- Updated `kicad/pipeline/placement_catalog.py` so fallback kinds resolve to source-backed symbols instead of `Progen:*` placeholders.
+- Updated `kicad/pipeline/output_packager.py` so internal bundles include per-project metadata instead of duplicating the entire run per project.
+- Updated `kicad/pipeline/final_circuit_builder.py`, `wire_planner.py`, `README.md`, and `__init__.py` for the executable/fixer/validation workflow.
+
+### Validation Evidence
+
+- Focused tests: `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_input_json_validator_fixer.py -q` passed with `8 passed`.
+- Compile check: `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests` passed.
+- Wrapper help: `kicad/tools/progen-kicad --help` showed `run`, `run-variations`, and `combine-sources`.
+- Diff whitespace check passed for KiCad pipeline, tests, wrapper, and docs.
+- Full combination run:
+  - Path: `kicad/examples/progen_kicad_executable_run_2026_07_06_025855_executable_600_combination_v6`
+  - `input_count=600`, `project_count=600`
+  - `all_final_validation_ok=True`, `all_local_netlist_ok=True`
+  - zero final blocking failures, failed nets, merged nets, physical pin conflicts, power/ground shorts, unresolved pins, geometry violations, unrouted nets, partial wire nets, and strict-wire violations.
+- Full terminal-only run:
+  - Path: `kicad/examples/progen_kicad_executable_run_2026_07_06_031455_executable_600_terminal_v1`
+  - `input_count=600`, `project_count=600`
+  - `all_final_validation_ok=True`, `all_local_netlist_ok=True`
+  - zero final blocking failures, failed nets, merged nets, physical pin conflicts, unresolved pins, geometry violations, unrouted nets, and partial wire nets.
+- Random variation run:
+  - Source path: `kicad/examples/final_json_variation_source_run_2026_07_10_130323_variation_100x3_v1_source`
+  - Project path: `kicad/examples/progen_kicad_executable_run_2026_07_10_130324_variation_100x3_v1_projects`
+  - 100 random new-500 circuits, 3 variations each, seed `20260710`.
+  - `project_count=300`, `all_final_validation_ok=True`, `all_local_netlist_ok=True`, zero local-netlist/geometry/final failures.
+- Curated demo run:
+  - Source path: `kicad/examples/final_json_variation_source_run_2026_07_10_133146_demo7_3variations_v1_source`
+  - Project path: `kicad/examples/progen_kicad_executable_run_2026_07_10_133147_demo7_3variations_v1_projects`
+  - 7 circuits, 3 variations each, `project_count=21`.
+  - `all_final_validation_ok=True`, `all_local_netlist_ok=True`, zero local-netlist/geometry/final failures.
+  - Demo source circuits: `N01`, `N04`, `N09`, `N12`, `N14`, `N15`, `N17`.
+
+### Files Edited
+
+- `context.md`
+- `kicad/AGENTS.md`
+- `kicad/pipeline/README.md`
+- `kicad/pipeline/INPUT_JSON_VALIDATOR_FIXER.md`
+- `kicad/pipeline/__init__.py`
+- `kicad/pipeline/final_circuit_builder.py`
+- `kicad/pipeline/input_json_validator_fixer.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/output_packager.py`
+- `kicad/pipeline/placement_catalog.py`
+- `kicad/pipeline/progen_kicad_executable.py`
+- `kicad/pipeline/wire_planner.py`
+- `kicad/tests/test_input_json_validator_fixer.py`
+- `kicad/tools/progen-kicad`
+
 ## 2026-07-06 01:09:32 PKT - KiCad Output Artifact Contract and Packager
 
 ### User Request

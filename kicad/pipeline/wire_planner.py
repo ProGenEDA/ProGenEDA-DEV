@@ -1365,10 +1365,10 @@ def _terminal_net_set(cfg: dict[str, Any]) -> set[str]:
 
 def _terminalized_net_reason(net: str, endpoints: list[dict[str, Any]], routing_mode: str, cfg: dict[str, Any]) -> str | None:
     upper = net.upper()
+    explicit_terminals = _terminal_net_set(cfg)
+    if upper in explicit_terminals:
+        return f"{routing_mode}_declared_terminal_net"
     if routing_mode == "wire":
-        explicit_terminals = _terminal_net_set(cfg)
-        if upper in explicit_terminals:
-            return "wire_mode_declared_terminal_net"
         if float(cfg.get("wire_mode_terminal_power_ground", 0.0)) > 0.0 and (upper in POWER_NETS or upper in GROUND_NETS):
             return "wire_mode_power_ground_terminal"
         high_fanout_threshold = int(float(cfg.get("wire_mode_terminal_high_fanout_threshold", 0.0)))

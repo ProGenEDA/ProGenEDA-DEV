@@ -63,6 +63,18 @@ The first deterministic main-JSON compiler is:
 kicad/pipeline/final_circuit_builder.py
 ```
 
+Loose or incomplete main JSON must pass through:
+
+```text
+kicad/pipeline/input_json_validator_fixer.py
+```
+
+The fixer is independent of any single stress-test file. It uses component
+catalogues and common pin-role rules to fill safe details. Any net it invents
+or renames must be named `GUESS_TERMINAL_*` and listed in
+`routing.terminal_policy.terminal_nets`, so guessed connectivity is terminalized
+and never silently treated as a confident user wire.
+
 It implements the non-AI portion of prompt-to-final-JSON generation:
 
 ```text
@@ -166,6 +178,7 @@ kicad/pipeline/beautifier.py
 kicad/pipeline/wire_planner.py
 kicad/pipeline/kicad_wire_maker.py
 kicad/pipeline/terminal_placer.py
+kicad/pipeline/input_json_validator_fixer.py
 kicad/pipeline/value_editor.py
 kicad/pipeline/value_validator.py
 kicad/pipeline/final_validator.py

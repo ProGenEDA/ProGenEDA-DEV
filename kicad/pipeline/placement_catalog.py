@@ -10,6 +10,7 @@ import re
 from dataclasses import dataclass, replace
 from typing import Any
 
+from kicad.generator.kicad_backend.component_catalog import COMPONENT_CATALOG as BACKEND_COMPONENT_CATALOG
 from kicad.generator.kicad_json_to_project import KIND_SPECS
 from kicad.generator.orthogonal_router import Obstacle
 
@@ -423,6 +424,8 @@ def spec_from_generator_kind(kind: str) -> PlacementSpec | None:
     generator_spec = KIND_SPECS.get(normalized)
     if generator_spec is None:
         return None
+    backend_spec = BACKEND_COMPONENT_CATALOG.get(normalized)
+    lib_id = backend_spec.lib_id if backend_spec is not None and backend_spec.lib_id else generator_spec.lib_id
     xs = [pin.x for pin in generator_spec.pins] + [-5.08, 5.08]
     ys = [pin.y for pin in generator_spec.pins] + [-3.81, 3.81]
     width = max(7.0, round(max(xs) - min(xs) + 3.0, 3))
@@ -435,7 +438,7 @@ def spec_from_generator_kind(kind: str) -> PlacementSpec | None:
         height=height,
         category="generator_kind",
         source="kicad.generator.kicad_json_to_project.KIND_SPECS",
-        lib_id=generator_spec.lib_id,
+        lib_id=lib_id,
     )
 
 

@@ -83,6 +83,12 @@ def validate_final_project(*args, **kwargs):
 
     return _validate_final_project(*args, **kwargs)
 
+
+def validate_and_fix_main_json(*args, **kwargs):
+    from .input_json_validator_fixer import validate_and_fix_main_json as _validate_and_fix_main_json
+
+    return _validate_and_fix_main_json(*args, **kwargs)
+
 __all__ = [
     "PipelineContext",
     "PipelineError",
@@ -111,6 +117,7 @@ __all__ = [
     "validate_placement_input",
     "validate_component_values",
     "validate_final_project",
+    "validate_and_fix_main_json",
     "validate_schematic_netlist",
     "write_validation_report",
     "write_wire_planner_jsons",

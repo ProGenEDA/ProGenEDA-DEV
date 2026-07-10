@@ -568,22 +568,46 @@ def _resolve_kind_candidate(value: str) -> str | None:
     return value if resolve_placement_spec(value) is not None else None
 
 
+def _node_ref_kind_candidates(normalized: str) -> list[str]:
+    candidates = [normalized]
+    stripped = re.sub(r"^(?:C\d+|B\d+|N\d+|MJ\d+)_+", "", normalized)
+    if stripped and stripped not in candidates:
+        candidates.append(stripped)
+    # Many generated refs are role/value suffixes around a known family, e.g.
+    # C001_USB_C_CONNECTOR or C004_LM358_AUDIO_A.
+    tokens = stripped.split("_") if stripped else normalized.split("_")
+    for start in range(len(tokens)):
+        for end in range(len(tokens), start, -1):
+            candidate = "_".join(tokens[start:end])
+            if candidate and candidate not in candidates:
+                candidates.append(candidate)
+    return candidates
+
+
 def _infer_node_component_kind(ref: str, pins: set[str]) -> tuple[str, str]:
     normalized = re.sub(r"[^A-Za-z0-9]+", "_", ref.strip().upper()).strip("_")
-    exact = _resolve_kind_candidate(normalized)
-    if exact:
-        if normalized in {"PWR_5V", "PWR_3V3"} and "-" in pins:
+    candidates = _node_ref_kind_candidates(normalized)
+    primary = candidates[0] if candidates else normalized
+    semantic = candidates[1] if len(candidates) > 1 else primary
+    for candidate in candidates:
+        exact = _resolve_kind_candidate(candidate)
+        if not exact:
+            continue
+        if candidate in {"PWR_5V", "PWR_3V3"} and "-" in pins:
             return "VDC", "two_pin_power_block_as_voltage_source"
-        if normalized == "HEADER_CONNECTOR" and _max_indexed_pin(pins, "P") > 4:
+        if candidate == "HEADER_CONNECTOR" and _max_indexed_pin(pins, "P") > 4:
             return "PROGRAMMING_HEADER", "exact_header_ref_widened_for_pin_count"
-        if normalized in {"UART_HEADER", "PWM_HEADER"} and len(pins) > 5:
+        if candidate in {"UART_HEADER", "PWM_HEADER"} and len(pins) > 5:
             return "PROGRAMMING_HEADER", "exact_header_ref_widened_for_pin_count"
         return exact, "exact_catalog_kind"
 
-    suffix_reduced = re.sub(r"(?:_\d+|\d+)$", "", normalized)
-    suffix_match = _resolve_kind_candidate(suffix_reduced)
-    if suffix_match:
-        return suffix_match, "numeric_suffix_removed"
+    for candidate in candidates:
+        suffix_reduced = re.sub(r"(?:_\d+|\d+)$", "", candidate)
+        suffix_match = _resolve_kind_candidate(suffix_reduced)
+        if suffix_match:
+            return suffix_match, "numeric_suffix_removed"
+
+    normalized = semantic
 
     if normalized.startswith("74HC595_SHIFT_REGISTER"):
         return "74HC595_SHIFT_REGISTER", "shift_register_ref_family"

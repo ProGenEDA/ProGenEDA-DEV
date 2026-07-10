@@ -15,6 +15,9 @@ The active stages are independent:
 - `placement_input_validator.validate_placement_input(circuit)`
   checks component kinds and pin numbers against
   `kicad.generator.kicad_json_to_project.KIND_SPECS`.
+- `input_json_validator_fixer.validate_and_fix_main_json(circuit)`
+  repairs loose main JSON into canonical CircuitIR. Any invented/repaired net is
+  named `GUESS_TERMINAL_*` and forced into terminal handling.
 - `kicad_component_placer.place_components(circuit)`
   is the canonical component placer and does not run routing.
 - `placement_validator.validate_placement(circuit, placement_plan)`
@@ -37,6 +40,10 @@ The active stages are independent:
   overlap, and routing-contract evidence into `final_validation_report.json`.
 - `output_packager.package_generated_project(...)`
   emits the user-downloadable project zip and the internal-only metadata bundle.
+- `progen_kicad_executable.py`
+  is the single command wrapper: it validates/fixes main JSON, runs generation,
+  and writes the two output artifacts for each project. It also supports
+  deterministic layout-variation batches.
 
 This active placer slice does not require KiCad to be installed. It uses
 embedded Python metadata from the repository:
@@ -61,6 +68,37 @@ The active hosted final validator currently implements steps 1, 2, 3, 5, 6 as
 optional evidence, and 8 without requiring KiCad CLI. The internal bundle keeps
 the full report history for database storage.
 ```
+
+## Executable And Variation Commands
+
+Main generation:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run path/to/final_json --routing-mode combination
+```
+
+Deterministic variation generation:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run-variations path/to/final_json --routing-mode combination --sample-count 100 --variations-per-circuit 3 --seed 20260710
+```
+
+`run-variations` samples `N*` new-500 corpus files by default, clones each
+selected circuit, preserves the same connectivity, adds
+`generation_variation`, and then runs the normal executable path. Variation
+mode disables the combination wire-route cap for that generated batch only;
+normal combination generation keeps the cap for speed.
+
+Latest local evidence:
+
+- 600/600 combination projects passed final validation and hosted local-netlist
+  comparison with zero unresolved pins, zero merged nets, zero geometry
+  violations, and zero final blocking failures.
+- 600/600 terminal-only projects passed the same validator stack.
+- 100 random new-500 circuits x 3 variations passed as 300/300 combination
+  variation projects with zero local-netlist/geometry/final failures.
+- 7 curated demo circuits x 3 variations passed as 21/21 combination variation
+  projects with zero local-netlist/geometry/final failures.
 
 ## Arrangement, Beautifier, Wire Planner, And Wire Maker
 

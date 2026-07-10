@@ -266,9 +266,21 @@ def package_generated_project(
     user_sha = sha256_bytes(user_project_bytes)
 
     variant_metadata = _variant_metadata(wire_plan)
+    generated_json_sources: set[Path] = {
+        final_json_path,
+        placement_input_path,
+        routing_input_path,
+        wire_plan_path,
+        project_manifest_path,
+        run_manifest_path,
+    }
+    if component_body_report_path is not None:
+        generated_json_sources.add(component_body_report_path)
+    for source in project_dir.glob("*.json"):
+        generated_json_sources.add(source)
     generated_json_entries: dict[str, bytes] = {}
-    for source in sorted(run_dir.rglob("*.json")):
-        if "outputs" in source.relative_to(run_dir).parts:
+    for source in sorted(generated_json_sources):
+        if not source.exists():
             continue
         generated_json_entries[f"all_generated_json/{source.relative_to(run_dir)}"] = source.read_bytes()
 
