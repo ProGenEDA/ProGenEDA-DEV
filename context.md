@@ -7655,6 +7655,49 @@ Critical resume facts:
 - New executable commands: `run`, `run-variations`, and `combine-sources`.
 - Main code changes: general input JSON validator/fixer, guessed terminal nets, physical-pin alias conflict repair, source-backed symbol resolution, output packaging, executable wrapper, and variation metadata/profile support.
 
+## 2026-07-10 13:52:00 PKT - Supported Components And KiCad Schematic Finalization Direction
+
+### User Request
+
+```text
+what are all the supported components
+n what should be the next step into finalizing kicad sch?
+then we will do a small bit of pcd for kicad then move on from kicad
+```
+
+### Visible Agent Response
+
+```text
+Supported right now: 222 accepted input names, including aliases. The strongest, most tested support is the named catalogue/fixer set; the `generator_kind` group is source-backed fallback support that can place/wire/validate but has less semantic pin-guess intelligence.
+
+Core supported components by group:
+
+- MCU/modules: ARDUINO_NANO, ESP32_WROOM.
+- Sensors/RTC/memory/display: ACS712, BME280, DS3231, W25Q64, SSD1306_OLED, 7SEGCOMA, 7SEGCOMK.
+- Power/regulators/chargers: LM7805, LM317, LM2596, TP4056, PROTECTION_IC.
+- Sources/sim primitives: VDC, VSOURCE, CSOURCE, VSIN, VPULSE.
+- Passives: RES, RESISTOR, R, R_220, R_10K_PULLUP, R_4K7_PULLUP, R_120_CAN, R_120_RS485, FEEDBACK_RESISTOR, SDA_PULLUP, SCL_PULLUP, PULLUP_RESISTOR_OLED, CAP, CAPACITOR, C, CP, CP_100UF, CAP-ELEC/CAP_ELEC, C_100NF_CERAMIC, C_100NF_FLASH, DECOUPLING_CAPACITOR, DECOUPLING_CAPACITOR_SD, INPUT_CAPACITOR, OUTPUT_CAPACITOR_BUCK, INPUT_CAPACITOR_BUCK, OUTPUT_FILTER_CAPACITOR, RESET_CAPACITOR, C_22PF_X1, C_22PF_X2, REALIND, L, POWER_INDUCTOR, FERRITE.
+- Diodes/protection: D, DIODE, D_1N4007, 1N4007, 1N4148, 1N60, SCHOTTKY, SCHOTTKY_DIODE_BUCK, FLYBACK_DIODE, RELAY_FLYBACK_DIODE, TVS, TVS_DIODE_RS485, ZENER, BZX55C5, BZX79C5, BRIDGE, BRIDGE_RECTIFIER, FUSE, POLYFUSE, PTC, MOV.
+- LEDs/indicators: LED, LED_INDICATOR, POWER_LED, CHARGING_LED, RELAY_INDICATOR_LED, LED_ARRAY.
+- Transistors/FETs: BC547, NPN, PNP, 2N2222, MOSFET, NMOS, PMOS, IRLZ44N, 2N7000, BS170, JFET_N, JFET_P.
+- Analog/audio/timing: LM358, LM741, OPAMP, LM393, LM393_COMPARATOR, NE555, PAM8403, SPEAKER.
+- Logic ICs: CD4007, 4008, 4013, 4017, 4020, 4024, 4027, 4040, 4051, 4060, 4063, 4093, 4511, 4518, 4520, 7447, 7490, 74HC00, 74HC02, 74HC04, 74HC08, 74HC14, 74HC32, 74HC47, 74HC48, 74HC74, 74HC76, 74HC85, 74HC86, 74HC90, 74HC151, 74HC153, 74HC157, 74HC160, 74HC161, 74HC163, 74HC165, 74HC174, 74HC175, 74HC192, 74HC193, 74HC266, 74HC273, 74HC283, 74HC595, 74HC595_SHIFT_REGISTER, 74LS14, 74LS47.
+- Interfaces/comms: CP2102, CH340, MAX485, MCP2515, TJA1050, LEVEL_SHIFTER.
+- Connectors/headers/terminals: USB_C_CONNECTOR, USB_CONNECTOR, USB_CONNECTOR_UART, MICRO_USB_CONNECTOR, DC_BARREL_JACK, MICRO_SD_SOCKET, JST_CONNECTOR, LI_ION_BATTERY_CONNECTOR, AUDIO_JACK, AUDIO_INPUT_JACK, PIN_HEADER, HEADER_CONNECTOR, UART_HEADER, I2C_HEADER, SPI_HEADER_FLASH, SPI_HEADER_SD, PWM_HEADER, PROGRAMMING_HEADER, TX_HEADER, RX_HEADER, CONN_2, CONN_3, CONN_4, IDC, CAN_TERMINAL, RS485_TERMINAL, SCREW_TERMINAL_2, TERMINAL, TERMINAL_BLOCK, TERMINAL_BLOCK_4.
+- Switches/controls: PUSH_BUTTON, EN_PUSH_BUTTON, BOOT_PUSH_BUTTON, SWITCH, SW_PUSH, SW_DIP, DIP_SWITCH, CARD_DETECT_SWITCH, POT-HG/POT_HG, POTENTIOMETER, R_POT, TRIMMER_POTENTIOMETER, VOLUME_POTENTIOMETER, CHIP_SELECT_JUMPER.
+- Power symbols/mechanical/misc: GND, GND_SYMBOL, GND_Symbol, GROUND, VCC_SYMBOL, PWR_5V, PWR_3V3, TEST_POINT, TESTPOINT, MOUNTING_HOLE, TRANSFORMER, DC_MOTOR, RELAY, RELAY_5V, COIN_CELL_HOLDER, CR2032_BATTERY.
+
+Next step to finalize KiCad schematic should be a freeze pass, not more routing work:
+
+1. Generate an authoritative supported-components doc from code with aliases, KiCad `lib_id`, pin aliases, and semantic confidence level.
+2. Lock combination mode as default, terminal-only as the fast baseline/test mode, and wire-only as experimental.
+3. Track small validation summaries for the 600 pass, 600 terminal pass, 300 variation pass, and 21 demo pass, instead of committing giant generated folders.
+4. Do final schematic polish: title block, sheet metadata, cleaner local-label spacing, consistent power/ground terminal style, reference/value placement, and demo-readable grouping.
+5. Make `progen-kicad` the only public entrypoint: input JSON in, user project zip plus internal bundle out.
+
+Small PCB step after SCH: do footprint mapping and PCB placement only. Build a minimal `.kicad_pcb` emitter with board outline, footprints, nets/ratsnest, connector-edge placement, and basic DRC/static validation. Do not attempt full PCB autorouting yet; that is a separate big problem.
+```
+
 ## 2026-07-10 13:34:50 PKT - KiCad Input Fixer, Executable, 600-Circuit Validation, Terminal, And Variation Runs
 
 ### User Request
