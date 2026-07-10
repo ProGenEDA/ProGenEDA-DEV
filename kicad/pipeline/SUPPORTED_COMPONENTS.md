@@ -4,6 +4,18 @@ Date locked: 2026-07-01
 
 This file records the current component-placer support baseline.
 
+Current generated catalogue:
+
+```text
+kicad/pipeline/SUPPORTED_COMPONENTS_CATALOG.md
+```
+
+As of 2026-07-10 the active placement catalog contains 163 normalized component
+kinds. The original 100-component practical pack remains the locked beginner
+baseline; the wider catalogue now includes Proteus-style aliases, common
+simulation sources, logic ICs, communication parts, sensors, connectors,
+passives, and documented substitutes.
+
 ## Source Of Truth
 
 The supported component list is defined in:
@@ -11,6 +23,8 @@ The supported component list is defined in:
 - `kicad/pipeline/placement_catalog.py`
   - `PLACER_COMPONENT_SPECS`: normalized component kind, display name, reference prefix, rough body size, category.
   - `PLACER_KIND_LIB_IDS`: normalized component kind to real KiCad `Library:Symbol` id.
+- `kicad/pipeline/SUPPORTED_COMPONENTS_CATALOG.md`
+  - generated full list of current normalized kinds and KiCad symbol mappings.
 - `kicad/examples/placer_run_2026_07_01_baseline_c11_spacing_fix_v2/inputs/*.json`
   - The current 20 practical partial CircuitIR-shaped circuits used as the 100-component acceptance pack.
 - `kicad/examples/placer_run_2026_07_01_stress_limit_suite_v2/inputs/*.json`

@@ -45,6 +45,7 @@ WIRE_MAKER_VERSION = "progen-kicad-wire-maker/v0.1"
 POWER_LABEL_NETS = {"GND", "0", "VSS", "+5V", "5V", "+3V3", "3V3", "VCC", "VDD", "VIN", "VBUS"}
 UNROUTED_STRATEGY_PREFIXES = ("unroutable", "deferred")
 MAX_ACTUAL_PATH_CANDIDATES = 160
+TERMINAL_LABEL_PIN_OFFSET_MM = 10.16
 VARIATION_ARRANGEMENT_PROFILES: dict[str, dict[str, float]] = {
     "square_compact": {"column_gap": 0.9, "row_gap": 1.1, "component_clearance": 1.0},
     "square_loose": {"column_gap": 1.2, "row_gap": 1.2, "component_clearance": 1.25},
@@ -1533,9 +1534,13 @@ def _label_direction(
     return _side_vector(side)
 
 
-def _terminal_label_point(pin_point: tuple[float, float], side: str) -> tuple[float, float]:
+def _terminal_label_point(
+    pin_point: tuple[float, float],
+    side: str,
+    offset_mm: float = TERMINAL_LABEL_PIN_OFFSET_MM,
+) -> tuple[float, float]:
     dx, dy = _side_vector(side)
-    return (round(pin_point[0] + dx * 7.62, 3), round(pin_point[1] + dy * 7.62, 3))
+    return (round(pin_point[0] + dx * offset_mm, 3), round(pin_point[1] + dy * offset_mm, 3))
 
 
 def _reserved_label_point(
@@ -1548,13 +1553,26 @@ def _reserved_label_point(
     used_label_points: dict[tuple[float, float], str],
     existing_segments: list[WireGeometrySegment],
     component_bodies: tuple[ComponentBody, ...],
+    protected_pin_points: dict[tuple[float, float], set[str]],
 ) -> tuple[tuple[float, float], bool]:
+    def touches_wrong_protected_pin(segment: WireGeometrySegment) -> bool:
+        own_pin = _round_wire_point(pin_point)
+        for protected_point, protected_nets in protected_pin_points.items():
+            rounded = _round_wire_point(protected_point)
+            if rounded == own_pin:
+                continue
+            if net in protected_nets:
+                continue
+            if _point_on_wire_segment(rounded, segment):
+                return True
+        return False
+
     candidate = raw_label
     owner = used_label_points.get(candidate)
     if candidate == pin_point and owner in (None, net):
         used_label_points[candidate] = net
         return candidate, False
-    validation_bodies = tuple(body for body in component_bodies if body.ref != ref)
+    validation_bodies = component_bodies
     if owner in (None, net):
         candidate_segment = WireGeometrySegment(
             net=net,
@@ -1564,7 +1582,11 @@ def _reserved_label_point(
             source=f"{net}:reserved_label_candidate:{ref}",
         )
         report = validate_wire_geometry([candidate_segment], validation_bodies)
-        if report["ok"] and not _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments):
+        if (
+            report["ok"]
+            and not touches_wrong_protected_pin(candidate_segment)
+            and not _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments)
+        ):
             used_label_points[candidate] = net
             return candidate, False
 
@@ -1575,7 +1597,7 @@ def _reserved_label_point(
         if direction not in unique_directions:
             unique_directions.append(direction)
 
-    for step in range(1, 17):
+    for step in range(2, 17):
         for direction in unique_directions:
             candidate = (
                 round(pin_point[0] + direction[0] * 5.08 * step, 3),
@@ -1590,6 +1612,8 @@ def _reserved_label_point(
                 allowed_touches=(AllowedTouch(ref, pin_point),),
                 source=f"{net}:reserved_label_candidate:{ref}",
             )
+            if touches_wrong_protected_pin(candidate_segment):
+                continue
             if _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments):
                 continue
             report = validate_wire_geometry([candidate_segment], validation_bodies)
@@ -1609,11 +1633,24 @@ def _reserved_label_point(
             )
             if used_label_points.get(candidate) not in (None, net):
                 continue
+            candidate_segment = WireGeometrySegment(
+                net=net,
+                start=pin_point,
+                end=candidate,
+                allowed_touches=(AllowedTouch(ref, pin_point),),
+                source=f"{net}:reserved_label_candidate:{ref}",
+            )
+            if touches_wrong_protected_pin(candidate_segment):
+                continue
+            if _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments):
+                continue
+            report = validate_wire_geometry([candidate_segment], validation_bodies)
+            if not report["ok"]:
+                continue
             used_label_points[candidate] = net
             return candidate, True
 
-    used_label_points[raw_label] = net
-    return raw_label, False
+    return pin_point, True
 
 
 def _point_on_visual_segment(point: tuple[float, float], segment: tuple[tuple[float, float], tuple[float, float]]) -> bool:
@@ -1907,6 +1944,7 @@ def make_kicad_wires(
     unit_count_cache: dict[str, int] = {}
     unresolved: list[dict[str, Any]] = []
     endpoint_point_cache: dict[tuple[str, str], tuple[float, float]] = {}
+    endpoint_geometry_cache: dict[tuple[str, str], PinGeometry | None] = {}
     resolved_count = 0
 
     def endpoint_point(endpoint: dict[str, Any]) -> tuple[float, float]:
@@ -1916,7 +1954,7 @@ def make_kicad_wires(
         key = (ref, pin)
         if key in endpoint_point_cache:
             return endpoint_point_cache[key]
-        point, status, _geometry = _resolve_component_pin_point(
+        point, status, geometry = _resolve_component_pin_point(
             ref=ref,
             pin=pin,
             component=components.get(ref),
@@ -1933,11 +1971,29 @@ def make_kicad_wires(
                     unresolved[-1]["kind"] = component.kind
             raw_point = endpoint.get("point", [0.0, 0.0])
             fallback = (round(float(raw_point[0]), 3), round(float(raw_point[1]), 3))
+            endpoint_geometry_cache[key] = None
             endpoint_point_cache[key] = fallback
             return fallback
         resolved_count += 1
+        endpoint_geometry_cache[key] = geometry
         endpoint_point_cache[key] = point
         return point
+
+    def endpoint_side(endpoint: dict[str, Any]) -> str:
+        ref = str(endpoint.get("ref") or "")
+        pin = str(endpoint.get("pin") or "")
+        key = (ref, pin)
+        endpoint_point(endpoint)
+        geometry = endpoint_geometry_cache.get(key)
+        component = components.get(ref)
+        if geometry is not None and component is not None:
+            side = _pin_side_from_rotation(float(geometry.rotation) + float(component.rotation))
+            if side:
+                return side
+        raw_side = str(endpoint.get("side") or "").lower()
+        if raw_side in {"left", "right", "top", "bottom"}:
+            return raw_side
+        return ""
 
     segments: list[tuple[tuple[float, float], tuple[float, float]]] = []
     geometry_segments: list[WireGeometrySegment] = []
@@ -2001,8 +2057,8 @@ def make_kicad_wires(
             for endpoint in endpoints:
                 pin_point = endpoint_point(endpoint)
                 ref = str(endpoint.get("ref") or "")
-                side = str(endpoint.get("side") or "")
-                raw_label = pin_point
+                side = endpoint_side(endpoint)
+                raw_label = _terminal_label_point(pin_point, side)
                 label_point, label_moved = _reserved_label_point(
                     net=net_name,
                     ref=ref,
@@ -2012,6 +2068,7 @@ def make_kicad_wires(
                     used_label_points=used_label_points,
                     existing_segments=geometry_segments,
                     component_bodies=component_bodies,
+                    protected_pin_points=protected_pin_points,
                 )
                 if label_moved:
                     label_collision_avoidance_count += 1
@@ -2119,6 +2176,7 @@ def make_kicad_wires(
         "stage": "kicad_wire_maker",
         "version": WIRE_MAKER_VERSION,
         "routing_mode": routing_mode,
+        "terminal_label_pin_offset_mm": TERMINAL_LABEL_PIN_OFFSET_MM,
         "wire_object_count": len(segments),
         "raw_wire_segment_count": raw_segment_count,
         "merged_wire_segment_count": merged_segment_count,

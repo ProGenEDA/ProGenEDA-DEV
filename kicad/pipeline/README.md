@@ -125,6 +125,11 @@ The post-placer stages remain independent:
   actual wire/junction S-expressions, and records unresolved pin aliases,
   partial-wire nets, unroutable nets, geometry validation, and strict-wire
   connectivity validation in each manifest.
+  In terminal and combination modes it emits KiCad local labels with a default
+  10.16 mm pin-to-label offset where safe. Candidate terminal stubs are rejected
+  if they cross component bodies, touch protected pins from another net, or
+  hard-contact another net. If the local area is too dense, the writer keeps the
+  label pin-local rather than drawing an unsafe visual stub.
 
 `wire_planner.py` is deliberately pure math/JSON. It does not know about KiCad
 S-expressions or Proteus files.

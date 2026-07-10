@@ -234,9 +234,13 @@ strict-wire connectivity validation, hosted expected-net comparison, and
 geometry validation in manifests.
 
 `terminal_placer.py` is the current placeholder/foundation for terminal-style
-connectivity. For KiCad its current backend is local labels at pin points, with
-short collision-avoidance stubs only when needed. Strict wire mode must not
-invoke it implicitly as a fallback.
+connectivity. For KiCad its current backend is local labels emitted by
+`kicad_wire_maker.py`. Labels are placed one 10.16 mm terminal offset away from
+the resolved KiCad pin when that short stub is geometrically and electrically
+safe. The writer must reject candidate terminal stubs that cross component
+bodies, touch protected pins from other nets, or hard-contact another net; if
+no safe offset exists, it must prefer a pin-local label over an unsafe stub.
+Strict wire mode must not invoke terminal behavior implicitly as a fallback.
 
 `value_editor.py` applies the main JSON component values to generated KiCad
 schematics and records whether any schematic value properties had to be

@@ -2,7 +2,46 @@
 
 Generated example folders are immutable records. Do not overwrite old generated
 projects or input packs. When placement, wiring, symbol mapping, values, or any
-other output changes, create a new `placer_run_*` folder.
+other output changes, create a new timestamped run folder.
+
+This directory now has two layers:
+
+- committed source/evidence records: curated fixtures, docs, compact manifest
+  summaries, and old small records already in Git;
+- local generated project packs: bulky run folders produced during validation,
+  kept on disk and indexed, but ignored by default so a 600-project pass does
+  not accidentally become a multi-gigabyte source commit.
+
+The full index is:
+
+```text
+kicad/examples/EVIDENCE_INDEX.md
+```
+
+Compact summaries for the current accepted runs are under:
+
+```text
+kicad/examples/manifest_summaries/
+```
+
+Current accepted schematic evidence:
+
+- `progen_kicad_executable_run_2026_07_06_025855_executable_600_combination_v6`: 600/600 combination-mode projects passed final validation, hosted expected-net comparison, geometry validation, value validation, and component body overlap checks.
+- `progen_kicad_executable_run_2026_07_06_031455_executable_600_terminal_v1`: 600/600 terminal-only projects passed the same validator stack.
+- `progen_kicad_executable_run_2026_07_10_130324_variation_100x3_v1_projects`: 100 random imported circuits x 3 deterministic layout variations passed as 300/300 combination-mode projects.
+- `progen_kicad_executable_run_2026_07_10_133147_demo7_3variations_v1_projects`: 7 curated MVP-demo circuits x 3 variations passed as 21/21 combination-mode projects.
+
+Current accepted JSON sources:
+
+- `final_json_run_2026_07_06_020659_main_json_catalog_600_combination_v2`: canonical 600 main JSON source catalog.
+- `final_json_run_2026_07_06_020648_complex_500_from_node_spec_v2`: repaired 500 imported netlist JSON source.
+- `final_json_run_2026_07_10_133400_demo7_curated_source_v1`: curated seven-demo source.
+- `final_json_variation_source_run_2026_07_10_130323_variation_100x3_v1_source`: accepted 300-variation source batch.
+- `final_json_variation_source_run_2026_07_10_133146_demo7_3variations_v1_source`: accepted demo variation source batch.
+
+Do not rename accepted evidence folders after they have been shared. If a
+folder name is ugly or historical, keep it and document its status in this file
+or `EVIDENCE_INDEX.md`; the path itself is part of the reproducibility record.
 
 Current useful runs:
 

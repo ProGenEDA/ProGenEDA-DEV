@@ -16,13 +16,27 @@ from kicad.pipeline.final_circuit_builder import (
     placer_ready_circuit,
 )
 from kicad.pipeline.kicad_symbol_library import KiCadSymbolLibrary
-from kicad.pipeline.kicad_wire_maker import _pin_geometries, _resolve_pin_geometry, generate_wired_projects_from_final_json, make_kicad_wires
+from kicad.pipeline.kicad_wire_maker import (
+    TERMINAL_LABEL_PIN_OFFSET_MM,
+    _pin_geometries,
+    _resolve_pin_geometry,
+    _terminal_label_point,
+    generate_wired_projects_from_final_json,
+    make_kicad_wires,
+)
 from kicad.pipeline.terminal_placer import place_terminals
 from kicad.pipeline.placer_pipeline import run_placer_pipeline
 from kicad.pipeline.wire_planner import plan_wire_routes
 
 
 class KiCadWireMakerTests(unittest.TestCase):
+    def test_terminal_label_point_uses_clear_pin_offset(self) -> None:
+        pin = (25.4, 50.8)
+        self.assertEqual(_terminal_label_point(pin, "right"), (round(pin[0] + TERMINAL_LABEL_PIN_OFFSET_MM, 3), pin[1]))
+        self.assertEqual(_terminal_label_point(pin, "left"), (round(pin[0] - TERMINAL_LABEL_PIN_OFFSET_MM, 3), pin[1]))
+        self.assertEqual(_terminal_label_point(pin, "top"), (pin[0], round(pin[1] - TERMINAL_LABEL_PIN_OFFSET_MM, 3)))
+        self.assertEqual(_terminal_label_point(pin, "bottom"), (pin[0], round(pin[1] + TERMINAL_LABEL_PIN_OFFSET_MM, 3)))
+
     def test_exact_pin_aliases_preserve_case_and_active_low_identity(self) -> None:
         library = KiCadSymbolLibrary()
         cases = {
@@ -63,7 +77,9 @@ class KiCadWireMakerTests(unittest.TestCase):
         result = make_kicad_wires(circuit, placement, terminal_plan)
         self.assertEqual(terminal_plan["stage"], "terminal_placer")
         self.assertIn("(label \"GND\"", result.schematic_objects)
+        self.assertIn("(wire (pts", result.schematic_objects)
         self.assertEqual(result.report["routing_mode"], "terminal")
+        self.assertEqual(result.report["terminal_label_pin_offset_mm"], TERMINAL_LABEL_PIN_OFFSET_MM)
         self.assertTrue(result.report["strict_wire_ok"])
 
     def test_wire_mode_terminal_policy_labels_declared_power_ground_nets(self) -> None:
