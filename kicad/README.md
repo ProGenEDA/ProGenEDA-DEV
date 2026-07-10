@@ -3,6 +3,18 @@
 This folder is separate from the Proteus generator internals but is callable from
 the same `proteusgen` CLI so the final `progen` executable can ship both flows.
 
+Current accepted schematic status, the first PCB target, and the complete
+cross-EDA/LTspice handoff are recorded in:
+
+```text
+kicad/FINALIZATION_STATUS.md
+kicad/PROGENEDA_PROJECT_AND_LTSPICE_HANDOFF.md
+```
+
+Historical note: later sections of this README preserve the early incremental
+placer-era record and may describe stages as placeholders. Use the two files
+above for the current accepted pipeline and next-step status.
+
 ## Current V1 Mode
 
 KiCad generation writes self-contained projects from
