@@ -11620,3 +11620,13 @@ V34’s four repaired BJT files now match the donor invariants that V33 missed: 
 ### Planned Final Response To User
 
 V34 contains only the four repaired BJT 1x `_sa` files. Test those four; the three successful MOSFET families remain locked and were not regenerated. After all four BJT files pass Proteus, the next checkpoint will be 9x/15x/23x solos for all seven transistor families, then mixed testing.
+
+### Commit And Push Verification
+
+The scoped V34 commit is `6dc63169`; only the shared placer, catalogue, tests, docs/logs, backup, and four-case evidence pack were staged. The unrelated donor deletions and user-fixed artifacts remain untouched. I’m pushing and verifying the remote hash now.
+
+Remote verification passed: local HEAD, upstream, and GitHub all match `6dc63169d08ccfa6d01936f2a4ee4972972c2c14`. I’m recording that verification in the required follow-up context commit and will verify the final remote hash once more.
+
+- Implementation/evidence commit: `6dc63169d08ccfa6d01936f2a4ee4972972c2c14` (`Repair BJT terminal 1x emission`).
+- Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `6dc63169d08ccfa6d01936f2a4ee4972972c2c14`.
+- Unrelated deleted/untracked donor and user-fixed files remained untouched and unstaged.
