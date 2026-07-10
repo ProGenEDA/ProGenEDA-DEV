@@ -154,6 +154,9 @@ Current fields stored in `output_manifest.json`:
 
 Database import should use the serial as the stable lookup key. Component code
 registries must remain append-only: never reuse a code for a different meaning.
+KiCad `KC-A` component/count codes use uppercase Base36 characters (`0-9A-Z`)
+so they remain compatible with the current website registry decoder, which
+uppercases component codes during lookup.
 
 ## Variant Retention
 

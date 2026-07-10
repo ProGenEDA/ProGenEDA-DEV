@@ -10642,3 +10642,183 @@ Critical resume facts:
 - Old-`N183` real executable smoke passed for 9/9 combination and 9/9 terminal-smoke projects with zero unresolved pins, netlist failures, geometry violations, and final-validation blockers.
 - Fresh 600-circuit executable retest passed for 600/600 combination and 600/600 terminal-smoke projects. All static/value/final/netlist/geometry/strict-wire booleans were true and every counted blocking/failure metric was zero.
 - Fresh 600 manifest: `/tmp/kicad_retest_600_outputs_20260710/progen_kicad_executable_run_2026_07_10_190435_retest_600_20260710/run_manifest.json`.
+
+## 2026-07-10 21:01:04 PKT - KiCad Executable and newwebsite Handoff Release
+
+### User Request
+
+```text
+so it is ready to be shiped?
+then covert it into an executable
+and then ill have u pay attention to a folder called newwebsite
+there u can see is support for proteus and even in the supported components there is only mention for proteus
+i want u to deeply analysis that whole website
+and make for me an executable for that, with a zip containing all the information it needs to succesfull move implement everything for kicad, support for generation, support in supported component menu everywhere
+```
+
+### Visible Agent Responses
+
+```text
+Yes: based on the repeated retests, the KiCad schematic pipeline is ready for the supported flow. I’ll now turn that into a proper executable handoff and inspect `newwebsite` deeply so the KiCad integration package matches how the website currently handles Proteus.
+
+I’m continuing from the clean pushed checkpoint and switching into the handoff shape now: first I’ll pin down the executable’s component/serial registry so the website package matches the generator instead of becoming a second fragile list.
+
+The website already has the right serial idea for multiple EDAs, but the implementation is still Proteus-shaped in the places that matter: the generator adapter, export storage path, download filenames, component registry, and the visible “supported components” page. I’m turning that into a concrete KiCad drop-in package rather than vague notes.
+
+One important packaging detail: `kicad/pipeline/routing` is huge because it contains Rust build output. I’m going to package the executable with the Python source plus the compiled Rust extension it actually imports, not the whole Rust target directory.
+
+The Rust core is imported as `progen_routing_core`, so a zipapp alone cannot carry it from inside the archive in a portable way. I’ll build the executable as a small self-contained launcher directory/zip: the launcher plus the Python package, and I’ll include the Rust wheel/extension as install-time/`PYTHONPATH` support.
+
+One snag I found: the Rust wheel was built, but it is not installed in the current Python, so the existing route pipeline is passing by falling back to Python. I’m going to make the executable honest: it runs standalone with the proven Python path, and the handoff zip will include the Rust wheel plus an install note/env check so the website host can enable it without changing the executable contract.
+
+The backend can already store any service code if the registry exists; the missing piece is the KiCad registry file and a generator adapter that returns the KiCad executable’s user project zip plus internal metadata. I’ll generate the registry from the KiCad catalogue so the serials decode correctly in the website.
+
+I’m at the edit point now. I’m adding a repeatable build tool that creates the KiCad executable, exports the `KC-A` component registry, and assembles the website handoff folder/zip with adapter contract, audit notes, and install instructions.
+
+There is an old `kicad/tools/progen-kicad` launcher already present, so I’ll avoid overwriting it. The new build will go under `kicad/release/` with a dated handoff bundle and a reproducible builder script.
+
+I’ll also keep the release artifacts out of normal scratch/build folders so they don’t collide with generated examples or the old tool launcher.
+
+I’m adding the builder now. It will not mutate `newwebsite`; it creates a handoff package with copy-in files and exact integration notes, so the website can be patched deliberately instead of silently changed from this repo.
+
+The builder is in place. Next I’m going to run it, inspect the generated registry/zip contents, and then smoke-test the portable executable against a real JSON so we know the handoff isn’t just pretty paper.
+
+The first build hit a path-normalization bug in the manifest writer, not in the generator. I’m fixing that so relative release paths are resolved before the manifest is written.
+
+Path bug fixed; I’m rebuilding the release package now.
+
+The release built cleanly: executable zip is about 3.4 MB, handoff zip about 10 KB, and the KiCad registry currently has 103 supported component words from canonical kinds plus aliases. I’m extracting it to a temp folder and running the executable like the website would.
+
+The archive contents look right: the launcher, Python runtime package, KiCad source subset, and the Rust wheel are inside the portable executable zip; the handoff zip has registry, adapter, docs, and sample JSON. Now I’m doing actual execution from a fresh extraction.
+
+The zip integrity test passed, but extraction stripped the launcher execute bit. That’s a real packaging issue, so I’m fixing the zipper to preserve Unix permissions and rebuilding.
+
+I’m updating the release zip writer so shell launchers survive extraction as executable files.
+
+Rebuilding with the permission fix now, then I’ll rerun the extraction smoke.
+
+The rebuilt zip now has new hashes. I’m extracting again and running both `--help` and a real generation smoke through the launcher.
+
+Python’s zip extractor ignores Unix execute bits even when the zip stores them. That means the zip is fine for transfer, but not a reliable executable-preserving extractor by itself. I’m adding a `.tar.gz` portable executable artifact too, because tar preserves the launcher mode cleanly on Linux.
+
+Before adding the tarball I’m checking the normal Linux `unzip` behavior too, since website deployment hosts usually use that rather than Python’s minimal extractor.
+
+Normal `unzip` preserves the execute bit and `--help` works. I’m running a real generated KiCad project now from the extracted release.
+
+The portable executable generated a real KiCad project successfully: zero unresolved pins, zero overlaps, zero geometry violations, zero local-netlist failures, and it produced both `PROGEN_KICAD_PROJECT.zip` and `internal_bundle.zip`. I’m doing a quick syntax check on the handoff adapter next.
+
+One more practical check: I’m testing the generated `KC-A.json` with the website’s own serial parser in a temporary copy, so we know `KC-A-...` serials actually decode once that registry is installed.
+
+The registry check caught a real compatibility bug: `newwebsite` uppercases component codes when decoding serials, so lowercase Base62 codes collide. PR never hit it because PR-A only uses uppercase codes. For KiCad, I’m fixing the release contract to use website-compatible uppercase Base36 codes for `KC-A` serials.
+
+I’m changing the KiCad serial alphabet to uppercase Base36. That keeps every public `KC-A` serial decodable by the current website registry code without requiring a deep serial-system refactor before KiCad can launch.
+
+The serial fix is in the packager and release builder. I’m rebuilding the release, then I’ll retest the website parser against the new KC serial.
+
+The rebuilt release now uses uppercase-only serial codes. I’m running the extracted executable again so the generated serial and artifacts reflect the fixed contract.
+
+The smoke generation still passes and the new serial is uppercase-code clean. I’m testing that exact serial through the website parser now.
+
+Good catch paid off: the generated `KC-A` serial now decodes correctly with the website’s existing serial system. I’m running the KiCad test suite again because changing the serial alphabet is small but important enough to verify broadly.
+
+Compile passed. The full unit suite is still running; I’ll let it finish rather than guessing from the first few tests.
+
+Still in the longer generation-heavy test. Nothing has failed so far; waiting it out.
+
+Still no failure output. This test run usually takes several minutes; I’m letting it complete.
+
+The suite is still on the slow pipeline validation section. I’m keeping it running because this is exactly where packaging/serial changes would surface if they broke artifact generation.
+
+Still running. The earlier full retest was about five minutes, so this is within expected range.
+
+No new output yet; I’m continuing to wait for the full verdict.
+
+The test process is still alive and quiet, which is normal for this generator-heavy case. I’ll poll again.
+
+The suite has moved past the long first block with all OK so far; now it’s in the wire-maker/project artifact tests.
+
+Full KiCad unit suite passed again: 83 tests in about 291 seconds. I’m updating the project log and then I’ll commit and push this release checkpoint.
+
+I’m adding the serial alphabet note to the artifact contract and ignoring release scratch build folders, then I’ll write the turn record to `context.md`.
+
+Scratch release builds are now ignored; release zips, docs, and manifests remain trackable.
+
+The contract wording was wrapped slightly differently than expected; I’m applying the note against the exact lines.
+
+Now I’m writing the resumable record with the files changed, artifacts produced, and verification results so this checkpoint does not depend on chat history.
+```
+
+### newwebsite Analysis Findings
+
+- `apps/api/src/server.mjs` already accepts `targetService` and includes `KC`.
+- `apps/api/src/services/circuit-service.mjs` already maps `KC` to `KiCad`.
+- `packages/serial-system/index.mjs` is structurally multi-EDA, but the component registry folder only had `PR-A.json`.
+- `packages/component-registry/index.mjs` uppercases serial component codes in `componentForCode`, so lowercase Base62 codes collide. KiCad release serials were changed to uppercase Base36 to stay compatible.
+- `src/temp/legacyGeneratorClient.ts` hardcodes `targetService: 'PR'` and `.pdsprj` fallback names.
+- `apps/api/src/services/temp-generator-service.mjs` always calls the temporary Proteus bridge and derives component summary from prompt heuristics.
+- `packages/storage-adapter/local-storage-service.mjs` stores internal bundle export copies under `export/PR/...`; KiCad needs `export/${service}/...`.
+- `apps/api/src/server.mjs` returns `fileName: 'project.pdsprj'` from the owner-history download POST route.
+- `src/generation/SupportedComponentsPage.tsx` is hardcoded to Proteus-era groups and says Proteus-ready.
+- `src/generation/AnimatedDarkGeneratePage.tsx` locks KiCad in the UI and visible copy says Proteus-ready.
+- `src/generation/NonAnimatedDarkWorkspace.tsx`, `HistoryPage.tsx`, and docs still contain Proteus/.pdsprj-specific copy.
+
+### Artifacts Produced
+
+- Portable KiCad executable zip:
+  - `kicad/release/progen-kicad-portable-2026_07_10.zip`
+  - SHA256: `14f7dbbbfd79b4ad2c14e87b15ad1bb82497535dd3a26f0a8cf7446c606d77f2`
+  - Contains `progen-kicad` launcher, bundled KiCad Python package, KiCad source subset, and Rust wheel.
+- Website handoff zip:
+  - `kicad/release/newwebsite-kicad-handoff-2026_07_10.zip`
+  - SHA256: `f62e0ab240cdcad402c1ae7b276b21497bd95a585d55737a65a1d2c243834c5c`
+- Handoff folder:
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/README.md`
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/NEWEBSITE_KICAD_AUDIT.md`
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/IMPLEMENTATION_CHECKLIST.md`
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/website_files/packages/component-registry/registries/KC-A.json`
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/website_files/apps/api/src/services/kicad-executable-service.mjs`
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/website_files/src/generation/kicadSupportedComponents.json`
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/website_files/docs/KICAD_WEBSITE_INTEGRATION.md`
+  - `kicad/release/newwebsite_kicad_handoff_2026_07_10/website_files/api.env.kicad.example`
+- Release manifest:
+  - `kicad/release/kicad_release_manifest_2026_07_10.json`
+
+### Verification
+
+- Release build passed:
+  - `python kicad/tools/build_kicad_release.py --release-root kicad/release --date-label 2026_07_10`
+- Zip integrity passed:
+  - `python -m zipfile -t kicad/release/progen-kicad-portable-2026_07_10.zip`
+  - `python -m zipfile -t kicad/release/newwebsite-kicad-handoff-2026_07_10.zip`
+- Normal Linux `unzip` preserved launcher execute bits and `progen-kicad --help` worked.
+- Portable executable smoke passed from fresh extraction:
+  - `progen-kicad run kicad/examples/ee215_diode_iv.json --output-root /tmp/progen_kicad_release_smoke --label release_smoke --routing-mode combination`
+  - Result: `all_inputs_fixed=true`, `all_local_netlist_ok=true`, `all_final_validation_ok=true`, `total_unrouted_nets=0`, `total_partial_wire_nets=0`, `total_component_body_overlaps=0`, `total_geometry_violations=0`
+  - User artifact: `PROGEN_KICAD_PROJECT.zip`
+  - Serial after Base36 fix: `KC-A-0+V01+1+402+2+001O01+-E7B1`
+- Website serial parser compatibility passed in a temporary copy of `newwebsite` packages with generated `KC-A.json` installed:
+  - Parsed `KC-A-0+V01+1+402+2+001O01+-E7B1`
+  - Decoded summary exactly: `D=1`, `GND=2`, `R=1`, `VDC=1`
+- Handoff adapter syntax passed:
+  - `node --check kicad/release/newwebsite_kicad_handoff_2026_07_10/website_files/apps/api/src/services/kicad-executable-service.mjs`
+- Compile passed:
+  - `PYTHONPATH=. python -m compileall -q kicad`
+- Full unit discovery passed:
+  - `PYTHONPATH=. python -m unittest discover -s kicad/tests -v`
+  - `Ran 83 tests in 291.210s`
+  - `OK`
+
+### Files Edited
+
+- `context.md`
+- `kicad/.gitignore`
+- `kicad/pipeline/OUTPUT_ARTIFACT_CONTRACT.md`
+- `kicad/pipeline/output_packager.py`
+- `kicad/tools/build_kicad_release.py`
+
+### Files/Artifacts Added
+
+- `kicad/release/kicad_release_manifest_2026_07_10.json`
+- `kicad/release/progen-kicad-portable-2026_07_10.zip`
+- `kicad/release/newwebsite-kicad-handoff-2026_07_10.zip`
+- `kicad/release/newwebsite_kicad_handoff_2026_07_10/**`

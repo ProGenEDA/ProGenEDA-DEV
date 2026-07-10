@@ -21,7 +21,10 @@ from pathlib import Path
 from typing import Any
 
 
-BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+# The website registry currently normalizes component codes with toUpperCase().
+# Keep KiCad serial component/count codes uppercase-only so KC-A serials decode
+# correctly there without case-collision bugs.
+BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 OUTPUT_ARTIFACT_SCHEMA = "progen-kicad-output-artifacts/v0.1"
 INTERNAL_BUNDLE_SCHEMA = "progen-kicad-internal-bundle/v0.1"
 SERIAL_SERVICE = "KC"
@@ -102,7 +105,7 @@ def _component_code(kind: str, kind_codes: dict[str, str]) -> str:
     # Reserve high code space for unknown future components; metadata stores
     # the real kind name so database import can replace this with a registry
     # code later.
-    value = 62 * 62 - 1 - int.from_bytes(digest[:2], "big") % 256
+    value = len(BASE62_ALPHABET) ** 2 - 1 - int.from_bytes(digest[:2], "big") % 256
     return encode_base62(value, 2)
 
 
