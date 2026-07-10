@@ -1207,6 +1207,77 @@ open/render acceptance is pending user testing.
 User result on 2026-07-09: V27 `LM317T` and `OPAMP` 9x/15x/23x all worked.
 Treat `POT-HG` V25 and `LM317T`/`OPAMP` V27 as accepted checkpoints.
 
+### Three-pin control failure catalogue and donor checklist
+
+The `POT-HG`/`LM317T`/`OPAMP` recovery exposed a sequence of wrong turns that
+must be checked explicitly for every later terminal family:
+
+1. V14 generated scale and mixes before restoring a proven 1x. It also assumed
+   one terminal-leading order for all three families. Future groups start with
+   one placed 1x component, one matching no-terminal control, and one final
+   `_sa` output per family. Scale and mixes stay disabled until Proteus accepts
+   every 1x structural prototype.
+2. V15 treated marker order as proof. A file can contain the expected component,
+   terminal, and WIRE markers and still open as an empty sheet when the original
+   ROOT.DSN prefix bytes are lost. Compare the full object-stream prefix with
+   the component-placer control, not only marker positions.
+3. V16 preserved the prefix but inserted attachments at the wrong byte boundary.
+   Compare the first terminal offset with the accepted donor and with
+   `len(no-terminal-control)-1`; do not move stale component-group bytes across
+   the attachment boundary.
+4. V18 looked visually close but Proteus discarded the malformed tail, leaving
+   one inactive terminal and no attached WIRE. Static record counts before a
+   Proteus save are therefore not survival proof. A user-saved repair must be
+   compared again to see which records Proteus retained or removed.
+5. V19 compared only the first two WIRE endpoints. That missed POT-HG's 4-point
+   ground route and LM317T's 3-point adjust route. Catalogue evidence and tests
+   must preserve and compare the complete `wire_unit_coordinates` polyline,
+   record length, point count, order, terminal endpoint, and exact pin endpoint.
+6. V21/V22 counted the requested components and records but repeated donor labels
+   made visual verification ambiguous. Scaled labels must be compact, unique,
+   component-qualified, and short enough for the Proteus record. Counts must be
+   paired with distinct component-anchor and distinct reference audits.
+7. V23 inserted attachment bytes inside a component packet. Byte searches still
+   reported every component/terminal/WIRE, while Proteus parsed only one valid
+   component. Verify each complete placed component packet remains byte-present
+   and that all attachments begin only at a donor-proven object boundary.
+8. V24 generalized terminal-leading order from the two-pin route. Proteus
+   rejected it for this group. Object order is a catalogue/backend fact, not a
+   universal terminal rule. `POT-HG`/`LM317T`/`OPAMP` use the accepted V20/V25
+   component-stream-then-attachments route; a later family may use another
+   donor-proven order without changing the shared placer architecture.
+9. V25 proved POT-HG but not LM317T/OPAMP because their raw object prefixes differ.
+   Never infer one family's prefix or finalizer from a visually similar family.
+10. V26 still failed with one final `FF`; V27 required the donor/Proteus-proven
+    `FF FF` ending and compact labels. Final terminator shape is now an explicit
+    catalogue emission policy and must be checked byte-for-byte.
+
+The quick, clean family workflow is therefore:
+
+1. Generate the no-terminal 1x through the locked component placer and current
+   beautifier. Record the selected packet count, reference, component marker,
+   object prefix, complete packet bytes, anchor, and final terminator.
+2. Analyse the terminalized donor as evidence only. Record terminal order,
+   label/side/angle, component-relative pin and terminal contacts, complete WIRE
+   polylines, component-link offsets/trailers, object order, first attachment
+   boundary, and final terminator count.
+3. Emit only through `component_terminal_placer.py` using catalogue policies.
+   Recalculate current pin coordinates, grid-snap the terminal contact, preserve
+   donor WIRE topology, and rebase terminal/component links from final WIRE
+   addresses.
+4. Reject a candidate unless it preserves the placed control prefix and packet,
+   has the exact expected component/terminal/WIRE counts, distinct anchors,
+   full WIRE contact validity, correct left/right rotation, unique final links,
+   donor-proven object order, and donor-proven finalizer.
+5. Treat all static checks as diagnostics. Only Proteus open/render feedback can
+   promote the 1x. After promotion, rerun previously accepted 1x families before
+   attempting 9x/15x/23x and then group/accepted-family mixes.
+
+Terminalized donors must never be returned as generated outputs or used as
+placement sources. They are byte/geometry oracles; every candidate output must
+start from the locked mega-donor component placer and pass through the shared
+terminal placer.
+
 V28 mixed two-pin + LM317T/OPAMP combination pack:
 
 `experiments/mixed_two_pin_lm_op_terminal_v28_temp_2026_07_09/`
@@ -1423,3 +1494,36 @@ Regression checks: `test_three_pin_transistor_catalogue_terminal_attachment`
 passes for all seven families, `tests/test_component_placer.py` reports
 110 passed, and `python -m compileall -q src tests tools/proteus_generation`
 passes. Proteus open/render acceptance of V32 is pending user testing.
+
+User result on 2026-07-10: every V32 transistor output failed. V32 repeated the
+earlier false-positive pattern by promoting 1x, scaled, and mixed outputs from
+record counts/link checks before Proteus accepted a structural 1x. The focused
+recovery is 1x-only.
+
+Donor comparison found two concrete V32 structural errors:
+
+- Accepted `NPN` and `PNP` donors use `terminals -> component -> WIREs` and one
+  final `FF`; V32 emitted `component stream -> terminal/WIRE pairs` and forced
+  `FF FF`. The catalogue now records their terminal-leading order, single-FF
+  finalizer, and a one-component proof limit. `2N3904` and `2N4401` inherit that
+  structural hypothesis but remain pending their own Proteus acceptance.
+- Accepted `NMOSFET` evidence uses component-first terminal/WIRE units, `FF FF`,
+  and 4-point dogleg WIRE units for drain/source. V32 collapsed those routes to
+  2-point diagonals. The catalogue now preserves full WIRE-unit polylines and
+  retargets their endpoints to the current calculated pin and snapped terminal
+  contact without changing donor topology. `2N7000` and `BS170` inherit this
+  MOSFET topology pending Proteus acceptance.
+
+The shared placer refuses transistor terminal-leading scale or mixed object
+orders until the focused 1x files are accepted. This is an intentional
+anti-false-positive gate, not a component limit.
+
+Focused V33 checkpoint:
+
+`experiments/three_pin_transistor_1x_solo_v33_temp_2026_07_10/`
+
+V33 contains seven component-placer controls and seven terminalized `_sa`
+outputs, one each for `NPN`, `PNP`, `NMOSFET`, `2N3904`, `2N4401`, `2N7000`,
+and `BS170`. Every output has exactly one selected component and three active
+terminals/WIREs. Focused static regression is 7/7 passing; Proteus open/render
+acceptance remains required before any scale or mixed pack is generated.

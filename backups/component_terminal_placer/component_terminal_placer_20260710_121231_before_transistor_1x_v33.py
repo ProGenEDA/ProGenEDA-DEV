@@ -711,51 +711,6 @@ def _transform_catalogue_wire_coordinates(
     return coordinates, matched
 
 
-def _retarget_catalogue_wire_coordinates(
-    coordinates: Iterable[int],
-    *,
-    transformed_terminal_contact: tuple[int, int],
-    target_terminal_contact: tuple[int, int],
-    target_pin_contact: tuple[int, int],
-) -> tuple[tuple[int, ...], tuple[int, int]]:
-    """Keep donor polyline topology while fitting current terminal and pin contacts."""
-
-    points = list(_wire_coordinate_points(coordinates))
-    if len(points) < 2:
-        raise ValueError("Catalogue WIRE retargeting requires at least two points.")
-    first_distance = abs(points[0][0] - transformed_terminal_contact[0]) + abs(
-        points[0][1] - transformed_terminal_contact[1]
-    )
-    last_distance = abs(points[-1][0] - transformed_terminal_contact[0]) + abs(
-        points[-1][1] - transformed_terminal_contact[1]
-    )
-    terminal_index = 0 if first_distance <= last_distance else len(points) - 1
-    pin_index = len(points) - 1 if terminal_index == 0 else 0
-    old_terminal = points[terminal_index]
-    old_pin = points[pin_index]
-    retargeted: list[tuple[int, int]] = []
-    for index, (x, y) in enumerate(points):
-        if index == terminal_index:
-            retargeted.append(target_terminal_contact)
-            continue
-        if index == pin_index:
-            retargeted.append(target_pin_contact)
-            continue
-        if old_pin[0] != old_terminal[0]:
-            if x == old_pin[0]:
-                x = target_pin_contact[0]
-            elif x == old_terminal[0]:
-                x = target_terminal_contact[0]
-        if old_pin[1] != old_terminal[1]:
-            if y == old_pin[1]:
-                y = target_pin_contact[1]
-            elif y == old_terminal[1]:
-                y = target_terminal_contact[1]
-        retargeted.append((x, y))
-    flattened = tuple(value for point in retargeted for value in point)
-    return flattened, target_terminal_contact
-
-
 def _wire_coordinate_points(coordinates: Iterable[int]) -> tuple[tuple[int, int], ...]:
     values = tuple(int(value) for value in coordinates)
     if len(values) < 4 or len(values) % 2 != 0:
@@ -1133,33 +1088,6 @@ def plan_catalogue_pin_bidir_terminals(
                 )
             if transformed_wire is not None:
                 wire_coordinates, matched_wire_endpoint = transformed_wire
-                if bool(
-                    raw_pin_geometry.get(
-                        "wire_coordinates_retarget_to_current_contacts",
-                        geometry.get(
-                            "wire_coordinates_retarget_to_current_contacts",
-                            False,
-                        ),
-                    )
-                ):
-                    transformed_terminal_contact = (
-                        int(explicit_contact[0]),
-                        int(explicit_contact[1]),
-                    ) if explicit_contact is not None else (
-                        int(wire_start_x),
-                        int(wire_start_y),
-                    )
-                    wire_coordinates, matched_wire_endpoint = (
-                        _retarget_catalogue_wire_coordinates(
-                            wire_coordinates,
-                            transformed_terminal_contact=transformed_terminal_contact,
-                            target_terminal_contact=(
-                                int(wire_start_x),
-                                int(wire_start_y),
-                            ),
-                            target_pin_contact=(int(pin_x), int(pin_y)),
-                        )
-                    )
                 endpoints = _wire_coordinate_points(wire_coordinates)
                 wire_start_x, wire_start_y = endpoints[0]
                 wire_end_x, wire_end_y = endpoints[-1]
@@ -1490,8 +1418,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
 
     local_records: list[bytes] = []
     trailing_attachment_records: list[bytes] = []
-    object_stream_finalizers: set[str] = set()
-    clean_packet_attachment_orders: set[str] = set()
     family_reports: list[dict[str, Any]] = []
     preserved_rows: list[dict[str, Any]] = []
     suffix = suffix_start
@@ -1815,31 +1741,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
             continue
 
-        clean_packet_attachment_order = str(
-            geometry.get(
-                "clean_packet_attachment_order",
-                "component_stream_then_attachment_units",
-            )
-        )
-        if clean_packet_attachment_order not in {
-            "component_stream_then_attachment_units",
-            "terminal_leading_component_then_wires",
-        }:
-            raise ValueError(
-                f"{family} {key} uses unsupported clean packet attachment order "
-                f"{clean_packet_attachment_order!r}."
-            )
-        object_stream_finalizer = str(
-            geometry.get("object_stream_finalizer", "double_ff")
-        )
-        if object_stream_finalizer not in {"single_ff", "double_ff"}:
-            raise ValueError(
-                f"{family} {key} uses unsupported object stream finalizer "
-                f"{object_stream_finalizer!r}."
-            )
-        object_stream_finalizers.add(object_stream_finalizer)
-        clean_packet_attachment_orders.add(clean_packet_attachment_order)
-
         current_suffix_by_pin = _current_bidir_suffixes_by_pin(
             original_group_data,
             profile,
@@ -2038,46 +1939,13 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     f"{family} {key} has {len(terminal_records)} terminals but "
                     f"{len(appended_wire_records)} appended WIRE records."
                 )
-            if clean_packet_attachment_order == "terminal_leading_component_then_wires":
-                max_proven_components = int(
-                    geometry.get("clean_packet_max_proven_components", 1)
-                )
-                family_component_count = sum(
-                    1 for item in groups if _group_family(item) == family
-                )
-                if family_component_count > max_proven_components:
-                    raise ValueError(
-                        f"{family} terminal-leading clean-packet order is proven for "
-                        f"at most {max_proven_components} component(s), not "
-                        f"{family_component_count}."
-                    )
-                if local_records or trailing_attachment_records:
-                    raise ValueError(
-                        f"{family} terminal-leading clean-packet order is currently "
-                        "restricted to a focused solo stream; refusing to mix object "
-                        "orders before Proteus acceptance."
-                    )
-                local_records.extend(terminal_records)
-                local_records.append(b"\x00")
-                local_records.append(
-                    patched_data + b"".join(appended_wire_records)
-                )
-            else:
-                if clean_packet_attachment_orders == {
-                    "component_stream_then_attachment_units",
-                    "terminal_leading_component_then_wires",
-                }:
-                    raise ValueError(
-                        "Catalogue clean-packet attachment orders cannot be mixed "
-                        "before each order has a Proteus-accepted combined oracle."
-                    )
-                local_records.append(patched_data)
-                for terminal_record, wire_record in zip(
-                    terminal_records,
-                    appended_wire_records,
-                ):
-                    trailing_attachment_records.append(terminal_record)
-                    trailing_attachment_records.append(wire_record)
+            local_records.append(patched_data)
+            for terminal_record, wire_record in zip(
+                terminal_records,
+                appended_wire_records,
+            ):
+                trailing_attachment_records.append(terminal_record)
+                trailing_attachment_records.append(wire_record)
         else:
             local_records.extend(terminal_records)
             local_records.append(b"\x00")
@@ -2099,8 +1967,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "wire_count": len(terminal_records),
                 "wire_count_added": wire_count_added,
                 "wire_count_rewritten": wire_count_rewritten,
-                "clean_packet_attachment_order": clean_packet_attachment_order,
-                "object_stream_finalizer": object_stream_finalizer,
                 "stripped_existing_terminal_count": stripped_existing_terminals,
                 "terminal_pins": terminal_pins,
             }
@@ -2108,17 +1974,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
 
     if not family_reports:
         raise ValueError("No catalogue-backed terminalized component was emitted.")
-    if len(object_stream_finalizers) != 1:
-        raise ValueError(
-            "Catalogue terminal attachment requires one proven object-stream "
-            f"finalizer per output, got {sorted(object_stream_finalizers)}."
-        )
-    object_stream_finalizer = next(iter(object_stream_finalizers))
-    finalize_object_stream = (
-        _ensure_single_ff_object_stream_terminator
-        if object_stream_finalizer == "single_ff"
-        else _ensure_double_ff_object_stream_terminator
-    )
     if trailing_attachment_records:
         if not local_records or not all(record.startswith(b"\xff") for record in local_records):
             raise ValueError(
@@ -2137,7 +1992,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             + b"".join(local_records[:-1])
             + local_records[-1][:-1]
         )
-        new_chunk = finalize_object_stream(
+        new_chunk = _ensure_double_ff_object_stream_terminator(
             component_stream + b"".join(trailing_attachment_records)
         )
     elif local_records and not local_records[0].startswith(b"\xff"):
@@ -2147,7 +2002,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         # component packet separator and component packet.  Re-inserting the
         # original component-prefix byte before the first component would
         # create a Proteus-rejected hybrid stream.
-        new_chunk = finalize_object_stream(
+        new_chunk = _ensure_double_ff_object_stream_terminator(
             original_chunk[:1] + b"".join(local_records)
         )
     else:
@@ -2168,7 +2023,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "Catalogue terminal attachment did not emit a component packet "
                 "that can receive the original object-stream component prefix."
             )
-        new_chunk = finalize_object_stream(
+        new_chunk = _ensure_double_ff_object_stream_terminator(
             original_chunk[:1] + b"".join(rebuilt_records)
         )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
@@ -2294,7 +2149,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         "object_chunk_size_before": len(original_chunk),
         "object_chunk_size_after": len(final_chunk),
         "object_chunk_double_ff_valid": final_chunk.endswith(b"\xff\xff"),
-        "object_stream_finalizer": object_stream_finalizer,
         "base_component_stream_covered": True,
     }
     return _rebase_terminal_links_to_final_wire_addresses(destination, report)
@@ -6214,16 +6068,6 @@ def _ensure_double_ff_object_stream_terminator(chunk: bytes) -> bytes:
     return chunk + b"\xff\xff"
 
 
-def _ensure_single_ff_object_stream_terminator(chunk: bytes) -> bytes:
-    """Return the donor-proven single-FF ending used by selected families."""
-
-    if chunk.endswith(b"\xff\xff"):
-        return chunk[:-1]
-    if chunk.endswith(b"\xff"):
-        return chunk
-    return chunk + b"\xff"
-
-
 def _insert_attachment_units_before_packet_terminator(
     component_packet: bytes,
     attachment_units: Iterable[bytes],
@@ -6899,10 +6743,7 @@ def _rebase_terminal_links_to_final_wire_addresses(
     expected_wire_count = int(report.get("wire_count_added") or 0) + int(
         report.get("wire_count_rewritten") or 0
     )
-    require_double_ff = (
-        str(report.get("family_handler", "")).startswith("CATALOGUE/")
-        and report.get("object_stream_finalizer", "double_ff") == "double_ff"
-    )
+    require_double_ff = str(report.get("family_handler", "")).startswith("CATALOGUE/")
     report["valid"] = bool(
         report["terminal_suffixes_unique"]
         and report["terminal_suffix_links_valid"]

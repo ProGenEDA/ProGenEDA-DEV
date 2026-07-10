@@ -1203,7 +1203,7 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
     result = generate_component_placement_project(
         {
             "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
-            "components": {family: 3},
+            "components": {family: 1},
             "layout": {"strategy": "beautify"},
         },
         base,
@@ -1219,13 +1219,31 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
 
     assert result.valid
     assert report["valid"] is True
-    assert report["terminal_count_added"] == 9
-    assert report["wire_count_added"] == 9
-    assert report["terminalized_component_count"] == 3
+    assert report["terminal_count_added"] == 3
+    assert report["wire_count_added"] == 3
+    assert report["terminalized_component_count"] == 1
     assert report["wire_path_contacts_valid"] is True
     assert report["terminal_grid_alignment_valid"] is True
     assert report["terminal_suffix_links_valid"] is True
-    assert chunk.count(b"\x7fWIRE") == 9
+    assert chunk.count(b"\x7fWIRE") == 3
+    terminal_offset = chunk.find(b"$TERBIDIR")
+    component_offset = chunk.find(family.encode("ascii"))
+    wire_offset = chunk.find(b"\x7fWIRE")
+    assert min(terminal_offset, component_offset, wire_offset) >= 0
+    if family in {"NPN", "PNP", "2N3904", "2N4401"}:
+        assert terminal_offset < component_offset < wire_offset
+        assert report["object_stream_finalizer"] == "single_ff"
+        assert chunk.endswith(b"\xff") and not chunk.endswith(b"\xff\xff")
+    else:
+        assert component_offset < terminal_offset < wire_offset
+        assert report["object_stream_finalizer"] == "double_ff"
+        assert chunk.endswith(b"\xff\xff")
+        wire_coordinate_lengths = sorted(
+            len(pin["short_wire"]["coordinates"])
+            for family_report in report["family_reports"]
+            for pin in family_report["terminal_pins"]
+        )
+        assert wire_coordinate_lengths == [4, 8, 8]
 
 
 def test_capacitor_terminal_planner_uses_body_center_plus_half_span(tmp_path: Path) -> None:

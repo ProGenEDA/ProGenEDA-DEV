@@ -11507,3 +11507,67 @@ Remote verification passed: local HEAD, upstream, and `ls-remote` all match `5ba
 ### Final Response To User
 
 Planned summary: V32 transistor group is generated and committed. Main test path is `experiments/three_pin_transistor_terminal_v32_temp_2026_07_10/`: test solo `_sa`, transistor-group mixed `_sa`, then all-accepted-plus-transistors `_sa`. Transistor-only reaches 20x; all-accepted-plus-transistors stops at 15x because 20x hits native high-index source/two-pin packet limits. Commit `5ba4988a` is pushed and verified.
+
+## User Message - 2026-07-10 01:18:25 +05:00
+
+they didnt work, lets do proper deep focus on 1x solo first
+
+## User Message - 2026-07-10 12:03:00 +05:00
+
+continue above, and how about u catelogue all the information of all the mistakes u made while fixing and making terimaized versions of pervious group? the Pothg one, note down all the mistakes n wrong turns u took in archietecute.md clearly, and learn from those mistakes, as to what to look for in donors n generated stuff and what might be false positives and how to quickly and cleanly build me the terminlized version of this group so we can move on to next
+
+## Agent Visible Responses - 2026-07-10 01:18:25 +05:00 onwards
+
+Understood. I’ll stop broad packs and isolate only 1x solo transistor terminalization. First I’m verifying the last push/remote checkpoint, then I’ll inspect the 1x outputs against donor evidence and regenerate a small focused 1x-only diagnostic pack.
+
+Checkpoint is verified: local, upstream, and remote all match `042c4e8e`. The dirty files shown are the same unrelated user/fixed artifacts; I’m leaving them untouched.
+
+There is accepted historical evidence for donor-native NPN/PNP solo files, so I’m using that as byte evidence. The immediate target is not scale or mix: one clean 1x solo per transistor marker, with no-terminal controls and exact byte comparisons against the terminalized donors.
+
+A concrete issue is visible already: the NPN/PNP accepted donors use a different object order from V32. Accepted NPN donor is `terminal records → component → wires`; V32 emitted `component → terminal records → wires`. That can pass static counts but still fail Proteus. I’m checking whether NMOSFET also needs donor-exact ordering/record shape before editing.
+
+For NMOSFET, the accepted donor also differs: donor uses multi-segment 4-point WIRE records for D/S, while V32 collapsed them to 2-point diagonal wires. That is a likely Proteus failure even if static counted the records. I’m going to preserve donor WIRE shape where it is available and restrict this pass to 1x solo.
+
+The current shared code has a clean-packet branch that always emits component first, then terminal/WIRE pairs. That is wrong for at least NPN/PNP evidence. I’m checking the existing catalogue donor analyzer so I can populate the missing donor wire/contact data instead of guessing.
+
+Yes. I’m turning the previous POT-HG/LM317T/OPAMP failures into an explicit “failure-to-evidence” checklist in `architecture.md`, then applying that checklist to the transistor 1x solos only. The key lesson is that record counts and static link checks are false positives unless object order, complete WIRE point shape, final-address links, and actual placed component count all match the accepted donor mechanics.
+
+The donor review confirms two distinct failure classes that the previous group taught us to separate: “the right records exist” and “Proteus accepts their stream.” For this group, NPN/PNP need donor-compatible record ordering, while NMOSFET needs its full multi-segment donor WIRE shape preserved. I’m encoding both as catalogue policies in the one shared placer, with defaults left unchanged so the accepted POT-HG/LM317T/OPAMP path is not disturbed.
+
+I’ve now extracted the reusable lesson set from V14–V27: header-prefix preservation, exact attachment boundary, full polyline WIRE encoding, final `FF FF`, compact labels, real component-count/anchor checks, and Proteus-open acceptance. I’m backing up the shared placer before adding the transistor-specific stream-shape policies; no new terminal script is being created.
+
+The focused regression is still running because each case invokes the locked mega-donor component placer. The new guard is already doing useful work: transistor terminal-leading behavior is restricted to one component until Proteus accepts it, so the old mistake of statically “proving” 9x/15x/23x before a valid 1x cannot recur.
+
+The focused test correctly caught two assumptions before they reached you: the placed NPN-family packet’s last byte is not itself the ROOT.DSN terminator, and BS170’s inherited MOSFET polyline does not yet satisfy the calculated pin/contact audit. I’m resolving both from the actual placed packet boundaries and per-family geometry now; I will not loosen the validator to make them pass.
+
+The seven 1x regressions now pass, including the donor-order/finalizer checks and complete MOSFET polyline checks. I’ve also added the full prior-group mistake catalogue and recovery checklist to `architecture.md`. I’m generating only the seven 1x controls and seven 1x `_sa` files now—no scale and no mix.
+
+The V33 pack’s independent byte audit is clean: BJT files have three 2-point WIRE units and single-FF endings; MOSFET files have two 4-point doglegs plus one 2-point gate WIRE and double-FF endings. The full component-placer/terminal regression suite is still running.
+
+The broad suite is slower than the focused run because it regenerates many donor-based cases, but it is still progressing within the test timeout. I’m keeping the accepted three-pin-control regressions in this run specifically to prove the new per-family policies did not break POT-HG, LM317T, or OPAMP.
+
+The focused safety net is complete: 16 relevant regressions passed, including the accepted POT-HG/LM317T/OPAMP and two-pin combination paths, and compilation passed. The V33 archive is built. I’m recording the failed full-suite timeout honestly, the successful focused suite, the donor lessons, and this conversation in the repository logs before committing and pushing.
+
+### Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_terminal_placer.py` - added catalogue-selected clean-packet object order and finalizer policies, one-component proof gating for terminal-leading families, and donor-polyline retargeting to the current pin/snapped terminal contacts.
+- `knowledge/component_catalog_v0.json` - recorded NPN/PNP terminal-leading single-FF evidence, one-component proof limits, and complete MOSFET WIRE-unit evidence for `NMOSFET`, `2N7000`, and `BS170`.
+- `tests/test_component_placer.py` - changed the transistor regression to focused 1x and added object-order, finalizer, and WIRE-point-count assertions.
+- `backups/component_terminal_placer/component_terminal_placer_20260710_121231_before_transistor_1x_v33.py` - required pre-edit shared placer backup.
+- `docs/architecture.md` - catalogued the V14–V27 POT-HG/LM317T/OPAMP mistakes, false positives, donor checklist, clean family workflow, V32 rejection, and V33 recovery.
+- `experiments/three_pin_transistor_1x_solo_v33_temp_2026_07_10/` - generated seven component-placer controls, seven terminalized 1x `_sa` files, requests, reports, README, and summary.
+- `experiments/THREE_PIN_TRANSISTOR_1X_SOLO_V33_TEMP_2026_07_10.zip` - V33 archive.
+- `knowledge/test_results.jsonl` - appended the V32 rejection/V33 static checkpoint.
+- `context.md` - appended both user messages, visible responses, validation, and edited-file record.
+
+### Validation
+
+- Focused transistor regression: 7 passed, 103 deselected.
+- Relevant accepted-path regression: 16 passed, 94 deselected.
+- `python -m compileall -q src tests tools/proteus_generation` passed.
+- Independent generated-pack audit passed for all seven outputs: three terminals/WIREs, correct donor-order family, BJT single-FF, and MOSFET full WIRE-unit shapes plus double-FF.
+- A broad `tests/test_component_placer.py -q` attempt exceeded the 300-second command timeout; it is not claimed as passing.
+
+### Planned Final Response To User
+
+V33 focused 1x pack is ready. Test only the seven `_sa` files under `01_terminalized_solo_sa`, beginning with NPN, PNP, and NMOSFET, then the four aliases. Matching no-terminal controls are included. No scale or mixed output will be generated until these 1x structures receive Proteus acceptance.
