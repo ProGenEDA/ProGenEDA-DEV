@@ -2041,21 +2041,46 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     f"{family} {key} has {len(terminal_records)} terminals but "
                     f"{len(appended_wire_records)} appended WIRE records."
                 )
-            raw_max_proven_components = geometry.get(
-                "clean_packet_max_proven_components"
-            )
-            if raw_max_proven_components is not None:
-                max_proven_components = int(raw_max_proven_components)
+            if clean_packet_attachment_order == "terminal_leading_component_then_wires":
+                raw_terminal_record_order = geometry.get("terminal_record_order")
+                if raw_terminal_record_order is not None:
+                    if not isinstance(raw_terminal_record_order, (list, tuple)):
+                        raise ValueError(
+                            f"{family} terminal_record_order must be a list of pin names."
+                        )
+                    terminal_record_order = [
+                        str(pin_name) for pin_name in raw_terminal_record_order
+                    ]
+                    terminal_records_by_pin = {
+                        str(pin_row["pin"]["name"]): terminal_record
+                        for pin_row, terminal_record in zip(
+                            terminal_pins,
+                            terminal_records,
+                            strict=True,
+                        )
+                    }
+                    if set(terminal_record_order) != set(terminal_records_by_pin):
+                        raise ValueError(
+                            f"{family} terminal_record_order {terminal_record_order} "
+                            "does not cover the emitted catalogue pins "
+                            f"{sorted(terminal_records_by_pin)}."
+                        )
+                    terminal_records = [
+                        terminal_records_by_pin[pin_name]
+                        for pin_name in terminal_record_order
+                    ]
+                max_proven_components = int(
+                    geometry.get("clean_packet_max_proven_components", 1)
+                )
                 family_component_count = sum(
                     1 for item in groups if _group_family(item) == family
                 )
                 if family_component_count > max_proven_components:
                     raise ValueError(
-                        f"{family} clean-packet terminal emission is proven for "
+                        f"{family} terminal-leading clean-packet order is proven for "
                         f"at most {max_proven_components} component(s), not "
                         f"{family_component_count}."
                     )
-            if clean_packet_attachment_order == "terminal_leading_component_then_wires":
                 if local_records or trailing_attachment_records:
                     raise ValueError(
                         f"{family} terminal-leading clean-packet order is currently "
@@ -2106,6 +2131,12 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "wire_count_rewritten": wire_count_rewritten,
                 "clean_packet_attachment_order": clean_packet_attachment_order,
                 "object_stream_finalizer": object_stream_finalizer,
+                "terminal_record_order": list(
+                    geometry.get(
+                        "terminal_record_order",
+                        [row["pin"]["name"] for row in terminal_pins],
+                    )
+                ),
                 "allow_zero_length_wire_units": bool(
                     geometry.get("allow_zero_length_wire_units", False)
                 ),

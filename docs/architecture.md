@@ -1551,3 +1551,28 @@ outputs for the failed BJT families. Scaling and mixes remain gated on Proteus
 acceptance of these repaired 1x structures. The three accepted MOSFET families
 are deliberately not regenerated, preventing a BJT repair from changing their
 accepted route.
+
+User Proteus result for V34: all four BJT files failed with the same
+`Device '<garbage bytes>' used but not in library` dialog. This is an
+object-stream framing failure, not a missing transistor library part. The V34
+no-terminal controls begin `00 00 FF`, while V34 terminalized outputs begin
+`00 10 ...`; the terminal-leading path replaced the locked-mega component
+prefix, causing Proteus to decode terminal record bytes as a device identifier.
+
+The accepted standalone NPN/PNP donors use terminal-leading streams, but that
+order is not transferable to a locked-mega component-placement output with a
+different CDB/object-stream frame. Donor facts must be separated into:
+
+- transferable pin/contact/WIRE/link evidence; and
+- project-frame-dependent object ordering and prefix evidence.
+
+Focused V35 checkpoint:
+
+`experiments/three_pin_bjt_component_stream_1x_v35_temp_2026_07_10/`
+
+V35 keeps the donor-proven on-pin zero-length WIRE units but preserves the full
+locked-mega component stream first. Every output starts `00 00 FF`; the first
+terminal record starts at `len(no-terminal-control)-1`; component precedes all
+terminal/WIRE units; and the finalizer remains the donor-proven single `FF`.
+The shared placer now enforces the one-component proof limit for every clean
+packet order, preventing premature BJT scaling until V35 passes Proteus.

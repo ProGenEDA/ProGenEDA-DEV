@@ -11582,6 +11582,45 @@ Remote verification passed: local HEAD, upstream, and GitHub all match `7eb5e926
 - Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `7eb5e926a67f3e8065b35f976038da1706d1ad63`.
 - Unrelated deleted/untracked donor and user-fixed files remained untouched and unstaged.
 
+## User Message - 2026-07-10 13:11:00 +05:00
+
+nope failure remained all 4 have the same error, as shown in the image
+
+Attached image showed a Proteus Schematic Capture dialog reporting:
+`Device '<garbage/unreadable bytes>' used but not in library.`
+
+## Agent Visible Responses - 2026-07-10 13:11:00 +05:00 onwards
+
+That error is structural, not pin geometry: Proteus is interpreting the terminal-leading bytes as a device identifier, so it reports a garbage device name “used but not in library.” The locked-mega component packet requires its original `00 00 FF...` component-stream framing before attachments; V34 replaced that framing with terminal records first. I’m locking the zero-length BJT pin geometry, changing only the BJT object order to preserve the complete component stream first, then regenerating focused 1x files.
+
+The byte evidence is exact: each no-terminal control begins `00 00 FF...`, while every failed V34 file begins `00 10...` because a `$TERBIDIR` record replaced the component-stream prefix. That explains the garbage library device name before Proteus even reaches the transistor geometry. I’m removing the unaccepted terminal-leading emission policy from the BJT path; donor terminal order will remain catalogue evidence, not be forced onto a differently framed locked-mega packet.
+
+The corrected structural probe now passes: each BJT output retains the base `00 00 FF...` prefix, preserves the entire placed component stream, and starts the first terminal record exactly where the base’s final stream terminator was. The BJT pin contacts remain donor-proven zero-length active WIREs. I’m generating V35 from this component-first route only.
+
+V35 now passes the same 16-path regression set, including the accepted MOSFET and earlier terminal families. Its audit specifically guards against the shown error: the output begins with the same `00 00 FF` device frame as its control, and no terminal bytes occur before the placed component. I’m packaging this corrected framing checkpoint and recording V34 as rejected.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - removed unaccepted terminal-record reordering from emission and made the clean-packet one-component proof limit apply to every object order.
+- `knowledge/component_catalog_v0.json` - changed the four BJT families to component-stream-first emission while retaining donor terminal order as evidence only and preserving on-pin zero-length WIRE facts.
+- `tests/test_component_placer.py` - added locked-mega `00 00 FF` prefix, component-first order, exact attachment boundary, zero-length WIRE, and link regressions.
+- `backups/component_terminal_placer/component_terminal_placer_20260710_131330_before_bjt_component_stream_v35.py` - required pre-edit shared terminal placer backup.
+- `experiments/three_pin_bjt_component_stream_1x_v35_temp_2026_07_10/` - generated four controls, four corrected BJT `_sa` files, requests, reports, README, and summary.
+- `experiments/THREE_PIN_BJT_COMPONENT_STREAM_1X_V35_TEMP_2026_07_10.zip` - V35 archive.
+- `docs/architecture.md` - recorded the V34 library-device error, exact framing cause, transferable-vs-project-frame donor distinction, and V35 structure.
+- `knowledge/test_results.jsonl` - marked V34 rejected and appended the V35 static checkpoint.
+- `context.md` - appended this user result, visible responses, validation, and edited-file record.
+
+### Validation
+
+- Relevant terminal regressions: 16 passed, 94 deselected.
+- `python -m compileall -q src tests tools/proteus_generation` passed.
+- Independent V35 audit: 4/4 preserve `00 00 FF`, component precedes terminal/WIRE records, first attachment starts at the base terminator, three on-pin WIRE units and final links validate.
+
+### Planned Final Response To User
+
+The image exposed a device-frame error. V35 keeps the original locked-mega component stream first and contains only four repaired BJT 1x `_sa` files. Test those four before scaling.
+
 ## User Message - 2026-07-10 12:54:00 +05:00
 
 NMOSFET, 2N700 and bs170 worked. so locked those for 1x, and fix remaining

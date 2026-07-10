@@ -1215,6 +1215,7 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
         result.selected_groups,
         terminal_families=[family],
     )
+    base_chunk = _extract_object_chunk(read_internal_file(base, "ROOT.DSN"))
     chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
 
     assert result.valid
@@ -1231,7 +1232,11 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
     wire_offset = chunk.find(b"\x7fWIRE")
     assert min(terminal_offset, component_offset, wire_offset) >= 0
     if family in {"NPN", "PNP", "2N3904", "2N4401"}:
-        assert terminal_offset < component_offset < wire_offset
+        assert component_offset < terminal_offset < wire_offset
+        assert chunk[:3] == base_chunk[:3]
+        assert terminal_placer._bidir_label_records(chunk)[0]["start"] == (
+            len(base_chunk) - 1
+        )
         assert report["object_stream_finalizer"] == "single_ff"
         assert chunk.endswith(b"\xff") and not chunk.endswith(b"\xff\xff")
         wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
@@ -1247,12 +1252,7 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
             row["label"]
             for row in terminal_placer._bidir_label_records(chunk)
         ]
-        expected_labels = (
-            ["BASE", "COLLECTOR", "EMITTER"]
-            if family == "PNP"
-            else ["COLLECTOR", "EMITTER", "BASE"]
-        )
-        assert terminal_labels == expected_labels
+        assert terminal_labels == ["BASE", "COLLECTOR", "EMITTER"]
     else:
         assert component_offset < terminal_offset < wire_offset
         assert report["object_stream_finalizer"] == "double_ff"
