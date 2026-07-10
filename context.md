@@ -11621,6 +11621,16 @@ V35 now passes the same 16-path regression set, including the accepted MOSFET an
 
 The image exposed a device-frame error. V35 keeps the original locked-mega component stream first and contains only four repaired BJT 1x `_sa` files. Test those four before scaling.
 
+### Commit And Push Verification
+
+The scoped V35 commit is `f6bb03d4`; unrelated donor deletions and user-fixed artifacts were excluded. I’m pushing now and verifying local HEAD, upstream, and GitHub before handing you the four corrected files.
+
+Remote verification passed: local HEAD, upstream, and GitHub all match `f6bb03d4a3d8c33eb5f5f4c0ac926cf17d5808f7`. I’m adding the required verification log commit, then checking the final remote hash once more.
+
+- Implementation/evidence commit: `f6bb03d4a3d8c33eb5f5f4c0ac926cf17d5808f7` (`Preserve BJT component stream framing`).
+- Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `f6bb03d4a3d8c33eb5f5f4c0ac926cf17d5808f7`.
+- Unrelated deleted/untracked donor and user-fixed files remained untouched and unstaged.
+
 ## User Message - 2026-07-10 12:54:00 +05:00
 
 NMOSFET, 2N700 and bs170 worked. so locked those for 1x, and fix remaining
