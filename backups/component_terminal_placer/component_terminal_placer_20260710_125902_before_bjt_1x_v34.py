@@ -1107,10 +1107,7 @@ def plan_catalogue_pin_bidir_terminals(
                     pin_x=pin_x,
                     pin_y=pin_y,
                     outward_grid_steps=int(
-                        raw_pin_geometry.get(
-                            "terminal_contact_outward_grid_steps",
-                            geometry.get("terminal_contact_outward_grid_steps", 1),
-                        )
+                        raw_pin_geometry.get("terminal_contact_outward_grid_steps", 1)
                     ),
                 )
             wire_end_x = pin_x
@@ -2042,33 +2039,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     f"{len(appended_wire_records)} appended WIRE records."
                 )
             if clean_packet_attachment_order == "terminal_leading_component_then_wires":
-                raw_terminal_record_order = geometry.get("terminal_record_order")
-                if raw_terminal_record_order is not None:
-                    if not isinstance(raw_terminal_record_order, (list, tuple)):
-                        raise ValueError(
-                            f"{family} terminal_record_order must be a list of pin names."
-                        )
-                    terminal_record_order = [
-                        str(pin_name) for pin_name in raw_terminal_record_order
-                    ]
-                    terminal_records_by_pin = {
-                        str(pin_row["pin"]["name"]): terminal_record
-                        for pin_row, terminal_record in zip(
-                            terminal_pins,
-                            terminal_records,
-                            strict=True,
-                        )
-                    }
-                    if set(terminal_record_order) != set(terminal_records_by_pin):
-                        raise ValueError(
-                            f"{family} terminal_record_order {terminal_record_order} "
-                            "does not cover the emitted catalogue pins "
-                            f"{sorted(terminal_records_by_pin)}."
-                        )
-                    terminal_records = [
-                        terminal_records_by_pin[pin_name]
-                        for pin_name in terminal_record_order
-                    ]
                 max_proven_components = int(
                     geometry.get("clean_packet_max_proven_components", 1)
                 )
@@ -2131,15 +2101,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "wire_count_rewritten": wire_count_rewritten,
                 "clean_packet_attachment_order": clean_packet_attachment_order,
                 "object_stream_finalizer": object_stream_finalizer,
-                "terminal_record_order": list(
-                    geometry.get(
-                        "terminal_record_order",
-                        [row["pin"]["name"] for row in terminal_pins],
-                    )
-                ),
-                "allow_zero_length_wire_units": bool(
-                    geometry.get("allow_zero_length_wire_units", False)
-                ),
                 "stripped_existing_terminal_count": stripped_existing_terminals,
                 "terminal_pins": terminal_pins,
             }
@@ -2287,9 +2248,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         and planned_pin_contact_xy in wire_points
                     ),
                     "wire_is_nonzero": len(wire_points) > 1,
-                    "zero_length_wire_allowed": bool(
-                        report.get("allow_zero_length_wire_units", False)
-                    ),
                 }
             )
     report = {
@@ -2319,10 +2277,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             row["terminal_contact_grid_aligned"]
             and row["terminal_to_wire"]
             and row["wire_to_pin"]
-            and (
-                row["wire_is_nonzero"]
-                or row["zero_length_wire_allowed"]
-            )
+            and row["wire_is_nonzero"]
             for row in wire_path_checks
         ),
         "terminal_grid_alignment_valid": all(

@@ -1234,6 +1234,25 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
         assert terminal_offset < component_offset < wire_offset
         assert report["object_stream_finalizer"] == "single_ff"
         assert chunk.endswith(b"\xff") and not chunk.endswith(b"\xff\xff")
+        wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
+        assert all(
+            tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])
+            for row in wire_rows
+        )
+        assert all(
+            not row["wire_is_nonzero"] and row["zero_length_wire_allowed"]
+            for row in report["wire_path_contact_checks"]
+        )
+        terminal_labels = [
+            row["label"]
+            for row in terminal_placer._bidir_label_records(chunk)
+        ]
+        expected_labels = (
+            ["BASE", "COLLECTOR", "EMITTER"]
+            if family == "PNP"
+            else ["COLLECTOR", "EMITTER", "BASE"]
+        )
+        assert terminal_labels == expected_labels
     else:
         assert component_offset < terminal_offset < wire_offset
         assert report["object_stream_finalizer"] == "double_ff"

@@ -11581,3 +11581,42 @@ Remote verification passed: local HEAD, upstream, and GitHub all match `7eb5e926
 - Implementation/evidence commit: `7eb5e926a67f3e8065b35f976038da1706d1ad63` (`Repair transistor terminal 1x emission`).
 - Push verification before this log commit: local HEAD, upstream, and `ls-remote` all matched `7eb5e926a67f3e8065b35f976038da1706d1ad63`.
 - Unrelated deleted/untracked donor and user-fixed files remained untouched and unstaged.
+
+## User Message - 2026-07-10 12:54:00 +05:00
+
+NMOSFET, 2N700 and bs170 worked. so locked those for 1x, and fix remaining
+so that we can do 9x 15x 23x solo(unless limit) then do mixed then next group
+
+## Agent Visible Responses - 2026-07-10 12:54:00 +05:00 onwards
+
+Locked for 1x: `NMOSFET`, `2N7000` (interpreting “2N700”), and `BS170`. I’ll preserve their accepted component-first/full-dogleg route unchanged. I’m first verifying the last GitHub checkpoint, then I’ll isolate the failed BJT branch (`NPN`, `PNP`, `2N3904`, `2N4401`) against same-packet donor evidence and regenerate only those four 1x files before any scaling.
+
+The accepted MOSFET branch is now isolated and will not be touched. For the BJT failures, the first important distinction is emerging: the old accepted NPN/PNP donor packets are not byte-identical to the high-index packets selected from the locked mega donor. I’m checking whether the failure is donor object order, zero-length-vs-short WIRE geometry, or a different component packet/link layout—without copying donor outputs.
+
+The strongest common failure is now donor-evidenced: accepted NPN/PNP use WIRE records that exist but are zero-length exactly on the grid-aligned transistor pins. V33 moved every BJT terminal one grid step outward and created nonzero wires. I’m switching only the BJT catalogue profiles to the accepted on-pin/zero-length WIRE unit, preserving active links, and also matching NPN’s distinct terminal-record order. The accepted MOSFET profiles remain untouched.
+
+The revised BJT route now passes all seven focused transistor regressions while keeping the three accepted MOSFET families unchanged. NPN now matches its donor’s unusual terminal order (`COLLECTOR, EMITTER, BASE`); PNP keeps (`BASE, COLLECTOR, EMITTER`); all four BJT profiles place the terminal contact directly on the grid-aligned pin and retain the required active zero-length WIRE record. I’m generating a four-file 1x-only V34 pack for Proteus confirmation.
+
+V34’s four repaired BJT files now match the donor invariants that V33 missed: exact terminal order, three active on-pin WIRE records, single-FF finalizer, and final-address links. The 16 relevant regression tests pass, including the already accepted MOSFET, POT-HG/LM317T/OPAMP, and two-pin paths. I’m packaging and logging this four-file checkpoint now.
+
+### Files Edited By Agent In Response To This Message
+
+- `src/proteusgen/component_terminal_placer.py` - added catalogue-gated terminal-record ordering, root-level terminal-contact grid-step policy, and donor-proven zero-length WIRE validation without weakening other families.
+- `knowledge/component_catalog_v0.json` - locked `NMOSFET`, `2N7000`, and `BS170` as accepted 1x; recorded BJT on-pin contact, zero-length WIRE, and terminal-record order facts.
+- `tests/test_component_placer.py` - added BJT zero-length WIRE and exact terminal-order regression assertions while retaining MOSFET full-polyline checks.
+- `backups/component_terminal_placer/component_terminal_placer_20260710_125902_before_bjt_1x_v34.py` - required pre-edit shared terminal placer backup.
+- `experiments/three_pin_bjt_1x_solo_v34_temp_2026_07_10/` - generated four BJT component-placer controls, four repaired 1x `_sa` outputs, requests, reports, README, and summary.
+- `experiments/THREE_PIN_BJT_1X_SOLO_V34_TEMP_2026_07_10.zip` - V34 archive.
+- `docs/architecture.md` - recorded V33 Proteus results, locked MOSFET branch, BJT root cause, and V34 scope.
+- `knowledge/test_results.jsonl` - appended V33 acceptance split and V34 static checkpoint.
+- `context.md` - appended the user message, visible responses, validation, and edited-file record.
+
+### Validation
+
+- Relevant terminal regressions: 16 passed, 94 deselected.
+- `python -m compileall -q src tests tools/proteus_generation` passed.
+- Independent V34 audit: 4/4 have one placed component, three terminals, three active zero-length WIRE units at exact pins, donor terminal order, single final `FF`, and valid final-address links.
+
+### Planned Final Response To User
+
+V34 contains only the four repaired BJT 1x `_sa` files. Test those four; the three successful MOSFET families remain locked and were not regenerated. After all four BJT files pass Proteus, the next checkpoint will be 9x/15x/23x solos for all seven transistor families, then mixed testing.

@@ -1527,3 +1527,27 @@ outputs, one each for `NPN`, `PNP`, `NMOSFET`, `2N3904`, `2N4401`, `2N7000`,
 and `BS170`. Every output has exactly one selected component and three active
 terminals/WIREs. Focused static regression is 7/7 passing; Proteus open/render
 acceptance remains required before any scale or mixed pack is generated.
+
+User Proteus result for V33 on 2026-07-10:
+
+- `NMOSFET`, `2N7000`, and `BS170` worked and are locked for 1x.
+- `NPN`, `PNP`, `2N3904`, and `2N4401` failed and remain unaccepted.
+
+The common BJT defect was V33's extra outward terminal contact and nonzero short
+WIRE. Accepted NPN/PNP donor projects contain three active WIRE records, but
+each WIRE is zero-length exactly at its grid-aligned transistor pin. NPN also
+uses terminal-record order `COLLECTOR -> EMITTER -> BASE`, while PNP uses
+`BASE -> COLLECTOR -> EMITTER`. These are catalogue facts, not a new terminal
+workflow. The shared placer now permits zero-length WIRE units only when the
+family catalogue explicitly records donor proof; the normal nonzero-WIRE
+validator remains unchanged for every other family.
+
+Focused BJT V34 checkpoint:
+
+`experiments/three_pin_bjt_1x_solo_v34_temp_2026_07_10/`
+
+V34 contains only four 1x component-placer controls and four terminalized `_sa`
+outputs for the failed BJT families. Scaling and mixes remain gated on Proteus
+acceptance of these repaired 1x structures. The three accepted MOSFET families
+are deliberately not regenerated, preventing a BJT repair from changing their
+accepted route.
