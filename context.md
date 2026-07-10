@@ -7831,6 +7831,124 @@ The tests are green. I’m appending this turn’s record to `context.md` now, i
 Commit and push this turn after the context append. Then perform a fresh clone
 verification and compare committed KiCad file lists.
 
+## 2026-07-10 16:15 PKT - KiCad Finalization Commit And Clone Verification
+
+### Visible Agent Responses
+
+```text
+The log is appended. I’m staging the KiCad source/docs/tests plus the compact evidence summaries now; I’m also preserving the three legacy v4 generated file modifications rather than resetting them, since the user asked for the current work to be committed.
+```
+
+```text
+Everything intended is staged, including the compact summaries and the legacy v4 files as preservation records. I’m checking the staged stat once, then committing and pushing.
+```
+
+```text
+The staged set is exactly the finalization patch plus compact records. I’m committing it now, then I’ll push and verify `origin/main` matches the local commit.
+```
+
+```text
+Committed as `0a5055f59`. I’m pushing it now and then I’ll do the fresh-clone verification the user asked for.
+```
+
+```text
+Push verified: local `HEAD`, upstream, and `origin/main` all match `0a5055f59`. The only remaining local entries are ignored generated/cache artifacts, which is exactly the new examples policy. Now I’m doing the fresh clone and tracked-file comparison.
+```
+
+```text
+The normal worktree is clean. I’m cloning into `/tmp` now and comparing the committed `kicad/` file list against this workspace.
+```
+
+```text
+The clone is still running, which makes sense with this repo’s historical generated files. I’m polling it rather than starting anything else.
+```
+
+```text
+Still cloning. I’m giving it another poll; after it finishes I’ll compare `git ls-files kicad` between local and clone.
+```
+
+```text
+The fresh clone is taking a while, likely because older generated artifacts are already tracked in history. I’m letting it finish so the verification is real, not hand-wavy.
+```
+
+```text
+The clone is now beyond the “quick sanity check” range, but I’m not abandoning it because the user explicitly asked for clone verification. I’ll let this run a bit longer before deciding whether to retry with a narrower sparse checkout.
+```
+
+```text
+It is still silent, so I’m checking the clone process and partial directory from another shell. If it’s stalled rather than just large, I’ll stop it and use a sparse clone to verify `kicad/` specifically.
+```
+
+```text
+The process is not dead: it is still in `git fetch`/`index-pack`, currently only about 47 MB in `/tmp`, so it’s working through the remote pack slowly. I’ll keep waiting a bit more rather than interrupting a live fetch.
+```
+
+```text
+Still no completion, checking progress once more. If the size/process is unchanged, I’ll switch to a narrower verification route rather than waiting forever.
+```
+
+```text
+It has advanced to 111 MB, so it’s alive. I’ll keep it alive, otherwise I’ll terminate and use `git archive`/remote hash verification instead.
+```
+
+```text
+The full checkout is alive but too slow for a practical verification pass, and it is fetching far more historical example data than we need. I’m stopping this `/tmp` clone and retrying as a sparse clone of `kicad/` plus `context.md`, which is the exact area we need to verify.
+```
+
+```text
+The slow full clone is stopped cleanly. Now I’m doing the narrower sparse clone and checkout.
+```
+
+```text
+The sparse clone is started. It still needs the remote pack, but checkout should be much smaller once the initial clone step returns.
+```
+
+```text
+Sparse clone is still fetching; checking progress briefly.
+```
+
+```text
+Good, the sparse fetch is much smaller: 4,873 objects and about 9.5 MB so far. I’ll let this finish.
+```
+
+```text
+Still running, checking sparse progress again.
+```
+
+```text
+Sparse clone is at 35 MB and still moving. I’m waiting it out.
+```
+
+```text
+Sparse clone finished and checked out `main`. I’m comparing hashes and the committed `kicad/` tracked-file list now.
+```
+
+```text
+The sparse clone verification passed: clone `HEAD`, clone upstream, clone `origin/main`, and local `HEAD` all match `0a5055f59`; the committed `kicad/` plus `context.md` file list matches exactly at 11,648 files. I’m adding that final verification note to `context.md`, then I’ll make the small log-only commit and push it too.
+```
+
+### Verification Results
+
+- Commit pushed: `0a5055f592d0b21aec55d83d4ae5d40b14747b83`
+- Remote check: `git ls-remote origin refs/heads/main` returned `0a5055f592d0b21aec55d83d4ae5d40b14747b83`.
+- Full clone attempt in `/tmp/memory-kicad-verify-0a5055f59` was stopped after the remote pack was still crawling through historical generated objects.
+- Sparse clone verification path: `/tmp/memory-kicad-verify-0a5055f59-sparse`
+- Sparse clone checkout completed on `main`.
+- Clone `HEAD`, clone upstream, clone `origin/main`, and local `HEAD` all matched `0a5055f592d0b21aec55d83d4ae5d40b14747b83`.
+- `git ls-files kicad context.md` matched between local and sparse clone with `11648` files on each side and no diff.
+- Verified key committed files were present in the sparse clone:
+  - `kicad/FINALIZATION_STATUS.md`
+  - `kicad/examples/EVIDENCE_INDEX.md`
+  - `kicad/examples/manifest_summaries/accepted_runs.summary.json`
+  - `kicad/pipeline/SUPPORTED_COMPONENTS_CATALOG.md`
+  - `kicad/pipeline/kicad_wire_maker.py`
+  - `context.md`
+- Local worktree after verification was clean with `git status --short --branch`.
+
+### Files Edited
+
+- `context.md`
+
 ## 2026-07-10 13:34:50 PKT - Latest Checkpoint Pointer
 
 The detailed record for the latest implementation turn is the section titled:
