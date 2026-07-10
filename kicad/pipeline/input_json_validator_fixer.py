@@ -29,12 +29,20 @@ from .final_circuit_builder import (
     compile_raw_circuit,
     validate_final_circuit,
 )
-from .placement_catalog import resolve_placement_spec
+from .placement_catalog import normalize_kind, resolve_placement_spec
 
 
 INPUT_FIXER_SCHEMA = "progeneda-main-json-validator-fixer/v0.1"
 DEFAULT_ROUTING_MODE = "combination"
 CATALOGUE_PATH = Path(__file__).resolve().parent / "catelogues" / "component_catalogue.json"
+REPAIRABLE_GENERIC_COMPONENT_KINDS = {
+    "CONNECTOR",
+    "HEADER",
+    "HEADER_CONNECTOR",
+    "PIN_HEADER",
+    "TERMINAL",
+    "TERMINAL_BLOCK",
+}
 GROUND_PIN_NAMES = {"0", "AGND", "COM", "DGND", "GND", "GNDA", "GNDD", "MINUS", "NEG", "VEE", "VSS"}
 POWER_3V3_PIN_NAMES = {"3V3", "PLUS_3V3", "VDD", "VDDIO"}
 POWER_5V_PIN_NAMES = {"5V", "PLUS_5V", "VCC", "VBUS", "USB_5V"}
@@ -385,11 +393,39 @@ def _component_ref_candidates(component: dict[str, Any], index: int) -> str:
     return _safe_ref(component.get("ref") or component.get("id") or component.get("reference"), f"U{index}")
 
 
+def _component_kind_hint(component: dict[str, Any], ref: str, raw_kind: str) -> str:
+    parts = [ref]
+    for key in ("id", "name", "label", "title", "value", "display_value", "description", "role", "block", "type", "kind"):
+        value = _string(component.get(key))
+        if value and value not in parts:
+            parts.append(value)
+    if raw_kind and raw_kind not in parts:
+        parts.append(raw_kind)
+    return "_".join(parts)
+
+
 def _component_kind(component: dict[str, Any], ref: str, pins: set[str], repairs: list[dict[str, Any]]) -> str:
     raw_kind = _string(component.get("kind") or component.get("type") or component.get("name"))
     if raw_kind and resolve_placement_spec(raw_kind) is not None:
+        raw_token = normalize_kind(raw_kind)
+        if raw_token not in REPAIRABLE_GENERIC_COMPONENT_KINDS:
+            return raw_kind
+        inferred, reason = _infer_node_component_kind(_component_kind_hint(component, ref, raw_kind), pins)
+        inferred_token = normalize_kind(inferred)
+        if inferred_token != raw_token and inferred_token not in REPAIRABLE_GENERIC_COMPONENT_KINDS:
+            repairs.append(
+                {
+                    "kind": "generic_component_kind_upgraded",
+                    "ref": ref,
+                    "from": raw_kind,
+                    "to": inferred,
+                    "reason": reason,
+                    "pin_count": len(pins),
+                }
+            )
+            return inferred
         return raw_kind
-    inferred, reason = _infer_node_component_kind(raw_kind or ref, pins)
+    inferred, reason = _infer_node_component_kind(_component_kind_hint(component, ref, raw_kind) if raw_kind else ref, pins)
     repairs.append(
         {
             "kind": "component_kind_inferred" if not raw_kind else "component_kind_repaired",

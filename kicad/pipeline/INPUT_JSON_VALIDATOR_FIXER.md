@@ -23,6 +23,13 @@ general rules engine backed by:
   distinct, including case-sensitive source-symbol pins such as 7447 `A`
   versus `a`.
 
+The generated reference for accepted loose words, aliases, canonical placement
+kinds, and pin-role words is:
+
+```text
+kicad/pipeline/SUPPORTED_WORDS_AND_ALIASES.md
+```
+
 ## Repair Rules
 
 - Normalize project/circuit metadata.

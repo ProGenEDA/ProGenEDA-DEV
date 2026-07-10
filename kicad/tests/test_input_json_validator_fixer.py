@@ -14,6 +14,55 @@ from kicad.pipeline.wire_planner import plan_wire_routes
 
 
 class InputJsonValidatorFixerTests(unittest.TestCase):
+    def test_fixer_upgrades_generic_pin_header_when_ref_and_pins_identify_real_part(self) -> None:
+        loose = {
+            "circuit_id": "LOOSE_PLACEHOLDER_KIND",
+            "components": [
+                {
+                    "ref": "C183_ESP32_WROOM",
+                    "kind": "PIN_HEADER",
+                    "value": "Pin Header",
+                    "pins": {"3V3": "P3V3", "GND": "GND", "GPIO16": "SIG_UART"},
+                },
+                {
+                    "ref": "C183_MAX485",
+                    "kind": "PIN_HEADER",
+                    "value": "Pin Header",
+                    "pins": {"VCC": "P5V", "GND": "GND", "RO": "SIG_UART", "A": "BUS_A", "B": "BUS_B"},
+                },
+                {
+                    "ref": "C183_R_10K_PULLUP_EN",
+                    "kind": "PIN_HEADER",
+                    "value": "Pin Header",
+                    "pins": {"1": "P3V3", "2": "EN"},
+                },
+                {
+                    "ref": "C183_TEST_POINT_GPIO16",
+                    "kind": "PIN_HEADER",
+                    "value": "Pin Header",
+                    "pins": {"TP": "SIG_UART"},
+                },
+                {
+                    "ref": "C183_HEADER_CONNECTOR",
+                    "kind": "PIN_HEADER",
+                    "value": "Pin Header",
+                    "pins": {f"P{index}": f"EXP_{index}" for index in range(1, 11)},
+                },
+            ],
+        }
+
+        fixed, report = validate_and_fix_main_json(loose)
+
+        self.assertTrue(report["ok"], report["validation"]["errors"])
+        kind_by_ref = {component["ref"]: component["kind"] for component in fixed["components"]}
+        self.assertEqual(kind_by_ref["C183_ESP32_WROOM"], "ESP32_WROOM")
+        self.assertEqual(kind_by_ref["C183_MAX485"], "MAX485")
+        self.assertEqual(kind_by_ref["C183_R_10K_PULLUP_EN"], "R_10K_PULLUP")
+        self.assertEqual(kind_by_ref["C183_TEST_POINT_GPIO16"], "TEST_POINT")
+        self.assertEqual(kind_by_ref["C183_HEADER_CONNECTOR"], "PROGRAMMING_HEADER")
+        upgraded = [repair for repair in report["repairs"] if repair["kind"] == "generic_component_kind_upgraded"]
+        self.assertGreaterEqual(len(upgraded), 5)
+
     def test_fixer_adds_catalogue_based_guessed_terminal_rails(self) -> None:
         loose = {
             "circuit_id": "LOOSE001",

@@ -8,13 +8,16 @@ Current generated catalogue:
 
 ```text
 kicad/pipeline/SUPPORTED_COMPONENTS_CATALOG.md
+kicad/pipeline/SUPPORTED_WORDS_AND_ALIASES.md
 ```
 
 As of 2026-07-10 the active placement catalog contains 163 normalized component
 kinds. The original 100-component practical pack remains the locked beginner
 baseline; the wider catalogue now includes Proteus-style aliases, common
 simulation sources, logic ICs, communication parts, sensors, connectors,
-passives, and documented substitutes.
+passives, and documented substitutes. The supported-words document also lists
+loose words and alias families accepted by the JSON fixer before canonical
+generation.
 
 ## Source Of Truth
 

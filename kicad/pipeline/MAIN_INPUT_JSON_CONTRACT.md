@@ -23,6 +23,14 @@ For supported components, downstream stages must not require extra user data.
 Backend-specific symbol, footprint, pin-geometry, validation, and routing
 details must come from source-backed catalogues/profiles owned by the backend.
 
+Supported component words, aliases, semantic families, and current normalized
+`kind` values are listed in:
+
+```text
+kicad/pipeline/SUPPORTED_WORDS_AND_ALIASES.md
+kicad/pipeline/SUPPORTED_COMPONENTS_CATALOG.md
+```
+
 ## Top-Level Shape
 
 Required top-level sections:

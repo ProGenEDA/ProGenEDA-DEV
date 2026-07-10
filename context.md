@@ -7635,6 +7635,98 @@ Critical resume facts:
 - Verification: `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_placer_pipeline.py -q` passed with `34 passed, 30 subtests passed`; `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pipeline kicad/tests` passed.
 - Pre-existing July 2 generated KiCad edits remain dirty and intentionally unstaged.
 
+## 2026-07-10 18:45:41 PKT - KiCad Ship-Readiness Retest and Input Fixer Hardening
+
+### User Request
+
+```text
+so it is ready to be shipped?
+do thorough testing again to make sure
+and ofcourse i hope there is a full md file detailing what sort of json it takes, all the supported "words"
+and a good json improver that instead of just throwing error each time a json is slightly different then needed it fixes it instead
+```
+
+### Visible Agent Response Record
+
+```text
+I’ll re-verify from the repo checkpoint first, then I’ll inspect the JSON contract/docs and the fixer before running the heavier tests. If the docs or improver are thin, I’ll patch them and retest instead of just saying “looks good.”
+```
+
+```text
+Checkpoint is clean and pushed: `HEAD`, upstream, and `origin/main` all match `5323d1d67`. I’m now checking whether the JSON contract and fixer are actually documented and robust enough, then I’ll run the tests.
+```
+
+```text
+The contract doc and fixer doc are already there, and the fixer is a real deterministic repair stage, not just a rejector. One gap I’m seeing: the docs don’t yet give a single “supported words/aliases” reference, so I’m going to generate/link that from the active catalog before calling it ship-ready.
+```
+
+```text
+Compile passed. I’m starting the full `unittest` discovery now, then I’ll do an executable smoke with real JSON through the fixer/generator/validators.
+```
+
+```text
+The full test suite is running. In parallel I’m using the active component catalogue to generate a small `SUPPORTED_WORDS_AND_ALIASES.md` so the accepted loose words are documented from source, not handwritten guesswork.
+```
+
+```text
+Important: the real executable smoke did not fully pass, which means I am not calling this ship-ready yet. The failure is concentrated in the old v1 `N183` JSON: the fixer accepted generic `PIN_HEADER` kinds for real parts like ESP32/MAX485, which led to unresolved pins and local netlist failures.
+```
+
+```text
+I found a real ship-readiness blocker in the smoke, so I’m not going to hand-wave it: older v1 JSON can say “PIN_HEADER” for meaningful parts like ESP32/MAX485, and the fixer trusted that too much. I’m tightening the improver so generic placeholder kinds get upgraded from refs/pins instead of passing through and failing later.
+```
+
+```text
+The repaired smoke passed cleanly: 9 real JSONs, combination plus terminal smoke, zero unresolved pins, zero strict-wire violations, zero local-netlist failures, zero final-validation blocking failures. I’m still going to run the compile and full test suite again after the patch so we’re not trusting the earlier pre-fix result.
+```
+
+```text
+Full unittest discovery passed after the fix: 83 tests in about 295 seconds. I’m starting one fresh broad executable pass now against the 600-circuit catalog source, with combination as default and terminal smoke enabled; output is going to `/tmp` so I can summarize the manifest cleanly.
+```
+
+```text
+Fresh broad pass is clean: 600/600 combination and 600/600 terminal smoke both passed with zero unresolved pins, zero local-netlist failures, zero geometry violations, zero final-validation blocking failures. That is the kind of result I wanted before answering ship-readiness.
+```
+
+### Implementation Notes
+
+- Verified turn-start checkpoint was clean and pushed: local `HEAD`, upstream, and `origin/main` all matched `5323d1d674f966046fa5afe39c833cb892ff3fa2`.
+- Generated and linked `kicad/pipeline/SUPPORTED_WORDS_AND_ALIASES.md`, sourced from the active semantic component catalogue, placement catalogue, and backend alias map.
+- Linked the new supported-words document from `MAIN_INPUT_JSON_CONTRACT.md`, `SUPPORTED_COMPONENTS.md`, and `INPUT_JSON_VALIDATOR_FIXER.md`.
+- Found a real blocker in a first real smoke run: old v1 `N183_esp32_rs485_modbus_analog_comparator_node_variant_10.json` used `PIN_HEADER` for 37 meaningful components. Because `PIN_HEADER` is a valid generic kind, the fixer previously trusted it and downstream validation reported unresolved pins and failed expected-net comparisons.
+- Hardened `input_json_validator_fixer.py` so repairable generic placeholder kinds (`PIN_HEADER`, `HEADER_CONNECTOR`, `TERMINAL_BLOCK`, etc.) are re-inferred from reference/value/name/pins before being accepted. If a confident source-backed kind is inferred, the fixer records `generic_component_kind_upgraded`.
+- Added a regression test proving placeholder `PIN_HEADER` inputs upgrade to `ESP32_WROOM`, `MAX485`, `R_10K_PULLUP`, `TEST_POINT`, and `PROGRAMMING_HEADER` when refs/pins identify those real parts.
+
+### Verification
+
+- `PYTHONPATH=. python -m compileall -q kicad/pipeline kicad/tests kicad/generator kicad/automation kicad/tools`
+  - Passed.
+- `PYTHONPATH=. python -m unittest kicad.tests.test_input_json_validator_fixer -v`
+  - Passed: 9 tests.
+- Real executable smoke on 9 JSON inputs including old v1 `N183`:
+  - Command: `PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run /tmp/kicad_ship_smoke_inputs --output-root /tmp/kicad_ship_smoke_outputs_fix1 --label ship_readiness_real_jsons_v1_fix1 --routing-mode combination --terminal-smoke`
+  - Passed.
+  - Combination: 9/9 projects, `total_unresolved_pins=0`, `total_unrouted_nets=0`, `total_partial_wire_nets=0`, `total_geometry_violations=0`, `total_strict_wire_violations=0`, `total_local_netlist_failed_nets=0`, `total_final_validation_blocking_failures=0`.
+  - Terminal smoke: passed for all 9.
+- `PYTHONPATH=. python -m unittest discover -s kicad/tests -v`
+  - Passed: 83 tests in 294.989 seconds.
+- Fresh broad executable pass on the 600-circuit catalog source with combination default and terminal smoke:
+  - Command: `PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run kicad/examples/final_json_run_2026_07_06_020659_main_json_catalog_600_combination_v2/final_json --output-root /tmp/kicad_ship_600_outputs_fix1 --label ship_readiness_600_fix1 --routing-mode combination --terminal-smoke`
+  - Passed with exit code 0.
+  - Manifest: `/tmp/kicad_ship_600_outputs_fix1/progen_kicad_executable_run_2026_07_10_182145_ship_readiness_600_fix1/run_manifest.json`.
+  - Combination generation: 600/600 projects, `all_static_checks_ok=true`, `all_value_validation_ok=true`, `all_final_validation_ok=true`, `all_component_body_overlap_ok=true`, `all_geometry_ok=true`, `all_strict_wire_ok=true`, `all_local_netlist_ok=true`, all counted blocking/failure totals 0.
+  - Terminal generation: 600/600 projects, same all-green status and all counted blocking/failure totals 0.
+
+### Files Edited
+
+- `context.md`
+- `kicad/pipeline/INPUT_JSON_VALIDATOR_FIXER.md`
+- `kicad/pipeline/MAIN_INPUT_JSON_CONTRACT.md`
+- `kicad/pipeline/SUPPORTED_COMPONENTS.md`
+- `kicad/pipeline/SUPPORTED_WORDS_AND_ALIASES.md`
+- `kicad/pipeline/input_json_validator_fixer.py`
+- `kicad/tests/test_input_json_validator_fixer.py`
+
 ## 2026-07-10 15:30 PKT - KiCad Finalization, Terminal Offset, Evidence Cleanup
 
 ### User Request
