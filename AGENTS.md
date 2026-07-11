@@ -181,3 +181,20 @@ pipeline stages.
 Shared logical IR and stage interfaces should remain backend-neutral enough
 for Proteus, KiCad, PSpice, and Altium adapters. Backend-specific binary or
 symbol details belong behind backend profiles and emitters.
+
+## Local Proteus Acceptance Gate
+
+When the local Proteus installation is available, static validation is not a
+handoff condition. Before reporting a generated `.pdsprj` candidate as ready,
+run this gate on a copied output: cold-launch Proteus after stopping prior PDS
+and ISIS processes; wait until the schematic window has appeared and then at
+least ten additional seconds; reject any modal `Fatal Error`, `LXLCORE`, `Bad
+Object Record`, or device-library dialog; invoke Ctrl+S; verify no unexpected
+project-member/object-stream mutation; stop Proteus; then cold-reopen the saved
+copy and repeat the delayed dialog check. Record every result beside the pack.
+
+Window screenshots are supplemental only. The local Proteus schematic canvas
+may not render through `PrintWindow`/screen capture even for the authoritative
+donor, so a blank automated capture is not evidence that a design is empty.
+User visual inspection remains required for layout acceptance, while the local
+open/save/cold-reopen gate establishes loader and persistence acceptance.

@@ -36,7 +36,7 @@ from proteusgen.beautifier_validator import (
     validate_beautifier_layout_entries,
 )
 from proteusgen.component_arrangement import next_start_slot_after_layout_entries
-from proteusgen.bidirectional import extract_bidir_records, load_production_templates
+from proteusgen.bidirectional import BIDIR_MARKER, extract_bidir_records, load_production_templates
 from proteusgen.component_terminal_placer import (
     CAP_ELEC_PIN_HALF_SPAN,
     CAP_ELEC_TERMINAL_SYMBOL_TO_PIN,
@@ -283,6 +283,26 @@ def test_component_placer_prunes_cdb_to_kept_packages() -> None:
     assert "U24" not in pin_packages
     assert "U24" not in property_packages
     assert subset.count == len(subset.pin_rows)
+    assert int.from_bytes(subset.between_sections[-4:], "little") == len(subset.property_rows)
+
+
+def test_locked_mega_npn_cdb_subset_matches_proteus_ctrl_s_normalization() -> None:
+    source = (
+        ROOT
+        / "experiments"
+        / "bjt_npn_live_proteus_diagnostics_temp_2026_07_11"
+        / "H09_CURRENT_COORDS_PROTEUS_NORMALIZED_LINKS_AND_TAIL.pdsprj"
+    )
+    proteus_saved = (
+        ROOT
+        / "experiments"
+        / "bjt_npn_live_proteus_diagnostics_temp_2026_07_11"
+        / "H08_H07_PROTEUS_CTRL_S_NORMALIZATION.pdsprj"
+    )
+    parsed = parse_component_placer_cdb(read_internal_file(source, "ROOT.CDB"))
+    subset = build_component_placer_cdb_subset(parsed, ["Q129"])
+
+    assert subset == read_internal_file(proteus_saved, "ROOT.CDB")
 
 
 def test_move_linkage_validator_rejects_stale_reference_text() -> None:
@@ -1232,17 +1252,12 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
     wire_offset = chunk.find(b"\x7fWIRE")
     assert min(terminal_offset, component_offset, wire_offset) >= 0
     if family in {"NPN", "PNP", "2N3904", "2N4401"}:
-        assert component_offset < terminal_offset < wire_offset
-        assert chunk[:3] == base_chunk[:3]
-        assert terminal_placer._bidir_label_records(chunk)[0]["start"] == (
-            len(base_chunk) - 1
-        )
-        if family == "NPN":
-            assert report["object_stream_finalizer"] == "double_ff"
-            assert chunk.endswith(b"\xff\xff")
-        else:
-            assert report["object_stream_finalizer"] == "single_ff"
-            assert chunk.endswith(b"\xff") and not chunk.endswith(b"\xff\xff")
+        assert terminal_offset < component_offset < wire_offset
+        assert chunk[:2] == b"\x00\x10"
+        assert terminal_placer._bidir_label_records(chunk)[0]["start"] == 1
+        assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+        assert chunk[-1:] == b"\xff"
+        assert terminal_placer._wire_record_spans(chunk)[-1][1] == len(chunk) - 1
         wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
         assert all(
             tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])
@@ -1256,26 +1271,53 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
             row["label"]
             for row in terminal_placer._bidir_label_records(chunk)
         ]
-        assert terminal_labels == ["BASE", "COLLECTOR", "EMITTER"]
+        expected_terminal_labels = (
+            ["BASE", "COLLECTOR", "EMITTER"]
+            if family == "PNP"
+            else ["COLLECTOR", "EMITTER", "BASE"]
+        )
+        expected_pin_order = (
+            ["B", "C", "E"] if family == "PNP" else ["C", "E", "B"]
+        )
+        assert terminal_labels == expected_terminal_labels
+        assert report["family_reports"][0][
+            "clean_packet_attachment_order"
+        ] == "terminal_leading_component_then_wires"
+        assert report["family_reports"][0][
+            "donor_terminal_record_order"
+        ] == expected_pin_order
+        assert report["family_reports"][0][
+            "last_appended_wire_tail_policy"
+        ] == "trim_trailing_zero_before_finalizer"
+        assert Path(report["family_reports"][0]["catalogue_source_project"]).exists()
+        assert all(
+            row["terminal_trailer"] == "0200"
+            and row["component_trailer"] == "0200"
+            for row in report["terminal_suffix_link_checks"]
+        )
+        assert all(
+            pin["catalogue_geometry"]["donor_component_link_trailer"] == "0100"
+            and pin["catalogue_geometry"]["component_link_trailer"] == "0200"
+            for pin in report["family_reports"][0]["terminal_pins"]
+        )
+        output_cdb = read_internal_file(output, "ROOT.CDB")
+        parsed_output_cdb = parse_component_placer_cdb(output_cdb)
+        assert parsed_output_cdb.count == len(parsed_output_cdb.pin_rows) == 1
+        assert len(parsed_output_cdb.property_rows) == 1
+        assert int.from_bytes(
+            parsed_output_cdb.between_sections[-4:], "little"
+        ) == 1
+        assert report["cdb_normalization"]["keep_packages"] == [
+            result.selected_groups[0].key
+        ]
         if family == "NPN":
-            assert report["family_reports"][0][
-                "clean_packet_attachment_order"
-            ] == "component_stream_then_attachment_units"
-            assert report["family_reports"][0]["catalogue_source_project"].endswith(
-                "terminalized_catalogue_evidence\\three_pin_transistor\\NPN\\NPN_terminalized_primary.pdsprj"
+            proteus_saved = (
+                ROOT
+                / "experiments"
+                / "bjt_npn_live_proteus_diagnostics_temp_2026_07_11"
+                / "H08_H07_PROTEUS_CTRL_S_NORMALIZATION.pdsprj"
             )
-            assert all(
-                row["terminal_trailer"] == "0200"
-                and row["component_trailer"] == "0200"
-                for row in report["terminal_suffix_link_checks"]
-            )
-            assert all(
-                pin["catalogue_geometry"]["donor_component_link_trailer"]
-                == "0100"
-                and pin["catalogue_geometry"]["component_link_trailer"]
-                == "0200"
-                for pin in report["family_reports"][0]["terminal_pins"]
-            )
+            assert output_cdb == read_internal_file(proteus_saved, "ROOT.CDB")
     else:
         assert component_offset < terminal_offset < wire_offset
         assert report["object_stream_finalizer"] == "double_ff"
@@ -1286,6 +1328,59 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
             for pin in family_report["terminal_pins"]
         )
         assert wire_coordinate_lengths == [4, 8, 8]
+
+
+@pytest.mark.parametrize("family", ["NPN", "PNP"])
+@pytest.mark.parametrize("count", [2, 4])
+def test_donor_proven_bjt_terminal_leading_scaling(
+    tmp_path: Path,
+    family: str,
+    count: int,
+) -> None:
+    base = tmp_path / f"{family}_{count}x_bjt_scaling_base.pdsprj"
+    output = tmp_path / f"{family}_{count}x_bjt_scaling_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=[family],
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    cdb = parse_component_placer_cdb(read_internal_file(output, "ROOT.CDB"))
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == count * 3
+    assert report["wire_count_added"] == count * 3
+    assert chunk.count(BIDIR_MARKER) == count * 3
+    assert chunk.count(b"\x7fWIRE") == count * 3
+    assert chunk[-1:] == b"\xff"
+    assert len(cdb.pin_rows) == count
+    assert len(cdb.property_rows) == count
+    assert int.from_bytes(cdb.between_sections[-4:], "little") == count
+    terminals = terminal_placer._bidir_label_records(chunk)
+    labels_per_block = 3
+    expected_labels = (
+        ["BASE", "COLLECTOR", "EMITTER"]
+        if family == "PNP"
+        else ["COLLECTOR", "EMITTER", "BASE"]
+    )
+    assert [row["label"] for row in terminals] == expected_labels * count
+    component_markers = [
+        chunk.find(group.key.encode("ascii"))
+        for group in result.selected_groups
+    ]
+    assert all(marker >= 0 for marker in component_markers)
+    assert terminals[labels_per_block - 1]["start"] < component_markers[0]
 
 
 def test_capacitor_terminal_planner_uses_body_center_plus_half_span(tmp_path: Path) -> None:

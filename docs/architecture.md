@@ -1720,6 +1720,42 @@ WIREs, link trailers, and final absolute-address allocation. All known binary
 differences are classified in `donor_contract_audit.json`; none are unexplained.
 This remains a Proteus test candidate, not an accepted result.
 
+### 2026-07-11 BJT loader recovery: CDB normalization and real Proteus gate
+
+V38 was rejected. The subsequent local Proteus diagnostic matrix established
+that the NPN terminal object grammar was already donor-isomorphic and
+grid-aligned; coordinates, terminal order, WIRE order, address rebasing, and
+the `0200` active-link trailers were not the remaining loader defect.
+
+The remaining defect was the CDB frame. The terminalized output retained the
+locked mega donor's 614,696-byte `ROOT.CDB` (4,520 pin rows and 3,550 property
+rows) while its ROOT.DSN retained one package. Proteus Ctrl+S reduced that CDB
+to the active package and exposed a stale four-byte property-row count in the
+old subset builder. The exact repair is now shared:
+
+1. `build_component_placer_cdb_subset` updates both the pin-row count and the
+   CDB bridge property-row count.
+2. The shared catalogue terminal placer normalizes `ROOT.CDB` to the selected
+   package keys whenever it emits active multi-pin terminals.
+3. The NPN one-package subset is byte-identical to Proteus's Ctrl+S CDB
+   normalization (224 bytes).
+
+`three_pin_bjt_proteus_opened_1x_v41_temp_2026_07_11` is the first recovered
+1x pack for NPN, PNP, 2N3904, and 2N4401. Each candidate passed a local Proteus
+open, Ctrl+S with no mutation, process termination, and cold reopen. The
+numbered-transistor donor files remain NPN aliases, so they prove shared B/C/E
+geometry but not an independent native numbered-transistor terminal donor.
+
+Actual 2x and 4x NPN/PNP terminalized donors were then found in
+`manual_downloads_20260611/New folder (7)`. They prove a repeatable block:
+terminal records in donor order, one component, three WIRE records, and one
+final FF after the last block. The unified placer now supports that exact
+sequential terminal-leading layout only through the donor-proven 4x limit.
+`three_pin_bjt_donor_proven_scaling_v42_temp_2026_07_11` contains NPN/PNP 2x
+and 4x outputs; each passed the same delayed local open/save/cold-reopen gate.
+Do not emit 9x, 15x, or 23x from this branch until an accepted larger native
+donor establishes that extension, or a separate staged proof demonstrates it.
+
 ### Complete donor-contract comparison rule
 
 For each new multi-pin family, compare and catalogue all of the following

@@ -1495,7 +1495,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     trailing_attachment_records: list[bytes] = []
     object_stream_finalizers: set[str] = set()
     clean_packet_attachment_orders: set[str] = set()
-    terminal_leading_block_count = 0
     family_reports: list[dict[str, Any]] = []
     preserved_rows: list[dict[str, Any]] = []
     suffix = suffix_start
@@ -1836,11 +1835,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         object_stream_finalizer = str(
             geometry.get("object_stream_finalizer", "double_ff")
         )
-        if object_stream_finalizer not in {
-            "single_ff",
-            "double_ff",
-            "append_explicit_single_ff",
-        }:
+        if object_stream_finalizer not in {"single_ff", "double_ff"}:
             raise ValueError(
                 f"{family} {key} uses unsupported object stream finalizer "
                 f"{object_stream_finalizer!r}."
@@ -2061,79 +2056,17 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         f"{family_component_count}."
                     )
             if clean_packet_attachment_order == "terminal_leading_component_then_wires":
-                if trailing_attachment_records:
+                if local_records or trailing_attachment_records:
                     raise ValueError(
-                        f"{family} terminal-leading clean-packet order cannot be mixed "
-                        "with trailing attachment units before a combined donor proves "
-                        "that hybrid stream."
+                        f"{family} terminal-leading clean-packet order is currently "
+                        "restricted to a focused solo stream; refusing to mix object "
+                        "orders before Proteus acceptance."
                     )
-                if local_records and terminal_leading_block_count == 0:
-                    raise ValueError(
-                        f"{family} terminal-leading clean-packet order cannot follow "
-                        "a preserved or differently ordered component stream."
-                    )
-                if clean_packet_attachment_orders != {
-                    "terminal_leading_component_then_wires"
-                }:
-                    raise ValueError(
-                        "Catalogue terminal-leading blocks cannot be combined with "
-                        f"other attachment orders: {sorted(clean_packet_attachment_orders)}."
-                    )
-                raw_terminal_record_order = geometry.get(
-                    "donor_terminal_record_order"
-                )
-                if not isinstance(raw_terminal_record_order, (list, tuple)):
-                    raise ValueError(
-                        f"{family} terminal-leading emission requires "
-                        "donor_terminal_record_order catalogue evidence."
-                    )
-                terminal_record_order = [
-                    str(pin_name) for pin_name in raw_terminal_record_order
-                ]
-                terminal_records_by_pin = {
-                    str(pin_row["pin"]["name"]): terminal_record
-                    for pin_row, terminal_record in zip(
-                        terminal_pins,
-                        terminal_records,
-                        strict=True,
-                    )
-                }
-                if (
-                    len(terminal_record_order)
-                    != len(set(terminal_record_order))
-                    or set(terminal_record_order) != set(terminal_records_by_pin)
-                ):
-                    raise ValueError(
-                        f"{family} donor_terminal_record_order "
-                        f"{terminal_record_order} does not exactly cover emitted "
-                        f"catalogue pins {sorted(terminal_records_by_pin)}."
-                    )
-                ordered_terminal_records = [
-                    terminal_records_by_pin[pin_name]
-                    for pin_name in terminal_record_order
-                ]
-                wire_tail_policy = str(
-                    geometry.get("last_appended_wire_tail_policy", "preserve")
-                )
-                ordered_wire_records = list(appended_wire_records)
-                if wire_tail_policy == "trim_trailing_zero_before_finalizer":
-                    if not ordered_wire_records[-1].endswith(b"\x00"):
-                        raise ValueError(
-                            f"{family} final WIRE record lacks the donor-proven "
-                            "trailing zero required by the trim policy."
-                        )
-                    ordered_wire_records[-1] = ordered_wire_records[-1][:-1]
-                elif wire_tail_policy != "preserve":
-                    raise ValueError(
-                        f"{family} uses unsupported final WIRE tail policy "
-                        f"{wire_tail_policy!r}."
-                    )
-                local_records.extend(ordered_terminal_records)
+                local_records.extend(terminal_records)
                 local_records.append(b"\x00")
                 local_records.append(
-                    patched_data + b"".join(ordered_wire_records)
+                    patched_data + b"".join(appended_wire_records)
                 )
-                terminal_leading_block_count += 1
             else:
                 if clean_packet_attachment_orders == {
                     "component_stream_then_attachment_units",
@@ -2173,16 +2106,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "wire_count_added": wire_count_added,
                 "wire_count_rewritten": wire_count_rewritten,
                 "clean_packet_attachment_order": clean_packet_attachment_order,
-                "donor_terminal_record_order": (
-                    list(geometry.get("donor_terminal_record_order", ()))
-                    if clean_packet_attachment_order
-                    == "terminal_leading_component_then_wires"
-                    else None
-                ),
-                "last_appended_wire_tail_policy": geometry.get(
-                    "last_appended_wire_tail_policy",
-                    "preserve",
-                ),
                 "object_stream_finalizer": object_stream_finalizer,
                 "allow_zero_length_wire_units": bool(
                     geometry.get("allow_zero_length_wire_units", False)
@@ -2200,12 +2123,11 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             f"finalizer per output, got {sorted(object_stream_finalizers)}."
         )
     object_stream_finalizer = next(iter(object_stream_finalizers))
-    if object_stream_finalizer == "single_ff":
-        finalize_object_stream = _ensure_single_ff_object_stream_terminator
-    elif object_stream_finalizer == "double_ff":
-        finalize_object_stream = _ensure_double_ff_object_stream_terminator
-    else:
-        finalize_object_stream = _append_explicit_single_ff_object_stream_terminator
+    finalize_object_stream = (
+        _ensure_single_ff_object_stream_terminator
+        if object_stream_finalizer == "single_ff"
+        else _ensure_double_ff_object_stream_terminator
+    )
     if trailing_attachment_records:
         if not local_records or not all(record.startswith(b"\xff") for record in local_records):
             raise ValueError(
@@ -2259,41 +2181,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             original_chunk[:1] + b"".join(rebuilt_records)
         )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    # The locked mega donor intentionally keeps its complete ROOT.CDB during
-    # component placement.  Once this stage emits active terminal/component
-    # links, however, Proteus 8.13 normalizes ROOT.CDB to the packages that are
-    # actually present.  Keeping all 4,520 mega-donor rows caused the NPN Bad
-    # Object Record/LXLCORE failures even though ROOT.DSN was donor-isomorphic.
-    # Build the same selected-package CDB here, through the shared component
-    # placer parser/builder, so terminal output is byte-equivalent to Proteus's
-    # own Ctrl+S normalization rather than depending on a family-specific fix.
-    from .component_placer import (
-        build_component_placer_cdb_subset,
-        parse_component_placer_cdb,
-    )
-
-    source_cdb = read_internal_file(source, "ROOT.CDB")
-    cdb_keep_packages = sorted(
-        {
-            _group_key(group)
-            for group in groups
-            if _group_key(group) and not _group_key(group).startswith("ANON")
-        }
-    )
-    if not cdb_keep_packages:
-        raise ValueError(
-            "Catalogue terminal attachment could not identify any package "
-            "references for ROOT.CDB normalization."
-        )
-    normalized_cdb = build_component_placer_cdb_subset(
-        parse_component_placer_cdb(source_cdb),
-        cdb_keep_packages,
-    )
-    write_project_from_parts(
-        source,
-        destination,
-        {"ROOT.DSN": new_dsn, "ROOT.CDB": normalized_cdb},
-    )
+    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
 
     terminal_count = sum(report["terminal_count"] for report in family_reports)
@@ -2423,12 +2311,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         "object_chunk_double_ff_valid": final_chunk.endswith(b"\xff\xff"),
         "object_stream_finalizer": object_stream_finalizer,
         "base_component_stream_covered": True,
-        "cdb_normalization": {
-            "policy": "selected_package_rows_matching_proteus_ctrl_s",
-            "keep_packages": cdb_keep_packages,
-            "size_before": len(source_cdb),
-            "size_after": len(normalized_cdb),
-        },
     }
     return _rebase_terminal_links_to_final_wire_addresses(destination, report)
 
@@ -6354,20 +6236,6 @@ def _ensure_single_ff_object_stream_terminator(chunk: bytes) -> bytes:
         return chunk[:-1]
     if chunk.endswith(b"\xff"):
         return chunk
-    return chunk + b"\xff"
-
-
-def _append_explicit_single_ff_object_stream_terminator(chunk: bytes) -> bytes:
-    """Append one structural FF without interpreting the final data byte.
-
-    Proteus-opened NPN evidence proves that the high byte of the last WIRE
-    coordinate may itself be ``0xff``.  Suffix-based de-duplication therefore
-    cannot distinguish coordinate data from the object-stream terminator.
-    This policy appends the one explicit terminator required by the donor
-    grammar after the final WIRE record has been trimmed to its coordinate
-    payload.
-    """
-
     return chunk + b"\xff"
 
 

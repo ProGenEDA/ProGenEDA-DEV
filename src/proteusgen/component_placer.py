@@ -820,12 +820,22 @@ def build_component_placer_cdb_subset(parsed: ComponentPlacerCdb, keep_packages:
             property_tail = b"\x00\x00\x00\x00"
         elif computed_end != len(last_row.data):
             raise ValueError(f"Unexpected CDB property row length for {last_row.ref}: computed_end={computed_end}, row_size={len(last_row.data)}.")
+    if len(parsed.between_sections) < 4:
+        raise ValueError("CDB bridge is too short to contain its property-row count.")
+    donor_property_count = int.from_bytes(parsed.between_sections[-4:], "little")
+    if donor_property_count != len(parsed.property_rows):
+        raise ValueError(
+            "CDB bridge property-row count disagrees with parsed rows: "
+            f"bridge={donor_property_count}, parsed={len(parsed.property_rows)}."
+        )
+    between_sections = bytearray(parsed.between_sections)
+    between_sections[-4:] = len(property_rows).to_bytes(4, "little")
     prefix = bytearray(parsed.prefix)
     prefix.extend(len(pin_rows).to_bytes(4, "little"))
     return (
         bytes(prefix)
         + b"".join(row.data for row in pin_rows)
-        + parsed.between_sections
+        + bytes(between_sections)
         + b"".join(row.data for row in property_rows)
         + property_tail
         + parsed.suffix

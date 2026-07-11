@@ -91,6 +91,7 @@
               "y_offset_from_component_bbox_min": 762000,
               "anchor_family": "2N3904",
               "component_link_offset_from_component_end": -13,
+              "donor_component_link_trailer": "0100",
               "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             },
@@ -107,6 +108,7 @@
               "y_offset_from_component_bbox_min": 1524000,
               "anchor_family": "2N3904",
               "component_link_offset_from_component_end": -9,
+              "donor_component_link_trailer": "0100",
               "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             },
@@ -123,15 +125,16 @@
               "y_offset_from_component_bbox_min": 0,
               "anchor_family": "2N3904",
               "component_link_offset_from_component_end": -5,
+              "donor_component_link_trailer": "0100",
               "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             }
           },
-          "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\New folder (7)\\NPN.pdsprj",
+          "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\new_component_mega_supported_terminalized_evidence_20260708\\03_three_pin_transistor\\2N3904\\2N3904_alias_from_NPN_terminalized_primary.pdsprj",
           "source_registry_key": "2N3904",
           "status": "donor_extracted_pending_terminal_emission_tests",
           "terminal_policy": "grid_snapped_terminal_contact_plus_short_wire_to_exact_pin",
-          "clean_packet_attachment_order": "component_stream_then_attachment_units",
+          "clean_packet_attachment_order": "terminal_leading_component_then_wires",
           "clean_packet_max_proven_components": 1,
           "project_frame_contract": {
             "attachment_boundary": "len(no_terminal_control_object_chunk)-1",
@@ -141,7 +144,8 @@
             "required_object_order": "complete_component_stream_then_terminal_wire_units",
             "required_output_prefix_hex": "0000ff"
           },
-          "object_stream_finalizer": "single_ff",
+          "object_stream_finalizer": "append_explicit_single_ff",
+          "last_appended_wire_tail_policy": "trim_trailing_zero_before_finalizer",
           "terminal_contact_outward_grid_steps": 0,
           "donor_terminal_record_order": [
             "C",
@@ -193,6 +197,7 @@
               "y_offset_from_component_bbox_min": 762000,
               "anchor_family": "2N4401",
               "component_link_offset_from_component_end": -13,
+              "donor_component_link_trailer": "0100",
               "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             },
@@ -209,6 +214,7 @@
               "y_offset_from_component_bbox_min": 1524000,
               "anchor_family": "2N4401",
               "component_link_offset_from_component_end": -9,
+              "donor_component_link_trailer": "0100",
               "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             },
@@ -225,15 +231,16 @@
               "y_offset_from_component_bbox_min": 0,
               "anchor_family": "2N4401",
               "component_link_offset_from_component_end": -5,
+              "donor_component_link_trailer": "0100",
               "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             }
           },
-          "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\New folder (7)\\NPN.pdsprj",
+          "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\new_component_mega_supported_terminalized_evidence_20260708\\03_three_pin_transistor\\2N4401\\2N4401_alias_from_NPN_terminalized_primary.pdsprj",
           "source_registry_key": "2N4401",
           "status": "donor_extracted_pending_terminal_emission_tests",
           "terminal_policy": "grid_snapped_terminal_contact_plus_short_wire_to_exact_pin",
-          "clean_packet_attachment_order": "component_stream_then_attachment_units",
+          "clean_packet_attachment_order": "terminal_leading_component_then_wires",
           "clean_packet_max_proven_components": 1,
           "project_frame_contract": {
             "attachment_boundary": "len(no_terminal_control_object_chunk)-1",
@@ -243,7 +250,8 @@
             "required_object_order": "complete_component_stream_then_terminal_wire_units",
             "required_output_prefix_hex": "0000ff"
           },
-          "object_stream_finalizer": "single_ff",
+          "object_stream_finalizer": "append_explicit_single_ff",
+          "last_appended_wire_tail_policy": "trim_trailing_zero_before_finalizer",
           "terminal_contact_outward_grid_steps": 0,
           "donor_terminal_record_order": [
             "C",
@@ -15541,25 +15549,40 @@
             }
           },
           "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\terminalized_catalogue_evidence\\three_pin_transistor\\NPN\\NPN_terminalized_primary.pdsprj",
+          "multi_component_donor_evidence": [
+            {
+              "component_count": 2,
+              "project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\New folder (7)\\2_NPN.pdsprj",
+              "proves": "two sequential terminal-leading component-and-three-WIRE blocks with one final FF"
+            },
+            {
+              "component_count": 4,
+              "project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\New folder (7)\\4_NPN.pdsprj",
+              "proves": "four sequential terminal-leading component-and-three-WIRE blocks with one final FF"
+            }
+          ],
           "source_registry_key": "NPN",
-          "status": "donor_extracted_pending_terminal_emission_tests",
+          "status": "local_proteus_opened_1x_pending_user_visual_acceptance",
           "terminal_policy": "grid_snapped_terminal_contact_plus_short_wire_to_exact_pin",
-          "clean_packet_attachment_order": "component_stream_then_attachment_units",
-          "clean_packet_max_proven_components": 1,
+          "clean_packet_attachment_order": "terminal_leading_component_then_wires",
+          "clean_packet_max_proven_components": 4,
           "project_frame_contract": {
             "attachment_boundary": "len(no_terminal_control_object_chunk)-1",
             "control_source": "locked_mega_component_placer",
             "donor_object_order_portable": false,
-            "rejected_failure_signature": "V34 terminal-leading output produced garbage device-name decoding; V35 interleaved single-FF and V36 interleaved double-FF with donor 0100 links produced lxlcore.dll; V37 grouped double-FF with donor 0100 links also failed",
-            "required_object_order": "complete_component_stream_then_terminal_wire_attachment_units",
-            "required_output_prefix_hex": "0000ff",
-            "required_output_trailer_hex": "ffff",
+            "rejected_failure_signature": "V34 used the right terminal-leading family order but retained 0100 active links and one extra synthetic WIRE tail zero; V35-V38 used unproven component-first/grouped adaptations and failed in LXLCORE.DLL",
+            "required_object_order": "all_terminals_in_donor_order_then_placed_component_then_all_wires_in_pin_link_order",
+            "required_output_prefix_hex": "0010",
+            "required_output_terminator_policy": "trim the final synthetic WIRE trailing zero, then append exactly one explicit FF without interpreting the final coordinate byte",
             "required_active_link_trailer_hex": "0200",
-            "trailer_evidence": "actual NPN donor uses 0100 only in its terminal-leading frame; accepted locked-mega component-first NMOSFET uses 0200 for terminal and component links, component/terminal/WIRE attachment units, and FF FF",
-            "donor_grouping_evidence": "actual standalone NPN donor serializes COLLECTOR, EMITTER, BASE terminals before its component, then BASE, COLLECTOR, EMITTER WIREs; that complete order is project-frame evidence and V34 proved it cannot replace the locked-mega component prefix",
-            "v38_hypothesis": "retain donor-exact NPN terminal template, pin geometry, zero-length WIRE schema, and pin-link offsets; use accepted locked-mega component-first attachment-unit order, 0200 active links, and double FF as one inseparable frame contract"
+            "trailer_evidence": "Proteus opened H07 and Ctrl+S changed exactly the three terminal and three component active-link trailer bytes from 0100 to 0200; no coordinates or object ordering changed",
+            "donor_grouping_evidence": "authoritative NPN donor and Proteus-opened H09 serialize COLLECTOR, EMITTER, BASE terminals before the placed component, then BASE, COLLECTOR, EMITTER WIREs",
+            "proteus_live_open_evidence": "H09_CURRENT_COORDS_PROTEUS_NORMALIZED_LINKS_AND_TAIL opened locally in Proteus 8 with a normal schematic window and no visible modal dialogs",
+            "coordinate_result": "H09 opened at the component placer's current calculated coordinates; H07/H08 also opened at donor coordinates, proving the loader failure was not grid placement",
+            "scaling_evidence": "2_NPN and 4_NPN donors repeat the same complete terminal-leading block; 4 is the current hard emitted limit pending a larger accepted donor"
           },
-          "object_stream_finalizer": "double_ff",
+          "object_stream_finalizer": "append_explicit_single_ff",
+          "last_appended_wire_tail_policy": "trim_trailing_zero_before_finalizer",
           "terminal_contact_outward_grid_steps": 0,
           "donor_terminal_record_order": [
             "C",
@@ -15810,7 +15833,8 @@
               "y_offset_from_component_bbox_min": 762000,
               "anchor_family": "PNP",
               "component_link_offset_from_component_end": -13,
-              "component_link_trailer": "0100",
+              "donor_component_link_trailer": "0100",
+              "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             },
             "C": {
@@ -15826,7 +15850,8 @@
               "y_offset_from_component_bbox_min": 1524000,
               "anchor_family": "PNP",
               "component_link_offset_from_component_end": -9,
-              "component_link_trailer": "0100",
+              "donor_component_link_trailer": "0100",
+              "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             },
             "E": {
@@ -15842,25 +15867,41 @@
               "y_offset_from_component_bbox_min": 0,
               "anchor_family": "PNP",
               "component_link_offset_from_component_end": -5,
-              "component_link_trailer": "0100",
+              "donor_component_link_trailer": "0100",
+              "component_link_trailer": "0200",
               "wire_coordinates_policy": "computed_terminal_contact_to_pin"
             }
           },
-          "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\New folder (7)\\PNP.pdsprj",
+          "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\terminalized_catalogue_evidence\\three_pin_transistor\\PNP\\PNP_terminalized_primary.pdsprj",
+          "multi_component_donor_evidence": [
+            {
+              "component_count": 2,
+              "project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\New folder (7)\\2_PNP.pdsprj",
+              "proves": "two sequential terminal-leading component-and-three-WIRE blocks with one final FF"
+            },
+            {
+              "component_count": 4,
+              "project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\New folder (7)\\4_PNP.pdsprj",
+              "proves": "four sequential terminal-leading component-and-three-WIRE blocks with one final FF"
+            }
+          ],
           "source_registry_key": "PNP",
-          "status": "donor_extracted_pending_terminal_emission_tests",
+          "status": "local_proteus_opened_1x_pending_user_visual_acceptance",
           "terminal_policy": "grid_snapped_terminal_contact_plus_short_wire_to_exact_pin",
-          "clean_packet_attachment_order": "component_stream_then_attachment_units",
-          "clean_packet_max_proven_components": 1,
+          "clean_packet_attachment_order": "terminal_leading_component_then_wires",
+          "clean_packet_max_proven_components": 4,
           "project_frame_contract": {
-            "attachment_boundary": "len(no_terminal_control_object_chunk)-1",
-            "control_source": "locked_mega_component_placer",
-            "donor_object_order_portable": false,
-            "rejected_failure_signature": "terminal-leading output began 0010 and Proteus reported garbage device name used but not in library",
-            "required_object_order": "complete_component_stream_then_terminal_wire_units",
-            "required_output_prefix_hex": "0000ff"
+            "coordinate_result": "local 1x output opened, saved unchanged, and cold-reopened in Proteus 8 with no modal dialog",
+            "donor_grouping_evidence": "authoritative PNP, 2_PNP, and 4_PNP donors serialize BASE, COLLECTOR, EMITTER terminals before each placed component, then BASE, COLLECTOR, EMITTER WIREs",
+            "required_active_link_trailer_hex": "0200",
+            "required_object_order": "all_terminals_in_donor_order_then_placed_component_then_all_wires_in_pin_link_order",
+            "required_output_prefix_hex": "0010",
+            "required_output_terminator_policy": "trim the final synthetic WIRE trailing zero, then append exactly one explicit FF",
+            "scaling_evidence": "2_PNP and 4_PNP donors repeat the terminal-leading block; 4 is the current hard emitted limit pending a larger accepted donor",
+            "trailer_evidence": "the original donor uses 0100 active links; local emitter uses final ROOT.DSN-address rebasing with 0200 links and passed Proteus open/save/cold-reopen"
           },
-          "object_stream_finalizer": "single_ff",
+          "object_stream_finalizer": "append_explicit_single_ff",
+          "last_appended_wire_tail_policy": "trim_trailing_zero_before_finalizer",
           "terminal_contact_outward_grid_steps": 0,
           "donor_terminal_record_order": [
             "B",

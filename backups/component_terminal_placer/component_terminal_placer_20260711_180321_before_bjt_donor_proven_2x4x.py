@@ -1495,7 +1495,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     trailing_attachment_records: list[bytes] = []
     object_stream_finalizers: set[str] = set()
     clean_packet_attachment_orders: set[str] = set()
-    terminal_leading_block_count = 0
     family_reports: list[dict[str, Any]] = []
     preserved_rows: list[dict[str, Any]] = []
     suffix = suffix_start
@@ -2061,23 +2060,11 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         f"{family_component_count}."
                     )
             if clean_packet_attachment_order == "terminal_leading_component_then_wires":
-                if trailing_attachment_records:
+                if local_records or trailing_attachment_records:
                     raise ValueError(
-                        f"{family} terminal-leading clean-packet order cannot be mixed "
-                        "with trailing attachment units before a combined donor proves "
-                        "that hybrid stream."
-                    )
-                if local_records and terminal_leading_block_count == 0:
-                    raise ValueError(
-                        f"{family} terminal-leading clean-packet order cannot follow "
-                        "a preserved or differently ordered component stream."
-                    )
-                if clean_packet_attachment_orders != {
-                    "terminal_leading_component_then_wires"
-                }:
-                    raise ValueError(
-                        "Catalogue terminal-leading blocks cannot be combined with "
-                        f"other attachment orders: {sorted(clean_packet_attachment_orders)}."
+                        f"{family} terminal-leading clean-packet order is currently "
+                        "restricted to a focused solo stream; refusing to mix object "
+                        "orders before Proteus acceptance."
                     )
                 raw_terminal_record_order = geometry.get(
                     "donor_terminal_record_order"
@@ -2133,7 +2120,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 local_records.append(
                     patched_data + b"".join(ordered_wire_records)
                 )
-                terminal_leading_block_count += 1
             else:
                 if clean_packet_attachment_orders == {
                     "component_stream_then_attachment_units",

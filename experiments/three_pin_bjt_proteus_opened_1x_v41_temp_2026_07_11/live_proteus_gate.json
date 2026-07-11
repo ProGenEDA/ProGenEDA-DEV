@@ -1,0 +1,15 @@
+{
+  "gate": "cold_open_wait_10s_ctrl_s_cold_reopen",
+  "notes": [
+    "Each candidate opened to the normal LX_APPLN_DClkNoDC schematic window with no modal error dialog after ten seconds.",
+    "Ctrl+S was issued on a copied candidate; each copied project SHA-256 remained unchanged.",
+    "The saved copy was then cold-reopened with the same delayed no-dialog result.",
+    "Proteus PrintWindow capture is not a visual acceptance signal because the authoritative NPN donor also has a blank captured canvas."
+  ],
+  "cases": [
+    {"family": "NPN", "case": "T001_NPN_1x_PROTEUS_OPENED", "open_after_10s": "passed", "ctrl_s_changed_project": false, "cold_reopen": "passed"},
+    {"family": "PNP", "case": "T002_PNP_1x_PROTEUS_OPENED", "open_after_10s": "passed", "ctrl_s_changed_project": false, "cold_reopen": "passed"},
+    {"family": "2N3904", "case": "T003_2N3904_1x_PROTEUS_OPENED", "open_after_10s": "passed", "ctrl_s_changed_project": false, "cold_reopen": "passed"},
+    {"family": "2N4401", "case": "T004_2N4401_1x_PROTEUS_OPENED", "open_after_10s": "passed", "ctrl_s_changed_project": false, "cold_reopen": "passed"}
+  ]
+}

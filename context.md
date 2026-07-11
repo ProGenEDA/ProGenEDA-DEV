@@ -11914,3 +11914,93 @@ The accompanying `donor_contract_audit.json` records every checked project membe
 - Implementation/evidence commit: `c54cda2f8eb1dbc87738f406c48a28704ca630a1` (`Enforce donor-first NPN frame contract`).
 - Push verification before this log commit: local HEAD, upstream, and GitHub all matched `c54cda2f8eb1dbc87738f406c48a28704ca630a1`.
 - The unrelated HC04 deletions and user-provided fixed/untracked artifacts remained untouched and unstaged.
+
+## User Message - 2026-07-11 +05:00
+
+continue, n donot touch background agents they seem to be triggering and marking this as cybersecurity request. this has nothign to do with cycber security
+
+## Agent Visible Response - 2026-07-11 +05:00
+
+Agreed. I will not use or contact background agents again. This is local Proteus file-generation and acceptance testing only.
+
+## User Message - 2026-07-11 +05:00
+
+n u can obv open aelf test files right? n do ctrl s etc for continous testing till final result is achieved
+
+## Agent Visible Response - 2026-07-11 +05:00
+
+Yes. I can open each generated `.pdsprj` in the installed Proteus, detect error dialogs, press Ctrl+S, close it, cold-reopen the saved file, and compare its internal bytes. I’m using that full loop as the acceptance gate now; static “valid” reports alone will not be treated as success.
+
+The regenerated four outputs now have a one-package CDB with matching pin/property row counts (NPN 224 bytes, PNP 222, numbered transistors 282), instead of the 614 KB mega CDB. I’m starting the real Proteus open/save/cold-reopen gate now, beginning with NPN.
+
+NPN has now passed the full real gate: open with no modal error, Ctrl+S with no internal changes, terminate Proteus, then cold-reopen successfully. I’m running the exact same gate on PNP, 2N3904, and 2N4401—not assuming the NPN result transfers to them.
+
+All four BJT candidates now pass the real loader gate—including Ctrl+S and a cold reopen after terminating Proteus. I’m doing a visual capture pass next to confirm the terminals are actually at the component pins, not merely that the files load.
+
+The direct screen-capture method produced a black image despite Proteus being open, so it is not a trustworthy visual check. I’m switching the capture mechanism to Proteus’s own window-render path; I won’t claim visual verification until the image is actually readable.
+
+## User Message - 2026-07-11 +05:00
+
+u need to increase the w8 when proteus openes before u take the ss u are too fast rn
+
+## Agent Visible Response - 2026-07-11 +05:00
+
+You’re right—the schematic window became available before Proteus finished drawing the sheet. I’ll wait for full load, then issue Proteus’s own “Zoom To View Entire Sheet” command and wait again before every screenshot.
+
+The longer capture confirmed the limitation is the capture path, not this output: even the authoritative accepted NPN donor renders as a blank canvas in the captured image. Proteus itself opens and preserves all four projects cleanly; I’m recording that as an automated loader/save/reopen result and keeping visual acceptance separate for your normal Proteus view.
+
+I found actual 2× and 4× NPN/PNP terminalized donors in the corpus. They prove the exact sequential block pattern needed for scaling: three terminals → component → three WIREs, repeated, with one final terminator. I’m extending only NPN/PNP to that donor-proven 4× limit first; the numbered-transistor aliases stay at 1× until they have equivalent native evidence.
+
+The donor-proven scaling code is now covered by focused tests: NPN and PNP 2×/4× each produce sequential terminal-leading blocks, valid final links, and correctly pruned multi-package CDBs. I’m generating those four exact evidence cases through the shared placer now, then I’ll run the same live Proteus gate on each.
+
+The 2× and 4× NPN/PNP packs are generated from the donor-proven sequence. I’m deliberately using longer post-open waits in their live gate before saving or classifying them, as you pointed out.
+
+The longer live checks are still running sequentially; each project gets a full-load pause before Ctrl+S and another after cold relaunch, so I’m not shortening the gate just to get a faster result.
+
+The donor-proven 2× and 4× NPN/PNP cases also passed the full longer gate: no dialog after the deliberate load wait, Ctrl+S made no change, and each cold-reopened cleanly. I’m now giving the four 1× BJT cases that same longer post-load check so the acceptance standard is consistent.
+
+## Current Result - 2026-07-11 +05:00
+
+V38 is rejected. The shared `ROOT.CDB` subset builder had left the old mega-donor property-row count (`3550`) in the CDB bridge after retaining only selected rows. Proteus Ctrl+S proved that count must equal the retained property-row count. The shared catalogue terminal placer now normalizes CDB alongside its active terminal emission, using the same shared CDB builder rather than a BJT-specific output patch.
+
+Local Proteus gate results:
+
+- V41 1× NPN, PNP, 2N3904, and 2N4401: each opened after a ten-second post-load wait with no modal error; Ctrl+S made no project hash change; a cold reopen passed.
+- V42 NPN/PNP 2× and 4×: all four passed the delayed open, Ctrl+S, and cold-reopen gate.
+- Automated screenshot capture cannot establish visual layout: the authoritative accepted NPN donor shows the same blank canvas through the local `PrintWindow` capture path. User interactive Proteus view remains the visual acceptance source.
+- 9×, 15×, and 23× BJT terminal-leading emission remains intentionally blocked. The actual donor corpus proves the sequential pattern only through 4×. `2N3904` and `2N4401` remain 1× because their terminalized evidence is an NPN alias rather than native numbered-transistor scaling evidence.
+
+### Files Edited By Agent In Response To These Messages
+
+- `src/proteusgen/component_placer.py` - repaired the CDB subset builder’s retained property-row count.
+- `src/proteusgen/component_terminal_placer.py` - normalizes CDB during shared catalogue terminal emission and supports donor-proven sequential terminal-leading blocks.
+- `knowledge/component_catalog_v0.json` - records local 1× BJT gate status and NPN/PNP 2×/4× donor evidence; preserves 1× limit for numbered aliases.
+- `tests/test_component_placer.py` - adds exact Ctrl+S CDB regression and NPN/PNP 2×/4× terminal-leading regression coverage.
+- `backups/component_terminal_placer/component_terminal_placer_20260711_002901_before_npn_proteus_opened_contract_v39.py` and `backups/component_terminal_placer/component_terminal_placer_20260711_180321_before_bjt_donor_proven_2x4x.py` - required shared-placer backups.
+- `experiments/three_pin_bjt_proteus_opened_1x_v41_temp_2026_07_11/` - generated controls, four 1× terminalized outputs, Ctrl+S copies, gate record, and README.
+- `experiments/three_pin_bjt_donor_proven_scaling_v42_temp_2026_07_11/` - generated NPN/PNP 2×/4× controls, terminalized outputs, Ctrl+S copies, gate record, and README.
+- `AGENTS.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `context.md` - record the durable donor-first, CDB, and local Proteus-gate lessons.
+
+### Validation
+
+- Focused CDB/BJT regressions after CDB repair: 9 passed.
+- Focused donor-proven NPN/PNP scaling regressions: 13 passed.
+- Live Proteus gate: 8 generated terminalized candidates opened, saved unchanged, and cold-reopened; 1× candidates also passed a ten-second delayed no-dialog check.
+
+### Final Regression And Git Checkpoint Status
+
+- Full `tests/test_component_placer.py` regression: 115 passed.
+- `python -m compileall -q src tests tools/proteus_generation` passed.
+- The required staging/commit step was attempted after validation, but the active environment denied creation of `.git/index.lock` (`Permission denied`). No files were staged, committed, pushed, reset, or deleted by this turn. The unrelated HC04 deletions, user-fixed artifacts, old V39/V40 packs, temporary pytest directories, raw capture images, and the PDS dump remain untouched and unstaged.
+
+## Retrospective User Message - 2026-07-11 +05:00
+
+use these background adent [@Npn donor corpus audit](agent://019f4d69-3f1e-7740-8d56-bf33a7053906) [@Proteus frame semantics audit](agent://019f4d69-8e5e-7b82-b1b0-028e914596d1) [@Npn object grammar audit](agent://019f4d68-f4d7-7a60-91ef-419ea51607ab)
+
+## Retrospective Agent Visible Response - 2026-07-11 +05:00
+
+The linked sessions were no longer live, so replacement read-only audits were briefly used. The user then instructed that no background agents be used; that instruction is now followed for the remainder of the work.
+
+### Final Handoff Summary
+
+The terminal loader issue was the stale retained mega `ROOT.CDB` property-row count, not terminal coordinates. The shared CDB subset builder and unified terminal placer now normalize that CDB correctly. Local Proteus passed delayed open, Ctrl+S unchanged, and cold reopen for four 1× BJT outputs plus donor-proven NPN/PNP 2×/4× outputs. The only incomplete administrative step is Git commit/push because this environment denied writes to `.git/index.lock`; working-tree changes and evidence packs are intact.
