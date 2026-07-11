@@ -33,10 +33,25 @@ def _generation_passed(summary: dict[str, Any]) -> bool:
     return True
 
 
-def _source_files(source: Path) -> list[Path]:
+def _source_files(source: Path, circuit_ids: set[str] | None = None) -> list[Path]:
     if source.is_file():
-        return [source]
-    return _final_json_files(source)
+        files = [source]
+    else:
+        files = _final_json_files(source)
+    if not circuit_ids:
+        return files
+    selected: list[Path] = []
+    found_ids: set[str] = set()
+    for path in files:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        circuit_id = str(data.get("circuit_id") or "").strip()
+        if circuit_id in circuit_ids:
+            selected.append(path)
+            found_ids.add(circuit_id)
+    missing = sorted(circuit_ids - found_ids)
+    if missing:
+        raise ValueError(f"Requested circuit IDs were not found in {source}: {', '.join(missing)}")
+    return selected
 
 
 def run_executable(
@@ -48,6 +63,7 @@ def run_executable(
     terminal_smoke: bool = False,
     max_wired_routes: float | None = None,
     variation_mode: bool = False,
+    circuit_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     run_root = _fresh_prefixed_run_dir(output_root, "progen_kicad_executable_run", label)
     fixed_dir = run_root / "fixed_main_json"
@@ -56,7 +72,7 @@ def run_executable(
     reports_dir.mkdir()
 
     fixed_results: list[dict[str, Any]] = []
-    for index, source_file in enumerate(_source_files(source), 1):
+    for index, source_file in enumerate(_source_files(source, circuit_ids), 1):
         stem = source_file.stem
         output = fixed_dir / f"{stem}.json"
         report_output = reports_dir / f"{stem}_input_fix_report.json"
@@ -103,6 +119,7 @@ def run_executable(
         "schema": EXECUTABLE_SCHEMA,
         "run_dir": str(run_root),
         "source": str(source),
+        "requested_circuit_ids": sorted(circuit_ids) if circuit_ids else None,
         "routing_mode": routing_mode,
         "terminal_smoke_enabled": terminal_smoke,
         "variation_mode_enabled": variation_mode,
@@ -322,6 +339,7 @@ def main() -> None:
     run.add_argument("--terminal-smoke", action="store_true")
     run.add_argument("--max-wired-routes", type=float)
     run.add_argument("--variation-mode", action="store_true", help="Disable combination wire-route cap and honor generation_variation metadata.")
+    run.add_argument("--circuit-id", action="append", default=[], help="Generate only this canonical circuit ID; repeat for a reproducible subset.")
 
     variations = sub.add_parser("run-variations", help="Create deterministic variation JSONs and run the normal generator on them.")
     variations.add_argument("source", type=Path, help="Folder/run with final_json/*.json.")
@@ -350,6 +368,7 @@ def main() -> None:
             terminal_smoke=args.terminal_smoke,
             max_wired_routes=args.max_wired_routes,
             variation_mode=args.variation_mode,
+            circuit_ids=set(args.circuit_id) or None,
         )
     elif args.command == "run-variations":
         summary = run_variations(

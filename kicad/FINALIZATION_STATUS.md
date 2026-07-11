@@ -1,9 +1,13 @@
-# KiCad Schematic Finalization Status
+# KiCad Schematic And PCB Finalization Status
 
-Date: 2026-07-10
+Date: 2026-07-11
 
-This is the current handoff for the KiCad schematic generator inside the
+This is the current handoff for the integrated KiCad generator inside the
 `memory/kicad` folder.
+
+The schematic pipeline is finalized for its current catalogue. A bounded,
+source-backed native PCB stage is now integrated and release-tested. See
+`kicad/pcb/README.md` for its exact support envelope and evidence.
 
 ## Current Pipeline
 
@@ -22,6 +26,8 @@ main JSON
 -> value validator
 -> hosted expected-net validator
 -> final validator
+-> optional physical PCB compiler / placer / two-layer router
+-> hosted PCB parser / validator
 -> output packager
 ```
 
@@ -37,12 +43,13 @@ then validate against the expected netlist.
 
 ## Output Contract
 
-Each completed project emits two artifacts:
+Each completed project emits two archives plus an optional direct PCB artifact:
 
-- user project zip: only the openable KiCad project/schematic files;
+- user project zip: openable KiCad project/schematic and accepted PCB files;
 - internal bundle zip: main input JSON, every generated stage JSON, selected
   and rejected arrangement/routing variants, manifests, validator reports, and
-  metadata keyed by the generated serial.
+  metadata keyed by the generated serial;
+- direct user PCB: emitted only when hosted PCB validation passes.
 
 The output packager owns this boundary:
 
@@ -172,7 +179,29 @@ Policy:
 The examples-specific ignore file prevents future generated project packs from
 flooding source control while keeping compact summaries tracked.
 
-## Remaining Schematic Work
+## Current PCB Evidence
+
+The accepted current PCB corpus run is:
+
+```text
+progen_kicad_executable_run_2026_07_11_174321_pcb_600_combination_v4
+```
+
+It completed 600/600 canonical combination-mode schematics. PCB results were
+495 accepted, 67 complexity-limited, and 38 routing-limited. No rejected board
+was copied into a user project.
+
+The external KiCad 10.0.4 release oracle is:
+
+```text
+pcb_cli_oracle_run_2026_07_11_185217_pcb_600_combination_v4
+```
+
+All 495 accepted boards passed KiCad DRC with zero violations and zero
+unconnected items. Hosted generation and validation remain independent of
+KiCad installation; CLI is external evidence only.
+
+## Remaining Work
 
 The schematic generator is ready to move toward a small KiCad PCB slice after
 one final optional sweep:
@@ -183,18 +212,11 @@ one final optional sweep:
   terminal spacing visible in demo files;
 - add PDF/SVG preview export only when a hosted preview path is needed.
 
-The main remaining KiCad work is PCB, not schematic connectivity.
+Remaining work is expansion, not completion of the current MVP slice:
 
-Recommended PCB first slice:
-
-```text
-main JSON + validated schematic
--> footprint selector
--> board outline decider
--> footprint placer
--> ratsnest/net import validator
--> simple two-layer router or terminal/export placeholder
--> DRC/final PCB report
-```
-
-Start PCB with a small board, not the 600-circuit corpus.
+- add audited footprint families beyond the committed 34-record source pack;
+- improve compact placement and routing for the 38 routing-limited corpus cases;
+- raise the explicit 40-component/40-multinet bounds only with new evidence;
+- add zones, differential-pair/length constraints, thermal rules, and broader
+  manufacturing profiles before calling the PCB stage universal production
+  layout.

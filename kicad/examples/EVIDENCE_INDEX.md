@@ -1,6 +1,6 @@
 # KiCad Example Evidence Index
 
-Generated: 2026-07-10
+Generated: 2026-07-11
 
 This file indexes the immutable generated evidence folders under `kicad/examples/`. The folders themselves are records: do not overwrite them. New generation means a new timestamped run folder. Large local project packs may be intentionally untracked; the source of truth for committed code is the pipeline plus the run manifests and summary records here.
 
@@ -17,6 +17,9 @@ This file indexes the immutable generated evidence folders under `kicad/examples
 | `progen_kicad_executable_run_2026_07_06_031455_executable_600_terminal_v1` | terminal | 600 | 600 | pass | pass | pass | 0 | 86520 | accepted-current: 600/600 terminal-only final validation pass |
 | `progen_kicad_executable_run_2026_07_10_130324_variation_100x3_v1_projects` | combination | 300 | 300 | pass | pass | pass | 27708 | 24129 | accepted-current: 100 random x3 variations, 300/300 pass |
 | `progen_kicad_executable_run_2026_07_10_133147_demo7_3variations_v1_projects` | combination | 21 | 21 | pass | pass | pass | 2166 | 1350 | accepted-current: 7 MVP demos x3 variations, 21/21 pass |
+| `progen_kicad_executable_run_2026_07_11_174321_pcb_600_combination_v4` | combination+PCB | 600 | 600 | pass | pass | pass | 95788 | 80438 | accepted-current: 495 PCB accepted, 67 complexity limit, 38 routing limit |
+| `pcb_cli_oracle_run_2026_07_11_185217_pcb_600_combination_v4` | KiCad PCB DRC | 495 | 495 | pass | pass | pass | 0 | 0 | accepted-current: 495/495 DRC clean, zero violations/unconnected |
+| `pcb_release_evidence_run_2026_07_11_230157_pcb_600_combination_v4` | PCB fabrication/render | 5 | 5 | pass | pass | pass | 0 | 0 | Gerber, drill, BOM, positions, render pass |
 
 ## All Top-Level Example Folders
 

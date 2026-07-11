@@ -2760,6 +2760,41 @@ def generate_wired_projects_from_final_json(
             "report": final_validation_report_path.name,
             "blocking_failure_count": int(final_validation_report["blocking_failure_count"]),
         }
+        from kicad.pcb.pipeline import generate_pcb_for_project
+
+        if final_validation_report["ready_for_output"]:
+            try:
+                pcb_pipeline_report = generate_pcb_for_project(
+                    circuit=circuit,
+                    routing_placement=routing_placement,
+                    project_dir=project_dir,
+                    project_name=str(manifest["project_name"]),
+                    schematic_file=str(manifest["schematic_file"]),
+                )
+            except Exception as exc:
+                pcb_pipeline_report = {
+                    "schema": "progen-kicad-pcb-pipeline/v0.1",
+                    "generated": False,
+                    "ready_for_output": False,
+                    "reason": "pcb_pipeline_exception",
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+                (project_dir / "pcb_pipeline_report.json").write_text(
+                    json.dumps(pcb_pipeline_report, indent=2),
+                    encoding="utf-8",
+                )
+        else:
+            pcb_pipeline_report = {
+                "schema": "progen-kicad-pcb-pipeline/v0.1",
+                "generated": False,
+                "ready_for_output": False,
+                "reason": "schematic_final_validation_failed",
+            }
+            (project_dir / "pcb_pipeline_report.json").write_text(
+                json.dumps(pcb_pipeline_report, indent=2),
+                encoding="utf-8",
+            )
+        manifest["pcb_pipeline"] = pcb_pipeline_report
         (project_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
         results.append(
             {
@@ -2777,6 +2812,15 @@ def generate_wired_projects_from_final_json(
                 "project_dir": str(project_dir.relative_to(run_path)),
                 "open_this": str((project_dir / manifest["open_this"]).relative_to(run_path)),
                 "schematic_file": str((project_dir / manifest["schematic_file"]).relative_to(run_path)),
+                "pcb_generated": bool(pcb_pipeline_report.get("generated")),
+                "pcb_ready_for_output": bool(pcb_pipeline_report.get("ready_for_output")),
+                "pcb_reason": str(pcb_pipeline_report.get("reason") or "unknown"),
+                "pcb_file": str((project_dir / str(pcb_pipeline_report["pcb_file"])).relative_to(run_path))
+                if pcb_pipeline_report.get("pcb_file")
+                else None,
+                "pcb_supported_component_count": int(pcb_pipeline_report.get("supported_component_count", 0)),
+                "pcb_omitted_component_count": int(pcb_pipeline_report.get("omitted_component_count", 0)),
+                "pcb_unrouted_net_count": int(pcb_pipeline_report.get("unrouted_net_count", 0)),
                 "component_count": manifest["component_count"],
                 "symbol_instance_count": manifest["symbol_instance_count"],
                 "wire_object_count": manifest["wire_maker"]["wire_object_count"],
@@ -2834,6 +2878,15 @@ def generate_wired_projects_from_final_json(
         ),
         "total_components": sum(int(item["component_count"]) for item in results),
         "total_symbol_instances": sum(int(item["symbol_instance_count"]) for item in results),
+        "pcb_generated_count": sum(1 for item in results if item["pcb_generated"]),
+        "pcb_ready_for_output_count": sum(1 for item in results if item["pcb_ready_for_output"]),
+        "pcb_result_counts": {
+            reason: sum(1 for item in results if item["pcb_reason"] == reason)
+            for reason in sorted({item["pcb_reason"] for item in results})
+        },
+        "total_pcb_supported_components": sum(int(item["pcb_supported_component_count"]) for item in results),
+        "total_pcb_omitted_components": sum(int(item["pcb_omitted_component_count"]) for item in results),
+        "total_pcb_unrouted_nets": sum(int(item["pcb_unrouted_net_count"]) for item in results),
         "total_wire_objects": sum(int(item["wire_object_count"]) for item in results),
         "total_labels": sum(int(item["label_count"]) for item in results),
         "total_unresolved_pins": sum(int(item["unresolved_pin_count"]) for item in results),
@@ -2884,6 +2937,7 @@ def generate_wired_projects_from_final_json(
         result["output_artifacts"] = {
             "serial": artifact_metadata["serial"],
             "user_project": artifact_metadata["user_project"],
+            "user_pcb": artifact_metadata.get("user_pcb"),
             "internal_bundle": artifact_metadata["internal_bundle"],
             "retained_variants": artifact_metadata["retained_variants"],
         }
@@ -2896,6 +2950,7 @@ def generate_wired_projects_from_final_json(
     summary["output_artifact_contract"] = {
         "schema": "progen-kicad-run-output-artifacts/v0.1",
         "user_visible_artifact": "user_project",
+        "optional_user_pcb_artifact": "user_pcb",
         "internal_only_artifact": "internal_bundle",
         "artifact_count": len(output_artifacts),
     }

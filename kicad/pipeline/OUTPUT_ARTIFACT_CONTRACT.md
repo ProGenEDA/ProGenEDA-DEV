@@ -2,14 +2,16 @@
 
 This contract defines the final output boundary for KiCad generation.
 
-Every complete generated circuit produces exactly two artifact classes:
+Every complete generated circuit produces two archive classes and may produce
+one direct PCB artifact:
 
 ```text
 1. user_project      user-downloadable export
 2. internal_bundle   backend/database-only metadata zip
+3. user_pcb          optional direct native PCB file, accepted boards only
 ```
 
-The frontend/user receives only `user_project`. The internal bundle is stored
+The frontend/user receives `user_project` and, when present, `user_pcb`. The internal bundle is stored
 by the backend database/storage layer under the generated serial and must never
 be returned through public serial download routes.
 
@@ -44,6 +46,8 @@ outputs/<circuit_id>/
   output_manifest.json
   user_project/
     PROGEN_KICAD_PROJECT.zip
+  user_pcb/
+    <project>.kicad_pcb
   internal/
     internal_bundle.zip
 ```
@@ -70,6 +74,7 @@ Contents:
 ```text
 project/<main>.kicad_pro
 project/<main>.kicad_sch
+project/<optional accepted main>.kicad_pcb
 project/<optional KiCad project-local library/table files>
 ```
 
@@ -81,6 +86,8 @@ Rules:
 - No route-variant metadata.
 - No source catalogue dumps.
 - Must contain a `.kicad_pro` and `.kicad_sch` for KiCad portability.
+- Contains `.kicad_pcb` only after independent hosted PCB validation passes.
+- Never contains `pcb_internal` or a `.candidate.kicad_pcb`.
 
 The website may expose this as the serial-downloadable artifact.
 

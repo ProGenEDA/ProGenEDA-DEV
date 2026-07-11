@@ -10930,3 +10930,74 @@ Final agent response:
 > - **Direct native Altium generation: about 8/10 difficulty.** Writing and independently validating native `.SchDoc`/`.PcbDoc` files is much harder because Altium is proprietary, requires Altium-specific component/library semantics, and realistically needs a licensed Windows Altium installation for conversion and validation.
 >
 > Once our KiCad PCB pipeline is solid, most difficult logical work is reusable: the same JSON, expected netlist, footprint/pad knowledge, placement, and routing. My recommendation is to ship Altium compatibility first through the official KiCad importer, then consider a direct native adapter only if users actually need server-generated `.SchDoc` and `.PcbDoc` files.
+
+### 2026-07-11T23:50:29+05:00
+
+User:
+
+> for altium i want the direct native but that for later, lets continue the pcb thing ... whenever a sch is generate, whatever part of it is supported in pcb it will generate that too along side it.
+
+> remember to embend all the stuff from source in the generator for flawless generation as well as validation when no kicad is installed
+
+> continue
+
+> continue from above, donot start the 600 from beginning
+
+> can u make it so the 67 complexity limits are actually covered too? this will improve support value
+
+> continue above
+
+Agent:
+
+> Resumed the integrated PCB implementation without regenerating the completed
+> 600-circuit v4 run. The source-backed PCB package is present under
+> `kicad/pcb/`; its KiCad 10.0.4 footprint source pack and hosted parser/
+> validator require neither KiCad nor `kicad-cli` at runtime.
+
+> Replaced the old fixed PCB rejection at 40 selected components or 40
+> multi-pad nets with an adaptive budget. Every physically compilable design
+> now proceeds through placement, routing, candidate writing, and hosted
+> validation. A non-accepted design is reported only as `pcb_routing_limit` or
+> `pcb_validation_failed`; it is never emitted as a user PCB.
+
+> Added connectivity-aware square-fill placement, a coarse extra-large routing
+> lattice, compact high-fanout tree growth, and retained route-order variants.
+> Fine-grid boards preserve the previously proven priority-retry behavior;
+> extra-large boards use the bounded fast-path strategy only.
+
+> Added `--circuit-id` to the existing executable so the exact 67 historical
+> v4 complexity cases can be selected directly from the original fixed JSON
+> directory without copying inputs or restarting the other 533 circuits.
+
+> Evidence from real canonical inputs: N07 (69 selected physical components),
+> previously held at the count limit, now generates an accepted PCB with zero
+> PCB unrouted nets and passes the hosted validator. MJ003 (58 selected
+> physical components) now receives full PCB routing and ends as a
+> `pcb_routing_limit` with one remaining net rather than a complexity rejection.
+> The 199-component MJ070 stress design also receives real routing attempts;
+> it remains a bounded two-layer routing limit because its physical subset has
+> 128 ground and 76 five-volt pads. Its exploratory retained candidates reduced
+> unfinished nets from 102 to 55 before the extra-large budget was tightened.
+
+> A fresh 67-case subset run was started from the v4 source directory and then
+> intentionally stopped after MJ003 exposed excessive medium-tier retry time.
+> The original 600 run was not changed. The retained partial run is a timing
+> record, not release evidence; the next corpus retry must run after the
+> adaptive placement-variant work is complete.
+
+Files edited:
+
+- `context.md`
+- `kicad/pcb/pipeline.py`
+- `kicad/pcb/footprint_placer.py`
+- `kicad/pcb/pcb_router.py`
+- `kicad/pipeline/progen_kicad_executable.py`
+- `kicad/pcb/README.md`
+- `kicad/tests/test_pcb_pipeline.py`
+
+Verification:
+
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_pcb_pipeline.py -q`: 6 passed.
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pcb kicad/pipeline/progen_kicad_executable.py`: passed.
+- Fresh N07 canonical filtered executable run: accepted PCB, zero unrouted PCB nets, hosted validation passed.
+- Fresh installed-KiCad DRC was not available in this shell because `kicad-cli` is not on `PATH`; the independent hosted validator remains mandatory, and prior external 495/495 v4 oracle evidence is retained unchanged.

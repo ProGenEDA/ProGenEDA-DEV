@@ -31,6 +31,12 @@ Current accepted schematic evidence:
 - `progen_kicad_executable_run_2026_07_10_130324_variation_100x3_v1_projects`: 100 random imported circuits x 3 deterministic layout variations passed as 300/300 combination-mode projects.
 - `progen_kicad_executable_run_2026_07_10_133147_demo7_3variations_v1_projects`: 7 curated MVP-demo circuits x 3 variations passed as 21/21 combination-mode projects.
 
+Current accepted integrated PCB evidence:
+
+- `progen_kicad_executable_run_2026_07_11_174321_pcb_600_combination_v4`: 600/600 schematic pipelines passed; 495 native PCBs accepted, 67 complexity-limited, and 38 routing-limited.
+- `pcb_cli_oracle_run_2026_07_11_185217_pcb_600_combination_v4`: installed KiCad 10.0.4 checked all 495 accepted PCBs; 495/495 passed with zero DRC violations and zero unconnected items.
+- `pcb_release_evidence_run_2026_07_11_230157_pcb_600_combination_v4`: five final boards exported Gerbers, drill, BOM, positions, and nonblank 3D renders.
+
 Current accepted JSON sources:
 
 - `final_json_run_2026_07_06_020659_main_json_catalog_600_combination_v2`: canonical 600 main JSON source catalog.

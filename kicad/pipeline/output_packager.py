@@ -30,6 +30,7 @@ INTERNAL_BUNDLE_SCHEMA = "progen-kicad-internal-bundle/v0.1"
 SERIAL_SERVICE = "KC"
 SERIAL_TABLE_VERSION = "A"
 USER_PROJECT_ZIP_NAME = "PROGEN_KICAD_PROJECT.zip"
+USER_PCB_DIR_NAME = "user_pcb"
 INTERNAL_BUNDLE_ZIP_NAME = "internal_bundle.zip"
 
 
@@ -178,6 +179,8 @@ def _project_export_entries(project_dir: Path) -> tuple[list[tuple[str, bytes]],
     for path in sorted(project_dir.rglob("*")):
         if not path.is_file():
             continue
+        if "pcb_internal" in path.relative_to(project_dir).parts:
+            continue
         if path.suffix not in allowed_suffixes and path.name not in allowed_names:
             continue
         if path.suffix == ".kicad_pro" and not main_project_file:
@@ -267,6 +270,24 @@ def package_generated_project(
     _write_zip(user_project_zip, project_entries)
     user_project_bytes = user_project_zip.read_bytes()
     user_sha = sha256_bytes(user_project_bytes)
+    pcb_files = sorted(path for path in project_dir.glob("*.kicad_pcb") if path.is_file())
+    direct_pcb: dict[str, Any] | None = None
+    direct_pcb_bytes: bytes | None = None
+    if pcb_files:
+        pcb_source = pcb_files[0]
+        pcb_output = outputs_dir / USER_PCB_DIR_NAME / pcb_source.name
+        pcb_output.parent.mkdir(parents=True, exist_ok=True)
+        direct_pcb_bytes = pcb_source.read_bytes()
+        pcb_output.write_bytes(direct_pcb_bytes)
+        direct_pcb = {
+            "artifact_type": "kicad_pcb_file",
+            "storage_visibility": "user_downloadable",
+            "path": str(pcb_output.relative_to(run_dir)),
+            "file_name": pcb_output.name,
+            "mime_type": "application/x-kicad-pcb",
+            "size_bytes": pcb_output.stat().st_size,
+            "sha256": sha256_bytes(direct_pcb_bytes),
+        }
 
     variant_metadata = _variant_metadata(wire_plan)
     generated_json_sources: set[Path] = {
@@ -308,6 +329,7 @@ def package_generated_project(
             "size_bytes": user_project_zip.stat().st_size,
             "sha256": user_sha,
         },
+        "user_pcb": direct_pcb,
         "internal_bundle": {
             "artifact_type": "internal_generation_bundle",
             "storage_visibility": "internal_only",
@@ -350,6 +372,15 @@ def package_generated_project(
             "run_manifest": str(run_manifest_path.relative_to(run_dir)),
         },
     }
+    if direct_pcb is not None:
+        metadata["database_record_hint"]["artifacts"].append(
+            {
+                "artifact_type": "kicad_pcb_file",
+                "storage_visibility": "user_downloadable",
+                "path": direct_pcb["path"],
+                "sha256": direct_pcb["sha256"],
+            }
+        )
 
     internal_entries: list[tuple[str, bytes]] = [
         ("internal/output-metadata.json", _json_bytes(metadata)),
@@ -364,6 +395,10 @@ def package_generated_project(
         (f"export/{SERIAL_SERVICE}/{user_project_zip.name}", user_project_bytes),
         *generated_json_entries.items(),
     ]
+    if direct_pcb is not None and direct_pcb_bytes is not None:
+        internal_entries.append((f"export/{SERIAL_SERVICE}/{direct_pcb['file_name']}", direct_pcb_bytes))
+    for candidate in sorted((project_dir / "pcb_internal").glob("*.kicad_pcb")):
+        internal_entries.append((f"internal/pcb-candidates/{candidate.name}", candidate.read_bytes()))
     project_report_aliases = {
         "local_netlist_validation_report.json": "internal/local-netlist-validation-report.json",
         "value_edit_report.json": "internal/value-edit-report.json",
@@ -416,6 +451,7 @@ def package_project_run(run_dir: Path) -> dict[str, Any]:
         result["output_artifacts"] = {
             "serial": artifact_metadata["serial"],
             "user_project": artifact_metadata["user_project"],
+            "user_pcb": artifact_metadata.get("user_pcb"),
             "internal_bundle": artifact_metadata["internal_bundle"],
             "retained_variants": artifact_metadata["retained_variants"],
         }
@@ -427,6 +463,7 @@ def package_project_run(run_dir: Path) -> dict[str, Any]:
     run_manifest["output_artifact_contract"] = {
         "schema": "progen-kicad-run-output-artifacts/v0.1",
         "user_visible_artifact": "user_project",
+        "optional_user_pcb_artifact": "user_pcb",
         "internal_only_artifact": "internal_bundle",
         "artifact_count": len(artifacts),
     }
