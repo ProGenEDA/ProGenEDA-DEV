@@ -12332,6 +12332,91 @@ Great—1× is accepted. I’ll extend the same DIL14 runner and shared placer t
 
 ### Files Edited By Agent In This Continuation Before Scaling
 
+<!-- Continuation transcript appended during the next turn; the preceding file
+     list remains the historical metadata for the earlier scaling response. -->
+
+## User Message - 2026-07-13 +05:00
+
+make sure all these 13 or whatever are actually terminalized using screenshot of the protues, cause the project that openned i say it only had 1 terminalized remaining without terminal
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’m verifying the real generated full-terminal projects, not the one-terminal isolation control. I’ll use Proteus screenshots plus persisted terminal/WIRE counts for each candidate before I call it terminalized.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The rebuilt 15× HC08 project contains 180 terminal records and 180 short-WIRE records before Proteus opens it. I’m now doing the slower GUI check on a copy, so the screenshot is of the actual full 15× candidate—not an isolation file.
+
+## User Message - 2026-07-13 +05:00
+
+n no donot invent new limits, if for some reason 12 works with all the terminals n is proven by ss that it does have terminals but 13 isnt this means the placement in the thirteenth is the issue which needs to be fixed not that it is impossible.
+but rn we dont have time for limits so if a terminalized component is failing at 15 make sure it passes 10 record this limitation n move on.
+and yk after after the 1x 9x n 15x are done for this group, just generate a mixed with all the allowed terminalized plus these component placed but not terminalized. record all this and move on to next group do the same there of 1x 9x 15x (or the closest to 15 10 plus.) then the mixed of all the terminalized ones and the groups without terminal placed.
+and for ss i realise u cannot zoom out the diagram in protues to capture the whole circuit so if whatever proteus ss u take shows proper terminals and it opened without error call it acceptable.
+and when u are done with this 1x 9x 15x/closestx solo for all groups and noneterminal mix of that group then u can call it quit. not before that whatever happens not before that.
+and i also seem to realise the 13x now worked with new placement that means the issue probably was v bad placement of terminals, like they werent properly on gridline or something. but its okk u can implement hiearchy rules in beautifier to for the solution u found so it arranges component the way u found working
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Agreed. I’m treating the 13× success as proof that the issue was placement, not an invented terminal limit. I’ve made that two-row hierarchy a reusable beautifier setting, and I’m rebuilding 1×/9×/15× from it; if a family’s locked mega-donor runs out before 15, I’ll record the real placer cap and use the closest valid scale rather than claim a terminal cap.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The actual 15× HC08 screenshot is clean: multiple gates visibly have two input terminals plus one output terminal with short wires, and the saved/reopened copy still has all 180 terminal and 180 WIRE records. I’m applying the same copied-file gate to the other DIL14 families now.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The first two scale-cap outputs also passed the copied-file save/reopen check with their full expected counts: 96/96 for HC00 and 144/144 for HC02. Their Proteus screens show terminal-and-wire attachments across multiple gate subparts, not a lone terminal.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The wide-shelf layout is behaving as intended: 15 package groups stay in two package rows instead of spilling into the old problematic third row. The remaining 15× family gates are running on copies now; no source project is being saved or altered.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The six largest candidates all now pass the real Proteus copied-file gate. Next I’m verifying the 1× and 9× outputs the same way, so each scale is backed by an actual loader/save/reopen result rather than only byte counts.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The smaller-scale gate is still running sequentially because Proteus needs a cold launch and delayed reopen per file. I’m preserving the generated source files and only Ctrl+S-ing disposable copies, exactly as requested.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+No modal errors have appeared during the 1× checks so far. I’m keeping this as a real acceptance pass—not using the automated canvas image alone as evidence—then I’ll audit the saved copies’ terminal and wire counts.
+
+## User Message - 2026-07-13 +05:00
+
+u are over doing ss, it is only for those which previously failed and large ones i.e. the 15x ones
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Understood. I’m not taking 1×/9× screenshots—the current 1× run is only the background open/save/reopen gate. I’ll keep visual screenshots to the previously failing large 15× cases.
+
+## User Message - 2026-07-13 +05:00
+
+i can confirm this group solo works. make mix then move on. n reduce time by half
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Got it—the solo group is accepted. I’m stopping the remaining redundant 9× loader checks, cutting future non-screenshot waits to 12 seconds, and moving straight to the mixed project.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’ve interpreted the mixed request exactly as written: all previously accepted two-pin terminal routes stay terminalized, while the six new DIL14 families are present but deliberately left unterminalized. I’m checking that mixed baseline now before moving to the next family group.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The requested boundary mix is generated and opens: 20 frozen two-pin families are terminalized (40 terminals/WIREs), while all six DIL14 families are present with no terminals. I’m checkpointing this accepted group, then I’ll start the next group from its donor evidence.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_placer.py` — reusable `layout.shelf_width` placement contract for the proven two-row DIL14 layout; terminal geometry is untouched.
+- `tools/proteus_generation/2026-07-13/generate_dil14_quad_2input_logic_1x_temp.py` — regenerated DIL14 1x/9x/15x scales and the requested two-pin-terminalized/DIL14-bare mixed baseline using the shared placer only.
+- `tests/test_component_placer.py` — shelf-width, wide-reference, scale-cap, and bare-DIL14 boundary-mix regressions.
+- `knowledge/component_catalog_v0.json`, `knowledge/dil14_quad_2input_logic_donor_analysis_2026_07_13.md` — DIL14 donor-derived profile facts and scale evidence.
+- `experiments/dil14_quad_2input_logic_terminal_v1_temp_2026_07_13/` — final scale outputs, reports, mixed baseline, and large-candidate Proteus screenshots.
+- `docs/architecture.md`, `knowledge/test_results.jsonl`, and `AGENTS.md` — layout/boundary-mix evidence and the user-requested 12-second non-screenshot wait.
+
 - `src/proteusgen/component_terminal_placer.py` — catalogue-gated per-subpart link-slot and coordinate-frame resolution; no separate terminal script.
 - `knowledge/component_catalog_v0.json` — DIL14 pin/subpart/link/WIRE facts, HC266 pin-6 correction, and a 15× current-group terminalized-stream cap.
 - `tests/test_component_placer.py` — DIL14 subpart-boundary and short-WIRE regressions.

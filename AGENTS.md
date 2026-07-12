@@ -231,7 +231,9 @@ donor, so a blank automated capture is not evidence that a design is empty.
 User visual inspection remains required for layout acceptance, while the local
 open/save/cold-reopen gate establishes loader and persistence acceptance.
 
-For iterative non-screenshot loader checks, use a 24-second wait (two thirds
-of the former 35-second diagnostic interval) after launch, provided the
-schematic window has appeared and the required additional ten-second stability
-period is still met. The full open/save/cold-reopen gate remains mandatory.
+For iterative non-screenshot loader checks, use a 12-second wait after launch,
+provided the schematic window has appeared and the required additional
+ten-second stability period is still met. This is the user-requested half-time
+replacement for the former 24-second interval. The full open/save/cold-reopen
+gate remains mandatory unless the user explicitly accepts a solo pack and
+directs work onward.

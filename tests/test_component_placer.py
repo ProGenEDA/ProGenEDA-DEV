@@ -36,6 +36,7 @@ from proteusgen.beautifier_validator import (
     validate_beautifier_layout_entries,
 )
 from proteusgen.component_arrangement import next_start_slot_after_layout_entries
+from proteusgen.component_catalog import load_component_catalog
 from proteusgen.bidirectional import BIDIR_MARKER, extract_bidir_records, load_production_templates
 from proteusgen.component_terminal_placer import (
     CAP_ELEC_PIN_HALF_SPAN,
@@ -122,6 +123,14 @@ DIL14_QUAD_2INPUT_FAMILIES = (
     "74HC86",
     "74HC266",
 )
+DIL14_LOCKED_MEGA_SCALE_CAPS = {
+    "74HC00": 8,
+    "74HC02": 12,
+    "74HC08": 15,
+    "74HC32": 15,
+    "74HC86": 15,
+    "74HC266": 15,
+}
 
 
 @pytest.mark.parametrize(
@@ -931,6 +940,41 @@ def test_component_placement_ic_beautifier_reserves_multi_gate_footprints(tmp_pa
                 or right["max_y"] <= left["min_y"]
             )
             assert separated, f"{left_key} overlaps {right_key}"
+
+
+def test_component_placement_honors_wider_dil14_mvp_shelf(tmp_path: Path) -> None:
+    """A wider normal shelf keeps a 15-package DIL14 project to two rows.
+
+    This is deliberately a placement-stage test.  It establishes the frame
+    consumed by the catalogue terminal stage without changing terminal
+    geometry, links, or WIRE construction.
+    """
+
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"74HC08": 15},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        tmp_path / "hc08_15x_two_row_mvp_shelf.pdsprj",
+        full_cdb=True,
+    )
+    entries = [
+        entry
+        for entry in result.layout_plan["actual_binary_placements"]
+        if entry["family"] == "74HC08"
+    ]
+
+    assert result.valid
+    assert len(entries) == 15
+    assert max(int(entry["row"]) for entry in entries) == 1
+    assert all(entry["layout_shelf_width"] == 75_000_000 for entry in entries)
+    assert layout_overlap_pairs(entries) == []
+    assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
 def test_component_placement_mixed_ic_non_ic_beautifier_uses_separate_bands(
@@ -2900,6 +2944,7 @@ def test_dil14_quad_2input_solo_retargets_donor_wires_to_grid_contacts(
     assert report["terminal_grid_alignment_valid"] is True
     assert report["wire_path_contacts_valid"] is True
     assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "single_ff"
     assert report["family_reports"][0]["component_family"] == family
     assert report["family_reports"][0]["terminal_count"] == 12
     assert report["family_reports"][0]["wire_count"] == 12
@@ -2940,6 +2985,142 @@ def test_dil14_quad_2input_solo_retargets_donor_wires_to_grid_contacts(
             start <= position and position + 4 <= end
             for start, end in zip(starts, ends, strict=True)
         ), f"{family} link at {position} crosses a component-record boundary"
+
+
+@pytest.mark.parametrize("family", DIL14_QUAD_2INPUT_FAMILIES)
+def test_dil14_catalogues_wide_reference_safe_link_slots(family: str) -> None:
+    """A/B/C links must be anchored to their current subpart, not package end."""
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    slots = geometry["component_link_subpart_end_offsets"]
+    assert geometry["object_stream_finalizer"] == "single_ff"
+    assert set(slots) == {"1", "2", "3", "4", "5", "6", "8", "9", "10"}
+    assert all(
+        slot["subpart"] in {"A", "B", "C"}
+        and slot["offset"] in {-13, -9, -5}
+        for slot in slots.values()
+    )
+
+
+def test_dil14_hc08_wide_reference_links_use_current_subpart_end(
+    tmp_path: Path,
+) -> None:
+    """Four-character package refs cannot use U66 whole-packet offsets."""
+
+    family = "74HC08"
+    base = tmp_path / "74HC08_4x_no_terminal.pdsprj"
+    output = tmp_path / "74HC08_4x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 4},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert any(len(ref.split(":", 1)[0]) >= 4 for group in result.selected_groups for ref in group.refs)
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    slots = geometry["component_link_subpart_end_offsets"]
+    pin_subparts = geometry["pin_subparts"]
+
+    expected_positions: dict[tuple[str, str], int] = {}
+    for group in result.selected_groups:
+        starts: dict[str, int] = {}
+        for ref in group.refs:
+            encoded = ref.encode("ascii")
+            start = chunk.find(b"\xff" + bytes([len(encoded)]) + encoded)
+            assert start >= 0, f"{family} lost {ref}"
+            starts[ref.rsplit(":", 1)[1]] = start
+        for pin, slot in slots.items():
+            subpart = pin_subparts[pin]
+            following = [
+                position
+                for name, position in starts.items()
+                if position > starts[subpart]
+            ]
+            assert following, f"{group.key} {subpart} lacks a following subpart"
+            expected_positions[(group.key, pin)] = min(following) + slot["offset"]
+
+    actual_positions = {
+        (str(row["component_key"]), str(row["role"])): int(
+            row["component_link_position"]
+        )
+        for row in report["link_allocation"]["allocations"]
+        if str(row["role"]) in slots
+    }
+    assert actual_positions == expected_positions
+
+
+def test_dil14_mixed_baseline_keeps_new_logic_groups_unterminalized(
+    tmp_path: Path,
+) -> None:
+    """The boundary mix must not silently attach DIL14 terminals yet."""
+
+    base = tmp_path / "mixed_two_pin_terminalized_dil14_bare.pdsprj"
+    output = tmp_path / "mixed_two_pin_terminalized_dil14_bare_sa.pdsprj"
+    components = {
+        family: 1
+        for family in (*CURRENT_GROUP_NATIVE_FAMILIES, *DIL14_QUAD_2INPUT_FAMILIES)
+    }
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": dict(sorted(components.items())),
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_component_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=CURRENT_GROUP_NATIVE_FAMILIES,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    preserved = {
+        row["component_family"]
+        for row in report["preserved_groups"]
+        if row["component_family"] in DIL14_QUAD_2INPUT_FAMILIES
+    }
+
+    expected = len(CURRENT_GROUP_NATIVE_FAMILIES) * 2
+    assert result.valid
+    assert report["valid"]
+    assert report["terminal_count_added"] == expected
+    assert report["wire_count_added"] == expected
+    assert chunk.count(b"$TERBIDIR") == expected
+    assert chunk.count(b"\x7fWIRE") == expected
+    assert preserved == set(DIL14_QUAD_2INPUT_FAMILIES)
+
+
+def test_dil14_locked_mega_scale_caps_are_catalogued() -> None:
+    catalog = load_component_catalog()
+    actual = {
+        family: int(
+            catalog.get_profile(family).limits[
+                "locked_new_components_5x_mega_clean_group_max"
+            ]
+        )
+        for family in DIL14_QUAD_2INPUT_FAMILIES
+    }
+    assert actual == DIL14_LOCKED_MEGA_SCALE_CAPS
 
 
 @pytest.mark.parametrize(

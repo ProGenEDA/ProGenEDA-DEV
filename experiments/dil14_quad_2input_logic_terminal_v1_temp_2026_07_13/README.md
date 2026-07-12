@@ -1,4 +1,4 @@
-# DIL14 quad two-input logic terminal 1x recovery
+# DIL14 quad two-input logic terminal scale pack
 
 This pack uses the locked
 `proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`
@@ -7,35 +7,57 @@ emitter, `src/proteusgen/component_terminal_placer.py`. The terminalized user
 donors under `proteus_ic/donors/terminalized_catalogue_evidence/` are evidence
 only; no output is copied from them.
 
-## Test these final terminalized files
+## Final solo terminalized outputs
 
-- `01_solo_1x/S01_74HC00_1X/S01_74HC00_1X_CATALOGUE_TERMINAL_sa.pdsprj`
-- `01_solo_1x/S02_74HC02_1X/S02_74HC02_1X_CATALOGUE_TERMINAL_sa.pdsprj`
-- `01_solo_1x/S03_74HC08_1X/S03_74HC08_1X_CATALOGUE_TERMINAL_sa.pdsprj`
-- `01_solo_1x/S04_74HC32_1X/S04_74HC32_1X_CATALOGUE_TERMINAL_sa.pdsprj`
-- `01_solo_1x/S05_74HC86_1X/S05_74HC86_1X_CATALOGUE_TERMINAL_sa.pdsprj`
-- `01_solo_1x/S06_74HC266_1X/S06_74HC266_1X_CATALOGUE_TERMINAL_sa.pdsprj`
+- `01_solo_1x/` — six 1× terminalized solos.
+- `02_solo_9x/` — six requested 9× solos; `74HC00` is emitted at its
+  donor-proven eight complete packages.
+- `03_solo_15x/` — six requested 15× solos; `74HC00` remains at eight and
+  `74HC02` at twelve because those are the available clean locked-mega package
+  counts. These are component-placer source caps, not invented terminal caps.
 
-Each directory also contains the corresponding no-terminal control and the
-terminal report. Every terminalized project has one complete four-gate package,
-12 terminals, 12 short WIRE records, grid-aligned terminal contacts, left
-terminals at 1800, right terminals at 0, and active component/WIRE links
-allocated from the final ROOT.DSN WIRE addresses.
+Each case contains the matching no-terminal control, `capacity.json`, and a
+terminal report. Every complete DIL14 package has twelve grid-aligned terminal
+contacts, short local WIREs, left terminals at 1800, right terminals at 0, and
+active component/WIRE links allocated from final ROOT.DSN WIRE addresses.
+
+The actual large-scale terminal counts are:
+
+| Family | Largest emitted scale | Terminal/WIRE units |
+| --- | ---: | ---: |
+| 74HC00 | 8× | 96 / 96 |
+| 74HC02 | 12× | 144 / 144 |
+| 74HC08 | 15× | 180 / 180 |
+| 74HC32 | 15× | 180 / 180 |
+| 74HC86 | 15× | 180 / 180 |
+| 74HC266 | 15× | 180 / 180 |
+
+## Boundary mixed baseline
+
+`04_mixed_accepted_two_pin_terminalized_dil14_bare_1x/` contains the requested
+1× boundary mix:
+
+- all twenty previously accepted two-pin families are terminalized (40
+  terminal/WIRE units);
+- the six newly accepted DIL14 families are component-placed but intentionally
+  unterminalized;
+- the output opens normally in local Proteus during the shortened 12-second
+  non-screenshot gate.
+
+This keeps the established two-pin route frozen while the next multi-pin group
+is researched.
 
 ## Evidence and local checks
 
 - Authoritative donor comparison:
   `knowledge/dil14_quad_2input_logic_donor_analysis_2026_07_13.md`
-- Static regression:
-  `python -m pytest tests/test_component_placer.py -q -k "dil14_quad_2input_solo or full_current_group_matches_user_accepted_mixed_tail_oracle or mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo"`
-  passed: 9 tests.
-- `compileall` and catalogue JSON validation passed.
-- Local delayed 24-second Proteus loader checks reached a normal responsive
-  schematic window for all six final terminalized outputs. No normal-open
-  candidate was Ctrl+S-saved.
-- HC02 and HC266 were visually captured after opening. They show each `:A`,
-  `:B`, `:C`, and `:D` subpart with local terminal contacts and short WIREs;
-  HC266 package pin 6 is labelled `Pin6I4`.
-
-User visual review remains the final layout acceptance. Do not scale or mix
-this group until all six 1x terminals are accepted.
+- Static regression passed: 16 focused tests, catalogue JSON validation, and
+  `compileall`.
+- The user confirmed the DIL14 solo group works.
+- Before that confirmation, each 1× solo passed a copied-file local
+  open/save/cold-reopen gate. The large 8×/12×/15× candidates also passed the
+  same delayed copied-file gate and retained their full terminal/WIRE counts
+  after save/reopen.
+- Actual Proteus screenshots of the large candidates are under
+  `05_local_proteus_gate/screenshots/`. They show local terminal/WIRE units on
+  multiple gates; they are not one-terminal isolation controls.

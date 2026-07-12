@@ -134,3 +134,46 @@ pin-to-subpart mapping and the donor subpart-anchor delta. The planner must
 calculate each pin and donor WIRE/contact from that *current subpart* anchor,
 then snap only the terminal contact to the 254,000 grid. It must not use the
 final package anchor as a proxy for A/B/C/D.
+
+## Wide-reference link-frame and finalizer audit — 2026-07-13
+
+The authoritative `74HC08_user_terminalized_july04.pdsprj` was cold-opened,
+saved on a copy, and cold-opened again. Proteus kept all 12 `$TERBIDIR`
+records and all 12 WIRE records. Its only `ROOT.DSN` changes were five project
+metadata bytes; its `ROOT.CDB` was byte-identical. This establishes that the
+donor's component-first, terminal/WIRE-tail stream is persistent, not merely
+a loader-only visual result.
+
+The shared 1x HC08 candidate was tested the same way. It also kept its 12
+terminals and 12 WIREs, proving the base U66 route works, but Proteus removed
+one extra explicit final `FF` on save. The donor's final WIRE coordinate itself
+ends in `FF`, followed by one structural `FF`; the generated route wrote two
+structural `FF` bytes. All DIL14 profiles therefore require the donor-proven
+`single_ff` finalizer rather than the catalogue default `double_ff`.
+
+The scale failure is a separate, fully explained reference-width issue. A
+locked-mega HC08 package with four-character references (`U350:A` through
+`U350:D`) is four bytes longer than the U66 donor package. Whole-packet-end
+offsets therefore land too late in the first three records: `:A` link slots
+are three bytes late, `:B` two bytes late, and `:C` one byte late. The final
+`:D` slots remain correct because they are measured from the final packet end.
+For HC08, donor-derived current-subpart offsets are A pins 1/2/3 =
+`-13/-9/-5`, B pins 4/5/6 = `-13/-9/-5`, and C pins 9/10/8 =
+`-13/-9/-5`; D remains on its existing whole-packet offsets.
+
+This exact pattern is shared by the other quad-gate DIL14 donors and is
+catalogued per pin, not inferred at runtime:
+
+| Family | A/B/C per-subpart pin-link slots | D handling |
+| --- | --- | --- |
+| 74HC08 | `-13/-9/-5` in physical pin order | existing whole-packet offsets |
+| 74HC32 | `-13/-9/-5` in physical pin order | existing whole-packet offsets |
+| 74HC86 | `-13/-9/-5` in physical pin order | existing whole-packet offsets |
+| 74HC266 | `-13/-9/-5` in its donor pin order (including pin 6/I4) | existing whole-packet offsets |
+
+The user Save As copy of a 9-package control that terminalized only U350
+removed all 12 attachments. That is expected from the mispatched A/B/C link
+fields and is the acceptance check for the catalogue-only repair: the repaired
+wide-reference project must retain its terminal/WIRE units after Ctrl+S and
+cold reopen. No accepted two-pin, BJT, or previously accepted DIL14 U66 route
+is changed.

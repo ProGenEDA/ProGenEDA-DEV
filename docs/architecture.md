@@ -1826,3 +1826,35 @@ then use `component_terminal_placer.py` and rerun the entire DIL14 1x
 regression. A clean normal Proteus open is not Ctrl+S-saved. When a Bad Object
 Record dialog appears but the project continues after dismissal, save only that
 copy and compare the saved structure as a diagnostic.
+
+### 2026-07-13 DIL14 scale layout and boundary-mix rule
+
+The 13+ DIL14 package failure was a layout failure, not a terminal-count
+limit. The ordinary shelf put the thirteenth package into a third vertical
+package row; the same full terminal route opens when the placement stage uses
+the reusable `layout.shelf_width` contract. The DIL14 scale runner requests a
+75,000,000-unit shelf, keeping fifteen packages in two rows (eight then seven)
+while preserving their existing packets and all terminal geometry. The generic
+option lives in `component_placer`, not in the terminal placer, so a future
+placer can supply its own layout while downstream terminal logic continues to
+consume the placed-design contract.
+
+The scale evidence is additive:
+
+- `74HC08`, `74HC32`, `74HC86`, and `74HC266` have full 15x output, with 180
+  terminal/WIRE units each;
+- `74HC02` has twelve clean locked-mega packages and `74HC00` has eight. These
+  are source-packet availability caps recorded in the catalogue, not a claim
+  that terminal placement cannot support more;
+- large candidates were opened, saved only as disposable copies, and
+  cold-reopened. The saved copies retained their expected terminal and WIRE
+  counts. The screenshots in the DIL14 experiment are of those actual full
+  candidates, not an isolation control that terminalized one package only.
+
+Before moving to the next multi-pin family, use the boundary-mix rule: the
+accepted two-pin terminal families may remain terminalized, while a newly
+accepted group is added as bare component packets. The DIL14 boundary mix is
+therefore terminalized for the twenty frozen two-pin families only (40
+terminal/WIRE units) and deliberately preserves all six DIL14 families without
+terminals. This prevents experimental mixed work from modifying an accepted
+route.

@@ -1380,6 +1380,32 @@ def _binary_beautifier_enabled(payload: Any) -> bool:
     return True
 
 
+def _binary_layout_shelf_width(payload: Any) -> int:
+    """Return the requested reusable shelf width for binary beautification.
+
+    The placement contract may choose a wider canvas for a dense, but otherwise
+    ordinary, design. This is a layout-only input: it does not select a donor,
+    alter component identity, or change terminal geometry.
+    """
+
+    raw_width = _raw_layout_payload(payload).get("shelf_width")
+    if raw_width is None:
+        return VISIBLE_LAYOUT_SHELF_WIDTH
+    if isinstance(raw_width, bool):
+        raise ValueError("layout.shelf_width must be an integer Proteus-unit width.")
+    try:
+        width = int(raw_width)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "layout.shelf_width must be an integer Proteus-unit width."
+        ) from exc
+    if width < VISIBLE_LAYOUT_SLOT_X:
+        raise ValueError(
+            "layout.shelf_width must fit at least one visible layout slot."
+        )
+    return width
+
+
 def _apply_binary_beautifier(
     payload: Any,
     groups: tuple[RawComponentGroup, ...],
@@ -1391,6 +1417,7 @@ def _apply_binary_beautifier(
         return groups, [], start_slot
 
     hidden_ids = {id(group) for group in hidden_groups}
+    shelf_width = _binary_layout_shelf_width(payload)
     visible_groups = tuple(group for group in groups if id(group) not in hidden_ids)
     ic_groups = tuple(group for group in visible_groups if is_ic_layout_family(group.family))
     non_ic_groups = tuple(
@@ -1432,7 +1459,7 @@ def _apply_binary_beautifier(
             if band_name == "combined"
             else 0
         )
-        shelf_right = VISIBLE_LAYOUT_ORIGIN_X + VISIBLE_LAYOUT_SHELF_WIDTH
+        shelf_right = VISIBLE_LAYOUT_ORIGIN_X + shelf_width
         band_max_y = band_origin_y
         previous_family: str | None = None
         family_block_index = 0
@@ -1509,6 +1536,7 @@ def _apply_binary_beautifier(
             entry["mixed_band_separation"] = use_separate_bands
             entry["family_block_index"] = family_block_index
             entry["family_row_break"] = bool(family_changed)
+            entry["layout_shelf_width"] = shelf_width
             if not known_refs_unchanged:
                 raise ValueError(
                     f"Beautifier changed references for {group.key}; "
