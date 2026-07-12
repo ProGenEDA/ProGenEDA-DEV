@@ -11168,3 +11168,42 @@ Verification:
 - `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/tools/build_kicad_release.py`: passed.
 - The rendered handoff README template resolves the date-labelled portable ZIP
   name without formatting errors.
+
+### 2026-07-13T01:14:25+05:00
+
+Continuation:
+
+> The portable-packaging fix is pushed at `c78b0ba`. I’m building the dated executable and website handoff from that exact remote-matched commit now, then I’ll run both normal and PCB-only smoke tests from an unpacked copy so it proves it is not secretly depending on this checkout.
+
+> The unpacked portable executable passed both smoke paths without the repository on `PYTHONPATH`: normal generation produced a validated project plus PCB, and `run-pcb` produced one direct native board with `ok: true`. I’m doing the final artifact integrity, handoff-content, and external DRC checks now.
+
+> The release audit is clean: the unpacked executable passed both pipelines, its PCB-only sample passed installed KiCad 10 DRC with zero violations/unconnected items, and the handoff contains `information.md`, the generated **KiCad PCB** support section, and a syntax-checked PCB-only website adapter. I’m preserving that final smoke evidence in the repository and committing the dated deliverables.
+
+> The portable ZIP and handoff ZIP both pass archive-integrity checks. I’ve also started the complete KiCad test suite rather than stopping at focused tests; it has moved past the first two tests and is still running, so I’m letting it finish before the final release commit.
+
+> I caught that the first full-suite invocation was still running after its wrapper returned early, so I cancelled only the duplicate I started by mistake and left the original suite running. The interrupted duplicate had no test failure before cancellation; I’ll use the original run’s completion as the suite result.
+
+> The original full-suite process has finished; its captured wrapper output was unfortunately lost when that background wrapper closed, so I’m rerunning it once, alone, to get an auditable final result rather than inferring success from process exit.
+
+Files edited or generated:
+
+- `context.md`
+- `kicad/release/progen-kicad-portable-2026_07_13.zip`
+- `kicad/release/newwebsite-kicad-handoff-2026_07_13.zip`
+- `kicad/release/newwebsite_kicad_handoff_2026_07_13/`
+- `kicad/release/kicad_release_manifest_2026_07_13.json`
+- `kicad/experiment_records/runs/kicad_portable_release_smoke_2026_07_13/`
+
+Verification:
+
+- Unpacked portable `--help`, normal `run`, and direct `run-pcb` all passed
+  using the bundled sample outside the repository. Both normal and PCB-only
+  runs accepted one PCB with passing hosted schematic/PCB validation.
+- Installed KiCad 10.0.4 DRC on the direct portable PCB: zero violations and
+  zero unconnected items. The board, command manifest, DRC report, and summary
+  are retained in `kicad_portable_release_smoke_2026_07_13`.
+- Website handoff contains `information.md`, a 34-record source-backed KiCad
+  PCB support section, and a Node syntax-checked PCB-only adapter.
+- Both release ZIPs passed `unzip -t`; manifest SHA-256 values match the files.
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests -q`: 93 passed,
+  160 subtests passed in 160.06 seconds.
