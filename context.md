@@ -12222,3 +12222,14 @@ I’m finalising the requested four packs now: no more capacity probing or save-
 - `tools/proteus_generation/2026-07-12/generate_current_group_mixed_tail_oracle_v1_temp.py` - shared-stage-only reproducible pack runner.
 - `knowledge/current_group_mixed_tail_donor_analysis_2026_07_12.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/README.md` - evidence and continuation record.
 - `backups/component_terminal_placer/` - retained all required pre-edit shared-placer backups, including the pre-save-canonicalization backup.
+
+## Agent Final Response - 2026-07-13 +05:00
+
+Done and pushed (`a5ac422a`). Test these terminalized files:
+
+- `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/01_1x_user_donor_oracle/ALL_ACCEPTED_CURRENT_GROUP_1X_TAIL_ORACLE_sa.pdsprj`
+- `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/02_9x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_9X_TAIL_ORACLE_sa.pdsprj`
+- `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/03_15x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_15X_TAIL_ORACLE_sa.pdsprj`
+- `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/04_up_to_23x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_21X_CAPPED_FROM_23X_REQUEST_TAIL_ORACLE_sa.pdsprj`
+
+They are generated from the locked mega donor through the shared component placer and shared terminal placer. The requested 23x is 21x because CAP-ELEC has 21 usable locked-mega groups. Focused regression passed (4), as did `compileall`; the old global experiment test remains unrelatedly broken. I stopped Ctrl+S/save-mimic work as instructed. The 21x file is generated but a local cold-open diagnostic showed a VGDVC error, so its visual/loader status remains for user verification; no speculative changes were made to it.
