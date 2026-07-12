@@ -1014,12 +1014,13 @@ def text_obj(
     index: int,
     kind: str = "text",
     justify: str = "left bottom",
+    font_size: float = 1.27,
 ) -> str:
     token = "label" if kind == "label" else "text"
     extra = " (exclude_from_sim no)" if token == "text" else ""
     return (
         f"  ({token} {q(text)}{extra} (at {num(at[0])} {num(at[1])} 0) (fields_autoplaced)\n"
-        f"    (effects (font (size 1.27 1.27)) (justify {justify}))\n"
+        f"    (effects (font (size {num(font_size)} {num(font_size)})) (justify {justify}))\n"
         f"    (uuid {uid(project_name + ':' + token + ':' + str(index) + text + str(at))})\n"
         "  )\n"
     )

@@ -28,7 +28,7 @@ from .final_circuit_builder import STAGE_REPORT_WIRE_CONFIG, _final_json_files, 
 from .kicad_symbol_library import KiCadSymbolLibrary, _balanced_block, _child_head, _direct_child_blocks
 from .output_packager import package_generated_project
 from .placement_catalog import CatalogPlacementPlan, PlacedCatalogComponent, resolve_placement_spec
-from .placement_project_writer import write_placement_project
+from .placement_project_writer import MULTI_UNIT_VERTICAL_PITCH_MM, write_placement_project
 from .placer_pipeline import run_placer_pipeline
 from .wire_geometry_validator import AllowedTouch, ComponentBody, WireGeometrySegment, validate_wire_geometry
 from .wire_planner import (
@@ -46,6 +46,9 @@ POWER_LABEL_NETS = {"GND", "0", "VSS", "+5V", "5V", "+3V3", "3V3", "VCC", "VDD",
 UNROUTED_STRATEGY_PREFIXES = ("unroutable", "deferred")
 MAX_ACTUAL_PATH_CANDIDATES = 160
 TERMINAL_LABEL_PIN_OFFSET_MM = 10.16
+VISIBLE_TEXT_FONT_MM = 1.27
+VISIBLE_TEXT_CLEARANCE_MM = 0.8
+TERMINAL_LABEL_FONT_MM = 0.8
 VARIATION_ARRANGEMENT_PROFILES: dict[str, dict[str, float]] = {
     "square_compact": {"column_gap": 0.9, "row_gap": 1.1, "component_clearance": 1.0},
     "square_loose": {"column_gap": 1.2, "row_gap": 1.2, "component_clearance": 1.25},
@@ -749,7 +752,7 @@ def _unit_origin(component: PlacedCatalogComponent, unit: int, unit_count: int) 
     if unit_count <= 1:
         return x, y
     index = max(0, unit - 1)
-    return x, round(y + index * 12.7, 3)
+    return x, round(y + index * MULTI_UNIT_VERTICAL_PITCH_MM, 3)
 
 
 def _unit_position(component: PlacedCatalogComponent, geometry: PinGeometry, unit_count: int) -> tuple[float, float]:
@@ -856,6 +859,112 @@ def _component_bodies(
     return tuple(bodies)
 
 
+def _text_body(
+    *,
+    owner: str,
+    text: str,
+    at: tuple[float, float],
+    justify: str,
+    source: str,
+    font_mm: float = VISIBLE_TEXT_FONT_MM,
+) -> ComponentBody:
+    """Conservative rectangle for visible KiCad text emitted at ``at``."""
+
+    width = max(font_mm, len(text) * font_mm * 0.78)
+    height = font_mm * 1.3
+    x, y = at
+    # All generated labels/reference/value fields use horizontal text.  KiCad
+    # ``right`` justification extends text left from its anchor; otherwise it
+    # extends right. Keep a small gap so a terminal stub can end at its anchor.
+    justify_tokens = justify.split()
+    if "right" in justify_tokens:
+        left = x - width - VISIBLE_TEXT_CLEARANCE_MM
+        right = x - VISIBLE_TEXT_CLEARANCE_MM
+    else:
+        left = x + VISIBLE_TEXT_CLEARANCE_MM
+        right = x + width + VISIBLE_TEXT_CLEARANCE_MM
+    if "top" in justify_tokens:
+        top = y - VISIBLE_TEXT_CLEARANCE_MM
+        bottom = y + height + VISIBLE_TEXT_CLEARANCE_MM
+    else:
+        top = y - height - VISIBLE_TEXT_CLEARANCE_MM
+        bottom = y + VISIBLE_TEXT_CLEARANCE_MM
+    return ComponentBody(
+        owner,
+        round(left, 3),
+        round(top, 3),
+        round(right, 3),
+        round(bottom, 3),
+        source,
+    )
+
+
+def _component_text_bodies(
+    placement: CatalogPlacementPlan,
+    library: KiCadSymbolLibrary,
+) -> tuple[ComponentBody, ...]:
+    """Match the visible reference/value positions written by ``symbol_instance``."""
+
+    bodies: list[ComponentBody] = []
+    for component in placement.components:
+        units = (1,)
+        if component.spec.lib_id:
+            symbol = library.load(component.spec.lib_id)
+            units = tuple(sorted(symbol.unit_pin_numbers)) or (1,)
+        for unit in units:
+            x, y = _unit_origin(component, unit, len(units))
+            bodies.append(
+                _text_body(
+                    owner=f"__text__{component.ref}__unit{unit}__reference",
+                    text=component.ref,
+                    at=(x + 4.0, y - 5.0),
+                    justify="left",
+                    source="generated_visible_reference",
+                )
+            )
+            bodies.append(
+                _text_body(
+                    owner=f"__text__{component.ref}__unit{unit}__value",
+                    text=component.name,
+                    at=(x + 4.0, y + 5.0),
+                    justify="left",
+                    source="generated_visible_value",
+                )
+            )
+    return tuple(bodies)
+
+
+def _bodies_overlap(left: ComponentBody, right: ComponentBody) -> bool:
+    return not (
+        left.right < right.left
+        or right.right < left.left
+        or left.bottom < right.top
+        or right.bottom < left.top
+    )
+
+
+def _label_visual_layout_report(
+    label_bodies: list[ComponentBody],
+    static_obstacles: list[ComponentBody],
+) -> dict[str, Any]:
+    """Validate terminal text against symbols, visible fields, and peer labels."""
+
+    overlaps: list[dict[str, str]] = []
+    for index, label in enumerate(label_bodies):
+        for obstacle in static_obstacles:
+            if _bodies_overlap(label, obstacle):
+                overlaps.append({"label": label.ref, "obstacle": obstacle.ref, "kind": "static"})
+        for other in label_bodies[index + 1 :]:
+            if _bodies_overlap(label, other):
+                overlaps.append({"label": label.ref, "obstacle": other.ref, "kind": "label"})
+    return {
+        "ok": not overlaps,
+        "overlap_count": len(overlaps),
+        "overlaps": overlaps[:200],
+        "overlaps_truncated": len(overlaps) > 200,
+    }
+
+
 def _catalog_plan_as_routing_placement(circuit: dict[str, Any], placement: CatalogPlacementPlan) -> dict[str, Any]:
     """Build a pure-JSON routing input with KiCad-resolved pins and bodies."""
     library = KiCadSymbolLibrary()
@@ -906,6 +1015,26 @@ def _catalog_plan_as_routing_placement(circuit: dict[str, Any], placement: Catal
             }
         )
     overlap_report = component_body_overlap_report(body_items)
+    layout_items = list(body_items)
+    for component in placement.components:
+        lib_id = component.spec.lib_id
+        if not lib_id:
+            continue
+        symbol = library.load(lib_id)
+        unit_count = len(symbol.unit_pin_numbers) if symbol.unit_pin_numbers else 1
+        for geometry in _pin_geometries(symbol.text):
+            point = _pin_world(component, geometry, unit_count)
+            layout_items.append(
+                {
+                    "owner": f"{component.ref}::pin{geometry.unit}_{geometry.number}",
+                    "component_ref": component.ref,
+                    "left": point[0],
+                    "top": point[1],
+                    "right": point[0],
+                    "bottom": point[1],
+                    "source": f"{lib_id}:unit{geometry.unit}:pin{geometry.number}:layout_pin_tip",
+                }
+            )
 
     component_items = {
         component.ref: {
@@ -923,6 +1052,7 @@ def _catalog_plan_as_routing_placement(circuit: dict[str, Any], placement: Catal
         "stage": "kicad_routing_input_builder",
         "components": component_items,
         "obstacles": body_items,
+        "layout_obstacles": layout_items,
         "pin_points": pin_points,
         "routing_metadata": {
             "pin_point_source": "KiCad embedded/source symbol library pin coordinates",
@@ -1501,8 +1631,25 @@ def _validated_actual_path(
     return best_path, best_path != _compress_wire_path(original), False
 
 
-def _label_justify(anchor: tuple[float, float], label: tuple[float, float]) -> str:
-    return "right bottom" if label[0] < anchor[0] else "left bottom"
+def _label_justify(anchor: tuple[float, float], label: tuple[float, float], side: str = "") -> str:
+    """Keep a terminal label extending away from its pin whenever possible."""
+
+    delta_x = round(label[0] - anchor[0], 3)
+    if delta_x < 0:
+        horizontal = "right"
+    elif delta_x > 0:
+        horizontal = "left"
+    else:
+        # A label that has only moved vertically still needs a horizontal
+        # direction.  Use the pin's exposed side, rather than defaulting right
+        # into the symbol for a left-facing pin.
+        horizontal = "right" if side.lower().strip() == "left" else "left"
+    delta_y = round(label[1] - anchor[1], 3)
+    if delta_y > 0 or (delta_y == 0.0 and side.lower().strip() == "bottom"):
+        vertical = "top"
+    else:
+        vertical = "bottom"
+    return f"{horizontal} {vertical}"
 
 
 def _side_vector(side: str) -> tuple[float, float]:
@@ -1554,7 +1701,8 @@ def _reserved_label_point(
     existing_segments: list[WireGeometrySegment],
     component_bodies: tuple[ComponentBody, ...],
     protected_pin_points: dict[tuple[float, float], set[str]],
-) -> tuple[tuple[float, float], bool]:
+    visual_obstacle_bodies: list[ComponentBody],
+) -> tuple[tuple[float, float], bool, list[tuple[float, float]]]:
     def touches_wrong_protected_pin(segment: WireGeometrySegment) -> bool:
         own_pin = _round_wire_point(pin_point)
         for protected_point, protected_nets in protected_pin_points.items():
@@ -1567,28 +1715,93 @@ def _reserved_label_point(
                 return True
         return False
 
-    candidate = raw_label
-    owner = used_label_points.get(candidate)
-    if candidate == pin_point and owner in (None, net):
-        used_label_points[candidate] = net
-        return candidate, False
-    validation_bodies = component_bodies
-    if owner in (None, net):
-        candidate_segment = WireGeometrySegment(
-            net=net,
-            start=pin_point,
-            end=candidate,
-            allowed_touches=(AllowedTouch(ref, pin_point),),
-            source=f"{net}:reserved_label_candidate:{ref}",
+    def label_text_body(candidate: tuple[float, float]) -> ComponentBody:
+        return _text_body(
+            owner=f"__label_text__{net}__{ref}__{pin_point[0]}__{pin_point[1]}",
+            text=net,
+            at=candidate,
+            justify=_label_justify(pin_point, candidate, side),
+            source="generated_terminal_label",
+            font_mm=TERMINAL_LABEL_FONT_MM,
         )
-        report = validate_wire_geometry([candidate_segment], validation_bodies)
-        if (
-            report["ok"]
-            and not touches_wrong_protected_pin(candidate_segment)
-            and not _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments)
-        ):
-            used_label_points[candidate] = net
-            return candidate, False
+
+    def text_is_clear(candidate: tuple[float, float]) -> bool:
+        proposed = label_text_body(candidate)
+        return not any(_bodies_overlap(proposed, body) for body in visual_obstacle_bodies)
+
+    def candidate_paths(candidate: tuple[float, float]) -> list[list[tuple[float, float]]]:
+        if candidate == pin_point:
+            return [[pin_point]]
+        paths: list[list[tuple[float, float]]] = []
+        if candidate[0] == pin_point[0] or candidate[1] == pin_point[1]:
+            paths.append([pin_point, candidate])
+        else:
+            horizontal_first = [pin_point, (candidate[0], pin_point[1]), candidate]
+            vertical_first = [pin_point, (pin_point[0], candidate[1]), candidate]
+            primary = _label_direction(pin_point, raw_label, side)
+            paths.extend([horizontal_first, vertical_first] if primary[0] else [vertical_first, horizontal_first])
+
+        # Dense connector and IC pin rows need a genuine escape before they
+        # fan into a parallel label lane.  A simple L-shape can otherwise run
+        # through the endpoint of its neighbouring terminal stub and become an
+        # unintended electrical contact.
+        escape_dx, escape_dy = _side_vector(side)
+        # Try several short egress offsets.  The first adjacent terminal may
+        # already occupy one of them, so a single hard-coded escape distance
+        # is not enough for closely-spaced connector rows.
+        for escape_mm in (1.27, 2.54, 3.81, 5.08):
+            escape = (
+                round(pin_point[0] + escape_dx * escape_mm, 3),
+                round(pin_point[1] + escape_dy * escape_mm, 3),
+            )
+            if escape == pin_point:
+                continue
+            if escape_dx:
+                lane_turn = (escape[0], candidate[1])
+            else:
+                lane_turn = (candidate[0], escape[1])
+            lane_path = [pin_point, escape, lane_turn, candidate]
+            deduped_lane: list[tuple[float, float]] = []
+            for point in lane_path:
+                if not deduped_lane or point != deduped_lane[-1]:
+                    deduped_lane.append(point)
+            if len(deduped_lane) > 1 and deduped_lane not in paths:
+                paths.append(deduped_lane)
+        return paths
+
+    # A terminal stub must never cross a symbol body or another protected pin.
+    # Visible reference/value text is deliberately *not* a wire obstacle: it
+    # may cross a short stub, but treating it as one can leave no valid lane
+    # and force the label itself back onto its pin.  The label text remains
+    # checked against every visible obstacle by ``text_is_clear`` above.
+    validation_bodies = component_bodies
+
+    def try_candidate(candidate: tuple[float, float]) -> list[tuple[float, float]] | None:
+        if used_label_points.get(candidate) not in (None, net) or not text_is_clear(candidate):
+            return None
+        for path in candidate_paths(candidate):
+            candidate_segments = [
+                WireGeometrySegment(
+                    net=net,
+                    start=start,
+                    end=end,
+                    allowed_touches=(AllowedTouch(ref, pin_point),),
+                    source=f"{net}:reserved_label_candidate:{ref}",
+                )
+                for start, end in _segments_from_points(path)
+            ]
+            if any(touches_wrong_protected_pin(segment) for segment in candidate_segments):
+                continue
+            if _candidate_creates_cross_net_endpoint_touch(candidate_segments, existing_segments):
+                continue
+            if validate_wire_geometry(candidate_segments, validation_bodies)["ok"]:
+                used_label_points[candidate] = net
+                return path
+        return None
+
+    path = try_candidate(raw_label)
+    if path is not None:
+        return raw_label, False, path
 
     primary = _label_direction(pin_point, raw_label, side)
     directions = [primary, (1.0, 0.0), (-1.0, 0.0), (0.0, -1.0), (0.0, 1.0)]
@@ -1603,54 +1816,37 @@ def _reserved_label_point(
                 round(pin_point[0] + direction[0] * 5.08 * step, 3),
                 round(pin_point[1] + direction[1] * 5.08 * step, 3),
             )
-            if used_label_points.get(candidate) not in (None, net):
-                continue
-            candidate_segment = WireGeometrySegment(
-                net=net,
-                start=pin_point,
-                end=candidate,
-                allowed_touches=(AllowedTouch(ref, pin_point),),
-                source=f"{net}:reserved_label_candidate:{ref}",
-            )
-            if touches_wrong_protected_pin(candidate_segment):
-                continue
-            if _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments):
-                continue
-            report = validate_wire_geometry([candidate_segment], validation_bodies)
-            if report["ok"]:
-                used_label_points[candidate] = net
-                return candidate, True
+            path = try_candidate(candidate)
+            if path is not None:
+                return candidate, True, path
 
-    if used_label_points.get(pin_point) in (None, net):
-        used_label_points[pin_point] = net
-        return pin_point, True
+    # A diagonal label lane lets a crowded pin escape without overlapping its
+    # own reference/value text or a neighbouring terminal name.
+    for step in range(1, 17):
+        for scale_x, scale_y in ((1, 1), (2, 1), (1, 2)):
+            for sign_x, sign_y in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
+                candidate = (
+                    round(pin_point[0] + sign_x * 5.08 * step * scale_x, 3),
+                    round(pin_point[1] + sign_y * 5.08 * step * scale_y, 3),
+                )
+                path = try_candidate(candidate)
+                if path is not None:
+                    return candidate, True, path
 
-    for step in range(17, 33):
+    for step in range(17, 65):
         for direction in unique_directions:
             candidate = (
                 round(pin_point[0] + direction[0] * 5.08 * step, 3),
                 round(pin_point[1] + direction[1] * 5.08 * step, 3),
             )
-            if used_label_points.get(candidate) not in (None, net):
-                continue
-            candidate_segment = WireGeometrySegment(
-                net=net,
-                start=pin_point,
-                end=candidate,
-                allowed_touches=(AllowedTouch(ref, pin_point),),
-                source=f"{net}:reserved_label_candidate:{ref}",
-            )
-            if touches_wrong_protected_pin(candidate_segment):
-                continue
-            if _candidate_creates_cross_net_endpoint_touch([candidate_segment], existing_segments):
-                continue
-            report = validate_wire_geometry([candidate_segment], validation_bodies)
-            if not report["ok"]:
-                continue
-            used_label_points[candidate] = net
-            return candidate, True
+            path = try_candidate(candidate)
+            if path is not None:
+                return candidate, True, path
 
-    return pin_point, True
+    # This should be unreachable for normal sheets. Keep the electrical label
+    # anchored at its pin as the only final fallback; the visual report makes
+    # that condition explicit and blocks release acceptance.
+    return pin_point, True, [pin_point]
 
 
 def _point_on_visual_segment(point: tuple[float, float], segment: tuple[tuple[float, float], tuple[float, float]]) -> bool:
@@ -2028,6 +2224,10 @@ def make_kicad_wires(
             )
 
     component_bodies = _component_bodies(placement, library)
+    visible_text_bodies: list[ComponentBody] = list(_component_text_bodies(placement, library))
+    static_visual_obstacles: list[ComponentBody] = [*component_bodies, *visible_text_bodies]
+    visual_label_obstacles: list[ComponentBody] = list(static_visual_obstacles)
+    label_text_bodies: list[ComponentBody] = []
     protected_pin_points: dict[tuple[float, float], set[str]] = {}
     for net, net_data in wire_plan.get("nets", {}).items():
         if not isinstance(net_data, dict):
@@ -2059,7 +2259,7 @@ def make_kicad_wires(
                 ref = str(endpoint.get("ref") or "")
                 side = endpoint_side(endpoint)
                 raw_label = _terminal_label_point(pin_point, side)
-                label_point, label_moved = _reserved_label_point(
+                label_point, label_moved, label_path = _reserved_label_point(
                     net=net_name,
                     ref=ref,
                     pin_point=pin_point,
@@ -2069,18 +2269,29 @@ def make_kicad_wires(
                     existing_segments=geometry_segments,
                     component_bodies=component_bodies,
                     protected_pin_points=protected_pin_points,
+                    visual_obstacle_bodies=visual_label_obstacles,
                 )
                 if label_moved:
                     label_collision_avoidance_count += 1
                 if label_point != pin_point:
-                    label_path = _orthogonal_points(pin_point, label_point)
                     add_segments(
                         net=net_name,
                         points=label_path,
                         allowed_touches=(AllowedTouch(str(endpoint.get("ref") or ""), pin_point),),
                         source=f"{net_name}:local_label:{endpoint.get('ref')}.{endpoint.get('pin')}",
                     )
-                labels.append({"net": net_name, "at": label_point, "anchor": pin_point})
+                label_justify = _label_justify(pin_point, label_point, side)
+                labels.append({"net": net_name, "at": label_point, "justify": label_justify})
+                label_body = _text_body(
+                    owner=f"__label_text__{net_name}__{ref}__{endpoint.get('pin')}",
+                    text=net_name,
+                    at=label_point,
+                    justify=label_justify,
+                    source="generated_terminal_label",
+                    font_mm=TERMINAL_LABEL_FONT_MM,
+                )
+                label_text_bodies.append(label_body)
+                visual_label_obstacles.append(label_body)
             continue
         for route in net_data.get("routes", []):
             if not isinstance(route, dict):
@@ -2144,6 +2355,7 @@ def make_kicad_wires(
     merged_segment_count = 0
     junctions = _insert_junctions(geometry_segments)
     geometry_report = validate_wire_geometry(geometry_segments, component_bodies)
+    label_visual_layout = _label_visual_layout_report(label_text_bodies, static_visual_obstacles)
     strict_wire_report = _strict_wire_connectivity_report(wire_plan, geometry_segments, endpoint_point)
     if invalid_actual_routes:
         strict_wire_report = dict(strict_wire_report)
@@ -2169,7 +2381,17 @@ def make_kicad_wires(
     for index, point in enumerate(junctions, 1):
         objects.append(junction_obj(point, project_name, index))
     for index, label in enumerate(labels, 1):
-        objects.append(text_obj(str(label["net"]), label["at"], project_name, index, "label", _label_justify(label["anchor"], label["at"])))
+        objects.append(
+            text_obj(
+                str(label["net"]),
+                label["at"],
+                project_name,
+                index,
+                "label",
+                str(label["justify"]),
+                font_size=TERMINAL_LABEL_FONT_MM,
+            )
+        )
 
     report = {
         "schema": "progen-kicad-wire-maker-report/v0.1",
@@ -2177,6 +2399,7 @@ def make_kicad_wires(
         "version": WIRE_MAKER_VERSION,
         "routing_mode": routing_mode,
         "terminal_label_pin_offset_mm": TERMINAL_LABEL_PIN_OFFSET_MM,
+        "terminal_label_font_mm": TERMINAL_LABEL_FONT_MM,
         "wire_object_count": len(segments),
         "raw_wire_segment_count": raw_segment_count,
         "merged_wire_segment_count": merged_segment_count,
@@ -2204,6 +2427,7 @@ def make_kicad_wires(
             and _wire_mode_terminal_label_allowed(wire_plan, str(net), str(net_data.get("strategy") or ""))
         ),
         "label_collision_avoidance_count": label_collision_avoidance_count,
+        "label_visual_layout": label_visual_layout,
         "deferred_net_count": len(deferred_nets),
         "deferred_nets": deferred_nets,
         "unrouted_net_count": len(unrouted_nets),
@@ -2338,6 +2562,175 @@ def repair_wire_plan_geometry(
     return repaired_plan, result
 
 
+def _pin_coordinate_overlap_report(
+    placement: CatalogPlacementPlan,
+    library: KiCadSymbolLibrary,
+) -> dict[str, Any]:
+    """Detect coincident endpoints across every source-backed symbol pin."""
+
+    by_point: dict[tuple[float, float], list[dict[str, str]]] = {}
+    for component in placement.components:
+        lib_id = component.spec.lib_id
+        if not lib_id:
+            continue
+        symbol = library.load(lib_id)
+        geometries = _pin_geometries(symbol.text)
+        unit_count = len(symbol.unit_pin_numbers) if symbol.unit_pin_numbers else 1
+        for geometry in geometries:
+            point = _pin_world(component, geometry, unit_count)
+            key = (round(point[0], 3), round(point[1], 3))
+            pin_id = geometry.name or geometry.number
+            by_point.setdefault(key, []).append(
+                {"ref": component.ref, "pin": pin_id, "number": geometry.number, "unit": str(geometry.unit)}
+            )
+    overlaps: list[dict[str, Any]] = []
+    for point, members in by_point.items():
+        refs = {member["ref"] for member in members}
+        if len(refs) <= 1:
+            continue
+        overlaps.append({"point": [point[0], point[1]], "members": members})
+    return {
+        "schema": "progen-kicad-pin-coordinate-overlap-report/v0.1",
+        "ok": not overlaps,
+        "overlap_count": len(overlaps),
+        "overlaps": overlaps[:200],
+        "overlaps_truncated": len(overlaps) > 200,
+    }
+
+
+def _nudge_actual_pin_overlap(
+    placement_dict: dict[str, Any],
+    routing_placement: dict[str, Any],
+    pin_report: dict[str, Any],
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Separate one coincident pair of source-derived pin endpoints."""
+
+    overlaps = pin_report.get("overlaps", [])
+    components = placement_dict.get("components", {})
+    obstacles = routing_placement.get("obstacles", [])
+    if not isinstance(overlaps, list) or not overlaps or not isinstance(components, dict) or not isinstance(obstacles, list):
+        return None, None
+    members = overlaps[0].get("members", []) if isinstance(overlaps[0], dict) else []
+    if not isinstance(members, list) or len(members) < 2:
+        return None, None
+    refs = sorted({str(member.get("ref") or "") for member in members if isinstance(member, dict)})
+    if len(refs) < 2 or any(ref not in components for ref in refs[:2]):
+        return None, None
+    bodies_per_ref: dict[str, int] = {}
+    for item in obstacles:
+        if isinstance(item, dict):
+            ref = str(item.get("component_ref") or "")
+            bodies_per_ref[ref] = bodies_per_ref.get(ref, 0) + 1
+    move_ref = min(refs[:2], key=lambda ref: (bodies_per_ref.get(ref, 1), ref))
+    fixed_ref = refs[1] if move_ref == refs[0] else refs[0]
+    moving_raw = components.get(move_ref)
+    fixed_raw = components.get(fixed_ref)
+    if not isinstance(moving_raw, dict) or not isinstance(fixed_raw, dict):
+        return None, None
+    if bool(moving_raw.get("manual", False)):
+        if bool(fixed_raw.get("manual", False)):
+            return None, None
+        move_ref, fixed_ref = fixed_ref, move_ref
+        moving_raw, fixed_raw = fixed_raw, moving_raw
+    moving_at = moving_raw.get("at")
+    fixed_at = fixed_raw.get("at")
+    if not isinstance(moving_at, list) or not isinstance(fixed_at, list) or len(moving_at) < 2 or len(fixed_at) < 2:
+        return None, None
+    dx = float(moving_at[0]) - float(fixed_at[0])
+    dy = float(moving_at[1]) - float(fixed_at[1])
+    if abs(dy) >= abs(dx):
+        delta = (0.0, 10.16 if dy >= 0 else -10.16)
+    else:
+        delta = (10.16 if dx >= 0 else -10.16, 0.0)
+    repaired = deepcopy(placement_dict)
+    repaired["components"][move_ref]["at"] = [
+        round(float(moving_at[0]) + delta[0], 3),
+        round(float(moving_at[1]) + delta[1], 3),
+    ]
+    return repaired, {
+        "status": "source_pin_coordinate_nudge",
+        "moved_ref": move_ref,
+        "delta": [delta[0], delta[1]],
+        "conflict_members": members,
+    }
+
+
+def _nudge_actual_body_overlap(
+    placement_dict: dict[str, Any],
+    routing_placement: dict[str, Any],
+    overlap_report: dict[str, Any],
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Make one small, source-body-informed separation when arrangement stalls."""
+
+    overlaps = overlap_report.get("overlaps", [])
+    components = placement_dict.get("components", {})
+    obstacles = routing_placement.get("obstacles", [])
+    if not isinstance(overlaps, list) or not overlaps or not isinstance(components, dict) or not isinstance(obstacles, list):
+        return None, None
+    conflict = overlaps[0]
+    if not isinstance(conflict, dict):
+        return None, None
+    by_owner = {str(item.get("owner") or ""): item for item in obstacles if isinstance(item, dict)}
+    left = by_owner.get(str(conflict.get("left") or ""))
+    right = by_owner.get(str(conflict.get("right") or ""))
+    if left is None or right is None:
+        return None, None
+    left_ref = str(left.get("component_ref") or "")
+    right_ref = str(right.get("component_ref") or "")
+    if left_ref not in components or right_ref not in components:
+        return None, None
+
+    bodies_per_ref: dict[str, int] = {}
+    for item in obstacles:
+        if isinstance(item, dict):
+            ref = str(item.get("component_ref") or "")
+            bodies_per_ref[ref] = bodies_per_ref.get(ref, 0) + 1
+    # Prefer moving a smaller/simple component rather than a complete multi-unit
+    # IC stack. This is a deterministic placement repair, not a route-specific
+    # assumption.
+    move_ref = min((left_ref, right_ref), key=lambda ref: (bodies_per_ref.get(ref, 1), ref))
+    moving = left if move_ref == left_ref else right
+    fixed = right if move_ref == left_ref else left
+    moving_center = (
+        (float(moving["left"]) + float(moving["right"])) / 2,
+        (float(moving["top"]) + float(moving["bottom"])) / 2,
+    )
+    fixed_center = (
+        (float(fixed["left"]) + float(fixed["right"])) / 2,
+        (float(fixed["top"]) + float(fixed["bottom"])) / 2,
+    )
+    clearance = 5.08
+    horizontal_overlap = min(float(moving["right"]), float(fixed["right"])) - max(float(moving["left"]), float(fixed["left"]))
+    vertical_overlap = min(float(moving["bottom"]), float(fixed["bottom"])) - max(float(moving["top"]), float(fixed["top"]))
+    if horizontal_overlap <= vertical_overlap:
+        direction = -1.0 if moving_center[0] <= fixed_center[0] else 1.0
+        delta = (round(direction * (horizontal_overlap + clearance), 3), 0.0)
+    else:
+        direction = -1.0 if moving_center[1] <= fixed_center[1] else 1.0
+        delta = (0.0, round(direction * (vertical_overlap + clearance), 3))
+
+    raw = components.get(move_ref)
+    if not isinstance(raw, dict) or bool(raw.get("manual", False)):
+        other_ref = right_ref if move_ref == left_ref else left_ref
+        raw = components.get(other_ref)
+        if not isinstance(raw, dict) or bool(raw.get("manual", False)):
+            return None, None
+        move_ref = other_ref
+        delta = (-delta[0], -delta[1])
+    at = raw.get("at")
+    if not isinstance(at, list) or len(at) < 2:
+        return None, None
+    repaired = deepcopy(placement_dict)
+    repaired_raw = repaired["components"][move_ref]
+    repaired_raw["at"] = [round(float(at[0]) + delta[0], 3), round(float(at[1]) + delta[1], 3)]
+    return repaired, {
+        "status": "source_body_overlap_nudge",
+        "moved_ref": move_ref,
+        "delta": [delta[0], delta[1]],
+        "conflict": {"left": left_ref, "right": right_ref},
+    }
+
+
 def _settle_actual_symbol_body_placement(
     circuit: dict[str, Any],
     placement_dict: dict[str, Any],
@@ -2346,32 +2739,50 @@ def _settle_actual_symbol_body_placement(
 ) -> tuple[dict[str, Any], CatalogPlacementPlan, dict[str, Any], dict[str, Any]]:
     current = deepcopy(placement_dict)
     passes: list[dict[str, Any]] = []
+    library = KiCadSymbolLibrary()
     final_placement = _catalog_plan_from_placement_dict(circuit, current)
     final_routing_placement = _catalog_plan_as_routing_placement(circuit, final_placement)
     final_report = component_body_overlap_report(final_routing_placement.get("obstacles", []))
+    final_pin_report = _pin_coordinate_overlap_report(final_placement, library)
 
     for pass_index in range(1, max_passes + 1):
         final_placement = _catalog_plan_from_placement_dict(circuit, current)
         final_routing_placement = _catalog_plan_as_routing_placement(circuit, final_placement)
         final_report = component_body_overlap_report(final_routing_placement.get("obstacles", []))
+        final_pin_report = _pin_coordinate_overlap_report(final_placement, library)
         passes.append(
             {
                 "pass": pass_index,
                 "component_body_overlap_count": final_report["overlap_count"],
                 "component_body_overlaps": final_report["overlaps"],
+                "pin_coordinate_overlap_count": final_pin_report["overlap_count"],
+                "pin_coordinate_overlaps": final_pin_report["overlaps"],
             }
         )
-        if final_report["ok"]:
+        if final_report["ok"] and final_pin_report["ok"]:
             break
+
+        if final_report["ok"]:
+            nudged, nudge_report = _nudge_actual_pin_overlap(current, final_routing_placement, final_pin_report)
+            if nudged is None:
+                break
+            passes[-1]["fallback"] = nudge_report
+            current = nudged
+            continue
 
         coordinate_plan = decide_arrangement(
             final_routing_placement,
             circuit,
             config={"component_clearance": 50.8, "column_gap": 63.5, "row_gap": 38.1},
         )
-        if not coordinate_plan.get("coordinate_edits"):
+        if coordinate_plan.get("coordinate_edits"):
+            current = apply_coordinate_edits(current, coordinate_plan)
+            continue
+        nudged, nudge_report = _nudge_actual_body_overlap(current, final_routing_placement, final_report)
+        if nudged is None:
             break
-        current = apply_coordinate_edits(current, coordinate_plan)
+        passes[-1]["fallback"] = nudge_report
+        current = nudged
 
     report = {
         "schema": "progen-kicad-actual-symbol-body-placement-report/v0.1",
@@ -2379,6 +2790,9 @@ def _settle_actual_symbol_body_placement(
         "pass_count": len(passes),
         "component_body_overlap_count": int(final_report["overlap_count"]),
         "component_body_overlaps": final_report["overlaps"],
+        "pin_coordinate_overlap_ok": bool(final_pin_report["ok"]),
+        "pin_coordinate_overlap_count": int(final_pin_report["overlap_count"]),
+        "pin_coordinate_overlaps": final_pin_report["overlaps"],
         "passes": passes,
     }
     return current, final_placement, final_routing_placement, report
@@ -2609,8 +3023,23 @@ def generate_wired_projects_from_final_json(
     run_dir: Path | None = None,
     wire_config: dict[str, Any] | None = None,
     routing_mode: str | None = None,
+    generate_pcb: bool = True,
+    circuit_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     files = _final_json_files(source)
+    if circuit_ids:
+        selected: list[Path] = []
+        found_ids: set[str] = set()
+        for path in files:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            circuit_id = str(data.get("circuit_id") or "").strip()
+            if circuit_id in circuit_ids:
+                selected.append(path)
+                found_ids.add(circuit_id)
+        missing = sorted(circuit_ids - found_ids)
+        if missing:
+            raise ValueError(f"Requested circuit IDs were not found in {source}: {', '.join(missing)}")
+        files = selected
     cfg: dict[str, Any] = dict(STAGE_REPORT_WIRE_CONFIG)
     if wire_config:
         cfg.update(wire_config)
@@ -2682,6 +3111,12 @@ def generate_wired_projects_from_final_json(
 
         ctx = run_placer_pipeline(placement_input, write_trace=False)
         placement_dict = ctx.placement_plan.as_dict()
+        # Use KiCad-source body extents, including every unit of compound ICs,
+        # for the very first arrangement decision.  Generic catalog boxes are
+        # too small for multi-unit symbols and can produce a misleadingly thin
+        # strip layout before the backend has a chance to correct it.
+        source_placement = _catalog_plan_from_placement_dict(circuit, placement_dict)
+        source_routing_placement = _catalog_plan_as_routing_placement(circuit, source_placement)
         arrangement_cfg = dict(cfg)
         arrangement_cfg = _apply_generation_variation_config(arrangement_cfg, circuit)
         arrangement_cfg["arrangement_final_wire_route"] = 0.0
@@ -2691,8 +3126,17 @@ def generate_wired_projects_from_final_json(
             fast_arrangement_cfg = {
                 key: value for key, value in arrangement_cfg.items() if isinstance(value, (int, float))
             }
-            coordinate_plan = decide_arrangement(placement_dict, circuit, config=fast_arrangement_cfg)
-            beautified = apply_coordinate_edits(placement_dict, coordinate_plan)
+            # Terminal names need a real visual channel as well as enough room
+            # for the symbol bodies.  Keep a one-inch minimum between dense
+            # source-derived rows/columns so label stubs can escape cleanly.
+            fast_arrangement_cfg["component_clearance"] = max(
+                float(fast_arrangement_cfg.get("component_clearance", 0.0)), 25.4
+            )
+            fast_arrangement_cfg["column_gap"] = max(
+                float(fast_arrangement_cfg.get("column_gap", 0.0)), 25.4
+            )
+            coordinate_plan = decide_arrangement(source_routing_placement, circuit, config=fast_arrangement_cfg)
+            beautified = apply_coordinate_edits(source_routing_placement, coordinate_plan)
             planned = {
                 "coordinate_plan": coordinate_plan,
                 "routing_placement": beautified,
@@ -2707,7 +3151,7 @@ def generate_wired_projects_from_final_json(
                 },
             }
         else:
-            planned = plan_wiring(placement_dict, circuit, wire_config=arrangement_cfg)
+            planned = plan_wiring(source_routing_placement, circuit, wire_config=arrangement_cfg)
             beautified = planned["routing_placement"]
         beautified, placement, routing_placement, body_overlap_report = _settle_actual_symbol_body_placement(circuit, beautified)
         if normalize_routing_mode(cfg.get("routing_mode", "wire")) == "terminal":
@@ -2724,10 +3168,14 @@ def generate_wired_projects_from_final_json(
             cfg,
         )
         final_body_overlap_report = component_body_overlap_report(routing_placement.get("obstacles", []))
+        final_pin_coordinate_overlap_report = _pin_coordinate_overlap_report(placement, KiCadSymbolLibrary())
         body_overlap_report = dict(body_overlap_report)
         body_overlap_report["ok"] = bool(final_body_overlap_report["ok"])
         body_overlap_report["component_body_overlap_count"] = int(final_body_overlap_report["overlap_count"])
         body_overlap_report["component_body_overlaps"] = final_body_overlap_report["overlaps"]
+        body_overlap_report["pin_coordinate_overlap_ok"] = bool(final_pin_coordinate_overlap_report["ok"])
+        body_overlap_report["pin_coordinate_overlap_count"] = int(final_pin_coordinate_overlap_report["overlap_count"])
+        body_overlap_report["pin_coordinate_overlaps"] = final_pin_coordinate_overlap_report["overlaps"]
         (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
         wire_plan["arrangement_selection"] = planned.get("arrangement_selection", {})
         wire_plan["partial_route_motion_repair"] = partial_motion_report
@@ -2743,6 +3191,7 @@ def generate_wired_projects_from_final_json(
             "report": body_report_path.name,
             "pass_count": body_overlap_report["pass_count"],
             "overlap_count": body_overlap_report["component_body_overlap_count"],
+            "pin_coordinate_overlap_count": body_overlap_report["pin_coordinate_overlap_count"],
         }
         from .final_validator import validate_final_project
 
@@ -2762,7 +3211,18 @@ def generate_wired_projects_from_final_json(
         }
         from kicad.pcb.pipeline import generate_pcb_for_project
 
-        if final_validation_report["ready_for_output"]:
+        if not generate_pcb:
+            pcb_pipeline_report = {
+                "schema": "progen-kicad-pcb-pipeline/v0.1",
+                "generated": False,
+                "ready_for_output": False,
+                "reason": "pcb_disabled_for_schematic_run",
+            }
+            (project_dir / "pcb_pipeline_report.json").write_text(
+                json.dumps(pcb_pipeline_report, indent=2),
+                encoding="utf-8",
+            )
+        elif final_validation_report["ready_for_output"]:
             try:
                 pcb_pipeline_report = generate_pcb_for_project(
                     circuit=circuit,
@@ -2832,6 +3292,14 @@ def generate_wired_projects_from_final_json(
                 "component_body_overlap_count": body_overlap_report["component_body_overlap_count"],
                 "component_body_overlaps": body_overlap_report["component_body_overlaps"],
                 "component_body_overlap_pass_count": body_overlap_report["pass_count"],
+                "pin_coordinate_overlap_ok": bool(body_overlap_report["pin_coordinate_overlap_ok"]),
+                "pin_coordinate_overlap_count": int(body_overlap_report["pin_coordinate_overlap_count"]),
+                "terminal_label_layout_ok": bool(
+                    manifest["wire_maker"].get("label_visual_layout", {}).get("ok", True)
+                ),
+                "terminal_label_layout_overlap_count": int(
+                    manifest["wire_maker"].get("label_visual_layout", {}).get("overlap_count", 0)
+                ),
                 "deferred_net_count": manifest["wire_maker"]["deferred_net_count"],
                 "unrouted_net_count": manifest["wire_maker"]["unrouted_net_count"],
                 "partial_wire_net_count": manifest["wire_maker"]["partial_wire_net_count"],
@@ -2894,6 +3362,12 @@ def generate_wired_projects_from_final_json(
         "total_routing_unresolved_pins": sum(int(item["routing_unresolved_pin_count"]) for item in results),
         "all_component_body_overlap_ok": all(item["component_body_overlap_ok"] for item in results),
         "total_component_body_overlaps": sum(int(item["component_body_overlap_count"]) for item in results),
+        "all_pin_coordinate_overlap_ok": all(item["pin_coordinate_overlap_ok"] for item in results),
+        "total_pin_coordinate_overlaps": sum(int(item["pin_coordinate_overlap_count"]) for item in results),
+        "all_terminal_label_layout_ok": all(item["terminal_label_layout_ok"] for item in results),
+        "total_terminal_label_layout_overlaps": sum(
+            int(item["terminal_label_layout_overlap_count"]) for item in results
+        ),
         "total_deferred_nets": sum(int(item["deferred_net_count"]) for item in results),
         "total_unrouted_nets": sum(int(item["unrouted_net_count"]) for item in results),
         "total_partial_wire_nets": sum(int(item["partial_wire_net_count"]) for item in results),
@@ -2916,6 +3390,8 @@ def generate_wired_projects_from_final_json(
             int(item["local_netlist_floating_expected_pin_count"]) for item in results
         ),
         "wire_config": cfg,
+        "pcb_generation_enabled": generate_pcb,
+        "requested_circuit_ids": sorted(circuit_ids) if circuit_ids else None,
         "results": results,
     }
     (run_path / "run_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
@@ -2987,6 +3463,8 @@ def main() -> None:
     parser.add_argument("--routing-mode", choices=("wire", "terminal", "combination"), help="Override final JSON routing.mode for this run.")
     parser.add_argument("--max-wired-routes", type=float, help="Optional route count cap passed to the wire planner.")
     parser.add_argument("--max-astar-expansions", type=float, help="Optional A* expansion cap passed to the wire planner.")
+    parser.add_argument("--skip-pcb", action="store_true", help="Generate and validate only schematic artifacts for visual/regression inspection.")
+    parser.add_argument("--circuit-id", action="append", default=[], help="Generate only this canonical circuit ID; repeat for a subset.")
     args = parser.parse_args()
     wire_config: dict[str, float] = {}
     if args.max_wired_routes is not None:
@@ -3000,6 +3478,8 @@ def main() -> None:
         run_dir=Path(args.run_dir) if args.run_dir else None,
         wire_config=wire_config or None,
         routing_mode=args.routing_mode,
+        generate_pcb=not args.skip_pcb,
+        circuit_ids=set(args.circuit_id) or None,
     )
     print(json.dumps(summary, indent=2))
 

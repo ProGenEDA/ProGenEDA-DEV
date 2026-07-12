@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 from dataclasses import dataclass
-from math import ceil
+from math import ceil, log, sqrt
 from typing import Any
 
 
@@ -198,7 +198,8 @@ def _components_from_placement(placement: dict[str, Any], circuit: dict[str, Any
         placement_components = {}
 
     obstacles: dict[str, dict[str, float]] = {}
-    for item in placement.get("obstacles", []):
+    layout_obstacles = placement.get("layout_obstacles", placement.get("obstacles", []))
+    for item in layout_obstacles:
         if isinstance(item, dict) and (item.get("owner") or item.get("component_ref")):
             ref = _obstacle_ref(item)
             if not ref:
@@ -393,6 +394,57 @@ def _layer_y_positions(
     return out
 
 
+def _square_fill_positions(
+    layer_map: dict[int, list[str]],
+    components: dict[str, ComponentNode],
+    cfg: dict[str, float],
+) -> tuple[dict[str, tuple[float, float]], float, float, int]:
+    """Pack a dense graph into a near-square grid without changing topology data."""
+
+    ordered = [ref for layer in sorted(layer_map) for ref in layer_map[layer]]
+    if not ordered:
+        return {}, cfg["sheet_width"], cfg["sheet_height"], 1
+    maximum_columns = min(len(ordered), max(2, int(ceil(sqrt(len(ordered)) * 3))))
+    candidates: list[tuple[tuple[float, float, int], int, list[float], list[float]]] = []
+    for columns in range(1, maximum_columns + 1):
+        rows = int(ceil(len(ordered) / columns))
+        column_widths = [0.0] * columns
+        row_heights = [0.0] * rows
+        for index, ref in enumerate(ordered):
+            node = components[ref]
+            column = index % columns
+            row = index // columns
+            column_widths[column] = max(column_widths[column], node.width)
+            row_heights[row] = max(row_heights[row], node.height)
+        width = sum(column_widths) + max(0, columns - 1) * cfg["column_gap"]
+        height = sum(row_heights) + max(0, rows - 1) * cfg["component_clearance"]
+        ratio = max(width, height) / max(min(width, height), cfg["grid"])
+        # The first term enforces the square-fill law. The second favours a
+        # smaller usable sheet when two candidates have the same aspect.
+        score = (abs(log(ratio)), width * height, columns)
+        candidates.append((score, columns, column_widths, row_heights))
+    _score, columns, column_widths, row_heights = min(candidates, key=lambda item: item[0])
+
+    x_centers: list[float] = []
+    x = cfg["margin"]
+    for width in column_widths:
+        x_centers.append(_snap(x + width / 2, cfg["grid"]))
+        x += width + cfg["column_gap"]
+    y_centers: list[float] = []
+    y = cfg["margin"]
+    for height in row_heights:
+        y_centers.append(_snap(y + height / 2, cfg["grid"]))
+        y += height + cfg["component_clearance"]
+
+    planned = {
+        ref: (x_centers[index % columns], y_centers[index // columns])
+        for index, ref in enumerate(ordered)
+    }
+    sheet_width = _snap_up(max(cfg["sheet_width"], x - cfg["column_gap"] + cfg["margin"]), cfg["grid"])
+    sheet_height = _snap_up(max(cfg["sheet_height"], y - cfg["component_clearance"] + cfg["margin"]), cfg["grid"])
+    return planned, sheet_width, sheet_height, columns
+
+
 def decide_arrangement(
     placement: dict[str, Any],
     circuit: dict[str, Any],
@@ -418,13 +470,24 @@ def decide_arrangement(
     }
 
     planned: dict[str, tuple[float, float]] = {}
+    layered_aspect = max(sheet_width, sheet_height) / max(min(sheet_width, sheet_height), grid)
+    use_square_fill = len(components) >= 25 and (
+        layered_aspect > 1.8 or len(layer_map) > int(ceil(sqrt(len(components)) * 2))
+    )
+    square_columns: int | None = None
+    if use_square_fill:
+        planned, sheet_width, sheet_height, square_columns = _square_fill_positions(layer_map, components, cfg)
     edits: list[dict[str, Any]] = []
     for layer, refs in layer_map.items():
         x = layer_x[layer]
         for index, ref in enumerate(refs):
             node = components[ref]
-            y = layer_y[layer][ref]
-            reasons = ["topology_depth_to_x", "barycenter_row_order"]
+            if use_square_fill:
+                x, y = planned[ref]
+                reasons = ["square_fill_density_layout", "barycenter_topology_order"]
+            else:
+                y = layer_y[layer][ref]
+                reasons = ["topology_depth_to_x", "barycenter_row_order"]
             if node.role == "power":
                 reasons.append("power_symbols_above_signal_path")
             elif node.role == "ground":
@@ -452,9 +515,14 @@ def decide_arrangement(
         "schema": "progen-kicad-arrangement-decision/v0.1",
         "stage": "arrangement_decider",
         "algorithm": {
-            "primary": "sugiyama_layered_layout",
+            "primary": "adaptive_square_fill" if use_square_fill else "sugiyama_layered_layout",
             "ordering": "barycenter_crossing_minimization",
             "rules_source": "topology, signal-flow, power-ground, density, clock-priority rules",
+            "square_fill": {
+                "enabled": use_square_fill,
+                "columns": square_columns,
+                "layered_aspect_ratio": round(layered_aspect, 3),
+            },
         },
         "sheet": {"width": sheet_width, "height": sheet_height, "grid": grid, "margin": cfg["margin"]},
         "component_count": len(components),

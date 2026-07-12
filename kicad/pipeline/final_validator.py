@@ -72,6 +72,7 @@ def validate_final_project(
     pin_check = local_netlist.get("checks", {}).get("pin_existence", {})
     component_value_check = local_netlist.get("checks", {}).get("component_count_reference_value", {})
     erc_report = local_netlist.get("erc", {}) if isinstance(local_netlist.get("erc"), dict) else {}
+    label_layout = wire_report.get("label_visual_layout", {}) if isinstance(wire_report.get("label_visual_layout"), dict) else {}
 
     checks = {
         "file_validity": _required_files(project_path, manifest),
@@ -115,6 +116,15 @@ def validate_final_project(
         "component_body_overlap": {
             "ok": bool(body_report.get("ok")),
             "overlap_count": int(body_report.get("component_body_overlap_count", body_report.get("overlap_count", 0))),
+        },
+        "pin_coordinate_overlap": {
+            "ok": bool(body_report.get("pin_coordinate_overlap_ok", True)),
+            "overlap_count": int(body_report.get("pin_coordinate_overlap_count", 0)),
+        },
+        "terminal_label_layout": {
+            "ok": bool(label_layout.get("ok", True)),
+            "overlap_count": int(label_layout.get("overlap_count", 0)),
+            "collision_avoidance_count": int(wire_report.get("label_collision_avoidance_count", 0)),
         },
         "routing_contract": {
             "ok": routing_mode != "wire" or bool(wire_report.get("strict_wire_ok")),

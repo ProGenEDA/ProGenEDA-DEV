@@ -25,10 +25,32 @@ def _routing_budget(component_count: int, multi_pad_net_count: int) -> dict[str,
     if load <= 40:
         return {"profile": "small", "grid_mm": 1.27, "max_attempts": 6, "max_astar_expansions": 30_000}
     if load <= 80:
-        return {"profile": "medium", "grid_mm": 1.27, "max_attempts": 6, "max_astar_expansions": 45_000}
+        return {"profile": "medium", "grid_mm": 1.27, "max_attempts": 4, "max_astar_expansions": 45_000}
     if load <= 140:
         return {"profile": "large", "grid_mm": 1.27, "max_attempts": 5, "max_astar_expansions": 70_000}
     return {"profile": "extra_large", "grid_mm": 2.54, "max_attempts": 3, "max_astar_expansions": 12_000}
+
+
+def _placement_profiles(component_count: int) -> tuple[dict[str, Any], ...]:
+    """Return bounded, meaningfully distinct physical placement variants."""
+
+    primary: dict[str, Any] = {
+        "name": "primary",
+        "gap_mm": 8.0,
+        "ignore_global_nets": None,
+    }
+    return (primary,)
+
+
+def _evaluation_key(evaluation: dict[str, Any]) -> tuple[int, int, int, int]:
+    validation = evaluation["validation"]
+    route_plan = evaluation["route_plan"]
+    return (
+        0 if validation["ready_for_output"] else 1,
+        route_plan.unrouted_net_count,
+        len(validation.get("blocking_failures", [])),
+        len(route_plan.segments) + len(route_plan.vias),
+    )
 
 
 def _source_minimum_drill(design: Any) -> float:
@@ -132,44 +154,83 @@ def generate_pcb_for_project(
     process_profile_path.write_text(json.dumps(process_profile, indent=2), encoding="utf-8")
 
     multi_pad_net_count = sum(1 for members in design.nets.values() if len(members) >= 2)
-    placement = place_footprints(design)
-    placement_path = project_dir / "pcb_placement.json"
-    placement_path.write_text(json.dumps(placement.as_dict(), indent=2), encoding="utf-8")
     routing_budget = _routing_budget(len(design.components), multi_pad_net_count)
-    route_plan, route_variants = route_pcb_with_retries(
-        design,
-        placement,
-        grid=float(routing_budget["grid_mm"]),
-        max_attempts=int(routing_budget["max_attempts"]),
-        max_astar_expansions=int(routing_budget["max_astar_expansions"]),
-        enable_direct_paths=float(routing_budget["grid_mm"]) >= 2.0,
-        compact_high_fanout_trees=float(routing_budget["grid_mm"]) >= 2.0,
-        strategy_variants=float(routing_budget["grid_mm"]) >= 2.0,
-    )
+    variants_dir = internal_dir / "placement_variants"
+    variants_dir.mkdir(exist_ok=True)
+    evaluations: list[dict[str, Any]] = []
+    for profile in _placement_profiles(len(design.components)):
+        placement = place_footprints(
+            design,
+            gap=float(profile["gap_mm"]),
+            ignore_global_nets=profile["ignore_global_nets"],
+        )
+        route_plan, route_variants = route_pcb_with_retries(
+            design,
+            placement,
+            grid=float(routing_budget["grid_mm"]),
+            max_attempts=int(routing_budget["max_attempts"]),
+            max_astar_expansions=int(routing_budget["max_astar_expansions"]),
+            enable_direct_paths=float(routing_budget["grid_mm"]) >= 2.0,
+            compact_high_fanout_trees=float(routing_budget["grid_mm"]) >= 2.0,
+            strategy_variants=float(routing_budget["grid_mm"]) >= 2.0,
+        )
+        profile_name = str(profile["name"])
+        placement_path = variants_dir / f"{profile_name}_placement.json"
+        placement_path.write_text(json.dumps(placement.as_dict(), indent=2), encoding="utf-8")
+        route_path = variants_dir / f"{profile_name}_route_plan.json"
+        route_path.write_text(json.dumps(route_plan.as_dict(), indent=2), encoding="utf-8")
+        route_variants_path = variants_dir / f"{profile_name}_route_variants.json"
+        route_variants_path.write_text(
+            json.dumps(
+                {
+                    "schema": "progen-kicad-pcb-route-variants/v0.1",
+                    "variant_count": len(route_variants),
+                    "variants": route_variants,
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        candidate_path = write_kicad_pcb(
+            variants_dir,
+            f"{project_name}.{profile_name}.candidate",
+            design,
+            placement,
+            route_plan,
+            schematic_file=schematic_file,
+        )
+        validation_path = variants_dir / f"{profile_name}_validation.json"
+        validation = validate_pcb(candidate_path, design, placement, route_plan, output_report=validation_path)
+        evaluation = {
+            "profile": profile,
+            "placement": placement,
+            "route_plan": route_plan,
+            "route_variants": route_variants,
+            "candidate_path": candidate_path,
+            "validation": validation,
+            "placement_path": placement_path,
+            "route_path": route_path,
+            "route_variants_path": route_variants_path,
+            "validation_path": validation_path,
+        }
+        evaluations.append(evaluation)
+        if validation["ready_for_output"]:
+            break
+
+    selected = min(evaluations, key=_evaluation_key)
+    placement = selected["placement"]
+    route_plan = selected["route_plan"]
+    route_variants = selected["route_variants"]
+    candidate_path = selected["candidate_path"]
+    validation = selected["validation"]
+    placement_path = project_dir / "pcb_placement.json"
     route_path = project_dir / "pcb_route_plan.json"
-    route_path.write_text(json.dumps(route_plan.as_dict(), indent=2), encoding="utf-8")
     variants_path = project_dir / "pcb_route_variants.json"
-    variants_path.write_text(
-        json.dumps(
-            {
-                "schema": "progen-kicad-pcb-route-variants/v0.1",
-                "variant_count": len(route_variants),
-                "variants": route_variants,
-            },
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
-    candidate_path = write_kicad_pcb(
-        internal_dir,
-        f"{project_name}.candidate",
-        design,
-        placement,
-        route_plan,
-        schematic_file=schematic_file,
-    )
     validation_path = project_dir / "pcb_validation_report.json"
-    validation = validate_pcb(candidate_path, design, placement, route_plan, output_report=validation_path)
+    shutil.copyfile(selected["placement_path"], placement_path)
+    shutil.copyfile(selected["route_path"], route_path)
+    shutil.copyfile(selected["route_variants_path"], variants_path)
+    shutil.copyfile(selected["validation_path"], validation_path)
     ready = bool(validation["ready_for_output"])
     final_path = project_dir / f"{project_name}.kicad_pcb"
     if ready:
@@ -197,6 +258,17 @@ def generate_pcb_for_project(
         "validation": validation_path.name,
         "process_profile": process_profile_path.name,
         "routing_budget": routing_budget,
+        "selected_placement_profile": selected["profile"],
+        "placement_variants": [
+            {
+                "profile": evaluation["profile"],
+                "candidate_file": str(evaluation["candidate_path"].relative_to(project_dir)),
+                "unrouted_net_count": evaluation["route_plan"].unrouted_net_count,
+                "validation_ok": bool(evaluation["validation"]["ok"]),
+                "ready_for_output": bool(evaluation["validation"]["ready_for_output"]),
+            }
+            for evaluation in evaluations
+        ],
         "supported_component_count": len(design.components),
         "omitted_component_count": len(design.omitted_components),
         "physical_net_count": len(design.nets),

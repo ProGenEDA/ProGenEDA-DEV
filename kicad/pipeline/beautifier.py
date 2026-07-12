@@ -128,16 +128,21 @@ def apply_coordinate_edits(placement: dict[str, Any], coordinate_plan: dict[str,
             }
         )
 
-    obstacles = updated.setdefault("obstacles", [])
-    if isinstance(obstacles, list):
+    for obstacle_key in ("obstacles", "layout_obstacles"):
+        obstacles = updated.get(obstacle_key, [])
+        if not isinstance(obstacles, list):
+            continue
         for obstacle in obstacles:
             if not isinstance(obstacle, dict):
                 continue
             owner = str(obstacle.get("owner") or "")
-            if owner not in transforms:
+            ref = str(obstacle.get("component_ref") or owner)
+            if "::" in ref:
+                ref = ref.split("::", 1)[0]
+            if ref not in transforms:
                 continue
             if all(key in obstacle for key in ("left", "right", "top", "bottom")):
-                rect = _transformed_rect(obstacle, **_coordinate_transform(transforms[owner]))
+                rect = _transformed_rect(obstacle, **_coordinate_transform(transforms[ref]))
                 obstacle.update(rect)
 
     pin_points = updated.get("pin_points")

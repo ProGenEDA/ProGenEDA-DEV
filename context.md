@@ -11001,3 +11001,74 @@ Verification:
 - `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pcb kicad/pipeline/progen_kicad_executable.py`: passed.
 - Fresh N07 canonical filtered executable run: accepted PCB, zero unrouted PCB nets, hosted validation passed.
 - Fresh installed-KiCad DRC was not available in this shell because `kicad-cli` is not on `PATH`; the independent hosted validator remains mandatory, and prior external 495/495 v4 oracle evidence is retained unchanged.
+
+### 2026-07-12T03:42:30+05:00
+
+User:
+
+> so pcb is ready to be shipped?
+
+Agent:
+
+> Assessed the committed PCB evidence. The bounded MVP is shippable for the
+> accepted validated subset: v4 generated 495 native PCBs and the KiCad 10.0.4
+> oracle reported 495/495 DRC clean with zero violations and zero unconnected
+> items. It is not ready to be represented as universal production PCB
+> generation because 105 of the historical 600 did not receive PCBs, and the
+> post-cap-removal 67-only run plus external DRC has not yet been completed.
+
+Files edited:
+
+- `context.md`
+
+Verification:
+
+- Local `HEAD` and configured upstream both resolve to
+  `ccdfec9efb3a7f8b316154a61ff2a40f503eb307`.
+- Live GitHub remote lookup could not run because the restricted environment
+  could not resolve `github.com`.
+### 2026-07-12T07:20:00+05:00
+
+User:
+
+> and we need a sch update too i just remembered. rn the terminal(nodes) names and nodes themselves are overlapping with other names n componenets, this needs to be fixed, u can reuse some of the logic from the wiring here to make sure this isnt the case, then run it n take screenshot to see if it worked or not, no need for all 600 just a couple 20ish v complex ones of works means we are good to go
+>
+> do this as the batch run completes in the background
+
+Agent:
+
+> Implemented source-backed terminal-label visual layout validation and repair.
+> The final accepted run covers 20 complex canonical inputs in fresh immutable
+> directory `kicad/examples/schematic_terminal_visual_run_2026_07_12_071500_final_complex20_v19/`.
+> It passes static validation, final validation, local netlist comparison, wire
+> geometry, component-body overlap, source-pin-coordinate overlap, and visual
+> terminal-label layout with zero failures or overlaps.
+
+> The repair includes side- and vertical-aware label justification, bounded
+> outward terminal escape lanes, 25.4 mm multi-unit spacing, actual source-body
+> and all-pin placement envelopes, square-fill dense layouts, dynamic KiCad
+> `User` sheet sizing, and a deterministic nudge for coincident source pin tips.
+> The final validator now treats label collisions and pin-coordinate contacts as
+> output-blocking conditions.
+
+> KiCad 10.0.4 exported the final N187 project to SVG and it was raster-rendered
+> and inspected at `/tmp/progen-schematic-v19-renders/n187.png`. The rendering
+> showed an on-sheet square-like layout with separate labels.
+
+Files edited:
+
+- `context.md`
+- `kicad/generator/kicad_json_to_project.py`
+- `kicad/pipeline/arrangement_decider.py`
+- `kicad/pipeline/beautifier.py`
+- `kicad/pipeline/final_validator.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/placement_project_writer.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+- `kicad/docs/schematic_terminal_layout_validation_2026_07_12.md`
+
+Verification:
+
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py -q`: 12 passed, 4 subtests passed.
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_final_circuit_builder.py -q`: completed without a test failure.
+- Final v19 20-circuit manifest: zero label, body, source-pin, geometry, failed-net, and merged-net counts.

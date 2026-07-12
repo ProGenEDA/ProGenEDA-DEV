@@ -23,6 +23,11 @@ from .kicad_symbol_library import ResolvedKiCadSymbols, resolve_kicad_symbols
 from .placement_catalog import CatalogPlacementPlan
 
 PLACER_GENERATOR = "progen-kicad-placer-v0"
+# A 12.7 mm stack pitch can put a power-unit pin inside the preceding gate for
+# common 74xx/4xxx symbols.  This leaves no legal escape for a wire or local
+# terminal label.  Keep every emitted unit on a conservative, KiCad-grid-aligned
+# 25.4 mm pitch; wire geometry uses this same constant.
+MULTI_UNIT_VERTICAL_PITCH_MM = 25.4
 
 
 def _assert_fresh_output_dir(out_dir: Path) -> None:
@@ -53,7 +58,7 @@ def _unit_position(component: Any, unit_index: int, unit_count: int) -> tuple[fl
     x, y = component.at
     if unit_count <= 1:
         return x, y
-    return x, round(y + unit_index * 12.7, 3)
+    return x, round(y + unit_index * MULTI_UNIT_VERTICAL_PITCH_MM, 3)
 
 
 def _symbol_instance(
@@ -123,6 +128,25 @@ def _component_symbol_instances(ref: str, project_name: str, component: Any, sym
     )
 
 
+def _paper_declaration(placement: CatalogPlacementPlan, symbols: ResolvedKiCadSymbols) -> str:
+    """Use a source-backed custom sheet when a dense design exceeds A3."""
+
+    width = 420.0
+    height = 297.0
+    for component in placement.components:
+        lib_id = component.spec.lib_id
+        unit_count = len(symbols.units_for(lib_id)) if lib_id else 1
+        x, y = component.at
+        width = max(width, x + max(component.spec.width / 2, 12.7) + 50.8)
+        height = max(
+            height,
+            y + (unit_count - 1) * MULTI_UNIT_VERTICAL_PITCH_MM + max(component.spec.height / 2, 12.7) + 50.8,
+        )
+    if width <= 420.0 and height <= 297.0:
+        return '  (paper "A3")\n'
+    return f'  (paper "User" {num(width)} {num(height)})\n'
+
+
 def placement_schematic_text(
     project_name: str,
     circuit: dict[str, Any],
@@ -136,7 +160,7 @@ def placement_schematic_text(
     out = [
         f"(kicad_sch (version {SCH_VERSION}) (generator {q(PLACER_GENERATOR)}) (generator_version {q('v0.1')})\n",
         f"  (uuid {ROOT_UUID})\n",
-        "  (paper \"A3\")\n",
+        _paper_declaration(placement, symbols),
         "  (lib_symbols\n",
     ]
     for symbol in symbols.symbols:

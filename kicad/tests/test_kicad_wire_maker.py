@@ -18,6 +18,7 @@ from kicad.pipeline.final_circuit_builder import (
 from kicad.pipeline.kicad_symbol_library import KiCadSymbolLibrary
 from kicad.pipeline.kicad_wire_maker import (
     TERMINAL_LABEL_PIN_OFFSET_MM,
+    _label_justify,
     _pin_geometries,
     _resolve_pin_geometry,
     _terminal_label_point,
@@ -30,6 +31,14 @@ from kicad.pipeline.wire_planner import plan_wire_routes
 
 
 class KiCadWireMakerTests(unittest.TestCase):
+    def test_terminal_label_justification_extends_away_from_exposed_pin_side(self) -> None:
+        pin = (25.4, 50.8)
+        self.assertEqual(_label_justify(pin, pin, "left"), "right bottom")
+        self.assertEqual(_label_justify(pin, pin, "right"), "left bottom")
+        self.assertEqual(_label_justify(pin, (pin[0], pin[1] - 5.08), "left"), "right bottom")
+        self.assertEqual(_label_justify(pin, (pin[0], pin[1] + 5.08), "right"), "left top")
+        self.assertEqual(_label_justify(pin, pin, "bottom"), "left top")
+
     def test_terminal_label_point_uses_clear_pin_offset(self) -> None:
         pin = (25.4, 50.8)
         self.assertEqual(_terminal_label_point(pin, "right"), (round(pin[0] + TERMINAL_LABEL_PIN_OFFSET_MM, 3), pin[1]))
@@ -164,6 +173,10 @@ class KiCadWireMakerTests(unittest.TestCase):
             self.assertTrue(summary["all_final_validation_ok"])
             self.assertTrue(summary["all_component_body_overlap_ok"])
             self.assertEqual(summary["total_component_body_overlaps"], 0)
+            self.assertTrue(summary["all_pin_coordinate_overlap_ok"])
+            self.assertEqual(summary["total_pin_coordinate_overlaps"], 0)
+            self.assertTrue(summary["all_terminal_label_layout_ok"])
+            self.assertEqual(summary["total_terminal_label_layout_overlaps"], 0)
             self.assertTrue(summary["all_local_netlist_ok"])
             self.assertEqual(summary["total_local_netlist_failed_nets"], 0)
             self.assertGreater(summary["total_labels"], 0)
