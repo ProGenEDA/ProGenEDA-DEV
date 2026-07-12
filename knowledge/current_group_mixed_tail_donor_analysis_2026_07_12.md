@@ -146,3 +146,22 @@ shared route continues to allocate its donor-proven low-16-bit suffixes and
 must be accepted by clean Proteus open plus visual layout verification; no
 terminal geometry, WIRE path, or existing accepted family is to be changed to
 mimic a save rewrite.
+
+## 2026-07-13 high-count failure isolation
+
+The final 21x pack contains 1,470 active terminal/WIRE units. It opens a
+`VGDVC.DLL` access-violation dialog. The paired 21x no-terminal component-
+placer control opens to the normal schematic window after the same 24-second
+wait, so this is not a raw component count, CDB, or component-layout loader
+failure. A 20x terminalized probe fails identically. The 1x and 9x terminalized
+routes reached the normal schematic window, and the user reported only the
+21x result as failed.
+
+The first and only planned high-count probe is therefore bounded to the
+high-count final-link allocation path: write the complete four-byte final WIRE
+address for terminal/component link fields when the attachment count reaches
+the 1,470-unit case. This is the exact field that Proteus altered during the
+9x Ctrl+S diagnostic. It does not alter component geometry, WIRE geometry,
+ordering, labels, or any 1x/9x/15x serial route. If a clean 21x open does not
+result, revert this isolated probe and continue from new donor evidence rather
+than making serial byte guesses.

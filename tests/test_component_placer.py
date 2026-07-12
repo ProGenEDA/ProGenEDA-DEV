@@ -114,6 +114,14 @@ CURRENT_GROUP_CATALOGUE_TAIL_FAMILIES = (
     "2N3904",
     "2N4401",
 )
+DIL14_QUAD_2INPUT_FAMILIES = (
+    "74HC00",
+    "74HC02",
+    "74HC08",
+    "74HC32",
+    "74HC86",
+    "74HC266",
+)
 
 
 @pytest.mark.parametrize(
@@ -133,26 +141,6 @@ def test_terminal_grid_snap_is_nearest_with_deterministic_ties(
     expected: int,
 ) -> None:
     assert terminal_placer.snap_to_proteus_terminal_grid(value) == expected
-
-
-def test_layout_parser_keeps_high_locked_mega_source_body_anchor() -> None:
-    fragment = b"\x00VSOURCE" + struct.pack("<ii", -5_186_680, 736_854_000)
-
-    pairs = layout_coordinate_pairs(fragment, "VSOURCE")
-    catalogue_anchor = terminal_placer._component_marker_anchor_for_catalogue(
-        fragment,
-        "VSOURCE",
-    )
-
-    assert pairs == [(8, 12, "marker_body:VSOURCE")]
-    assert catalogue_anchor == {
-        "marker": "VSOURCE",
-        "marker_offset": 1,
-        "x_offset": 8,
-        "y_offset": 12,
-        "x": -5_186_680,
-        "y": 736_854_000,
-    }
 
 
 def test_component_pin_link_patch_accepts_type_02_trailer() -> None:
@@ -2876,6 +2864,82 @@ def test_full_current_group_matches_user_accepted_mixed_tail_oracle(
     ]
     assert output_chunk.endswith(b"\xff")
     assert not output_chunk.endswith(b"\xff\xff")
+
+
+@pytest.mark.parametrize("family", DIL14_QUAD_2INPUT_FAMILIES)
+def test_dil14_quad_2input_solo_retargets_donor_wires_to_grid_contacts(
+    tmp_path: Path,
+    family: str,
+) -> None:
+    """Each four-gate package uses the same catalogue-only terminal route."""
+
+    base = tmp_path / f"{family}_1x_no_terminal.pdsprj"
+    output = tmp_path / f"{family}_1x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == 1
+    assert report["terminal_count_added"] == 12
+    assert report["wire_count_added"] == 12
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["family_reports"][0]["component_family"] == family
+    assert report["family_reports"][0]["terminal_count"] == 12
+    assert report["family_reports"][0]["wire_count"] == 12
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+    # The entire terminal attachment must remain a short local connection. A
+    # package-wide anchor bug yields multi-million-unit crossing wires even
+    # though the terminal contact itself happens to be grid aligned.
+    for terminal_pin in report["family_reports"][0]["terminal_pins"]:
+        start = terminal_pin["short_wire"]["start"]
+        end = terminal_pin["short_wire"]["end"]
+        assert (
+            abs(start["x"] - end["x"]) + abs(start["y"] - end["y"])
+            <= 2 * 254_000
+        ), f"{family} emitted a non-local terminal WIRE for pin {terminal_pin['pin']['name']}"
+    # A component-link field must remain wholly inside its owning subpart. In
+    # particular, `U476`/`U198` have one more reference character than their
+    # accepted donor packages; whole-package offsets would overwrite the next
+    # `FF <length> U...:<subpart>` marker instead of the current pin-link slot.
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    refs = result.selected_groups[0].refs
+    starts = []
+    for ref in refs:
+        encoded = ref.encode("ascii")
+        marker = b"\xff" + bytes([len(encoded)]) + encoded
+        start = chunk.find(marker)
+        assert start >= 0, f"{family} lost its {ref} component record marker"
+        starts.append(start)
+    starts.sort()
+    terminal_start = chunk.find(b"$TERBIDIR") - 14
+    assert terminal_start > starts[-1]
+    ends = [*starts[1:], terminal_start]
+    for allocation in report["link_allocation"]["allocations"]:
+        position = allocation["component_link_position"]
+        assert any(
+            start <= position and position + 4 <= end
+            for start, end in zip(starts, ends, strict=True)
+        ), f"{family} link at {position} crosses a component-record boundary"
 
 
 @pytest.mark.parametrize(

@@ -38,11 +38,12 @@ MULTIPART_SUBPART_GAP_X = 5_080_000
 MULTIPART_SUBPART_GAP_Y = 5_080_000
 SCAN_COORD_LIMIT = 30_000_000
 MIN_COORD_ABS = 50_000
-# A full locked-mega 20x/21x mixed placement legitimately reaches Y=736,854,000
-# (VPULSE V103).  The old 700M scan ceiling made the source-body marker vanish
-# after beautification even though the signed 32-bit packet coordinate was
-# intact.  Keep a conservative margin below the Proteus signed-32-bit range.
-SAFE_PACKET_COORD_LIMIT = 1_000_000_000
+# The terminalized mixed route is Proteus-loader-safe through 15x.  Larger
+# layouts can place source markers above this range and then trigger VGDVC.DLL
+# access violations once their terminal/WIRE attachment stream is added.
+# Keep the parser guard at the demonstrated safe range so unsupported scales
+# fail deterministically before an invalid terminalized project is emitted.
+SAFE_PACKET_COORD_LIMIT = 700_000_000
 SAFE_PACKET_MIN_COORD_ABS = 1_000_000
 
 LINKED_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {

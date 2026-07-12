@@ -12233,3 +12233,108 @@ Done and pushed (`a5ac422a`). Test these terminalized files:
 - `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/04_up_to_23x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_21X_CAPPED_FROM_23X_REQUEST_TAIL_ORACLE_sa.pdsprj`
 
 They are generated from the locked mega donor through the shared component placer and shared terminal placer. The requested 23x is 21x because CAP-ELEC has 21 usable locked-mega groups. Focused regression passed (4), as did `compileall`; the old global experiment test remains unrelatedly broken. I stopped Ctrl+S/save-mimic work as instructed. The 21x file is generated but a local cold-open diagnostic showed a VGDVC error, so its visual/loader status remains for user verification; no speculative changes were made to it.
+
+## User Message - 2026-07-13 +05:00
+
+the 21x one failed. fix this as well as make 1x of the next group i mentioned
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’ll fix the 21× failure without touching the accepted 1×/9×/15× routes, then generate a 1× pack for the next group: the DIL14 quad 2-input logic families. I’ll verify the previous checkpoint first and work only from the authoritative donor evidence.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The 20× failure confirms this is not a CAP-ELEC count issue. A 21× bare no-terminal control opens, while terminalized 16×, 18×, 20×, and 21× candidates terminate with VGDVC.DLL. The shared current-group terminal route is therefore capped at its highest known clean load: 15×.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The requested 23× output is now regenerated as a 15× terminal-load cap. I did not alter any accepted component geometry or terminal family route to force a larger result.
+
+## User Message - 2026-07-13 +05:00
+
+it gave bad object record but opened okk new rule when u recieve a bad object record click ok then let it open n do ctrl s, do ctrl s for bad object record that opens after click okk and compare. dont do ctrl s for those which opens normally
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Understood. New Proteus rule locked in: a normal clean open is not Ctrl+S-saved; when Bad Object Record appears and the project continues, dismiss it, save that copy, and compare the saved project only as a diagnostic.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The first 1× DIL14 group emission exposed a real corruption: HC00/HC02 reference-width differences caused whole-package link offsets to overwrite a later component-record marker. I stopped before proposing the group output and audited the authoritative donor records.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The DIL14 1× group now passes the shared static regression, but only HC08 had a clean local open at that checkpoint. HC00 and HC02 are being isolated as component-link/frame cases, not patched through a separate terminal script.
+
+## User Message - 2026-07-13 +05:00
+
+it crashed
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Confirmed: 74HC00’s no-terminal 1× control crashes, so I will not touch its terminal route yet. I’m isolating/fixing the locked-mega component-placer packet for 74HC00 first; the other five DIL14 families remain untouched.
+
+## User Message - 2026-07-13 +05:00
+
+u sure try again 74HC00’s no-terminal 1× control crashes, so I will not touch its terminal route ye
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+You’re right to ask for a second clean run. I’ll retry a freshly copied no-terminal 74HC00 project with the full 24-second gate; if a Bad Object Record appears and it continues, I’ll dismiss it, save, and compare the saved project.
+
+## User Message - 2026-07-13 +05:00
+
+it oppened and was correct. make sure terminals are always placced on grid lines
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Confirmed—the clean 74HC00 no-terminal control opens correctly. I’m leaving its placement route unchanged. I’m enforcing grid alignment as a hard pre-handoff check for every terminal contact and testing its terminalized 1× route next.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The no-terminal control is confirmed clean, but the terminalized 74HC00 candidate exits before Proteus reaches the schematic window. I’m treating that as a family-specific attachment-frame issue and will compare the full accepted 74HC00 donor against the generated project before any change.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I found the actual fault: the old link calculation overwrote the next gate record when the locked-mega reference had an extra digit (`U476`/`U198`). I’ve made the repair catalogue-gated, corrected the separate 74HC266 pin-6 donor typo/slot, and the six-family structural regression now passes.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The repaired terminalized 74HC00 now survives a fresh 24-second Proteus launch with a responsive schematic window and no save was performed. I’m running the same delayed loader check on the remaining five 1× DIL14 outputs.
+
+## User Message - 2026-07-13 +05:00
+
+![HC02 geometry failure](user-provided image: terminals far from independently beautified HC02 A/B/C/D gates with long crossing WIREs)
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+That image shows the loader repair worked but the HC02 terminal geometry is still wrong: terminals are being calculated from one package anchor while the beautifier has spread A/B/C/D independently. I’m stopping this group here and switching the catalogue/planner to subpart-relative pin anchors, so every terminal is calculated from its own current gate before grid snapping.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The regenerated plans now pass the important mechanical checks: every terminal contact is grid-aligned and every terminal-to-pin WIRE is local (at most 274,320 units), rather than crossing the sheet. I’m opening HC02 again to visually verify the correction before asking you to test it.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The HC02 visual check is now correct: each A/B/C/D gate has its own nearby grid-aligned terminals and short wires—no crossings. I’m checking the remaining regenerated 1× files next, including the corrected HC266 pin 6.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Three more clean loader checks have passed after the geometry repair: 74HC00, 74HC08, and 74HC32. I’m finishing 74HC86 and 74HC266, then I’ll give you only the corrected 1× files to inspect.
+
+## User Message - 2026-07-13 +05:00
+
+since 1x worked do 9x 15x n lets make the 15x mvp safe limit for mvp for terminalized mixed of all
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Great—1× is accepted. I’ll extend the same DIL14 runner and shared placer to 9× and 15×, capping only a family that truly lacks clean locked-mega packages. Then I’ll use 15× as the documented MVP ceiling for the all-terminalized mixed route, without changing any accepted 1× geometry.
+
+### Files Edited By Agent In This Continuation Before Scaling
+
+- `src/proteusgen/component_terminal_placer.py` — catalogue-gated per-subpart link-slot and coordinate-frame resolution; no separate terminal script.
+- `knowledge/component_catalog_v0.json` — DIL14 pin/subpart/link/WIRE facts, HC266 pin-6 correction, and a 15× current-group terminalized-stream cap.
+- `tests/test_component_placer.py` — DIL14 subpart-boundary and short-WIRE regressions.
+- `tools/proteus_generation/2026-07-13/generate_dil14_quad_2input_logic_1x_temp.py` — shared-stage-only 1× evidence runner.
+- `knowledge/dil14_quad_2input_logic_donor_analysis_2026_07_13.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `experiments/dil14_quad_2input_logic_terminal_v1_temp_2026_07_13/README.md` — donor evidence, loader results, and continuation notes.
+- `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/` — 23× request regenerated to the safe 15× terminalized cap.

@@ -1781,13 +1781,48 @@ The reproducible generator is
 `tools/proteus_generation/2026-07-12/generate_current_group_mixed_tail_oracle_v1_temp.py`.
 It contains no terminal geometry or component exceptions; it calls the shared
 placer and catalogue only. It produces 1x, 9x, 15x, and requested-23x uniform
-cases. The locked mega donor has 21 clean `CAP-ELEC` groups, so the requested
-23x uniform case is explicitly capped at 21x. This is a source-placement limit
-recorded in `knowledge/component_catalog_v0.json`, not a reason to mutate an
-accepted terminal route.
+cases. The locked mega donor has 21 clean `CAP-ELEC` groups, but local Proteus
+tests established a stricter *terminalized mixed-stream* limit: 15x opens
+normally while 16x, 18x, 20x, and 21x terminate with a VGDVC access violation;
+the 21x no-terminal control opens. The requested 23x uniform case is therefore
+explicitly capped at 15x by `catalogue_policy.proteus_route_limits` in
+`knowledge/component_catalog_v0.json`. This is loader evidence, not a reason
+to mutate an accepted terminal route.
 
 User direction for this checkpoint: do not treat Ctrl+S output or byte-for-byte
 save canonicalization as an emission target. Use a clean Proteus open and user
 visual layout inspection as acceptance evidence. Ctrl+S deltas may be recorded
 only as diagnostics when a project fails to open; never alter terminal geometry,
 WIRE shape, or a frozen family merely to mimic a save rewrite.
+
+### 2026-07-13 DIL14 quad two-input gate terminal contract
+
+The DIL14 quad-gate group (`74HC00`, `74HC02`, `74HC08`, `74HC32`, `74HC86`,
+and `74HC266`) uses one shared catalogue-driven terminal emitter, but its
+facts must be resolved per logical gate rather than per package. The
+component placer/beautifier can independently arrange `:A`, `:B`, `:C`, and
+`:D`; a pin's geometry is consequently computed from its current subpart
+marker plus its donor-relative subpart offset. The terminal contact is then
+snapped to the 254,000 Proteus grid and a short, nonzero WIRE connects that
+contact to the exact pin.
+
+Two non-negotiable catalogue rules follow:
+
+- Link slots in packages whose current reference width differs from the donor
+  (`U476` versus donor `U53` for HC00, `U198` versus donor `U58` for HC02)
+  resolve from the end of the matching current `:A`/`:B`/`:C` record, not from
+  the end of the full package. This prevents overwriting the next subpart's
+  `FF <length> U...` record marker. The final `:D` fields retain the
+  donor-proven package-tail offset because the splice removes the one trailing
+  byte after that record.
+- HC266's user donor has a label typo: gate-B package pin 5 is `I3` and pin 6
+  is `I4`, although both donor labels begin `Pin5`. The catalogue records the
+  actual link/WIRE slots and emits the normalized testing label `Pin6I4` for
+  pin 6.
+
+Do not add a component-specific emitter for this group. Extend its profile
+with donor-derived pin-to-subpart, subpart-anchor, link-slot, and WIRE facts;
+then use `component_terminal_placer.py` and rerun the entire DIL14 1x
+regression. A clean normal Proteus open is not Ctrl+S-saved. When a Bad Object
+Record dialog appears but the project continues after dismissal, save only that
+copy and compare the saved structure as a diagnostic.

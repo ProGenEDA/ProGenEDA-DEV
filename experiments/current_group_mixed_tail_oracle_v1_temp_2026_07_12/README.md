@@ -14,13 +14,15 @@ and stream boundaries.
 | 1x | 1x | 70 | `01_1x_user_donor_oracle/ALL_ACCEPTED_CURRENT_GROUP_1X_TAIL_ORACLE_sa.pdsprj` |
 | 9x | 9x | 630 | `02_9x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_9X_TAIL_ORACLE_sa.pdsprj` |
 | 15x | 15x | 1,050 | `03_15x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_15X_TAIL_ORACLE_sa.pdsprj` |
-| 23x | 21x | 1,470 | `04_up_to_23x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_21X_CAPPED_FROM_23X_REQUEST_TAIL_ORACLE_sa.pdsprj` |
+| 23x | 15x | 1,050 | `04_up_to_23x_full_current_group/ALL_ACCEPTED_CURRENT_GROUP_15X_CAPPED_FROM_23X_REQUEST_TAIL_ORACLE_sa.pdsprj` |
 
 Every folder also contains the corresponding `_NO_TERMINAL.pdsprj` control,
 the input JSON, capacity metadata, and the shared-placer report. The requested
-23x case is capped at 21x because the locked mega donor has only 21 clean
-`CAP-ELEC` groups; this is recorded in the component catalogue and
-`capacity.json`.
+23x case is capped at 15x. Although the locked mega donor has 21 clean
+`CAP-ELEC` groups, local Proteus opens proved a terminalized mixed-stream
+loader ceiling at 15x: 16x, 18x, 20x, and 21x fail with a VGDVC access
+violation while the 21x no-terminal control opens. This route-specific limit
+is recorded in the component catalogue and `capacity.json`.
 
 ## Evidence and validation
 
@@ -38,9 +40,6 @@ the input JSON, capacity metadata, and the shared-placer report. The requested
 
 The user directed that Ctrl+S byte canonicalization is not an acceptance target.
 Proteus visual inspection remains the acceptance test for terminal placement.
-A local cold-open diagnostic reached the normal schematic window for the 1x
-and 9x candidates. A later 21x cold-open attempt displayed a `VGDVC.DLL`
-access-violation dialog; no speculative cap, geometry change, or save-mimic
-repair was made after the user instructed the work to stop at the requested
-generated pack. Treat the 21x file as a generated static candidate pending user
-inspection/direction, not as locally accepted.
+The 1x, 9x, and 15x terminalized candidates reached normal responsive Proteus
+schematic windows in delayed cold-launch checks. The route now emits the proven
+15x cap rather than retaining an unsafe 21x candidate.

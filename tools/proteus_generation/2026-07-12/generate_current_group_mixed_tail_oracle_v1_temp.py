@@ -35,6 +35,8 @@ from proteusgen.resistor_v9 import _extract_object_chunk  # noqa: E402
 
 OUT_ROOT = ROOT / "experiments" / "current_group_mixed_tail_oracle_v1_temp_2026_07_12"
 DONOR = ROOT / NEW_COMPONENT_MEGA_DONOR
+CATALOGUE_PATH = ROOT / "knowledge" / "component_catalog_v0.json"
+ROUTE_LIMIT_KEY = "current_group_mixed_tail"
 SCALES = (1, 9, 15, 23)
 
 
@@ -98,7 +100,7 @@ def _uniform_capacity(
     *,
     requested_scale: int,
     families: tuple[str, ...],
-) -> tuple[int, tuple[str, ...]]:
+) -> tuple[int, tuple[str, ...], tuple[str, ...]]:
     """Return the locked-mega uniform count and its documented limiting families."""
 
     known_limits: list[tuple[str, int]] = []
@@ -109,15 +111,32 @@ def _uniform_capacity(
         raw_limit = profile.limits.get("locked_new_components_5x_mega_clean_group_max")
         if isinstance(raw_limit, int) and raw_limit > 0:
             known_limits.append((family, raw_limit))
-    if not known_limits:
-        return requested_scale, ()
-    effective_scale = min(requested_scale, *(limit for _family, limit in known_limits))
+    raw_catalogue = json.loads(CATALOGUE_PATH.read_text(encoding="utf-8"))
+    route_limits = raw_catalogue.get("catalogue_policy", {}).get(
+        "proteus_route_limits",
+        {},
+    )
+    route_limit = route_limits.get(ROUTE_LIMIT_KEY, {})
+    raw_terminal_limit = route_limit.get("uniform_terminal_max")
+    if not isinstance(raw_terminal_limit, int) or raw_terminal_limit <= 0:
+        raise ValueError(
+            f"Catalogue route limit {ROUTE_LIMIT_KEY!r} lacks a positive "
+            "uniform_terminal_max."
+        )
+
+    all_limits = [*known_limits, (ROUTE_LIMIT_KEY, raw_terminal_limit)]
+    effective_scale = min(requested_scale, *(limit for _source, limit in all_limits))
     limiting = tuple(
         family
         for family, limit in known_limits
         if limit == effective_scale and limit < requested_scale
     )
-    return effective_scale, limiting
+    limiting_constraints = tuple(
+        source
+        for source, limit in all_limits
+        if limit == effective_scale and limit < requested_scale
+    )
+    return effective_scale, limiting, limiting_constraints
 
 
 def _case_paths(case: Case, effective_scale: int) -> tuple[Path, Path, Path]:
@@ -163,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
             elif isinstance(row, dict) and isinstance(row.get("scale"), int):
                 existing_rows[int(row["scale"])] = row
     for case in _cases(scales):
-        effective_scale, limiting_families = _uniform_capacity(
+        effective_scale, limiting_families, limiting_constraints = _uniform_capacity(
             catalogue,
             requested_scale=case.requested_scale,
             families=all_families,
@@ -178,7 +197,8 @@ def main(argv: list[str] | None = None) -> int:
                 "requested_uniform_scale": case.requested_scale,
                 "effective_uniform_scale": effective_scale,
                 "limiting_families": list(limiting_families),
-                "capacity_source": "component_catalogue.locked_new_components_5x_mega_clean_group_max",
+                "limiting_constraints": list(limiting_constraints),
+                "capacity_source": "component_catalogue.catalogue_policy.proteus_route_limits",
             },
         )
         placement = generate_component_placement_project(
@@ -217,6 +237,7 @@ def main(argv: list[str] | None = None) -> int:
             "requested_scale": case.requested_scale,
             "effective_scale": effective_scale,
             "limiting_families": list(limiting_families),
+            "limiting_constraints": list(limiting_constraints),
             "folder": str(bare_output.parent.relative_to(ROOT)),
             "bare_output": str(bare_output.relative_to(ROOT)),
             "terminal_output": str(terminal_output.relative_to(ROOT)),

@@ -956,15 +956,6 @@ def plan_catalogue_pin_bidir_terminals(
         component_data = _component_only_chunk_from_terminalized_chunk(data)
         anchor_cache: dict[str, list[dict[str, Any]]] = {}
         wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
-        donor_anchor = geometry.get("component_anchor")
-        raw_pin_subparts = geometry.get("pin_subparts", {})
-        raw_subpart_anchor_indices = geometry.get("subpart_anchor_indices", {})
-        raw_subpart_anchor_offsets = geometry.get(
-            "subpart_anchor_offsets_from_component_anchor", {}
-        )
-        use_subpart_anchor_rebase = bool(
-            geometry.get("subpart_anchor_coordinate_rebase", False)
-        )
         for pin in profile.pins:
             if pin.hidden:
                 continue
@@ -996,48 +987,6 @@ def plan_catalogue_pin_bidir_terminals(
             existing_wire: dict[str, Any] | None = None
             if isinstance(wire_order_index, int) and 0 <= wire_order_index < len(wire_rows):
                 existing_wire = wire_rows[wire_order_index]
-            subpart: str | None = None
-            if isinstance(raw_pin_subparts, dict):
-                raw_subpart = raw_pin_geometry.get("component_subpart")
-                if raw_subpart is None:
-                    raw_subpart = raw_pin_subparts.get(pin.name)
-                if raw_subpart is not None:
-                    subpart = str(raw_subpart).upper()
-            subpart_anchor_delta: dict[str, int] | None = None
-            if use_subpart_anchor_rebase:
-                if (
-                    subpart is None
-                    or not isinstance(raw_subpart_anchor_indices, dict)
-                    or not isinstance(raw_subpart_anchor_offsets, dict)
-                ):
-                    missing_geometry.append(
-                        {
-                            "component_key": key,
-                            "component_family": family,
-                            "pin": pin.name,
-                            "reason": "missing_subpart_anchor_geometry",
-                        }
-                    )
-                    continue
-                raw_delta = raw_subpart_anchor_offsets.get(subpart)
-                if (
-                    not isinstance(raw_delta, dict)
-                    or raw_delta.get("x") is None
-                    or raw_delta.get("y") is None
-                ):
-                    missing_geometry.append(
-                        {
-                            "component_key": key,
-                            "component_family": family,
-                            "pin": pin.name,
-                            "reason": "missing_donor_subpart_anchor_delta",
-                        }
-                    )
-                    continue
-                subpart_anchor_delta = {
-                    "x": int(raw_delta["x"]),
-                    "y": int(raw_delta["y"]),
-                }
             anchor_family = str(
                 raw_pin_geometry.get("anchor_family")
                 or geometry.get("anchor_family")
@@ -1053,12 +1002,6 @@ def plan_catalogue_pin_bidir_terminals(
             anchor_index = raw_pin_geometry.get("component_anchor_index")
             if anchor_index is None:
                 anchor_index = raw_pin_geometry.get("subpart_anchor_index")
-            if (
-                anchor_index is None
-                and subpart is not None
-                and isinstance(raw_subpart_anchor_indices, dict)
-            ):
-                anchor_index = raw_subpart_anchor_indices.get(subpart)
             if isinstance(anchor_index, int):
                 if 0 <= anchor_index < len(component_anchors):
                     component_anchor = component_anchors[anchor_index]
@@ -1085,16 +1028,11 @@ def plan_catalogue_pin_bidir_terminals(
                 pin_y = int(component_anchor["y"]) + int(
                     raw_pin_geometry["y_offset_from_component_anchor"]
                 )
-                if subpart_anchor_delta is not None:
-                    pin_x -= subpart_anchor_delta["x"]
-                    pin_y -= subpart_anchor_delta["y"]
                 coordinate_source = (
                     "component_marker_anchor_offset_existing_wire_identity"
                     if existing_wire is not None
                     else "component_marker_anchor_offset"
                 )
-                if subpart_anchor_delta is not None:
-                    coordinate_source += "_subpart_anchor_rebased"
             else:
                 pin_x = int(bbox["min_x"]) + int(
                     raw_pin_geometry["x_offset_from_component_bbox_min"]
@@ -1123,33 +1061,22 @@ def plan_catalogue_pin_bidir_terminals(
                 coordinate_source += "_pin_endpoint_snap_" + "".join(snapped_axes)
             explicit_contact: tuple[int, int] | None = None
             terminal_contact_source = "generic_grid_contact"
-            coordinate_donor_anchor = donor_anchor
-            if (
-                subpart_anchor_delta is not None
-                and isinstance(donor_anchor, dict)
-                and donor_anchor.get("x") is not None
-                and donor_anchor.get("y") is not None
-            ):
-                coordinate_donor_anchor = {
-                    **donor_anchor,
-                    "x": int(donor_anchor["x"]) + subpart_anchor_delta["x"],
-                    "y": int(donor_anchor["y"]) + subpart_anchor_delta["y"],
-                }
+            donor_anchor = geometry.get("component_anchor")
             if (
                 component_anchor is not None
-                and isinstance(coordinate_donor_anchor, dict)
+                and isinstance(donor_anchor, dict)
                 and raw_pin_geometry.get("terminal_contact_x") is not None
                 and raw_pin_geometry.get("terminal_contact_y") is not None
-                and coordinate_donor_anchor.get("x") is not None
-                and coordinate_donor_anchor.get("y") is not None
+                and donor_anchor.get("x") is not None
+                and donor_anchor.get("y") is not None
             ):
                 explicit_contact = (
                     int(component_anchor["x"])
                     + int(raw_pin_geometry["terminal_contact_x"])
-                    - int(coordinate_donor_anchor["x"]),
+                    - int(donor_anchor["x"]),
                     int(component_anchor["y"])
                     + int(raw_pin_geometry["terminal_contact_y"])
-                    - int(coordinate_donor_anchor["y"]),
+                    - int(donor_anchor["y"]),
                 )
                 terminal_contact_source = "donor_terminal_contact_anchor_offset"
             terminal = TerminalSpec(
@@ -1208,11 +1135,7 @@ def plan_catalogue_pin_bidir_terminals(
                 transformed_wire = _transform_catalogue_wire_coordinates(
                     raw_pin_geometry,
                     component_anchor=component_anchor,
-                    donor_anchor=(
-                        coordinate_donor_anchor
-                        if isinstance(coordinate_donor_anchor, dict)
-                        else None
-                    ),
+                    donor_anchor=donor_anchor if isinstance(donor_anchor, dict) else None,
                 )
             if transformed_wire is not None:
                 wire_coordinates, matched_wire_endpoint = transformed_wire
@@ -1460,8 +1383,6 @@ def _patch_component_link_from_catalogue_offset(
     new_suffix: int,
     offset_from_component_end: int,
     trailer_hex: str | None = None,
-    component_refs: Iterable[str] = (),
-    subpart_end_relative: dict[str, Any] | None = None,
 ) -> tuple[bytes, int, int, bytes]:
     """Patch a donor-proven bare-packet link slot.
 
@@ -1473,51 +1394,6 @@ def _patch_component_link_from_catalogue_offset(
     """
 
     position = len(data) + int(offset_from_component_end)
-    if subpart_end_relative is not None:
-        raw_subpart = subpart_end_relative.get("subpart")
-        raw_offset = subpart_end_relative.get("offset")
-        if not isinstance(raw_subpart, str) or len(raw_subpart) != 1:
-            raise ValueError(
-                "Catalogue subpart-relative component link needs a one-letter "
-                f"subpart, got {raw_subpart!r}."
-            )
-        if not isinstance(raw_offset, int):
-            raise ValueError(
-                "Catalogue subpart-relative component link needs an integer "
-                f"offset, got {raw_offset!r}."
-            )
-        refs = tuple(str(ref) for ref in component_refs)
-        suffix = f":{raw_subpart.upper()}"
-        matching_refs = [ref for ref in refs if ref.upper().endswith(suffix)]
-        if len(matching_refs) != 1:
-            raise ValueError(
-                "Catalogue subpart-relative component link could not identify "
-                f"exactly one current {suffix} record among {refs}."
-            )
-        starts: list[tuple[int, str]] = []
-        for ref in refs:
-            encoded_ref = ref.encode("ascii")
-            marker = b"\xff" + bytes([len(encoded_ref)]) + encoded_ref
-            start = data.find(marker)
-            if start < 0:
-                raise ValueError(
-                    "Catalogue subpart-relative component link could not find "
-                    f"the declared current record {ref!r}."
-                )
-            starts.append((start, ref))
-        starts.sort()
-        target_start = next(
-            start for start, ref in starts if ref == matching_refs[0]
-        )
-        next_starts = [start for start, _ref in starts if start > target_start]
-        target_end = next_starts[0] if next_starts else len(data)
-        position = target_end + raw_offset
-        if position < target_start or position + 4 > target_end:
-            raise ValueError(
-                "Catalogue subpart-relative component link falls outside the "
-                f"current {matching_refs[0]} record: position={position}, "
-                f"record=[{target_start},{target_end})."
-            )
     return _patch_component_link_at_position(
         data,
         new_suffix=new_suffix,
@@ -1998,15 +1874,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 f"{plan['missing_geometry']}."
             )
         patched_data = data
-        raw_subpart_link_slots = (
-            geometry.get("component_link_subpart_end_offsets", {})
-            if isinstance(geometry, dict)
-            else {}
-        )
-        if not isinstance(raw_subpart_link_slots, dict):
-            raise ValueError(
-                f"{family} {key} has malformed component_link_subpart_end_offsets."
-            )
         data_wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
         wire_marker_offsets = [
             int(row["marker_offset"])
@@ -2094,8 +1961,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         new_suffix=temporary_suffix,
                         offset_from_component_end=int(raw_link_offset),
                         trailer_hex=raw_geometry.get("component_link_trailer"),
-                        component_refs=tuple(getattr(group, "refs", ())),
-                        subpart_end_relative=raw_subpart_link_slots.get(pin_name),
                     )
                 )
                 component_link_trailer = trailer
@@ -3150,15 +3015,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             geometry=geometry,
         )
         patched_data = original_group_data
-        raw_subpart_link_slots = (
-            geometry.get("component_link_subpart_end_offsets", {})
-            if isinstance(geometry, dict)
-            else {}
-        )
-        if not isinstance(raw_subpart_link_slots, dict):
-            raise ValueError(
-                f"{family} {key} has malformed component_link_subpart_end_offsets."
-            )
         terminal_pins: list[dict[str, Any]] = []
         terminal_records: list[bytes] = []
         appended_wire_records: list[bytes] = []
@@ -3190,8 +3046,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     new_suffix=temporary_suffix,
                     offset_from_component_end=int(raw_link_offset),
                     trailer_hex=raw_geometry.get("component_link_trailer"),
-                    component_refs=tuple(getattr(group, "refs", ())),
-                    subpart_end_relative=raw_subpart_link_slots.get(pin_name),
                 )
             )
             terminal_dict = dict(row["terminal"])
