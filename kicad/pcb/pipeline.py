@@ -17,6 +17,12 @@ from .physical_design_compiler import compile_physical_design
 PCB_PIPELINE_SCHEMA = "progen-kicad-pcb-pipeline/v0.1"
 MIN_SUPPORTED_DRILL_MM = 0.2
 
+# These are fixed retry orders, not entropy.  They are tried only after the
+# normal router has proved that a board is within two missing nets of a valid
+# result.  Keeping the list here makes the supported routing profile explicit
+# and preserves identical output for a given input/version.
+NEAR_COMPLETE_RESCUE_ORDER_SEEDS = (404, 101, 202, 303, 505, 606, 707, 808)
+
 
 def _routing_budget(component_count: int, multi_pad_net_count: int) -> dict[str, int | float | str]:
     """Scale search effort without rejecting otherwise compilable boards."""
@@ -173,6 +179,8 @@ def generate_pcb_for_project(
             enable_direct_paths=float(routing_budget["grid_mm"]) >= 2.0,
             compact_high_fanout_trees=float(routing_budget["grid_mm"]) >= 2.0,
             strategy_variants=float(routing_budget["grid_mm"]) >= 2.0,
+            near_complete_order_seeds=NEAR_COMPLETE_RESCUE_ORDER_SEEDS,
+            near_complete_max_unrouted_nets=2,
         )
         profile_name = str(profile["name"])
         placement_path = variants_dir / f"{profile_name}_placement.json"

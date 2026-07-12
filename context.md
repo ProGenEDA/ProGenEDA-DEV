@@ -11072,3 +11072,35 @@ Verification:
 - `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py -q`: 12 passed, 4 subtests passed.
 - `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_kicad_wire_maker.py kicad/tests/test_final_circuit_builder.py -q`: completed without a test failure.
 - Final v19 20-circuit manifest: zero label, body, source-pin, geometry, failed-net, and merged-net counts.
+
+### 2026-07-13T00:26:22+05:00
+
+User:
+
+> continue
+
+Agent:
+
+> I’m picking up from the completed schematic-label hardening and the additive PCB rerun, not restarting the 600-circuit job. I’ll finish the two remaining KiCad 10 DRC batches, inspect the remaining routing-limit cases for small evidence-backed improvements, then package the PCB-only release path and handoff.
+
+> The missing external checks are now clean: groups A and B are both 4/4 KiCad 10 DRC-clean, joining C’s 11/11 and D’s 16/16. That makes the 35 newly accepted boards independently clean; I’m now separating the 32 still rejected cases by actual router failure shape, so any final support increase stays modest and explainable.
+
+> The remaining failures split cleanly into two classes. Thirteen are repeated medium designs stranded by only one net, six repeated smaller designs by two nets, while the rest are genuinely dense 138–199-footprint boards with 15–68 nets unresolved; I will only pursue the first two with a bounded retry/ordering improvement and leave dense full-autorouting work explicitly out of this shipment.
+
+> The benchmark exposed a small, concrete weakness rather than a missing footprint or a bad netlist: the deterministic route order gets trapped late. A reproducible randomized order solved one previously rejected 67-footprint board in 9.6 seconds, while the broad eight-attempt strategy took 106 seconds and still failed it. I’m folding that as a bounded “near-complete rescue” only after the normal router is within two nets, then rerunning the affected subset.
+
+> I have enough evidence to make the router change now. I’m adding a deterministic rescue stage that preserves the normal four-attempt profile, runs only when the best result has at most two missing nets, and records every seed/attempt in the retained route metadata; it will not try to masquerade the dense 15–68-net boards as supported.
+
+Files edited:
+
+- `context.md`
+- `kicad/pcb/pcb_router.py`
+- `kicad/pcb/pipeline.py`
+- `kicad/tests/test_pcb_pipeline.py`
+
+Verification:
+
+- KiCad 10.0.4 external DRC: PCB 67-group A 4/4 passed and group B 4/4 passed, both with zero violations and unconnected items. Existing group C is 11/11 and group D is 16/16 under the same oracle, therefore all 35 new accepted boards are externally DRC clean.
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_pcb_pipeline.py -q`: 7 passed.
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pcb kicad/tests`: passed.
+- Router micro-benchmark: deterministic seed 404 completely routed an actual retained 67-footprint case in 9.571 seconds. The normal path remains unchanged unless its best candidate has one or two incomplete nets.

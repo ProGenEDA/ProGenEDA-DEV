@@ -6,12 +6,13 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 from kicad.pcb.footprint_catalogue import SOURCE_PACK_PATH, load_footprint_catalogue
 from kicad.pcb.footprint_placer import place_footprints
 from kicad.pcb.kicad_pcb_parser import parse_kicad_pcb
 from kicad.pcb.kicad_pcb_writer import write_kicad_pcb
-from kicad.pcb.pcb_router import _all_pad_endpoints, route_pcb_with_retries
+from kicad.pcb.pcb_router import PCBRoutePlan, _all_pad_endpoints, route_pcb_with_retries
 from kicad.pcb.pcb_validator import validate_pcb
 from kicad.pcb.physical_design_compiler import compile_physical_design
 from kicad.pcb.pipeline import _routing_budget, generate_pcb_for_project
@@ -77,6 +78,58 @@ def _minimal_circuit() -> dict[str, object]:
 
 
 class KiCadPCBPipelineTests(unittest.TestCase):
+    def test_near_complete_seeded_rescue_is_bounded_and_retained(self) -> None:
+        circuit = _minimal_circuit()
+        design = compile_physical_design(circuit, {})
+        placement = place_footprints(design)
+        partial = PCBRoutePlan(
+            grid=1.27,
+            track_width=0.25,
+            via_size=0.8,
+            via_drill=0.4,
+            segments=(),
+            vias=(),
+            net_results=(
+                {
+                    "net": "INPUT",
+                    "status": "unroutable",
+                    "member_count": 2,
+                    "routed_member_count": 1,
+                    "failed_members": ["R2.1"],
+                },
+            ),
+        )
+        complete = PCBRoutePlan(
+            grid=1.27,
+            track_width=0.25,
+            via_size=0.8,
+            via_drill=0.4,
+            segments=(),
+            vias=(),
+            net_results=(
+                {
+                    "net": "INPUT",
+                    "status": "routed",
+                    "member_count": 2,
+                    "routed_member_count": 2,
+                    "failed_members": [],
+                },
+            ),
+        )
+        with patch("kicad.pcb.pcb_router.route_pcb", side_effect=(partial, complete)) as mocked:
+            plan, variants = route_pcb_with_retries(
+                design,
+                placement,
+                max_attempts=1,
+                near_complete_order_seeds=(404,),
+                near_complete_max_unrouted_nets=2,
+            )
+        self.assertEqual(plan.unrouted_net_count, 0)
+        self.assertEqual(len(variants), 2)
+        self.assertEqual(variants[-1]["order_strategy"], "seeded_random")
+        self.assertEqual(variants[-1]["order_seed"], 404)
+        self.assertEqual(mocked.call_args_list[-1].kwargs["order_seed"], 404)
+
     def test_large_physical_design_uses_adaptive_budget_not_component_rejection(self) -> None:
         budget = _routing_budget(199, 140)
         self.assertEqual(budget["profile"], "extra_large")

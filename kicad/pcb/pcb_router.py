@@ -73,9 +73,19 @@ def route_pcb_with_retries(
     *,
     max_attempts: int = 8,
     strategy_variants: bool = False,
+    near_complete_order_seeds: tuple[int, ...] = (),
+    near_complete_max_unrouted_nets: int = 0,
     **kwargs: Any,
 ) -> tuple[PCBRoutePlan, list[dict[str, Any]]]:
-    """Retry from scratch with failed nets promoted ahead of their blockers."""
+    """Retry from scratch with deterministic order and near-complete rescues.
+
+    The normal attempts preserve the established priority-promotion behavior.
+    A caller may additionally supply a small fixed seed set for a genuinely
+    near-complete plan.  Those full-net-order retries are deliberately bounded
+    and recorded as route variants: they give a late, locally trapped net a
+    different routing history without turning every board into an unbounded
+    randomized autorouting search.
+    """
 
     priorities: list[str] = []
     variants: list[dict[str, Any]] = []
@@ -121,6 +131,39 @@ def route_pcb_with_retries(
             best = plan
             break
         priorities = list(dict.fromkeys([*failed, *priorities]))
+
+    if (
+        best is not None
+        and best.unrouted_net_count <= near_complete_max_unrouted_nets
+        and best.unrouted_net_count > 0
+    ):
+        for rescue_index, seed in enumerate(near_complete_order_seeds, start=1):
+            plan = route_pcb(design, placement, order_seed=int(seed), **kwargs)
+            failed = [
+                str(result["net"])
+                for result in plan.net_results
+                if result["status"] not in {"routed", "single_pad"}
+            ]
+            variants.append(
+                {
+                    "attempt": len(variants) + 1,
+                    "order_strategy": "seeded_random",
+                    "order_seed": int(seed),
+                    "rescue_index": rescue_index,
+                    "priority_nets": [],
+                    "failed_nets": failed,
+                    "unrouted_net_count": plan.unrouted_net_count,
+                    "segment_count": len(plan.segments),
+                    "via_count": len(plan.vias),
+                    "accepted": False,
+                }
+            )
+            score = (plan.unrouted_net_count, len(plan.vias), len(plan.segments))
+            if best is None or score < (best.unrouted_net_count, len(best.vias), len(best.segments)):
+                best = plan
+            if not failed:
+                best = plan
+                break
     if best is None:
         best = route_pcb(design, placement, **kwargs)
     accepted_score = (best.unrouted_net_count, len(best.vias), len(best.segments))
