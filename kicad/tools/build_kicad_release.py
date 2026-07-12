@@ -28,7 +28,7 @@ from typing import Any
 # Match kicad.pipeline.output_packager and the current website decoder, which
 # uppercases component codes during lookup. Uppercase Base36 avoids collisions.
 BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-DEFAULT_DATE_LABEL = "2026_07_10"
+DEFAULT_DATE_LABEL = "2026_07_13"
 
 
 def repo_root() -> Path:
@@ -109,6 +109,54 @@ def component_registry_from_catalogue(catalogue_path: Path) -> dict[str, Any]:
     }
 
 
+def pcb_support_from_source_pack(root: Path) -> dict[str, Any]:
+    """Build the public PCB support contract from the embedded runtime source."""
+
+    source_pack = load_json(root / "kicad" / "pcb" / "source_pack" / "footprint_source_pack.json")
+    footprint_map = load_json(root / "kicad" / "pipeline" / "catelogues" / "kicad_footprint_map.json")
+    footprints = source_pack.get("footprints", {})
+    if not isinstance(footprints, dict):
+        raise ValueError("PCB source pack has no footprints object")
+    return {
+        "section": "KiCad PCB",
+        "status": "bounded_native_pcb_mvp",
+        "input": "The same canonical ProGenEDA main JSON used for KiCad schematic generation.",
+        "output": "A direct native .kicad_pcb only after hosted PCB validation passes; the combined project ZIP also contains it.",
+        "source_backed": True,
+        "kicad_version": source_pack.get("kicad_version"),
+        "source_pack_schema": source_pack.get("schema"),
+        "source_footprint_record_count": int(source_pack.get("record_count", len(footprints))),
+        "audited_footprints": sorted(str(name) for name in footprints),
+        "abstract_footprint_mappings": {
+            str(kind): str(spec.get("footprint") or "")
+            for kind, spec in sorted(footprint_map.items())
+            if isinstance(spec, dict)
+        },
+        "routing": {
+            "layers": 2,
+            "track_width_mm": 0.25,
+            "minimum_clearance_mm": 0.2,
+            "via_diameter_mm": 0.8,
+            "via_drill_mm": 0.4,
+            "routing_modes": ["combination", "terminal", "wire"],
+            "default_routing_mode": "combination",
+        },
+        "validation": [
+            "embedded footprint SHA-256 verification",
+            "native PCB syntax/parser validation",
+            "identity/value/pad-to-net comparison",
+            "copper connectivity and clearance checks",
+            "component-overlap and closed-outline checks",
+            "optional installed KiCad 10 DRC release oracle",
+        ],
+        "limits": [
+            "No output board is produced for unsupported physical pin-to-pad mappings.",
+            "No output board is produced when bounded two-layer routing leaves a net unrouted.",
+            "No copper pours, differential-pair constraints, impedance control, length matching, thermal design, or universal dense-board autorouting.",
+        ],
+    }
+
+
 def copy_runtime_tree(root: Path, target: Path) -> None:
     package_root = target / "lib" / "kicad"
     package_root.mkdir(parents=True)
@@ -117,6 +165,7 @@ def copy_runtime_tree(root: Path, target: Path) -> None:
     for relative in [
         "generator",
         "pipeline",
+        "pcb",
         "rules",
         "source_pack",
     ]:
@@ -202,6 +251,17 @@ def write_executable_folder(root: Path, build_dir: Path, date_label: str) -> dic
             ./progen-kicad run path/to/main.json --output-root /tmp/progen-kicad-out --routing-mode combination
             ```
 
+            Direct PCB-only export (still uses the same canonical main JSON):
+
+            ```bash
+            ./progen-kicad run-pcb path/to/main.json --output-root /tmp/progen-kicad-pcb --routing-mode combination
+            ```
+
+            `run-pcb` emits a native board only after the embedded source-backed
+            PCB validator accepts it. It retains the normal internal generation
+            record because PCB pad assignment depends on the schematic pin
+            contract; it does not accept a separate PCB-specific JSON format.
+
             The executable is a portable folder, not a zipapp, because the KiCad
             pipeline intentionally reads bundled KiCad source/catalogue files by
             filesystem path.
@@ -248,7 +308,12 @@ def zip_directory(source_dir: Path, zip_path: Path) -> None:
                     archive.writestr(info, handle.read(), compress_type=zipfile.ZIP_DEFLATED)
 
 
-def write_website_files(root: Path, handoff_dir: Path, registry: dict[str, Any]) -> None:
+def write_website_files(
+    root: Path,
+    handoff_dir: Path,
+    registry: dict[str, Any],
+    pcb_support: dict[str, Any],
+) -> None:
     website_files = handoff_dir / "website_files"
     registry_dir = website_files / "packages" / "component-registry" / "registries"
     registry_dir.mkdir(parents=True, exist_ok=True)
@@ -266,6 +331,13 @@ def write_website_files(root: Path, handoff_dir: Path, registry: dict[str, Any])
         "groups": registry["groups"],
         "totalSupportedWords": len(registry["components"]),
         "note": "Generated from KiCad component catalogue canonical names plus aliases.",
+        "schematic": {
+            "section": "KiCad Schematic",
+            "status": "source_backed_combination_and_terminal_generation",
+            "input": "Canonical ProGenEDA main JSON.",
+            "output": "Native .kicad_pro/.kicad_sch project ZIP with private retained generation metadata.",
+        },
+        "pcb": pcb_support,
     }
     (frontend_dir / "kicadSupportedComponents.json").write_text(
         json.dumps(supported_parts, indent=2),
@@ -284,7 +356,7 @@ def write_website_files(root: Path, handoff_dir: Path, registry: dict[str, Any])
         shutil.copy2(sample, example_dir / sample.name)
 
 
-def write_audit_docs(handoff_dir: Path, registry: dict[str, Any]) -> None:
+def write_audit_docs(handoff_dir: Path, registry: dict[str, Any], pcb_support: dict[str, Any]) -> None:
     handoff_dir.mkdir(parents=True, exist_ok=True)
     (handoff_dir / "README.md").write_text(
         HANDOFF_README_MD.format(component_count=len(registry["components"])),
@@ -292,6 +364,96 @@ def write_audit_docs(handoff_dir: Path, registry: dict[str, Any]) -> None:
     )
     (handoff_dir / "NEWEBSITE_KICAD_AUDIT.md").write_text(NEWEBSITE_AUDIT_MD, encoding="utf-8")
     (handoff_dir / "IMPLEMENTATION_CHECKLIST.md").write_text(IMPLEMENTATION_CHECKLIST_MD, encoding="utf-8")
+    (handoff_dir / "information.md").write_text(
+        information_markdown(registry, pcb_support),
+        encoding="utf-8",
+    )
+
+
+def information_markdown(registry: dict[str, Any], pcb_support: dict[str, Any]) -> str:
+    mappings = pcb_support["abstract_footprint_mappings"]
+    mapped = "\n".join(f"- `{kind}` -> `{footprint or 'no physical footprint'}`" for kind, footprint in mappings.items())
+    limits = "\n".join(f"- {item}" for item in pcb_support["limits"])
+    return textwrap.dedent(
+        f"""\
+        # ProGenEDA KiCad Information
+
+        ## Current Product Scope
+
+        ProGenEDA KiCad consumes one canonical ProGenEDA main JSON. The same
+        input first produces a validated native KiCad schematic and then, when
+        the physical subset is supported and routes cleanly, a native two-layer
+        KiCad PCB. There is no parallel PCB-specific input schema.
+
+        - Schematic vocabulary: {len(registry["components"])} canonical words and aliases in `KC-A.json`.
+        - Default generation mode: `combination`.
+        - Public schematic artifact: `PROGEN_KICAD_PROJECT.zip`.
+        - Direct PCB artifact: a native `.kicad_pcb` exposed only after hosted
+          PCB validation passes.
+        - PCB-only command: `progen-kicad run-pcb main.json --output-root OUT`.
+
+        ## Architecture
+
+        ```text
+        canonical main JSON
+        -> input JSON fixer and validator
+        -> component selection and source-backed schematic placement
+        -> arrangement decision and coordinate beautifier
+        -> wire/terminal/combination planner and wire maker
+        -> value and final schematic validators
+        -> physical-design compiler
+        -> embedded KiCad 10.0.4 footprint catalogue
+        -> square-fill footprint placement
+        -> two-layer router with retained deterministic variants
+        -> native PCB writer and independent parser/validator
+        -> user project / direct PCB / private internal bundle
+        ```
+
+        The public download receives only the requested project or direct PCB.
+        The private internal bundle retains the original/fixed input, every
+        generated JSON, placement and route variants, accepted-variant marker,
+        validation reports, and project artifacts for database reconstruction.
+
+        ## Embedded Source and Validation
+
+        PCB generation and primary validation do not require KiCad installed on
+        the hosting server. The portable executable embeds {pcb_support["source_footprint_record_count"]}
+        audited KiCad {pcb_support["kicad_version"]} footprint records, their
+        source text, pad geometry, bounds, SHA-256 digests, mapping catalogue,
+        and source-reference material. An installed KiCad 10 CLI is an optional
+        external DRC oracle, never a runtime generator dependency.
+
+        PCB acceptance requires source digest verification, native file parsing,
+        component/reference/value checks, exact pad-net comparison, copper graph
+        connectivity, clearance checks, non-overlapping placement, and a closed
+        outline. A board that fails any hosted check is never offered as a user
+        artifact.
+
+        ## KiCad PCB Supported Physical Mappings
+
+        {mapped}
+
+        The footprint source pack also includes axial resistor/diode, ceramic
+        and electrolytic capacitors, LED, DIP/SOIC/TO packages, terminals,
+        Arduino Nano, ESP32-WROOM, and 1x01 through 1x20 pin-header records.
+        Generic connectors select an audited header by required numeric pad
+        count, up to 20 positions.
+
+        ## Current PCB Limits
+
+        {limits}
+
+        ## Future Direction
+
+        Next physical iterations can add audited footprint mappings, more board
+        stackups and rule profiles, copper pours, class-aware constraints,
+        differential pairs, controlled impedance, length matching, stronger
+        dense-board routing, manufacturing-output policies, and native Altium
+        backends. The canonical main JSON and backend-neutral stage contracts
+        are intentionally retained so those additions do not replace the input
+        model.
+        """
+    )
 
 
 def write_build_manifest(
@@ -393,6 +555,17 @@ function firstGeneratedProject(summary) {
   };
 }
 
+function firstGeneratedPcb(summary) {
+  const result = (summary?.pcb_exports || []).find(
+    (item) => item?.ready_for_output && item?.pcb_file,
+  );
+  if (!result) throw new Error('KiCad PCB-only command did not return an accepted native board.');
+  return {
+    result,
+    pcbPath: result.pcb_file,
+  };
+}
+
 export async function generateWithKiCadExecutable({
   mainJson,
   prompt = '',
@@ -485,6 +658,82 @@ export async function generateWithKiCadExecutable({
     },
   };
 }
+
+export async function generatePcbOnlyWithKiCadExecutable({
+  mainJson,
+  prompt = '',
+  config,
+  routingMode = 'combination',
+}) {
+  if (!mainJson || typeof mainJson !== 'object') {
+    const error = new Error('KiCad PCB generation requires canonical mainJson.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const executablePath = config.kicadExecutablePath || process.env.PROGEN_KICAD_EXECUTABLE_PATH;
+  if (!executablePath) {
+    const error = new Error('PROGEN_KICAD_EXECUTABLE_PATH is not configured.');
+    error.statusCode = 500;
+    throw error;
+  }
+
+  const workRoot = resolve(config.kicadWorkDir || process.env.PROGEN_KICAD_WORK_DIR || join(tmpdir(), 'progen-kicad-website-runs'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'progen-kicad-pcb-input-'));
+  const inputPath = join(tempDir, 'main.json');
+  await writeFile(inputPath, JSON.stringify(mainJson, null, 2), 'utf8');
+  const args = [
+    'run-pcb',
+    inputPath,
+    '--output-root',
+    workRoot,
+    '--label',
+    'website_kicad_pcb',
+    '--routing-mode',
+    routingMode,
+  ];
+  const command = executablePath.endsWith('.py') ? (process.env.PYTHON || 'python3') : executablePath;
+  const commandArgs = executablePath.endsWith('.py') ? [executablePath, ...args] : args;
+  const { stdout, stderr } = await runProcess(command, commandArgs);
+  const summary = parseLastJson(stdout);
+  const pcb = firstGeneratedPcb(summary);
+  const pcbPath = resolve(summary.run_dir, pcb.pcbPath);
+  const exportBuffer = await readFile(pcbPath);
+
+  return {
+    exportBuffer,
+    fileName: pcb.result.artifact.file_name,
+    internalCircuit: {
+      schemaVersion: 'progen-kicad-pcb-only-adapter/v0.1',
+      service: 'KC',
+      prompt,
+      executableSummary: summary,
+      exportFileName: pcb.result.artifact.file_name,
+    },
+    validationReport: {
+      status: 'passed',
+      checks: [
+        'kicad_input_json_fixed',
+        'kicad_schematic_contract_passed',
+        'kicad_pcb_hosted_validation_passed',
+      ],
+      executableRunDir: summary.run_dir,
+      stderr,
+    },
+    modelRouting: {
+      provider: 'progen-kicad',
+      model: 'deterministic-executable',
+      adapter: 'progen-kicad-pcb-only',
+    },
+    generationMetadata: {
+      temporary: false,
+      routingMode,
+      pcbOnly: true,
+      generatedAt: new Date().toISOString(),
+      executableRunDir: summary.run_dir,
+    },
+  };
+}
 """
 
 
@@ -514,8 +763,10 @@ Artifacts in this release:
 - `IMPLEMENTATION_CHECKLIST.md`: ordered implementation steps.
 
 The current KiCad schematic pipeline is ready for the supported combination and
-terminal flows. The website still needs integration work because its generation
-UI and temporary backend bridge currently force Proteus.
+terminal flows. The bounded source-backed PCB stage is also ready: the same
+main JSON can emit an accepted native board inside the project archive or through
+the direct PCB-only endpoint. The website still needs integration work because
+its generation UI and temporary backend bridge currently force Proteus.
 """
 
 
@@ -542,6 +793,9 @@ Analyzed folder: `/home/zaruka/Documents/newwebsite`
 - `apps/api/src/services/temp-generator-service.mjs` always calls the temporary
   Proteus bridge and does not pass `service`. Route `service === 'KC'` to the
   provided `generateWithKiCadExecutable` adapter.
+- Add a PCB-only selection that routes `service === 'KC'` and output type
+  `pcb_only` to `generatePcbOnlyWithKiCadExecutable`. It returns native
+  `.kicad_pcb` only when the hosted PCB validator accepted the board.
 - `packages/storage-adapter/local-storage-service.mjs` stores internal export
   copies under `export/PR/${exportFileName}`. Change that to
   `export/${service}/${exportFileName}`.
@@ -584,24 +838,31 @@ IMPLEMENTATION_CHECKLIST_MD = """\
 4. Update `apps/api/src/config.mjs` with `kicadExecutablePath` and `kicadWorkDir`.
 5. In `apps/api/src/services/temp-generator-service.mjs`, route `service === 'KC'`
    to `generateWithKiCadExecutable({ mainJson, prompt, config })`.
-6. Extend `/api/generate` to accept or obtain `mainJson` when `targetService` is
+6. Add the direct PCB option by importing
+   `generatePcbOnlyWithKiCadExecutable({ mainJson, prompt, config })`. Do not
+   create a second PCB request schema: it takes the same canonical `mainJson`.
+7. Extend `/api/generate` to accept or obtain `mainJson` when `targetService` is
    `KC`. Keep natural prompt generation blocked until prompt-to-main-json is
    wired.
-7. In `packages/storage-adapter/local-storage-service.mjs`, change internal
+8. In `packages/storage-adapter/local-storage-service.mjs`, change internal
    bundle export path from `export/PR/...` to `export/${service}/...`.
-8. In `apps/api/src/server.mjs`, return the stored artifact file name for
+9. In `apps/api/src/server.mjs`, return the stored artifact file name for
    `POST /api/circuits/:serial/download`.
-9. Update `src/temp/legacyGeneratorClient.ts` to accept a selected service and
+10. Update `src/temp/legacyGeneratorClient.ts` to accept a selected service and
    stop hardcoding `targetService: 'PR'`.
-10. Unlock KiCad in `src/generation/AnimatedDarkGeneratePage.tsx` and pass the
+11. Unlock KiCad in `src/generation/AnimatedDarkGeneratePage.tsx` and pass the
     selected service through the client.
-11. Make download modal/shared serial/workspace copy service-aware; KiCad
+12. Make download modal/shared serial/workspace copy service-aware; KiCad
     downloads are `PROGEN_KICAD_PROJECT.zip`.
-12. Replace or extend `SupportedComponentsPage.tsx` with service tabs and import
+13. Replace or extend `SupportedComponentsPage.tsx` with service tabs and import
     `kicadSupportedComponents.json` for the KiCad component menu.
-13. Update docs/runbook examples with `KC-A` serial examples and `.zip` KiCad
+14. Add a visibly separate **KiCad PCB** section from
+    `kicadSupportedComponents.json.pcb`; show its audited mappings and current
+    bounded-router limits instead of presenting all schematic words as physical
+    board support.
+15. Update docs/runbook examples with `KC-A` serial examples and `.zip` KiCad
     project exports.
-14. Smoke test:
+16. Schematic smoke test:
 
     ```bash
     ./progen-kicad-portable/progen-kicad run examples/ee215_diode_iv.json \\
@@ -609,7 +870,15 @@ IMPLEMENTATION_CHECKLIST_MD = """\
       --routing-mode combination
     ```
 
-15. Website smoke test:
+17. PCB-only smoke test:
+
+    ```bash
+    ./progen-kicad-portable/progen-kicad run-pcb examples/ee215_diode_iv.json \\
+      --output-root /tmp/progen-kicad-pcb-smoke \\
+      --routing-mode combination
+    ```
+
+18. Website smoke test:
 
     - POST `/api/generate` with `targetService: "KC"` and canonical `mainJson`.
     - Confirm DB service is `KC`.
@@ -656,6 +925,15 @@ The executable prints a JSON run manifest. For each generated circuit:
 The website should store the user project zip as the public export artifact and
 store the internal bundle privately.
 
+## PCB-only API output
+
+For a selected KiCad PCB-only request, invoke `run-pcb` through
+`generatePcbOnlyWithKiCadExecutable`. It uses the same canonical `mainJson`,
+but returns one direct native `.kicad_pcb`. Internally it still creates the
+schematic contract required for source-backed pad resolution. If the physical
+subset is unmapped or bounded routing/hosted PCB validation fails, it returns
+no board rather than a partial candidate.
+
 ## Serial registry
 
 Install `KC-A.json` next to `PR-A.json`. KiCad serials use:
@@ -680,6 +958,7 @@ def build_release(release_root: Path, date_label: str) -> dict[str, Any]:
     registry = component_registry_from_catalogue(
         root / "kicad" / "pipeline" / "catelogues" / "component_catalogue.json"
     )
+    pcb_support = pcb_support_from_source_pack(root)
 
     executable_info = write_executable_folder(root, build_root, date_label)
     executable_zip = release_root / f"progen-kicad-portable-{date_label}.zip"
@@ -688,8 +967,8 @@ def build_release(release_root: Path, date_label: str) -> dict[str, Any]:
     handoff_dir = release_root / f"newwebsite_kicad_handoff_{date_label}"
     if handoff_dir.exists():
         shutil.rmtree(handoff_dir)
-    write_audit_docs(handoff_dir, registry)
-    write_website_files(root, handoff_dir, registry)
+    write_audit_docs(handoff_dir, registry, pcb_support)
+    write_website_files(root, handoff_dir, registry, pcb_support)
     handoff_zip = release_root / f"newwebsite-kicad-handoff-{date_label}.zip"
     zip_directory(handoff_dir, handoff_zip)
 

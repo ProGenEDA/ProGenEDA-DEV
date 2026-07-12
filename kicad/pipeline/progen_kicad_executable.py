@@ -18,6 +18,7 @@ from .kicad_wire_maker import generate_wired_projects_from_final_json
 
 
 EXECUTABLE_SCHEMA = "progen-kicad-executable-run/v0.1"
+PCB_ONLY_SCHEMA = "progen-kicad-pcb-only-run/v0.1"
 VARIATION_PROFILES = ("square_compact", "square_loose", "wide_bus", "tall_bus", "loose_channels")
 
 
@@ -140,6 +141,84 @@ def run_executable(
         "The generated project run contains user-project zips and internal-only bundles.\n",
         encoding="utf-8",
     )
+    return summary
+
+
+def run_pcb_only(
+    source: Path,
+    *,
+    output_root: Path,
+    label: str = "pcb_only",
+    routing_mode: str = DEFAULT_ROUTING_MODE,
+    circuit_ids: set[str] | None = None,
+) -> dict[str, Any]:
+    """Expose only accepted native boards from the canonical full pipeline.
+
+    A PCB still depends on the source-backed schematic pin contract, therefore
+    this command deliberately runs the normal fixer and combined schematic/PCB
+    generation first.  It then copies only independently accepted ``.kicad_pcb``
+    artifacts into a direct-user folder and records every non-output reason.
+    """
+
+    generation_run = run_executable(
+        source,
+        output_root=output_root,
+        label=f"{label}_source_pipeline",
+        routing_mode=routing_mode,
+        circuit_ids=circuit_ids,
+    )
+    run_root = Path(str(generation_run["run_dir"]))
+    exports_dir = run_root / "pcb_only_exports"
+    exports_dir.mkdir()
+    generated = generation_run.get("generation", {})
+    generation_results = generated.get("results", []) if isinstance(generated, dict) else []
+    exports: list[dict[str, Any]] = []
+    for result in generation_results:
+        if not isinstance(result, dict):
+            continue
+        circuit_id = str(result.get("circuit_id") or "unknown")
+        artifacts = result.get("output_artifacts")
+        pcb_artifact = artifacts.get("user_pcb") if isinstance(artifacts, dict) else None
+        source_path = (
+            run_root / "generation" / str(pcb_artifact["path"])
+            if isinstance(pcb_artifact, dict) and pcb_artifact.get("path")
+            else None
+        )
+        ready = bool(result.get("pcb_ready_for_output")) and source_path is not None and source_path.is_file()
+        output_path: Path | None = None
+        if ready and source_path is not None:
+            circuit_dir = exports_dir / slugify(circuit_id).lower()
+            circuit_dir.mkdir()
+            output_path = circuit_dir / source_path.name
+            shutil.copy2(source_path, output_path)
+        exports.append(
+            {
+                "circuit_id": circuit_id,
+                "ready_for_output": ready,
+                "reason": str(result.get("pcb_reason") or "unknown"),
+                "physical_component_count": int(result.get("pcb_supported_component_count", 0)),
+                "omitted_component_count": int(result.get("pcb_omitted_component_count", 0)),
+                "unrouted_net_count": int(result.get("pcb_unrouted_net_count", 0)),
+                "pcb_file": str(output_path.relative_to(run_root)) if output_path is not None else None,
+                "artifact": pcb_artifact if ready else None,
+            }
+        )
+    summary = {
+        "schema": PCB_ONLY_SCHEMA,
+        "run_dir": str(run_root),
+        "source": str(source),
+        "requested_circuit_ids": sorted(circuit_ids) if circuit_ids else None,
+        "routing_mode": routing_mode,
+        "input_count": len(exports),
+        "accepted_pcb_count": sum(1 for item in exports if item["ready_for_output"]),
+        "rejected_pcb_count": sum(1 for item in exports if not item["ready_for_output"]),
+        "all_pcb_ready": bool(exports) and all(item["ready_for_output"] for item in exports),
+        "pcb_only_exports_dir": str(exports_dir.relative_to(run_root)),
+        "generation": generation_run,
+        "pcb_exports": exports,
+    }
+    summary["ok"] = bool(summary["all_pcb_ready"]) and _generation_passed(generation_run)
+    (run_root / "pcb_only_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
 
 
@@ -341,6 +420,16 @@ def main() -> None:
     run.add_argument("--variation-mode", action="store_true", help="Disable combination wire-route cap and honor generation_variation metadata.")
     run.add_argument("--circuit-id", action="append", default=[], help="Generate only this canonical circuit ID; repeat for a reproducible subset.")
 
+    pcb_only = sub.add_parser(
+        "run-pcb",
+        help="Run the canonical pipeline and expose only independently accepted .kicad_pcb outputs.",
+    )
+    pcb_only.add_argument("source", type=Path, help="One main JSON file or a folder/run with final_json/*.json.")
+    pcb_only.add_argument("--output-root", default="kicad/examples", type=Path)
+    pcb_only.add_argument("--label", default="pcb_only")
+    pcb_only.add_argument("--routing-mode", default=DEFAULT_ROUTING_MODE, choices=("wire", "terminal", "combination"))
+    pcb_only.add_argument("--circuit-id", action="append", default=[], help="Generate only this canonical circuit ID; repeat for a reproducible subset.")
+
     variations = sub.add_parser("run-variations", help="Create deterministic variation JSONs and run the normal generator on them.")
     variations.add_argument("source", type=Path, help="Folder/run with final_json/*.json.")
     variations.add_argument("--output-root", default="kicad/examples", type=Path)
@@ -368,6 +457,14 @@ def main() -> None:
             terminal_smoke=args.terminal_smoke,
             max_wired_routes=args.max_wired_routes,
             variation_mode=args.variation_mode,
+            circuit_ids=set(args.circuit_id) or None,
+        )
+    elif args.command == "run-pcb":
+        summary = run_pcb_only(
+            args.source,
+            output_root=args.output_root,
+            label=args.label,
+            routing_mode=args.routing_mode,
             circuit_ids=set(args.circuit_id) or None,
         )
     elif args.command == "run-variations":

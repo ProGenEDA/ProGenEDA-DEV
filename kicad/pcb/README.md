@@ -1,6 +1,6 @@
 # Integrated KiCad PCB Pipeline
 
-Status date: 2026-07-11
+Status date: 2026-07-13
 
 This package is the bounded native KiCad PCB stage of the canonical ProGenEDA
 pipeline. It consumes the same fixed main JSON and exact resolved schematic pin
@@ -153,3 +153,38 @@ kicad/examples/pcb_release_evidence_run_2026_07_11_230157_pcb_600_combination_v4
 
 Every selected board exported Gerbers, drill data/report, BOM, position CSV,
 and a nonblank KiCad 3D render.
+
+### Additive 67-Case Recovery Evidence
+
+The historical v4 run is immutable. Later changes did not regenerate the 600
+inputs from scratch; they reran only its former count-based non-output cases.
+
+```text
+kicad/examples/progen_kicad_executable_run_2026_07_12_052149_pcb67_v3_group_[a-d]
+```
+
+- the fixed-cap rejection is gone: every selected physically compilable design
+  now receives adaptive placement and bounded routing;
+- 35 of the former 67 count-based non-outputs became accepted boards;
+- KiCad 10.0.4 DRC accepted all 35: 4/4 group A, 4/4 group B, 11/11 group C,
+  and 16/16 group D, each with zero violations and zero unconnected items.
+
+The final near-complete rescue evidence covers the 18 remaining inputs that
+were within two unfinished physical nets:
+
+```text
+kicad/examples/progen_kicad_executable_run_2026_07_13_002708_pcb_near_complete_rescue_2026_07_13_group_[a-c]
+kicad/experiment_records/runs/pcb_near_complete_rescue_group_[a-b]_kicad10_drc_2026_07_13
+```
+
+- deterministic seed `404` recovered all five recoverable 67-footprint cases;
+- 5/5 new boards passed installed KiCad 10.0.4 DRC with zero violations and
+  zero unconnected items;
+- the remaining 13 near-complete inputs stayed routing-limited by one net even
+  after the retained broader seed study. They are never exposed as PCB output.
+
+The effective 600-circuit evidence set therefore has **535 accepted native
+PCBs**, all externally DRC clean, and **65 explicit routing limits**. The
+production default uses the one proven seed `404`; explicit layout variations
+choose alternate retained deterministic orders one at a time, avoiding the
+unbounded latency of an eight-seed production retry.

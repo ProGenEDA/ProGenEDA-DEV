@@ -11104,3 +11104,50 @@ Verification:
 - `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_pcb_pipeline.py -q`: 7 passed.
 - `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pcb kicad/tests`: passed.
 - Router micro-benchmark: deterministic seed 404 completely routed an actual retained 67-footprint case in 9.571 seconds. The normal path remains unchanged unless its best candidate has one or two incomplete nets.
+
+### 2026-07-13T01:03:29+05:00
+
+Continuation:
+
+> The rescue stage is committed and pushed at `4d3966a`. I’m now running the 18 genuinely near-complete historical inputs in three fresh immutable batches; their retained variants will show exactly whether the improvement converts them, and only newly accepted boards will go through the KiCad DRC oracle again.
+
+> While those batches run, I’m making the release-facing PCB-only command a thin, honest view over the same canonical pipeline: it still produces the schematic internally to resolve source-backed pin/footprint contracts, but it returns only independently accepted native `.kicad_pcb` files and a manifest. There will be no separate PCB JSON or bypass path.
+
+> The first full results confirm the boundary: all five 67-footprint duplicates are the only likely quick gains; the 42- and 58-footprint families remain limits after their recorded deterministic rescues. I’m preserving that distinction in the release material too, including the exact PCB footprint support, validated outputs, and current limits rather than a vague “KiCad supported” label.
+
+> The release command is now present and self-describing: `run-pcb` consumes the same main JSON, exposes only validated `.kicad_pcb` files, and retains the internal schematic-derived record needed to prove pin-to-pad mapping. The portable release will now include the PCB package/source pack and a website handoff with a separate KiCad PCB support section and `information.md`.
+
+> Group B is complete: 3/6 new boards accepted, and every schematic-side check remains clean across all six. I’m sending those three native boards to the KiCad 10 DRC oracle now while the final group finishes.
+
+> The three new Group B boards are now independently KiCad 10 DRC-clean, with zero violations and zero unconnected items. The PCB-only command’s focused test also passes; the remaining live work is the final Group A case, then its two accepted boards’ DRC and the release audit/package.
+
+> The full near-complete rerun is finished: exactly 5/18 converted, and both DRC batches are clean, 5/5 with zero violations and zero unconnected items. The evidence also shows the first rescue seed produced every conversion; the remaining seven never converted a failed case, so I’m tightening production to one bounded rescue seed and reserving the other deterministic orders for explicit layout-variation runs.
+
+Files edited:
+
+- `context.md`
+- `kicad/pcb/README.md`
+- `kicad/pcb/pipeline.py`
+- `kicad/pipeline/progen_kicad_executable.py`
+- `kicad/tests/test_pcb_pipeline.py`
+- `kicad/tools/build_kicad_release.py`
+- `kicad/experiment_records/runs/pcb_near_complete_rescue_aggregate_2026_07_13/README.md`
+- `kicad/experiment_records/runs/pcb_near_complete_rescue_aggregate_2026_07_13/aggregate_summary.json`
+
+Evidence created:
+
+- Fresh immutable rescue runs:
+  `kicad/examples/progen_kicad_executable_run_2026_07_13_002708_pcb_near_complete_rescue_2026_07_13_group_[a-c]`.
+- New KiCad 10.0.4 DRC records: Group A 2/2 and Group B 3/3 clean, each with
+  zero violations and unconnected items.
+- Existing adaptive 67-case DRC records complete the preceding 35/35 clean
+  acceptance evidence. The effective additive 600-circuit result is 535
+  accepted/DCR-clean boards and 65 explicit routing limits.
+
+Verification:
+
+- `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests/test_pcb_pipeline.py -q`: 9 passed.
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/pcb kicad/pipeline/progen_kicad_executable.py kicad/tools/build_kicad_release.py`: passed.
+- `python -m kicad.pipeline.progen_kicad_executable --help`: exposes `run-pcb`.
+- The 18-case retained variant reports prove every successful rescue occurred
+  at seed `404`; no later seed accepted a board that seed `404` did not.

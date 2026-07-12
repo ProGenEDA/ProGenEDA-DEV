@@ -15,7 +15,13 @@ from kicad.pcb.kicad_pcb_writer import write_kicad_pcb
 from kicad.pcb.pcb_router import PCBRoutePlan, _all_pad_endpoints, route_pcb_with_retries
 from kicad.pcb.pcb_validator import validate_pcb
 from kicad.pcb.physical_design_compiler import compile_physical_design
-from kicad.pcb.pipeline import _routing_budget, generate_pcb_for_project
+from kicad.pcb.pipeline import (
+    NEAR_COMPLETE_DEFAULT_ORDER_SEEDS,
+    _near_complete_rescue_order_seeds,
+    _routing_budget,
+    generate_pcb_for_project,
+)
+from kicad.pipeline.progen_kicad_executable import run_pcb_only
 from kicad.pipeline.kicad_wire_maker import generate_wired_projects_from_final_json
 
 
@@ -129,6 +135,12 @@ class KiCadPCBPipelineTests(unittest.TestCase):
         self.assertEqual(variants[-1]["order_strategy"], "seeded_random")
         self.assertEqual(variants[-1]["order_seed"], 404)
         self.assertEqual(mocked.call_args_list[-1].kwargs["order_seed"], 404)
+
+    def test_variations_select_one_deterministic_near_complete_order(self) -> None:
+        self.assertEqual(_near_complete_rescue_order_seeds(_minimal_circuit()), NEAR_COMPLETE_DEFAULT_ORDER_SEEDS)
+        variation = _minimal_circuit()
+        variation["generation_variation"] = {"enabled": True, "variation_index": 2}
+        self.assertEqual(_near_complete_rescue_order_seeds(variation), (101,))
 
     def test_large_physical_design_uses_adaptive_budget_not_component_rejection(self) -> None:
         budget = _routing_budget(199, 140)
@@ -250,6 +262,26 @@ class KiCadPCBPipelineTests(unittest.TestCase):
                 names = set(archive.namelist())
                 self.assertTrue(any(name.endswith(".kicad_pcb") for name in names))
                 self.assertFalse(any("candidate" in name or "pcb_internal" in name for name in names))
+
+    def test_pcb_only_command_exposes_accepted_native_board(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "main.json"
+            source.write_text(json.dumps(_minimal_circuit(), indent=2), encoding="utf-8")
+            summary = run_pcb_only(
+                source,
+                output_root=root,
+                label="pcb_only_test",
+                routing_mode="combination",
+            )
+            self.assertTrue(summary["ok"], summary)
+            self.assertTrue(summary["all_pcb_ready"], summary)
+            self.assertEqual(summary["accepted_pcb_count"], 1)
+            board = Path(summary["run_dir"]) / str(summary["pcb_exports"][0]["pcb_file"])
+            self.assertTrue(board.is_file())
+            self.assertEqual(board.suffix, ".kicad_pcb")
+            manifest = Path(summary["run_dir"]) / "pcb_only_manifest.json"
+            self.assertTrue(manifest.is_file())
 
 
 if __name__ == "__main__":

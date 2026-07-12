@@ -1,0 +1,4706 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "routing_mode": "combination",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "lane_candidates_then_grid_astar",
+    "routing_engine": "hanan_lane_candidates_rectilinear_mst_then_grid_astar",
+    "hanan_grid_lanes": true,
+    "rectilinear_mst_tree": true,
+    "astar_manhattan_fallback": true,
+    "segment_indexed_crossing_metrics": true,
+    "dense_design_mode": false,
+    "routing_order": "clock/control, bus, local/ordinary, display, power, ground; terminal/combination mode may label selected nets",
+    "multi_terminal_policy": "rectilinear MST / nearest connected tree; each branch uses net-wide Hanan lanes plus A* fallback",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "wire-wire crossings are allowed; existing wire grid cells are congestion hints, not hard obstacles",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "wire mode records unroutable nets as failures; terminal/combination mode may convert selected failures to local-label terminal plans",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 531.495,
+    "height": 505.46000000000004,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "wire_mode_terminal_policy": {
+    "enabled": false,
+    "terminal_strategy": "wire_mode_terminal_label",
+    "terminal_nets": [],
+    "nets": {},
+    "source": "explicit_terminal_nets_or_power_ground_policy"
+  },
+  "nets": {
+    "B2_SPI_SCK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D13",
+          "side": "left",
+          "point": [
+            147.32,
+            388.62
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+        },
+        {
+          "ref": "B2_J_SPI",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            154.94,
+            454.66
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "B2_TP5",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            160.02,
+            29.21
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        },
+        {
+          "ref": "B2_U6",
+          "pin": "CLK",
+          "side": "left",
+          "point": [
+            200.66,
+            452.12
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+        }
+      ],
+      "routes": [
+        {
+          "net": "B2_SPI_SCK",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 99.06,
+            "turns": 4,
+            "score": 419.66,
+            "portal_route_score": 419.66,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "B2_J_SPI",
+            "pin": "3",
+            "point": [
+              154.94,
+              454.66
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "B2_U6",
+            "pin": "CLK",
+            "point": [
+              200.66,
+              452.12
+            ],
+            "exact": true,
+            "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+          },
+          "path": [
+            [
+              154.94,
+              454.66
+            ],
+            [
+              149.86,
+              454.66
+            ],
+            [
+              149.86,
+              431.8
+            ],
+            [
+              195.58,
+              431.8
+            ],
+            [
+              195.58,
+              452.12
+            ],
+            [
+              200.66,
+              452.12
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                154.94,
+                454.66
+              ],
+              "end": [
+                149.86,
+                454.66
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                149.86,
+                454.66
+              ],
+              "end": [
+                149.86,
+                431.8
+              ],
+              "direction": "up",
+              "length": 22.86
+            },
+            {
+              "start": [
+                149.86,
+                431.8
+              ],
+              "end": [
+                195.58,
+                431.8
+              ],
+              "direction": "right",
+              "length": 45.72
+            },
+            {
+              "start": [
+                195.58,
+                431.8
+              ],
+              "end": [
+                195.58,
+                452.12
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                195.58,
+                452.12
+              ],
+              "end": [
+                200.66,
+                452.12
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "B2_SPI_SCK",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 0.0,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 83.82,
+            "turns": 2,
+            "score": 404.32,
+            "portal_route_score": 404.32,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "B2_J_SPI",
+            "pin": "3",
+            "point": [
+              154.94,
+              454.66
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+          },
+          "to": {
+            "ref": "B2_U1",
+            "pin": "D13",
+            "point": [
+              147.32,
+              388.62
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+          },
+          "path": [
+            [
+              154.94,
+              454.66
+            ],
+            [
+              142.24,
+              454.66
+            ],
+            [
+              142.24,
+              388.62
+            ],
+            [
+              147.32,
+              388.62
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                154.94,
+                454.66
+              ],
+              "end": [
+                142.24,
+                454.66
+              ],
+              "direction": "left",
+              "length": 12.7
+            },
+            {
+              "start": [
+                142.24,
+                454.66
+              ],
+              "end": [
+                142.24,
+                388.62
+              ],
+              "direction": "up",
+              "length": 66.04
+            },
+            {
+              "start": [
+                142.24,
+                388.62
+              ],
+              "end": [
+                147.32,
+                388.62
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "B2_SPI_SCK",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 8,
+            "outer_channel_cost": 315.04,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 636.27,
+            "turns": 3,
+            "score": 5057.396,
+            "portal_route_score": 5057.396,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "B2_U1",
+            "pin": "D13",
+            "point": [
+              147.32,
+              388.62
+            ],
+            "exact": true,
+            "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+          },
+          "to": {
+            "ref": "B2_TP5",
+            "pin": "1",
+            "point": [
+              160.02,
+              29.21
+            ],
+            "exact": true,
+            "source": "Connector:TestPoint:unit1:pin1"
+          },
+          "path": [
+            [
+              147.32,
+              388.62
+            ],
+            [
+              15.24,
+              388.62
+            ],
+            [
+              15.24,
+              34.29
+            ],
+            [
+              160.02,
+              34.29
+            ],
+            [
+              160.02,
+              29.21
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                388.62
+              ],
+              "end": [
+                15.24,
+                388.62
+              ],
+              "direction": "left",
+              "length": 132.08
+            },
+            {
+              "start": [
+                15.24,
+                388.62
+              ],
+              "end": [
+                15.24,
+                34.29
+              ],
+              "direction": "up",
+              "length": 354.33
+            },
+            {
+              "start": [
+                15.24,
+                34.29
+              ],
+              "end": [
+                160.02,
+                34.29
+              ],
+              "direction": "right",
+              "length": 144.78
+            },
+            {
+              "start": [
+                160.02,
+                34.29
+              ],
+              "end": [
+                160.02,
+                29.21
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            1,
+            73.66
+          ],
+          [
+            1,
+            3,
+            48.26
+          ],
+          [
+            0,
+            2,
+            372.11
+          ]
+        ],
+        "length": 494.03
+      }
+    },
+    "B1_ESP_BOOT_IO0": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO0",
+          "side": "right",
+          "point": [
+            55.88,
+            152.4
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+        },
+        {
+          "ref": "B1_R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            85.09,
+            374.65
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_SW2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            205.74,
+            106.68
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "B1_ESP_BOOT_IO0",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 139.717,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 248.92,
+            "turns": 4,
+            "score": 2246.13,
+            "portal_route_score": 2246.13,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "B1_U1",
+            "pin": "IO0",
+            "point": [
+              55.88,
+              152.4
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+          },
+          "to": {
+            "ref": "B1_SW2",
+            "pin": "1",
+            "point": [
+              205.74,
+              106.68
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "path": [
+            [
+              55.88,
+              152.4
+            ],
+            [
+              60.96,
+              152.4
+            ],
+            [
+              60.96,
+              80.01
+            ],
+            [
+              200.66,
+              80.01
+            ],
+            [
+              200.66,
+              106.68
+            ],
+            [
+              205.74,
+              106.68
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                55.88,
+                152.4
+              ],
+              "end": [
+                60.96,
+                152.4
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                60.96,
+                152.4
+              ],
+              "end": [
+                60.96,
+                80.01
+              ],
+              "direction": "up",
+              "length": 72.39
+            },
+            {
+              "start": [
+                60.96,
+                80.01
+              ],
+              "end": [
+                200.66,
+                80.01
+              ],
+              "direction": "right",
+              "length": 139.7
+            },
+            {
+              "start": [
+                200.66,
+                80.01
+              ],
+              "end": [
+                200.66,
+                106.68
+              ],
+              "direction": "down",
+              "length": 26.67
+            },
+            {
+              "start": [
+                200.66,
+                106.68
+              ],
+              "end": [
+                205.74,
+                106.68
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "B1_ESP_BOOT_IO0",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 167.419,
+            "different_net_crossings": 0,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 261.62,
+            "turns": 5,
+            "score": 2591.598,
+            "portal_route_score": 2591.598,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "B1_U1",
+            "pin": "IO0",
+            "point": [
+              55.88,
+              152.4
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+          },
+          "to": {
+            "ref": "B1_R2",
+            "pin": "2",
+            "point": [
+              85.09,
+              374.65
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "path": [
+            [
+              55.88,
+              152.4
+            ],
+            [
+              60.96,
+              152.4
+            ],
+            [
+              60.96,
+              372.11
+            ],
+            [
+              62.23,
+              372.11
+            ],
+            [
+              62.23,
+              379.73
+            ],
+            [
+              85.09,
+              379.73
+            ],
+            [
+              85.09,
+              374.65
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                55.88,
+                152.4
+              ],
+              "end": [
+                60.96,
+                152.4
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                60.96,
+                152.4
+              ],
+              "end": [
+                60.96,
+                372.11
+              ],
+              "direction": "down",
+              "length": 219.71
+            },
+            {
+              "start": [
+                60.96,
+                372.11
+              ],
+              "end": [
+                62.23,
+                372.11
+              ],
+              "direction": "right",
+              "length": 1.27
+            },
+            {
+              "start": [
+                62.23,
+                372.11
+              ],
+              "end": [
+                62.23,
+                379.73
+              ],
+              "direction": "down",
+              "length": 7.62
+            },
+            {
+              "start": [
+                62.23,
+                379.73
+              ],
+              "end": [
+                85.09,
+                379.73
+              ],
+              "direction": "right",
+              "length": 22.86
+            },
+            {
+              "start": [
+                85.09,
+                379.73
+              ],
+              "end": [
+                85.09,
+                374.65
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            2,
+            195.58
+          ],
+          [
+            0,
+            1,
+            251.46
+          ]
+        ],
+        "length": 447.04
+      }
+    },
+    "B1_ESP_EN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "EN",
+          "side": "left",
+          "point": [
+            25.4,
+            152.4
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+        },
+        {
+          "ref": "B1_SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            248.92,
+            457.2
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "B1_R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            434.34,
+            186.69
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "B1_ESP_EN",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 5,
+            "outer_channel_cost": 1143.627,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 0,
+            "length": 521.97,
+            "turns": 3,
+            "score": 14645.941,
+            "portal_route_score": 14645.941,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "B1_R1",
+            "pin": "2",
+            "point": [
+              434.34,
+              186.69
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "B1_U1",
+            "pin": "EN",
+            "point": [
+              25.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+          },
+          "path": [
+            [
+              434.34,
+              186.69
+            ],
+            [
+              434.34,
+              220.98
+            ],
+            [
+              20.32,
+              220.98
+            ],
+            [
+              20.32,
+              152.4
+            ],
+            [
+              25.4,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                434.34,
+                186.69
+              ],
+              "end": [
+                434.34,
+                220.98
+              ],
+              "direction": "down",
+              "length": 34.29
+            },
+            {
+              "start": [
+                434.34,
+                220.98
+              ],
+              "end": [
+                20.32,
+                220.98
+              ],
+              "direction": "left",
+              "length": 414.02
+            },
+            {
+              "start": [
+                20.32,
+                220.98
+              ],
+              "end": [
+                20.32,
+                152.4
+              ],
+              "direction": "up",
+              "length": 68.58
+            },
+            {
+              "start": [
+                20.32,
+                152.4
+              ],
+              "end": [
+                25.4,
+                152.4
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "B1_ESP_EN",
+          "router": "lane_candidate",
+          "route_quality": {
+            "body_hits": 0,
+            "component_shadow_count": 4,
+            "outer_channel_cost": 128.387,
+            "different_net_crossings": 1,
+            "forbidden_contacts": 0,
+            "same_net_contacts": 4,
+            "length": 604.52,
+            "turns": 4,
+            "score": 2465.962,
+            "portal_route_score": 2465.962,
+            "portal_route_forbidden_contacts": 0,
+            "portal_route_body_hits": 0
+          },
+          "from": {
+            "ref": "B1_U1",
+            "pin": "EN",
+            "point": [
+              25.4,
+              152.4
+            ],
+            "exact": true,
+            "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+          },
+          "to": {
+            "ref": "B1_SW1",
+            "pin": "1",
+            "point": [
+              248.92,
+              457.2
+            ],
+            "exact": true,
+            "source": "Switch:SW_Push:unit0:pin1"
+          },
+          "path": [
+            [
+              25.4,
+              152.4
+            ],
+            [
+              20.32,
+              152.4
+            ],
+            [
+              20.32,
+              490.22
+            ],
+            [
+              243.84,
+              490.22
+            ],
+            [
+              243.84,
+              457.2
+            ],
+            [
+              248.92,
+              457.2
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                25.4,
+                152.4
+              ],
+              "end": [
+                20.32,
+                152.4
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                20.32,
+                152.4
+              ],
+              "end": [
+                20.32,
+                490.22
+              ],
+              "direction": "down",
+              "length": 337.82
+            },
+            {
+              "start": [
+                20.32,
+                490.22
+              ],
+              "end": [
+                243.84,
+                490.22
+              ],
+              "direction": "right",
+              "length": 223.52
+            },
+            {
+              "start": [
+                243.84,
+                490.22
+              ],
+              "end": [
+                243.84,
+                457.2
+              ],
+              "direction": "up",
+              "length": 33.02
+            },
+            {
+              "start": [
+                243.84,
+                457.2
+              ],
+              "end": [
+                248.92,
+                457.2
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ],
+      "mst": {
+        "edges": [
+          [
+            0,
+            2,
+            443.23
+          ],
+          [
+            2,
+            1,
+            455.93
+          ]
+        ],
+        "length": 899.16
+      }
+    },
+    "B1_ESP_IO18": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO18",
+          "side": "right",
+          "point": [
+            55.88,
+            182.88
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin30"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            506.73,
+            281.94
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "combination_terminal_fallback: net converted to local labels after route geometry or emitter validation failure."
+      ]
+    },
+    "B1_ESP_IO19": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO19",
+          "side": "right",
+          "point": [
+            55.88,
+            185.42
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin31"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            506.73,
+            284.48
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_ESP_IO21": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO21",
+          "side": "right",
+          "point": [
+            55.88,
+            187.96
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin33"
+        },
+        {
+          "ref": "B1_J3",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            113.03,
+            454.66
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_ESP_IO22": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO22",
+          "side": "right",
+          "point": [
+            55.88,
+            190.5
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin36"
+        },
+        {
+          "ref": "B1_J3",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            113.03,
+            457.2
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_ESP_IO23": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO23",
+          "side": "right",
+          "point": [
+            55.88,
+            193.04
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+        },
+        {
+          "ref": "B1_J3",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            113.03,
+            459.74
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_ESP_IO5": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO5",
+          "side": "right",
+          "point": [
+            55.88,
+            165.1
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin29"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            506.73,
+            279.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_ESP_LED1": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO2",
+          "side": "right",
+          "point": [
+            55.88,
+            157.48
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin24"
+        },
+        {
+          "ref": "B1_R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            118.11,
+            110.49
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            303.53,
+            106.68
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_ESP_LED2": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "IO4",
+          "side": "right",
+          "point": [
+            55.88,
+            162.56
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin26"
+        },
+        {
+          "ref": "B1_R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            40.64,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            303.53,
+            182.88
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_UART_RX_FROM_ESP_TX": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "U0TXD",
+          "side": "right",
+          "point": [
+            55.88,
+            154.94
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin35"
+        },
+        {
+          "ref": "B1_U2",
+          "pin": "RXD",
+          "side": "right",
+          "point": [
+            447.04,
+            256.54
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin25"
+        },
+        {
+          "ref": "B1_J4",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            472.44,
+            106.68
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_UART_TX_TO_ESP_RX": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "U0RXD",
+          "side": "right",
+          "point": [
+            55.88,
+            160.02
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin34"
+        },
+        {
+          "ref": "B1_U2",
+          "pin": "TXD",
+          "side": "right",
+          "point": [
+            447.04,
+            254.0
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin26"
+        },
+        {
+          "ref": "B1_J4",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            472.44,
+            104.14
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_USB_CC1": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_J1",
+          "pin": "CC1",
+          "side": "right",
+          "point": [
+            449.58,
+            360.68
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA5"
+        },
+        {
+          "ref": "B1_R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            350.52,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_USB_CC2": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_J1",
+          "pin": "CC2",
+          "side": "right",
+          "point": [
+            449.58,
+            363.22
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+        },
+        {
+          "ref": "B1_R6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            511.81,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_USB_D_MINUS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U2",
+          "pin": "D-",
+          "side": "left",
+          "point": [
+            421.64,
+            269.24
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin5"
+        },
+        {
+          "ref": "B1_J1",
+          "pin": "D-",
+          "side": "right",
+          "point": [
+            449.58,
+            368.3
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_USB_D_PLUS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U2",
+          "pin": "D+",
+          "side": "left",
+          "point": [
+            421.64,
+            271.78
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin4"
+        },
+        {
+          "ref": "B1_J1",
+          "pin": "D+",
+          "side": "right",
+          "point": [
+            449.58,
+            373.38
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B1_USB_VBUS": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B1_U2",
+          "pin": "VBUS",
+          "side": "left",
+          "point": [
+            421.64,
+            266.7
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin8"
+        },
+        {
+          "ref": "B1_J1",
+          "pin": "VBUS",
+          "side": "right",
+          "point": [
+            449.58,
+            355.6
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_ARDUINO_TO_ESP_RX": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D2",
+          "side": "left",
+          "point": [
+            147.32,
+            360.68
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "U0RXD",
+          "side": "right",
+          "point": [
+            314.96,
+            434.34
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin34"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_ARDUINO_TO_ESP_TX": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D3",
+          "side": "left",
+          "point": [
+            147.32,
+            363.22
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "U0TXD",
+          "side": "right",
+          "point": [
+            314.96,
+            429.26
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin35"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_BUTTON_1": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D4",
+          "side": "left",
+          "point": [
+            147.32,
+            365.76
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin7"
+        },
+        {
+          "ref": "B2_R7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            299.72,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_SW3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            386.08,
+            281.94
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_BUTTON_2": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D5",
+          "side": "left",
+          "point": [
+            147.32,
+            368.3
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin8"
+        },
+        {
+          "ref": "B2_R8",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            391.16,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_SW4",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            248.92,
+            370.84
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_ESP_BOOT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U2",
+          "pin": "IO0",
+          "side": "right",
+          "point": [
+            314.96,
+            426.72
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+        },
+        {
+          "ref": "B2_R6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            477.52,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_SW2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            472.44,
+            182.88
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_ESP_EN": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U2",
+          "pin": "EN",
+          "side": "left",
+          "point": [
+            284.48,
+            426.72
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+        },
+        {
+          "ref": "B2_R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            254.0,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            386.08,
+            106.68
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_FLASH_WP_HOLD": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U6",
+          "pin": "HOLD",
+          "side": "left",
+          "point": [
+            200.66,
+            462.28
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin7"
+        },
+        {
+          "ref": "B2_U6",
+          "pin": "WP",
+          "side": "left",
+          "point": [
+            200.66,
+            459.74
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin3"
+        },
+        {
+          "ref": "B2_R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            40.64,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_LED_STATUS_1": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D9",
+          "side": "left",
+          "point": [
+            147.32,
+            378.46
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin12"
+        },
+        {
+          "ref": "B2_R14",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            254.0,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_LED_STATUS_1_A": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_D4",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            88.9,
+            457.2
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "B2_R14",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            254.0,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_LED_STATUS_2": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U2",
+          "pin": "IO2",
+          "side": "right",
+          "point": [
+            314.96,
+            431.8
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin24"
+        },
+        {
+          "ref": "B2_R15",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            299.72,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_LED_STATUS_2_A": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_D5",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            354.33,
+            106.68
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "B2_R15",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            299.72,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_MOSFET1_GATE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D6",
+          "side": "left",
+          "point": [
+            147.32,
+            370.84
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin9"
+        },
+        {
+          "ref": "B2_R9",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            434.34,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_MOSFET1_GATE_NODE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_Q1",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            506.73,
+            106.68
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin1"
+        },
+        {
+          "ref": "B2_R9",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            434.34,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R10",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            210.82,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_MOSFET1_LOAD_LOW": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_Q1",
+          "pin": "D",
+          "side": "top",
+          "point": [
+            514.35,
+            101.6
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin2"
+        },
+        {
+          "ref": "B2_D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            88.9,
+            106.68
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_LOAD1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            154.94,
+            185.42
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_MOSFET2_GATE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D7",
+          "side": "left",
+          "point": [
+            147.32,
+            373.38
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin10"
+        },
+        {
+          "ref": "B2_R11",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            160.02,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_MOSFET2_GATE_NODE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_Q2",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            35.56,
+            281.94
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin1"
+        },
+        {
+          "ref": "B2_R11",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            160.02,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R12",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            85.09,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_MOSFET2_LOAD_LOW": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_Q2",
+          "pin": "D",
+          "side": "top",
+          "point": [
+            43.18,
+            276.86
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin2"
+        },
+        {
+          "ref": "B2_D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            394.97,
+            182.88
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_LOAD2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            113.03,
+            284.48
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_RELAY_BASE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_Q3",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            35.56,
+            370.84
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin2"
+        },
+        {
+          "ref": "B2_R13",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            210.82,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_RELAY_COIL_LOW": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_Q3",
+          "pin": "C",
+          "side": "top",
+          "point": [
+            43.18,
+            365.76
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin1"
+        },
+        {
+          "ref": "B2_K1",
+          "pin": "COIL_MINUS",
+          "side": "bottom",
+          "point": [
+            345.44,
+            378.46
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pinA2"
+        },
+        {
+          "ref": "B2_D3",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            481.33,
+            281.94
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_RELAY_CONTACT_COM": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_K1",
+          "pin": "COM",
+          "side": "bottom",
+          "point": [
+            355.6,
+            378.46
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pin11"
+        },
+        {
+          "ref": "B2_J_RELAY",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            472.44,
+            29.21
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_RELAY_CONTACT_NO": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_K1",
+          "pin": "NO",
+          "side": "top",
+          "point": [
+            358.14,
+            363.22
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pin14"
+        },
+        {
+          "ref": "B2_J_RELAY",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            472.44,
+            31.75
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_RELAY_CTRL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D8",
+          "side": "left",
+          "point": [
+            147.32,
+            375.92
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin11"
+        },
+        {
+          "ref": "B2_R13",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            210.82,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_SPI_CS_FLASH": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D10",
+          "side": "left",
+          "point": [
+            147.32,
+            381.0
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+        },
+        {
+          "ref": "B2_U6",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            200.66,
+            449.58
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin1"
+        },
+        {
+          "ref": "B2_R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            40.64,
+            110.49
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_SPI",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            154.94,
+            452.12
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_SPI_MISO": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D12",
+          "side": "left",
+          "point": [
+            147.32,
+            386.08
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+        },
+        {
+          "ref": "B2_U6",
+          "pin": "DO",
+          "side": "left",
+          "point": [
+            200.66,
+            457.2
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_SPI",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            154.94,
+            459.74
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "B2_TP4",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            118.11,
+            29.21
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "B2_SPI_MOSI": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "D11",
+          "side": "left",
+          "point": [
+            147.32,
+            383.54
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+        },
+        {
+          "ref": "B2_U6",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            200.66,
+            454.66
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin5"
+        },
+        {
+          "ref": "B2_J_SPI",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            154.94,
+            457.2
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "B2_TP3",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            85.09,
+            29.21
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "wire_route_limit_deferred"
+      ]
+    },
+    "GUESS_TERMINAL_VIN": {
+      "strategy": "local_labels",
+      "terminal_reason": "combination_declared_terminal_net",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "VIN",
+          "side": "top",
+          "point": [
+            157.48,
+            345.44
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin30"
+        },
+        {
+          "ref": "B2_U5",
+          "pin": "BAT",
+          "side": "top",
+          "point": [
+            210.82,
+            360.68
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin14"
+        }
+      ],
+      "routes": []
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "terminal_reason": "combination_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            40.64,
+            147.32
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin2"
+        },
+        {
+          "ref": "B1_U2",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            434.34,
+            248.92
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin6"
+        },
+        {
+          "ref": "B1_R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            434.34,
+            179.07
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B1_R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            85.09,
+            367.03
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B1_R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            118.11,
+            102.87
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B1_R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            40.64,
+            25.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B1_C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            40.64,
+            453.39
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B1_C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            160.02,
+            102.87
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B1_C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            210.82,
+            179.07
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B1_C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            210.82,
+            278.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B1_C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            299.72,
+            367.03
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            506.73,
+            274.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B1_J3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            113.03,
+            449.58
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B1_J4",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            472.44,
+            99.06
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B1_J5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            506.73,
+            175.26
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            299.72,
+            421.64
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin2"
+        },
+        {
+          "ref": "B2_U3",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            436.88,
+            91.44
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin8"
+        },
+        {
+          "ref": "B2_U4",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            162.56,
+            243.84
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin28"
+        },
+        {
+          "ref": "B2_U5",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            208.28,
+            360.68
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin2"
+        },
+        {
+          "ref": "B2_U6",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            210.82,
+            444.5
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin8"
+        },
+        {
+          "ref": "B2_R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            118.11,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            350.52,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            40.64,
+            102.87
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            40.64,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            254.0,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            477.52,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            477.52,
+            367.03
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            254.0,
+            102.87
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            350.52,
+            179.07
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            350.52,
+            278.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C8",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            511.81,
+            367.03
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_J_3V3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            80.01,
+            274.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B2_TP7",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            118.11,
+            182.88
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "terminal_reason": "combination_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            165.1,
+            345.44
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin27"
+        },
+        {
+          "ref": "B2_K1",
+          "pin": "COIL_PLUS",
+          "side": "top",
+          "point": [
+            345.44,
+            363.22
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pinA1"
+        },
+        {
+          "ref": "B2_D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            81.28,
+            106.68
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "B2_D2",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            387.35,
+            182.88
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "B2_D3",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            473.71,
+            281.94
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "B2_C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            391.16,
+            58.42
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            254.0,
+            179.07
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            299.72,
+            278.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_SW3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            396.24,
+            281.94
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B2_SW4",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            259.08,
+            370.84
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B2_J_POWER",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            80.01,
+            175.26
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B2_J_LOAD1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            154.94,
+            182.88
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "B2_J_LOAD2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            113.03,
+            281.94
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "B2_TP6",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            511.81,
+            62.23
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "terminal_reason": "combination_power_ground_terminal",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            162.56,
+            396.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin29"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            299.72,
+            492.76
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin1"
+        },
+        {
+          "ref": "B2_U3",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            431.8,
+            121.92
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin1"
+        },
+        {
+          "ref": "B2_U4",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            157.48,
+            320.04
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin1"
+        },
+        {
+          "ref": "B2_U5",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            210.82,
+            381.0
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin10"
+        },
+        {
+          "ref": "B2_U6",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            210.82,
+            469.9
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin4"
+        },
+        {
+          "ref": "B2_Q1",
+          "pin": "S",
+          "side": "bottom",
+          "point": [
+            514.35,
+            111.76
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin3"
+        },
+        {
+          "ref": "B2_Q2",
+          "pin": "S",
+          "side": "bottom",
+          "point": [
+            43.18,
+            287.02
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin3"
+        },
+        {
+          "ref": "B2_Q3",
+          "pin": "E",
+          "side": "bottom",
+          "point": [
+            43.18,
+            375.92
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin3"
+        },
+        {
+          "ref": "B2_D4",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            81.28,
+            457.2
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "B2_D5",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            346.71,
+            106.68
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "B2_R7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            299.72,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            391.16,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R10",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            210.82,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R12",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            85.09,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            391.16,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            254.0,
+            186.69
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            299.72,
+            285.75
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            477.52,
+            374.65
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            254.0,
+            110.49
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            350.52,
+            186.69
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            350.52,
+            285.75
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            511.81,
+            374.65
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            396.24,
+            106.68
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B2_SW2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            482.6,
+            182.88
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B2_J_POWER",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            80.01,
+            177.8
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_3V3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            80.01,
+            276.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_I2C",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            113.03,
+            375.92
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin4"
+        },
+        {
+          "ref": "B2_J_SPI",
+          "pin": "6",
+          "side": "left",
+          "point": [
+            154.94,
+            462.28
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        },
+        {
+          "ref": "B2_TP8",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            254.0,
+            281.94
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_USB_GND": {
+      "strategy": "local_labels",
+      "terminal_reason": "combination_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            40.64,
+            218.44
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin1"
+        },
+        {
+          "ref": "B1_U2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            434.34,
+            314.96
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin29"
+        },
+        {
+          "ref": "B1_J1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            434.34,
+            393.7
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA1"
+        },
+        {
+          "ref": "B1_SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            259.08,
+            457.2
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B1_SW2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            215.9,
+            106.68
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B1_R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            350.52,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_R6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            511.81,
+            33.02
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            40.64,
+            461.01
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B1_C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            160.02,
+            110.49
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B1_C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            210.82,
+            186.69
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B1_C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            210.82,
+            285.75
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B1_C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            299.72,
+            374.65
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B1_D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            295.91,
+            106.68
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "B1_D2",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            295.91,
+            182.88
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            506.73,
+            276.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B1_J3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            113.03,
+            452.12
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B1_J4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            472.44,
+            101.6
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B1_J5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            506.73,
+            177.8
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_I2C_SCL": {
+      "strategy": "local_labels",
+      "terminal_reason": "combination_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "A5",
+          "side": "right",
+          "point": [
+            172.72,
+            383.54
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin24"
+        },
+        {
+          "ref": "B2_U3",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            449.58,
+            104.14
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin4"
+        },
+        {
+          "ref": "B2_U4",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            147.32,
+            287.02
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin18"
+        },
+        {
+          "ref": "B2_U5",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            198.12,
+            365.76
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin16"
+        },
+        {
+          "ref": "B2_R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            350.52,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_I2C",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            113.03,
+            373.38
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin3"
+        },
+        {
+          "ref": "B2_TP2",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            434.34,
+            62.23
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_I2C_SDA": {
+      "strategy": "local_labels",
+      "terminal_reason": "combination_high_fanout_terminal",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "A4",
+          "side": "right",
+          "point": [
+            172.72,
+            381.0
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin23"
+        },
+        {
+          "ref": "B2_U3",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            449.58,
+            109.22
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin3"
+        },
+        {
+          "ref": "B2_U4",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            147.32,
+            289.56
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin19"
+        },
+        {
+          "ref": "B2_U5",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            198.12,
+            368.3
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin15"
+        },
+        {
+          "ref": "B2_R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            118.11,
+            66.04
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_J_I2C",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            113.03,
+            370.84
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin2"
+        },
+        {
+          "ref": "B2_TP1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            391.16,
+            370.84
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "B2_SPI_SCK",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 99.06,
+        "turns": 4,
+        "score": 419.66,
+        "portal_route_score": 419.66,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "B2_J_SPI",
+        "pin": "3",
+        "point": [
+          154.94,
+          454.66
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "B2_U6",
+        "pin": "CLK",
+        "point": [
+          200.66,
+          452.12
+        ],
+        "exact": true,
+        "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+      },
+      "path": [
+        [
+          154.94,
+          454.66
+        ],
+        [
+          149.86,
+          454.66
+        ],
+        [
+          149.86,
+          431.8
+        ],
+        [
+          195.58,
+          431.8
+        ],
+        [
+          195.58,
+          452.12
+        ],
+        [
+          200.66,
+          452.12
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            154.94,
+            454.66
+          ],
+          "end": [
+            149.86,
+            454.66
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            149.86,
+            454.66
+          ],
+          "end": [
+            149.86,
+            431.8
+          ],
+          "direction": "up",
+          "length": 22.86
+        },
+        {
+          "start": [
+            149.86,
+            431.8
+          ],
+          "end": [
+            195.58,
+            431.8
+          ],
+          "direction": "right",
+          "length": 45.72
+        },
+        {
+          "start": [
+            195.58,
+            431.8
+          ],
+          "end": [
+            195.58,
+            452.12
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            195.58,
+            452.12
+          ],
+          "end": [
+            200.66,
+            452.12
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "B2_SPI_SCK",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 0.0,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 83.82,
+        "turns": 2,
+        "score": 404.32,
+        "portal_route_score": 404.32,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "B2_J_SPI",
+        "pin": "3",
+        "point": [
+          154.94,
+          454.66
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+      },
+      "to": {
+        "ref": "B2_U1",
+        "pin": "D13",
+        "point": [
+          147.32,
+          388.62
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+      },
+      "path": [
+        [
+          154.94,
+          454.66
+        ],
+        [
+          142.24,
+          454.66
+        ],
+        [
+          142.24,
+          388.62
+        ],
+        [
+          147.32,
+          388.62
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            154.94,
+            454.66
+          ],
+          "end": [
+            142.24,
+            454.66
+          ],
+          "direction": "left",
+          "length": 12.7
+        },
+        {
+          "start": [
+            142.24,
+            454.66
+          ],
+          "end": [
+            142.24,
+            388.62
+          ],
+          "direction": "up",
+          "length": 66.04
+        },
+        {
+          "start": [
+            142.24,
+            388.62
+          ],
+          "end": [
+            147.32,
+            388.62
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "B2_SPI_SCK",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 8,
+        "outer_channel_cost": 315.04,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 636.27,
+        "turns": 3,
+        "score": 5057.396,
+        "portal_route_score": 5057.396,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "B2_U1",
+        "pin": "D13",
+        "point": [
+          147.32,
+          388.62
+        ],
+        "exact": true,
+        "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+      },
+      "to": {
+        "ref": "B2_TP5",
+        "pin": "1",
+        "point": [
+          160.02,
+          29.21
+        ],
+        "exact": true,
+        "source": "Connector:TestPoint:unit1:pin1"
+      },
+      "path": [
+        [
+          147.32,
+          388.62
+        ],
+        [
+          15.24,
+          388.62
+        ],
+        [
+          15.24,
+          34.29
+        ],
+        [
+          160.02,
+          34.29
+        ],
+        [
+          160.02,
+          29.21
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            388.62
+          ],
+          "end": [
+            15.24,
+            388.62
+          ],
+          "direction": "left",
+          "length": 132.08
+        },
+        {
+          "start": [
+            15.24,
+            388.62
+          ],
+          "end": [
+            15.24,
+            34.29
+          ],
+          "direction": "up",
+          "length": 354.33
+        },
+        {
+          "start": [
+            15.24,
+            34.29
+          ],
+          "end": [
+            160.02,
+            34.29
+          ],
+          "direction": "right",
+          "length": 144.78
+        },
+        {
+          "start": [
+            160.02,
+            34.29
+          ],
+          "end": [
+            160.02,
+            29.21
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "B1_ESP_BOOT_IO0",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 139.717,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 248.92,
+        "turns": 4,
+        "score": 2246.13,
+        "portal_route_score": 2246.13,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "B1_U1",
+        "pin": "IO0",
+        "point": [
+          55.88,
+          152.4
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+      },
+      "to": {
+        "ref": "B1_SW2",
+        "pin": "1",
+        "point": [
+          205.74,
+          106.68
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "path": [
+        [
+          55.88,
+          152.4
+        ],
+        [
+          60.96,
+          152.4
+        ],
+        [
+          60.96,
+          80.01
+        ],
+        [
+          200.66,
+          80.01
+        ],
+        [
+          200.66,
+          106.68
+        ],
+        [
+          205.74,
+          106.68
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            55.88,
+            152.4
+          ],
+          "end": [
+            60.96,
+            152.4
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            60.96,
+            152.4
+          ],
+          "end": [
+            60.96,
+            80.01
+          ],
+          "direction": "up",
+          "length": 72.39
+        },
+        {
+          "start": [
+            60.96,
+            80.01
+          ],
+          "end": [
+            200.66,
+            80.01
+          ],
+          "direction": "right",
+          "length": 139.7
+        },
+        {
+          "start": [
+            200.66,
+            80.01
+          ],
+          "end": [
+            200.66,
+            106.68
+          ],
+          "direction": "down",
+          "length": 26.67
+        },
+        {
+          "start": [
+            200.66,
+            106.68
+          ],
+          "end": [
+            205.74,
+            106.68
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "B1_ESP_BOOT_IO0",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 167.419,
+        "different_net_crossings": 0,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 261.62,
+        "turns": 5,
+        "score": 2591.598,
+        "portal_route_score": 2591.598,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "B1_U1",
+        "pin": "IO0",
+        "point": [
+          55.88,
+          152.4
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+      },
+      "to": {
+        "ref": "B1_R2",
+        "pin": "2",
+        "point": [
+          85.09,
+          374.65
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "path": [
+        [
+          55.88,
+          152.4
+        ],
+        [
+          60.96,
+          152.4
+        ],
+        [
+          60.96,
+          372.11
+        ],
+        [
+          62.23,
+          372.11
+        ],
+        [
+          62.23,
+          379.73
+        ],
+        [
+          85.09,
+          379.73
+        ],
+        [
+          85.09,
+          374.65
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            55.88,
+            152.4
+          ],
+          "end": [
+            60.96,
+            152.4
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            60.96,
+            152.4
+          ],
+          "end": [
+            60.96,
+            372.11
+          ],
+          "direction": "down",
+          "length": 219.71
+        },
+        {
+          "start": [
+            60.96,
+            372.11
+          ],
+          "end": [
+            62.23,
+            372.11
+          ],
+          "direction": "right",
+          "length": 1.27
+        },
+        {
+          "start": [
+            62.23,
+            372.11
+          ],
+          "end": [
+            62.23,
+            379.73
+          ],
+          "direction": "down",
+          "length": 7.62
+        },
+        {
+          "start": [
+            62.23,
+            379.73
+          ],
+          "end": [
+            85.09,
+            379.73
+          ],
+          "direction": "right",
+          "length": 22.86
+        },
+        {
+          "start": [
+            85.09,
+            379.73
+          ],
+          "end": [
+            85.09,
+            374.65
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "B1_ESP_EN",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 5,
+        "outer_channel_cost": 1143.627,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 0,
+        "length": 521.97,
+        "turns": 3,
+        "score": 14645.941,
+        "portal_route_score": 14645.941,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "B1_R1",
+        "pin": "2",
+        "point": [
+          434.34,
+          186.69
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "B1_U1",
+        "pin": "EN",
+        "point": [
+          25.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+      },
+      "path": [
+        [
+          434.34,
+          186.69
+        ],
+        [
+          434.34,
+          220.98
+        ],
+        [
+          20.32,
+          220.98
+        ],
+        [
+          20.32,
+          152.4
+        ],
+        [
+          25.4,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            434.34,
+            186.69
+          ],
+          "end": [
+            434.34,
+            220.98
+          ],
+          "direction": "down",
+          "length": 34.29
+        },
+        {
+          "start": [
+            434.34,
+            220.98
+          ],
+          "end": [
+            20.32,
+            220.98
+          ],
+          "direction": "left",
+          "length": 414.02
+        },
+        {
+          "start": [
+            20.32,
+            220.98
+          ],
+          "end": [
+            20.32,
+            152.4
+          ],
+          "direction": "up",
+          "length": 68.58
+        },
+        {
+          "start": [
+            20.32,
+            152.4
+          ],
+          "end": [
+            25.4,
+            152.4
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "B1_ESP_EN",
+      "router": "lane_candidate",
+      "route_quality": {
+        "body_hits": 0,
+        "component_shadow_count": 4,
+        "outer_channel_cost": 128.387,
+        "different_net_crossings": 1,
+        "forbidden_contacts": 0,
+        "same_net_contacts": 4,
+        "length": 604.52,
+        "turns": 4,
+        "score": 2465.962,
+        "portal_route_score": 2465.962,
+        "portal_route_forbidden_contacts": 0,
+        "portal_route_body_hits": 0
+      },
+      "from": {
+        "ref": "B1_U1",
+        "pin": "EN",
+        "point": [
+          25.4,
+          152.4
+        ],
+        "exact": true,
+        "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+      },
+      "to": {
+        "ref": "B1_SW1",
+        "pin": "1",
+        "point": [
+          248.92,
+          457.2
+        ],
+        "exact": true,
+        "source": "Switch:SW_Push:unit0:pin1"
+      },
+      "path": [
+        [
+          25.4,
+          152.4
+        ],
+        [
+          20.32,
+          152.4
+        ],
+        [
+          20.32,
+          490.22
+        ],
+        [
+          243.84,
+          490.22
+        ],
+        [
+          243.84,
+          457.2
+        ],
+        [
+          248.92,
+          457.2
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            25.4,
+            152.4
+          ],
+          "end": [
+            20.32,
+            152.4
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            20.32,
+            152.4
+          ],
+          "end": [
+            20.32,
+            490.22
+          ],
+          "direction": "down",
+          "length": 337.82
+        },
+        {
+          "start": [
+            20.32,
+            490.22
+          ],
+          "end": [
+            243.84,
+            490.22
+          ],
+          "direction": "right",
+          "length": 223.52
+        },
+        {
+          "start": [
+            243.84,
+            490.22
+          ],
+          "end": [
+            243.84,
+            457.2
+          ],
+          "direction": "up",
+          "length": 33.02
+        },
+        {
+          "start": [
+            243.84,
+            457.2
+          ],
+          "end": [
+            248.92,
+            457.2
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 50,
+    "wired_route_count": 7,
+    "lane_route_count": 8,
+    "astar_route_count": 0,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 0,
+    "crossing_risk_route_count": 2,
+    "dense_design_mode": false,
+    "segment_count": 32,
+    "different_net_crossing_count": 2,
+    "mst_total_length": 2390.14,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 2,
+    "crossing_density_max_tile_crossings": 1,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 1,
+    "label_strategy_count": 47,
+    "wire_mode_terminal_net_count": 0,
+    "wire_mode_terminal_endpoint_count": 0,
+    "partial_wire_net_count": 0,
+    "unroutable_net_count": 0,
+    "combination_terminal_fallback_net_count": 1
+  },
+  "warnings": [
+    "astar_unroutable_expansion_limit: B1_ESP_EN exceeded 3000 explored grid states.",
+    "minimum_crossing_route: B1_ESP_EN accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: B1_ESP_EN exceeded 3000 explored grid states.",
+    "minimum_crossing_route: B1_ESP_EN accepted 1 different-net crossing/touch risks.",
+    "astar_unroutable_expansion_limit: B1_ESP_IO18 exceeded 3000 explored grid states.",
+    "minimum_forbidden_contact_route: B1_ESP_IO18 accepted 3 forbidden wire contact risk(s).",
+    "wire_route_limit_deferred: B1_ESP_IO19 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_ESP_IO21 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_ESP_IO22 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_ESP_IO23 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_ESP_IO5 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_ESP_LED1 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_ESP_LED2 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_UART_RX_FROM_ESP_TX skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_UART_TX_TO_ESP_RX skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_USB_CC1 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_USB_CC2 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_USB_D_MINUS skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_USB_D_PLUS skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B1_USB_VBUS skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_ARDUINO_TO_ESP_RX skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_ARDUINO_TO_ESP_TX skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_BUTTON_1 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_BUTTON_2 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_ESP_BOOT skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_ESP_EN skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_FLASH_WP_HOLD skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_LED_STATUS_1 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_LED_STATUS_1_A skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_LED_STATUS_2 skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_LED_STATUS_2_A skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_MOSFET1_GATE skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_MOSFET1_GATE_NODE skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_MOSFET1_LOAD_LOW skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_MOSFET2_GATE skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_MOSFET2_GATE_NODE skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_MOSFET2_LOAD_LOW skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_RELAY_BASE skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_RELAY_COIL_LOW skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_RELAY_CONTACT_COM skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_RELAY_CONTACT_NO skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_RELAY_CTRL skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_SPI_CS_FLASH skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_SPI_MISO skipped after 8 routed connections.",
+    "wire_route_limit_deferred: B2_SPI_MOSI skipped after 8 routed connections.",
+    "different_net_crossings_detected: 2",
+    "geometry_repair_fallback: converted nets to local labels: B1_ESP_IO18"
+  ],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": false,
+    "reason": "only strict wire mode uses partial-route component motion repair",
+    "pass_count": 0,
+    "passes": []
+  },
+  "arrangement_selection": {
+    "mode": "combination_fast_arrangement",
+    "reason": "combination generation terminalizes hard nets and bounds route attempts instead of searching for a wire-perfect arrangement"
+  }
+}

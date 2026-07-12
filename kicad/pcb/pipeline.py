@@ -17,11 +17,13 @@ from .physical_design_compiler import compile_physical_design
 PCB_PIPELINE_SCHEMA = "progen-kicad-pcb-pipeline/v0.1"
 MIN_SUPPORTED_DRILL_MM = 0.2
 
-# These are fixed retry orders, not entropy.  They are tried only after the
-# normal router has proved that a board is within two missing nets of a valid
-# result.  Keeping the list here makes the supported routing profile explicit
-# and preserves identical output for a given input/version.
-NEAR_COMPLETE_RESCUE_ORDER_SEEDS = (404, 101, 202, 303, 505, 606, 707, 808)
+# These are fixed retry orders, not entropy. The default is deliberately one
+# inexpensive rescue: the 18-case evidence run proved it recovered every case
+# that the broader sequence recovered. Additional orders remain available to
+# explicit generation variations, where a user has asked to spend time seeking
+# alternate layouts rather than delaying the standard single-board result.
+NEAR_COMPLETE_DEFAULT_ORDER_SEEDS = (404,)
+NEAR_COMPLETE_VARIATION_ORDER_SEEDS = (404, 101, 202, 303, 505, 606, 707, 808)
 
 
 def _routing_budget(component_count: int, multi_pad_net_count: int) -> dict[str, int | float | str]:
@@ -46,6 +48,17 @@ def _placement_profiles(component_count: int) -> tuple[dict[str, Any], ...]:
         "ignore_global_nets": None,
     }
     return (primary,)
+
+
+def _near_complete_rescue_order_seeds(circuit: dict[str, Any]) -> tuple[int, ...]:
+    variation = circuit.get("generation_variation")
+    if not isinstance(variation, dict) or not variation.get("enabled"):
+        return NEAR_COMPLETE_DEFAULT_ORDER_SEEDS
+    try:
+        index = max(1, int(variation.get("variation_index", 1)))
+    except (TypeError, ValueError):
+        index = 1
+    return (NEAR_COMPLETE_VARIATION_ORDER_SEEDS[(index - 1) % len(NEAR_COMPLETE_VARIATION_ORDER_SEEDS)],)
 
 
 def _evaluation_key(evaluation: dict[str, Any]) -> tuple[int, int, int, int]:
@@ -161,6 +174,7 @@ def generate_pcb_for_project(
 
     multi_pad_net_count = sum(1 for members in design.nets.values() if len(members) >= 2)
     routing_budget = _routing_budget(len(design.components), multi_pad_net_count)
+    rescue_order_seeds = _near_complete_rescue_order_seeds(circuit)
     variants_dir = internal_dir / "placement_variants"
     variants_dir.mkdir(exist_ok=True)
     evaluations: list[dict[str, Any]] = []
@@ -179,7 +193,7 @@ def generate_pcb_for_project(
             enable_direct_paths=float(routing_budget["grid_mm"]) >= 2.0,
             compact_high_fanout_trees=float(routing_budget["grid_mm"]) >= 2.0,
             strategy_variants=float(routing_budget["grid_mm"]) >= 2.0,
-            near_complete_order_seeds=NEAR_COMPLETE_RESCUE_ORDER_SEEDS,
+            near_complete_order_seeds=rescue_order_seeds,
             near_complete_max_unrouted_nets=2,
         )
         profile_name = str(profile["name"])
@@ -266,6 +280,7 @@ def generate_pcb_for_project(
         "validation": validation_path.name,
         "process_profile": process_profile_path.name,
         "routing_budget": routing_budget,
+        "near_complete_rescue_order_seeds": list(rescue_order_seeds),
         "selected_placement_profile": selected["profile"],
         "placement_variants": [
             {
