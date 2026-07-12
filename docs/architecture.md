@@ -1765,3 +1765,29 @@ order, terminal template fields, component link offsets/trailers, WIRE topology,
 and final absolute-address links. A match on coordinates, counts, and suffixes
 is insufficient. A catalogue field is not evidence in practice unless the
 shared emitter consumes and tests it.
+
+### 2026-07-12 current-group mixed tail oracle
+
+The accepted current-group mixed donor is
+`proteus_ic/donors/ALL_donorACCEPTED_TERMINALIZED_CURRENT_GROUP_TERMINALIZED_1X_sa.pdsprj`.
+It is evidence only: final projects must still be produced by the locked-mega
+component placer followed by the shared terminal placer. The shared mixed route
+keeps the frozen two-pin families unchanged and adds catalogue-tail attachment
+units in donor-proven order for POT-HG, OPAMP, LM317T, MOSFETs, and the BJT
+families. Mixed-only WIRE endpoint exceptions are catalogue data, scoped to
+this heterogeneous route; they must never rewrite a standalone accepted route.
+
+The reproducible generator is
+`tools/proteus_generation/2026-07-12/generate_current_group_mixed_tail_oracle_v1_temp.py`.
+It contains no terminal geometry or component exceptions; it calls the shared
+placer and catalogue only. It produces 1x, 9x, 15x, and requested-23x uniform
+cases. The locked mega donor has 21 clean `CAP-ELEC` groups, so the requested
+23x uniform case is explicitly capped at 21x. This is a source-placement limit
+recorded in `knowledge/component_catalog_v0.json`, not a reason to mutate an
+accepted terminal route.
+
+User direction for this checkpoint: do not treat Ctrl+S output or byte-for-byte
+save canonicalization as an emission target. Use a clean Proteus open and user
+visual layout inspection as acceptance evidence. Ctrl+S deltas may be recorded
+only as diagnostics when a project fails to open; never alter terminal geometry,
+WIRE shape, or a frozen family merely to mimic a save rewrite.

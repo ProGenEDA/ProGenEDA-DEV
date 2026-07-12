@@ -863,8 +863,11 @@ def _component_marker_anchors_for_catalogue(
             x_value = struct.unpack("<i", data[x_offset : x_offset + 4])[0]
             y_value = struct.unpack("<i", data[y_offset : y_offset + 4])[0]
             if (
-                -700_000_000 <= x_value <= 700_000_000
-                and -700_000_000 <= y_value <= 700_000_000
+                # The locked-mega 20x current-group preflight reaches a valid
+                # VPULSE anchor at Y=736,854,000. Keep this scanner aligned
+                # with component_beautifier's conservative signed range.
+                -1_000_000_000 <= x_value <= 1_000_000_000
+                and -1_000_000_000 <= y_value <= 1_000_000_000
                 and x_value % 10 == 0
                 and y_value % 10 == 0
                 and (abs(x_value) >= 1_000_000 or abs(y_value) >= 1_000_000)
@@ -2463,6 +2466,207 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     return _rebase_terminal_links_to_final_wire_addresses(destination, report)
 
 
+def _mixed_catalogue_attachment_order(
+    geometry: dict[str, Any],
+    *,
+    family: str,
+    key: str,
+) -> str:
+    """Return the donor-proven attachment order for a mixed output only.
+
+    Standalone catalogue emission retains ``clean_packet_attachment_order``.
+    A combined user-accepted donor can prove a distinct serialization without
+    changing that standalone route, which is essential for preserving accepted
+    solo BJT behavior.
+    """
+
+    order = str(
+        geometry.get(
+            "mixed_attachment_order",
+            geometry.get(
+                "clean_packet_attachment_order",
+                "component_stream_then_attachment_units",
+            ),
+        )
+    )
+    if order not in {
+        "component_stream_then_attachment_units",
+        "terminal_leading_component_then_wires",
+    }:
+        raise ValueError(
+            f"{family} {key} uses unsupported mixed attachment order {order!r}."
+        )
+    return order
+
+
+def _ordered_mixed_tail_attachment_units(
+    *,
+    family: str,
+    key: str,
+    geometry: dict[str, Any],
+    terminal_pins: list[dict[str, Any]],
+    terminal_records: list[bytes],
+    wire_records: list[bytes],
+) -> list[bytes]:
+    """Pair tail attachments in the exact user-donor pin order.
+
+    The normal catalogue pin order is useful for planning, but the accepted
+    combined donor may serialize terminal/WIRE pairs in another order.  The
+    catalogue records that order explicitly and this helper refuses partial or
+    duplicate mappings rather than guessing.
+    """
+
+    if not (
+        len(terminal_pins) == len(terminal_records) == len(wire_records)
+    ):
+        raise ValueError(
+            f"{family} {key} has mismatched terminal/WIRE planning cardinality."
+        )
+    units_by_pin: dict[str, tuple[bytes, bytes]] = {}
+    for row, terminal_record, wire_record in zip(
+        terminal_pins,
+        terminal_records,
+        wire_records,
+        strict=True,
+    ):
+        pin = str(row["pin"]["name"])
+        if pin in units_by_pin:
+            raise ValueError(f"{family} {key} planned duplicate pin {pin!r}.")
+        units_by_pin[pin] = (terminal_record, wire_record)
+
+    raw_order = geometry.get("mixed_tail_attachment_unit_order")
+    if raw_order is None:
+        ordered_pins = [str(row["pin"]["name"]) for row in terminal_pins]
+    elif isinstance(raw_order, (list, tuple)):
+        ordered_pins = [str(pin) for pin in raw_order]
+    else:
+        raise ValueError(
+            f"{family} {key} mixed tail attachment order must be a pin list."
+        )
+    if (
+        len(ordered_pins) != len(set(ordered_pins))
+        or set(ordered_pins) != set(units_by_pin)
+    ):
+        raise ValueError(
+            f"{family} {key} mixed tail attachment order {ordered_pins} does not "
+            f"cover planned pins {sorted(units_by_pin)}."
+        )
+    return [
+        record
+        for pin in ordered_pins
+        for record in units_by_pin[pin]
+    ]
+
+
+def _apply_mixed_tail_pin_evidence(
+    terminal_plans: Iterable[dict[str, Any]],
+    *,
+    family: str,
+    key: str,
+    geometry: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Replace generic mixed-plan geometry with combined-donor evidence.
+
+    The combined user donor is the authority for a terminal's grid contact and
+    full WIRE polyline in a mixed stream.  Evidence is stored relative to the
+    component marker anchor, so the exact accepted 1x shape translates to each
+    component's placed position without donor-slot dependence.
+    """
+
+    raw_evidence = geometry.get("mixed_tail_pin_evidence")
+    if raw_evidence is None:
+        return [dict(row) for row in terminal_plans]
+    if not isinstance(raw_evidence, dict) or not raw_evidence:
+        raise ValueError(f"{family} {key} mixed tail evidence must be a pin map.")
+
+    out: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for original_row in terminal_plans:
+        row = dict(original_row)
+        pin = dict(row["pin"])
+        pin_name = str(pin["name"])
+        evidence = raw_evidence.get(pin_name)
+        if not isinstance(evidence, dict):
+            raise ValueError(
+                f"{family} {key} lacks mixed tail donor evidence for pin {pin_name}."
+            )
+        if pin_name in seen:
+            raise ValueError(f"{family} {key} has duplicate mixed pin {pin_name}.")
+        seen.add(pin_name)
+        anchor = row.get("component_anchor")
+        if not isinstance(anchor, dict) or "x" not in anchor or "y" not in anchor:
+            raise ValueError(
+                f"{family} {key} mixed tail evidence requires a component anchor."
+            )
+        anchor_x = int(anchor["x"])
+        anchor_y = int(anchor["y"])
+        raw_symbol_offset = evidence.get("terminal_symbol_offset")
+        raw_wire_offsets = evidence.get("wire_coordinate_offsets")
+        if (
+            not isinstance(raw_symbol_offset, (list, tuple))
+            or len(raw_symbol_offset) != 2
+            or not isinstance(raw_wire_offsets, (list, tuple))
+            or len(raw_wire_offsets) < 4
+            or len(raw_wire_offsets) % 2 != 0
+        ):
+            raise ValueError(
+                f"{family} {key} pin {pin_name} has malformed mixed tail offsets."
+            )
+        symbol_x = anchor_x + int(raw_symbol_offset[0])
+        symbol_y = anchor_y + int(raw_symbol_offset[1])
+        angle = int(evidence.get("angle_tenths", row["terminal"]["angle_tenths"]))
+        if angle not in (LEFT_SIDE_ANGLE, RIGHT_SIDE_ANGLE):
+            raise ValueError(
+                f"{family} {key} pin {pin_name} has unsupported mixed angle {angle}."
+            )
+        coordinates = tuple(
+            int(value) + (anchor_x if index % 2 == 0 else anchor_y)
+            for index, value in enumerate(raw_wire_offsets)
+        )
+        terminal_contact = (
+            symbol_x + TERMINAL_CONTACT_TO_PIN
+            if angle == LEFT_SIDE_ANGLE
+            else symbol_x - TERMINAL_CONTACT_TO_PIN,
+            symbol_y,
+        )
+        points = _wire_coordinate_points(coordinates)
+        if terminal_contact not in points:
+            raise ValueError(
+                f"{family} {key} pin {pin_name} mixed donor WIRE does not touch "
+                "its terminal contact."
+            )
+        pin_x, pin_y = points[0]
+        pin["x"] = pin_x
+        pin["y"] = pin_y
+        terminal = dict(row["terminal"])
+        terminal["label"] = str(evidence.get("terminal_label", terminal["label"]))
+        terminal["symbol_x"] = symbol_x
+        terminal["symbol_y"] = symbol_y
+        terminal["angle_tenths"] = angle
+        row["pin"] = pin
+        row["terminal"] = terminal
+        row["short_wire"] = {
+            "start": {"x": terminal_contact[0], "y": terminal_contact[1]},
+            "end": {"x": pin_x, "y": pin_y},
+            "terminal_contact": {
+                "x": terminal_contact[0],
+                "y": terminal_contact[1],
+            },
+            "pin_contact": {"x": pin_x, "y": pin_y},
+            "coordinates": list(coordinates),
+            "record": _build_catalogue_wire_unit(coordinates).hex(),
+        }
+        row["coordinate_source"] = "combined_user_donor_anchor_relative_tail_evidence"
+        row["terminal_contact_source"] = "combined_user_donor_anchor_relative_tail_evidence"
+        out.append(row)
+    if set(raw_evidence) != seen:
+        raise ValueError(
+            f"{family} {key} mixed tail evidence pins {sorted(raw_evidence)} do not "
+            f"exactly cover planned pins {sorted(seen)}."
+        )
+    return out
+
+
 def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
@@ -2556,11 +2760,10 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         for family in requested_catalogue
         if (
             (profile := catalog.get_profile(family)) is not None
-            and str(
-                profile.proteus.get("pin_geometry", {}).get(
-                    "clean_packet_attachment_order",
-                    "component_stream_then_attachment_units",
-                )
+            and _mixed_catalogue_attachment_order(
+                dict(profile.proteus.get("pin_geometry", {})),
+                family=family,
+                key="<family-profile>",
             )
             == "terminal_leading_component_then_wires"
         )
@@ -2613,8 +2816,10 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     native_terminal_by_group_id: dict[int, tuple[bytes, ...]] = {}
     native_wire_by_group_id: dict[int, tuple[bytes, bytes]] = {}
     catalogue_attachment_records: list[bytes] = []
+    catalogue_attachment_groups: list[tuple[int, int, list[bytes]]] = []
     catalogue_leading_by_group_id: dict[int, tuple[bytes, ...]] = {}
     catalogue_leading_finalizers: set[str] = set()
+    mixed_tail_finalizer_overrides: set[str] = set()
     family_reports: list[dict[str, Any]] = []
     terminalized_count = 0
     reserved_temporary_suffixes: set[int] = set()
@@ -2628,6 +2833,20 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         )
         if not family_groups:
             continue
+        native_profile = catalog.get_profile(family)
+        raw_mixed_native_wire_evidence = (
+            native_profile.proteus.get("mixed_native_wire_evidence")
+            if native_profile is not None
+            and isinstance(native_profile.proteus, dict)
+            else None
+        )
+        if raw_mixed_native_wire_evidence is not None and not isinstance(
+            raw_mixed_native_wire_evidence,
+            dict,
+        ):
+            raise ValueError(
+                f"{family} mixed native wire evidence must be an object."
+            )
         pairs, family_terminals, family_wires, family_patches = (
             _mixed_overlay_family_parts(
                 family,
@@ -2652,6 +2871,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     else ("right", "left")
                 ),
                 snap_terminal_contacts_to_grid=False,
+                mixed_native_wire_evidence=raw_mixed_native_wire_evidence,
             )
         )
         if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
@@ -2699,6 +2919,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "wire_count_added": len(pairs) * 2,
                 "wire_count_rewritten": 0,
                 "terminal_pairs": [pair.as_dict() for pair in pairs],
+                "mixed_native_wire_evidence": (
+                    "accepted_current_group_tail_anchor_relative"
+                    if raw_mixed_native_wire_evidence is not None
+                    else None
+                ),
                 **(
                     {
                         "cap_wire_order": list(
@@ -2715,7 +2940,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         terminalized_count += len(family_groups)
 
     suffix = catalogue_suffix_start
-    for group in ordered_groups:
+    for group_index, group in enumerate(ordered_groups):
         family = _group_family(group)
         if family not in requested_catalogue:
             continue
@@ -2731,14 +2956,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "component_stream_then_attachment_units",
             )
         )
-        if clean_packet_attachment_order not in {
-            "component_stream_then_attachment_units",
-            "terminal_leading_component_then_wires",
-        }:
-            raise ValueError(
-                f"{family} {key} uses unsupported clean packet attachment order "
-                f"{clean_packet_attachment_order!r} in mixed emission."
-            )
+        mixed_attachment_order = _mixed_catalogue_attachment_order(
+            geometry,
+            family=family,
+            key=key,
+        )
         object_stream_finalizer = str(
             geometry.get("object_stream_finalizer", "double_ff")
         )
@@ -2751,29 +2973,53 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 f"{family} {key} uses unsupported object stream finalizer "
                 f"{object_stream_finalizer!r} in mixed emission."
             )
+        mixed_tail_finalizer = geometry.get("mixed_object_stream_finalizer")
+        if mixed_tail_finalizer is not None:
+            mixed_tail_finalizer = str(mixed_tail_finalizer)
+            if mixed_tail_finalizer not in {
+                "single_ff",
+                "double_ff",
+                "append_explicit_single_ff",
+            }:
+                raise ValueError(
+                    f"{family} {key} uses unsupported mixed tail finalizer "
+                    f"{mixed_tail_finalizer!r}."
+                )
         original_group_data = bytes(getattr(group, "data", b""))
         if BIDIR_MARKER in original_group_data or b"\x7fWIRE" in original_group_data:
             raise ValueError(
                 f"{family} {key} mixed catalogue emission requires a clean "
                 "bare component packet."
             )
+        mixed_use_donor_terminal_labels = bool(
+            geometry.get(
+                "mixed_use_donor_terminal_labels",
+                use_donor_terminal_labels,
+            )
+        )
         plan = plan_catalogue_pin_bidir_terminals(
             [group],
             catalog=catalog,
             suffix_start=suffix,
-            use_donor_terminal_labels=use_donor_terminal_labels,
+            use_donor_terminal_labels=mixed_use_donor_terminal_labels,
         )
         if not plan["valid"]:
             raise ValueError(
                 f"Catalogue terminal plan for {family} {key} is incomplete: "
                 f"{plan['missing_geometry']}."
+            )
+        mixed_terminal_plans = _apply_mixed_tail_pin_evidence(
+            plan["terminal_plans"],
+            family=family,
+            key=key,
+            geometry=geometry,
         )
         patched_data = original_group_data
         terminal_pins: list[dict[str, Any]] = []
         terminal_records: list[bytes] = []
         appended_wire_records: list[bytes] = []
         terminal_count = 0
-        for row in plan["terminal_plans"]:
+        for row in mixed_terminal_plans:
             pin_name = str(row["pin"]["name"])
             raw_geometry = pins[pin_name]
             if row.get("existing_wire") is not None:
@@ -2884,7 +3130,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 f"{family} {key} emitted {len(terminal_records)} terminals but "
                 f"{len(appended_wire_records)} short WIRE records in mixed emission."
             )
-        if clean_packet_attachment_order == "terminal_leading_component_then_wires":
+        mixed_tail_group_rank: int | None = None
+        if mixed_attachment_order == "terminal_leading_component_then_wires":
             if object_stream_finalizer != "append_explicit_single_ff":
                 raise ValueError(
                     f"{family} {key} terminal-leading mixed emission requires "
@@ -2949,13 +3196,32 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             # are collected after the component stream.  Moving those packets
             # to a synthetic trailing zone changed packet order and created a
             # full-mix-only loader failure.
-            for terminal_record, wire_record in zip(
-                terminal_records,
-                appended_wire_records,
-                strict=True,
-            ):
-                catalogue_attachment_records.append(terminal_record)
-                catalogue_attachment_records.append(wire_record)
+            raw_rank = geometry.get("mixed_tail_group_rank")
+            if raw_rank is None:
+                mixed_tail_group_rank = 1_000_000 + group_index
+            else:
+                try:
+                    mixed_tail_group_rank = int(raw_rank)
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(
+                        f"{family} {key} mixed tail group rank must be an integer."
+                    ) from exc
+            catalogue_attachment_groups.append(
+                (
+                    mixed_tail_group_rank,
+                    group_index,
+                    _ordered_mixed_tail_attachment_units(
+                        family=family,
+                        key=key,
+                        geometry=geometry,
+                        terminal_pins=terminal_pins,
+                        terminal_records=terminal_records,
+                        wire_records=appended_wire_records,
+                    ),
+                )
+            )
+            if mixed_tail_finalizer is not None:
+                mixed_tail_finalizer_overrides.add(mixed_tail_finalizer)
         if id(group) in patched_by_id:
             raise ValueError(f"Duplicate catalogue patch target for {family} {key}.")
         patched_by_id[id(group)] = patched_data
@@ -2971,10 +3237,14 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "wire_count_rewritten": 0,
                 "stripped_existing_terminal_count": 0,
                 "clean_packet_attachment_order": clean_packet_attachment_order,
+                "mixed_attachment_order": mixed_attachment_order,
+                "mixed_object_stream_finalizer": mixed_tail_finalizer,
+                "mixed_tail_group_rank": mixed_tail_group_rank,
+                "mixed_use_donor_terminal_labels": mixed_use_donor_terminal_labels,
                 "object_stream_finalizer": object_stream_finalizer,
                 "donor_terminal_record_order": (
                     list(geometry.get("donor_terminal_record_order", ()))
-                    if clean_packet_attachment_order
+                    if mixed_attachment_order
                     == "terminal_leading_component_then_wires"
                     else None
                 ),
@@ -2986,6 +3256,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         )
         terminalized_count += 1
 
+    catalogue_attachment_records = [
+        record
+        for _rank, _index, units in sorted(catalogue_attachment_groups)
+        for record in units
+    ]
     local_starts_with_terminal = [
         bool(native_terminal_by_group_id.get(id(group), ()))
         for group in ordered_groups
@@ -3004,10 +3279,68 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     local_records: list[bytes] = []
     preserved_rows: list[dict[str, Any]] = []
     boundary_normalizations = 0
+    donor_stream_boundary_overrides: list[dict[str, Any]] = []
     terminalized_ids = set(patched_by_id)
+
+    def mixed_stream_profile(family: str) -> dict[str, Any]:
+        profile = catalog.get_profile(family)
+        if profile is None or not isinstance(profile.proteus, dict):
+            return {}
+        raw_stream = profile.proteus.get("mixed_stream", {})
+        return dict(raw_stream) if isinstance(raw_stream, dict) else {}
+
+    def stream_byte(raw: Any, *, family: str, field: str) -> int:
+        if isinstance(raw, int):
+            value = raw
+        elif isinstance(raw, str):
+            try:
+                value = int(raw, 16)
+            except ValueError as exc:
+                raise ValueError(
+                    f"{family} mixed stream {field} byte {raw!r} is not hex."
+                ) from exc
+        else:
+            raise ValueError(
+                f"{family} mixed stream {field} byte must be an integer or hex string."
+            )
+        if not 0 <= value <= 0xFF:
+            raise ValueError(
+                f"{family} mixed stream {field} byte {value!r} is outside one byte."
+            )
+        return value
+
     for index, group in enumerate(ordered_groups):
         group_id = id(group)
         family = _group_family(group)
+        stream_profile = mixed_stream_profile(family)
+        if index:
+            raw_preceding_boundary = stream_profile.get("preceding_boundary")
+            if isinstance(raw_preceding_boundary, dict):
+                expected_previous_family = str(
+                    raw_preceding_boundary.get("previous_family", "")
+                )
+                actual_previous_family = _group_family(ordered_groups[index - 1])
+                if expected_previous_family == actual_previous_family:
+                    if not local_records or not local_records[-1]:
+                        raise ValueError(
+                            f"{family} donor stream boundary has no preceding record "
+                            "to normalize."
+                        )
+                    separator_byte = stream_byte(
+                        raw_preceding_boundary.get("separator_byte"),
+                        family=family,
+                        field="preceding_boundary.separator_byte",
+                    )
+                    previous = local_records[-1]
+                    local_records[-1] = previous[:-1] + bytes([separator_byte])
+                    donor_stream_boundary_overrides.append(
+                        {
+                            "before_family": family,
+                            "after_family": actual_previous_family,
+                            "separator_byte": f"{separator_byte:02x}",
+                            "kind": "preceding_boundary",
+                        }
+                    )
         next_starts_with_terminal = (
             index + 1 < len(local_starts_with_terminal)
             and local_starts_with_terminal[index + 1]
@@ -3039,7 +3372,25 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 )
             local_records.extend(terminals)
             if family != "RESISTOR":
-                local_records.append(b"\x00")
+                raw_separator = stream_profile.get(
+                    "native_component_prefix_separator_byte",
+                    0,
+                )
+                separator_byte = stream_byte(
+                    raw_separator,
+                    family=family,
+                    field="native_component_prefix_separator_byte",
+                )
+                local_records.append(bytes([separator_byte]))
+                if separator_byte:
+                    donor_stream_boundary_overrides.append(
+                        {
+                            "before_family": family,
+                            "after_family": family,
+                            "separator_byte": f"{separator_byte:02x}",
+                            "kind": "native_component_prefix",
+                        }
+                    )
             local_records.extend((patched, first_wire))
             local_records.append(
                 # T01's final CAP-ELEC WIRE and P002's R/C boundary prove that
@@ -3114,6 +3465,24 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             + b"".join(catalogue_attachment_records)
             + b"".join(catalogue_terminal_leading_records)
         )
+    elif mixed_tail_finalizer_overrides:
+        if len(mixed_tail_finalizer_overrides) != 1:
+            raise ValueError(
+                "Mixed catalogue tail attachments require one donor-proven "
+                f"finalizer override, got {sorted(mixed_tail_finalizer_overrides)}."
+            )
+        object_stream_finalizer = next(iter(mixed_tail_finalizer_overrides))
+        mixed_stream = accepted_native_order_stream + b"".join(
+            catalogue_attachment_records
+        )
+        if object_stream_finalizer == "single_ff":
+            new_chunk = _ensure_single_ff_object_stream_terminator(mixed_stream)
+        elif object_stream_finalizer == "append_explicit_single_ff":
+            new_chunk = _append_explicit_single_ff_object_stream_terminator(
+                mixed_stream
+            )
+        else:
+            new_chunk = _ensure_double_ff_object_stream_terminator(mixed_stream)
     else:
         object_stream_finalizer = "double_ff"
         new_chunk = _ensure_double_ff_object_stream_terminator(
@@ -3160,12 +3529,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     "start": start,
                     "end": end,
                     "separator": final_chunk[end - 1],
-                    "valid": final_chunk[end - 1] in (0x00, 0xFF),
+                    "valid": final_chunk[end - 1] in (0x00, 0x08, 0xFF),
                 }
             )
 
     expected_terminals = sum(int(report["terminal_count"]) for report in family_reports)
     expected_wires = sum(int(report["wire_count"]) for report in family_reports)
+    native_wire_path_checks = _wire_path_contact_checks(family_reports)
     catalogue_contact_checks = []
     for report_row in family_reports:
         for row in report_row.get("terminal_pins", []):
@@ -3235,6 +3605,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ),
         "object_order": (
             "preserved_placed_component_order_with_native_attachment_units_"
+            "and_ranked_catalogue_tail_attachment_units"
+            if not catalogue_leading_by_group_id
+            else "preserved_placed_component_order_with_native_attachment_units_"
             "catalogue_trailing_attachment_units_then_contiguous_final_"
             "terminal-leading_zone"
         ),
@@ -3265,7 +3638,18 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             for report in family_reports
             if report.get("terminal_pairs")
         ),
-        "wire_path_contact_checks": catalogue_contact_checks,
+        "native_wire_path_contact_checks": native_wire_path_checks,
+        "native_terminal_contact_basis": (
+            "accepted_mixed_donor_terminal_contact_coordinates"
+        ),
+        "native_wire_path_contacts_valid": all(
+            row.get("terminal_to_wire", False)
+            and row.get("wire_to_pin", False)
+            for row in native_wire_path_checks
+        ),
+        "wire_path_contact_checks": (
+            native_wire_path_checks + catalogue_contact_checks
+        ),
         "wire_path_contacts_valid": all(
             (
                 row.get("wire_is_nonzero", True)
@@ -3274,6 +3658,10 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             and row.get("terminal_to_wire", False)
             and row.get("wire_to_pin", False)
             for row in catalogue_contact_checks
+        ) and all(
+            row.get("terminal_to_wire", False)
+            and row.get("wire_to_pin", False)
+            for row in native_wire_path_checks
         ),
         "terminal_grid_alignment_valid": all(
             row.get("terminal_contact_grid_aligned", True)
@@ -3289,6 +3677,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             catalogue_leading_by_group_id
         ),
         "boundary_tail_normalizations": boundary_normalizations,
+        "donor_stream_boundary_overrides": donor_stream_boundary_overrides,
         "native_wire_boundary_checks": native_wire_boundary_checks,
         "native_wire_boundaries_valid": all(
             row["valid"] for row in native_wire_boundary_checks
@@ -3323,6 +3712,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 else final_chunk.endswith(b"\xff")
             )
             and all(row["valid"] for row in native_wire_boundary_checks)
+            and all(
+                row.get("terminal_to_wire", False)
+                and row.get("wire_to_pin", False)
+                for row in native_wire_path_checks
+            )
         ),
     }
     return _rebase_terminal_links_to_final_wire_addresses(destination, report)
@@ -5637,6 +6031,126 @@ def _overlay_terminal_record(
     return record[:-2] + active_link_trailer
 
 
+def _apply_mixed_native_wire_evidence_to_pairs(
+    pairs: Iterable[Any],
+    groups: Iterable[Any],
+    *,
+    family: str,
+    evidence: dict[str, Any] | None,
+) -> tuple[Any, ...]:
+    """Apply accepted combined-donor WIRE endpoints in the mixed path only.
+
+    The standalone two-pin planners remain frozen at their user-accepted
+    behavior.  A combined donor can nevertheless prove a different rendered
+    pin endpoint for a family in a heterogeneous stream (for example, the
+    diagonal LED, 40EPS08, and fuse shapes).  This evidence is relative to the
+    packet's body anchor, so it follows each component placed by the
+    replaceable component placer rather than a donor slot or absolute position.
+    """
+
+    planned_pairs = tuple(pairs)
+    planned_groups = tuple(groups)
+    if evidence is None:
+        return planned_pairs
+    if len(planned_pairs) != len(planned_groups):
+        raise ValueError(
+            f"{family} mixed native evidence has mismatched groups and pairs."
+        )
+    raw_roles = evidence.get("roles") if isinstance(evidence, dict) else None
+    if not isinstance(raw_roles, dict) or not raw_roles:
+        raise ValueError(
+            f"{family} mixed native wire evidence requires a non-empty roles map."
+        )
+    unknown_roles = sorted(set(raw_roles) - {"left", "right"})
+    if unknown_roles:
+        raise ValueError(
+            f"{family} mixed native wire evidence has unsupported role(s) "
+            f"{unknown_roles}."
+        )
+
+    def offsets(row: Any, *, role: str) -> tuple[tuple[int, int], tuple[int, int]]:
+        if not isinstance(row, dict):
+            raise ValueError(
+                f"{family} mixed native wire evidence for {role} must be an object."
+            )
+        start = row.get("wire_start_offset_from_component_anchor")
+        end = row.get("wire_end_offset_from_component_anchor")
+        if (
+            not isinstance(start, (list, tuple))
+            or not isinstance(end, (list, tuple))
+            or len(start) != 2
+            or len(end) != 2
+        ):
+            raise ValueError(
+                f"{family} mixed native wire evidence for {role} needs two "
+                "start/end anchor offsets."
+            )
+        return (int(start[0]), int(start[1])), (int(end[0]), int(end[1]))
+
+    out: list[Any] = []
+    for group, pair in zip(planned_groups, planned_pairs, strict=True):
+        if not all(
+            hasattr(pair, field)
+            for field in (
+                "left",
+                "right",
+                "component_x_offset",
+                "component_y_offset",
+            )
+        ):
+            raise ValueError(
+                f"{family} mixed native wire evidence only supports two-sided "
+                "terminal pairs."
+            )
+        data = bytes(getattr(group, "data", b""))
+        component_x_offset = int(pair.component_x_offset)
+        component_y_offset = int(pair.component_y_offset)
+        if (
+            component_x_offset < 0
+            or component_y_offset < 0
+            or component_x_offset + 4 > len(data)
+            or component_y_offset + 4 > len(data)
+        ):
+            raise ValueError(
+                f"{family} {getattr(group, 'key', '')} has no valid body anchor "
+                "for mixed native WIRE evidence."
+            )
+        anchor_x = _s32_at(data, component_x_offset)
+        anchor_y = _s32_at(data, component_y_offset)
+        updates: dict[str, int] = {}
+        for role, raw_row in raw_roles.items():
+            start_offset, end_offset = offsets(raw_row, role=str(role))
+            start_x = anchor_x + start_offset[0]
+            start_y = anchor_y + start_offset[1]
+            end_x = anchor_x + end_offset[0]
+            end_y = anchor_y + end_offset[1]
+            terminal = getattr(pair, role)
+            if terminal.angle_tenths == LEFT_SIDE_ANGLE:
+                contact_x = terminal.symbol_x + TERMINAL_CONTACT_TO_PIN
+            elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
+                contact_x = terminal.symbol_x - TERMINAL_CONTACT_TO_PIN
+            else:
+                raise ValueError(
+                    f"{family} {getattr(group, 'key', '')} {role} terminal has "
+                    f"unsupported angle {terminal.angle_tenths}."
+                )
+            if (start_x, start_y) != (contact_x, terminal.symbol_y):
+                raise ValueError(
+                    f"{family} {getattr(group, 'key', '')} {role} donor WIRE "
+                    "start does not match its grid-snapped terminal contact."
+                )
+            updates.update(
+                {
+                    f"{role}_wire_start_x": start_x,
+                    f"{role}_wire_start_y": start_y,
+                    f"{role}_pin_x": end_x,
+                    f"{role}_pin_y": end_y,
+                }
+            )
+        out.append(replace(pair, **updates))
+    return tuple(out)
+
+
 def _mixed_overlay_family_parts(
     family: str,
     groups: tuple[Any, ...],
@@ -5647,6 +6161,7 @@ def _mixed_overlay_family_parts(
     active_link_trailer: bytes = b"\x01\x00",
     cap_wire_order: tuple[str, str] = ("right", "left"),
     snap_terminal_contacts_to_grid: bool = False,
+    mixed_native_wire_evidence: dict[str, Any] | None = None,
 ) -> tuple[
     tuple[Any, ...],
     list[bytes],
@@ -5746,6 +6261,12 @@ def _mixed_overlay_family_parts(
 
     if snap_terminal_contacts_to_grid:
         pairs = tuple(_snap_terminal_pair_to_grid(pair) for pair in pairs)
+    pairs = _apply_mixed_native_wire_evidence_to_pairs(
+        pairs,
+        groups,
+        family=family,
+        evidence=mixed_native_wire_evidence,
+    )
     if family == "RESISTOR":
         terminals = [
             *(pair.left for pair in pairs),
@@ -6986,15 +7507,54 @@ def analyse_terminalized_donor_pin_geometry(
     }
 
 
+def _pad_bidir_label_record(
+    chunk: bytes,
+    *,
+    record: dict[str, Any],
+    padding_bytes: int,
+    pad_char: str = "X",
+) -> tuple[bytes, dict[str, Any]]:
+    """Lengthen one known terminal label without touching its link fields."""
+
+    pad = pad_char.encode("ascii")
+    if len(pad) != 1:
+        raise ValueError("Bidirectional label padding must be one ASCII byte.")
+    if padding_bytes <= 0:
+        raise ValueError("Bidirectional label padding must be positive.")
+    label_length = int(record["label_length"])
+    if label_length + padding_bytes > 255:
+        raise ValueError(
+            f"Terminal {record['label']} cannot accept {padding_bytes} padding "
+            "byte(s) without exceeding Proteus's 255-byte label limit."
+        )
+    label_end = int(record["label_end"])
+    new_length = label_length + padding_bytes
+    old_label = str(record["label"])
+    new_label = old_label + pad_char * padding_bytes
+    patched = (
+        chunk[: int(record["start"]) + 30]
+        + bytes([new_length])
+        + chunk[int(record["label_start"]) : label_end]
+        + pad * padding_bytes
+        + chunk[label_end:]
+    )
+    return patched, {
+        "terminal_start": int(record["start"]),
+        "old_label": old_label,
+        "new_label": new_label,
+        "old_suffix": f"{int(record['suffix']):04x}",
+        "padding_bytes": padding_bytes,
+    }
+
+
 def _pad_bidir_label_before_offset(
     chunk: bytes,
     *,
     before_offset: int,
     pad_char: str = "X",
 ) -> tuple[bytes, dict[str, Any]]:
-    pad = pad_char.encode("ascii")
-    if len(pad) != 1:
-        raise ValueError("Bidirectional label padding must be one ASCII byte.")
+    """Compatibility helper for one-byte padding before a WIRE offset."""
+
     candidates = [
         record
         for record in _bidir_label_records(chunk)
@@ -7005,24 +7565,14 @@ def _pad_bidir_label_before_offset(
             "No bidirectional terminal label can be safely lengthened before "
             f"WIRE offset {before_offset}."
         )
-    record = max(candidates, key=lambda item: int(item["start"]))
-    label_end = int(record["label_end"])
-    new_length = int(record["label_length"]) + 1
-    old_label = str(record["label"])
-    new_label = old_label + pad_char
-    patched = (
-        chunk[: int(record["start"]) + 30]
-        + bytes([new_length])
-        + chunk[int(record["label_start"]) : label_end]
-        + pad
-        + chunk[label_end:]
+    patched, event = _pad_bidir_label_record(
+        chunk,
+        record=max(candidates, key=lambda item: int(item["start"])),
+        padding_bytes=1,
+        pad_char=pad_char,
     )
-    return patched, {
-        "terminal_start": int(record["start"]),
-        "old_label": old_label,
-        "new_label": new_label,
-        "wire_marker_offset_before_padding": before_offset,
-    }
+    event["wire_marker_offset_before_padding"] = before_offset
+    return patched, event
 
 
 def _update_report_terminal_label(
@@ -7030,19 +7580,38 @@ def _update_report_terminal_label(
     *,
     old_label: str,
     new_label: str,
+    old_suffix: int,
 ) -> bool:
+    """Update exactly the padded terminal, even when labels repeat.
+
+    Large mixed groups legitimately reuse role labels such as ``BASE``.  Label
+    jitter changes one binary record to avoid an address collision; updating
+    every same-named report entry makes the final suffix lookup lose the other
+    active records.  The pre-rebase terminal suffix is unique and identifies
+    the intended report row without relying on its display label.
+    """
+
+    def is_target(terminal: Any) -> bool:
+        if not isinstance(terminal, dict) or terminal.get("label") != old_label:
+            return False
+        suffix = terminal.get("suffix")
+        try:
+            return isinstance(suffix, str) and int(suffix, 16) == old_suffix
+        except (TypeError, ValueError):
+            return False
+
     updated = False
     for family_report in report.get("family_reports", []):
         for row in family_report.get("terminal_pins", []):
             terminal = row.get("terminal")
-            if isinstance(terminal, dict) and terminal.get("label") == old_label:
+            if is_target(terminal):
                 terminal["label"] = new_label
                 updated = True
         for pair in family_report.get("terminal_pairs", []):
             roles = ("left", "right") if "left" in pair else ("input", "output")
             for role in roles:
                 terminal = pair.get(role)
-                if isinstance(terminal, dict) and terminal.get("label") == old_label:
+                if is_target(terminal):
                     terminal["label"] = new_label
                     updated = True
     return updated
@@ -7106,46 +7675,160 @@ def _ensure_unique_final_wire_suffixes(
     expected_wire_count: int,
     report: dict[str, Any],
 ) -> tuple[bytes, bytes, int, list[dict[str, Any]], list[dict[str, Any]]]:
-    """Lengthen terminal labels when large object streams alias low-16 WIRE links."""
+    """Allocate unique WIRE suffixes with monotonic terminal-label padding.
+
+    A suffix is the low 16 bits of a WIRE's final absolute address.  Padding a
+    terminal label changes every later address.  The former retry strategy
+    always chased the last duplicate, which could create a new tail collision
+    before earlier duplicates were handled.  This allocator instead walks
+    terminal-to-terminal WIRE segments in stream order: when a segment would
+    collide with an already-fixed prefix, it adds the smallest donor-safe label
+    padding to that segment's leading terminal. Earlier WIRE addresses never
+    move, so the process is finite and deterministic.
+    """
+
+    def segmented_rows(
+        current_chunk: bytes,
+        *,
+        current_chunk_start: int,
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[list[dict[str, Any]]], list[dict[str, Any]]]:
+        terminal_records = _bidir_label_records(current_chunk)
+        rows = _wire_rows_from_chunk(
+            current_chunk,
+            chunk_start=current_chunk_start,
+        )
+        segments: list[list[dict[str, Any]]] = [
+            [] for _record in terminal_records
+        ]
+        prefix_rows: list[dict[str, Any]] = []
+        terminal_index = -1
+        for wire in rows:
+            while (
+                terminal_index + 1 < len(terminal_records)
+                and int(terminal_records[terminal_index + 1]["start"])
+                < int(wire["marker_offset"])
+            ):
+                terminal_index += 1
+            if terminal_index < 0:
+                prefix_rows.append(wire)
+            else:
+                segments[terminal_index].append(wire)
+        return terminal_records, rows, segments, prefix_rows
 
     label_jitter_events: list[dict[str, Any]] = []
-    for iteration in range(1, 4097):
+    chunk_start = _object_chunk_absolute_start(dsn)
+    terminals, wire_rows, segments, prefix_rows = segmented_rows(
+        chunk,
+        current_chunk_start=chunk_start,
+    )
+    if len(wire_rows) != expected_wire_count:
+        raise ValueError(
+            f"Terminal/WIRE count mismatch: {expected_wire_count} bindings for "
+            f"{len(wire_rows)} WIRE records."
+        )
+    prefix_suffixes = [int(row["suffix"]) for row in prefix_rows]
+    if len(prefix_suffixes) != len(set(prefix_suffixes)):
+        raise ValueError(
+            "Unresolvable duplicate final WIRE suffix before the first "
+            "bidirectional terminal record."
+        )
+    used_suffixes = set(prefix_suffixes)
+
+    for terminal_index in range(len(terminals)):
+        # Earlier label padding shifts this and all later segments. Re-parse
+        # the in-memory frame so every address decision uses final bytes.
         chunk_start = _object_chunk_absolute_start(dsn)
-        wire_rows = _wire_rows_from_chunk(chunk, chunk_start=chunk_start)
+        terminals, wire_rows, segments, current_prefix_rows = segmented_rows(
+            chunk,
+            current_chunk_start=chunk_start,
+        )
         if len(wire_rows) != expected_wire_count:
             raise ValueError(
-                f"Terminal/WIRE count mismatch: {expected_wire_count} bindings for "
-                f"{len(wire_rows)} WIRE records."
+                f"Terminal/WIRE count changed during suffix allocation: expected "
+                f"{expected_wire_count}, got {len(wire_rows)}."
             )
-        duplicates = _duplicate_wire_suffix_rows(wire_rows)
-        if not duplicates:
-            return dsn, chunk, chunk_start, wire_rows, label_jitter_events
+        if len(current_prefix_rows) != len(prefix_rows):
+            raise ValueError("Terminal padding moved a WIRE before the first terminal.")
+        segment = segments[terminal_index]
+        if not segment:
+            continue
+        suffixes = [int(row["suffix"]) for row in segment]
+        if len(suffixes) != len(set(suffixes)):
+            raise ValueError(
+                "Two WIRE records in one terminal segment share a final suffix; "
+                "there is no safe label-only adjustment between them."
+            )
+        record = terminals[terminal_index]
+        max_padding = 255 - int(record["label_length"])
+        selected_padding: int | None = None
+        for padding in range(max_padding + 1):
+            candidate_suffixes = [
+                (suffix + padding) & 0xFFFF for suffix in suffixes
+            ]
+            if (
+                len(candidate_suffixes) == len(set(candidate_suffixes))
+                and not (set(candidate_suffixes) & used_suffixes)
+            ):
+                selected_padding = padding
+                break
+        if selected_padding is None:
+            raise ValueError(
+                f"No safe final-WIRE suffix padding exists for terminal "
+                f"{record['label']} ({record['suffix']:04x})."
+            )
+        if selected_padding:
+            chunk, event = _pad_bidir_label_record(
+                chunk,
+                record=record,
+                padding_bytes=selected_padding,
+            )
+            event["iteration"] = len(label_jitter_events) + 1
+            event["segment_terminal_index"] = terminal_index
+            event["suffixes_before_padding"] = [
+                f"{suffix:04x}" for suffix in suffixes
+            ]
+            event["report_label_updated"] = _update_report_terminal_label(
+                report,
+                old_label=str(event["old_label"]),
+                new_label=str(event["new_label"]),
+                old_suffix=int(str(event["old_suffix"]), 16),
+            )
+            if not event["report_label_updated"]:
+                raise ValueError(
+                    "Label jitter could not identify its terminal report row for "
+                    f"suffix {event['old_suffix']}."
+                )
+            label_jitter_events.append(event)
+            dsn, _pointers = build_dsn(dsn, dsn, chunk)
+            chunk = _extract_object_chunk(dsn)
+            chunk_start = _object_chunk_absolute_start(dsn)
+            terminals, wire_rows, segments, _prefix_rows = segmented_rows(
+                chunk,
+                current_chunk_start=chunk_start,
+            )
+            segment = segments[terminal_index]
+            suffixes = [int(row["suffix"]) for row in segment]
+        if set(suffixes) & used_suffixes:
+            raise ValueError(
+                "Segmented final-WIRE allocator did not eliminate a suffix "
+                f"collision for terminal {terminals[terminal_index]['label']}."
+            )
+        used_suffixes.update(suffixes)
 
-        target = max(duplicates, key=lambda row: int(row["marker_offset"]))
-        chunk, event = _pad_bidir_label_before_offset(
-            chunk,
-            before_offset=int(target["marker_offset"]),
+    chunk_start = _object_chunk_absolute_start(dsn)
+    final_wire_rows = _wire_rows_from_chunk(chunk, chunk_start=chunk_start)
+    if len(final_wire_rows) != expected_wire_count:
+        raise ValueError(
+            f"Final WIRE count mismatch: expected {expected_wire_count}, got "
+            f"{len(final_wire_rows)}."
         )
-        event["iteration"] = iteration
-        event["duplicate_suffix"] = f"{int(target['suffix']):04x}"
-        event["report_label_updated"] = _update_report_terminal_label(
-            report,
-            old_label=str(event["old_label"]),
-            new_label=str(event["new_label"]),
+    duplicates = _duplicate_wire_suffix_rows(final_wire_rows)
+    if duplicates:
+        raise ValueError(
+            "Segmented final-WIRE allocator left duplicate suffixes: "
+            f"{[f'{int(row['suffix']):04x}' for row in duplicates[:16]]}."
         )
-        label_jitter_events.append(event)
-        dsn, _pointers = build_dsn(dsn, dsn, chunk)
-        write_project_from_parts(
-            destination,
-            destination,
-            {"ROOT.DSN": dsn},
-        )
-        dsn = read_internal_file(destination, "ROOT.DSN")
-        chunk = _extract_object_chunk(dsn)
-
-    raise ValueError(
-        "Could not resolve low-16 WIRE-address collisions after 4096 label jitters."
-    )
+    return dsn, chunk, chunk_start, final_wire_rows, label_jitter_events
 
 
 def _terminal_wire_bindings(report: dict[str, Any]) -> list[dict[str, Any]]:

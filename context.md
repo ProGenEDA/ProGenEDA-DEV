@@ -12133,3 +12133,92 @@ regenerate them, these 1x are not working
 The prior Git checkpoint was verified locally, at upstream, and at `origin`. A new isolated seven-family 1x pack was generated from the locked mega donor through the existing shared terminal placer, without editing the accepted generic two-pin/diode route or overwriting earlier V32 outputs. The complete authoritative NMOSFET, NPN, and PNP donor archives were read before generation; numbered BJT aliases use the NPN schema with their own locked-mega packets and the two named MOSFETs use the NMOSFET schema with their own locked-mega packets.
 
 Every regenerated terminal report records exactly three terminals, three WIRE records, grid-aligned terminal contacts, active link fields, and short wire-to-pin paths. Focused shared-placer regression passed: 24 passed; compile check passed. The user had an active Proteus PDS session, so it was deliberately not terminated to perform a cold gate; user visual/open acceptance is pending.
+
+## User Message - 2026-07-12 +05:00
+
+continue and i hope u are doing self tests by opening files in proteus
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+I’m continuing with actual Proteus open/save/reopen checks. The 1× mixed circuit passed that gate; the larger 9× save exposed one real serialization issue, so I’m correcting the shared final link rebasing before handing over any larger pack.
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+Proteus’s own save shows the larger-file defect is precise: the link field must carry the complete 32-bit final WIRE address, not only its low 16-bit suffix. I’m applying that evidence only in the shared final-rebasing step; it leaves accepted component geometry and attachment routes untouched.
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+The focused regression now proves 9× paths use the full pointer and still retain the right low-word suffixes. I’m regenerating every requested scale from the locked mega donor through the same component placer and shared terminal placer, then I’ll repeat the Proteus save/reopen gate.
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+The regenerated 9× object stream is now byte-for-byte identical to the object stream Proteus produced when saving the earlier 9× copy. I’m cold-opening a fresh copy next, waiting the full 24 seconds, saving it, and cold-reopening it before I move on to 15× and 21×.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The 9× circuit now passes the real loader gate: no error dialog on cold open, Ctrl+S leaves its entire object stream unchanged, and a cold reopen is clean. I’m running the same gate on 15× and the 21× capacity-capped version.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The 21× case hit a real Proteus `Fatal Error` during the local gate, so I’m not treating it as a valid cap. I’m inspecting that dialog and finding the highest genuinely cold-openable count rather than masking the failure.
+
+## User Message - 2026-07-13 +05:00
+
+dont over fix. if it has opened u dont need to over fix by doing ctrl s, dont try n mimic it excatly like wiring etc
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Understood. I’m stopping the Ctrl+S/byte-for-byte canonicalization work now. From here, Proteus acceptance means it opens cleanly and its layout is correct; I’ll only use save data as a diagnostic if opening itself fails, not as a target to imitate.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The 21× output itself—not saving—fails during cold open with a VGDVC access violation. That is a real Proteus capacity limit, so I’m checking 20× next and will cap the requested 23× pack at the highest count that actually opens.
+
+## User Message - 2026-07-13 +05:00
+
+bro y are u doing this i think u were at correct at All requested scale packs are regenerated from the same shared placer: 1×, 9×, 15×, and 21× (the documented CAP‑ELEC ceiling for the requested 23× uniform case). I’m starting the actual local Proteus gate on a copied 1× output now: cold launch, 24-second stability wait, save, shutdown, and cold reopen.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+You’re right—I went past the requested scope. The 1×, 9×, 15×, and 21× packs were already regenerated correctly from the shared placer; I’m stopping the extra 20×/capacity probing and all Ctrl+S work. I’ll keep the requested 21× output as the documented CAP‑ELEC-limited 23× case and move on cleanly.
+
+## User Message - 2026-07-13 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’m finalising the requested four packs now: no more capacity probing or save-mimic work. I’ll run the normal regression suite, record the 21× CAP‑ELEC limit, update the continuation log, and commit/push the shared-placer changes and generated pack.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The shared placer is confirmed back at the pre-detour implementation. The repository-wide `pytest` command is blocked by an old experiment test importing a deleted `proteusgen.inductor` module; I’m running the maintained `tests/` suite instead and will record that unrelated collection failure rather than change old experiment code.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The maintained test suite is still running. I’m preserving the accepted routes and generated pack unchanged while it completes.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The maintained suite is slower than the focused terminal tests but is still progressing; I’m letting it finish so this checkpoint is backed by the full maintained regression set rather than a partial pass.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’m finalising the requested four packs now: no more capacity probing or save-mimic work. I’ll run the normal regression suite, record the 21× CAP‑ELEC limit, update the continuation log, and commit/push the shared-placer changes and generated pack.
+
+### Current Result - 2026-07-13 +05:00
+
+- The final requested pack is regenerated through the locked mega component placer and the single shared terminal placer: 1× (70 terminal/WIRE units), 9× (630), 15× (1,050), and requested 23× capped at the documented CAP-ELEC source limit of 21× (1,470).
+- The Ctrl+S-derived full-pointer experiment was completely reverted at the user’s request. The shared placer exactly matches the backup taken immediately before that detour; no accepted geometry, WIRE shape, or family route was changed to mimic a Proteus save.
+- Focused current-group regression: 4 passed. `compileall` passed. Repository-wide collection is blocked by the old `tools/proteus_generation/2026-06-01/inductor_temp_from_premature_main/test_inductor.py` import of the deleted `proteusgen.inductor`; the maintained `tests/` run exceeded the 184-second command limit without a result.
+- Local open diagnostics reached the normal Proteus schematic window for 1× and 9×. The 21× open attempt produced `VGDVC.DLL` access violation; after the user directed that no additional capacity probing be done, no cap or route was changed. User visual inspection remains the layout acceptance source.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_terminal_placer.py` - donor-audited mixed-tail route, mixed-only native WIRE evidence handling, label allocation safety, and donor separator handling; final state excludes the reverted save-mimic pointer experiment.
+- `src/proteusgen/component_beautifier.py` - accepts valid high locked-mega source anchors up to the documented signed-coordinate bound.
+- `knowledge/component_catalog_v0.json` - records mixed-only endpoint evidence, stream separators, tail rank, and CAP-ELEC 21x source limit.
+- `tests/test_component_placer.py` - current-group donor oracle and mixed-route regression coverage.
+- `tools/proteus_generation/2026-07-12/generate_current_group_mixed_tail_oracle_v1_temp.py` - shared-stage-only reproducible pack runner.
+- `knowledge/current_group_mixed_tail_donor_analysis_2026_07_12.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/README.md` - evidence and continuation record.
+- `backups/component_terminal_placer/` - retained all required pre-edit shared-placer backups, including the pre-save-canonicalization backup.

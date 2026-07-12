@@ -73,6 +73,47 @@ from proteusgen.templates import FixtureRegistry
 
 
 ROOT = Path(__file__).resolve().parents[1]
+CURRENT_GROUP_MIXED_TAIL_ORACLE = (
+    ROOT
+    / "proteus_ic"
+    / "donors"
+    / "ALL_donorACCEPTED_TERMINALIZED_CURRENT_GROUP_TERMINALIZED_1X_sa.pdsprj"
+)
+
+CURRENT_GROUP_NATIVE_FAMILIES = (
+    "VSOURCE",
+    "CSOURCE",
+    "VSINE",
+    "VPULSE",
+    "CAP",
+    "CAP-ELEC",
+    "REALIND",
+    "RESISTOR",
+    "DIODE",
+    "1N4007",
+    "1N4148",
+    "1N4733A",
+    "1N6000B",
+    "40EPS08",
+    "BZX55C5V1",
+    "BZX79C5V1",
+    "BZY88C",
+    "LED-RED",
+    "FUSE",
+    "SWITCH",
+)
+CURRENT_GROUP_CATALOGUE_TAIL_FAMILIES = (
+    "POT-HG",
+    "LM317T",
+    "OPAMP",
+    "NMOSFET",
+    "2N7000",
+    "BS170",
+    "NPN",
+    "PNP",
+    "2N3904",
+    "2N4401",
+)
 
 
 @pytest.mark.parametrize(
@@ -94,6 +135,26 @@ def test_terminal_grid_snap_is_nearest_with_deterministic_ties(
     assert terminal_placer.snap_to_proteus_terminal_grid(value) == expected
 
 
+def test_layout_parser_keeps_high_locked_mega_source_body_anchor() -> None:
+    fragment = b"\x00VSOURCE" + struct.pack("<ii", -5_186_680, 736_854_000)
+
+    pairs = layout_coordinate_pairs(fragment, "VSOURCE")
+    catalogue_anchor = terminal_placer._component_marker_anchor_for_catalogue(
+        fragment,
+        "VSOURCE",
+    )
+
+    assert pairs == [(8, 12, "marker_body:VSOURCE")]
+    assert catalogue_anchor == {
+        "marker": "VSOURCE",
+        "marker_offset": 1,
+        "x_offset": 8,
+        "y_offset": 12,
+        "x": -5_186_680,
+        "y": 736_854_000,
+    }
+
+
 def test_component_pin_link_patch_accepts_type_02_trailer() -> None:
     data = b"prefix" + struct.pack("<H", 0x3456) + b"\x02\x00" + b"\x7fWIRE"
 
@@ -106,6 +167,36 @@ def test_component_pin_link_patch_accepts_type_02_trailer() -> None:
 
     assert position == len(b"prefix")
     assert patched[position : position + 4] == struct.pack("<H", 0x789A) + b"\x02\x00"
+
+
+def test_label_jitter_updates_only_the_matching_duplicate_label_suffix() -> None:
+    report = {
+        "family_reports": [
+            {
+                "terminal_pins": [
+                    {"terminal": {"label": "BASE", "suffix": "7a00"}},
+                    {"terminal": {"label": "BASE", "suffix": "7a01"}},
+                ],
+                "terminal_pairs": [
+                    {
+                        "left": {"label": "BASE", "suffix": "7a02"},
+                        "right": {"label": "OUT", "suffix": "7a03"},
+                    }
+                ],
+            }
+        ]
+    }
+
+    assert terminal_placer._update_report_terminal_label(
+        report,
+        old_label="BASE",
+        new_label="BASEX",
+        old_suffix=0x7A01,
+    )
+    pins = report["family_reports"][0]["terminal_pins"]
+    pair = report["family_reports"][0]["terminal_pairs"][0]
+    assert [row["terminal"]["label"] for row in pins] == ["BASE", "BASEX"]
+    assert pair["left"]["label"] == "BASE"
 
 
 def _active_terminal_suffixes(chunk: bytes) -> list[int]:
@@ -2518,21 +2609,21 @@ def test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo(
     assert chunk.endswith(b"\xff\xff")
 
 
-def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_controls(
+def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:
     native_families = ["RESISTOR", "CAP"]
     trailing_catalogue_families = ["POT-HG", "LM317T", "OPAMP"]
-    terminal_leading_bjt_families = ["NPN", "PNP", "2N3904", "2N4401"]
-    base = tmp_path / "mixed_terminal_leading_bjt_base.pdsprj"
-    output = tmp_path / "mixed_terminal_leading_bjt_sa.pdsprj"
+    tail_bjt_families = ["NPN", "PNP", "2N3904", "2N4401"]
+    base = tmp_path / "mixed_tail_bjt_base.pdsprj"
+    output = tmp_path / "mixed_tail_bjt_sa.pdsprj"
     result = generate_component_placement_project(
         {
             "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
             "components": {
                 **{family: 1 for family in native_families},
                 **{family: 1 for family in trailing_catalogue_families},
-                **{family: 1 for family in terminal_leading_bjt_families},
+                **{family: 1 for family in tail_bjt_families},
             },
             "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
         },
@@ -2546,7 +2637,7 @@ def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_control
         result.selected_groups,
         native_terminal_families=native_families,
         catalogue_terminal_families=(
-            trailing_catalogue_families + terminal_leading_bjt_families
+            trailing_catalogue_families + tail_bjt_families
         ),
         use_donor_terminal_labels=False,
     )
@@ -2555,15 +2646,15 @@ def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_control
     expected_components = (
         len(native_families)
         + len(trailing_catalogue_families)
-        + len(terminal_leading_bjt_families)
+        + len(tail_bjt_families)
     )
     expected_terminals = len(native_families) * 2 + (
-        len(trailing_catalogue_families) + len(terminal_leading_bjt_families)
+        len(trailing_catalogue_families) + len(tail_bjt_families)
     ) * 3
     bjt_reports = [
         row
         for row in report["family_reports"]
-        if row.get("component_family") in terminal_leading_bjt_families
+        if row.get("component_family") in tail_bjt_families
     ]
     cap_report = next(
         row
@@ -2576,9 +2667,9 @@ def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_control
     assert report["terminal_count_added"] == expected_terminals
     assert report["wire_count_added"] == expected_terminals
     assert report["terminalized_component_count"] == expected_components
-    assert report["catalogue_terminal_leading_component_count"] == 4
+    assert report["catalogue_terminal_leading_component_count"] == 0
     assert report["native_terminal_families"] == ["RESISTOR", "CAP"]
-    assert cap_report["cap_wire_order"] == ["left", "right"]
+    assert cap_report["cap_wire_order"] == ["right", "left"]
     assert report["object_stream_finalizer"] == "append_explicit_single_ff"
     assert report["object_chunk_finalizer_valid"] is True
     assert report["terminal_suffix_links_valid"] is True
@@ -2593,7 +2684,10 @@ def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_control
     assert all(
         row["clean_packet_attachment_order"]
         == "terminal_leading_component_then_wires"
-        and row["object_stream_finalizer"] == "append_explicit_single_ff"
+        and row["mixed_attachment_order"]
+        == "component_stream_then_attachment_units"
+        and row["mixed_object_stream_finalizer"]
+        == "append_explicit_single_ff"
         for row in bjt_reports
     )
     native_link_trailers = {
@@ -2605,8 +2699,8 @@ def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_control
         if row["component_family"] in native_families
     }
     assert native_link_trailers == {
-        "RESISTOR": ("0100", "0100"),
-        "CAP": ("0100", "0100"),
+        "RESISTOR": ("0200", "0200"),
+        "CAP": ("0200", "0200"),
     }
     assert [
         row["label"]
@@ -2617,10 +2711,10 @@ def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_control
     assert chunk.endswith(b"\xff")
 
 
-def test_terminal_leading_bjt_zone_refuses_unproven_cap_elec_prefix(
+def test_donor_proven_tail_bjt_zone_handles_cap_elec_prefix(
     tmp_path: Path,
 ) -> None:
-    """Do not guess a CAP-ELEC + BJT stream from unrelated donor evidence."""
+    """The full user donor proves catalogue tail units after CAP-ELEC."""
 
     native_families = ["RESISTOR", "CAP-ELEC"]
     bjt_families = ["NPN", "PNP", "2N3904", "2N4401"]
@@ -2639,22 +2733,25 @@ def test_terminal_leading_bjt_zone_refuses_unproven_cap_elec_prefix(
         full_cdb=True,
     )
 
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=native_families,
+        catalogue_terminal_families=bjt_families,
+        use_donor_terminal_labels=False,
+    )
+
     assert result.valid
-    with pytest.raises(ValueError, match="unproven native/BJT terminal-leading"):
-        attach_mixed_component_and_catalogue_bidir_terminals_to_project(
-            base,
-            output,
-            result.selected_groups,
-            native_terminal_families=native_families,
-            catalogue_terminal_families=bjt_families,
-            use_donor_terminal_labels=False,
-        )
+    assert report["valid"] is True
+    assert report["catalogue_terminal_leading_component_count"] == 0
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
 
 
-def test_terminal_leading_bjt_mix_refuses_unproven_extra_native_family(
+def test_donor_proven_tail_bjt_mix_preserves_diode_route(
     tmp_path: Path,
 ) -> None:
-    """Never mutate an accepted diode route to guess a BJT mixed grammar."""
+    """The combined donor permits DIODE plus BJT tail units without mutation."""
 
     base = tmp_path / "unproven_diode_bjt_base.pdsprj"
     output = tmp_path / "unproven_diode_bjt_output.pdsprj"
@@ -2673,16 +2770,112 @@ def test_terminal_leading_bjt_mix_refuses_unproven_extra_native_family(
         full_cdb=True,
     )
 
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP", "DIODE"),
+        catalogue_terminal_families=("NPN",),
+        use_donor_terminal_labels=False,
+    )
+
     assert result.valid
-    with pytest.raises(ValueError, match="unproven native/BJT terminal-leading"):
-        attach_mixed_component_and_catalogue_bidir_terminals_to_project(
-            base,
-            output,
-            result.selected_groups,
-            native_terminal_families=("RESISTOR", "CAP", "DIODE"),
-            catalogue_terminal_families=("NPN",),
-            use_donor_terminal_labels=False,
+    assert report["valid"] is True
+    assert report["native_terminal_families"] == ["RESISTOR", "CAP", "DIODE"]
+    assert report["catalogue_terminal_leading_component_count"] == 0
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+
+
+def test_full_current_group_matches_user_accepted_mixed_tail_oracle(
+    tmp_path: Path,
+) -> None:
+    """Keep the accepted 67-unit tail byte-geometry stable before PNP extends it.
+
+    The user-provided combined donor is authoritative for the full native,
+    control, FET, and BJT mixture.  It is intentionally compared here against
+    a new placement generated from the locked mega donor, rather than copied
+    into the output.  PNP follows as three additional units with its own
+    direct-donor geometry.
+    """
+
+    assert CURRENT_GROUP_MIXED_TAIL_ORACLE.exists()
+    base = tmp_path / "current_group_1x_no_terminal.pdsprj"
+    output = tmp_path / "current_group_1x_tail_oracle_sa.pdsprj"
+    components = {
+        family: 1
+        for family in (
+            *CURRENT_GROUP_NATIVE_FAMILIES,
+            *CURRENT_GROUP_CATALOGUE_TAIL_FAMILIES,
         )
+    }
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": components,
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=CURRENT_GROUP_NATIVE_FAMILIES,
+        catalogue_terminal_families=CURRENT_GROUP_CATALOGUE_TAIL_FAMILIES,
+        use_donor_terminal_labels=False,
+    )
+
+    donor_dsn = read_internal_file(CURRENT_GROUP_MIXED_TAIL_ORACLE, "ROOT.DSN")
+    output_dsn = read_internal_file(output, "ROOT.DSN")
+    donor_chunk = _extract_object_chunk(donor_dsn)
+    output_chunk = _extract_object_chunk(output_dsn)
+    donor_terminals = terminal_placer._bidir_label_records(donor_chunk)
+    output_terminals = terminal_placer._bidir_label_records(output_chunk)
+    donor_wires = terminal_placer._wire_rows_from_chunk(
+        donor_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(donor_dsn),
+    )
+    output_wires = terminal_placer._wire_rows_from_chunk(
+        output_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
+    )
+    signature = lambda rows: [
+        (
+            row["label"],
+            row["symbol_x"],
+            row["symbol_y"],
+            row["angle_tenths"],
+            row["suffix"],
+        )
+        for row in rows
+    ]
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert report["terminal_count_added"] == 70
+    assert report["wire_count_added"] == 70
+    assert donor_chunk.count(b"$TERBIDIR") == donor_chunk.count(b"\x7fWIRE") == 67
+    assert output_chunk.count(b"$TERBIDIR") == output_chunk.count(b"\x7fWIRE") == 70
+    assert signature(output_terminals[:67]) == signature(donor_terminals)
+    assert [row["full_coordinates"] for row in output_wires[:67]] == [
+        row["full_coordinates"] for row in donor_wires
+    ]
+    # Proteus Ctrl+S and the accepted donor both require these four stream
+    # separators to be 08 rather than the bare component placer's 00. They
+    # occur before POT-HG, LED-RED, SWITCH, and FUSE in this mixed grammar.
+    separator_offsets = (4957, 5594, 9823, 15511)
+    assert [output_chunk[offset] for offset in separator_offsets] == [
+        donor_chunk[offset] for offset in separator_offsets
+    ] == [0x08, 0x08, 0x08, 0x08]
+    assert signature(output_terminals[-3:]) == [
+        ("BASE", -7_620_000, 18_542_000, 1800, 0x8966),
+        ("COLLECTOR", -6_096_000, 19_304_000, 0, 0x8A06),
+        ("EMITTER", -6_096_000, 17_780_000, 0, 0x8AA4),
+    ]
+    assert output_chunk.endswith(b"\xff")
+    assert not output_chunk.endswith(b"\xff\xff")
 
 
 @pytest.mark.parametrize(
