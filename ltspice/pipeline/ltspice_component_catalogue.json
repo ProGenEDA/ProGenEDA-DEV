@@ -1,0 +1,431 @@
+{
+  "schema": "progen-ltspice-component-catalogue/v0.1",
+  "format_policy": {
+    "native_file": ".asc",
+    "symbol_strategy": "project_local_asy",
+    "coordinate_grid": 16,
+    "normal_mode_property_policy": "profile_whitelist_only"
+  },
+  "components": {
+    "R": {
+      "aliases": ["RES", "RESISTOR", "RESISTOR_AXIAL"],
+      "symbol": "progeneda_res",
+      "symbol_template": "resistor",
+      "reference_prefix": "R",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "A", "role": "passive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "B", "role": "passive", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "1k",
+      "value_rule": "spice_number",
+      "editable_parameters": ["tc", "temp", "m"],
+      "metadata_fields": ["tolerance", "power_rating"],
+      "model_key": null
+    },
+    "C": {
+      "aliases": ["CAP", "CAPACITOR", "CAPACITOR_GENERIC"],
+      "symbol": "progeneda_cap",
+      "symbol_template": "capacitor",
+      "reference_prefix": "C",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "POS", "role": "passive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "NEG", "role": "passive", "x": 0, "y": 64, "justification": "Bottom"}
+      ],
+      "default_value": "100n",
+      "value_rule": "capacitance",
+      "editable_parameters": ["ic", "rser", "lser", "rpar", "cpar", "rlshunt", "m", "temp"],
+      "metadata_fields": ["voltage_rating", "tolerance"],
+      "model_key": null
+    },
+    "C_ELEC": {
+      "aliases": ["CAP_ELEC", "CAP-ELEC", "CAPACITOR_ELECTROLYTIC", "ELECTROLYTIC_CAPACITOR"],
+      "symbol": "progeneda_cap_polarized",
+      "symbol_template": "capacitor_polarized",
+      "reference_prefix": "C",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "POS", "role": "positive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "NEG", "role": "negative", "x": 0, "y": 64, "justification": "Bottom"}
+      ],
+      "default_value": "10u",
+      "value_rule": "capacitance",
+      "editable_parameters": ["ic", "rser", "lser", "rpar", "cpar", "rlshunt", "m", "temp"],
+      "metadata_fields": ["voltage_rating", "tolerance"],
+      "model_key": null
+    },
+    "L": {
+      "aliases": ["IND", "INDUCTOR", "INDUCTANCE"],
+      "symbol": "progeneda_ind",
+      "symbol_template": "inductor",
+      "reference_prefix": "L",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "A", "role": "passive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "B", "role": "passive", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "1m",
+      "value_rule": "inductance",
+      "editable_parameters": ["ic", "ipk", "rser", "rpar", "cpar", "m", "tc1", "tc2", "temp"],
+      "metadata_fields": ["current_rating", "saturation_current"],
+      "model_key": null
+    },
+    "VDC": {
+      "aliases": ["V", "VOLTAGE", "VOLTAGE_SOURCE", "VSOURCE", "DC_VOLTAGE", "VOLTAGE_DC"],
+      "symbol": "progeneda_voltage",
+      "symbol_template": "source",
+      "reference_prefix": "V",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "PLUS", "role": "positive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "MINUS", "role": "negative", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "5",
+      "value_rule": "source_expression",
+      "editable_parameters": ["dc", "ac", "pulse", "sine", "exp", "sffm", "pwl", "rser", "cpar"],
+      "metadata_fields": [],
+      "model_key": null
+    },
+    "VSIN": {
+      "aliases": ["SINE_VOLTAGE", "V_SINE", "V_SIN"],
+      "symbol": "progeneda_voltage",
+      "symbol_template": "source",
+      "reference_prefix": "V",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "PLUS", "role": "positive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "MINUS", "role": "negative", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "SINE(0 1 1k)",
+      "value_rule": "source_expression",
+      "editable_parameters": ["dc", "ac", "pulse", "sine", "exp", "sffm", "pwl", "rser", "cpar"],
+      "metadata_fields": [],
+      "model_key": null
+    },
+    "VPULSE": {
+      "aliases": ["PULSE_VOLTAGE", "V_PULSE"],
+      "symbol": "progeneda_voltage",
+      "symbol_template": "source",
+      "reference_prefix": "V",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "PLUS", "role": "positive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "MINUS", "role": "negative", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PULSE(0 5 0 1n 1n 1m 2m)",
+      "value_rule": "source_expression",
+      "editable_parameters": ["dc", "ac", "pulse", "sine", "exp", "sffm", "pwl", "rser", "cpar"],
+      "metadata_fields": [],
+      "model_key": null
+    },
+    "I": {
+      "aliases": ["CURRENT", "CURRENT_SOURCE", "CSOURCE", "IDC", "DC_CURRENT"],
+      "symbol": "progeneda_current",
+      "symbol_template": "source_current",
+      "reference_prefix": "I",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "PLUS", "role": "positive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "MINUS", "role": "negative", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "1m",
+      "value_rule": "source_expression",
+      "editable_parameters": ["dc", "ac", "load", "pulse", "sine", "exp", "sffm", "pwl"],
+      "metadata_fields": [],
+      "model_key": null
+    },
+    "D": {
+      "aliases": ["DIODE", "DIODE_AXIAL", "GENERIC_DIODE"],
+      "symbol": "progeneda_diode",
+      "symbol_template": "diode",
+      "reference_prefix": "D",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "A", "role": "anode", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "K", "role": "cathode", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_DIODE",
+      "value_rule": "model_name",
+      "editable_parameters": ["area", "off", "m", "n", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_DIODE"
+    },
+    "1N4148": {
+      "aliases": ["D_1N4148"],
+      "symbol": "progeneda_diode",
+      "symbol_template": "diode",
+      "reference_prefix": "D",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "A", "role": "anode", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "K", "role": "cathode", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_1N4148_APPROX",
+      "value_rule": "model_name",
+      "editable_parameters": ["area", "off", "m", "n", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_1N4148_APPROX"
+    },
+    "1N4007": {
+      "aliases": ["D_1N4007"],
+      "symbol": "progeneda_diode",
+      "symbol_template": "diode",
+      "reference_prefix": "D",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "A", "role": "anode", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "K", "role": "cathode", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_1N4007_APPROX",
+      "value_rule": "model_name",
+      "editable_parameters": ["area", "off", "m", "n", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_1N4007_APPROX"
+    },
+    "LED": {
+      "aliases": ["LED_INDICATOR", "LED_GENERIC"],
+      "symbol": "progeneda_led",
+      "symbol_template": "led",
+      "reference_prefix": "D",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "A", "role": "anode", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "K", "role": "cathode", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_LED_APPROX",
+      "value_rule": "model_name",
+      "editable_parameters": ["area", "off", "m", "n", "temp"],
+      "metadata_fields": ["color", "forward_voltage"],
+      "model_key": "PROGEN_LED_APPROX"
+    },
+    "NPN": {
+      "aliases": ["Q_NPN", "BJT_NPN", "TRANSISTOR_NPN"],
+      "symbol": "progeneda_npn",
+      "symbol_template": "bjt_npn",
+      "reference_prefix": "Q",
+      "symbol_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "C", "role": "collector", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "B", "role": "base", "x": -64, "y": 48, "justification": "Left"},
+        {"number": "3", "name": "E", "role": "emitter", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_NPN",
+      "value_rule": "model_name",
+      "editable_parameters": ["area", "m", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_NPN",
+      "canonical_pin_map": {"1": "2", "2": "1", "3": "3", "B": "2", "BASE": "2", "C": "1", "COLLECTOR": "1", "E": "3", "EMITTER": "3"},
+      "native_semantics": {"substrate_terminal": "inside the project-local subcircuit and tied to emitter", "oracle_evidence": "LTspice 26 emits a three-node X instance and the internal Q substrate is explicitly tied to emitter."}
+    },
+    "PNP": {
+      "aliases": ["Q_PNP", "BJT_PNP", "TRANSISTOR_PNP"],
+      "symbol": "progeneda_pnp",
+      "symbol_template": "bjt_pnp",
+      "reference_prefix": "Q",
+      "symbol_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "C", "role": "collector", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "B", "role": "base", "x": -64, "y": 48, "justification": "Left"},
+        {"number": "3", "name": "E", "role": "emitter", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_PNP",
+      "value_rule": "model_name",
+      "editable_parameters": ["area", "m", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_PNP",
+      "canonical_pin_map": {"1": "2", "2": "1", "3": "3", "B": "2", "BASE": "2", "C": "1", "COLLECTOR": "1", "E": "3", "EMITTER": "3"},
+      "native_semantics": {"substrate_terminal": "inside the project-local subcircuit and tied to emitter", "oracle_evidence": "LTspice 26 emits a three-node X instance and the internal Q substrate is explicitly tied to emitter."}
+    },
+    "NMOS": {
+      "aliases": ["N_MOS", "MOSFET_N", "MOSFET_NMOS"],
+      "symbol": "progeneda_nmos",
+      "symbol_template": "mosfet_n",
+      "reference_prefix": "M",
+      "symbol_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "D", "role": "drain", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "G", "role": "gate", "x": -64, "y": 48, "justification": "Left"},
+        {"number": "3", "name": "S", "role": "source", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_NMOS",
+      "value_rule": "model_name",
+      "editable_parameters": ["l", "w", "m", "ad", "as", "pd", "ps", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_NMOS",
+      "canonical_pin_map": {"1": "2", "2": "1", "3": "3", "G": "2", "GATE": "2", "D": "1", "DRAIN": "1", "S": "3", "SOURCE": "3"},
+      "native_semantics": {"bulk_terminal": "inside the project-local subcircuit and tied to source", "oracle_evidence": "LTspice 26 emits a three-node X instance whose internal MOS bulk is tied to source."}
+    },
+    "PMOS": {
+      "aliases": ["P_MOS", "MOSFET_P", "MOSFET_PMOS"],
+      "symbol": "progeneda_pmos",
+      "symbol_template": "mosfet_p",
+      "reference_prefix": "M",
+      "symbol_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "D", "role": "drain", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "G", "role": "gate", "x": -64, "y": 48, "justification": "Left"},
+        {"number": "3", "name": "S", "role": "source", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_PMOS",
+      "value_rule": "model_name",
+      "editable_parameters": ["l", "w", "m", "ad", "as", "pd", "ps", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_PMOS",
+      "canonical_pin_map": {"1": "2", "2": "1", "3": "3", "G": "2", "GATE": "2", "D": "1", "DRAIN": "1", "S": "3", "SOURCE": "3"},
+      "native_semantics": {"bulk_terminal": "inside the project-local subcircuit and tied to source", "oracle_evidence": "LTspice 26 emits a three-node X instance whose internal MOS bulk is tied to source."}
+    },
+    "2N7000": {
+      "aliases": ["MOSFET_2N7000"],
+      "symbol": "progeneda_nmos",
+      "symbol_template": "mosfet_n",
+      "reference_prefix": "M",
+      "symbol_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "D", "role": "drain", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "G", "role": "gate", "x": -64, "y": 48, "justification": "Left"},
+        {"number": "3", "name": "S", "role": "source", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_2N7000_APPROX",
+      "value_rule": "model_name",
+      "editable_parameters": ["l", "w", "m", "ad", "as", "pd", "ps", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_2N7000_APPROX",
+      "canonical_pin_map": {"1": "2", "2": "1", "3": "3", "G": "2", "GATE": "2", "D": "1", "DRAIN": "1", "S": "3", "SOURCE": "3"},
+      "native_semantics": {"bulk_terminal": "inside the project-local subcircuit and tied to source", "oracle_evidence": "LTspice 26 emits a three-node X instance whose internal MOS bulk is tied to source."}
+    },
+    "BS170": {
+      "aliases": ["MOSFET_BS170"],
+      "symbol": "progeneda_nmos",
+      "symbol_template": "mosfet_n",
+      "reference_prefix": "M",
+      "symbol_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "D", "role": "drain", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "G", "role": "gate", "x": -64, "y": 48, "justification": "Left"},
+        {"number": "3", "name": "S", "role": "source", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_BS170_APPROX",
+      "value_rule": "model_name",
+      "editable_parameters": ["l", "w", "m", "ad", "as", "pd", "ps", "temp"],
+      "metadata_fields": [],
+      "model_key": "PROGEN_BS170_APPROX",
+      "canonical_pin_map": {"1": "2", "2": "1", "3": "3", "G": "2", "GATE": "2", "D": "1", "DRAIN": "1", "S": "3", "SOURCE": "3"},
+      "native_semantics": {"bulk_terminal": "inside the project-local subcircuit and tied to source", "oracle_evidence": "LTspice 26 emits a three-node X instance whose internal MOS bulk is tied to source."}
+    },
+    "SW": {
+      "aliases": ["S", "SWITCH", "VOLTAGE_CONTROLLED_SWITCH"],
+      "symbol": "progeneda_switch",
+      "symbol_template": "switch",
+      "reference_prefix": "S",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "A", "role": "switch_a", "x": 0, "y": 16, "justification": "Top"},
+        {"number": "2", "name": "B", "role": "switch_b", "x": 0, "y": 96, "justification": "Bottom"},
+        {"number": "3", "name": "CTRL+", "role": "control_positive", "x": -48, "y": 80, "justification": "Left"},
+        {"number": "4", "name": "CTRL-", "role": "control_negative", "x": -48, "y": 32, "justification": "Left"}
+      ],
+      "default_value": "PROGEN_SWITCH",
+      "value_rule": "model_name",
+      "editable_parameters": ["off"],
+      "metadata_fields": ["ron", "roff", "vt", "vh"],
+      "model_key": "PROGEN_SWITCH"
+    },
+    "POT": {
+      "aliases": ["POTENTIOMETER", "VARIABLE_RESISTOR"],
+      "symbol": "progeneda_pot",
+      "symbol_template": "potentiometer",
+      "reference_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "A", "role": "end_a", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "W", "role": "wiper", "x": -64, "y": 48, "justification": "Left"},
+        {"number": "3", "name": "B", "role": "end_b", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "PROGEN_POT",
+      "value_rule": "model_name",
+      "editable_parameters": ["r", "wiper"],
+      "metadata_fields": ["taper"],
+      "model_key": "PROGEN_POT"
+    },
+    "OPAMP": {
+      "aliases": ["OP_AMP", "GENERIC_OPAMP", "OPAMP_GENERIC"],
+      "symbol": "progeneda_opamp",
+      "symbol_template": "opamp",
+      "reference_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "IN+", "role": "non_inverting_input", "x": -64, "y": 32, "justification": "Left"},
+        {"number": "2", "name": "IN-", "role": "inverting_input", "x": -64, "y": 64, "justification": "Left"},
+        {"number": "3", "name": "V+", "role": "positive_supply", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "4", "name": "V-", "role": "negative_supply", "x": 0, "y": 96, "justification": "Bottom"},
+        {"number": "5", "name": "OUT", "role": "output", "x": 64, "y": 48, "justification": "Right"}
+      ],
+      "default_value": "PROGEN_OPAMP",
+      "value_rule": "model_name",
+      "editable_parameters": [],
+      "metadata_fields": ["gain_bandwidth", "slew_rate"],
+      "model_key": "PROGEN_OPAMP",
+      "canonical_pin_map": {"1": "5", "2": "2", "3": "1", "4": "4", "8": "3", "OUT": "5", "IN_PLUS": "1", "INP": "1", "IN_MINUS": "2", "INM": "2", "VCC": "3", "VPLUS": "3", "GND": "4", "VMINUS": "4"}
+    },
+    "LM741": {
+      "aliases": ["UA741", "741"],
+      "symbol": "progeneda_opamp",
+      "symbol_template": "opamp",
+      "reference_prefix": "X",
+      "support_state": "project_local_model",
+      "pins": [
+        {"number": "1", "name": "IN+", "role": "non_inverting_input", "x": -64, "y": 32, "justification": "Left"},
+        {"number": "2", "name": "IN-", "role": "inverting_input", "x": -64, "y": 64, "justification": "Left"},
+        {"number": "3", "name": "V+", "role": "positive_supply", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "4", "name": "V-", "role": "negative_supply", "x": 0, "y": 96, "justification": "Bottom"},
+        {"number": "5", "name": "OUT", "role": "output", "x": 64, "y": 48, "justification": "Right"}
+      ],
+      "default_value": "PROGEN_LM741_APPROX",
+      "value_rule": "model_name",
+      "editable_parameters": [],
+      "metadata_fields": ["model_accuracy_note"],
+      "model_key": "PROGEN_LM741_APPROX",
+      "canonical_pin_map": {"2": "2", "3": "1", "4": "4", "6": "5", "7": "3", "OUT": "5", "IN_PLUS": "1", "INP": "1", "IN_MINUS": "2", "INM": "2", "VCC": "3", "VPLUS": "3", "GND": "4", "VMINUS": "4"}
+    },
+    "FUSE": {
+      "aliases": ["F", "FUSE_APPROX"],
+      "symbol": "progeneda_fuse",
+      "symbol_template": "fuse",
+      "reference_prefix": "R",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "A", "role": "passive", "x": 0, "y": 0, "justification": "Top"},
+        {"number": "2", "name": "B", "role": "passive", "x": 0, "y": 96, "justification": "Bottom"}
+      ],
+      "default_value": "10m",
+      "value_rule": "spice_number",
+      "editable_parameters": ["tc", "temp", "m"],
+      "metadata_fields": ["current_rating", "blow_note"],
+      "model_key": null,
+      "semantics_note": "Rendered and simulated as a low-value resistor; it does not model a thermal blow event."
+    },
+    "GND": {
+      "aliases": ["GROUND", "0"],
+      "symbol": null,
+      "symbol_template": "ground_flag",
+      "reference_prefix": "",
+      "support_state": "native_simulation",
+      "native_representation": "flag_0",
+      "pins": [
+        {"number": "1", "name": "GND", "role": "ground", "x": 0, "y": 0, "justification": "Top"}
+      ],
+      "default_value": "0",
+      "value_rule": "fixed",
+      "editable_parameters": [],
+      "metadata_fields": [],
+      "model_key": null
+    }
+  }
+}

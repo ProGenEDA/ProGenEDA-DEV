@@ -459,7 +459,10 @@ def _raw_components_from_any(
         refs_seen.add(ref)
         kind = _component_kind(component, ref, pins_by_ref.get(ref, set()), repairs)
         spec = resolve_placement_spec(kind)
-        value = _string(component.get("value") or component.get("display_value"))
+        raw_value = component.get("value")
+        if raw_value is None or not str(raw_value).strip():
+            raw_value = component.get("display_value")
+        value = _string(raw_value)
         if not value:
             value = _infer_node_component_value(ref, kind)
             repairs.append({"kind": "component_value_filled", "ref": ref, "value": value})
