@@ -12123,3 +12123,13 @@ u can regenerate or just give me location of generated ones
 ## Agent Visible Response - 2026-07-12 +05:00
 
 The prior Git checkpoint was verified locally, at upstream, and at `origin` before inspecting files. The existing complete 1x terminalized-solo set is under `experiments/three_pin_transistor_terminal_v32_temp_2026_07_10/01_terminalized_solo_sa/`: NPN, PNP, NMOSFET, 2N3904, 2N4401, 2N7000, and BS170. No regeneration was performed, so the restored and frozen generic diode route is untouched.
+
+## User Message - 2026-07-12 +05:00
+
+regenerate them, these 1x are not working
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+The prior Git checkpoint was verified locally, at upstream, and at `origin`. A new isolated seven-family 1x pack was generated from the locked mega donor through the existing shared terminal placer, without editing the accepted generic two-pin/diode route or overwriting earlier V32 outputs. The complete authoritative NMOSFET, NPN, and PNP donor archives were read before generation; numbered BJT aliases use the NPN schema with their own locked-mega packets and the two named MOSFETs use the NMOSFET schema with their own locked-mega packets.
+
+Every regenerated terminal report records exactly three terminals, three WIRE records, grid-aligned terminal contacts, active link fields, and short wire-to-pin paths. Focused shared-placer regression passed: 24 passed; compile check passed. The user had an active Proteus PDS session, so it was deliberately not terminated to perform a cold gate; user visual/open acceptance is pending.
