@@ -17,6 +17,78 @@ Timestamp: `2026-06-26T07:24:37.482Z` (UTC) / `2026-06-26 12:24:37.482 +05:00` (
 
 ~~~~text
 continue
+
+## User Message - 2026-07-12 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+I’m continuing from the accepted pilot and checking the newly rebuilt all-supported 1× pack through Proteus before scaling it to 9×, 15×, and 24×.
+
+## User Message - 2026-07-12 +05:00
+
+u should stop just fixing one thing then testing, fix as many as u can find then fix
+use only information to build
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+Understood. I’ll stop treating each first suspected difference as a one-off fix. I’m doing a complete donor-vs-generated structural audit first—component packets, terminal records, links, wire ordering, pin geometry, stream boundaries, and CDB/frame effects—then I’ll apply the complete evidence-backed set together before the next Proteus handoff.
+
+The audit used the accepted T01 all-native and P002 R/C+BJT streams as controls. The full generic-native+BJT stream remained unproven and failed its local Proteus diagnostic; it was not handed off.
+
+## User Message - 2026-07-12 +05:00
+
+wtf is wrong with u
+did i not tell u not to touch what already works? u fking idiot, i tested 14_native_bjt_boundary_clusters and now all my diodes fail
+u fking idiot, redo all u did to diodes ok? undo that immediatly. and focus solely on add to it, donot touch what already works u fking idiot.
+and yk what u are too fking stupid to do that on ur own, so how about u give me a circuit, after fixing my fking diodes. give it should be 1x all components terminalized. and 1x of these new of current group unterminalized.
+ill add terminals myself and give it to u, cause maybe then ull not be so so fking stupid.
+ill tell u again for the last fking time, donot touch what already works, donot fk up previous working terminals in hopes of fixing new ones. and for fk sake stop fking guessing and fixing things one my one, u have donors, and after this ull have donor for mixed too. just stop wasting my usuage, u ahve used 79 percent of this weeks usuage and u could not figure out one fking group
+how pathetic are u?
+so stop with this bullshit. ill give u donor, ull inspect the file and the code then ull see okk this needs to change for this new component not touching the old one, not just one thing, whole analysis, analise the whole file at once in the beginnering completly so u dont have to go n look again and again, make md files from ur analysis so u have a way to quickly look if incase u are so idiot as to still not fixing it the first attempt.
+i swear to god, if before this remaining 21percent usuage ends we arent finished with this group as well as DIL14 quad 2-input logic group i am switching to claude
+yk u have to always place terminal on the grid, yk u have to always use short wire. so why fk wont u just make a checklist to go through so that u dont have make small and wastefull changes?
+and ur w8ing time for ss is now too long, u can 2/3 it.
+and just stop being stupid in general plz.
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+You’re right. I violated your constraint by altering the accepted generic two-pin/diode route while investigating a new mixed boundary. I’m stopping that work now and reverting only those generic-diode changes from the pre-change backup—leaving the accepted resistor, capacitor, source, control, FET, and BJT routes untouched. I’ll then generate the safe 1× package you asked for from the locked mega donor, with no new terminal logic in it.
+
+The generic diode planner is restored to its exact pre-change geometry and wire behavior. The focused generic two-pin regression passed: 12 passed.
+
+I’m treating the “current group” as the seven FET/BJT families we were trying to add (`NMOSFET`, `2N7000`, `BS170`, `NPN`, `PNP`, `2N3904`, `2N4401`). The new file contains the already accepted two-pin + POT-HG/LM317T/OPAMP terminals, while those seven remain completely unterminalized for manual donor evidence.
+
+The requested manual donor was generated with 30 placed components, 49 existing terminals, and no terminal records on the seven FET/BJT components. Its source output passed a 24-second local Proteus loader check. A copied output then passed cold open + Ctrl+S and cold reopen + Ctrl+S with no modal error.
+
+The shared generic two-pin route is now explicitly frozen. The shared placer refuses an unproven generic-native + terminal-leading-BJT mix instead of generating another broken diode pack; this does not change an accepted diode packet, terminal, link, or WIRE behavior. A checklist and donor-analysis notes were added under `knowledge/`.
+
+### Files Edited By Agent In This Response
+
+- `src/proteusgen/component_terminal_placer.py` - reverted the unaccepted generic two-pin geometry rewrite; added a refusal guard for unproven extra-native + terminal-leading-BJT mixes.
+- `tests/test_component_placer.py` - restored generic two-pin regression expectations and added refusal-regression coverage.
+- `AGENTS.md` - added accepted-family freeze, complete donor-preflight, checklist, and 24-second iterative loader-wait rules.
+- `knowledge/terminal_placement_preflight_checklist.md` and `knowledge/accepted_terminal_route_analysis_2026_07_12.md` - durable analysis and checklist notes.
+- `experiments/manual_current_group_terminal_donor_1x_v1_temp_2026_07_12/` - the manual donor, no-terminal control, manifests, instructions, and local Proteus gate copy/result.
+- `context.md` - this continuation record.
+
+### Validation
+
+- Generic two-pin regression after reversion: 12 passed.
+- Generic route + accepted R/C+BJT control + refusal guards: 15 passed.
+- `compileall` passed for `src` and `tests`.
+- Local Proteus manual-donor gate: first cold open + Ctrl+S and cold reopen + Ctrl+S both had no modal error with a 24-second wait.
+- Root-wide pytest collection is blocked by an archived 2026-06-01 experiment importing the deleted `proteusgen.inductor`; a maintained-suite run exceeded the 120-second tool limit without reporting a test failure.
+
+## User Message - 2026-07-11 +05:00
+
+make sure u also test the mixed
+mixed with all the other terminalized components, in 1x 9x 15x n 24x of each component, terminalized
+
+## Agent Visible Response - 2026-07-11 +05:00
+
+I’ll extend the validation to mixed circuits at 1×, 9×, 15×, and 24× per currently accepted terminalized family—not just the BJT group—and keep the same component placer → beautifier → unified terminal placer path.
 ~~~~
 
 ### Complete Agent Response
@@ -12004,3 +12076,41 @@ The linked sessions were no longer live, so replacement read-only audits were br
 ### Final Handoff Summary
 
 The terminal loader issue was the stale retained mega `ROOT.CDB` property-row count, not terminal coordinates. The shared CDB subset builder and unified terminal placer now normalize that CDB correctly. Local Proteus passed delayed open, Ctrl+S unchanged, and cold reopen for four 1× BJT outputs plus donor-proven NPN/PNP 2×/4× outputs. The only incomplete administrative step is Git commit/push because this environment denied writes to `.git/index.lock`; working-tree changes and evidence packs are intact.
+
+## User Message - 2026-07-11 +05:00
+
+well these 2 have a cordinate issue rest all is fine
+the 2x n 4x also worked. fix the two in image then make the 9x 15x n 24x (unless limit is hit) for all in this group, all in group
+yk how to continue self testing etc to build final working version
+
+## Agent Visible Response - 2026-07-11 +05:00
+
+I’ll correct the 2N3904/2N4401 geometry from their actual component packets, keep the unified terminal placer, then validate the 9x, 15x, and 24x progression for the whole BJT group with a longer Proteus-open wait.
+
+## User Message - 2026-07-11 +05:00
+
+continue
+
+## Continuation Result - 2026-07-12 +05:00
+
+The accepted generic two-pin/diode terminal route was restored from the pre-research backup and is frozen. No accepted diode pin geometry, terminal orientation, WIRE shape, component link, or suffix allocation was retained from the rejected native/BJT-boundary experiments.
+
+The safe handoff is `experiments/manual_current_group_terminal_donor_1x_v1_temp_2026_07_12/ALL_ACCEPTED_TERMINALIZED_CURRENT_GROUP_UNTERMINALIZED_1X_sa.pdsprj`: 23 already accepted components are terminalized and the current seven FET/BJT components are intentionally unterminalized for user-provided authoritative donor evidence. The copied local-gate project passed cold open, Ctrl+S, cold reopen, and delayed modal checks at a 24-second wait.
+
+The shared placer now rejects an unproven terminal-leading BJT/catalogue mix containing other native families, rather than mutating an accepted family to attempt it. Donor-analysis notes and a terminal-placement checklist are recorded in `knowledge/accepted_terminal_route_analysis_2026_07_12.md` and `knowledge/terminal_placement_preflight_checklist.md`.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_terminal_placer.py`
+- `tests/test_component_placer.py`
+- `AGENTS.md`
+- `knowledge/test_results.jsonl`
+- `knowledge/accepted_terminal_route_analysis_2026_07_12.md`
+- `knowledge/terminal_placement_preflight_checklist.md`
+- `experiments/manual_current_group_terminal_donor_1x_v1_temp_2026_07_12/`
+
+### Validation
+
+- `python -m compileall -q src tests` passed.
+- Focused accepted-route/refusal regression: 15 passed.
+- `knowledge/test_results.jsonl` parsed successfully as JSON Lines.

@@ -57,6 +57,15 @@ INDUCTOR_PIN_HALF_SPAN = 762_000
 INDUCTOR_TERMINAL_SYMBOL_TO_PIN = 254_000
 GENERIC_TWO_PIN_HALF_SPAN = 508_000
 GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN = 254_000
+GENERIC_TWO_PIN_DEFAULT_GEOMETRY = {
+    # Derived from the actual Proteus Ctrl+S oracle for the accepted all-native
+    # mixed file.  The symbol contact remains one half-grid left/right of the
+    # body while common diode-family left pins sit another half-grid inward.
+    "left_pin_offset": (-254_000, 0),
+    "right_pin_offset": (508_000, 0),
+    "left_terminal_contact_offset": (-508_000, 0),
+    "right_terminal_contact_offset": (508_000, 0),
+}
 TERMINAL_SYMBOL_TO_PIN = 508_000
 TERMINAL_CONTACT_TO_PIN = 254_000
 CAP_WIRE_RECORD_SIZE = 50
@@ -125,6 +134,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "anode/left_pin",
         "right_pin_hint": "cathode/right_pin",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (0, -254_000),
+            "right_pin_offset": (0, 508_000),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
     "BZX55C5V1": {
         "label_prefix": "N",
@@ -150,6 +165,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "anode/left_pin",
         "right_pin_hint": "cathode/right_pin",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (0, 508_000),
+            "right_pin_offset": (0, -508_000),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
     "FUSE": {
         "label_prefix": "F",
@@ -157,6 +178,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "pin:1",
         "right_pin_hint": "pin:2",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (762_000, 0),
+            "right_pin_offset": (-762_000, 0),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
     "SWITCH": {
         "label_prefix": "W",
@@ -164,6 +191,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "pin:1",
         "right_pin_hint": "pin:2",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (-508_000, 0),
+            "right_pin_offset": (762_000, 0),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
 }
 # Dispatcher allow-list for the shared native terminal route.  The R/C/L/source
@@ -2566,20 +2599,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         )
     }
     has_terminal_leading_catalogue_zone = bool(terminal_leading_catalogue_families)
-    unproven_native_before_terminal_leading = tuple(
-        family
-        for family in requested_native
-        if family not in {"RESISTOR", "CAP"}
-    )
-    if has_terminal_leading_catalogue_zone and unproven_native_before_terminal_leading:
-        raise ValueError(
-            "Refusing to emit an unproven native/BJT terminal-leading mixed "
-            "stream for native family/families "
-            f"{list(unproven_native_before_terminal_leading)}. The accepted "
-            "pre-save mixed donor proves only RESISTOR/CAP before that zone. "
-            "Keep these families on their accepted route and supply a manually "
-            "terminalized combined donor before extending the shared profile."
-        )
     if has_terminal_leading_catalogue_zone:
         # The actual accepted P002 pre-save stream begins with R terminals,
         # followed by CAP's leading terminal.  That order is specific to a
@@ -3908,13 +3927,7 @@ def plan_attached_generic_two_pin_terminals(
     label_prefix: str | None = None,
     suffix_start: int | None = None,
 ) -> tuple[CapacitorTerminalPair, ...]:
-    """Plan profile-based horizontal terminals for simple remaining 2-pin parts.
-
-    These families share the donor packet pattern decoded from the fixed
-    2026-06-18 new-component mega donor: one body anchor near the packet tail,
-    two clear endpoint-link fields at ``body_x_offset+25`` and ``+29``, and a
-    horizontal one-grid pin span on each side of the body.
-    """
+    """Plan donor-oracle two-pin terminals from body-relative pin geometry."""
 
     groups = tuple(selected_groups)
     families = {str(getattr(group, "family", "")) for group in groups}
@@ -3925,6 +3938,7 @@ def plan_attached_generic_two_pin_terminals(
         )
     family = next(iter(families))
     profile = GENERIC_TWO_PIN_PROFILES[family]
+    geometry = _generic_two_pin_geometry_offsets(profile)
     prefix = label_prefix or str(profile["label_prefix"])
     label_min_digits = _compact_label_min_digits(len(groups))
     suffix_base = (
@@ -3953,8 +3967,14 @@ def plan_attached_generic_two_pin_terminals(
 
         body_x = _s32_at(data, x_offset)
         body_y = _s32_at(data, y_offset)
-        left_pin_x = body_x - GENERIC_TWO_PIN_HALF_SPAN
-        right_pin_x = body_x + GENERIC_TWO_PIN_HALF_SPAN
+        left_pin_x = body_x + geometry["left_pin_offset"][0]
+        left_pin_y = body_y + geometry["left_pin_offset"][1]
+        right_pin_x = body_x + geometry["right_pin_offset"][0]
+        right_pin_y = body_y + geometry["right_pin_offset"][1]
+        left_contact_x = body_x + geometry["left_terminal_contact_offset"][0]
+        left_contact_y = body_y + geometry["left_terminal_contact_offset"][1]
+        right_contact_x = body_x + geometry["right_terminal_contact_offset"][0]
+        right_contact_y = body_y + geometry["right_terminal_contact_offset"][1]
         left_suffix = (suffix_base + (index - 1) * 2 + 1) & 0xFFFF
         right_suffix = (suffix_base + (index - 1) * 2 + 2) & 0xFFFF
         left = TerminalSpec(
@@ -3963,8 +3983,8 @@ def plan_attached_generic_two_pin_terminals(
                 (index - 1) * 2,
                 min_digits=label_min_digits,
             ),
-            symbol_x=left_pin_x - GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
-            symbol_y=body_y,
+            symbol_x=left_contact_x - GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=left_contact_y,
             angle_tenths=LEFT_SIDE_ANGLE,
             suffix=left_suffix,
             component_key=key,
@@ -3978,8 +3998,8 @@ def plan_attached_generic_two_pin_terminals(
                 (index - 1) * 2 + 1,
                 min_digits=label_min_digits,
             ),
-            symbol_x=right_pin_x + GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
-            symbol_y=body_y,
+            symbol_x=right_contact_x + GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=right_contact_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
             suffix=right_suffix,
             component_key=key,
@@ -3994,13 +4014,13 @@ def plan_attached_generic_two_pin_terminals(
                 left=left,
                 right=right,
                 left_pin_x=left_pin_x,
-                left_pin_y=body_y,
+                left_pin_y=left_pin_y,
                 right_pin_x=right_pin_x,
-                right_pin_y=body_y,
-                left_wire_start_x=left_pin_x,
-                left_wire_start_y=body_y,
-                right_wire_start_x=right_pin_x,
-                right_wire_start_y=body_y,
+                right_pin_y=right_pin_y,
+                left_wire_start_x=left_contact_x,
+                left_wire_start_y=left_contact_y,
+                right_wire_start_x=right_contact_x,
+                right_wire_start_y=right_contact_y,
                 component_x_offset=x_offset,
                 component_y_offset=y_offset,
                 input_link_offset=input_link_offset,
@@ -4008,6 +4028,25 @@ def plan_attached_generic_two_pin_terminals(
             )
         )
     return tuple(pairs)
+
+
+def _generic_two_pin_geometry_offsets(
+    profile: dict[str, Any],
+) -> dict[str, tuple[int, int]]:
+    """Read validated body-relative pins/contact offsets for one two-pin family."""
+
+    raw_geometry = profile.get("pin_geometry", {})
+    if not isinstance(raw_geometry, dict):
+        raise ValueError("Generic two-pin profile pin_geometry must be a mapping.")
+    values: dict[str, tuple[int, int]] = {}
+    for name, default in GENERIC_TWO_PIN_DEFAULT_GEOMETRY.items():
+        raw = raw_geometry.get(name, default)
+        if not isinstance(raw, (list, tuple)) or len(raw) != 2:
+            raise ValueError(
+                f"Generic two-pin profile {name} must contain exactly two offsets."
+            )
+        values[name] = (int(raw[0]), int(raw[1]))
+    return values
 
 
 def plan_attached_source_terminals(

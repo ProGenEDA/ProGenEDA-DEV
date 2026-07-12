@@ -182,6 +182,38 @@ Shared logical IR and stage interfaces should remain backend-neutral enough
 for Proteus, KiCad, PSpice, and Altium adapters. Backend-specific binary or
 symbol details belong behind backend profiles and emitters.
 
+## Accepted Family Freeze and Donor Preflight
+
+User-accepted terminal families are frozen behavior. Never change their pin
+geometry, terminal orientation, WIRE coordinates/order, link trailers,
+packet-tail handling, suffix allocation, or serialization path merely to make
+a new family or a new mixed combination work. A new family must be additive:
+put its facts in the catalogue/profile and its exception branch in the shared
+placer, then prove that the full accepted-family regression matrix is
+unchanged. If an accepted family genuinely needs repair, stop and obtain a
+specific user failure report or an authoritative replacement donor; do not
+infer a repair from a different family or from a Ctrl+S rewrite.
+
+Before any terminal implementation change, create the requested shared-placer
+backup and complete the checklist in
+`knowledge/terminal_placement_preflight_checklist.md`. Read the entire actual
+donor project first, including all members, ROOT.DSN packet order, terminal
+records, pin links, WIRE records, coordinates, packet tails/finalizers, ROOT.CDB,
+and Ctrl+S deltas. Record the complete analysis in a compact Markdown note
+under `knowledge/` before emitting a candidate. Do not make serial speculative
+byte edits: collect every unexplained donor-vs-generated difference, implement
+the evidence-backed set together, then run focused and accepted-family
+regressions.
+
+Every terminal candidate must pass this mechanical checklist before handoff:
+grid-aligned terminal contact; 1800 angle for left-side pins and 0 for
+right-side pins; nonzero donor-proven short WIRE from terminal contact to exact
+pin; matching active terminal/component-link suffix allocated from final
+ROOT.DSN WIRE address; correct packet and stream boundary bytes; unchanged
+accepted-family regression outputs; and a local Proteus open/save/cold-reopen
+gate. New family work must never downgrade, replace, or rewrite a previously
+accepted family path.
+
 ## Local Proteus Acceptance Gate
 
 When the local Proteus installation is available, static validation is not a
@@ -198,3 +230,8 @@ may not render through `PrintWindow`/screen capture even for the authoritative
 donor, so a blank automated capture is not evidence that a design is empty.
 User visual inspection remains required for layout acceptance, while the local
 open/save/cold-reopen gate establishes loader and persistence acceptance.
+
+For iterative non-screenshot loader checks, use a 24-second wait (two thirds
+of the former 35-second diagnostic interval) after launch, provided the
+schematic window has appeared and the required additional ten-second stability
+period is still met. The full open/save/cold-reopen gate remains mandatory.

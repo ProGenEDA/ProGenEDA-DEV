@@ -2551,56 +2551,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "Requested catalogue terminal families are absent from selected "
                 f"groups: {missing_catalogue}."
             )
-    terminal_leading_catalogue_families = {
-        family
-        for family in requested_catalogue
-        if (
-            (profile := catalog.get_profile(family)) is not None
-            and str(
-                profile.proteus.get("pin_geometry", {}).get(
-                    "clean_packet_attachment_order",
-                    "component_stream_then_attachment_units",
-                )
-            )
-            == "terminal_leading_component_then_wires"
-        )
-    }
-    has_terminal_leading_catalogue_zone = bool(terminal_leading_catalogue_families)
-    unproven_native_before_terminal_leading = tuple(
-        family
-        for family in requested_native
-        if family not in {"RESISTOR", "CAP"}
-    )
-    if has_terminal_leading_catalogue_zone and unproven_native_before_terminal_leading:
-        raise ValueError(
-            "Refusing to emit an unproven native/BJT terminal-leading mixed "
-            "stream for native family/families "
-            f"{list(unproven_native_before_terminal_leading)}. The accepted "
-            "pre-save mixed donor proves only RESISTOR/CAP before that zone. "
-            "Keep these families on their accepted route and supply a manually "
-            "terminalized combined donor before extending the shared profile."
-        )
-    if has_terminal_leading_catalogue_zone:
-        # The actual accepted P002 pre-save stream begins with R terminals,
-        # followed by CAP's leading terminal.  That order is specific to a
-        # stream that will later enter a terminal-leading catalogue zone; it
-        # must not be conflated with T01's no-BJT all-native prefix.
-        leading_native_priority = ("RESISTOR", "CAP")
-        original_native_request_order = requested_native
-        requested_native = tuple(
-            dict.fromkeys(
-                [
-                    family
-                    for family in leading_native_priority
-                    if family in original_native_request_order
-                ]
-                + [
-                    family
-                    for family in original_native_request_order
-                    if family not in leading_native_priority
-                ]
-            )
-        )
     if not requested_native or not requested_catalogue:
         raise ValueError(
             "Mixed native/catalogue attachment requires at least one accepted "
@@ -2635,22 +2585,10 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 terminal_templates=terminal_templates,
                 source_index_start=source_index_start,
                 active_links=True,
-                # T01's all-native route has 0200 on every active link.  The
-                # accepted P002 *pre-save* R/C+BJT route is the sole proven
-                # exception: its RESISTOR/CAP links remain 0100 until Proteus
-                # saves and canonicalizes them.  Preserve that exact loader
-                # grammar only when a terminal-leading catalogue zone exists.
-                active_link_trailer=(
-                    b"\x01\x00"
-                    if has_terminal_leading_catalogue_zone
-                    and family in {"RESISTOR", "CAP"}
-                    else b"\x02\x00"
-                ),
-                cap_wire_order=(
-                    ("left", "right")
-                    if has_terminal_leading_catalogue_zone
-                    else ("right", "left")
-                ),
+                # P002's Proteus Ctrl+S oracle proves that native active
+                # terminal/component links in this hybrid stream canonicalize
+                # to 0200.  Standalone two-pin routes retain their 0100 form.
+                active_link_trailer=b"\x02\x00",
                 snap_terminal_contacts_to_grid=False,
             )
         )
@@ -2699,17 +2637,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "wire_count_added": len(pairs) * 2,
                 "wire_count_rewritten": 0,
                 "terminal_pairs": [pair.as_dict() for pair in pairs],
-                **(
-                    {
-                        "cap_wire_order": list(
-                            ("left", "right")
-                            if has_terminal_leading_catalogue_zone
-                            else ("right", "left")
-                        )
-                    }
-                    if family == "CAP"
-                    else {}
-                ),
             }
         )
         terminalized_count += len(family_groups)
@@ -2942,13 +2869,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             )
             catalogue_leading_finalizers.add(object_stream_finalizer)
         else:
-            # Keep the patched catalogue packet at its original position in
-            # the beautified component stream.  The saved T01 all-native
-            # oracle proves that POT-HG/OPAMP/LM317T packets remain interleaved
-            # with native packets while their terminal/WIRE attachment units
-            # are collected after the component stream.  Moving those packets
-            # to a synthetic trailing zone changed packet order and created a
-            # full-mix-only loader failure.
             for terminal_record, wire_record in zip(
                 terminal_records,
                 appended_wire_records,
@@ -3018,7 +2938,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 catalogue_attachment_records or catalogue_leading_by_group_id
             )
         )
-        trim_component_tail_before_terminal = (
+        trim_tail_before_terminal = (
             next_starts_with_terminal or terminal_units_follow_stream
         )
         if group_id in catalogue_leading_by_group_id:
@@ -3042,30 +2962,21 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 local_records.append(b"\x00")
             local_records.extend((patched, first_wire))
             local_records.append(
-                # T01's final CAP-ELEC WIRE and P002's R/C boundary prove that
-                # this byte is consumed whenever *any* terminal zone follows,
-                # including trailing catalogue attachments and the final BJT
-                # zone—not only by an immediately following native terminal.
-                second_wire[:-1]
-                if trim_component_tail_before_terminal
-                else second_wire
+                second_wire[:-1] if trim_tail_before_terminal else second_wire
             )
-            if trim_component_tail_before_terminal:
+            if trim_tail_before_terminal:
                 boundary_normalizations += 1
             continue
 
         data = patched_by_id.get(group_id, bytes(getattr(group, "data", b"")))
-        # T01 and P002 both remove a regular packet's trailing selector byte
-        # immediately before a terminal zone.  The same byte is retained when
-        # the following object is another ordinary component packet.
-        emitted = data[:-1] if trim_component_tail_before_terminal else data
+        emitted = data[:-1] if trim_tail_before_terminal else data
         if not emitted:
             raise ValueError(
                 f"{family} {getattr(group, 'key', '')} has no payload bytes "
                 "before an active terminal unit."
             )
         local_records.append(emitted)
-        if trim_component_tail_before_terminal:
+        if trim_tail_before_terminal:
             boundary_normalizations += 1
         if group_id not in terminalized_ids:
             preserved_rows.append(
@@ -3076,7 +2987,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     "emitted_packet_size": len(emitted),
                     "byte_preserved": emitted == bytes(getattr(group, "data", b""))
                     or emitted == bytes(getattr(group, "data", b""))[:-1],
-                    "boundary_tail_normalized": trim_component_tail_before_terminal,
+                    "boundary_tail_normalized": trim_tail_before_terminal,
                 }
             )
     if not original_chunk[:1]:
@@ -3084,8 +2995,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             "Mixed native/catalogue attachment could not recover the original "
             "component stream prefix."
         )
-    component_stream_records = local_records
-    if not component_stream_records:
+    if not local_records:
         raise ValueError("Mixed native/catalogue attachment produced no component records.")
     first_local_starts_with_terminal = local_starts_with_terminal[0]
     separator = b"" if first_local_starts_with_terminal else b"\x00"
@@ -3093,7 +3003,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         original_chunk[:1]
         + b"".join(native_leading_records)
         + separator
-        + b"".join(component_stream_records)
+        + b"".join(local_records)
     )
     catalogue_terminal_leading_records = [
         record
@@ -3234,9 +3144,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             "preserve_native_stream_with_profile-driven_catalogue_terminal_units"
         ),
         "object_order": (
-            "preserved_placed_component_order_with_native_attachment_units_"
-            "catalogue_trailing_attachment_units_then_contiguous_final_"
-            "terminal-leading_zone"
+            "accepted_two_pin_native_order_with_catalogue_profile-driven_"
+            "trailing_units_then_contiguous_final_terminal-leading_zone"
         ),
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
@@ -3245,8 +3154,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "catalogue_terminal_leading_component_count": len(
             catalogue_leading_by_group_id
         ),
-        "catalogue_component_stream_component_count": 0,
-        "catalogue_component_stream_component_keys": [],
         "catalogue_terminal_leading_component_keys": [
             _group_key(group)
             for group in ordered_groups
@@ -3285,9 +3192,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "accepted_native_order_stream_preserved": final_chunk.startswith(
             accepted_native_order_stream
         ),
-        "component_record_order_mutation": bool(
-            catalogue_leading_by_group_id
-        ),
+        "component_record_order_mutation": bool(catalogue_leading_by_group_id),
         "boundary_tail_normalizations": boundary_normalizations,
         "native_wire_boundary_checks": native_wire_boundary_checks,
         "native_wire_boundaries_valid": all(
@@ -5645,7 +5550,6 @@ def _mixed_overlay_family_parts(
     source_index_start: int,
     active_links: bool,
     active_link_trailer: bytes = b"\x01\x00",
-    cap_wire_order: tuple[str, str] = ("right", "left"),
     snap_terminal_contacts_to_grid: bool = False,
 ) -> tuple[
     tuple[Any, ...],
@@ -5653,11 +5557,6 @@ def _mixed_overlay_family_parts(
     list[tuple[bytes, bytes]],
     dict[int, bytes],
 ]:
-    if cap_wire_order not in {("left", "right"), ("right", "left")}:
-        raise ValueError(
-            "CAP mixed-overlay WIRE order must be ('left', 'right') or "
-            "('right', 'left')."
-        )
     terminal_records: list[bytes] = []
     wire_pairs: list[tuple[bytes, bytes]] = []
     patched_by_id: dict[int, bytes] = {}
@@ -5818,29 +5717,23 @@ def _mixed_overlay_family_parts(
                 )
             )
         elif family == "CAP":
-            # T01's all-native pre-save oracle uses right->left CAP WIREs,
-            # whereas P002's accepted R/C+BJT pre-save oracle uses left->right.
-            # The latter is required before a terminal-leading catalogue zone;
-            # Proteus canonicalizes it to the former on save.  Both are
-            # catalogue/stream-policy facts, never inferred from positions.
-            starts = {
-                "left": (pair.left_wire_start_x, pair.left_wire_start_y),
-                "right": (pair.right_wire_start_x, pair.right_wire_start_y),
-            }
-            pins = {
-                "left": (pair.left_pin_x, pair.left_pin_y),
-                "right": (pair.right_pin_x, pair.right_pin_y),
-            }
-            first_role, second_role = cap_wire_order
+            # The accepted capacitor stream is right terminal, left terminal,
+            # component, right WIRE, left WIRE.  In a hybrid stream Proteus
+            # rewrites a left/right WIRE order into this donor order on Ctrl+S.
+            # Emit the donor order directly so the saved project is stable.
             wire_pairs.append(
                 (
                     _build_native_short_wire(
-                        *starts[first_role],
-                        *pins[first_role],
+                        pair.right_wire_start_x,
+                        pair.right_wire_start_y,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
                     ),
                     _build_native_short_wire(
-                        *starts[second_role],
-                        *pins[second_role],
+                        pair.left_wire_start_x,
+                        pair.left_wire_start_y,
+                        pair.left_pin_x,
+                        pair.left_pin_y,
                     ),
                 )
             )

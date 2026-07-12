@@ -1259,14 +1259,47 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
         assert chunk[-1:] == b"\xff"
         assert terminal_placer._wire_record_spans(chunk)[-1][1] == len(chunk) - 1
         wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
-        assert all(
-            tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])
-            for row in wire_rows
-        )
-        assert all(
-            not row["wire_is_nonzero"] and row["zero_length_wire_allowed"]
-            for row in report["wire_path_contact_checks"]
-        )
+        if family in {"NPN", "PNP"}:
+            assert all(
+                tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])
+                for row in wire_rows
+            )
+            assert all(
+                not row["wire_is_nonzero"] and row["zero_length_wire_allowed"]
+                for row in report["wire_path_contact_checks"]
+            )
+        else:
+            expected_pin_coordinates = {
+                "B": (-6_858_000, -4_973_320),
+                "C": (-6_096_000, -4_211_320),
+                "E": (-6_096_000, -5_735_320),
+            }
+            terminal_pins = report["family_reports"][0]["terminal_pins"]
+            assert {
+                str(row["pin"]["name"]): (
+                    int(row["pin"]["x"]), int(row["pin"]["y"])
+                )
+                for row in terminal_pins
+            } == expected_pin_coordinates
+            assert all(
+                row["coordinate_source"].startswith(
+                    "component_marker_anchor_offset"
+                )
+                for row in terminal_pins
+            )
+            assert all(
+                row["wire_is_nonzero"] and not row["zero_length_wire_allowed"]
+                for row in report["wire_path_contact_checks"]
+            )
+            assert all(
+                tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+                for row in wire_rows
+            )
+            assert all(
+                abs(int(row["coordinates"][1]) - int(row["coordinates"][3]))
+                == 106_680
+                for row in wire_rows
+            )
         terminal_labels = [
             row["label"]
             for row in terminal_placer._bidir_label_records(chunk)
@@ -1381,6 +1414,90 @@ def test_donor_proven_bjt_terminal_leading_scaling(
     ]
     assert all(marker >= 0 for marker in component_markers)
     assert terminals[labels_per_block - 1]["start"] < component_markers[0]
+
+
+def test_bjt_progressive_scaling_is_promoted_through_proven_24x(tmp_path: Path) -> None:
+    base = tmp_path / "NPN_9x_progressive_base.pdsprj"
+    output = tmp_path / "NPN_9x_progressive_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"NPN": 9},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=["NPN"],
+    )
+
+    assert report["valid"] is True
+    assert report["progressive_scaling_enabled"] is False
+    assert report["terminalized_component_count"] == 9
+
+
+@pytest.mark.parametrize("family", ["NPN", "PNP", "2N3904", "2N4401"])
+@pytest.mark.parametrize("count", [9, 15, 24])
+def test_bjt_progressive_scaling_user_requested_counts(
+    tmp_path: Path,
+    family: str,
+    count: int,
+) -> None:
+    base = tmp_path / f"{family}_{count}x_progressive_base.pdsprj"
+    output = tmp_path / f"{family}_{count}x_progressive_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {"strategy": "beautify"},
+        },
+        base,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=[family],
+        allow_progressive_scaling=True,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    cdb = parse_component_placer_cdb(read_internal_file(output, "ROOT.CDB"))
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["progressive_scaling_enabled"] is True
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == count * 3
+    assert report["wire_count_added"] == count * 3
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_grid_alignment_valid"] is True
+    assert chunk.count(BIDIR_MARKER) == count * 3
+    assert chunk.count(b"\x7fWIRE") == count * 3
+    assert chunk[-1:] == b"\xff"
+    assert len(cdb.pin_rows) == count
+    assert len(cdb.property_rows) == count
+    assert int.from_bytes(cdb.between_sections[-4:], "little") == count
+    expected_labels = (
+        ["BASE", "COLLECTOR", "EMITTER"]
+        if family == "PNP"
+        else ["COLLECTOR", "EMITTER", "BASE"]
+    )
+    assert [row["label"] for row in terminal_placer._bidir_label_records(chunk)] == (
+        expected_labels * count
+    )
+    if family in {"2N3904", "2N4401"}:
+        assert all(
+            int(row["short_wire"]["start"]["x"])
+            != int(row["short_wire"]["end"]["x"])
+            or int(row["short_wire"]["start"]["y"])
+            != int(row["short_wire"]["end"]["y"])
+            for family_report in report["family_reports"]
+            for row in family_report["terminal_pins"]
+        )
 
 
 def test_capacitor_terminal_planner_uses_body_center_plus_half_span(tmp_path: Path) -> None:
@@ -2356,9 +2473,216 @@ def test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo(
     assert report["terminal_grid_alignment_valid"] is True
     assert report["native_wire_boundaries_valid"] is True
     assert report["object_chunk_double_ff_valid"] is True
+    assert report["component_record_order_mutation"] is False
+    assert report["catalogue_component_stream_component_count"] == 0
+    assert all(
+        check["terminal_trailer"] == "0200"
+        and check["component_trailer"] == "0200"
+        for check in report["terminal_suffix_link_checks"]
+    )
+    base_chunk = _extract_object_chunk(read_internal_file(base, "ROOT.DSN"))
+    output_component_chunk = terminal_placer._component_only_chunk_from_terminalized_chunk(
+        chunk
+    )
+    base_groups_by_family = _raw_groups_from_chunk(
+        base_chunk,
+        _generation_markers(),
+    )
+    output_groups_by_family = _raw_groups_from_chunk(
+        output_component_chunk,
+        _generation_markers(),
+    )
+    base_group_order = [
+        (
+            None if group.key.startswith("ANON") else group.key,
+            group.family,
+        )
+        for group in sorted(
+            (group for groups in base_groups_by_family.values() for group in groups),
+            key=lambda group: group.start,
+        )
+    ]
+    output_group_order = [
+        (
+            None if group.key.startswith("ANON") else group.key,
+            group.family,
+        )
+        for group in sorted(
+            (group for groups in output_groups_by_family.values() for group in groups),
+            key=lambda group: group.start,
+        )
+    ]
+    assert output_group_order == base_group_order
     assert chunk.count(b"$TERBIDIR") == expected_terminals
     assert chunk.count(b"\x7fWIRE") == expected_terminals
     assert chunk.endswith(b"\xff\xff")
+
+
+def test_mixed_terminalizer_handles_terminal_leading_bjt_with_native_and_controls(
+    tmp_path: Path,
+) -> None:
+    native_families = ["RESISTOR", "CAP"]
+    trailing_catalogue_families = ["POT-HG", "LM317T", "OPAMP"]
+    terminal_leading_bjt_families = ["NPN", "PNP", "2N3904", "2N4401"]
+    base = tmp_path / "mixed_terminal_leading_bjt_base.pdsprj"
+    output = tmp_path / "mixed_terminal_leading_bjt_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                **{family: 1 for family in native_families},
+                **{family: 1 for family in trailing_catalogue_families},
+                **{family: 1 for family in terminal_leading_bjt_families},
+            },
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=native_families,
+        catalogue_terminal_families=(
+            trailing_catalogue_families + terminal_leading_bjt_families
+        ),
+        use_donor_terminal_labels=False,
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    cdb = parse_component_placer_cdb(read_internal_file(output, "ROOT.CDB"))
+    expected_components = (
+        len(native_families)
+        + len(trailing_catalogue_families)
+        + len(terminal_leading_bjt_families)
+    )
+    expected_terminals = len(native_families) * 2 + (
+        len(trailing_catalogue_families) + len(terminal_leading_bjt_families)
+    ) * 3
+    bjt_reports = [
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") in terminal_leading_bjt_families
+    ]
+    cap_report = next(
+        row
+        for row in report["family_reports"]
+        if row["family_handler"].startswith("CAP/")
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == expected_terminals
+    assert report["wire_count_added"] == expected_terminals
+    assert report["terminalized_component_count"] == expected_components
+    assert report["catalogue_terminal_leading_component_count"] == 4
+    assert report["native_terminal_families"] == ["RESISTOR", "CAP"]
+    assert cap_report["cap_wire_order"] == ["left", "right"]
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert report["object_chunk_finalizer_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["cdb_normalization"]["keep_packages"] == sorted(
+        group.key for group in result.selected_groups
+    )
+    assert len(cdb.pin_rows) == expected_components
+    assert len(cdb.property_rows) == expected_components
+    assert int.from_bytes(cdb.between_sections[-4:], "little") == expected_components
+    assert all(
+        row["clean_packet_attachment_order"]
+        == "terminal_leading_component_then_wires"
+        and row["object_stream_finalizer"] == "append_explicit_single_ff"
+        for row in bjt_reports
+    )
+    native_link_trailers = {
+        row["component_family"]: (
+            row["terminal_trailer"],
+            row["component_trailer"],
+        )
+        for row in report["terminal_suffix_link_checks"]
+        if row["component_family"] in native_families
+    }
+    assert native_link_trailers == {
+        "RESISTOR": ("0100", "0100"),
+        "CAP": ("0100", "0100"),
+    }
+    assert [
+        row["label"]
+        for row in terminal_placer._bidir_label_records(chunk)[:3]
+    ] == ["R001A", "R001B", "C1"]
+    assert chunk.count(b"$TERBIDIR") == expected_terminals
+    assert chunk.count(b"\x7fWIRE") == expected_terminals
+    assert chunk.endswith(b"\xff")
+
+
+def test_terminal_leading_bjt_zone_refuses_unproven_cap_elec_prefix(
+    tmp_path: Path,
+) -> None:
+    """Do not guess a CAP-ELEC + BJT stream from unrelated donor evidence."""
+
+    native_families = ["RESISTOR", "CAP-ELEC"]
+    bjt_families = ["NPN", "PNP", "2N3904", "2N4401"]
+    base = tmp_path / "native_before_bjt_final_zone_base.pdsprj"
+    output = tmp_path / "native_before_bjt_final_zone_sa.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                **{family: 1 for family in native_families},
+                **{family: 1 for family in bjt_families},
+            },
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    assert result.valid
+    with pytest.raises(ValueError, match="unproven native/BJT terminal-leading"):
+        attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+            base,
+            output,
+            result.selected_groups,
+            native_terminal_families=native_families,
+            catalogue_terminal_families=bjt_families,
+            use_donor_terminal_labels=False,
+        )
+
+
+def test_terminal_leading_bjt_mix_refuses_unproven_extra_native_family(
+    tmp_path: Path,
+) -> None:
+    """Never mutate an accepted diode route to guess a BJT mixed grammar."""
+
+    base = tmp_path / "unproven_diode_bjt_base.pdsprj"
+    output = tmp_path / "unproven_diode_bjt_output.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                "RESISTOR": 1,
+                "CAP": 1,
+                "DIODE": 1,
+                "NPN": 1,
+            },
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+
+    assert result.valid
+    with pytest.raises(ValueError, match="unproven native/BJT terminal-leading"):
+        attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+            base,
+            output,
+            result.selected_groups,
+            native_terminal_families=("RESISTOR", "CAP", "DIODE"),
+            catalogue_terminal_families=("NPN",),
+            use_donor_terminal_labels=False,
+        )
 
 
 @pytest.mark.parametrize(

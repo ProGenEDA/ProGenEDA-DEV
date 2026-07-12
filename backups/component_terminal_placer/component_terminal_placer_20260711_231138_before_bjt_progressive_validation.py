@@ -1457,7 +1457,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     terminal_families: Iterable[str] | None = None,
     suffix_start: int = 0x7300,
     use_donor_terminal_labels: bool = True,
-    allow_progressive_scaling: bool = False,
 ) -> dict[str, Any]:
     """Attach catalogue-backed multi-pin terminals using placed WIRE skeletons.
 
@@ -1467,11 +1466,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     accepted grid-contact short-wire geometry, inserts active terminal records
     immediately before each component packet, and then rebases both terminal and
     component pin links from final ROOT.DSN WIRE addresses.
-
-    ``allow_progressive_scaling`` is intentionally opt-in.  A profile's
-    donor-proven component count remains the default safety boundary; a larger
-    catalogue-declared progressive-validation cap is available only for a
-    user-requested, independently gated scaling experiment.
     """
 
     if catalog is None:
@@ -2055,39 +2049,16 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             raw_max_proven_components = geometry.get(
                 "clean_packet_max_proven_components"
             )
-            raw_progressive_validation_cap = geometry.get(
-                "clean_packet_progressive_validation_cap"
-            )
-            max_allowed_components: int | None = None
             if raw_max_proven_components is not None:
-                max_allowed_components = int(raw_max_proven_components)
-            if allow_progressive_scaling and raw_progressive_validation_cap is not None:
-                progressive_validation_cap = int(raw_progressive_validation_cap)
-                if progressive_validation_cap < (max_allowed_components or 0):
-                    raise ValueError(
-                        f"{family} progressive validation cap "
-                        f"{progressive_validation_cap} is lower than its donor-proven "
-                        f"component count {max_allowed_components}."
-                    )
-                max_allowed_components = progressive_validation_cap
-            if max_allowed_components is not None:
+                max_proven_components = int(raw_max_proven_components)
                 family_component_count = sum(
                     1 for item in groups if _group_family(item) == family
                 )
-                if family_component_count > max_allowed_components:
-                    progressive_note = (
-                        " Enable allow_progressive_scaling only for the "
-                        "catalogue-declared progressive-validation cap."
-                        if (
-                            raw_progressive_validation_cap is not None
-                            and not allow_progressive_scaling
-                        )
-                        else ""
-                    )
+                if family_component_count > max_proven_components:
                     raise ValueError(
                         f"{family} clean-packet terminal emission is proven for "
-                        f"at most {raw_max_proven_components} component(s), not "
-                        f"{family_component_count}.{progressive_note}"
+                        f"at most {max_proven_components} component(s), not "
+                        f"{family_component_count}."
                     )
             if clean_packet_attachment_order == "terminal_leading_component_then_wires":
                 if trailing_attachment_records:
@@ -2414,7 +2385,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         "attachment_policy": (
             "catalogue_pin_identity_component_link_offset_grid_short_wire"
         ),
-        "progressive_scaling_enabled": allow_progressive_scaling,
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
         "terminal_record_encoder": "embedded_proteus_813_schema",
@@ -2551,56 +2521,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "Requested catalogue terminal families are absent from selected "
                 f"groups: {missing_catalogue}."
             )
-    terminal_leading_catalogue_families = {
-        family
-        for family in requested_catalogue
-        if (
-            (profile := catalog.get_profile(family)) is not None
-            and str(
-                profile.proteus.get("pin_geometry", {}).get(
-                    "clean_packet_attachment_order",
-                    "component_stream_then_attachment_units",
-                )
-            )
-            == "terminal_leading_component_then_wires"
-        )
-    }
-    has_terminal_leading_catalogue_zone = bool(terminal_leading_catalogue_families)
-    unproven_native_before_terminal_leading = tuple(
-        family
-        for family in requested_native
-        if family not in {"RESISTOR", "CAP"}
-    )
-    if has_terminal_leading_catalogue_zone and unproven_native_before_terminal_leading:
-        raise ValueError(
-            "Refusing to emit an unproven native/BJT terminal-leading mixed "
-            "stream for native family/families "
-            f"{list(unproven_native_before_terminal_leading)}. The accepted "
-            "pre-save mixed donor proves only RESISTOR/CAP before that zone. "
-            "Keep these families on their accepted route and supply a manually "
-            "terminalized combined donor before extending the shared profile."
-        )
-    if has_terminal_leading_catalogue_zone:
-        # The actual accepted P002 pre-save stream begins with R terminals,
-        # followed by CAP's leading terminal.  That order is specific to a
-        # stream that will later enter a terminal-leading catalogue zone; it
-        # must not be conflated with T01's no-BJT all-native prefix.
-        leading_native_priority = ("RESISTOR", "CAP")
-        original_native_request_order = requested_native
-        requested_native = tuple(
-            dict.fromkeys(
-                [
-                    family
-                    for family in leading_native_priority
-                    if family in original_native_request_order
-                ]
-                + [
-                    family
-                    for family in original_native_request_order
-                    if family not in leading_native_priority
-                ]
-            )
-        )
     if not requested_native or not requested_catalogue:
         raise ValueError(
             "Mixed native/catalogue attachment requires at least one accepted "
@@ -2613,8 +2533,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     native_terminal_by_group_id: dict[int, tuple[bytes, ...]] = {}
     native_wire_by_group_id: dict[int, tuple[bytes, bytes]] = {}
     catalogue_attachment_records: list[bytes] = []
-    catalogue_leading_by_group_id: dict[int, tuple[bytes, ...]] = {}
-    catalogue_leading_finalizers: set[str] = set()
     family_reports: list[dict[str, Any]] = []
     terminalized_count = 0
     reserved_temporary_suffixes: set[int] = set()
@@ -2635,22 +2553,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 terminal_templates=terminal_templates,
                 source_index_start=source_index_start,
                 active_links=True,
-                # T01's all-native route has 0200 on every active link.  The
-                # accepted P002 *pre-save* R/C+BJT route is the sole proven
-                # exception: its RESISTOR/CAP links remain 0100 until Proteus
-                # saves and canonicalizes them.  Preserve that exact loader
-                # grammar only when a terminal-leading catalogue zone exists.
-                active_link_trailer=(
-                    b"\x01\x00"
-                    if has_terminal_leading_catalogue_zone
-                    and family in {"RESISTOR", "CAP"}
-                    else b"\x02\x00"
-                ),
-                cap_wire_order=(
-                    ("left", "right")
-                    if has_terminal_leading_catalogue_zone
-                    else ("right", "left")
-                ),
                 snap_terminal_contacts_to_grid=False,
             )
         )
@@ -2699,17 +2601,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "wire_count_added": len(pairs) * 2,
                 "wire_count_rewritten": 0,
                 "terminal_pairs": [pair.as_dict() for pair in pairs],
-                **(
-                    {
-                        "cap_wire_order": list(
-                            ("left", "right")
-                            if has_terminal_leading_catalogue_zone
-                            else ("right", "left")
-                        )
-                    }
-                    if family == "CAP"
-                    else {}
-                ),
             }
         )
         terminalized_count += len(family_groups)
@@ -2725,32 +2616,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         pins = geometry.get("pins", {}) if isinstance(geometry, dict) else {}
         if profile is None or not isinstance(pins, dict) or not pins:
             raise ValueError(f"{family} {key} lacks catalogue pin geometry.")
-        clean_packet_attachment_order = str(
-            geometry.get(
-                "clean_packet_attachment_order",
-                "component_stream_then_attachment_units",
-            )
-        )
-        if clean_packet_attachment_order not in {
-            "component_stream_then_attachment_units",
-            "terminal_leading_component_then_wires",
-        }:
-            raise ValueError(
-                f"{family} {key} uses unsupported clean packet attachment order "
-                f"{clean_packet_attachment_order!r} in mixed emission."
-            )
-        object_stream_finalizer = str(
-            geometry.get("object_stream_finalizer", "double_ff")
-        )
-        if object_stream_finalizer not in {
-            "single_ff",
-            "double_ff",
-            "append_explicit_single_ff",
-        }:
-            raise ValueError(
-                f"{family} {key} uses unsupported object stream finalizer "
-                f"{object_stream_finalizer!r} in mixed emission."
-            )
         original_group_data = bytes(getattr(group, "data", b""))
         if BIDIR_MARKER in original_group_data or b"\x7fWIRE" in original_group_data:
             raise ValueError(
@@ -2767,11 +2632,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             raise ValueError(
                 f"Catalogue terminal plan for {family} {key} is incomplete: "
                 f"{plan['missing_geometry']}."
-        )
+            )
         patched_data = original_group_data
         terminal_pins: list[dict[str, Any]] = []
-        terminal_records: list[bytes] = []
-        appended_wire_records: list[bytes] = []
         terminal_count = 0
         for row in plan["terminal_plans"]:
             pin_name = str(row["pin"]["name"])
@@ -2817,7 +2680,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     f"{family} {key} pin {pin_name} uses unsupported terminal "
                     f"link trailer {terminal_link_trailer.hex()}."
                 )
-            terminal_records.append(
+            catalogue_attachment_records.append(
                 build_bidir_record(
                     terminal_templates,
                     label=str(terminal_dict["label"]),
@@ -2830,7 +2693,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 + terminal_link_trailer
             )
             short_wire = row["short_wire"]
-            appended_wire_records.append(bytes.fromhex(short_wire["record"]))
+            catalogue_attachment_records.append(bytes.fromhex(short_wire["record"]))
             start = short_wire["start"]
             end = short_wire["end"]
             terminal_pins.append(
@@ -2879,83 +2742,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 }
             )
             terminal_count += 1
-        if len(terminal_records) != len(appended_wire_records):
-            raise ValueError(
-                f"{family} {key} emitted {len(terminal_records)} terminals but "
-                f"{len(appended_wire_records)} short WIRE records in mixed emission."
-            )
-        if clean_packet_attachment_order == "terminal_leading_component_then_wires":
-            if object_stream_finalizer != "append_explicit_single_ff":
-                raise ValueError(
-                    f"{family} {key} terminal-leading mixed emission requires "
-                    "append_explicit_single_ff finalizer evidence."
-                )
-            raw_terminal_record_order = geometry.get("donor_terminal_record_order")
-            if not isinstance(raw_terminal_record_order, (list, tuple)):
-                raise ValueError(
-                    f"{family} {key} lacks donor_terminal_record_order for "
-                    "terminal-leading mixed emission."
-                )
-            terminal_records_by_pin = {
-                str(pin_row["pin"]["name"]): terminal_record
-                for pin_row, terminal_record in zip(
-                    terminal_pins,
-                    terminal_records,
-                    strict=True,
-                )
-            }
-            terminal_record_order = [
-                str(pin_name) for pin_name in raw_terminal_record_order
-            ]
-            if (
-                len(terminal_record_order) != len(set(terminal_record_order))
-                or set(terminal_record_order) != set(terminal_records_by_pin)
-            ):
-                raise ValueError(
-                    f"{family} {key} donor_terminal_record_order "
-                    f"{terminal_record_order} does not cover emitted pins "
-                    f"{sorted(terminal_records_by_pin)}."
-                )
-            ordered_terminal_records = [
-                terminal_records_by_pin[pin_name]
-                for pin_name in terminal_record_order
-            ]
-            ordered_wire_records = list(appended_wire_records)
-            wire_tail_policy = str(
-                geometry.get("last_appended_wire_tail_policy", "preserve")
-            )
-            if wire_tail_policy == "trim_trailing_zero_before_finalizer":
-                if not ordered_wire_records[-1].endswith(b"\x00"):
-                    raise ValueError(
-                        f"{family} {key} final WIRE lacks the donor-proven "
-                        "trailing zero required by its terminal-leading policy."
-                    )
-                ordered_wire_records[-1] = ordered_wire_records[-1][:-1]
-            elif wire_tail_policy != "preserve":
-                raise ValueError(
-                    f"{family} {key} uses unsupported terminal-leading WIRE "
-                    f"tail policy {wire_tail_policy!r}."
-                )
-            catalogue_leading_by_group_id[id(group)] = tuple(
-                ordered_terminal_records
-                + [b"\x00", patched_data + b"".join(ordered_wire_records)]
-            )
-            catalogue_leading_finalizers.add(object_stream_finalizer)
-        else:
-            # Keep the patched catalogue packet at its original position in
-            # the beautified component stream.  The saved T01 all-native
-            # oracle proves that POT-HG/OPAMP/LM317T packets remain interleaved
-            # with native packets while their terminal/WIRE attachment units
-            # are collected after the component stream.  Moving those packets
-            # to a synthetic trailing zone changed packet order and created a
-            # full-mix-only loader failure.
-            for terminal_record, wire_record in zip(
-                terminal_records,
-                appended_wire_records,
-                strict=True,
-            ):
-                catalogue_attachment_records.append(terminal_record)
-                catalogue_attachment_records.append(wire_record)
         if id(group) in patched_by_id:
             raise ValueError(f"Duplicate catalogue patch target for {family} {key}.")
         patched_by_id[id(group)] = patched_data
@@ -2970,17 +2756,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "wire_count_added": terminal_count,
                 "wire_count_rewritten": 0,
                 "stripped_existing_terminal_count": 0,
-                "clean_packet_attachment_order": clean_packet_attachment_order,
-                "object_stream_finalizer": object_stream_finalizer,
-                "donor_terminal_record_order": (
-                    list(geometry.get("donor_terminal_record_order", ()))
-                    if clean_packet_attachment_order
-                    == "terminal_leading_component_then_wires"
-                    else None
-                ),
-                "allow_zero_length_wire_units": bool(
-                    geometry.get("allow_zero_length_wire_units", False)
-                ),
                 "terminal_pins": terminal_pins,
             }
         )
@@ -2990,17 +2765,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         bool(native_terminal_by_group_id.get(id(group), ()))
         for group in ordered_groups
     ]
-    nonleading_group_indices = [
-        index
-        for index, group in enumerate(ordered_groups)
-        if id(group) not in catalogue_leading_by_group_id
-    ]
-    if not nonleading_group_indices:
-        raise ValueError(
-            "Mixed terminal-leading emission requires a non-leading component "
-            "stream before the final BJT serialization zone."
-        )
-    last_nonleading_group_index = nonleading_group_indices[-1]
     local_records: list[bytes] = []
     preserved_rows: list[dict[str, Any]] = []
     boundary_normalizations = 0
@@ -3013,21 +2777,12 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             and local_starts_with_terminal[index + 1]
         )
         terminal_units_follow_stream = (
-            index == last_nonleading_group_index
-            and bool(
-                catalogue_attachment_records or catalogue_leading_by_group_id
-            )
+            index == len(ordered_groups) - 1
+            and bool(catalogue_attachment_records)
         )
-        trim_component_tail_before_terminal = (
+        trim_tail_before_terminal = (
             next_starts_with_terminal or terminal_units_follow_stream
         )
-        if group_id in catalogue_leading_by_group_id:
-            # Terminal-leading BJT blocks are serialized together at the very
-            # end of the stream.  A following ordinary component packet starts
-            # with FF03 and Proteus treats that as the BJT block terminator.
-            # Their design identity/coordinates stay intact; only the backend
-            # serialization zone is moved to satisfy the donor grammar.
-            continue
         if group_id in native_wire_by_group_id:
             terminals = native_terminal_by_group_id[group_id]
             patched = patched_by_id[group_id]
@@ -3042,30 +2797,21 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 local_records.append(b"\x00")
             local_records.extend((patched, first_wire))
             local_records.append(
-                # T01's final CAP-ELEC WIRE and P002's R/C boundary prove that
-                # this byte is consumed whenever *any* terminal zone follows,
-                # including trailing catalogue attachments and the final BJT
-                # zone—not only by an immediately following native terminal.
-                second_wire[:-1]
-                if trim_component_tail_before_terminal
-                else second_wire
+                second_wire[:-1] if trim_tail_before_terminal else second_wire
             )
-            if trim_component_tail_before_terminal:
+            if trim_tail_before_terminal:
                 boundary_normalizations += 1
             continue
 
         data = patched_by_id.get(group_id, bytes(getattr(group, "data", b"")))
-        # T01 and P002 both remove a regular packet's trailing selector byte
-        # immediately before a terminal zone.  The same byte is retained when
-        # the following object is another ordinary component packet.
-        emitted = data[:-1] if trim_component_tail_before_terminal else data
+        emitted = data[:-1] if trim_tail_before_terminal else data
         if not emitted:
             raise ValueError(
                 f"{family} {getattr(group, 'key', '')} has no payload bytes "
                 "before an active terminal unit."
             )
         local_records.append(emitted)
-        if trim_component_tail_before_terminal:
+        if trim_tail_before_terminal:
             boundary_normalizations += 1
         if group_id not in terminalized_ids:
             preserved_rows.append(
@@ -3076,7 +2822,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     "emitted_packet_size": len(emitted),
                     "byte_preserved": emitted == bytes(getattr(group, "data", b""))
                     or emitted == bytes(getattr(group, "data", b""))[:-1],
-                    "boundary_tail_normalized": trim_component_tail_before_terminal,
+                    "boundary_tail_normalized": trim_tail_before_terminal,
                 }
             )
     if not original_chunk[:1]:
@@ -3084,8 +2830,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             "Mixed native/catalogue attachment could not recover the original "
             "component stream prefix."
         )
-    component_stream_records = local_records
-    if not component_stream_records:
+    if not local_records:
         raise ValueError("Mixed native/catalogue attachment produced no component records.")
     first_local_starts_with_terminal = local_starts_with_terminal[0]
     separator = b"" if first_local_starts_with_terminal else b"\x00"
@@ -3093,64 +2838,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         original_chunk[:1]
         + b"".join(native_leading_records)
         + separator
-        + b"".join(component_stream_records)
+        + b"".join(local_records)
     )
-    catalogue_terminal_leading_records = [
-        record
-        for group in ordered_groups
-        if id(group) in catalogue_leading_by_group_id
-        for record in catalogue_leading_by_group_id[id(group)]
-    ]
-    if catalogue_leading_by_group_id:
-        if catalogue_leading_finalizers != {"append_explicit_single_ff"}:
-            raise ValueError(
-                "Mixed terminal-leading catalogue blocks require one "
-                "append_explicit_single_ff finalizer policy, got "
-                f"{sorted(catalogue_leading_finalizers)}."
-            )
-        object_stream_finalizer = "append_explicit_single_ff"
-        new_chunk = _append_explicit_single_ff_object_stream_terminator(
-            accepted_native_order_stream
-            + b"".join(catalogue_attachment_records)
-            + b"".join(catalogue_terminal_leading_records)
-        )
-    else:
-        object_stream_finalizer = "double_ff"
-        new_chunk = _ensure_double_ff_object_stream_terminator(
-            accepted_native_order_stream + b"".join(catalogue_attachment_records)
-        )
+    new_chunk = _ensure_double_ff_object_stream_terminator(
+        accepted_native_order_stream + b"".join(catalogue_attachment_records)
+    )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    # Active mixed terminal links need the same selected-package CDB
-    # normalization as standalone catalogue emission.  In particular, Proteus
-    # Ctrl+S proved that retaining the full mega CDB alongside BJT link records
-    # can produce Bad Object Record/LXLCORE failures.
-    from .component_placer import (
-        build_component_placer_cdb_subset,
-        parse_component_placer_cdb,
-    )
-
-    source_cdb = read_internal_file(source, "ROOT.CDB")
-    cdb_keep_packages = sorted(
-        {
-            _group_key(group)
-            for group in groups
-            if _group_key(group) and not _group_key(group).startswith("ANON")
-        }
-    )
-    if not cdb_keep_packages:
-        raise ValueError(
-            "Mixed terminal attachment could not identify package references "
-            "for ROOT.CDB normalization."
-        )
-    normalized_cdb = build_component_placer_cdb_subset(
-        parse_component_placer_cdb(source_cdb),
-        cdb_keep_packages,
-    )
-    write_project_from_parts(
-        source,
-        destination,
-        {"ROOT.DSN": new_dsn, "ROOT.CDB": normalized_cdb},
-    )
+    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
     native_wire_boundary_checks: list[dict[str, Any]] = []
     for start, end in _wire_record_spans(final_chunk):
@@ -3221,9 +2915,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                         in wire_points
                     ),
                     "wire_is_nonzero": len(wire_points) > 1,
-                    "zero_length_wire_allowed": bool(
-                        report_row.get("allow_zero_length_wire_units", False)
-                    ),
                 }
             )
     report = {
@@ -3231,28 +2922,16 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "family_handler": "MIXED/native-two-pin-plus-catalogue-v1",
         "status": "pending_proteus_user_acceptance",
         "attachment_policy": (
-            "preserve_native_stream_with_profile-driven_catalogue_terminal_units"
+            "preserve_accepted_native_mixed_stream_then_append_catalogue_units"
         ),
         "object_order": (
-            "preserved_placed_component_order_with_native_attachment_units_"
-            "catalogue_trailing_attachment_units_then_contiguous_final_"
-            "terminal-leading_zone"
+            "accepted_two_pin_native_mixed_order_with_catalogue_components_"
+            "patched_in_place_then_catalogue_terminal_wire_units"
         ),
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
         "native_terminal_families": list(requested_native),
         "catalogue_terminal_families": list(requested_catalogue),
-        "catalogue_terminal_leading_component_count": len(
-            catalogue_leading_by_group_id
-        ),
-        "catalogue_component_stream_component_count": 0,
-        "catalogue_component_stream_component_keys": [],
-        "catalogue_terminal_leading_component_keys": [
-            _group_key(group)
-            for group in ordered_groups
-            if id(group) in catalogue_leading_by_group_id
-        ],
-        "object_stream_finalizer": object_stream_finalizer,
         "family_reports": family_reports,
         "terminal_count_added": expected_terminals,
         "wire_count_added": expected_wires,
@@ -3267,10 +2946,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ),
         "wire_path_contact_checks": catalogue_contact_checks,
         "wire_path_contacts_valid": all(
-            (
-                row.get("wire_is_nonzero", True)
-                or row.get("zero_length_wire_allowed", False)
-            )
+            row.get("wire_is_nonzero", True)
             and row.get("terminal_to_wire", False)
             and row.get("wire_to_pin", False)
             for row in catalogue_contact_checks
@@ -3285,9 +2961,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "accepted_native_order_stream_preserved": final_chunk.startswith(
             accepted_native_order_stream
         ),
-        "component_record_order_mutation": bool(
-            catalogue_leading_by_group_id
-        ),
+        "component_record_order_mutation": False,
         "boundary_tail_normalizations": boundary_normalizations,
         "native_wire_boundary_checks": native_wire_boundary_checks,
         "native_wire_boundaries_valid": all(
@@ -3300,28 +2974,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "object_chunk_size_before": len(original_chunk),
         "object_chunk_size_after": len(final_chunk),
         "object_chunk_double_ff_valid": final_chunk.endswith(b"\xff\xff"),
-        "object_chunk_finalizer_valid": (
-            final_chunk.endswith(b"\xff\xff")
-            if object_stream_finalizer == "double_ff"
-            else final_chunk.endswith(b"\xff")
-        ),
         "base_component_stream_covered": True,
-        "cdb_normalization": {
-            "policy": "selected_package_rows_matching_proteus_ctrl_s",
-            "keep_packages": cdb_keep_packages,
-            "size_before": len(source_cdb),
-            "size_after": len(normalized_cdb),
-        },
         "valid": (
             final_chunk == new_chunk
             and final_chunk.count(BIDIR_MARKER) == expected_terminals
             and final_chunk.count(b"\x7fWIRE") == expected_wires
             and final_chunk.startswith(accepted_native_order_stream)
-            and (
-                final_chunk.endswith(b"\xff\xff")
-                if object_stream_finalizer == "double_ff"
-                else final_chunk.endswith(b"\xff")
-            )
+            and final_chunk.endswith(b"\xff\xff")
             and all(row["valid"] for row in native_wire_boundary_checks)
         ),
     }
@@ -4244,40 +3903,6 @@ def _patch_source_terminal_links(
         out[offset + 2] = 0x01
         out[offset + 3] = 0x00
     out[-1] = 0x00
-    return bytes(out)
-
-
-def _patch_pair_link_trailer(
-    data: bytes,
-    pair: ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair,
-    *,
-    trailer: bytes,
-) -> bytes:
-    """Set a donor-proven active-link trailer without changing its suffixes.
-
-    The normal standalone two-pin writers retain their historically accepted
-    ``0100`` field.  Proteus 8.13 canonicalizes active native links to
-    ``0200`` when they share the hybrid mixed stream with catalogue terminal
-    units.  Keeping this narrowly scoped helper lets the mixed writer emit the
-    already-canonical form without changing the accepted standalone routes.
-    """
-
-    if trailer not in COMPONENT_PIN_LINK_TRAILERS:
-        raise ValueError(f"Unsupported active component-link trailer {trailer.hex()}.")
-    out = bytearray(data)
-    for offset in (pair.input_link_offset, pair.output_link_offset):
-        if offset + 4 > len(out):
-            raise ValueError(
-                f"{pair.component_family} {pair.component_key} packet ends before "
-                "its active component-link trailer."
-            )
-        current = bytes(out[offset + 2 : offset + 4])
-        if current not in COMPONENT_PIN_LINK_TRAILERS:
-            raise ValueError(
-                f"{pair.component_family} {pair.component_key} has unsupported "
-                f"component-link trailer {current.hex()}."
-            )
-        out[offset + 2 : offset + 4] = trailer
     return bytes(out)
 
 
@@ -5615,9 +5240,8 @@ def _overlay_terminal_record(
     terminal: TerminalSpec,
     *,
     active_link: bool,
-    active_link_trailer: bytes = b"\x01\x00",
 ) -> bytes:
-    record = build_bidir_record(
+    return build_bidir_record(
         templates,
         label=terminal.label,
         symbol_x=terminal.symbol_x,
@@ -5626,15 +5250,6 @@ def _overlay_terminal_record(
         suffix=terminal.suffix if active_link else 0,
         active_link=active_link,
     )
-    if not active_link:
-        return record
-    if active_link_trailer not in COMPONENT_PIN_LINK_TRAILERS:
-        raise ValueError(
-            f"Unsupported active terminal-link trailer {active_link_trailer.hex()}."
-        )
-    if record[-2:] != b"\x01\x00":
-        raise ValueError("Base bidirectional terminal record lacks the active link trailer.")
-    return record[:-2] + active_link_trailer
 
 
 def _mixed_overlay_family_parts(
@@ -5644,8 +5259,6 @@ def _mixed_overlay_family_parts(
     terminal_templates: Any,
     source_index_start: int,
     active_links: bool,
-    active_link_trailer: bytes = b"\x01\x00",
-    cap_wire_order: tuple[str, str] = ("right", "left"),
     snap_terminal_contacts_to_grid: bool = False,
 ) -> tuple[
     tuple[Any, ...],
@@ -5653,11 +5266,6 @@ def _mixed_overlay_family_parts(
     list[tuple[bytes, bytes]],
     dict[int, bytes],
 ]:
-    if cap_wire_order not in {("left", "right"), ("right", "left")}:
-        raise ValueError(
-            "CAP mixed-overlay WIRE order must be ('left', 'right') or "
-            "('right', 'left')."
-        )
     terminal_records: list[bytes] = []
     wire_pairs: list[tuple[bytes, bytes]] = []
     patched_by_id: dict[int, bytes] = {}
@@ -5783,14 +5391,6 @@ def _mixed_overlay_family_parts(
     else:
         raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
 
-    for group, pair in zip(groups, pairs, strict=True):
-        if active_links and active_link_trailer != b"\x01\x00":
-            patched_by_id[id(group)] = _patch_pair_link_trailer(
-                patched_by_id[id(group)],
-                pair,
-                trailer=active_link_trailer,
-            )
-
     for pair in pairs:
         if isinstance(pair, SourceTerminalPair):
             pins = {
@@ -5817,33 +5417,6 @@ def _mixed_overlay_family_parts(
                     _build_native_short_wire(*second_start, *second_pin),
                 )
             )
-        elif family == "CAP":
-            # T01's all-native pre-save oracle uses right->left CAP WIREs,
-            # whereas P002's accepted R/C+BJT pre-save oracle uses left->right.
-            # The latter is required before a terminal-leading catalogue zone;
-            # Proteus canonicalizes it to the former on save.  Both are
-            # catalogue/stream-policy facts, never inferred from positions.
-            starts = {
-                "left": (pair.left_wire_start_x, pair.left_wire_start_y),
-                "right": (pair.right_wire_start_x, pair.right_wire_start_y),
-            }
-            pins = {
-                "left": (pair.left_pin_x, pair.left_pin_y),
-                "right": (pair.right_pin_x, pair.right_pin_y),
-            }
-            first_role, second_role = cap_wire_order
-            wire_pairs.append(
-                (
-                    _build_native_short_wire(
-                        *starts[first_role],
-                        *pins[first_role],
-                    ),
-                    _build_native_short_wire(
-                        *starts[second_role],
-                        *pins[second_role],
-                    ),
-                )
-            )
         else:
             wire_pairs.append(
                 (
@@ -5867,7 +5440,6 @@ def _mixed_overlay_family_parts(
             terminal_templates,
             terminal,
             active_link=active_links,
-            active_link_trailer=active_link_trailer,
         )
         for terminal in terminals
     )

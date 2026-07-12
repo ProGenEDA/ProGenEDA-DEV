@@ -2566,20 +2566,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         )
     }
     has_terminal_leading_catalogue_zone = bool(terminal_leading_catalogue_families)
-    unproven_native_before_terminal_leading = tuple(
-        family
-        for family in requested_native
-        if family not in {"RESISTOR", "CAP"}
-    )
-    if has_terminal_leading_catalogue_zone and unproven_native_before_terminal_leading:
-        raise ValueError(
-            "Refusing to emit an unproven native/BJT terminal-leading mixed "
-            "stream for native family/families "
-            f"{list(unproven_native_before_terminal_leading)}. The accepted "
-            "pre-save mixed donor proves only RESISTOR/CAP before that zone. "
-            "Keep these families on their accepted route and supply a manually "
-            "terminalized combined donor before extending the shared profile."
-        )
     if has_terminal_leading_catalogue_zone:
         # The actual accepted P002 pre-save stream begins with R terminals,
         # followed by CAP's leading terminal.  That order is specific to a
@@ -3922,7 +3908,7 @@ def plan_attached_generic_two_pin_terminals(
         raise ValueError(
             "The generic two-pin terminal handler requires one profiled family; "
             f"received {sorted(families)}."
-        )
+    )
     family = next(iter(families))
     profile = GENERIC_TWO_PIN_PROFILES[family]
     prefix = label_prefix or str(profile["label_prefix"])

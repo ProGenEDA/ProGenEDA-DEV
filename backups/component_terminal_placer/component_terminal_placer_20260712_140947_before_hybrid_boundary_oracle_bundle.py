@@ -57,6 +57,15 @@ INDUCTOR_PIN_HALF_SPAN = 762_000
 INDUCTOR_TERMINAL_SYMBOL_TO_PIN = 254_000
 GENERIC_TWO_PIN_HALF_SPAN = 508_000
 GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN = 254_000
+GENERIC_TWO_PIN_DEFAULT_GEOMETRY = {
+    # Derived from the actual Proteus Ctrl+S oracle for the accepted all-native
+    # mixed file.  The symbol contact remains one half-grid left/right of the
+    # body while common diode-family left pins sit another half-grid inward.
+    "left_pin_offset": (-254_000, 0),
+    "right_pin_offset": (508_000, 0),
+    "left_terminal_contact_offset": (-508_000, 0),
+    "right_terminal_contact_offset": (508_000, 0),
+}
 TERMINAL_SYMBOL_TO_PIN = 508_000
 TERMINAL_CONTACT_TO_PIN = 254_000
 CAP_WIRE_RECORD_SIZE = 50
@@ -125,6 +134,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "anode/left_pin",
         "right_pin_hint": "cathode/right_pin",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (0, -254_000),
+            "right_pin_offset": (0, 508_000),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
     "BZX55C5V1": {
         "label_prefix": "N",
@@ -150,6 +165,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "anode/left_pin",
         "right_pin_hint": "cathode/right_pin",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (0, 508_000),
+            "right_pin_offset": (0, -508_000),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
     "FUSE": {
         "label_prefix": "F",
@@ -157,6 +178,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "pin:1",
         "right_pin_hint": "pin:2",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (762_000, 0),
+            "right_pin_offset": (-762_000, 0),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
     "SWITCH": {
         "label_prefix": "W",
@@ -164,6 +191,12 @@ GENERIC_TWO_PIN_PROFILES = {
         "left_pin_hint": "pin:1",
         "right_pin_hint": "pin:2",
         "terminal_contact_outward_grid_steps": 1,
+        "pin_geometry": {
+            "left_pin_offset": (-508_000, 0),
+            "right_pin_offset": (762_000, 0),
+            "left_terminal_contact_offset": (-508_000, 0),
+            "right_terminal_contact_offset": (508_000, 0),
+        },
     },
 }
 # Dispatcher allow-list for the shared native terminal route.  The R/C/L/source
@@ -2551,56 +2584,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "Requested catalogue terminal families are absent from selected "
                 f"groups: {missing_catalogue}."
             )
-    terminal_leading_catalogue_families = {
-        family
-        for family in requested_catalogue
-        if (
-            (profile := catalog.get_profile(family)) is not None
-            and str(
-                profile.proteus.get("pin_geometry", {}).get(
-                    "clean_packet_attachment_order",
-                    "component_stream_then_attachment_units",
-                )
-            )
-            == "terminal_leading_component_then_wires"
-        )
-    }
-    has_terminal_leading_catalogue_zone = bool(terminal_leading_catalogue_families)
-    unproven_native_before_terminal_leading = tuple(
-        family
-        for family in requested_native
-        if family not in {"RESISTOR", "CAP"}
-    )
-    if has_terminal_leading_catalogue_zone and unproven_native_before_terminal_leading:
-        raise ValueError(
-            "Refusing to emit an unproven native/BJT terminal-leading mixed "
-            "stream for native family/families "
-            f"{list(unproven_native_before_terminal_leading)}. The accepted "
-            "pre-save mixed donor proves only RESISTOR/CAP before that zone. "
-            "Keep these families on their accepted route and supply a manually "
-            "terminalized combined donor before extending the shared profile."
-        )
-    if has_terminal_leading_catalogue_zone:
-        # The actual accepted P002 pre-save stream begins with R terminals,
-        # followed by CAP's leading terminal.  That order is specific to a
-        # stream that will later enter a terminal-leading catalogue zone; it
-        # must not be conflated with T01's no-BJT all-native prefix.
-        leading_native_priority = ("RESISTOR", "CAP")
-        original_native_request_order = requested_native
-        requested_native = tuple(
-            dict.fromkeys(
-                [
-                    family
-                    for family in leading_native_priority
-                    if family in original_native_request_order
-                ]
-                + [
-                    family
-                    for family in original_native_request_order
-                    if family not in leading_native_priority
-                ]
-            )
-        )
     if not requested_native or not requested_catalogue:
         raise ValueError(
             "Mixed native/catalogue attachment requires at least one accepted "
@@ -2635,22 +2618,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 terminal_templates=terminal_templates,
                 source_index_start=source_index_start,
                 active_links=True,
-                # T01's all-native route has 0200 on every active link.  The
-                # accepted P002 *pre-save* R/C+BJT route is the sole proven
-                # exception: its RESISTOR/CAP links remain 0100 until Proteus
-                # saves and canonicalizes them.  Preserve that exact loader
-                # grammar only when a terminal-leading catalogue zone exists.
-                active_link_trailer=(
-                    b"\x01\x00"
-                    if has_terminal_leading_catalogue_zone
-                    and family in {"RESISTOR", "CAP"}
-                    else b"\x02\x00"
-                ),
-                cap_wire_order=(
-                    ("left", "right")
-                    if has_terminal_leading_catalogue_zone
-                    else ("right", "left")
-                ),
+                # The saved T01 all-native oracle has 0200 on every active
+                # native terminal/component pin link, including sources,
+                # diode-family parts, LED, fuse, switch, CAP-ELEC, and REALIND.
+                # Emit that loader-canonical form before it shares an object
+                # stream with catalogue attachments and the terminal-leading
+                # BJT zone.
+                active_link_trailer=b"\x02\x00",
                 snap_terminal_contacts_to_grid=False,
             )
         )
@@ -2699,17 +2673,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "wire_count_added": len(pairs) * 2,
                 "wire_count_rewritten": 0,
                 "terminal_pairs": [pair.as_dict() for pair in pairs],
-                **(
-                    {
-                        "cap_wire_order": list(
-                            ("left", "right")
-                            if has_terminal_leading_catalogue_zone
-                            else ("right", "left")
-                        )
-                    }
-                    if family == "CAP"
-                    else {}
-                ),
             }
         )
         terminalized_count += len(family_groups)
@@ -3000,7 +2963,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             "Mixed terminal-leading emission requires a non-leading component "
             "stream before the final BJT serialization zone."
         )
-    last_nonleading_group_index = nonleading_group_indices[-1]
     local_records: list[bytes] = []
     preserved_rows: list[dict[str, Any]] = []
     boundary_normalizations = 0
@@ -3011,15 +2973,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         next_starts_with_terminal = (
             index + 1 < len(local_starts_with_terminal)
             and local_starts_with_terminal[index + 1]
-        )
-        terminal_units_follow_stream = (
-            index == last_nonleading_group_index
-            and bool(
-                catalogue_attachment_records or catalogue_leading_by_group_id
-            )
-        )
-        trim_component_tail_before_terminal = (
-            next_starts_with_terminal or terminal_units_follow_stream
         )
         if group_id in catalogue_leading_by_group_id:
             # Terminal-leading BJT blocks are serialized together at the very
@@ -3042,31 +2995,28 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 local_records.append(b"\x00")
             local_records.extend((patched, first_wire))
             local_records.append(
-                # T01's final CAP-ELEC WIRE and P002's R/C boundary prove that
-                # this byte is consumed whenever *any* terminal zone follows,
-                # including trailing catalogue attachments and the final BJT
-                # zone—not only by an immediately following native terminal.
-                second_wire[:-1]
-                if trim_component_tail_before_terminal
-                else second_wire
+                # V29 donor/PDS evidence: a complete native WIRE must retain
+                # its separator when catalogue attachment units or the final
+                # terminal-leading BJT zone follow.  Only an immediately
+                # following local native terminal record consumes that byte.
+                second_wire[:-1] if next_starts_with_terminal else second_wire
             )
-            if trim_component_tail_before_terminal:
+            if next_starts_with_terminal:
                 boundary_normalizations += 1
             continue
 
         data = patched_by_id.get(group_id, bytes(getattr(group, "data", b"")))
-        # T01 and P002 both remove a regular packet's trailing selector byte
-        # immediately before a terminal zone.  The same byte is retained when
-        # the following object is another ordinary component packet.
-        emitted = data[:-1] if trim_component_tail_before_terminal else data
+        # A regular catalogue packet retains its complete native tail even if
+        # its next object is a terminal.  T01 proves POT-HG's 08 tail remains
+        # immediately before LED-RED's first terminal; only a native WIRE's
+        # separator is consumed by an immediately following native terminal.
+        emitted = data
         if not emitted:
             raise ValueError(
                 f"{family} {getattr(group, 'key', '')} has no payload bytes "
                 "before an active terminal unit."
             )
         local_records.append(emitted)
-        if trim_component_tail_before_terminal:
-            boundary_normalizations += 1
         if group_id not in terminalized_ids:
             preserved_rows.append(
                 {
@@ -3076,7 +3026,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     "emitted_packet_size": len(emitted),
                     "byte_preserved": emitted == bytes(getattr(group, "data", b""))
                     or emitted == bytes(getattr(group, "data", b""))[:-1],
-                    "boundary_tail_normalized": trim_component_tail_before_terminal,
+                    "boundary_tail_normalized": False,
                 }
             )
     if not original_chunk[:1]:
@@ -3908,13 +3858,7 @@ def plan_attached_generic_two_pin_terminals(
     label_prefix: str | None = None,
     suffix_start: int | None = None,
 ) -> tuple[CapacitorTerminalPair, ...]:
-    """Plan profile-based horizontal terminals for simple remaining 2-pin parts.
-
-    These families share the donor packet pattern decoded from the fixed
-    2026-06-18 new-component mega donor: one body anchor near the packet tail,
-    two clear endpoint-link fields at ``body_x_offset+25`` and ``+29``, and a
-    horizontal one-grid pin span on each side of the body.
-    """
+    """Plan donor-oracle two-pin terminals from body-relative pin geometry."""
 
     groups = tuple(selected_groups)
     families = {str(getattr(group, "family", "")) for group in groups}
@@ -3925,6 +3869,7 @@ def plan_attached_generic_two_pin_terminals(
         )
     family = next(iter(families))
     profile = GENERIC_TWO_PIN_PROFILES[family]
+    geometry = _generic_two_pin_geometry_offsets(profile)
     prefix = label_prefix or str(profile["label_prefix"])
     label_min_digits = _compact_label_min_digits(len(groups))
     suffix_base = (
@@ -3953,8 +3898,14 @@ def plan_attached_generic_two_pin_terminals(
 
         body_x = _s32_at(data, x_offset)
         body_y = _s32_at(data, y_offset)
-        left_pin_x = body_x - GENERIC_TWO_PIN_HALF_SPAN
-        right_pin_x = body_x + GENERIC_TWO_PIN_HALF_SPAN
+        left_pin_x = body_x + geometry["left_pin_offset"][0]
+        left_pin_y = body_y + geometry["left_pin_offset"][1]
+        right_pin_x = body_x + geometry["right_pin_offset"][0]
+        right_pin_y = body_y + geometry["right_pin_offset"][1]
+        left_contact_x = body_x + geometry["left_terminal_contact_offset"][0]
+        left_contact_y = body_y + geometry["left_terminal_contact_offset"][1]
+        right_contact_x = body_x + geometry["right_terminal_contact_offset"][0]
+        right_contact_y = body_y + geometry["right_terminal_contact_offset"][1]
         left_suffix = (suffix_base + (index - 1) * 2 + 1) & 0xFFFF
         right_suffix = (suffix_base + (index - 1) * 2 + 2) & 0xFFFF
         left = TerminalSpec(
@@ -3963,8 +3914,8 @@ def plan_attached_generic_two_pin_terminals(
                 (index - 1) * 2,
                 min_digits=label_min_digits,
             ),
-            symbol_x=left_pin_x - GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
-            symbol_y=body_y,
+            symbol_x=left_contact_x - GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=left_contact_y,
             angle_tenths=LEFT_SIDE_ANGLE,
             suffix=left_suffix,
             component_key=key,
@@ -3978,8 +3929,8 @@ def plan_attached_generic_two_pin_terminals(
                 (index - 1) * 2 + 1,
                 min_digits=label_min_digits,
             ),
-            symbol_x=right_pin_x + GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
-            symbol_y=body_y,
+            symbol_x=right_contact_x + GENERIC_TWO_PIN_TERMINAL_SYMBOL_TO_PIN,
+            symbol_y=right_contact_y,
             angle_tenths=RIGHT_SIDE_ANGLE,
             suffix=right_suffix,
             component_key=key,
@@ -3994,13 +3945,13 @@ def plan_attached_generic_two_pin_terminals(
                 left=left,
                 right=right,
                 left_pin_x=left_pin_x,
-                left_pin_y=body_y,
+                left_pin_y=left_pin_y,
                 right_pin_x=right_pin_x,
-                right_pin_y=body_y,
-                left_wire_start_x=left_pin_x,
-                left_wire_start_y=body_y,
-                right_wire_start_x=right_pin_x,
-                right_wire_start_y=body_y,
+                right_pin_y=right_pin_y,
+                left_wire_start_x=left_contact_x,
+                left_wire_start_y=left_contact_y,
+                right_wire_start_x=right_contact_x,
+                right_wire_start_y=right_contact_y,
                 component_x_offset=x_offset,
                 component_y_offset=y_offset,
                 input_link_offset=input_link_offset,
@@ -4008,6 +3959,25 @@ def plan_attached_generic_two_pin_terminals(
             )
         )
     return tuple(pairs)
+
+
+def _generic_two_pin_geometry_offsets(
+    profile: dict[str, Any],
+) -> dict[str, tuple[int, int]]:
+    """Read validated body-relative pins/contact offsets for one two-pin family."""
+
+    raw_geometry = profile.get("pin_geometry", {})
+    if not isinstance(raw_geometry, dict):
+        raise ValueError("Generic two-pin profile pin_geometry must be a mapping.")
+    values: dict[str, tuple[int, int]] = {}
+    for name, default in GENERIC_TWO_PIN_DEFAULT_GEOMETRY.items():
+        raw = raw_geometry.get(name, default)
+        if not isinstance(raw, (list, tuple)) or len(raw) != 2:
+            raise ValueError(
+                f"Generic two-pin profile {name} must contain exactly two offsets."
+            )
+        values[name] = (int(raw[0]), int(raw[1]))
+    return values
 
 
 def plan_attached_source_terminals(
@@ -5645,7 +5615,6 @@ def _mixed_overlay_family_parts(
     source_index_start: int,
     active_links: bool,
     active_link_trailer: bytes = b"\x01\x00",
-    cap_wire_order: tuple[str, str] = ("right", "left"),
     snap_terminal_contacts_to_grid: bool = False,
 ) -> tuple[
     tuple[Any, ...],
@@ -5653,11 +5622,6 @@ def _mixed_overlay_family_parts(
     list[tuple[bytes, bytes]],
     dict[int, bytes],
 ]:
-    if cap_wire_order not in {("left", "right"), ("right", "left")}:
-        raise ValueError(
-            "CAP mixed-overlay WIRE order must be ('left', 'right') or "
-            "('right', 'left')."
-        )
     terminal_records: list[bytes] = []
     wire_pairs: list[tuple[bytes, bytes]] = []
     patched_by_id: dict[int, bytes] = {}
@@ -5818,29 +5782,23 @@ def _mixed_overlay_family_parts(
                 )
             )
         elif family == "CAP":
-            # T01's all-native pre-save oracle uses right->left CAP WIREs,
-            # whereas P002's accepted R/C+BJT pre-save oracle uses left->right.
-            # The latter is required before a terminal-leading catalogue zone;
-            # Proteus canonicalizes it to the former on save.  Both are
-            # catalogue/stream-policy facts, never inferred from positions.
-            starts = {
-                "left": (pair.left_wire_start_x, pair.left_wire_start_y),
-                "right": (pair.right_wire_start_x, pair.right_wire_start_y),
-            }
-            pins = {
-                "left": (pair.left_pin_x, pair.left_pin_y),
-                "right": (pair.right_pin_x, pair.right_pin_y),
-            }
-            first_role, second_role = cap_wire_order
+            # The accepted capacitor stream is right terminal, left terminal,
+            # component, right WIRE, left WIRE.  In a hybrid stream Proteus
+            # rewrites a left/right WIRE order into this donor order on Ctrl+S.
+            # Emit the donor order directly so the saved project is stable.
             wire_pairs.append(
                 (
                     _build_native_short_wire(
-                        *starts[first_role],
-                        *pins[first_role],
+                        pair.right_wire_start_x,
+                        pair.right_wire_start_y,
+                        pair.right_pin_x,
+                        pair.right_pin_y,
                     ),
                     _build_native_short_wire(
-                        *starts[second_role],
-                        *pins[second_role],
+                        pair.left_wire_start_x,
+                        pair.left_wire_start_y,
+                        pair.left_pin_x,
+                        pair.left_pin_y,
                     ),
                 )
             )
