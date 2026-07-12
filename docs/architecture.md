@@ -1858,3 +1858,35 @@ therefore terminalized for the twenty frozen two-pin families only (40
 terminal/WIRE units) and deliberately preserves all six DIL14 families without
 terminals. This prevents experimental mixed work from modifying an accepted
 route.
+
+### 2026-07-13 74HC04 hex-inverter donor contract
+
+`74HC04` is a six-subpart DIL14 family, but it must not reuse the quad-gate
+packet assumptions. The authoritative active donor
+`E04_74HC04_1X_NO_TERMINAL_CONTROL.pdsprj` contains twelve `$TERBIDIR`/WIRE
+attachment units despite its historical filename. It proves the following
+complete contract:
+
+1. Each current `:A`--`:F` inverter has a local subpart anchor. Pin coordinates
+   are calculated from the current subpart marker plus the donor-relative pin
+   offset, never from a whole-package origin.
+2. The input link slot is `subpart_end - 9` and output is `subpart_end - 5`.
+   This is mandatory for the locked-mega `U202`-style four-character references;
+   a whole-package offset overwrites the next subpart marker.
+3. HC04's WIREs are not canonical two-point stubs. The donor requires routed
+   three- and four-point WIRE units, with grid-aligned terminal contacts and
+   exact component pin endpoints. Store and retarget the full polyline in the
+   component catalogue.
+4. The component stream comes first and its terminal/WIRE pairs follow in the
+   donor order `2,10,6,4,8,12,1,11,5,3,9,13`. A profile-pin order is not an
+   object-stream grammar. The shared emitter now accepts the catalogue field
+   `donor_attachment_unit_order` for that additive, evidence-backed ordering;
+   routes without it preserve their existing order.
+5. A normal 1x/15x open is not Ctrl+S-saved. The user's current policy is to
+   save only a project that first displayed Bad Object Record yet continued
+   opening, and to use the saved copy strictly as a diagnostic.
+
+The HC04 1x, 9x, and 15x component-placer outputs contain 12, 108, and 180
+active terminal/WIRE units respectively. The required boundary mix keeps HC04
+bare while retaining the twenty frozen two-pin terminal routes. This preserves
+the accepted route freeze while the next multi-pin group is researched.

@@ -1,4 +1,4 @@
-"""Regenerate donor-audited DIL14 quad 2-input logic scale packs.
+"""Regenerate donor-audited DIL14 catalogue scale packs.
 
 This is an experiment runner only. It delegates all component placement,
 catalogue pin planning, terminal construction, WIRE emission, and link rebasing
@@ -58,9 +58,18 @@ def _effective_scale(family: str, requested: int) -> tuple[int, dict[str, object
         raise ValueError(f"{family} is missing from the component catalogue.")
     raw_limit = profile.limits.get("locked_new_components_5x_mega_clean_group_max")
     if raw_limit is None:
-        raise ValueError(
-            f"{family} lacks locked_new_components_5x_mega_clean_group_max in the catalogue."
-        )
+        # Do not invent a family capacity. The component placer itself remains
+        # the source-packet availability gate for a requested experimental
+        # scale. This lets a newly audited family prove 1x/9x/15x without
+        # declaring an unsupported maximum.
+        return requested, {
+            "requested": requested,
+            "effective": requested,
+            "limiting_family": None,
+            "catalogue_limit": None,
+            "catalogue_limit_key": None,
+            "capacity_policy": "no_catalogue_cap_declared_component_placer_preflight",
+        }
     limit = int(raw_limit)
     effective = min(requested, limit)
     return effective, {
@@ -78,7 +87,11 @@ def _case_stem(index: int, family: str, requested: int, effective: int) -> str:
     return f"S{index:02d}_{family}_{effective}X_CAPPED_FROM_{requested}X_REQUEST"
 
 
-def _generate_mixed_baseline() -> dict[str, object]:
+def _generate_mixed_baseline(
+    *,
+    families: tuple[str, ...],
+    out_root: Path,
+) -> dict[str, object]:
     """Generate the requested boundary mix without terminalizing new DIL14.
 
     The accepted two-pin families retain their frozen shared attachment route.
@@ -87,11 +100,11 @@ def _generate_mixed_baseline() -> dict[str, object]:
     admitted to the all-terminalized mixed route.
     """
 
-    case_dir = OUT_ROOT / MIXED_BASELINE_FOLDER
+    case_dir = out_root / MIXED_BASELINE_FOLDER
     case_dir.mkdir(parents=True, exist_ok=True)
     components = {
         family: 1
-        for family in (*ACCEPTED_TERMINAL_FAMILY_ORDER, *FAMILIES)
+        for family in (*ACCEPTED_TERMINAL_FAMILY_ORDER, *families)
     }
     payload = {
         "donor": str(ROOT / NEW_COMPONENT_MEGA_DONOR),
@@ -119,7 +132,7 @@ def _generate_mixed_baseline() -> dict[str, object]:
         {
             str(row.get("component_family"))
             for row in report.get("preserved_groups", [])
-            if str(row.get("component_family")) in FAMILIES
+            if str(row.get("component_family")) in families
         }
     )
     if (
@@ -128,7 +141,7 @@ def _generate_mixed_baseline() -> dict[str, object]:
         or report["wire_count_added"] != expected
         or chunk.count(b"$TERBIDIR") != expected
         or chunk.count(b"\x7fWIRE") != expected
-        or preserved_dil14 != sorted(FAMILIES)
+        or preserved_dil14 != sorted(families)
     ):
         raise RuntimeError("DIL14 mixed baseline terminal boundary validation failed.")
     _write_json(case_dir / "terminal_report.json", report)
@@ -139,17 +152,23 @@ def _generate_mixed_baseline() -> dict[str, object]:
         "placement_valid": placement.valid,
         "terminal_valid": report["valid"],
         "terminalized_families": list(ACCEPTED_TERMINAL_FAMILY_ORDER),
-        "unterminalized_families": list(FAMILIES),
+        "unterminalized_families": list(families),
         "terminal_count": expected,
         "wire_count": expected,
     }
 
 
-def main(scales: tuple[int, ...] = REQUESTED_SCALES) -> int:
+def main(
+    scales: tuple[int, ...] = REQUESTED_SCALES,
+    *,
+    families: tuple[str, ...] = FAMILIES,
+    out_root: Path = OUT_ROOT,
+    include_mixed_baseline: bool = True,
+) -> int:
     rows: list[dict[str, object]] = []
     for scale_index, requested in enumerate(scales, start=1):
-        scale_root = OUT_ROOT / f"{scale_index:02d}_solo_{requested}x"
-        for index, family in enumerate(FAMILIES, start=1):
+        scale_root = out_root / f"{scale_index:02d}_solo_{requested}x"
+        for index, family in enumerate(families, start=1):
             effective, capacity = _effective_scale(family, requested)
             stem = _case_stem(index, family, requested, effective)
             case_dir = scale_root / stem
@@ -207,12 +226,16 @@ def main(scales: tuple[int, ...] = REQUESTED_SCALES) -> int:
                 }
             )
     _write_json(
-        OUT_ROOT / "summary.json",
+        out_root / "summary.json",
         {
-            "families": list(FAMILIES),
+            "families": list(families),
             "requested_scales": list(scales),
             "cases": rows,
-            "mixed_baseline": _generate_mixed_baseline(),
+            "mixed_baseline": (
+                _generate_mixed_baseline(families=families, out_root=out_root)
+                if include_mixed_baseline
+                else None
+            ),
         },
     )
     return 0
@@ -221,5 +244,37 @@ def main(scales: tuple[int, ...] = REQUESTED_SCALES) -> int:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--scales", type=_parse_scales, default=REQUESTED_SCALES)
+    parser.add_argument(
+        "--families",
+        default=",".join(FAMILIES),
+        help="comma-separated catalogue families; terminal logic remains shared",
+    )
+    parser.add_argument(
+        "--output-root",
+        default=None,
+        help="repository-relative or absolute experiment folder",
+    )
+    parser.add_argument("--skip-mixed-baseline", action="store_true")
     args = parser.parse_args()
-    raise SystemExit(main(args.scales))
+    selected_families = tuple(
+        family.strip().upper()
+        for family in str(args.families).split(",")
+        if family.strip()
+    )
+    if not selected_families:
+        parser.error("--families must contain at least one family")
+    selected_root = (
+        Path(args.output_root)
+        if args.output_root and Path(args.output_root).is_absolute()
+        else ROOT / args.output_root
+        if args.output_root
+        else OUT_ROOT
+    )
+    raise SystemExit(
+        main(
+            args.scales,
+            families=selected_families,
+            out_root=selected_root,
+            include_mixed_baseline=not args.skip_mixed_baseline,
+        )
+    )

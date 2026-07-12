@@ -12398,6 +12398,44 @@ i can confirm this group solo works. make mix then move on. n reduce time by hal
 
 ## Agent Visible Response - 2026-07-13 +05:00
 
+Iâ€™m continuing from the pushed DIL14 checkpoint. Iâ€™ll finish the HC04 donor-backed 1Ã— path first; Iâ€™m not touching the accepted two-pin or DIL14 routes.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The HC04 fatal is now narrowed to donor-proven attachment grammarâ€”not the component placer. The active donor uses six exact subpart frames and routed 3-/4-point WIRE units, so Iâ€™m applying that complete evidence set together rather than changing the accepted routes.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The rebuilt HC04 probe now has all 12 active, grid-aligned terminals and donor-shaped routed WIREs. Iâ€™m running the shortened 12-second Proteus loader check next; normal opens will not be Ctrl+S-saved.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+HC04 now passes static 1Ã—/9Ã—/15Ã— generation (12/108/180 terminalâ€“WIRE pairs) and the boundary mix is generated with HC04 intentionally bare. Iâ€™m taking the one permitted large-case visual check now, then Iâ€™ll record the result and move to the next family.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The 15× Proteus screen shows multiple real HC04 subparts with input/output terminals and routed links, not a one-terminal control. I’m running the frozen regression set once more, then I’ll checkpoint this group before starting the next donor audit.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The full component-placer regression is still running; the focused HC04/DIL14 checks already passed. I’m waiting on the broader result before committing, without making further route changes.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The full component-placer regression passed: 151 tests. I’m committing the HC04 donor-backed scale pack and boundary mix now, then I’ll start the next family only from its accepted donor evidence.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_terminal_placer.py` â€” catalogue-gated donor attachment-unit ordering; existing families without the new profile field are unchanged.
+- `backups/component_terminal_placer/component_terminal_placer_20260713_043010_before_hc04_donor_attachment_order.py` â€” required pre-edit shared-placer backup.
+- `knowledge/component_catalog_v0.json` and `knowledge/hc04_hex_inverter_donor_analysis_2026_07_13.md` â€” E04-authoritative HC04 subpart, pin, WIRE, order, and link facts.
+- `tools/proteus_generation/2026-07-13/generate_dil14_quad_2input_logic_1x_temp.py` â€” existing runner generalized to select an audited DIL14 family/output folder while still calling the shared placer only.
+- `tests/test_component_placer.py` â€” HC04 donor-order, full polyline WIRE, and wide-reference link-boundary regression.
+- `experiments/dil14_hex_inverter_terminal_v1_temp_2026_07_13/` â€” regenerated 1Ã—/9Ã—/15Ã— solos, required two-pin-terminalized/HC04-bare mix, local loader record, and one actual 15Ã— Proteus screenshot.
+- `docs/architecture.md` and `knowledge/test_results.jsonl` â€” recovered grammar and acceptance evidence.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
 Got it—the solo group is accepted. I’m stopping the remaining redundant 9× loader checks, cutting future non-screenshot waits to 12 seconds, and moving straight to the mixed project.
 
 ## Agent Visible Response - 2026-07-13 +05:00

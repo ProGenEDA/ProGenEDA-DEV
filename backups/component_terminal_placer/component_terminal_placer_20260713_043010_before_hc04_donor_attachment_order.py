@@ -2311,13 +2311,9 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         "before each order has a Proteus-accepted combined oracle."
                     )
                 local_records.append(patched_data)
-                for terminal_record, wire_record in _ordered_clean_packet_attachment_units(
-                    family=family,
-                    key=key,
-                    geometry=geometry,
-                    terminal_pins=terminal_pins,
-                    terminal_records=terminal_records,
-                    wire_records=appended_wire_records,
+                for terminal_record, wire_record in zip(
+                    terminal_records,
+                    appended_wire_records,
                 ):
                     trailing_attachment_records.append(terminal_record)
                     trailing_attachment_records.append(wire_record)
@@ -4867,61 +4863,6 @@ def _build_catalogue_wire_unit(coordinates: Iterable[int]) -> bytes:
     if record.find(b"\x7fWIRE") != 24:
         raise AssertionError("Catalogue WIRE unit has an invalid marker position.")
     return record
-
-
-def _ordered_clean_packet_attachment_units(
-    *,
-    family: str,
-    key: str,
-    geometry: dict[str, Any],
-    terminal_pins: list[dict[str, Any]],
-    terminal_records: list[bytes],
-    wire_records: list[bytes],
-) -> list[tuple[bytes, bytes]]:
-    """Return donor-proven terminal/WIRE attachment units in stream order.
-
-    Clean catalogue packets keep their component records in the beautified
-    component stream, then append one terminal immediately followed by its
-    linked WIRE.  Most families' profile-pin order already matches that
-    topology.  A donor may prove a different order, however (for example the
-    74HC04 output-side units precede its input-side units).  Keep that fact in
-    the catalogue instead of changing profile-pin order or introducing a
-    family-specific emitter.
-    """
-
-    if not (
-        len(terminal_pins) == len(terminal_records) == len(wire_records)
-    ):
-        raise ValueError(
-            f"{family} {key} has mismatched clean-packet attachment units: "
-            f"pins={len(terminal_pins)}, terminals={len(terminal_records)}, "
-            f"wires={len(wire_records)}."
-        )
-    units_by_pin = {
-        str(pin_row["pin"]["name"]): (terminal_record, wire_record)
-        for pin_row, terminal_record, wire_record in zip(
-            terminal_pins,
-            terminal_records,
-            wire_records,
-            strict=True,
-        )
-    }
-    if len(units_by_pin) != len(terminal_pins):
-        raise ValueError(f"{family} {key} has duplicate clean-packet pin units.")
-    raw_order = geometry.get("donor_attachment_unit_order")
-    if raw_order is None:
-        return list(units_by_pin.values())
-    if not isinstance(raw_order, (list, tuple)):
-        raise ValueError(
-            f"{family} {key} donor_attachment_unit_order must be a list."
-        )
-    order = [str(pin_name) for pin_name in raw_order]
-    if len(order) != len(set(order)) or set(order) != set(units_by_pin):
-        raise ValueError(
-            f"{family} {key} donor_attachment_unit_order {order} does not "
-            f"exactly cover emitted pins {sorted(units_by_pin)}."
-        )
-    return [units_by_pin[pin_name] for pin_name in order]
 
 
 def _load_six_inductor_templates(project: Path) -> InductorDonorTemplates:

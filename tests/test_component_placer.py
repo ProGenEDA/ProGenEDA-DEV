@@ -131,6 +131,20 @@ DIL14_LOCKED_MEGA_SCALE_CAPS = {
     "74HC86": 15,
     "74HC266": 15,
 }
+HC04_E04_ATTACHMENT_ORDER = (
+    "2",
+    "10",
+    "6",
+    "4",
+    "8",
+    "12",
+    "1",
+    "11",
+    "5",
+    "3",
+    "9",
+    "13",
+)
 
 
 @pytest.mark.parametrize(
@@ -3065,6 +3079,118 @@ def test_dil14_hc08_wide_reference_links_use_current_subpart_end(
         if str(row["role"]) in slots
     }
     assert actual_positions == expected_positions
+
+
+def test_hc04_catalogue_uses_complete_e04_attachment_grammar() -> None:
+    """HC04 must retain its actual donor's routed WIRE units and order."""
+
+    profile = load_component_catalog().get_profile("74HC04")
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["coordinate_geometry_source_project"].endswith(
+        "E04_74HC04_1X_NO_TERMINAL_CONTROL.pdsprj"
+    )
+    assert tuple(geometry["donor_attachment_unit_order"]) == HC04_E04_ATTACHMENT_ORDER
+    assert geometry["subpart_anchor_coordinate_rebase"] is True
+    assert geometry["object_stream_finalizer"] == "double_ff"
+    assert set(geometry["subpart_anchor_indices"]) == {"A", "B", "C", "D", "E", "F"}
+    assert all(
+        len(geometry["pins"][pin]["wire_unit_coordinates"]) // 2 in {3, 4}
+        for pin in HC04_E04_ATTACHMENT_ORDER
+    )
+    assert all(
+        geometry["pins"][pin]["terminal_contact_x"] % 254_000 == 0
+        and geometry["pins"][pin]["terminal_contact_y"] % 254_000 == 0
+        for pin in HC04_E04_ATTACHMENT_ORDER
+    )
+
+
+def test_hc04_shared_placer_uses_e04_ordered_routed_units_and_safe_links(
+    tmp_path: Path,
+) -> None:
+    """Four-character HC04 refs must not overwrite later inverter records."""
+
+    family = "74HC04"
+    base = tmp_path / "74HC04_1x_no_terminal.pdsprj"
+    output = tmp_path / "74HC04_1x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == 12
+    assert report["wire_count_added"] == 12
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "double_ff"
+
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminal_rows = terminal_placer._bidir_label_records(chunk)
+    assert [row["label"] for row in terminal_rows] == [
+        f"{'OUT' if pin in {'2', '4', '6', '8', '10', '12'} else 'IN'}pin{pin}"
+        for pin in HC04_E04_ATTACHMENT_ORDER
+    ]
+    wire_rows = terminal_placer._wire_rows_from_chunk(
+        chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(dsn),
+    )
+    assert [row["point_count"] for row in wire_rows] == [
+        3, 3, 3, 3, 3, 3, 4, 3, 4, 4, 4, 4
+    ]
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    slots = geometry["component_link_subpart_end_offsets"]
+    refs = result.selected_groups[0].refs
+    starts: dict[str, int] = {}
+    for ref in refs:
+        encoded = ref.encode("ascii")
+        start = chunk.find(b"\xff" + bytes([len(encoded)]) + encoded)
+        assert start >= 0, f"{family} lost {ref}"
+        starts[ref.rsplit(":", 1)[1]] = start
+    terminal_start = chunk.find(b"$TERBIDIR") - 14
+    actual_positions = {
+        str(row["role"]): int(row["component_link_position"])
+        for row in report["link_allocation"]["allocations"]
+    }
+    for pin, slot in slots.items():
+        subpart = slot["subpart"]
+        following = [position for position in starts.values() if position > starts[subpart]]
+        if following:
+            subpart_end = min(following)
+            expected = subpart_end + int(slot["offset"])
+            assert actual_positions[pin] == expected
+            assert starts[subpart] <= actual_positions[pin] < subpart_end
+        else:
+            # The final clean packet's selected terminator is replaced by the
+            # first attachment unit during stream rebuild.  Assert its two
+            # donor-proven F link fields stay inside the final subpart rather
+            # than conflating that one-byte stream boundary normalization with
+            # a later-subpart marker.
+            assert starts[subpart] <= actual_positions[pin]
+            assert actual_positions[pin] + 4 <= terminal_start
+    assert actual_positions["13"] + 4 == actual_positions["12"]
 
 
 def test_dil14_mixed_baseline_keeps_new_logic_groups_unterminalized(
