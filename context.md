@@ -11207,3 +11207,33 @@ Verification:
 - Both release ZIPs passed `unzip -t`; manifest SHA-256 values match the files.
 - `PYTHONPATH=. .venv/bin/python -m pytest kicad/tests -q`: 93 passed,
   160 subtests passed in 160.06 seconds.
+
+### 2026-07-13T01:14:25+05:00
+
+Continuation:
+
+> The full verification run is now clean: `93 passed, 160 subtests passed`. I’m committing the portable ZIP, handoff ZIP/folder, release manifest, and retained smoke evidence as the final shipped checkpoint, then I’ll verify the remote hash once more.
+
+> The shipped release checkpoint is now `818fbf93`, pushed and remote-matched. I’m adding the final audit/commit result to the continuation log, then making that log checkpoint so the repository itself has the complete handoff trail.
+
+Release checkpoint:
+
+- `818fbf93a962d8e7496aca2abdff1447adf7b929` on local `main` and
+  `origin/main`.
+- Portable executable:
+  `kicad/release/progen-kicad-portable-2026_07_13.zip`.
+- Website handoff:
+  `kicad/release/newwebsite-kicad-handoff-2026_07_13.zip` and its unpacked
+  `newwebsite_kicad_handoff_2026_07_13/` directory.
+- Release build manifest:
+  `kicad/release/kicad_release_manifest_2026_07_13.json`.
+- Source and PCB release evidence is retained under
+  `kicad/experiment_records/runs/`.
+
+Worktree note:
+
+- The remaining untracked `schematic_terminal_visual_run_*_v1` through `v18`
+  directories predate this release checkpoint. They are retained local
+  diagnostic iterations; the accepted committed `v19` run and its documentation
+  identify their role and final outcome. No generated circuit was overwritten
+  or removed during this release work.
