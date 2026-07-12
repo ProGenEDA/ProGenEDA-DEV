@@ -12114,3 +12114,12 @@ The shared placer now rejects an unproven terminal-leading BJT/catalogue mix con
 - `python -m compileall -q src tests` passed.
 - Focused accepted-route/refusal regression: 15 passed.
 - `knowledge/test_results.jsonl` parsed successfully as JSON Lines.
+
+## User Message - 2026-07-12 +05:00
+
+can u give me the 1x terminalized solos of all component of this group?
+u can regenerate or just give me location of generated ones
+
+## Agent Visible Response - 2026-07-12 +05:00
+
+The prior Git checkpoint was verified locally, at upstream, and at `origin` before inspecting files. The existing complete 1x terminalized-solo set is under `experiments/three_pin_transistor_terminal_v32_temp_2026_07_10/01_terminalized_solo_sa/`: NPN, PNP, NMOSFET, 2N3904, 2N4401, 2N7000, and BS170. No regeneration was performed, so the restored and frozen generic diode route is untouched.
