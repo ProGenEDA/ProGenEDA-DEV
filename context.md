@@ -11151,3 +11151,20 @@ Verification:
 - `python -m kicad.pipeline.progen_kicad_executable --help`: exposes `run-pcb`.
 - The 18-case retained variant reports prove every successful rescue occurred
   at seed `404`; no later seed accepted a board that seed `404` did not.
+
+### 2026-07-13T01:05:52+05:00
+
+Continuation:
+
+> The evidence checkpoint is pushed at `8c2d482`. It includes all three immutable rescue runs, the 40 new oracle reports, the aggregate record, and the production speed policy. I caught one release-packaging detail before building: the portable folder needs its smoke-test JSON inside it, so I’m fixing that rather than shipping a README command that only works in the repository.
+
+Files edited:
+
+- `context.md`
+- `kicad/tools/build_kicad_release.py`
+
+Verification:
+
+- `PYTHONPATH=. .venv/bin/python -m compileall -q kicad/tools/build_kicad_release.py`: passed.
+- The rendered handoff README template resolves the date-labelled portable ZIP
+  name without formatting errors.

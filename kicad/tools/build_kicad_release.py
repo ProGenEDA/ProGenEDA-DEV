@@ -193,6 +193,12 @@ def write_executable_folder(root: Path, build_dir: Path, date_label: str) -> dic
         shutil.rmtree(executable_dir)
     executable_dir.mkdir(parents=True)
     copy_runtime_tree(root, executable_dir)
+    examples_dir = executable_dir / "examples"
+    examples_dir.mkdir()
+    sample = root / "kicad" / "examples" / "ee215_diode_iv.json"
+    if not sample.is_file():
+        raise FileNotFoundError(f"Portable executable sample is missing: {sample}")
+    shutil.copy2(sample, examples_dir / sample.name)
 
     launcher = executable_dir / "progen-kicad"
     launcher.write_text(
@@ -356,10 +362,15 @@ def write_website_files(
         shutil.copy2(sample, example_dir / sample.name)
 
 
-def write_audit_docs(handoff_dir: Path, registry: dict[str, Any], pcb_support: dict[str, Any]) -> None:
+def write_audit_docs(
+    handoff_dir: Path,
+    registry: dict[str, Any],
+    pcb_support: dict[str, Any],
+    date_label: str,
+) -> None:
     handoff_dir.mkdir(parents=True, exist_ok=True)
     (handoff_dir / "README.md").write_text(
-        HANDOFF_README_MD.format(component_count=len(registry["components"])),
+        HANDOFF_README_MD.format(component_count=len(registry["components"]), date_label=date_label),
         encoding="utf-8",
     )
     (handoff_dir / "NEWEBSITE_KICAD_AUDIT.md").write_text(NEWEBSITE_AUDIT_MD, encoding="utf-8")
@@ -495,6 +506,7 @@ def write_build_manifest(
         "verification": {
             "run_executable_help": f"unzip {executable_zip.name} && ./progen-kicad-portable/progen-kicad --help",
             "smoke_command": "./progen-kicad-portable/progen-kicad run examples/ee215_diode_iv.json --output-root /tmp/progen-kicad-smoke --routing-mode combination",
+            "pcb_only_smoke_command": "./progen-kicad-portable/progen-kicad run-pcb examples/ee215_diode_iv.json --output-root /tmp/progen-kicad-pcb-smoke --routing-mode combination",
         },
     }
     manifest_path = release_root / f"kicad_release_manifest_{date_label}.json"
@@ -752,7 +764,7 @@ to add KiCad support to `newwebsite`.
 
 Artifacts in this release:
 
-- `../progen-kicad-portable-2026_07_10.zip`: portable KiCad executable folder.
+- `../progen-kicad-portable-{date_label}.zip`: portable KiCad executable folder.
 - `website_files/packages/component-registry/registries/KC-A.json`: KiCad serial
   registry with {component_count} supported component words.
 - `website_files/apps/api/src/services/kicad-executable-service.mjs`: Node adapter
@@ -967,7 +979,7 @@ def build_release(release_root: Path, date_label: str) -> dict[str, Any]:
     handoff_dir = release_root / f"newwebsite_kicad_handoff_{date_label}"
     if handoff_dir.exists():
         shutil.rmtree(handoff_dir)
-    write_audit_docs(handoff_dir, registry, pcb_support)
+    write_audit_docs(handoff_dir, registry, pcb_support, date_label)
     write_website_files(root, handoff_dir, registry, pcb_support)
     handoff_zip = release_root / f"newwebsite-kicad-handoff-{date_label}.zip"
     zip_directory(handoff_dir, handoff_zip)
