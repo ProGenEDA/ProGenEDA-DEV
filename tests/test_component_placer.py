@@ -872,6 +872,46 @@ def test_multipart_subparts_are_spread_with_large_internal_gap(tmp_path: Path) -
     assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
+def test_locked_mega_4027_scale_selection_uses_only_complete_ab_packages(
+    tmp_path: Path,
+) -> None:
+    """Never select the locked donor's intentionally split 4027 controls."""
+
+    result = generate_component_placement_project(
+        {
+            "components": {"4027": 15},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "terminal_grid_alignment": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        tmp_path / "locked_4027_complete_packages_15x.pdsprj",
+        full_cdb=True,
+    )
+
+    assert result.valid
+    assert [group.key for group in result.selected_groups] == [
+        "U13",
+        "U14",
+        "U15",
+        "U154",
+        "U155",
+        "U156",
+        "U295",
+        "U296",
+        "U297",
+        "U436",
+        "U437",
+        "U438",
+        "U577",
+        "U578",
+        "U579",
+    ]
+    assert all(group.refs == (f"{group.key}:A", f"{group.key}:B") for group in result.selected_groups)
+
+
 def test_mixed_layout_keeps_large_visual_spacing_between_types(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {

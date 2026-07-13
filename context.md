@@ -12804,3 +12804,30 @@ continue
 ## Agent Visible Response - 2026-07-13 16:46 +05:00
 
 I’m continuing from the corrected 4027 route: first prove the 1× short-wire build through Proteus, then generate and verify 9× and 15× before moving to the next group. I’ll keep the accepted families frozen and use ROOT.DSN only for this repair.
+
+## Agent Visible Response - 2026-07-13 16:47 +05:00
+
+The shared 4027 change is regression-clean: it produces a real grid-to-pin short wire rather than the earlier zero-length attachment. I’m checkpointing that exact evidence now; the only thing I will not do until your open Proteus session is free is launch/close Proteus myself.
+
+## Agent Visible Response - 2026-07-13 16:48 +05:00
+
+The locked mega contains exactly fifteen complete 4027 packages, so 9× and 15× are real removal-only placements—not cloned records or an invented cap. I’m generating both through the same component placer and shared terminal placer now, then I’ll run the loader gate as soon as your existing Proteus process is closed.
+
+## Agent Visible Response - 2026-07-13 16:51 +05:00
+
+The 9× static run found a real blocker before any handoff: package `U16` has no computed B-subpart anchor, so the shared route correctly refused to emit seven unsafe terminals for it. I’m tracing the anchor-index rule across the locked mega’s complete 4027 packets now; I will fix the catalogue/shared geometry once, not bypass it or copy a donor packet.
+
+## Agent Visible Response - 2026-07-13 16:52 +05:00
+
+The component-selection fix worked: 9× now uses nine complete A/B packages and emits 126 terminals/wires. One independent audit caught another issue before I call it good—the report’s wire-allocation list does not expose coordinate tuples at scale—so I’m parsing the actual emitted ROOT.DSN WIRE records directly instead of trusting that report field.
+
+## Agent Visible Response - 2026-07-13 16:55 +05:00
+
+Both scale packs now pass the actual DSN audit: 9× has 126 grid-aligned terminals plus 126 nonzero short wires; 15× has 210 of each, all from fifteen complete donor packages. The remaining acceptance step is only the delayed Proteus open/reopen gate, which I’ll run immediately once PID 9448 is no longer your active session.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_placer.py` — 4027 is now selected only as a complete two-subpart A/B package from the locked donor; partial `U16`/`U157`/`U298`/`U439`/`U580` controls are not legal placed components.
+- `tests/test_component_placer.py` and `tests/test_component_catalog.py` — add 15× complete-package selection and emitted-DSN nonzero-WIRE regressions.
+- `knowledge/4027_scale_selection_preflight_2026_07_13.md` — DSN-only full package audit, evidence-backed cause, and 9×/15× static results.
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/04_solo_9x/`, `05_solo_15x/`, and `scale_generation_report.json` — locked-mega no-terminal controls and shared terminalized 4027 scale packs.

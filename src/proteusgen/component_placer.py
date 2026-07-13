@@ -113,6 +113,9 @@ COMPLETE_PACKAGE_REF_COUNTS = {
     "74HC86": 4,
     "74HC266": 4,
     "74HC04": 6,
+    # The locked mega intentionally contains partial 4027 A/B records beside
+    # complete packages. A placed 4027 must always preserve both subparts.
+    "4027": 2,
 }
 DONOR_COMPONENT_OFFSET_DEFAULTS = {
     NEW_COMPONENT_MEGA_DONOR.as_posix(): {

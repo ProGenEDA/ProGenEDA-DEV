@@ -14,6 +14,7 @@ from proteusgen.pdsprj import read_internal_file
 from proteusgen.component_terminal_placer import (
     PROTEUS_TERMINAL_GRID,
     _extract_object_chunk,
+    _wire_rows_from_chunk,
     attach_catalogue_pin_bidir_terminals_to_project,
     analyse_terminalized_donor_pin_geometry,
     plan_catalogue_pin_bidir_terminals,
@@ -746,6 +747,64 @@ def test_4027_staged_terminal_contact_gate_is_dsn_only_and_monotonic(tmp_path) -
     assert complete_chunk.count(b"$TERBIDIR") == 14
     assert complete_chunk.count(b"\x7fWIRE") == 14
     assert complete_chunk.endswith(b"\xff")
+
+
+def test_4027_15x_uses_real_complete_packages_and_grid_short_wires(tmp_path) -> None:
+    """The locked mega supplies fifteen whole 4027 packages without cloning."""
+
+    source = tmp_path / "catalogue_4027_15x_bare.pdsprj"
+    output = tmp_path / "catalogue_4027_15x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {"4027": 15},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "terminal_grid_alignment": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        source,
+        full_cdb=True,
+    )
+    assert result.valid
+    assert [group.key for group in result.selected_groups] == [
+        "U13",
+        "U14",
+        "U15",
+        "U154",
+        "U155",
+        "U156",
+        "U295",
+        "U296",
+        "U297",
+        "U436",
+        "U437",
+        "U438",
+        "U577",
+        "U578",
+        "U579",
+    ]
+    assert all(len(group.refs) == 2 for group in result.selected_groups)
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["4027"],
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    wires = _wire_rows_from_chunk(chunk, chunk_start=0)
+
+    assert report["valid"]
+    assert report["terminal_count_added"] == 210
+    assert report["wire_count_added"] == 210
+    assert report["terminal_grid_alignment_valid"]
+    assert report["wire_path_contacts_valid"]
+    assert chunk.count(b"$TERBIDIR") == 210
+    assert len(wires) == 210
+    assert all(row["coordinates"][:2] != row["coordinates"][2:4] for row in wires)
+    assert chunk.endswith(b"\xff")
 
 
 def test_catalogue_display_block_link_offset_generation_remains_blocked(tmp_path) -> None:
