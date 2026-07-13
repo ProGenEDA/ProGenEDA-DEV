@@ -9,6 +9,7 @@ safe to emit.
 from __future__ import annotations
 
 from copy import deepcopy
+import math
 import re
 from typing import Any
 
@@ -22,10 +23,28 @@ SAFE_METADATA_TEXT = re.compile(r"^[A-Za-z0-9_+\-.,=(){}*/:% Ωµμ\t]+$")
 REFERENCE = re.compile(r"[A-Za-z#][A-Za-z0-9_#-]*\Z")
 NUMBER = re.compile(
     r"^(?P<number>[+-]?(?:(?:\d+(?:\.\d*)?)|(?:\.\d+))(?:[eE][+-]?\d+)?)"
-    r"(?P<scale>meg|[TGMKkmunpfF])?(?P<unit>[A-Za-zΩ]*)$"
+    r"(?P<scale>[mM][eE][gG]|[TGMKkmunpfF])?(?P<unit>[A-Za-zΩ]*)$"
 )
 SOURCE_PREFIXES = ("PULSE(", "SINE(", "EXP(", "SFFM(", "PWL(")
 EDIT_SCHEMA = "progen-ltspice-normal-mode-edit/v0.1"
+
+# Normal mode deliberately has a narrower contract than a raw SPICE text box.
+# These bounds keep ordinary editable fields meaningful for the profile that
+# exposes them while still allowing physically useful signed quantities such as
+# source values, initial conditions, temperature coefficients, and gains.
+_POSITIVE_SCALAR_PARAMETERS = {
+    "m", "area", "n", "l", "w", "r", "ron", "roff", "rpar", "rlshunt",
+    "a0", "gain_bandwidth", "slew_rate", "rout", "vout",
+}
+_NONNEGATIVE_SCALAR_PARAMETERS = {
+    "ad", "as", "pd", "ps", "rser", "lser", "cpar", "ipk", "dropout", "vh",
+}
+_PARAMETER_CONSTRAINTS: dict[str, dict[str, object]] = {
+    **{name: {"scalar": "positive", "exclusive_minimum": 0} for name in _POSITIVE_SCALAR_PARAMETERS},
+    **{name: {"scalar": "nonnegative", "minimum": 0} for name in _NONNEGATIVE_SCALAR_PARAMETERS},
+    "wiper": {"scalar": "unit_interval", "minimum": 0, "maximum": 1},
+    "forward_voltage": {"scalar": "range", "minimum": 0.2, "maximum": 5, "reference": "generic LED calibration at 10mA, 27C"},
+}
 
 
 class ValueValidationError(ValueError):
@@ -72,6 +91,73 @@ def normalize_spice_number(value: object, *, field: str, capacitance: bool = Fal
     # Units are display information for primitive numeric values. The SPICE
     # scale is retained; e.g. 10kOhm becomes 10k.
     return f"{number}{scale.lower() if scale.lower() == 'meg' else scale}"
+
+
+def spice_number_to_float(value: object, *, field: str) -> float:
+    """Convert an already-safe SPICE scalar to an SI float for model binding.
+
+    This is intentionally not a free-form expression evaluator.  It shares
+    the normal-mode numeric grammar and only serves deterministic calculations
+    such as deriving a diode saturation current from a user-facing reference
+    forward-voltage field.
+    """
+
+    number, scale, unit = _numeric_parts(value, field=field)
+    if unit:
+        raise ValueValidationError(f"{field} must be a bare normalized SPICE scalar for model binding.")
+    factors = {
+        "": 1.0,
+        "t": 1e12,
+        "g": 1e9,
+        "meg": 1e6,
+        "k": 1e3,
+        "m": 1e-3,
+        "u": 1e-6,
+        "n": 1e-9,
+        "p": 1e-12,
+        "f": 1e-15,
+    }
+    try:
+        factor = factors[scale.lower()]
+    except KeyError as exc:  # NUMBER remains the source of accepted suffixes.
+        raise ValueValidationError(f"{field} has unsupported SPICE scale {scale!r} for model binding.") from exc
+    converted = float(number) * factor
+    if not math.isfinite(converted):
+        raise ValueValidationError(f"{field} must be a finite SPICE scalar.")
+    return converted
+
+
+def _validate_parameter_constraint(profile: ComponentProfile, name: str, value: str) -> None:
+    """Reject normal-mode values that cannot retain their stated semantics."""
+
+    constraint = _PARAMETER_CONSTRAINTS.get(name)
+    if constraint is None:
+        return
+    numeric = spice_number_to_float(value, field=f"{profile.kind}.parameters.{name}")
+    minimum = constraint.get("minimum")
+    maximum = constraint.get("maximum")
+    exclusive_minimum = constraint.get("exclusive_minimum")
+    if exclusive_minimum is not None and numeric <= float(exclusive_minimum):
+        raise ValueValidationError(f"{profile.kind}.parameters.{name} must be greater than {exclusive_minimum}.")
+    if minimum is not None and numeric < float(minimum):
+        raise ValueValidationError(f"{profile.kind}.parameters.{name} must be at least {minimum}.")
+    if maximum is not None and numeric > float(maximum):
+        raise ValueValidationError(f"{profile.kind}.parameters.{name} must be at most {maximum}.")
+
+
+def _value_constraint(profile: ComponentProfile) -> dict[str, object] | None:
+    if profile.kind in {"R", "C", "C_ELEC", "L", "FUSE"}:
+        return {"scalar": "positive", "exclusive_minimum": 0}
+    return None
+
+
+def _validate_value_constraint(profile: ComponentProfile, value: str) -> None:
+    constraint = _value_constraint(profile)
+    if constraint is None:
+        return
+    numeric = spice_number_to_float(value, field=f"{profile.kind}.value")
+    if numeric <= 0:
+        raise ValueValidationError(f"{profile.kind}.value must be greater than 0 in normal mode.")
 
 
 def normalize_voltage_gain(value: object, *, field: str) -> str:
@@ -151,12 +237,32 @@ def validate_component_value(profile: ComponentProfile, value: object) -> str:
         if raw not in {"", "0", "GND", "gnd", "GROUND", "ground"}:
             raise ValueValidationError(f"{profile.kind} has a fixed native ground value.")
         return "0"
+    if profile.value_rule == "display_text":
+        # Interface-only markers are retained in the portable logical graph
+        # but never copied into a native Value/SpiceLine record.  Their UI
+        # label can therefore be edited safely without becoming raw SPICE.
+        text = str(raw).strip()
+        if not text or len(text) > 160 or "\n" in text or "\r" in text or "!" in text or ";" in text or not SAFE_METADATA_TEXT.fullmatch(text):
+            raise ValueValidationError(f"{profile.kind}.value contains unsupported display text.")
+        return text
+    if profile.value_rule == "fixed_terminal":
+        # Power-symbol values are descriptive labels only.  Keep the profile
+        # default in canonical output so a cosmetic KiCad spellings cannot
+        # alter the LTspice netlist.
+        _plain_text(raw, field=f"{profile.kind}.value")
+        return profile.default_value
     if profile.value_rule == "spice_number":
-        return normalize_spice_number(raw, field=f"{profile.kind}.value")
+        normalized = normalize_spice_number(raw, field=f"{profile.kind}.value")
+        _validate_value_constraint(profile, normalized)
+        return normalized
     if profile.value_rule == "capacitance":
-        return normalize_spice_number(raw, field=f"{profile.kind}.value", capacitance=True)
+        normalized = normalize_spice_number(raw, field=f"{profile.kind}.value", capacitance=True)
+        _validate_value_constraint(profile, normalized)
+        return normalized
     if profile.value_rule == "inductance":
-        return normalize_spice_number(raw, field=f"{profile.kind}.value")
+        normalized = normalize_spice_number(raw, field=f"{profile.kind}.value")
+        _validate_value_constraint(profile, normalized)
+        return normalized
     if profile.value_rule == "voltage_gain":
         return normalize_voltage_gain(raw, field=f"{profile.kind}.value")
     if profile.value_rule == "transconductance":
@@ -215,7 +321,11 @@ def validate_parameters(profile: ComponentProfile, parameters: dict[str, object]
         if name not in allowed:
             raise ValueValidationError(f"{profile.kind} does not allow normal-mode parameter {name!r}.")
         value = _plain_text(raw_value, field=f"{profile.kind}.parameters.{name}")
-        if name in {"tc", "tc1", "tc2", "temp", "m", "ic", "ipk", "rser", "lser", "rpar", "cpar", "rlshunt", "area", "n", "l", "w", "ad", "as", "pd", "ps", "r", "wiper"}:
+        if name in {
+            "tc", "tc1", "tc2", "temp", "m", "ic", "ipk", "rser", "lser", "rpar", "cpar", "rlshunt",
+            "area", "n", "l", "w", "ad", "as", "pd", "ps", "r", "wiper", "ron", "roff", "vt", "vh",
+            "forward_voltage", "gain_bandwidth", "slew_rate", "a0", "rout", "vout", "dropout",
+        }:
             # The currently supported passive profiles use scalar initial
             # conditions only. A parenthesized device-vector IC would need a
             # profile-specific arity/meaning contract rather than free text.
@@ -225,6 +335,13 @@ def validate_parameters(profile: ComponentProfile, parameters: dict[str, object]
         elif name in {"off", "load"}:
             if value.lower() not in {"0", "1", "true", "false", "yes", "no", "off"}:
                 raise ValueValidationError(f"{profile.kind}.parameters.{name} must be a boolean-like value.")
+            # LTspice represents these as presence-only instance attributes
+            # (``off``/``load``), not assignments.  Retaining a false value
+            # would later serialize as ``off=False`` and make the simulator
+            # reject an otherwise valid circuit.  Absence is the native false
+            # state, so normalize every false spelling by clearing the field.
+            if value.lower() in {"0", "false", "no"}:
+                continue
         elif name in {"dc", "ac"}:
             value = normalize_spice_number(value, field=f"{profile.kind}.parameters.{name}")
         elif name in {"pulse", "sine", "exp", "sffm", "pwl"}:
@@ -232,6 +349,7 @@ def validate_parameters(profile: ComponentProfile, parameters: dict[str, object]
             if not value.upper().startswith(prefix):
                 value = prefix + value + ")"
             value = normalize_source_expression(value, field=f"{profile.kind}.parameters.{name}")
+        _validate_parameter_constraint(profile, name, value)
         output[name] = value
     waveform_names = {"pulse", "sine", "exp", "sffm", "pwl"}
     selected_waveforms = sorted(waveform_names & set(output))
@@ -243,6 +361,11 @@ def validate_parameters(profile: ComponentProfile, parameters: dict[str, object]
         raise ValueValidationError(
             f"{profile.kind}.parameters cannot combine {selected_waveforms[0]} with dc in normal mode; choose one source definition."
         )
+    if profile.kind == "SW":
+        ron = spice_number_to_float(output.get("ron", "0.01"), field="SW.parameters.ron")
+        roff = spice_number_to_float(output.get("roff", "1e9"), field="SW.parameters.roff")
+        if roff <= ron:
+            raise ValueValidationError("SW.parameters.roff must be greater than ron so the switch has distinct on/off states.")
     return dict(sorted(output.items()))
 
 
@@ -258,19 +381,42 @@ def spice_line_from_parameters(profile: ComponentProfile, parameters: dict[str, 
             tokens.append(value if name not in {"dc", "ac"} else f"{name.upper()} {value}")
         elif name in {"off", "load"} and value.lower() in {"1", "true", "yes", "off"}:
             tokens.append(name)
+        elif name in {"off", "load"}:
+            # Be defensive for callers that constructed a parameter mapping
+            # without going through validate_parameters().
+            continue
         else:
             tokens.append(f"{name}={value}")
-    return " ".join(tokens)
+    return " ".join(tokens) or None
 
 
 def normal_mode_fields(profile: ComponentProfile) -> dict[str, Any]:
     """Return the deterministic edit schema presented by a normal UI."""
 
+    parameter_effects = {
+        name: "native_model_card" if name in profile.model_bound_parameters else "native_instance_or_subcircuit"
+        for name in profile.editable_parameters
+    }
+    metadata_effects = {name: "design_evidence_only" for name in profile.metadata_fields}
     return {
-        "value": {"rule": profile.value_rule, "default": profile.default_value},
+        "value": {
+            "rule": profile.value_rule,
+            "default": profile.default_value,
+            **({"constraint": _value_constraint(profile)} if _value_constraint(profile) else {}),
+        },
         "reference": {"pattern": REFERENCE.pattern, "renames_net_endpoints": True},
         "parameters": list(profile.editable_parameters),
         "metadata": list(profile.metadata_fields),
+        "property_effects": {
+            "value": "native_value" if not profile.is_pseudo_component else "logical_display_or_terminal_identity",
+            "parameters": parameter_effects,
+            "metadata": metadata_effects,
+        },
+        "parameter_constraints": {
+            name: dict(_PARAMETER_CONSTRAINTS[name])
+            for name in profile.editable_parameters
+            if name in _PARAMETER_CONSTRAINTS
+        },
         "advanced_raw_asc": {"available": False, "reason": "admin/demo mode only"},
     }
 

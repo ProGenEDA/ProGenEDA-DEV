@@ -25,6 +25,7 @@ from ltspice.pipeline.value_editor import (
     ValueValidationError,
     apply_normal_mode_edits,
     rename_component_reference,
+    spice_line_from_parameters,
     validate_component_value,
     validate_metadata,
     validate_parameters,
@@ -386,6 +387,9 @@ class CanonicalMappingAndSafetyTests(unittest.TestCase):
         self.assertEqual(validate_component_value(capacitor, "12µF"), "12u")
         self.assertEqual(validate_parameters(inductor, {"ipk": "2A"}), {"ipk": "2"})
         self.assertEqual(validate_parameters(resolve_profile("I"), {"load": True}), {"load": "True"})
+        self.assertEqual(validate_parameters(resolve_profile("I"), {"load": False}), {})
+        self.assertEqual(validate_parameters(resolve_profile("SW"), {"off": "no"}), {})
+        self.assertEqual(spice_line_from_parameters(resolve_profile("SW"), {"off": "False"}), None)
         with self.assertRaises(ValueValidationError):
             validate_component_value(voltage, "SINE(not_a_number)")
         with self.assertRaises(ValueValidationError):
@@ -444,9 +448,15 @@ class CanonicalMappingAndSafetyTests(unittest.TestCase):
             source = Path(temp_dir) / "aliases.json"
             source.write_text(json.dumps(raw), encoding="utf-8")
             fixed, report, _original = canonicalize_source(source)
-        by_ref = {item["ref"]: item["kind"] for item in fixed["components"]}
-        self.assertEqual([by_ref[f"X{index}"] for index in range(1, len(aliases) + 1)], [normalize_kind(alias) for alias in aliases])
-        self.assertTrue(any(entry.endswith(".kind") for entry in report["ltspice_component_extensions_restored"]))
+        by_ref = {item["ref"]: item for item in fixed["components"]}
+        # The shared logical kind stays verbatim; the adapter records its
+        # selected backend profile beside it instead of rewriting the input.
+        self.assertEqual([by_ref[f"X{index}"]["kind"] for index in range(1, len(aliases) + 1)], aliases)
+        self.assertEqual(
+            [by_ref[f"X{index}"]["ltspice_profile"] for index in range(1, len(aliases) + 1)],
+            [normalize_kind(alias) for alias in aliases],
+        )
+        self.assertTrue(any(entry.endswith(".ltspice_profile") for entry in report["ltspice_component_extensions_restored"]))
 
     def test_cross_backend_pin_numbers_translate_before_native_wiring(self) -> None:
         circuit = _mapped_model_circuit()

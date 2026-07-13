@@ -58,6 +58,7 @@ class ComponentProfile:
     value_rule: str
     editable_parameters: tuple[str, ...]
     metadata_fields: tuple[str, ...]
+    model_bound_parameters: tuple[str, ...]
     model_key: str | None
     symbol_prefix: str | None = None
     canonical_pin_map: dict[str, str] | None = None
@@ -67,7 +68,15 @@ class ComponentProfile:
 
     @property
     def is_pseudo_component(self) -> bool:
-        return self.native_representation == "flag_0"
+        """Whether the logical component has no native SPICE instance.
+
+        Ground and interface markers are real members of the portable circuit
+        graph, but an LTspice netlist represents them as flags/labels rather
+        than device cards.  Keep that distinction explicit so an adapter never
+        pretends an external connector or power symbol is a simulated device.
+        """
+
+        return self.native_representation in {"flag_0", "virtual_terminal"}
 
     @property
     def pin_numbers(self) -> tuple[str, ...]:
@@ -150,7 +159,7 @@ def load_catalogue() -> dict[str, ComponentProfile]:
         if len(numbers) != len(set(numbers)):
             raise CatalogueError(f"Profile {kind} repeats a pin number.")
         support_state = str(raw_profile.get("support_state") or "")
-        if support_state not in {"native_simulation", "project_local_model", "render_only", "unsupported"}:
+        if support_state not in {"native_simulation", "project_local_model", "interface_only", "render_only", "unsupported"}:
             raise CatalogueError(f"Profile {kind} has unsupported support_state {support_state!r}.")
         default_pin_map: dict[str, str] = {}
         role_numbers: dict[str, list[str]] = {}
@@ -189,6 +198,7 @@ def load_catalogue() -> dict[str, ComponentProfile]:
             value_rule=str(raw_profile.get("value_rule") or ""),
             editable_parameters=tuple(str(x).lower() for x in raw_profile.get("editable_parameters", [])),
             metadata_fields=tuple(str(x).lower() for x in raw_profile.get("metadata_fields", [])),
+            model_bound_parameters=tuple(str(x).lower() for x in raw_profile.get("model_bound_parameters", [])),
             model_key=(str(raw_profile["model_key"]) if raw_profile.get("model_key") else None),
             symbol_prefix=(str(raw_profile["symbol_prefix"]) if raw_profile.get("symbol_prefix") is not None else None),
             canonical_pin_map=dict(sorted(default_pin_map.items())),
@@ -206,6 +216,11 @@ def load_catalogue() -> dict[str, ComponentProfile]:
             raise CatalogueError(f"Profile {kind} must have a project-local symbol name.")
         if profile.support_state == "project_local_model" and not profile.model_key:
             raise CatalogueError(f"Profile {kind} requires a model_key.")
+        unknown_model_parameters = set(profile.model_bound_parameters) - set(profile.editable_parameters)
+        if unknown_model_parameters:
+            raise CatalogueError(
+                f"Profile {kind} model_bound_parameters are not editable parameters: {', '.join(sorted(unknown_model_parameters))}."
+            )
         profiles[kind] = profile
     return profiles
 

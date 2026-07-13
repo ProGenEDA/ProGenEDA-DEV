@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 from typing import Any, Iterable, Protocol
 
-from .catalogue import ComponentProfile, model_for
+from .catalogue import ComponentProfile
 from .component_placer import PlacedComponent
 from .directive_validator import validate_analysis_directives
 from .geometry import GRID, Point, Segment
@@ -263,6 +263,15 @@ def _symbol_graphics(template: str) -> list[str]:
             "LINE Normal -44 28 -44 36",
             "LINE Normal -48 64 -40 64",
         ],
+        "regulator": [
+            "RECTANGLE Normal -48 16 48 80",
+            "LINE Normal -64 48 -48 48",
+            "LINE Normal 48 48 64 48",
+            "LINE Normal 0 80 0 96",
+            "LINE Normal -24 40 -8 40",
+            "LINE Normal -16 32 -16 48",
+            "LINE Normal 8 40 28 40",
+        ],
     }
     return list(graphics.get(template, []))
 
@@ -318,17 +327,31 @@ def write_symbol_assets(project_dir: Path, profiles: Iterable[ComponentProfile])
     return tuple(assets)
 
 
-def write_model_library(project_dir: Path, profiles: Iterable[ComponentProfile]) -> WrittenAsset | None:
-    models: dict[str, dict[str, str]] = {}
-    for profile in profiles:
-        model = model_for(profile)
-        if model is not None and profile.model_key:
-            models[profile.model_key] = model
+def write_model_library(project_dir: Path, components: Iterable[Any]) -> WrittenAsset | None:
+    """Write the exact selected model cards, including per-instance bindings.
+
+    ``SelectedComponent.model_text`` is already generated from profile-checked
+    structured parameters.  Do not reconstruct it from profile keys here:
+    doing so would silently discard a safe per-instance switch/LED edit.
+    """
+
+    models: dict[str, tuple[str, str]] = {}
+    for component in components:
+        text = getattr(component, "model_text", None)
+        if not text:
+            continue
+        name = str(component.value)
+        accuracy = str(getattr(component, "model_accuracy", None) or "unspecified")
+        existing = models.get(name.upper())
+        candidate = (text, accuracy)
+        if existing is not None and existing != candidate:
+            raise ValueError(f"Conflicting selected model definitions for {name!r}.")
+        models[name.upper()] = candidate
     if not models:
         return None
     lines = ["* ProGenEDA project-local model library", "* Each approximation is declared in the internal model-resolution report."]
-    for key, model in sorted(models.items()):
-        lines.extend(["", f"* {key}: {model.get('accuracy', 'unspecified')}", model["text"]])
+    for key, (text, accuracy) in sorted(models.items()):
+        lines.extend(["", f"* {key}: {accuracy}", text])
     path = project_dir / MODEL_LIBRARY_NAME
     _write_ascii(path, "\n".join(lines) + "\n")
     return WrittenAsset(path, sha256_file(path), "model_library")
@@ -417,7 +440,7 @@ def write_asc(
     flags_list = list(flags_by_native_anchor.values())
     profiles = [item.component.profile for item in placed_list]
     symbol_assets = write_symbol_assets(project_dir, profiles)
-    model_asset = write_model_library(project_dir, profiles)
+    model_asset = write_model_library(project_dir, [item.component for item in placed_list])
     directive_lines, directive_repairs = _directive_lines(directives, needs_models=model_asset is not None)
     fitted_sheet = _fit_sheet(placed_list, segments, flags_list, len(directive_lines), sheet)
     lines = [_line("Version", ASC_VERSION), _line("SHEET", *fitted_sheet)]

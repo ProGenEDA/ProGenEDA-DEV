@@ -71,7 +71,9 @@ class ControlledSourceGenerationTests(unittest.TestCase):
             source.write_text(json.dumps(raw), encoding="utf-8")
             fixed, _report, _original = canonicalize_source(source)
         kinds = {item["ref"]: item["kind"] for item in fixed["components"]}
-        self.assertEqual(kinds, {"E1": "VCVS", "G1": "VCCS"})
+        profiles = {item["ref"]: item["ltspice_profile"] for item in fixed["components"]}
+        self.assertEqual(kinds, {"E1": "E", "G1": "G"})
+        self.assertEqual(profiles, {"E1": "VCVS", "G1": "VCCS"})
 
     def test_generator_writes_independently_parseable_native_e_and_g_symbols(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

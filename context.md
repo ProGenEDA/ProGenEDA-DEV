@@ -11730,3 +11730,41 @@ Visible assistant response (verbatim):
 > | Ground | fixed LTspice node `0`; no electrical value or parameters to edit. |
 >
 > Pins, nets, and raw LTspice text are intentionally not normal-user edits, because changing them can break connectivity. Those belong to the admin/demo raw-JSON mode and must pass the full deterministic validators afterward.
+
+## 2026-07-14T03:23:24+05:00 — Canonical LTspice actual-circuit increment
+
+User request (verbatim):
+
+> start building towards actual circuits
+> make sure now we can generate any circuite in Ltspice using any of these components with any of the properties edited
+> and make sure it takes in the same json like kicad or proteus in memory
+
+Visible assistant progress (verbatim):
+
+> The calibrated LED forward-voltage field now changes the actual simulated drop (1.8 V and 3.0 V both matched in LTspice at the documented 10 mA reference). I found one final switch-serialization edge case from the oracle: false must be omitted, not emitted as `off=False`; I’m correcting that before the full regression run.
+
+> The deterministic regression suite is clean (62 passed; one optional oracle test remains opt-in). I’m doing one final installed-LTspice run of the real KiCad-shaped regulated supply, plus the switch false-state case already verified against the simulator, then I’ll publish this checkpoint.
+
+> The simulator audit is now broader than the original donor set: all current supported passive, source, diode/LED, transistor/MOS, switch, potentiometer, op-amp, regulator, and interface profiles were exercised through canonical JSON. I’m adding the last guardrail it surfaced—component-specific numeric bounds—so an edit that is syntactically SPICE-like but nonsensical for its profile is rejected before generation.
+
+> All supported source waveforms are now oracle-checked too: `EXP`, `SFFM`, and `PWL` each netlist and batch-simulate from the canonical JSON fields. I’m on the final full validation/publish pass.
+
+Implementation and verification:
+
+- LTspice now consumes the same canonical `progen-kicad-circuit-ir/v1` main JSON as the KiCad path. It preserves logical `kind`, pins, nets, project metadata, placement/routing intent, and records the LTspice profile as an overlay instead of rewriting the shared component identity.
+- Added canonical compatibility for source `spice_model`, AC `Value2`, standard KiCad passive display values/rating metadata, interface terminals, named aliases, LED labels, and an explicitly labelled LM7805 behavioural approximation.
+- Added safe model/property bindings for switch `Ron/Roff/Vt/Vh`, LED forward voltage at its documented reference point, parameterized op-amp and regulator properties, plus strict normal-mode numeric constraints and real boolean `off`/`load` semantics.
+- Canonical/native topology agreement is now enforced; strict wire routing fails rather than silently falling back. Pipeline failures identify the actual failed stage.
+- The checked-in canonical regulated 5 V KiCad supply completed static validation, installed LTspice 26 netlisting, batch simulation, and native connectivity validation. The full property matrix—including `EXP`, `SFFM`, and `PWL` sources—was exercised through canonical JSON and the installed oracle.
+- `PYTHONPATH=. python -m unittest discover -s ltspice/tests -v`: 63 passed, 1 optional oracle test skipped. `compileall` and `git diff --check` passed.
+
+Visible assistant final response (verbatim):
+
+> Done — LTspice now accepts the shared canonical v1 JSON used by KiCad, rather than an LTspice-only circuit format.
+>
+> - The supported catalogue can build arbitrary valid topologies using its documented native, project-local-model, and interface-terminal profiles. Normal edits are effective in the emitted simulator model, and invalid values are rejected deterministically.
+> - A real KiCad-shaped regulated 5 V supply now generates and passed installed LTspice 26 netlisting and batch simulation.
+> - The safe editor reports property effects/constraints, including true/false switch semantics, LED forward-voltage calibration, and parameterized op-amp/regulator models.
+> - Full regression: 63 passed, 1 optional oracle test skipped. Pushed on `main`.
+>
+> This is intentionally not a claim of arbitrary LTspice support: vendor macromodels, digital ICs, transformers/coupling, behavioral sources, and unsupported semiconductor variants still need explicit profiles rather than being guessed.

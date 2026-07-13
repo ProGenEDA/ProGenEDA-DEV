@@ -16,6 +16,27 @@ loose/canonical ProGenEDA JSON
 → user project ZIP + private evidence ZIP
 ```
 
+## Shared JSON contract
+
+The input is the same `progen-kicad-circuit-ir/v1` main JSON consumed by the
+KiCad flow. LTspice records its selected profile in private generation
+evidence (`ltspice_profile`) and retains the original logical `kind`, pins,
+nets, project metadata, blocks, layout intent, `at`/`rotation`, and routing
+request. It does not require callers to translate a circuit into an
+LTspice-only JSON schema.
+
+When both canonical `nets` and `expected_netlist` are explicit endpoint lists,
+they must agree exactly; the adapter rejects a contradiction rather than
+merging it into a different circuit. The command-line routing override is
+optional. Without it, `routing.mode` from the source JSON is honored; strict
+`wire` mode fails rather than quietly falling back to terminal labels.
+
+There is one deliberate boundary: legacy backend-specific Proteus/CircuitIR
+formats are not interchangeable with canonical v1 JSON. They need a
+deterministic migration into the shared contract first. Unsupported logical
+parts are rejected with their selection stage and reason; the backend never
+guesses a digital IC or vendor model.
+
 ## Run it
 
 From the repository root:
@@ -109,16 +130,48 @@ When `PULSE` uses its optional eighth `Ncycles` argument, it must be a
 positive integer; omit it for continuous pulses. This prevents LTspice from
 silently ignoring an invalid cycle count.
 
+The normal-mode field schema also marks each property effect:
+
+- `native_instance_or_subcircuit` is emitted on the primitive or project-local
+  subcircuit instance;
+- `native_model_card` is emitted into a deterministic per-instance `.model`
+  card (currently switch Ron/Roff/Vt/Vh and LED forward-voltage approximation);
+- `design_evidence_only` is safely retained for documentation but cannot be
+  mistaken for a simulation-changing field.
+
+Presence-only LTspice attributes such as `off` and current-source `load` have
+native boolean semantics: true emits the bare attribute, while false removes
+it. They are never serialized as invalid text such as `off=False`.
+
+The same schema also exposes deterministic numeric constraints to the UI:
+physical R/C/L/fuse values and positive model quantities must be greater than
+zero; parasitic areas/resistances and dropout quantities are nonnegative; a
+potentiometer wiper is in `[0, 1]`; the generic LED reference voltage is in
+`[0.2, 5] V`; and a switch must have `Roff > Ron`. This is intentionally a
+safe normal-mode contract rather than a claim that raw SPICE can never model
+an exotic ideal or negative-valued element.
+
+For example, a generic OPAMP exposes `a0`, `gain_bandwidth`, `slew_rate`, and
+`rout` through its parameterized, single-pole/slew-limited project-local model.
+The generic LED `forward_voltage` calibrates its labelled `Is` saturation
+current for the requested drop at 10 mA and 27 °C; LED colour remains design
+metadata. The model-resolution report records every approximation and model
+binding.
+
 ## Supported initial slice
 
-Native primitive simulation: `R`, `C`, `C_ELEC`, `L`, `VDC`, `VSIN`,
-`VPULSE`, `I`, `VCVS`/`E`, `VCCS`/`G`, `FUSE` (a documented low-resistance
+Native primitive simulation: `R`, `C`, `C_ELEC`/`CP`, `L`, `VDC`, `VAC`,
+`VSIN`, `VPULSE`, `I`/`IDC`/`IPULSE`/`ISIN`, `VCVS`/`E`, `VCCS`/`G`, `FUSE` (a documented low-resistance
 approximation), and `GND`. Controlled sources use the native four-terminal
 order `OUT+`, `OUT-`, `CTRL+`, `CTRL-`; normal-mode VCVS gain is dimensionless
 and VCCS transconductance accepts a bare siemens scalar (or an `S` suffix).
 
 Project-local model support: generic/named diode profiles, `LED`, `NPN`, `PNP`,
-`NMOS`, `PMOS`, `2N7000`, `BS170`, `SW`, `POT`, `OPAMP`, and `LM741`.
+`NMOS`, `PMOS`, `2N7000`, `BS170`, `SW`, `POT`, `OPAMP`, `LM741`, and an
+evidence-labelled behavioural `LM7805` approximation. `DC_BARREL_JACK`,
+`SCREW_TERMINAL_2`/`CONN_2`, `CONN_3`, `CONN_4`, `TESTPOINT`, and power-net
+symbols are supported as explicit interface-only canonical terminals: their
+nets become native LTspice labels, not fake simulated components.
 
 Named approximations are deliberately labelled as such in output reports; they
 are not claimed to be manufacturer-verified models. The portable archive owns

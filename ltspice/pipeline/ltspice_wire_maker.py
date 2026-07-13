@@ -360,6 +360,7 @@ def build_wire_plan(
     by_ref = {item.component.ref: item for item in placed}
     endpoint_points: dict[str, Point] = {}
     pseudo_endpoints: set[str] = set()
+    pseudo_representation_by_endpoint: dict[str, str] = {}
     all_pin_points: set[Point] = set()
     for item in placed:
         for pin in item.component.profile.pins:
@@ -368,6 +369,7 @@ def build_wire_plan(
             endpoint_points[endpoint] = point
             if item.component.profile.is_pseudo_component:
                 pseudo_endpoints.add(endpoint)
+                pseudo_representation_by_endpoint[endpoint] = str(item.component.profile.native_representation or "")
             else:
                 all_pin_points.add(point)
     unknown = sorted({endpoint for members in nets.values() for endpoint in members if endpoint not in endpoint_points})
@@ -387,15 +389,32 @@ def build_wire_plan(
         label = label_map[net]
         native_members: list[str] = []
         physical = [endpoint for endpoint in endpoints if endpoint not in pseudo_endpoints]
+        has_virtual_terminal = False
         for endpoint in endpoints:
             if endpoint in pseudo_endpoints:
-                if not _is_ground(net):
-                    raise ValueError(f"Ground pseudo-component endpoint {endpoint} is assigned to non-ground net {net!r}.")
-                virtual.append(VirtualNativeAnchor(endpoint, net, endpoint_points[endpoint], "0"))
+                representation = pseudo_representation_by_endpoint[endpoint]
+                if representation == "flag_0":
+                    if not _is_ground(net):
+                        raise ValueError(f"Ground pseudo-component endpoint {endpoint} is assigned to non-ground net {net!r}.")
+                    virtual.append(VirtualNativeAnchor(endpoint, net, endpoint_points[endpoint], "0"))
+                elif representation == "virtual_terminal":
+                    # A portable connector/power marker is not a SPICE
+                    # primitive, but it remains a real canonical endpoint.
+                    # Give it the same deterministic native label as physical
+                    # terminals so the independent parser can prove its net
+                    # membership without fabricating a device card.
+                    virtual.append(VirtualNativeAnchor(endpoint, net, endpoint_points[endpoint], label))
+                    has_virtual_terminal = True
+                else:  # Defensive guard against a future pseudo profile.
+                    raise ValueError(f"Pseudo-component endpoint {endpoint} has unknown native representation {representation!r}.")
             else:
                 native_members.append(endpoint)
         expected_native[net] = native_members
-        force_terminal = net.upper() in forced_terminal_names
+        # A virtual terminal needs a persisted native label.  A direct wire is
+        # electrically valid but LTspice may rename it to N00x in the exported
+        # netlist, leaving the interface marker unprovable.  Terminal labels
+        # make that contract exact and are still native LTspice connectivity.
+        force_terminal = net.upper() in forced_terminal_names or has_virtual_terminal
         can_try_direct = (
             requested_mode in {"wire", "combination"}
             and len(physical) == 2
@@ -413,6 +432,8 @@ def build_wire_plan(
             if route is not None:
                 segments.extend(route)
                 continue
+            if requested_mode == "wire":
+                raise ValueError(f"Strict wire routing could not prove a safe direct route for net {net!r}.")
             rejected.append({"net": net, "reason": "direct_route_intersects_existing_geometry", "fallback": "terminal_flags"})
         elif can_try_tree:
             physical_points = {endpoint_points[endpoint] for endpoint in physical}
@@ -420,6 +441,8 @@ def build_wire_plan(
             if route is not None:
                 segments.extend(route)
                 continue
+            if requested_mode == "wire":
+                raise ValueError(f"Strict wire routing could not prove a safe Manhattan tree for net {net!r}.")
             rejected.append(
                 {
                     "net": net,
@@ -431,6 +454,8 @@ def build_wire_plan(
             # An analysis V(net) expression must name a native LTspice node.
             # Direct wires lack a persisted label and netlist as simulator
             # generated Nxxx nodes, so retain deterministic terminal flags.
+            if requested_mode == "wire" and not _is_ground(net):
+                raise ValueError(f"Strict wire routing cannot use a required terminal label for net {net!r}.")
             rejected.append(
                 {
                     "net": net,
@@ -438,8 +463,8 @@ def build_wire_plan(
                     "fallback": "terminal_flags",
                 }
             )
-        elif requested_mode == "wire" and physical:
-            rejected.append({"net": net, "reason": "strict_wire_mode_requires_safe_tree_router", "fallback": "terminal_flags"})
+        elif requested_mode == "wire" and physical and not _is_ground(net):
+            raise ValueError(f"Strict wire routing cannot use terminal fallback for net {net!r}.")
         for endpoint in physical:
             point = endpoint_points[endpoint]
             ref, pin = endpoint.rsplit(".", 1)
@@ -457,7 +482,8 @@ def build_wire_plan(
             # still represented by real native ground flags at their anchors.
             pass
     for anchor in virtual:
-        flags.append(NetFlag(anchor.point, anchor.native_flag, anchor.logical_net, anchor.endpoint, "virtual_ground_anchor"))
+        purpose = "virtual_ground_anchor" if anchor.native_flag == "0" else "virtual_interface_anchor"
+        flags.append(NetFlag(anchor.point, anchor.native_flag, anchor.logical_net, anchor.endpoint, purpose))
     return WirePlan(
         mode=requested_mode,
         segments=tuple(segments),

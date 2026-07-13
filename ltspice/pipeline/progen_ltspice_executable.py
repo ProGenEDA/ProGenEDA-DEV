@@ -54,6 +54,19 @@ PROGRESS_POLICY = {
 }
 
 
+class PipelineStageFailure(RuntimeError):
+    """Attach one deterministic pipeline stage to a user-safe failure."""
+
+    def __init__(self, stage: str, cause: Exception):
+        self.stage = stage
+        self.cause = cause
+        super().__init__(str(cause))
+
+
+def _stage_failure(stage: str, cause: Exception) -> PipelineStageFailure:
+    return PipelineStageFailure(stage, cause)
+
+
 def _slug(value: object) -> str:
     return re.sub(r"[^a-z0-9_.-]+", "_", str(value).lower()).strip("._") or "run"
 
@@ -170,6 +183,7 @@ def _write_failure(
     error: Exception,
     *,
     timing_evidence: dict[str, Any] | None = None,
+    failed_stage: str = "pipeline",
 ) -> dict[str, Any]:
     failure_dir = run_dir / "failures" / _slug(source.stem)
     failure_dir.mkdir(parents=True, exist_ok=True)
@@ -177,6 +191,7 @@ def _write_failure(
         "schema": EXECUTABLE_SCHEMA,
         "source": str(source),
         "ok": False,
+        "failed_stage": failed_stage,
         "error": str(error),
     }
     if timing_evidence is not None:
@@ -247,7 +262,7 @@ def generate_one(
     source: Path,
     *,
     run_dir: Path,
-    routing_mode: str,
+    routing_mode: str | None,
     oracle: OracleCommand | None,
     reserved_artifact_ids: set[str] | None = None,
     event_callback: Callable[[dict[str, Any]], None] | None = None,
@@ -266,7 +281,10 @@ def generate_one(
         timing=timing,
         message="Validating shared ProGenEDA JSON.",
     )
-    circuit, input_report, original = canonicalize_source(source, routing_mode=routing_mode)
+    try:
+        circuit, input_report, original = canonicalize_source(source, routing_mode=routing_mode)
+    except Exception as exc:
+        raise _stage_failure("canonicalize_input", exc) from exc
     circuit_id = str(circuit.get("circuit_id") or temporary_id)
     if timing is not None:
         timing.set_circuit_id(circuit_id)
@@ -297,7 +315,10 @@ def generate_one(
         timing=timing,
         message="Resolving LTspice symbols, pins, models, and safe fields.",
     )
-    selected, selection_report = select_components(circuit)
+    try:
+        selected, selection_report = select_components(circuit)
+    except Exception as exc:
+        raise _stage_failure("select_components", exc) from exc
     write_json(stage_dir / "component-selection.json", selection_report)
     _stage(
         event_callback,
@@ -314,15 +335,21 @@ def generate_one(
     if isinstance(project, dict) and isinstance(project.get("analysis"), list):
         raw_directives.extend(project["analysis"])
     directives = [str(item.get("text") or "") if isinstance(item, dict) else str(item) for item in raw_directives]
-    analysis_reference_report = validate_analysis_references(
-        directives,
-        component_refs=[item.ref for item in selected],
-        sweepable_refs=[item.ref for item in selected if item.profile.reference_prefix in {"V", "I"}],
-        net_names=[str(name) for name in circuit.get("nets", {})] if isinstance(circuit.get("nets"), dict) else [],
-    )
+    try:
+        analysis_reference_report = validate_analysis_references(
+            directives,
+            component_refs=[item.ref for item in selected],
+            sweepable_refs=[item.ref for item in selected if item.profile.reference_prefix in {"V", "I"}],
+            net_names=[str(name) for name in circuit.get("nets", {})] if isinstance(circuit.get("nets"), dict) else [],
+        )
+    except Exception as exc:
+        raise _stage_failure("select_components", exc) from exc
     write_json(stage_dir / "analysis-reference-validation.json", analysis_reference_report)
 
-    native_circuit, pin_mapper_report = translate_circuit_pins(circuit, selected)
+    try:
+        native_circuit, pin_mapper_report = translate_circuit_pins(circuit, selected)
+    except Exception as exc:
+        raise _stage_failure("select_components", exc) from exc
     write_json(stage_dir / "native-pin-translation.json", pin_mapper_report)
     write_json(stage_dir / "main-input-native-pins.json", native_circuit)
 
@@ -335,7 +362,10 @@ def generate_one(
         timing=timing,
         message="Placing native LTspice symbols on the 16-unit grid.",
     )
-    placed, placement_report = place_components(native_circuit, selected)
+    try:
+        placed, placement_report = place_components(native_circuit, selected)
+    except Exception as exc:
+        raise _stage_failure("place_components", exc) from exc
     write_json(stage_dir / "placement.json", placement_report)
     _stage(
         event_callback,
@@ -356,11 +386,14 @@ def generate_one(
         timing=timing,
         message="Planning orthogonal wires and safe terminal labels.",
     )
-    wire_plan = build_wire_plan(
-        native_circuit,
-        placed,
-        force_terminal_nets=analysis_voltage_trace_nodes(directives),
-    )
+    try:
+        wire_plan = build_wire_plan(
+            native_circuit,
+            placed,
+            force_terminal_nets=analysis_voltage_trace_nodes(directives),
+        )
+    except Exception as exc:
+        raise _stage_failure("plan_connectivity", exc) from exc
     wire_plan_data = wire_plan.as_dict()
     write_json(stage_dir / "wire-plan.json", wire_plan_data)
     _stage(
@@ -373,7 +406,10 @@ def generate_one(
         message="Native connectivity plan generated.",
     )
 
-    native_directives, directive_net_report = translate_voltage_trace_labels(directives, wire_plan.label_map)
+    try:
+        native_directives, directive_net_report = translate_voltage_trace_labels(directives, wire_plan.label_map)
+    except Exception as exc:
+        raise _stage_failure("plan_connectivity", exc) from exc
     write_json(stage_dir / "analysis-net-label-translation.json", directive_net_report)
 
     _stage(
@@ -385,14 +421,17 @@ def generate_one(
         timing=timing,
         message="Writing deterministic ASC, ASY, and model assets.",
     )
-    writer_result = write_asc(
-        project_dir=project_dir,
-        project_name=str(native_circuit.get("project", {}).get("name") or native_circuit.get("circuit_name") or circuit_id),
-        placed=placed,
-        wire_segments=wire_plan.segments,
-        flags=wire_plan.flags,
-        directives=native_directives,
-    )
+    try:
+        writer_result = write_asc(
+            project_dir=project_dir,
+            project_name=str(native_circuit.get("project", {}).get("name") or native_circuit.get("circuit_name") or circuit_id),
+            placed=placed,
+            wire_segments=wire_plan.segments,
+            flags=wire_plan.flags,
+            directives=native_directives,
+        )
+    except Exception as exc:
+        raise _stage_failure("write_native_project", exc) from exc
     writer_report = writer_result.as_dict(project_dir)
     write_json(stage_dir / "native-writer-report.json", writer_report)
     _stage(
@@ -445,11 +484,14 @@ def generate_one(
         message="Recording optional LTspice oracle status.",
     )
     timed_oracle = _oracle_with_timing_deadline(oracle, timing)
-    simulation_report = (
-        run_external_oracle(writer_result.asc_path, oracle=timed_oracle, selected=selected, wire_plan=wire_plan)
-        if timed_oracle
-        else simulation_not_requested()
-    )
+    try:
+        simulation_report = (
+            run_external_oracle(writer_result.asc_path, oracle=timed_oracle, selected=selected, wire_plan=wire_plan)
+            if timed_oracle
+            else simulation_not_requested()
+        )
+    except Exception as exc:
+        raise _stage_failure("optional_simulation", exc) from exc
     write_json(stage_dir / "simulation-report.json", simulation_report)
     simulation_state = "failed" if simulation_report.get("status") in {"failed", "timeout"} else "completed"
     _stage(
@@ -522,11 +564,11 @@ def generate_one(
                 "completed",
                 message="Validated user project archive is ready.",
             )
-        except Exception:
+        except Exception as exc:
             _retract_user_artifact(run_dir, output_artifacts, output_id=artifact_id)
             output_artifacts = None
             (stage_dir / "output-artifacts.json").unlink(missing_ok=True)
-            raise
+            raise _stage_failure("package_artifacts", exc) from exc
     else:
         _stage(
             event_callback,
@@ -563,6 +605,25 @@ def generate_one(
         "final_validation": final_report,
         "output_artifacts": output_artifacts,
     }
+    if not final_report["ok"]:
+        stage_status = final_report.get("stage_status", {})
+        failed_stage = next(
+            (
+                stage
+                for stage in ("canonicalize_input", "select_components", "place_components", "validate_native_project", "optional_simulation")
+                if stage_status.get(
+                    {
+                        "canonicalize_input": "input",
+                        "select_components": "component_selection",
+                        "place_components": "placement",
+                        "validate_native_project": "native_connectivity",
+                        "optional_simulation": "simulation",
+                    }[stage]
+                ) in {"fail", "failed", "timeout"}
+            ),
+            "pipeline",
+        )
+        result["failed_stage"] = failed_stage
     if timing_report is not None:
         result["timing"] = timing_report
     write_json(base_dir / "result.json", result)
@@ -574,7 +635,7 @@ def run_executable(
     *,
     output_root: Path,
     label: str = "ltspice",
-    routing_mode: str = "combination",
+    routing_mode: str | None = None,
     oracle_command: Iterable[str] | None = None,
     oracle_timeout_seconds: int = 90,
     oracle_path_style: str = "native",
@@ -601,7 +662,7 @@ def run_executable(
     try:
         files = _source_files(source)
     except Exception as exc:
-        result = _write_failure(run_dir, source, exc)
+        result = _write_failure(run_dir, source, exc, failed_stage="source_discovery")
         results.append(result)
         _event(event_callback, event="stage", circuit_id=source.stem, stage="pipeline", percent=100, state="failed", message=str(exc))
         files = []
@@ -627,7 +688,27 @@ def run_executable(
             )
         except AnimationBudgetExceeded as exc:
             timing.stop()
-            result = _write_failure(run_dir, file, exc, timing_evidence=timing.evidence())
+            failed_stage = str(timing.evidence().get("active_stage") or "pipeline")
+            result = _write_failure(run_dir, file, exc, timing_evidence=timing.evidence(), failed_stage=failed_stage)
+        except PipelineStageFailure as exc:
+            timing.stop()
+            result = _write_failure(
+                run_dir,
+                file,
+                exc.cause,
+                timing_evidence=timing.evidence() if timing.enabled else None,
+                failed_stage=exc.stage,
+            )
+            _event(
+                event_callback,
+                event="stage",
+                circuit_id=file.stem,
+                stage=exc.stage,
+                percent=dict(STAGES).get(exc.stage, 100),
+                state="failed",
+                message=str(exc.cause),
+            )
+            _event(event_callback, event="stage", circuit_id=file.stem, stage="pipeline", percent=100, state="failed", message=str(exc.cause))
         except Exception as exc:
             timing.stop()
             result = _write_failure(
@@ -635,6 +716,7 @@ def run_executable(
                 file,
                 exc,
                 timing_evidence=timing.evidence() if timing.enabled else None,
+                failed_stage="pipeline",
             )
             _event(event_callback, event="stage", circuit_id=file.stem, stage="pipeline", percent=100, state="failed", message=str(exc))
         else:
@@ -644,7 +726,7 @@ def run_executable(
         "schema": EXECUTABLE_SCHEMA,
         "run_dir": str(run_dir),
         "source": str(source),
-        "routing_mode": routing_mode,
+        "routing_mode": routing_mode or "source_or_combination_default",
         "progress_policy": PROGRESS_POLICY,
         "input_count": len(results),
         "accepted_count": sum(1 for item in results if item.get("ok")),
@@ -673,7 +755,11 @@ def main() -> None:
     parser.add_argument("source", type=Path, help="One loose/canonical JSON file or a directory of JSON files.")
     parser.add_argument("--outdir", type=Path, default=Path("ltspice/examples"), help="Parent directory for a new immutable run.")
     parser.add_argument("--label", default="ltspice", help="Human-readable immutable run label.")
-    parser.add_argument("--routing-mode", choices=("wire", "terminal", "combination"), default="combination")
+    parser.add_argument(
+        "--routing-mode",
+        choices=("wire", "terminal", "combination"),
+        help="Optional LTspice routing override. Omit to honor routing.mode from the shared JSON.",
+    )
     parser.add_argument("--oracle-command", help="Optional shell-style LTspice command prefix; the executable adds -netlist and the ASC path.")
     parser.add_argument("--oracle-timeout", type=int, default=90)
     parser.add_argument("--oracle-path-style", choices=("native", "wine_z"), default="native", help="How the optional oracle receives generated ASC paths.")

@@ -15,8 +15,9 @@ from typing import Any
 
 from kicad.pipeline.input_json_validator_fixer import load_json_lenient, validate_and_fix_main_json
 
-from .catalogue import normalize_kind
+from .catalogue import CatalogueError, normalize_kind, resolve_profile
 from .directive_validator import directive_report
+from .value_editor import ValueValidationError, validate_component_value
 
 
 INPUT_ADAPTER_SCHEMA = "progen-ltspice-input-adapter/v0.1"
@@ -40,11 +41,11 @@ def _raw_component_extensions(raw: dict[str, Any]) -> tuple[dict[str, dict[str, 
             continue
         ref = str(component.get("ref") or component.get("id") or "").strip()
         if not ref:
-            if any(name in component for name in ("parameters", "spice_params", "metadata", "ltspice_at", "ltspice_orientation")):
+            if any(name in component for name in ("parameters", "spice_params", "metadata", "spice_model", "at", "rotation", "ltspice_at", "ltspice_orientation")):
                 warnings.append(f"Component {index} has LTspice-specific fields but no stable ref/id; fields were not restored.")
             continue
         if not re.fullmatch(r"[A-Za-z#][A-Za-z0-9_#-]*", ref):
-            if any(name in component for name in ("parameters", "spice_params", "metadata", "ltspice_at", "ltspice_orientation")):
+            if any(name in component for name in ("parameters", "spice_params", "metadata", "spice_model", "at", "rotation", "ltspice_at", "ltspice_orientation")):
                 warnings.append(f"Component {index} has LTspice-specific fields but unsafe ref/id {ref!r}; fields were not restored.")
             continue
         if ref in captured:
@@ -54,20 +55,27 @@ def _raw_component_extensions(raw: dict[str, Any]) -> tuple[dict[str, dict[str, 
         # The shared fixer deliberately knows only the cross-backend KiCad
         # catalogue, so several valid LTspice aliases (I, POT, C_ELEC, source
         # spellings, etc.) would otherwise be repaired into a connector or a
-        # different primitive. Preserve only an alias that resolves in the
-        # LTspice profile catalogue, keyed by a stable safe ref; selector/pin
-        # validation still decides whether it can actually be emitted.
+        # different primitive.  Record the resolved backend profile *beside*
+        # the portable kind; adapters must not rewrite a user's canonical
+        # component identity merely to choose an LTspice implementation.
         raw_kind = next((component.get(name) for name in ("kind", "type", "name") if component.get(name) is not None), None)
         profile_kind = normalize_kind(raw_kind) if raw_kind is not None else ""
         if profile_kind:
-            extension["kind"] = profile_kind
+            extension["ltspice_profile"] = profile_kind
+        for name in ("kind", "type"):
+            if name in component:
+                extension[name] = deepcopy(component[name])
         if "parameters" in component:
             extension["parameters"] = deepcopy(component["parameters"])
         elif "spice_params" in component:
             extension["spice_params"] = deepcopy(component["spice_params"])
         if "metadata" in component:
             extension["metadata"] = deepcopy(component["metadata"])
-        for name in ("ltspice_at", "ltspice_orientation"):
+        # These are portable placement hints.  The LTspice placer treats
+        # generic ``at`` as an ordering hint and only ``ltspice_at`` as native
+        # ASC geometry, so preserving both cannot accidentally reinterpret a
+        # KiCad coordinate as an LTspice coordinate.
+        for name in ("spice_model", "at", "rotation", "ltspice_at", "ltspice_orientation"):
             if name in component:
                 extension[name] = deepcopy(component[name])
         if extension:
@@ -97,16 +105,182 @@ def _restore_component_extensions(fixed: dict[str, Any], captured: dict[str, dic
     return restored, sorted(unmatched)
 
 
-def canonicalize_source(source: Path, *, routing_mode: str = "combination") -> tuple[dict[str, Any], dict[str, Any], bytes]:
+def _canonical_expected_netlist_agrees(raw: dict[str, Any]) -> None:
+    """Reject contradictory canonical topology instead of merging it away.
+
+    The universal legacy fixer is intentionally helpful for loose JSON, but a
+    declared v1 ``nets`` plus ``expected_netlist`` is an invariant: adapters
+    must not choose which one is true.  Only enforce this when both sections
+    are already explicit endpoint lists; old descriptive loose inputs retain
+    the existing repair path.
+    """
+
+    raw_nets = raw.get("nets")
+    expected = raw.get("expected_netlist")
+    if not isinstance(raw_nets, dict) or not isinstance(expected, dict) or not isinstance(expected.get("nets"), list):
+        return
+    if not all(isinstance(members, list) for members in raw_nets.values()):
+        return
+    expected_nets: dict[str, list[str]] = {}
+    for item in expected["nets"]:
+        if not isinstance(item, dict) or not isinstance(item.get("members"), list) or not item.get("name"):
+            return
+        name = str(item["name"])
+        if name in expected_nets:
+            raise ValueError(f"Canonical expected_netlist repeats net {name!r}.")
+        expected_nets[name] = [str(member) for member in item["members"]]
+    actual = {str(name): [str(member) for member in members] for name, members in raw_nets.items()}
+    if set(actual) != set(expected_nets):
+        raise ValueError("Canonical nets and expected_netlist name sets disagree; refusing to mutate declared topology.")
+    for name in sorted(actual):
+        if set(actual[name]) != set(expected_nets[name]):
+            raise ValueError(f"Canonical net {name!r} disagrees with expected_netlist; refusing to mutate declared topology.")
+
+
+def _metadata_object(component: dict[str, Any]) -> dict[str, Any]:
+    value = component.get("metadata")
+    if not isinstance(value, dict):
+        value = {}
+        component["metadata"] = value
+    return value
+
+
+def _adapt_shared_component_values(fixed: dict[str, Any]) -> list[dict[str, str]]:
+    """Normalize only unambiguous KiCad display conventions into LTspice data.
+
+    This is a compatibility overlay on the shared JSON, not a second input
+    format.  Every rewrite is reported, limited to a profile we own, and
+    leaves ambiguous display prose to the strict selector.
+    """
+
+    adaptations: list[dict[str, str]] = []
+    components = fixed.get("components")
+    if not isinstance(components, list):
+        return adaptations
+    for component in components:
+        if not isinstance(component, dict):
+            continue
+        ref = str(component.get("ref") or component.get("id") or "")
+        try:
+            profile = resolve_profile(component.get("ltspice_profile") or component.get("kind") or component.get("type") or "")
+        except CatalogueError:
+            continue
+        raw_value = str(component.get("value") or "").strip()
+
+        # Earlier KiCad fixtures carry the actual source expression separately
+        # as spice_model while their display Value is VSIN/VPULSE. Preserve it
+        # and let the same strict source validator handle it later.
+        legacy_model = str(component.get("spice_model") or "").strip()
+        if legacy_model and profile.value_rule == "source_expression":
+            component["value"] = legacy_model
+            adaptations.append({"ref": ref, "kind": profile.kind, "field": "spice_model", "action": "used_as_source_value"})
+            raw_value = legacy_model
+
+        # A KiCad VAC's visible value is its AC magnitude.  LTspice represents
+        # that deterministically as a zero DC Value plus Value2 AC magnitude.
+        if profile.kind == "VAC" and raw_value:
+            ac_match = re.fullmatch(r"AC\s+(.+)", raw_value, flags=re.IGNORECASE)
+            magnitude = ac_match.group(1) if ac_match else raw_value
+            parameters = component.get("parameters")
+            if not isinstance(parameters, dict):
+                parameters = {}
+                component["parameters"] = parameters
+            if "ac" not in {str(key).lower() for key in parameters}:
+                parameters["ac"] = magnitude
+            component["value"] = "0"
+            adaptations.append({"ref": ref, "kind": profile.kind, "field": "value", "action": "moved_ac_magnitude_to_parameters.ac"})
+            raw_value = "0"
+
+        # Common KiCad display fields combine an electrical value and a
+        # deterministic rating, e.g. "100uF, 25V".  Only split one comma and
+        # only retain it if the electrical prefix passes our existing value
+        # validator.  This avoids treating arbitrary prose as a simulation
+        # property.
+        if profile.kind in {"R", "C", "C_ELEC", "L"} and "," in raw_value:
+            electrical, rating = (part.strip() for part in raw_value.split(",", 1))
+            try:
+                normalized = validate_component_value(profile, electrical)
+            except ValueValidationError:
+                normalized = ""
+            if normalized and rating:
+                component["value"] = normalized
+                metadata = _metadata_object(component)
+                metadata_name = {
+                    "R": "power_rating",
+                    "C": "voltage_rating",
+                    "C_ELEC": "voltage_rating",
+                    "L": "current_rating",
+                }[profile.kind]
+                metadata.setdefault(metadata_name, rating)
+                adaptations.append({"ref": ref, "kind": profile.kind, "field": "value", "action": f"split_display_value_to_{metadata_name}"})
+                raw_value = normalized
+
+        # The portable KiCad component value is sometimes a descriptive LED
+        # label.  The selected generic LED model remains explicit; a standard
+        # colour word is retained as design metadata rather than being
+        # misrepresented as an electrical model parameter.
+        if profile.kind == "LED":
+            try:
+                validate_component_value(profile, raw_value)
+            except ValueValidationError:
+                metadata = _metadata_object(component)
+                colour = next(
+                    (name for name in ("red", "green", "blue", "yellow", "white", "amber", "orange") if re.search(rf"\b{name}\b", raw_value, flags=re.IGNORECASE)),
+                    None,
+                )
+                if colour:
+                    metadata.setdefault("color", colour)
+                component["value"] = profile.default_value
+                adaptations.append({"ref": ref, "kind": profile.kind, "field": "value", "action": "replaced_display_label_with_generic_led_model"})
+
+        # KiCad labels commonly expand a locked named model ("LM7805 Voltage
+        # Regulator").  It is safe to normalize only when that text begins
+        # with the selected profile's public kind/alias; unrelated model names
+        # still fail rather than silently substituting a device.
+        if profile.value_rule == "model_name":
+            model_tokens = [profile.kind, *profile.aliases]
+            upper_value = raw_value.upper()
+            if any(upper_value.startswith(token.upper()) for token in model_tokens):
+                try:
+                    validate_component_value(profile, raw_value)
+                except ValueValidationError:
+                    component["value"] = profile.default_value
+                    adaptations.append({"ref": ref, "kind": profile.kind, "field": "value", "action": "normalized_profile_display_label"})
+    return adaptations
+
+
+def _restore_portable_sections(fixed: dict[str, Any], raw: dict[str, Any]) -> list[str]:
+    """Retain backend-neutral contract metadata through the legacy fixer."""
+
+    restored: list[str] = []
+    for name in ("main_json_contract", "compiler", "layout_intent", "stage_contracts", "generation_variation"):
+        if name in raw:
+            fixed[name] = deepcopy(raw[name])
+            restored.append(name)
+    raw_project = raw.get("project")
+    if isinstance(raw_project, dict):
+        project = fixed.setdefault("project", {})
+        if isinstance(project, dict):
+            for name, value in raw_project.items():
+                if name not in {"analysis"}:
+                    project[name] = deepcopy(value)
+            restored.append("project.metadata")
+    return restored
+
+
+def canonicalize_source(source: Path, *, routing_mode: str | None = None) -> tuple[dict[str, Any], dict[str, Any], bytes]:
     if source.suffix.lower() != ".json":
         raise ValueError(f"LTspice backend accepts canonical/loose ProGenEDA JSON, not {source.name!r}.")
     original = source.read_bytes()
     raw = load_json_lenient(source)
     if not isinstance(raw, dict):
         raise ValueError("LTspice input JSON must be an object.")
+    _canonical_expected_netlist_agrees(raw)
     extensions, extension_warnings = _raw_component_extensions(raw)
     fixed, fixer_report = validate_and_fix_main_json(raw, routing_mode=routing_mode, source=str(source))
     restored_extensions, unmatched_extensions = _restore_component_extensions(fixed, extensions)
+    restored_portable_sections = _restore_portable_sections(fixed, raw)
+    value_adaptations = _adapt_shared_component_values(fixed)
     # Analysis directives describe a requested simulator run, not circuit
     # connectivity. The older universal fixer understandably does not retain
     # them, so preserve this backend-neutral optional section verbatim while
@@ -128,6 +302,8 @@ def canonicalize_source(source: Path, *, routing_mode: str = "combination") -> t
         "contract": "The unchanged logical circuit JSON is shared with all ProGenEDA backends; backend selection is executable-owned.",
         "ltspice_component_extensions_restored": restored_extensions,
         "ltspice_component_extensions_unmatched": unmatched_extensions,
+        "portable_sections_restored": restored_portable_sections,
+        "canonical_value_adaptations": value_adaptations,
         "warnings": extension_warnings,
         "analysis_directives": directives_report,
     }

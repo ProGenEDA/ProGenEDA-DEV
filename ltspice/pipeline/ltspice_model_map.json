@@ -7,6 +7,12 @@
       "accuracy": "generic approximation",
       "text": ".model PROGEN_DIODE D(Is=1e-14 N=1 Rs=0.1 Cjo=2p)"
     },
+    "PROGEN_1N4001_APPROX": {
+      "support_state": "project_local_model",
+      "redistributability": "authored_approximation",
+      "accuracy": "not a manufacturer-verified 1N4001 model",
+      "text": ".model PROGEN_1N4001_APPROX D(Is=14n Rs=34m N=1.98 Cjo=26p M=0.333 Vj=0.39 Bv=50 Ibv=5u Tt=2.5u)"
+    },
     "PROGEN_1N4148_APPROX": {
       "support_state": "project_local_model",
       "redistributability": "authored_approximation",
@@ -19,10 +25,22 @@
       "accuracy": "not a manufacturer-verified 1N4007 model",
       "text": ".model PROGEN_1N4007_APPROX D(Is=14n Rs=34m N=1.98 Cjo=26p M=0.333 Vj=0.39 Bv=1000 Ibv=5u Tt=2.5u)"
     },
+    "PROGEN_SCHOTTKY": {
+      "support_state": "project_local_model",
+      "redistributability": "authored_generic_model",
+      "accuracy": "generic Schottky diode approximation; not a vendor model",
+      "text": ".model PROGEN_SCHOTTKY D(Is=1e-8 N=1.05 Rs=0.08 Cjo=30p Eg=0.69)"
+    },
+    "PROGEN_ZENER_5V1_APPROX": {
+      "support_state": "project_local_model",
+      "redistributability": "authored_generic_model",
+      "accuracy": "generic nominal 5.1 V Zener/TVS approximation; not a rated protection-device model",
+      "text": ".model PROGEN_ZENER_5V1_APPROX D(Is=1e-14 N=1.5 Rs=2 Bv=5.1 Ibv=5m Cjo=100p)"
+    },
     "PROGEN_LED_APPROX": {
       "support_state": "project_local_model",
       "redistributability": "authored_generic_model",
-      "accuracy": "generic LED approximation; colour is metadata only",
+      "accuracy": "generic LED approximation; colour is metadata only and forward_voltage calibrates Is at 10mA and 27C",
       "text": ".model PROGEN_LED_APPROX D(Is=1e-18 N=2 Rs=10 Cjo=5p Eg=2.1)"
     },
     "PROGEN_NPN": {
@@ -76,14 +94,20 @@
     "PROGEN_OPAMP": {
       "support_state": "project_local_model",
       "redistributability": "authored_generic_subcircuit",
-      "accuracy": "idealized five-pin operational amplifier approximation",
-      "text": ".subckt PROGEN_OPAMP INP INM VP VM OUT\nEGAIN OUT 0 VALUE={limit(1e5*(V(INP)-V(INM)),V(VM)+0.2,V(VP)-0.2)}\nRout OUT 0 1Meg\n.ends PROGEN_OPAMP"
+      "accuracy": "single-pole, slew-limited five-pin operational amplifier approximation; not a vendor macromodel",
+      "text": ".subckt PROGEN_OPAMP INP INM VP VM OUT params: A0=100k GAIN_BANDWIDTH=1Meg SLEW_RATE=10Meg ROUT=1Meg\n.param _CDOM={A0/(2*pi*GAIN_BANDWIDTH)}\nEOPEN NOPEN 0 INP INM {A0}\nGDOM 0 NPOLE VALUE={limit(V(NOPEN)-V(NPOLE),-SLEW_RATE*_CDOM,SLEW_RATE*_CDOM)}\nCDOM NPOLE 0 {_CDOM}\nRDC NPOLE 0 1T\nECLAMP NDRIVE 0 VALUE={limit(V(NPOLE),V(VM)+0.2,V(VP)-0.2)}\nROUT NDRIVE OUT {ROUT}\nRLEAK OUT 0 1G\n.ends PROGEN_OPAMP"
     },
     "PROGEN_LM741_APPROX": {
       "support_state": "project_local_model",
       "redistributability": "authored_approximation",
       "accuracy": "generic op-amp approximation; it is not an LM741 vendor macromodel",
       "text": ".subckt PROGEN_LM741_APPROX INP INM VP VM OUT\nEGAIN OUT 0 VALUE={limit(2e5*(V(INP)-V(INM)),V(VM)+1,V(VP)-1)}\nRout OUT 0 75\nCdom OUT 0 30p\n.ends PROGEN_LM741_APPROX"
+    },
+    "PROGEN_LM7805_APPROX": {
+      "support_state": "project_local_model",
+      "redistributability": "authored_approximation",
+      "accuracy": "behavioral three-pin 5 V regulator approximation; it is not a vendor LM7805 macromodel",
+      "text": ".subckt PROGEN_LM7805_APPROX IN GND OUT params: VOUT=5 DROPOUT=2 ROUT=0.1\nEREG NREG GND VALUE={limit(V(IN,GND)-DROPOUT,0,VOUT)}\nROUT NREG OUT {ROUT}\nRLEAK OUT GND 1G\n.ends PROGEN_LM7805_APPROX"
     }
   }
 }

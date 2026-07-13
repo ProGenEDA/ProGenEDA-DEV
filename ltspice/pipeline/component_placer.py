@@ -199,7 +199,7 @@ def place_components(circuit: dict[str, Any], selected: list[SelectedComponent])
             warnings.append(f"{item.ref}.at is not native LTspice geometry; placer chose a safe grid position.")
             requested = None
         if requested is None:
-            anchor = _default_ground_anchor(item, circuit, placed_by_ref)
+            anchor = _default_ground_anchor(item, circuit, placed_by_ref) if item.profile.native_representation == "flag_0" else None
             if anchor is not None:
                 requested = (anchor.x, anchor.y)
             else:

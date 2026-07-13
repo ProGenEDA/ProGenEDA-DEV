@@ -17,6 +17,14 @@ def expected_symbol_attributes(item: PlacedComponent) -> dict[str, str]:
 
     profile = item.component.profile
     parameters = dict(item.component.parameters)
+    # Some LTspice primitives (notably S switches and diode model cards) take
+    # electrical fields on a ``.model`` card, not on the instance SpiceLine.
+    # The selector has already materialized those profile-whitelisted values
+    # into ``SelectedComponent.model_text``.  Repeating them on the instance
+    # would make LTspice warn about an unknown parameter and would undermine
+    # the deterministic oracle contract.
+    for name in profile.model_bound_parameters:
+        parameters.pop(name, None)
     value = item.component.value
     value2: str | None = None
     if profile.value_rule == "source_expression":

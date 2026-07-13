@@ -37,6 +37,30 @@ than treated as valid just because an LTspice batch process exits successfully.
 - A generated circuit containing 20 passive R/L/C components plus source and
   ground passed static validation, LTspice netlisting, batch simulation, and
   exported-netlist connectivity validation.
+- A canonical transient source fixture passed installed LTspice 26 netlisting
+  and batch simulation for validated `EXP`, `SFFM`, and `PWL` fields; its
+  exported source cards preserved each waveform form exactly.
+
+## Shared-canonical circuit evidence
+
+The LTspice adapter consumes canonical `progen-kicad-circuit-ir/v1` input
+without an LTspice-only translation file. The checked-in KiCad regulated 5 V
+power-supply JSON is a regression target: its `100uF, 25V` display values are
+split deterministically into simulation value plus design rating, its barrel
+jack/terminal/power symbols remain interface-only graph members, and its
+LM7805 resolves to an explicitly labelled project-local behavioural
+approximation. The generated project passed the installed LTspice 26.0.2.1
+netlist oracle.
+
+The generic OPAMP's `a0`, `gain_bandwidth`, `slew_rate`, and `rout` parameters
+also passed installed LTspice 26 `.op` and transient checks. The transient
+fixture confirmed that the slew-rate parameter changes the output ramp, rather
+than merely appearing in an instance line. Switch Ron/Roff/Vt/Vh and LED
+forward-voltage (10 mA, 27 °C `Is` calibration) bindings are emitted as
+deterministic per-instance model cards and remain covered by static
+model-library validation. A false `off`/`load` value is omitted from the native
+instance, while true emits LTspice's required bare presence-only attribute;
+the false-switch `.op` case passed installed LTspice 26 validation.
 
 The backend is still JSON-first. A future ASC importer may normalize raw donor
 layout and source syntax, but it must not bypass the same value, pin,

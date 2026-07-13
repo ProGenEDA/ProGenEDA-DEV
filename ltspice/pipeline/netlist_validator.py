@@ -8,7 +8,6 @@ from pathlib import Path
 import re
 from typing import Any, Iterable
 
-from .catalogue import model_for
 from .component_placer import PlacedComponent
 from .directive_validator import DirectiveValidationError, validate_analysis_references, validate_analysis_directives
 from .geometry import Point
@@ -185,30 +184,29 @@ def _validate_model_library(
     warnings: list[str],
 ) -> dict[str, dict[str, Any]]:
     expected: dict[str, ModelDefinition] = {}
-    profile_by_model: dict[str, list[PlacedComponent]] = {}
+    component_by_model: dict[str, list[PlacedComponent]] = {}
     for item in physical:
-        profile = item.component.profile
-        if not profile.model_key:
+        component = item.component
+        profile = component.profile
+        if not component.model_text:
             continue
-        model = model_for(profile)
-        assert model is not None
         try:
-            definitions = _parse_model_definitions(model["text"], source=f"catalogue model {profile.model_key}")
+            definitions = _parse_model_definitions(component.model_text, source=f"selected model {component.value}")
         except ValueError as exc:
             errors.append(str(exc))
             continue
-        key = profile.model_key.upper()
+        key = component.value.upper()
         expected_main = definitions.get(key)
         if expected_main is None:
-            errors.append(f"Catalogue model {profile.model_key!r} has no matching model/subcircuit header.")
+            errors.append(f"Selected model {component.value!r} has no matching model/subcircuit header.")
         for name, definition in definitions.items():
             existing = expected.get(name)
             if existing is not None and existing != definition:
                 errors.append(f"Selected catalogue models conflict on nested definition {definition.name!r}.")
             expected[name] = definition
-        profile_by_model.setdefault(key, []).append(item)
-        if "approximation" in model.get("accuracy", "").lower():
-            warnings.append(f"{profile.kind}: {model['accuracy']}.")
+        component_by_model.setdefault(key, []).append(item)
+        if component.model_accuracy and "approximation" in component.model_accuracy.lower():
+            warnings.append(f"{profile.kind}: {component.model_accuracy}.")
     if not expected:
         if model_path.exists():
             warnings.append("Unused project-local model library is present.")
@@ -233,7 +231,7 @@ def _validate_model_library(
             continue
         if parsed != definition:
             errors.append(f"Model definition {definition.name!r} header or body digest differs from the selected catalogue model.")
-    for model_name, items in profile_by_model.items():
+    for model_name, items in component_by_model.items():
         definition = actual.get(model_name)
         if definition is None:
             continue
@@ -325,7 +323,7 @@ def validate_native_netlist(
             if endpoint not in resolved:
                 errors.append(f"{ref} does not expose resolved native endpoint {endpoint}.")
 
-    needs_models = [item.component.profile for item in physical if item.component.profile.model_key]
+    needs_models = [item.component for item in physical if item.component.model_text]
     _validate_directives(
         document,
         needs_models=bool(needs_models),
