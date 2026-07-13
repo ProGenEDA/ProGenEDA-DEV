@@ -2130,3 +2130,36 @@ every final-address suffix, terminal contact, nonzero WIRE, exact component
 only the 7447 uniform scale route through 15 components. It does not relax the
 default one-component emission boundary, authorize a mixed stream, or allow a
 new family to reuse 7447's terminal-leading metadata normalization.
+
+### 2026-07-14 DIL16 counter terminal-leading contract
+
+`74HC160` and `74HC192` use the same generic catalogue capability as a
+terminal-leading component stream, but their profile facts are independent:
+
+`14 terminal records -> separator -> one live component packet -> 14 WIREs -> explicit FF`.
+
+The shared terminal placer reads each component's relative pin geometry,
+left/right orientation, donor terminal-record order, WIRE/link order, and
+end-relative `0100` link slot from the catalogue. It then computes the current
+pin location from the placed component anchor, snaps the terminal attaching
+edge to the Proteus grid one step outward, emits a nonzero short WIRE back to
+the exact physical pin, and allocates both terminal and component link suffixes
+from the final `ROOT.DSN` WIRE address. No counter-specific terminal emitter
+exists.
+
+Both donors show zero-length WIREs. They are accepted only as byte grammar,
+orientation, link-slot, and pin-location evidence; zero-length output is not
+accepted for this route. The locked component placer retains a generator-only
+trailing byte in each raw group. The profile-gated terminal-leading path removes
+only that extra raw tail—not the live component tail—before appending WIREs.
+This protects each packet boundary and keeps all end-relative link fields
+valid when a placed reference has a different width than the donor reference.
+
+The MVP-proven uniform limit is 15 components per family: 1x staged loader
+gates, then 9x and 15x active cold-open/cold-reopen gates have passed for both
+families. This is a tested operating limit, not a fundamental capacity claim.
+Mixed terminalization is intentionally deferred until every component group has
+completed its individual 1x/9x/15x route. The 74HC192 source donor text calls
+the CPU input `UP PIN 9`, but its physical link is pin 5; the catalogue keeps
+the donor byte geometry/order and uses the user-verified electrical identity
+`UP PIN 5`.

@@ -4,7 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from proteusgen.component_placer import generate_component_placement_project, load_component_aliases
+from proteusgen.component_placer import (
+    NEW_COMPONENT_MEGA_DONOR,
+    generate_component_placement_project,
+    load_component_aliases,
+)
 from proteusgen.component_catalog import load_component_catalog
 from proteusgen.component_beautifier import (
     layout_coordinate_pairs,
@@ -13,7 +17,10 @@ from proteusgen.component_beautifier import (
 from proteusgen.pdsprj import read_internal_file
 from proteusgen.component_terminal_placer import (
     PROTEUS_TERMINAL_GRID,
+    _bidir_label_records,
     _extract_object_chunk,
+    _object_chunk_absolute_start,
+    _terminal_contact_xy,
     _wire_rows_from_chunk,
     attach_catalogue_pin_bidir_terminals_to_project,
     analyse_terminalized_donor_pin_geometry,
@@ -747,6 +754,216 @@ def test_4027_staged_terminal_contact_gate_is_dsn_only_and_monotonic(tmp_path) -
     assert complete_chunk.count(b"$TERBIDIR") == 14
     assert complete_chunk.count(b"\x7fWIRE") == 14
     assert complete_chunk.endswith(b"\xff")
+
+
+@pytest.mark.parametrize("family", ["74HC160", "74HC192"])
+def test_dil16_counter_terminal_leading_stages_preserve_active_pin_links(
+    tmp_path: Path,
+    family: str,
+) -> None:
+    """Counter profiles use one shared staged route with nonzero active wires."""
+
+    base = tmp_path / f"{family}_1x_no_terminal.pdsprj"
+    native = tmp_path / f"{family}_1x_native_contact.pdsprj"
+    grid = tmp_path / f"{family}_1x_grid_contact.pdsprj"
+    active = tmp_path / f"{family}_1x_catalogue_terminal.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(NEW_COMPONENT_MEGA_DONOR),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    native_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        native,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="native_pin_contact",
+    )
+    grid_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        grid,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="grid_contact",
+    )
+    active_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        active,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    catalog = load_component_catalog()
+    profile = catalog.get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["clean_packet_attachment_order"] == (
+        "terminal_leading_component_then_wires"
+    )
+    assert geometry["strip_component_placer_finalizer_before_terminal_leading_wires"]
+    assert geometry["wire_record_encoding"] == "catalogue_leading_separator"
+    assert geometry["object_stream_finalizer"] == "append_explicit_single_ff"
+
+    assert placement.valid
+    for report in (native_report, grid_report):
+        assert report["valid"]
+        assert report["terminal_count_added"] == 14
+        assert report["wire_count_added"] == 0
+    assert native_report["terminal_grid_alignment_valid"] is False
+    assert grid_report["terminal_grid_alignment_valid"] is True
+    assert active_report["valid"]
+    assert active_report["terminal_count_added"] == 14
+    assert active_report["wire_count_added"] == 14
+    assert active_report["terminal_grid_alignment_valid"]
+    assert active_report["wire_path_contacts_valid"]
+    assert active_report["terminal_suffix_links_valid"]
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in active_report["wire_path_contact_checks"]
+    )
+
+    dsn = read_internal_file(active, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = _bidir_label_records(chunk)
+    wires = _wire_rows_from_chunk(
+        chunk,
+        chunk_start=_object_chunk_absolute_start(dsn),
+    )
+    terminal_suffixes = {int(row["suffix"]) for row in terminals}
+    expected_labels = [
+        geometry["pins"][pin]["donor_terminal_label"]
+        for pin in geometry["donor_terminal_record_order"]
+    ]
+    assert [row["label"] for row in terminals] == expected_labels
+    assert len(terminals) == len(wires) == 14
+    assert all(
+        _terminal_contact_xy(row)[0] % PROTEUS_TERMINAL_GRID == 0
+        and _terminal_contact_xy(row)[1] % PROTEUS_TERMINAL_GRID == 0
+        for row in terminals
+    )
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in wires
+    )
+    chunk_start = _object_chunk_absolute_start(dsn)
+    assert all(
+        int(row["suffix"])
+        == (chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
+        for row in wires
+    )
+
+    group = placement.selected_groups[0]
+    marker = b"\xff" + bytes((len(group.key),)) + group.key.encode("ascii")
+    component_start = chunk.index(marker)
+    component_end = min(int(row["marker_offset"]) - 24 for row in wires)
+    # The original one-byte generator tail is consumed. The retained live
+    # packet is exactly donor-width plus the placed reference-width delta.
+    assert component_end - component_start == 445 + len(group.key) - len("U1")
+    for pin, pin_geometry in geometry["pins"].items():
+        position = component_end + int(
+            pin_geometry["component_link_offset_from_component_end"]
+        )
+        suffix = int.from_bytes(chunk[position : position + 2], "little")
+        assert suffix in terminal_suffixes, pin
+        assert chunk[position + 2 : position + 4] == bytes.fromhex(
+            pin_geometry["component_link_trailer"]
+        )
+    assert chunk.endswith(b"\xff")
+    base_cdb = read_internal_file(base, "ROOT.CDB")
+    assert read_internal_file(native, "ROOT.CDB") == base_cdb
+    assert read_internal_file(grid, "ROOT.CDB") == base_cdb
+    assert read_internal_file(active, "ROOT.CDB") == base_cdb
+
+
+@pytest.mark.parametrize(
+    ("family", "count"),
+    [
+        ("74HC160", 9),
+        ("74HC160", 15),
+        ("74HC192", 9),
+        ("74HC192", 15),
+    ],
+)
+def test_dil16_counter_scales_keep_all_grid_short_wire_attachment_units(
+    tmp_path: Path,
+    family: str,
+    count: int,
+) -> None:
+    """Every scaled counter stays within its per-component shared profile."""
+
+    base = tmp_path / f"{family}_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"{family}_{count}x_catalogue_terminal.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(NEW_COMPONENT_MEGA_DONOR),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
+    )
+
+    expected = 14 * count
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = _bidir_label_records(chunk)
+    wires = _wire_rows_from_chunk(
+        chunk,
+        chunk_start=_object_chunk_absolute_start(dsn),
+    )
+    suffixes = [int(row["suffix"]) for row in wires]
+    assert placement.valid
+    assert len(placement.selected_groups) == count
+    assert report["valid"]
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == expected
+    assert report["wire_count_added"] == expected
+    assert report["terminal_grid_alignment_valid"]
+    assert report["wire_path_contacts_valid"]
+    assert report["terminal_suffix_links_valid"]
+    assert len(terminals) == len(wires) == expected
+    assert len(set(suffixes)) == expected
+    assert all(
+        _terminal_contact_xy(row)[0] % PROTEUS_TERMINAL_GRID == 0
+        and _terminal_contact_xy(row)[1] % PROTEUS_TERMINAL_GRID == 0
+        for row in terminals
+    )
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in wires
+    )
+    chunk_start = _object_chunk_absolute_start(dsn)
+    assert all(
+        suffix == (chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
+        for suffix, row in zip(suffixes, wires, strict=True)
+    )
+    assert all(
+        chunk.count(suffix.to_bytes(2, "little") + b"\x01\x00") == 2
+        for suffix in suffixes
+    )
+    assert chunk.endswith(b"\xff")
+    assert read_internal_file(output, "ROOT.CDB") == read_internal_file(
+        base, "ROOT.CDB"
+    )
 
 
 def test_4027_15x_uses_real_complete_packages_and_grid_short_wires(tmp_path) -> None:

@@ -98,5 +98,38 @@ grammar, the above terminal orders, `-64..-12` component-link offsets with
 WIRE coordinates, explicit single-FF finalizer, and a profile-gated raw-tail
 trim. No accepted family profile or shared emission branch needs alteration.
 
-Required staged proof remains: native contact, grid contact, then active
-short-WIRE/link output, each cold-opened locally before any scale work.
+## Completed staged and scale evidence
+
+The staged proof is complete for both families, using fresh component-placer
+controls from the locked mega rather than any terminalized donor packet.
+
+| Family | Native contact | Grid contact | Active 1x | 9x | 15x |
+| --- | --- | --- | --- | --- | --- |
+| `74HC160` | normal open | normal open | normal open + cold reopen | normal open + cold reopen | normal open + cold reopen |
+| `74HC192` | normal open | normal open | normal open + cold reopen | normal open + cold reopen | normal open + cold reopen |
+
+Every active 1x packet has fourteen terminals and fourteen nonzero WIREs;
+the 9x packets have 126 of each and the 15x packets have 210 of each. An
+independent DSN audit checked: each terminal attaching edge lies on the
+254,000-unit Proteus grid, every WIRE begins at that contact and ends at the
+calculated exact component pin, each WIRE suffix equals
+`(chunk_start + wire_marker_offset - 24) & 0xffff`, every suffix has one
+matching `0100` component link, and the fresh control `ROOT.CDB` is unchanged.
+
+The live placed reference is one character wider than the donor reference
+(`U29`/`U21` versus `U1`), so generated components and WIRE marker offsets are
+exactly one byte later than the donor. This is a placed-design difference, not
+a structural drift: consuming the one generator-only raw tail leaves a
+445-byte live component packet plus only that reference-width delta. The
+`74HC192` donor's `UP PIN 9` text remains a proven historical label typo; the
+active route labels and links the physical pin as `UP PIN 5`, while retaining
+the donor's record order and coordinate evidence.
+
+No modal Bad Object Record, Fatal Error, LXLCORE, or library dialog appeared
+in any local gate. Normal opens were not Ctrl+S-saved. The active 1x and 15x
+screenshots show short green terminal-to-pin attachments. User visual review
+remains the layout authority.
+
+Per the current user direction, no mixed pack was retained or claimed. Mixed
+terminalization is deferred until all component groups have completed their
+1x/9x/15x routes.
