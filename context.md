@@ -13374,3 +13374,50 @@ Understood. I’ll discard the uncommitted boundary-mix experiment and will not 
 ## Agent Visible Response - 2026-07-14 02:12 +05:00
 
 Final verification is clean: counter-focused tests 6/6, frozen accepted-route tests 14/14, compile checks, exact output hashes, and all static attachment checks pass. I’m committing and pushing the counter-only checkpoint now; the next family will start from that clean state.
+
+## Agent Visible Response - 2026-07-14 02:13 +05:00
+
+Checkpoint `7158d10a` is pushed and matches GitHub. I’m moving straight to the next uncompleted group, starting with the single DIL16 register `74HC174`; I’ll first locate and fully audit its authoritative terminalized donor before changing any profile or generating files.
+
+## Agent Visible Response - 2026-07-14 02:13 +05:00
+
+The next group has a complete accepted `74HC174` donor and a compatible locked-mega packet. I’m generating only its fresh no-terminal control now, then will compare its entire DSN/CDB structure against the donor before writing a profile or producing a terminal candidate.
+
+## Agent Visible Response - 2026-07-14 02:14 +05:00
+
+Understood. I’m skipping every mixed pack for now: each remaining group will get only its solo 1×, 9×, and 15× evidence, then we’ll attempt the all-component terminalized mix after every group is complete. I’m continuing with the 74HC174 register group from the locked mega donor.
+
+## Agent Visible Response - 2026-07-14 02:18 +05:00
+
+The 74HC174 donor and fresh locked-mega control are structurally compatible: the donor proves the same terminal-leading grammar used by the accepted counter group (14 terminals, separator, component packet, 14 WIRE records, final terminator). I’m finishing the complete byte-level delta record now before enabling its existing catalogue geometry—no previous family route is being changed.
+
+## Agent Visible Response - 2026-07-14 02:22 +05:00
+
+The generated 1× route passes the static contract: 14 correctly ordered terminals, grid contacts in the grid/active stages, 14 nonzero short wires in the active stage, final-address link rebasing, and unchanged locked-mega `ROOT.CDB`. I’m doing the actual Proteus cold-open gates next; these are disposable copies and I will not save normally opening files.
+
+## Agent Visible Response - 2026-07-14 02:23 +05:00
+
+The loader gate is still running its required settled-window checks. I’ve kept it to the user-requested 12-second wait per open and will only accept a result if the project window appears with no error dialog.
+
+## Agent Visible Response - 2026-07-14 02:24 +05:00
+
+All four required 1× loader checks passed normally: native contact, grid contact, active terminal/WIRE, and active cold reopen. There was no Bad Object Record, library dialog, or silent rewrite. I’m adding the focused shared-placer regression and then will generate only the 9× and 15× solo packs.
+
+## Agent Visible Response - 2026-07-14 02:27 +05:00
+
+The shared placer has now produced both solo scale packs from the locked mega donor: 9× has 126 complete terminal/WIRE attachments and 15× has 210. I’m cold-opening/reopening both; per your instruction I’m retaining a visual capture only for the larger 15× case.
+
+## Agent Visible Response - 2026-07-14 02:28 +05:00
+
+The scale gate is still in its deliberate cold-reopen phase. I’m checking the actual project window titles and hashes after each open, rather than treating a generated file as accepted merely because its byte audit passes.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json` — adds only the donor-proven active `74HC174` catalogue facts and records its 1×/9×/15× loader status.
+- `tests/test_component_catalog.py` — adds focused shared-placer staged and scale regressions for `74HC174`.
+- `knowledge/dil16_register_donor_preflight_2026_07_14.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `experiments/dil16_register_terminal_v1_temp_2026_07_14/README.md` — record the complete donor/control audit, loader evidence, and mixed deferral.
+- `experiments/dil16_register_terminal_v1_temp_2026_07_14/` — fresh locked-mega 1×, 9×, and 15× controls and active outputs, loader record, and the 15× visual screenshot. Disposable gate copies are excluded from the checkpoint.
+
+## Agent Visible Response - 2026-07-14 02:39 +05:00
+
+The 74HC174 verification is clean: focused tests 3/3, frozen accepted-route tests 14/14, and compile checks all pass. I’m reviewing the exact staged files and repository diff now, then I’ll commit and push this register-only checkpoint before starting the next solo group.

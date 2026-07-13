@@ -2163,3 +2163,30 @@ completed its individual 1x/9x/15x route. The 74HC192 source donor text calls
 the CPU input `UP PIN 9`, but its physical link is pin 5; the catalogue keeps
 the donor byte geometry/order and uses the user-verified electrical identity
 `UP PIN 5`.
+
+### 2026-07-14 DIL16 register terminal-leading contract
+
+`74HC174` is an additive catalogue profile on the existing shared
+terminal-leading serializer:
+
+`14 terminal records → separator → one live component packet → 14 WIREs → explicit FF`.
+
+Its authoritative donor proves terminal record order
+`2,5,7,10,12,15,3,4,6,11,13,14,9,1`, left/right orientation, component-anchor
+relative pin coordinates, and fourteen end-relative `0100` link slots
+`-64..-12`. The locked mega control has a one-byte-wider placed reference
+(`U25` rather than `U1`) and one generator-only raw tail; the profile consumes
+only that raw tail while retaining the placed packet body. It never copies the
+donor packet or changes an accepted family route.
+
+The shared placer computes each current pin from its placed component anchor,
+snaps the attaching terminal edge to the 254,000-unit Proteus grid, emits a
+nonzero short WIRE to the exact pin, and rebases both link suffixes from the
+final ROOT.DSN WIRE address. `ROOT.CDB` remains byte-identical to the locked
+component-placer control.
+
+1x staged loader gates and 9x/15x active cold-open/cold-reopen gates passed
+locally without a modal error. The validated MVP solo limit is 15 per family;
+it is a tested operating bound, not an invented capacity limit. The user has
+explicitly deferred every mixed output until all remaining groups have passed
+their own 1x/9x/15x solo routes.
