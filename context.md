@@ -11674,6 +11674,26 @@ Planned visible final response:
 >
 > Verification: 53 tests passed (1 existing optional oracle test skipped), and the new donor decisions are recorded in `ltspice/docs/LTSPICE_DONOR_COVERAGE.md`.
 
+## 2026-07-14T02:40:49+05:00 — Published donor-backed LTspice increment
+
+Commit and remote verification:
+
+- Commit: `9bc4c33bd0042e8f5a72763c1eab0034ad0d843c` (`Expand LTspice donor-backed validation`)
+- Push: `main` advanced from `b6c7c4de0` to `9bc4c33bd` on `origin`.
+- Verified local and `origin/main` both resolve to `9bc4c33bd0042e8f5a72763c1eab0034ad0d843c`.
+- Pre-existing untracked KiCad visual-run folders remain untouched.
+
+Visible assistant final response (verbatim):
+
+> Done — the added donors are now part of the LTspice evidence and regression coverage.
+>
+> - The 19 new donors all netlist in installed LTspice. They confirm the existing R/C/L, voltage/current-source, AC/SINE/PULSE, orientation, and dense-network support; they did not require guessing new IC/model families.
+> - The generator now draws a safe physical Manhattan tree for provable 3+ endpoint nets. Crowded/ambiguous nets still fall back to real LTspice terminal labels instead of risking a short.
+> - A 20-passive R/L/C circuit now has a regression test and passed installed LTspice netlisting, batch simulation, and connectivity verification.
+> - Added stricter donor-derived validation: zero/invalid `PULSE Ncycles`, floating-node warnings, and ignored PULSE warnings are failures; ambiguous `0.1F` capacitance stays refused.
+>
+> Verification: 53 tests passed (1 existing optional oracle test skipped). The evidence is recorded in `ltspice/docs/LTSPICE_DONOR_COVERAGE.md`. Pushed checkpoint: `9bc4c33bd`.
+
 ## 2026-07-14T02:17:44+05:00 — LTspice capability scope question
 
 User request (verbatim):
