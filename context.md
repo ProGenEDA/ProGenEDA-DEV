@@ -11630,3 +11630,40 @@ Acceptance result:
 - Schematic geometry: zero component-body overlaps, zero pin-coordinate overlaps, zero terminal-label overlaps, zero unrouted/partial nets, and zero strict wire/geometry violations.
 - PCB: generated and accepted, nine physical supported components, three nonphysical symbols omitted, and zero unrouted PCB nets.
 - The user project ZIP passed `unzip -t` and contains the `.kicad_pro`, `.kicad_sch`, and `.kicad_pcb` project files.
+
+## 2026-07-14T02:17:44+05:00 — LTspice capability scope question
+
+User request (verbatim):
+
+> so now it can create any circuit using these components? like can u generate like 20 of resisitor cap ind? can u connect them using wire? what properties of all these components can u edit? just answer rn
+
+Visible assistant progress (verbatim):
+
+> I’ll check the current LTspice catalogue and editor rules so I can give you the exact supported scope, not a guess.
+
+Visible assistant response (verbatim):
+
+> Yes—for a 20-part R/C/L circuit, yes. There is no hard component-count cap: it can place a 20+ component network on a growing grid, write the `.asc`, and validate every declared pin and net.
+>
+> It is not yet literally “any circuit.” It supports the present catalogue: resistors, normal/polarized capacitors, inductors, voltage/current sources, VCVS/VCCS, ground, fuse, generic/named diodes and LED, NPN/PNP, NMOS/PMOS/2N7000/BS170, voltage-controlled switch, potentiometer, generic op-amp, and an LM741 approximation. Unsupported things—such as arbitrary ICs, transformers/mutual inductors, behavioral sources, or arbitrary vendor models—are rejected rather than guessed. Some named semiconductor/op-amp models are project-local approximations, not vendor-verified device models.
+>
+> Yes, it connects components electrically. Simple safe two-pin nets are drawn as native orthogonal LTspice wires. For a large or complex net where a wire would cross a part, form an unintended T-junction, or become ambiguous, it uses LTspice terminal flags/labels instead; those are real electrical connections in LTspice. Strict wire-only mode reports an unroutable net instead of emitting a bad wire.
+>
+> In normal user edit mode, reference rename and the validated value field are available where applicable; a rename also updates endpoint references. The per-family safe fields are:
+>
+> | Component family | Normal editable properties |
+> |---|---|
+> | R / fuse | resistance; `tc`, `temp`, `m`; rating metadata. Fuse is a low-resistance approximation, not a thermal blow model. |
+> | C / polarized C | capacitance; `ic`, `rser`, `lser`, `rpar`, `cpar`, `rlshunt`, `m`, `temp`; voltage rating and tolerance metadata. |
+> | L | inductance; `ic`, `ipk`, `rser`, `rpar`, `cpar`, `m`, `tc1`, `tc2`, `temp`; current/saturation ratings. |
+> | VDC / VSIN / VPULSE | source value and safe `dc`, `ac`, `pulse`, `sine`, `exp`, `sffm`, `pwl`, `rser`, `cpar` fields. |
+> | Current source | source value and safe `dc`, `ac`, `load`, `pulse`, `sine`, `exp`, `sffm`, `pwl` fields. |
+> | VCVS / VCCS | voltage gain / transconductance respectively. |
+> | Diodes / LED | `area`, `off`, `m`, `n`, `temp`; LED also has color and forward-voltage metadata. The selected model is locked to the supported profile in normal mode. |
+> | NPN / PNP | `area`, `m`, `temp`; supported model profile is locked. |
+> | NMOS / PMOS / 2N7000 / BS170 | `l`, `w`, `m`, `ad`, `as`, `pd`, `ps`, `temp`; supported model profile is locked. |
+> | Switch / potentiometer | switch `off`, `ron`, `roff`, `vt`, `vh`; potentiometer `r`, `wiper`, taper. |
+> | Generic op-amp / LM741 | supported model profile is locked; generic op-amp gain-bandwidth/slew-rate metadata, LM741 accuracy note. |
+> | Ground | fixed LTspice node `0`; no electrical value or parameters to edit. |
+>
+> Pins, nets, and raw LTspice text are intentionally not normal-user edits, because changing them can break connectivity. Those belong to the admin/demo raw-JSON mode and must pass the full deterministic validators afterward.
