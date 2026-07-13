@@ -34,6 +34,11 @@ from proteusgen.resistor_v9 import _extract_object_chunk  # noqa: E402
 FAMILIES = ("74HC00", "74HC02", "74HC08", "74HC32", "74HC86", "74HC266")
 OUT_ROOT = ROOT / "experiments" / "dil14_quad_2input_logic_terminal_v1_temp_2026_07_13"
 REQUESTED_SCALES = (1, 9, 15)
+# Keep experiment paths stable when a researcher regenerates one scale at a
+# time while investigating a loader failure. The old enumerate-only folder
+# index could put a standalone 9x run in `01_solo_9x` and a later full run in
+# `02_solo_9x`, which obscures which artifact is canonical.
+STANDARD_SCALE_DIRECTORY_INDICES = {1: 1, 9: 2, 15: 3}
 # The ordinary visible shelf creates a third vertical row at 13+ quad-gate
 # packages. Proteus then raises VGDVC.DLL once their terminal/WIRE stream is
 # loaded. This is a placement-stage canvas width, not terminal logic.
@@ -167,7 +172,11 @@ def main(
 ) -> int:
     rows: list[dict[str, object]] = []
     for scale_index, requested in enumerate(scales, start=1):
-        scale_root = out_root / f"{scale_index:02d}_solo_{requested}x"
+        directory_index = STANDARD_SCALE_DIRECTORY_INDICES.get(
+            requested,
+            scale_index,
+        )
+        scale_root = out_root / f"{directory_index:02d}_solo_{requested}x"
         for index, family in enumerate(families, start=1):
             effective, capacity = _effective_scale(family, requested)
             stem = _case_stem(index, family, requested, effective)

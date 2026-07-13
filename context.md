@@ -12469,3 +12469,60 @@ The requested boundary mix is generated and opens: 20 frozen two-pin families ar
 - `tools/proteus_generation/2026-07-13/generate_dil14_quad_2input_logic_1x_temp.py` — shared-stage-only 1× evidence runner.
 - `knowledge/dil14_quad_2input_logic_donor_analysis_2026_07_13.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `experiments/dil14_quad_2input_logic_terminal_v1_temp_2026_07_13/README.md` — donor evidence, loader results, and continuation notes.
 - `experiments/current_group_mixed_tail_oracle_v1_temp_2026_07_12/` — 23× request regenerated to the safe 15× terminalized cap.
+
+## User Message - 2026-07-13 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’m continuing from the HC74 1× failure point. I’ll keep accepted routes untouched, use the locked mega donor as the component source, and resolve the remaining wire/packet mismatch before scaling or mixing it.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The terminal records and final link addresses are now ruled out: a terminal-only HC74 output opens, while the same output fails as soon as its WIRE records are present. I’m isolating the remaining donor-vs-mega difference in the component/CDB object identity next, rather than changing placement behavior speculatively.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I found the concrete remaining mismatch: the accepted HC74 donor has one `00` record boundary after each A/B component-link block and before its first WIRE. The locked mega packet lacks that boundary, so our emitted WIRE begins one byte too early. I’m adding that donor-proven separator only to HC74’s shared catalogue mode and then rerunning the real loader gate.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The first boundary correction exposed a second, adjacent donor difference: the locked mega’s clean HC74 tail has one extra reserved zero immediately before the six link slots. The accepted donor does not. I’m normalizing that declared padding before attaching the same terminal/WIRE block; the rebasing stage will then allocate links against the corrected final stream.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The corrected 74HC74 1× now opens normally in Proteus with all 12 terminal/WIRE pairs present in the stream. I’m doing the required cold reopen and the one screenshot for this previously failing case now; I will not Ctrl+S a normal opening.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The 1× cold reopen is clean and the screenshot confirms both HC74 subparts have every expected terminal attached. I’m expanding only this newly fixed family to 9× and 15× now; after their loader checks, I’ll produce its requested boundary mix without touching earlier accepted routes.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+HC74’s 9× and 15× solos both pass the loader gate; the 15× screen visibly contains repeated A/B subparts with their terminals. I’m now generating the boundary mix: accepted two-pin routes remain terminalized, while 74HC74 is deliberately present but bare until a donor proves a hybrid stream order.
+
+### Files Edited By Agent In This Continuation (in progress)
+
+- `src/proteusgen/component_terminal_placer.py` — shared catalogue-driven subpart block serializer; HC74-only profile policies normalize its locked-mega link padding and component/WIRE boundary without changing frozen routes.
+- `knowledge/component_catalog_v0.json` — HC74 donor-derived attachment grammar now includes the one-byte link-prefix trim and component/WIRE separator policies.
+- `knowledge/hc74_dual_d_ff_donor_preflight_2026_07_13.md` and `tests/test_component_placer.py` — complete donor comparison notes and regression coverage.
+- `backups/component_terminal_placer/` — pre-edit shared-placer snapshots retained as required.
+- `experiments/dil14_dual_d_ff_terminal_v1_temp_2026_07_13/` — regenerated 1×/9×/15× controls and terminalized candidates, boundary mix, and loader screenshots.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’ve completed the HC74 repair and its 1×/9×/15× checks. I’m checkpointing only that validated shared-placer work now, then the next family can start from a clean committed state.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+HC74 is repaired and checkpointed: its 1×, 9×, and 15× terminalized solos open cleanly in Proteus, and the boundary mix keeps HC74 intentionally bare while preserving the accepted two-pin terminal routes. The focused shared-placer tests and compile/catalogue checks passed; the full pytest run exceeded the two-minute command window and is recorded as incomplete rather than passed.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_terminal_placer.py` — the unified, catalogue-driven HC74 subpart serializer now applies donor-proven link-padding and component/WIRE boundary rules only for HC74.
+- `knowledge/component_catalog_v0.json` and `knowledge/hc74_dual_d_ff_donor_preflight_2026_07_13.md` — authoritative HC74 donor facts and the complete remaining-difference audit.
+- `tests/test_component_placer.py` and `tools/proteus_generation/2026-07-13/generate_dil14_quad_2input_logic_1x_temp.py` — focused regression coverage and stable 1×/9×/15× output-directory routing through the shared placer.
+- `backups/component_terminal_placer/` — four required pre-edit snapshots; prior working versions remain intact.
+- `experiments/dil14_dual_d_ff_terminal_v1_temp_2026_07_13/` — regenerated scale packs, boundary mix, loader record, and clean 1×/15× screenshots.
+- `docs/architecture.md` and `knowledge/test_results.jsonl` — recorded the recovered HC74 binary grammar and acceptance result.

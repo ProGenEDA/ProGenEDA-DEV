@@ -98,3 +98,60 @@ place the donor-ordered terminals before it, append the donor-ordered WIREs,
 and rebase terminal/component links only after final ROOT.DSN addresses are
 known. The implementation must keep all frozen two-pin, DIL14 quad-gate, and
 HC04 routes byte-stable.
+
+## Complete first-emission comparison — 2026-07-13
+
+The first shared-emitter probe was deliberately loader-gated before any scale
+generation. Proteus raised `VGDVC.DLL` while opening it. A full record-boundary
+comparison found one structural difference after every expected coordinate,
+reference-width, terminal-label, CDB-row, pin-link, and final-address suffix
+difference had been accounted for:
+
+```text
+actual donor A/B WIRE block:
+  component-pin-link trailer + 00 + WIRE[0] + 00 + WIRE[1] + ... + 00 + WIRE[5] + next object
+
+first probe A/B WIRE block:
+  component-pin-link trailer + WIRE[0] + 00 + WIRE[1] + ... + 00 + WIRE[5] + next object
+```
+
+`WIRE[n]` here means the 49-byte `NATIVE_WIRE_PREFIX + point coordinates`
+payload. The zero immediately after the pin-link trailer is a component/WIRE
+record boundary. The zero between adjacent WIRE payloads is a distinct shared
+WIRE separator; the actual donor has no byte between its final WIRE's
+coordinates and the next terminal/finalizer. The clean mega packet omits the
+component/WIRE boundary because its `:A`/`:B` component records are originally
+contiguous. The first shared probe therefore began the WIRE one byte early in
+**each** `:A`/`:B` block. Its prior `00 + WIRE[n]` unit form also inserted the
+wrong leading separator before each first WIRE, so the two findings must be
+applied together: add the declared component/WIRE zero, then strip the
+per-unit leading zero only from WIRE[0].
+
+The subsequent loader probe still failed, so the full tail was compared from
+the final `74HC74` marker rather than only from the WIRE boundary. The manual
+donor has nine zero bytes between the component object ID and its six active
+four-byte pin-link fields. The locked mega clean packet has ten. Its terminal
+planner therefore initially placed the six links one byte later than the
+accepted packet after allowing for the wider `U45:A` reference. This is a
+clean-packet reserved-padding difference, not a terminal or WIRE coordinate
+difference. The profile must remove exactly that one declared zero immediately
+before the contiguous active link array, then append the component/WIRE
+boundary zero described above. That preserves the six link slots as `-24`
+through `-4` from the normalized current subpart end.
+
+The terminal record templates themselves are not the discrepancy: after their
+documented symbol/label coordinates and active final-address suffixes are
+masked, all fixed terminal fields match the donor. The current U45 CDB rows
+also preserve the locked-mega packet's current IDs and are valid in the bare
+no-terminal control. The pin-link slots and final-address formula likewise
+match the donor's 12 terminal/WIRE associations.
+
+The evidence-backed generic repair is catalogued as
+`subpart_component_wire_separator_policy = append_single_zero` plus
+`subpart_first_wire_separator_policy = strip_first_leading_separator` and
+`subpart_link_prefix_zero_trim_count = 1`. The shared serializer removes the
+declared clean-packet link padding, inserts the one component/WIRE boundary,
+and removes only the first leading unit separator for every declared subpart
+block; it preserves leading separators on subsequent WIRE units. This is the
+complete currently-known donor grammar set and does not modify any accepted
+family route.

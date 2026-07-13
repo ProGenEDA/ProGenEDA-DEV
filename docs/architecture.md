@@ -1890,3 +1890,42 @@ The HC04 1x, 9x, and 15x component-placer outputs contain 12, 108, and 180
 active terminal/WIRE units respectively. The required boundary mix keeps HC04
 bare while retaining the twenty frozen two-pin terminal routes. This preserves
 the accepted route freeze while the next multi-pin group is researched.
+
+### 2026-07-13 74HC74 dual flip-flop donor contract
+
+`74HC74` is the first two-subpart family whose active donor repeats a complete
+attachment block per subpart rather than using a package-wide attachment tail:
+
+`A terminals -> A component -> A WIREs -> B terminals -> B component -> B WIREs -> FF`.
+
+The authoritative donor is
+`proteus_ic/donors/terminalized_catalogue_evidence/dil14_dual_d_ff/74HC74/74HC74_terminalized_primary.pdsprj`.
+It establishes the terminal order, WIRE order, active `01 00` link trailers,
+six link slots per A/B subpart, and on-grid zero-length donor WIRE contacts.
+The shared terminal placer consumes those facts only through the 74HC74
+catalogue profile; no component-specific terminal script exists.
+
+The locked mega's clean HC74 packet is almost, but not byte-frame equivalent
+to, the active donor. Before its six current link slots it has one additional
+reserved zero. It also has no component/WIRE record boundary because its clean
+subparts are originally contiguous. The accepted attachment grammar therefore
+requires three declared, additive profile policies:
+
+1. remove one zero immediately before the contiguous active link array;
+2. append one zero after the component's final link trailer before its first
+   WIRE; and
+3. strip the generic leading unit separator only from the first WIRE of each
+   subpart, retaining shared separators between later WIRE payloads.
+
+The final link allocation still happens only after the complete ROOT.DSN stream
+is built, so every terminal and component link is the low 16 bits of its final
+WIRE address. The regression checks compare the donor's A/B record boundaries,
+all link fields, and the frozen HC04/DIL14 routes.
+
+The regenerated 74HC74 1x/9x/15x solos contain 12/108/180 active
+terminal/WIRE pairs and reached normal responsive Proteus schematic windows
+under the 12-second delayed gate. The 1x cold reopen and the 15x screen capture
+show the actual A/B terminalized output. Normal opens were not Ctrl+S-saved.
+The boundary mix preserves HC74 bare while terminalizing the frozen twenty
+two-pin families; do not emit a hybrid active HC74/two-pin mixed stream until
+an authoritative combined donor proves its order.

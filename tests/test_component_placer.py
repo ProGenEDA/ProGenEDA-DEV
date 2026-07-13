@@ -3193,6 +3193,114 @@ def test_hc04_shared_placer_uses_e04_ordered_routed_units_and_safe_links(
     assert actual_positions["13"] + 4 == actual_positions["12"]
 
 
+def test_hc74_shared_placer_preserves_subpart_native_wire_boundaries(
+    tmp_path: Path,
+) -> None:
+    """HC74's A/B blocks preserve donor component/WIRE boundaries."""
+
+    family = "74HC74"
+    donor = (
+        ROOT
+        / "proteus_ic"
+        / "donors"
+        / "terminalized_catalogue_evidence"
+        / "dil14_dual_d_ff"
+        / family
+        / "74HC74_terminalized_primary.pdsprj"
+    )
+    base = tmp_path / "74HC74_1x_no_terminal.pdsprj"
+    output = tmp_path / "74HC74_1x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["clean_packet_attachment_order"] == (
+        "subpart_terminal_component_wires"
+    )
+    assert geometry["subpart_first_wire_separator_policy"] == (
+        "strip_first_leading_separator"
+    )
+    assert geometry["subpart_component_wire_separator_policy"] == (
+        "append_single_zero"
+    )
+    assert geometry["subpart_link_prefix_zero_trim_count"] == 1
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == 12
+    assert report["wire_count_added"] == 12
+
+    donor_chunk = _extract_object_chunk(read_internal_file(donor, "ROOT.DSN"))
+    output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    def native_wire_starts(chunk: bytes) -> list[int]:
+        starts: list[int] = []
+        cursor = 0
+        while True:
+            marker = chunk.find(b"\x7fWIRE", cursor)
+            if marker < 0:
+                return starts
+            start = marker - 23
+            assert chunk[start : start + len(terminal_placer.NATIVE_WIRE_PREFIX)] == (
+                terminal_placer.NATIVE_WIRE_PREFIX
+            )
+            starts.append(start)
+            cursor = marker + 1
+
+    donor_wires = native_wire_starts(donor_chunk)
+    output_wires = native_wire_starts(output_chunk)
+    assert len(donor_wires) == len(output_wires) == 12
+    assert [right - left for left, right in zip(donor_wires, donor_wires[1:6])] == [50] * 5
+    assert [right - left for left, right in zip(donor_wires[6:], donor_wires[7:])] == [50] * 5
+    assert [right - left for left, right in zip(output_wires, output_wires[1:6])] == [50] * 5
+    assert [right - left for left, right in zip(output_wires[6:], output_wires[7:])] == [50] * 5
+    assert all(donor_chunk[start + 49] == 0 for start in (*donor_wires[:5], *donor_wires[6:11]))
+    assert all(output_chunk[start + 49] == 0 for start in (*output_wires[:5], *output_wires[6:11]))
+
+    donor_a = donor_chunk.index(b"\xff\x04U1:A")
+    donor_b = donor_chunk.index(b"\xff\x04U1:B")
+    current_refs = {
+        ref.rsplit(":", 1)[1]: ref for ref in result.selected_groups[0].refs
+    }
+    output_a_ref = current_refs["A"].encode("ascii")
+    output_b_ref = current_refs["B"].encode("ascii")
+    output_a = output_chunk.index(b"\xff" + bytes([len(output_a_ref)]) + output_a_ref)
+    output_b = output_chunk.index(b"\xff" + bytes([len(output_b_ref)]) + output_b_ref)
+    # A reference may be wider than U1 in a future component placer. HC74's
+    # accepted donor also has one component/WIRE boundary zero after each
+    # current subpart record, before its first native WIRE prefix.
+    assert output_wires[0] - output_a == donor_wires[0] - donor_a + (
+        len(output_a_ref) - len(b"U1:A")
+    )
+    assert output_wires[6] - output_b == donor_wires[6] - donor_b + (
+        len(output_b_ref) - len(b"U1:B")
+    )
+    assert donor_chunk[donor_wires[0] - 2 : donor_wires[0]] == b"\x00\x00"
+    assert donor_chunk[donor_wires[6] - 2 : donor_wires[6]] == b"\x00\x00"
+    assert output_chunk[output_wires[0] - 2 : output_wires[0]] == b"\x00\x00"
+    assert output_chunk[output_wires[6] - 2 : output_wires[6]] == b"\x00\x00"
+    # The source shares separator bytes *between* WIREs only.  Its last WIRE
+    # is immediately followed by the next terminal/object record; this catches
+    # the malformed leading-separator packet that previously reached VGDVC.DLL.
+    assert output_chunk[output_wires[5] + 49] == 0x10
+    assert output_chunk[output_wires[11] + 49] == 0xFF
+
+
 def test_dil14_mixed_baseline_keeps_new_logic_groups_unterminalized(
     tmp_path: Path,
 ) -> None:

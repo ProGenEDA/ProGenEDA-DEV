@@ -1961,7 +1961,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         if clean_packet_attachment_order not in {
             "component_stream_then_attachment_units",
             "terminal_leading_component_then_wires",
-            "subpart_terminal_component_wires",
         }:
             raise ValueError(
                 f"{family} {key} uses unsupported clean packet attachment order "
@@ -2084,8 +2083,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 raw_link_offset = raw_geometry.get(
                     "component_link_offset_from_component_end"
                 )
-                subpart_link_slot = raw_subpart_link_slots.get(pin_name)
-                if raw_link_offset is None and subpart_link_slot is None:
+                if raw_link_offset is None:
                     raise ValueError(
                         f"{family} {key} pin {pin_name} lacks catalogue "
                         "component-link offset for clean bare-packet emission."
@@ -2094,17 +2092,10 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     _patch_component_link_from_catalogue_offset(
                         patched_data,
                         new_suffix=temporary_suffix,
-                        # A subpart-relative slot is the source of truth when
-                        # present. Its current record boundary makes a
-                        # package-wide fallback offset irrelevant.
-                        offset_from_component_end=(
-                            int(raw_link_offset)
-                            if raw_link_offset is not None
-                            else 0
-                        ),
+                        offset_from_component_end=int(raw_link_offset),
                         trailer_hex=raw_geometry.get("component_link_trailer"),
                         component_refs=tuple(getattr(group, "refs", ())),
-                        subpart_end_relative=subpart_link_slot,
+                        subpart_end_relative=raw_subpart_link_slots.get(pin_name),
                     )
                 )
                 component_link_trailer = trailer
@@ -2310,46 +2301,14 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     patched_data + b"".join(ordered_wire_records)
                 )
                 terminal_leading_block_count += 1
-            elif clean_packet_attachment_order == "subpart_terminal_component_wires":
-                if trailing_attachment_records:
-                    raise ValueError(
-                        f"{family} subpart attachment blocks cannot be mixed with "
-                        "trailing attachment units before a combined donor proves "
-                        "that hybrid stream."
-                    )
-                if local_records and terminal_leading_block_count == 0:
-                    raise ValueError(
-                        f"{family} subpart attachment blocks cannot follow a "
-                        "preserved or differently ordered component stream."
-                    )
-                if clean_packet_attachment_orders != {
-                    "subpart_terminal_component_wires"
-                }:
-                    raise ValueError(
-                        "Catalogue subpart attachment blocks cannot be combined with "
-                        f"other attachment orders: {sorted(clean_packet_attachment_orders)}."
-                    )
-                local_records.extend(
-                    _catalogue_subpart_attachment_blocks(
-                        family=family,
-                        key=key,
-                        geometry=geometry,
-                        component_refs=tuple(getattr(group, "refs", ())),
-                        patched_component_data=patched_data,
-                        terminal_pins=terminal_pins,
-                        terminal_records=terminal_records,
-                        wire_records=appended_wire_records,
-                    )
-                )
-                terminal_leading_block_count += 1
             else:
-                if clean_packet_attachment_orders != {
-                    "component_stream_then_attachment_units"
+                if clean_packet_attachment_orders == {
+                    "component_stream_then_attachment_units",
+                    "terminal_leading_component_then_wires",
                 }:
                     raise ValueError(
-                        "Catalogue clean-packet component-stream attachment order "
-                        "cannot be mixed with another order before a combined donor "
-                        "proves that hybrid stream."
+                        "Catalogue clean-packet attachment orders cannot be mixed "
+                        "before each order has a Proteus-accepted combined oracle."
                     )
                 local_records.append(patched_data)
                 for terminal_record, wire_record in _ordered_clean_packet_attachment_units(
@@ -2385,10 +2344,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "wire_count_added": wire_count_added,
                 "wire_count_rewritten": wire_count_rewritten,
                 "clean_packet_attachment_order": clean_packet_attachment_order,
-                "subpart_first_wire_separator_policy": geometry.get(
-                    "subpart_first_wire_separator_policy",
-                    "preserve_each_unit",
-                ),
                 "donor_terminal_record_order": (
                     list(geometry.get("donor_terminal_record_order", ()))
                     if clean_packet_attachment_order
@@ -4967,292 +4922,6 @@ def _ordered_clean_packet_attachment_units(
             f"exactly cover emitted pins {sorted(units_by_pin)}."
         )
     return [units_by_pin[pin_name] for pin_name in order]
-
-
-def _catalogue_subpart_attachment_blocks(
-    *,
-    family: str,
-    key: str,
-    geometry: dict[str, Any],
-    component_refs: Iterable[str],
-    patched_component_data: bytes,
-    terminal_pins: list[dict[str, Any]],
-    terminal_records: list[bytes],
-    wire_records: list[bytes],
-) -> list[bytes]:
-    """Serialize donor-proven terminal/component/WIRE blocks per subpart.
-
-    Some multi-unit devices do not use one package-wide terminal zone. Their
-    authoritative donor repeats a compact unit: selected terminal records,
-    the matching current component subpart record, then its WIRE records. The
-    facts live entirely in the catalogue so this remains one shared emitter.
-    """
-
-    raw_blocks = geometry.get("donor_subpart_attachment_blocks")
-    if not isinstance(raw_blocks, (list, tuple)) or not raw_blocks:
-        raise ValueError(
-            f"{family} {key} requires non-empty donor_subpart_attachment_blocks."
-        )
-    if not (
-        len(terminal_pins) == len(terminal_records) == len(wire_records)
-    ):
-        raise ValueError(
-            f"{family} {key} has mismatched subpart attachment inputs: "
-            f"pins={len(terminal_pins)}, terminals={len(terminal_records)}, "
-            f"wires={len(wire_records)}."
-        )
-    terminal_by_pin = {
-        str(row["pin"]["name"]): record
-        for row, record in zip(terminal_pins, terminal_records, strict=True)
-    }
-    wire_by_pin = {
-        str(row["pin"]["name"]): record
-        for row, record in zip(terminal_pins, wire_records, strict=True)
-    }
-    if len(terminal_by_pin) != len(terminal_pins):
-        raise ValueError(f"{family} {key} has duplicate terminal pin plans.")
-
-    refs_by_subpart: dict[str, str] = {}
-    for raw_ref in component_refs:
-        ref = str(raw_ref)
-        if ":" not in ref:
-            raise ValueError(
-                f"{family} {key} subpart attachment requires ref suffixes, got {ref!r}."
-            )
-        _package, raw_subpart = ref.rsplit(":", 1)
-        subpart = raw_subpart.upper()
-        if len(subpart) != 1 or subpart in refs_by_subpart:
-            raise ValueError(
-                f"{family} {key} has malformed or duplicate subpart ref {ref!r}."
-            )
-        refs_by_subpart[subpart] = ref
-    if not refs_by_subpart:
-        raise ValueError(f"{family} {key} has no component subpart references.")
-
-    first_wire_separator_policy = str(
-        geometry.get("subpart_first_wire_separator_policy", "preserve_each_unit")
-    )
-    if first_wire_separator_policy not in {
-        "preserve_each_unit",
-        "strip_first_leading_separator",
-    }:
-        raise ValueError(
-            f"{family} {key} has unsupported subpart first-WIRE separator "
-            f"policy {first_wire_separator_policy!r}."
-        )
-
-    component_wire_separator_policy = str(
-        geometry.get("subpart_component_wire_separator_policy", "none")
-    )
-    if component_wire_separator_policy not in {
-        "none",
-        "append_single_zero",
-    }:
-        raise ValueError(
-            f"{family} {key} has unsupported subpart component/WIRE separator "
-            f"policy {component_wire_separator_policy!r}."
-        )
-
-    raw_link_prefix_zero_trim_count = geometry.get(
-        "subpart_link_prefix_zero_trim_count",
-        0,
-    )
-    if isinstance(raw_link_prefix_zero_trim_count, bool):
-        raise ValueError(
-            f"{family} {key} has a boolean subpart link-prefix trim count."
-        )
-    try:
-        link_prefix_zero_trim_count = int(raw_link_prefix_zero_trim_count)
-    except (TypeError, ValueError) as exc:
-        raise ValueError(
-            f"{family} {key} has a malformed subpart link-prefix trim count "
-            f"{raw_link_prefix_zero_trim_count!r}."
-        ) from exc
-    if not 0 <= link_prefix_zero_trim_count <= 8:
-        raise ValueError(
-            f"{family} {key} subpart link-prefix trim count "
-            f"{link_prefix_zero_trim_count} is outside the supported 0..8 range."
-        )
-    raw_subpart_link_slots = geometry.get("component_link_subpart_end_offsets", {})
-    if link_prefix_zero_trim_count and not isinstance(raw_subpart_link_slots, dict):
-        raise ValueError(
-            f"{family} {key} needs component_link_subpart_end_offsets to trim "
-            "subpart link-prefix padding."
-        )
-
-    record_starts: list[tuple[int, str]] = []
-    for subpart, ref in refs_by_subpart.items():
-        encoded = ref.encode("ascii")
-        marker = b"\xff" + bytes([len(encoded)]) + encoded
-        start = patched_component_data.find(marker)
-        if start < 0 or patched_component_data.find(marker, start + 1) >= 0:
-            raise ValueError(
-                f"{family} {key} cannot uniquely locate current subpart {ref!r}."
-            )
-        record_starts.append((start, subpart))
-    record_starts.sort()
-    component_segments: dict[str, bytes] = {}
-    for index, (start, subpart) in enumerate(record_starts):
-        end = (
-            record_starts[index + 1][0]
-            if index + 1 < len(record_starts)
-            else len(patched_component_data)
-        )
-        segment = patched_component_data[start:end]
-        if not segment.startswith(b"\xff"):
-            raise ValueError(
-                f"{family} {key} {subpart} component segment lost its record marker."
-            )
-        component_segments[subpart] = segment
-    if b"".join(
-        component_segments[subpart]
-        for _start, subpart in record_starts
-    ) != patched_component_data:
-        raise ValueError(
-            f"{family} {key} subpart split would discard component packet bytes."
-        )
-
-    consumed_terminal_pins: list[str] = []
-    consumed_wire_pins: list[str] = []
-    blocks: list[bytes] = []
-    for raw_block in raw_blocks:
-        if not isinstance(raw_block, dict):
-            raise ValueError(f"{family} {key} has a non-object subpart block.")
-        raw_subpart = raw_block.get("subpart")
-        subpart = str(raw_subpart).upper() if raw_subpart is not None else ""
-        if subpart not in component_segments:
-            raise ValueError(
-                f"{family} {key} block references unavailable subpart {raw_subpart!r}."
-            )
-        raw_terminal_order = raw_block.get("terminal_pins")
-        raw_wire_order = raw_block.get("wire_pins")
-        if not isinstance(raw_terminal_order, (list, tuple)) or not isinstance(
-            raw_wire_order, (list, tuple)
-        ):
-            raise ValueError(
-                f"{family} {key} {subpart} needs terminal_pins and wire_pins lists."
-            )
-        terminal_order = [str(pin_name) for pin_name in raw_terminal_order]
-        wire_order = [str(pin_name) for pin_name in raw_wire_order]
-        if (
-            len(terminal_order) != len(set(terminal_order))
-            or len(wire_order) != len(set(wire_order))
-            or set(terminal_order) != set(wire_order)
-            or any(pin_name not in terminal_by_pin for pin_name in terminal_order)
-        ):
-            raise ValueError(
-                f"{family} {key} {subpart} has invalid donor subpart pin orders."
-            )
-        consumed_terminal_pins.extend(terminal_order)
-        consumed_wire_pins.extend(wire_order)
-        blocks.extend(terminal_by_pin[pin_name] for pin_name in terminal_order)
-        blocks.append(b"\x00")
-        ordered_wire_records = [wire_by_pin[pin_name] for pin_name in wire_order]
-        if first_wire_separator_policy == "strip_first_leading_separator":
-            first_wire = ordered_wire_records[0]
-            expected_leading_wire = b"\x00" + NATIVE_WIRE_PREFIX
-            if not first_wire.startswith(expected_leading_wire):
-                raise ValueError(
-                    f"{family} {key} {subpart} first WIRE does not match the "
-                    "donor-proven leading-separator unit grammar."
-                )
-            if any(
-                not wire.startswith(expected_leading_wire)
-                for wire in ordered_wire_records[1:]
-            ):
-                raise ValueError(
-                    f"{family} {key} {subpart} has a malformed following WIRE "
-                    "unit for the donor-proven shared separator grammar."
-                )
-            # The HC74 donor starts the first WIRE immediately after its
-            # component packet.  Each following unit supplies the one shared
-            # zero byte between WIREs; there is no trailing byte after the
-            # final WIRE before the next terminal/object record.
-            ordered_wire_records[0] = first_wire[1:]
-        component_segment = component_segments[subpart]
-        if link_prefix_zero_trim_count:
-            link_offsets: list[int] = []
-            for raw_slot in raw_subpart_link_slots.values():
-                if not isinstance(raw_slot, dict):
-                    continue
-                if str(raw_slot.get("subpart", "")).upper() != subpart:
-                    continue
-                raw_offset = raw_slot.get("offset")
-                if raw_offset is None:
-                    continue
-                link_offsets.append(int(raw_offset))
-            if not link_offsets or any(offset >= 0 for offset in link_offsets):
-                raise ValueError(
-                    f"{family} {key} {subpart} lacks negative donor link offsets "
-                    "needed for link-prefix padding normalization."
-                )
-            link_positions = sorted(
-                len(component_segment) + offset
-                for offset in link_offsets
-            )
-            expected_positions = list(
-                range(link_positions[0], link_positions[-1] + 1, 4)
-            )
-            if link_positions != expected_positions:
-                raise ValueError(
-                    f"{family} {key} {subpart} donor link slots are not one "
-                    "contiguous four-byte array."
-                )
-            link_start = link_positions[0]
-            padding_start = link_start - link_prefix_zero_trim_count
-            if padding_start < 0 or component_segment[padding_start:link_start] != (
-                b"\x00" * link_prefix_zero_trim_count
-            ):
-                raise ValueError(
-                    f"{family} {key} {subpart} does not contain the declared "
-                    "zero link-prefix padding."
-                )
-            for position in link_positions:
-                if (
-                    component_segment[position + 2 : position + 4]
-                    not in COMPONENT_PIN_LINK_TRAILERS
-                ):
-                    raise ValueError(
-                        f"{family} {key} {subpart} link slot at {position} is "
-                        "not active before padding normalization."
-                    )
-            component_segment = (
-                component_segment[:padding_start]
-                + component_segment[link_start:]
-            )
-
-        # Some native multipart packets terminate each component's active
-        # pin-link trailer with a separate zero byte before the first WIRE.
-        # That byte is not a per-WIRE separator: it belongs to the component
-        # / WIRE record boundary and must be declared by the donor profile.
-        component_wire_separator = (
-            b"\x00"
-            if component_wire_separator_policy == "append_single_zero"
-            else b""
-        )
-        blocks.append(
-            component_segment
-            + component_wire_separator
-            + b"".join(ordered_wire_records)
-        )
-
-    expected_pins = set(terminal_by_pin)
-    if (
-        len(consumed_terminal_pins) != len(set(consumed_terminal_pins))
-        or len(consumed_wire_pins) != len(set(consumed_wire_pins))
-        or set(consumed_terminal_pins) != expected_pins
-        or set(consumed_wire_pins) != expected_pins
-        or set(component_segments) != {
-            str(block.get("subpart", "")).upper()
-            for block in raw_blocks
-            if isinstance(block, dict)
-        }
-    ):
-        raise ValueError(
-            f"{family} {key} donor subpart blocks do not exactly cover current "
-            "component records and terminal/WIRE plans."
-        )
-    return blocks
 
 
 def _load_six_inductor_templates(project: Path) -> InductorDonorTemplates:
