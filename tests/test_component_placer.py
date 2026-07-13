@@ -3901,6 +3901,75 @@ def test_4511_component_stream_stages_and_complete_route_match_donor_contract(
     assert read_internal_file(output, "ROOT.CDB") == base_cdb
 
 
+@pytest.mark.parametrize("count", [9, 15])
+def test_4511_scales_preserve_component_first_attachment_units(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """Every placed 4511 retains fourteen grid-contact active units."""
+
+    family = "4511"
+    base = tmp_path / f"4511_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"4511_{count}x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = terminal_placer._bidir_label_records(chunk)
+    wires = terminal_placer._wire_rows_from_chunk(
+        chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(dsn),
+    )
+    expected_labels = {
+        "PIN13QA", "PIN12QB", "PIN11QC", "PIN10QD", "PIN9QE", "PIN15QF",
+        "PIN14QG", "PIN7A", "PIN1B", "PIN2C", "PIN6D", "PIN3LT", "PIN4BI",
+        "PIN5LE/NSTB",
+    }
+
+    assert placement.valid
+    assert len(placement.selected_groups) == count
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == report["wire_count_added"] == 14 * count
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert len(terminals) == len(wires) == 14 * count
+    assert {row["label"] for row in terminals} == expected_labels
+    assert all(
+        terminal_placer._terminal_contact_xy(row)[0] % 254_000 == 0
+        and terminal_placer._terminal_contact_xy(row)[1] % 254_000 == 0
+        for row in terminals
+    )
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in wires
+    )
+    chunk_start = terminal_placer._object_chunk_absolute_start(dsn)
+    assert all(
+        int(row["suffix"])
+        == (chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
+        for row in wires
+    )
+    assert read_internal_file(output, "ROOT.CDB") == read_internal_file(base, "ROOT.CDB")
+
+
 def test_hc157_terminal_leading_donor_grammar_has_nonzero_short_wires(
     tmp_path: Path,
 ) -> None:

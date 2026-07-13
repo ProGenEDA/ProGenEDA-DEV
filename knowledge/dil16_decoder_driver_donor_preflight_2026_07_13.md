@@ -173,3 +173,20 @@ to their generated source files. Screenshots are retained under
 acceptance. 7447 remains deliberately un-emitted: its unexplained 50-byte
 component-to-first-WIRE difference must be fully resolved from its authoritative
 donor before its profile or stream is changed.
+
+## 4511 9x and 15x scale result
+
+Fresh locked-mega component-placer outputs were terminalized through the same
+shared catalogue profile, with no alternate terminal workflow:
+
+| Scale | Terminal/WIRE pairs | Static attachment audit | Local loader result |
+| ---: | ---: | --- | --- |
+| 9x | 126 / 126 | unique final-address links; grid contacts; nonzero WIREs; unchanged `ROOT.CDB` | normal visible cold open and cold reopen; no save |
+| 15x | 210 / 210 | unique final-address links; grid contacts; nonzero WIREs; unchanged `ROOT.CDB` | normal visible cold open and cold reopen; no save |
+
+The normal disposable copies retained the generated SHA-256 values:
+`05B32E9F52C3E5A324EE463B68547F2A84BF0D9F04561484771B4295CD40CCEC` for
+9x and `2D0E205943685F017BE11DD13D1A5BFA9C4CA1485BA08ACADDF6918828776A91`
+for 15x. The large 15x screenshots visibly show repeated 4511 symbols with
+their green short terminal attachments. No Bad Object Record appeared, so no
+normal copy was Ctrl+S-saved.

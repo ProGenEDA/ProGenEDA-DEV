@@ -2074,7 +2074,14 @@ The 4511 native-contact stage, grid-contact stage, and complete active 1x all
 passed visible 12-second local Proteus opens; the active output also passed a
 cold reopen. No modal dialog appeared, so no Ctrl+S was used. Direct comparison
 to the accepted donor leaves only 56 rebased suffix bytes different. `ROOT.CDB`
-is preserved unchanged. Scale and user visual checks are still separate gates.
+is preserved unchanged.
+
+The same frozen profile has now passed fresh locked-mega 9x and 15x outputs.
+They contain 126 and 210 active terminal/WIRE units respectively; every unit
+has a grid terminal contact, a nonzero exact-pin WIRE, and a unique final
+ROOT.DSN address link. Both scales cold-opened and cold-reopened visibly with
+no modal error and unchanged normal-copy hashes. User visual acceptance remains
+the final layout authority; this scale result does not authorize a mixed grammar.
 
 `7447` is not interchangeable with 4511 merely because both are DIL16
 decoder/driver parts. Its authoritative donor is terminal-leading and still has

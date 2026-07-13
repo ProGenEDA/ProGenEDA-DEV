@@ -13187,3 +13187,15 @@ The 4511 evidence is now recorded as a 1x loader pass, not as a user-accepted sc
 ## Agent Visible Response - 2026-07-13 21:00 +05:00
 
 The staged change set is limited to the shared placer, 4511 catalogue/evidence/tests, and its screenshots; the unrelated donor and experiment files remain unstaged. I’m committing this 1x checkpoint now.
+
+## Agent Visible Response - 2026-07-13 21:01 +05:00
+
+The 1x checkpoint is committed and pushed as `bb789096`; local, upstream, and GitHub now match. I’m continuing with 4511’s 9x/15x scale path through the same shared placer—no new terminal implementation—before touching 7447.
+
+## Agent Visible Response - 2026-07-13 21:03 +05:00
+
+Static scale audit is clean: 4511 now has 126 attached terminal/WIRE units at 9x and 210 at 15x, all grid-aligned at the terminal edge and nonzero to the exact pin. I’m running the visible Proteus loader gate on those actual scale outputs next.
+
+## Agent Visible Response - 2026-07-13 21:09 +05:00
+
+Both 4511 scale projects opened and cold-reopened normally. The 15x screen shows multiple 4511s with the same short green terminal-to-pin attachments; neither scale showed a Bad Object Record, so neither was saved. I’m adding the scale regression and checkpointing this before auditing 7447.

@@ -29,7 +29,17 @@ normally. No Bad Object Record appeared, so none of the normally opening copies
 was Ctrl+S-saved; their SHA-256 values remained unchanged. Screenshots are in
 `01_4511_staged_1x/local_proteus_gate/`.
 
-Status: 4511 1x loader/persistence proof is complete. 9x/15x scale validation
-and user visual acceptance remain separate next steps. 7447 is intentionally
-not generated because its donor-to-locked-mega packet frame has an unexplained
-50-byte delta.
+## 4511 scale proof
+
+`02_4511_scale_9x_15x/` contains fresh locked-mega controls and active shared
+placer outputs for 9x and 15x. Their active projects contain 126 and 210
+terminal/WIRE pairs respectively. Each pair has a grid-aligned terminal contact,
+a nonzero short WIRE to the exact pin, and final-address-rebased active links.
+
+Both scale outputs cold-opened and cold-reopened normally after the 12-second
+gate. No Bad Object Record appeared, so normal copies were not Ctrl+S-saved.
+The 15x loader screenshots are retained in that scale directory.
+
+Status: 4511 1x, 9x, and 15x loader/persistence proofs are complete; user
+visual acceptance remains authoritative. 7447 is intentionally not generated
+because its donor-to-locked-mega packet frame has an unexplained 50-byte delta.
