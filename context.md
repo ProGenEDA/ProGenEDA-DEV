@@ -12839,3 +12839,99 @@ Your active Proteus window is still `sa4027_complete`, responsive, so I’m leav
 ## Agent Visible Response - 2026-07-13 17:00 +05:00
 
 I’ve completed every safe generation and DSN-side validation available without touching your active window. I’m watching for that window to close; I will not replace it with a different donor, mutate CDB, or move on with an unaccepted 4027 route.
+
+## Agent Visible Response - 2026-07-13 17:04 +05:00
+
+I’m resuming the 4027 loader gate now: first confirm the previous checkpoint is on GitHub and that Proteus is free, then cold-open 1×, 9×, and 15× in order.
+
+## Agent Visible Response - 2026-07-13 17:05 +05:00
+
+Proteus is free. I’m running the first cold-open on a disposable 1× copy now, with a 12-second post-window stability check and modal-dialog scan; normal opens will not be saved.
+
+## Agent Visible Response - 2026-07-13 17:06 +05:00
+
+The 1× final opens normally: no Bad Object Record or library dialog, and the untouched disposable copy’s hash stayed identical. I’m cold-reopening that same copy now; then I’ll apply the identical gate to 9× and 15×.
+
+## User Message - 2026-07-13 17:07 +05:00
+
+The 1× final opens normally: no Bad Object Record or library dialog, and the untouched disposable copy’s hash stayed identical. I’m cold-reopening that same copy now; then I’ll apply the identical gate to 9× and 15×.it gave bad object record
+
+## Agent Visible Response - 2026-07-13 17:08 +05:00
+
+I’m treating your Bad Object Record report as authoritative—the automated first-open scan is not acceptance. I’m stopping promotion at 1×; after this in-flight reopen ends, I’ll use a disposable copy to dismiss the dialog, save it, and compare only ROOT.DSN against the original before changing anything.
+
+## Agent Visible Response - 2026-07-13 17:10 +05:00
+
+The cold reopen reproduced exactly what you saw: `Bad object record - circuit data lost.` I’m now following your diagnostic rule on a fresh disposable copy—dismiss OK, let the schematic load, Ctrl+S, then compare ROOT.DSN only.
+
+## Agent Visible Response - 2026-07-13 17:12 +05:00
+
+The disposable save reproduced your fix exactly: Proteus dismisses the dialog, opens the sheet, then saves a ROOT.DSN that shrinks from 148,593 to 146,736 bytes. I’m now enumerating every DSN-level loss against both the original and your `fixS02`—still no CDB work and no 9×/15× promotion.
+
+## Agent Visible Response - 2026-07-13 17:14 +05:00
+
+The save boundary confirms Proteus retains the first seven terminals and A component, then drops everything beginning at the first WIRE. I’m executing the required staged isolation now: stage 1 (terminals at pin contact, no WIRE), then stage 2 (grid contact, no WIRE), before touching the active stage.
+
+## Agent Visible Response - 2026-07-13 17:16 +05:00
+
+Stage 1 fails even earlier with `Fatal Error / VGDVC`, so I’m stopping exactly there as the staged method requires. That rules out the new short-wire coordinates as the first fault; I’m comparing the inactive terminal/component block ordering and fields against the Ctrl+S-salvaged DSN now.
+
+## Agent Visible Response - 2026-07-13 17:18 +05:00
+
+The stage-1 stream confirms the real boundary: the first A terminal/component block is readable, but a second terminal block directly after A without its attachment unit is not an accepted object-stream transition. I’m cold-reopening the Ctrl+S-salvaged copy next to confirm that prefix is genuinely valid before I map the missing boundary bytes.
+
+## User Message - 2026-07-13 17:20 +05:00
+
+use donor now, this much time on just 1x tells me that this method has failed. go back to donor as main learning
+
+## Agent Visible Response - 2026-07-13 17:20 +05:00
+
+Understood. I’m dropping the staged synthetic path here—it isolated the boundary but has not produced a valid unit. I’ll use the accepted 4027 donor as the primary source from this point: full donor stream, exact component/WIRE/link blocks, then one evidence-backed repair rather than further stage variants.
+
+## Agent Visible Response - 2026-07-13 17:21 +05:00
+
+Before changing terminal logic, I’m checking the current locked-mega 4027 no-terminal control through the same cold-open/reopen gate. That distinguishes a donor-derived attachment defect from a base packet/frame defect; it does not introduce another terminal variant.
+
+## User Message - 2026-07-13 17:23 +05:00
+
+always take ss before u close a project so yk what error was there , what was being shown on screen, cause what project file u opened most recent had a bad object reocrd
+
+## Agent Visible Response - 2026-07-13 17:23 +05:00
+
+Understood. Your reported Bad Object Record overrides my hidden-window scan; that scan was insufficient. I’m changing the local gate now: every Proteus launch will be visible, wait through the stability period, capture a screenshot before closing, and I’ll inspect that screenshot before classifying the result. I’m not promoting the donor-contact candidate.
+
+## User Message - 2026-07-13 17:25 +05:00
+
+you knwo how to deal with bad object record, click ok, let it open do ctrl s and compare with generated. remember if it opens after ok this means mistake is v small that proteus itself can correct it
+
+## Agent Visible Response - 2026-07-13 17:25 +05:00
+
+Locked in. For every Bad Object Record I’ll now: screenshot the dialog, dismiss it, let Proteus finish loading, Ctrl+S, screenshot again before closing, then compare the saved ROOT.DSN with the generated one. I’m applying that exact recovery audit to the donor-contact candidate now.
+
+## Agent Visible Response - 2026-07-13 17:52 +05:00
+
+The screenshot confirms the expected recovery path: Proteus shows the Bad Object Record dialog, then opens the first 4027 half after OK. I’m comparing the generated and Ctrl+S-saved ROOT.DSN now; that saved delta is the authoritative map of the small defect.
+
+## Agent Visible Response - 2026-07-13 17:56 +05:00
+
+The saved file proves Proteus keeps the first A-terminal/component unit and drops the stream at its first WIRE. The donor comparison exposes the exact structural correction: the locked mega’s U13:A/B packets must stay one byte wider than donor U1:A/B, so I regenerated the donor-contact route with that width preserved. I’m now cold-opening that corrected 1× candidate visibly and capturing the screen before making any further decision.
+
+## Agent Visible Response - 2026-07-13 17:59 +05:00
+
+The corrected candidate opens normally—no Bad Object Record dialog—and the screenshot shows both U13:A and U13:B with their seven terminals. Because it opened normally, I am not saving it. I’m closing this untouched instance and doing the required cold reopen on the same file.
+
+## Agent Visible Response - 2026-07-13 18:03 +05:00
+
+The 1× donor-width repair survived a normal cold reopen. I’m running the full component-placer regression set now before I freeze this 4027-only profile change; no accepted terminal family is being rewritten.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json` — 4027 now declares the donor-proven one-byte link-prefix trim and direct donor-contact route.
+- `tests/test_component_placer.py` — focused reference-width regression for 4027 active A/B subpart blocks.
+- `knowledge/4027_donor_native_contact_repair_2026_07_13.md` — DSN-only donor/recovery audit and resolved packet-width evidence.
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/07_reference_width_repair/` — locked-mega 1× no-terminal control, terminalized result, manifest, and visible loader screenshots.
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/README.md` and `knowledge/test_results.jsonl` — result record.
+
+## Agent Visible Response - 2026-07-13 18:07 +05:00
+
+The foregrounded cold reopen is clean as well: both 4027 halves and all fourteen terminals rendered, with no dialog. I’ve recorded the Bad Object recovery delta and the one-byte donor-frame repair; I’m checkpointing this 1× result now, then I’ll take the same shared route to 9× and 15×.

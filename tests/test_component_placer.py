@@ -912,6 +912,109 @@ def test_locked_mega_4027_scale_selection_uses_only_complete_ab_packages(
     assert all(group.refs == (f"{group.key}:A", f"{group.key}:B") for group in result.selected_groups)
 
 
+def test_4027_shared_placer_preserves_reference_width_in_active_subpart_blocks(
+    tmp_path: Path,
+) -> None:
+    """4027 keeps one reference-width byte instead of forcing donor packet size.
+
+    The user-accepted donor has ``U1:A/B`` records.  The locked mega places
+    ``U13:A/B``; its active packets must therefore remain one byte wider than
+    the donor packets after the one donor-proven tail-padding trim.
+    """
+
+    family = "4027"
+    donor = (
+        ROOT
+        / "proteus_ic"
+        / "donors"
+        / "terminalized_catalogue_evidence"
+        / "dil16_dual_jk_ff"
+        / family
+        / "4027_terminalized_primary.pdsprj"
+    )
+    base = tmp_path / "4027_1x_no_terminal.pdsprj"
+    output = tmp_path / "4027_1x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == 14
+    assert report["wire_count_added"] == 14
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "single_ff"
+    assert all(
+        not row["wire_is_nonzero"] and row["zero_length_wire_allowed"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+    donor_dsn = read_internal_file(donor, "ROOT.DSN")
+    output_dsn = read_internal_file(output, "ROOT.DSN")
+    donor_chunk = _extract_object_chunk(donor_dsn)
+    output_chunk = _extract_object_chunk(output_dsn)
+    donor_wires = terminal_placer._wire_rows_from_chunk(
+        donor_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(donor_dsn),
+    )
+    output_wires = terminal_placer._wire_rows_from_chunk(
+        output_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
+    )
+    assert len(donor_wires) == len(output_wires) == 14
+    assert all(
+        tuple(row["full_coordinates"][:2])
+        == tuple(row["full_coordinates"][-2:])
+        for row in output_wires
+    )
+
+    refs = {ref.rsplit(":", 1)[1]: ref for ref in result.selected_groups[0].refs}
+    component_starts = {
+        subpart: output_chunk.index(
+            b"\xff" + bytes([len(ref.encode("ascii"))]) + ref.encode("ascii")
+        )
+        for subpart, ref in refs.items()
+    }
+    donor_component_starts = {
+        subpart: donor_chunk.index(
+            b"\xff" + bytes([len(ref.encode("ascii"))]) + ref.encode("ascii")
+        )
+        for subpart, ref in {"A": "U1:A", "B": "U1:B"}.items()
+    }
+    wire_starts = [row["marker_offset"] - 24 for row in output_wires]
+    donor_wire_starts = [row["marker_offset"] - 24 for row in donor_wires]
+    reference_width_delta = len(refs["A"]) - len("U1:A")
+    assert reference_width_delta == 1
+    assert wire_starts[0] - component_starts["A"] == (
+        donor_wire_starts[0] - donor_component_starts["A"] + reference_width_delta
+    )
+    assert wire_starts[7] - component_starts["B"] == (
+        donor_wire_starts[7] - donor_component_starts["B"] + reference_width_delta
+    )
+    assert wire_starts[0] == donor_wire_starts[0] + 1
+    assert wire_starts[7] == donor_wire_starts[7] + 2
+    assert output_chunk.endswith(b"\xff")
+
+
 def test_mixed_layout_keeps_large_visual_spacing_between_types(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
