@@ -1484,8 +1484,13 @@ def _apply_binary_beautifier(
                 group.family,
                 group.refs,
                 snap_translation_to_terminal_grid=terminal_grid_alignment,
+                include_subckt_name_coordinates=terminal_grid_alignment,
             )
-            pairs = layout_coordinate_pairs(layout_source_data, group.family)
+            pairs = layout_coordinate_pairs(
+                layout_source_data,
+                group.family,
+                include_subckt_name_coordinates=terminal_grid_alignment,
+            )
             if pairs:
                 before = coordinate_bbox(layout_source_data, pairs)
                 allocation_width = (
@@ -1537,6 +1542,7 @@ def _apply_binary_beautifier(
                 allocation_width=allocation_width,
                 allocation_height=allocation_height,
                 snap_translation_to_terminal_grid=terminal_grid_alignment,
+                include_subckt_name_coordinates=terminal_grid_alignment,
             )
             known_refs_unchanged = all(
                 group.data.count(ref.encode("ascii"))

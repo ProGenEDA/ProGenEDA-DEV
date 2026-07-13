@@ -176,3 +176,27 @@ The remaining acceptance step is the delayed local Proteus cold-open/cold-
 reopen gate on a disposable copy. A normal open is not saved; only a dismissed
 `Bad Object Record` triggers the user-requested save-and-compare DSN check.
 The user's currently open Proteus window is not interrupted by the automation.
+
+## User-saved recovery delta â€” 2026-07-13
+
+The user supplied
+`experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/01_solo_1x/S02_4027_1X/fixS02_4027_1X_CATALOGUE_TERMINAL_sa.pdsprj`
+after dismissing `Bad Object Record` and saving. This is diagnostic evidence,
+not an accepted replacement donor. Its `ROOT.DSN` object chunk is 1,161 bytes
+rather than the candidate's 3,018 bytes: it contains only the first seven
+`$TERBIDIR` records, all with suffix `0000`, one `U13:A` component packet, no
+`WIRE` records, no active component links, and no `U13:B` block. Proteus
+therefore salvaged the readable prefix and discarded the stream at the first
+active attachment boundary.
+
+The DSN-only comparison also found one remaining complete-packet coordinate
+omission. Every locked-mega 4027 subpart has a non-length-prefixed `SUBCKT
+NAME` label coordinate pair after the literal `SUBCKT NAME` bytes. The
+accepted donor translates that pair with the body. The candidate kept the two
+pairs at their original mega-donor coordinates even though it translated the
+reference, ID, value, and body pairs. For example, physical `U13:A` retained
+`(9164330, 6329680)` instead of the translated `(-4805670, -5100320)`.
+This is DSN evidence for an additive, opt-in component-beautifier repair: move
+the `SUBCKT NAME` pair only when the terminal-grid layout option is requested.
+Default accepted-family beautifier paths remain unchanged. No `ROOT.CDB`
+member is read, compared, or mutated for this work.

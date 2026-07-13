@@ -406,6 +406,44 @@ def _length_prefixed_text_coordinate_pairs(fragment: bytes) -> list[tuple[int, i
     return pairs
 
 
+def _subckt_name_coordinate_pairs(fragment: bytes) -> list[tuple[int, int, str]]:
+    """Return the donor-proven non-length-prefixed ``SUBCKT NAME`` label pairs.
+
+    Proteus IC packets store this text label as a literal followed by five zero
+    bytes and ``FF 00`` before its signed X/Y pair.  It is not a normal
+    length-prefixed text record, so the regular parsed coordinate scan must not
+    accidentally infer it.  Callers opt in only when their family evidence
+    proves this field belongs to the translated visible packet frame.
+    """
+
+    marker = b"SUBCKT NAME"
+    prefix = b"\x00\x00\x00\x00\x00\xff\x00"
+    pairs: list[tuple[int, int, str]] = []
+    offset = 0
+    while True:
+        marker_offset = fragment.find(marker, offset)
+        if marker_offset < 0:
+            return pairs
+        coordinate_offset = marker_offset + len(marker) + len(prefix)
+        if (
+            coordinate_offset + 8 <= len(fragment)
+            and fragment[
+                marker_offset + len(marker) : coordinate_offset
+            ] == prefix
+        ):
+            x_value = _s32_at(fragment, coordinate_offset)
+            y_value = _s32_at(fragment, coordinate_offset + 4)
+            if _packet_coord_pair_ok(x_value, y_value):
+                pairs.append(
+                    (
+                        coordinate_offset,
+                        coordinate_offset + 4,
+                        "subckt_name_label",
+                    )
+                )
+        offset = marker_offset + 1
+
+
 def _marker_body_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
     marker = family.encode("ascii", errors="ignore")
     if not marker:
@@ -479,11 +517,18 @@ def _strict_marker_body_coordinate_pairs(
         offset = marker_offset + 1
 
 
-def _parsed_family_coordinate_pairs(fragment: bytes, family: str) -> list[tuple[int, int, str]]:
+def _parsed_family_coordinate_pairs(
+    fragment: bytes,
+    family: str,
+    *,
+    include_subckt_name_coordinates: bool = False,
+) -> list[tuple[int, int, str]]:
     marker_pairs: list[tuple[int, int, str]] = []
     for marker_text in (family, *BODY_MARKER_ALIASES.get(family, ())):
         marker_pairs.extend(_strict_marker_body_coordinate_pairs(fragment, marker_text))
     pairs = _length_prefixed_text_coordinate_pairs(fragment) + marker_pairs
+    if include_subckt_name_coordinates:
+        pairs.extend(_subckt_name_coordinate_pairs(fragment))
     return _dedupe_coordinate_pairs(pairs)
 
 
@@ -531,10 +576,19 @@ def _dedupe_coordinate_pairs(pairs: list[tuple[int, int, str]]) -> list[tuple[in
     return ordered
 
 
-def layout_coordinate_pairs(fragment: bytes, family: str | None = None) -> list[tuple[int, int, str]]:
+def layout_coordinate_pairs(
+    fragment: bytes,
+    family: str | None = None,
+    *,
+    include_subckt_name_coordinates: bool = False,
+) -> list[tuple[int, int, str]]:
     if family:
         if family in PARSED_PASSIVE_LAYOUT_FAMILIES or family in PARSED_IC_LAYOUT_FAMILIES:
-            return _parsed_family_coordinate_pairs(fragment, family)
+            return _parsed_family_coordinate_pairs(
+                fragment,
+                family,
+                include_subckt_name_coordinates=include_subckt_name_coordinates,
+            )
         if family in DISPLAY_LAYOUT_FAMILIES:
             return _display_coordinate_pairs(fragment)
         if family in LINKED_VISIBLE_LAYOUT_FAMILIES:
@@ -594,6 +648,7 @@ def spread_multipart_subpart_coordinates(
     gap_x: int = MULTIPART_SUBPART_GAP_X,
     gap_y: int = MULTIPART_SUBPART_GAP_Y,
     snap_translation_to_terminal_grid: bool = False,
+    include_subckt_name_coordinates: bool = False,
 ) -> tuple[bytes, dict[str, Any]]:
     """Spread native A/B/C subpart clusters inside one Proteus packet.
 
@@ -609,7 +664,11 @@ def spread_multipart_subpart_coordinates(
     if len(subpart_refs) < 2:
         return data, {"applied": False, "reason": "not_multipart"}
 
-    pairs = layout_coordinate_pairs(data, family)
+    pairs = layout_coordinate_pairs(
+        data,
+        family,
+        include_subckt_name_coordinates=include_subckt_name_coordinates,
+    )
     if not pairs:
         return data, {"applied": False, "reason": "no_layout_coordinate_pairs"}
 
@@ -698,7 +757,11 @@ def spread_multipart_subpart_coordinates(
         }
 
     translated = bytes(out)
-    after_pairs = layout_coordinate_pairs(translated, family)
+    after_pairs = layout_coordinate_pairs(
+        translated,
+        family,
+        include_subckt_name_coordinates=include_subckt_name_coordinates,
+    )
     return translated, {
         "applied": translated != data,
         "method": "subpart_label_offset_clusters",
@@ -783,10 +846,15 @@ def translate_packet_to_position(
     allocation_width: int | None = None,
     allocation_height: int | None = None,
     snap_translation_to_terminal_grid: bool = False,
+    include_subckt_name_coordinates: bool = False,
 ) -> tuple[bytes, dict[str, Any]]:
     """Move a complete packet so its parsed bbox begins at an explicit point."""
 
-    pairs = layout_coordinate_pairs(data, family)
+    pairs = layout_coordinate_pairs(
+        data,
+        family,
+        include_subckt_name_coordinates=include_subckt_name_coordinates,
+    )
     if not pairs:
         entry: dict[str, Any] = {
             "key": key,

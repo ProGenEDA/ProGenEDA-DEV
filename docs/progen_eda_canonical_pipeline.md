@@ -164,6 +164,13 @@ frame remains on-grid; the terminal stage still never moves component packets.
 The catalogue declares that exceptional WIRE grammar, physical subpart anchor,
 and proof source.
 
+When that opt-in moves a native IC packet, it must move every donor-proven
+visible-frame coordinate, not only the ordinary length-prefixed reference and
+value labels. The 4027 packet also has a non-length-prefixed `SUBCKT NAME`
+coordinate pair. This field is translated only through the explicit
+terminal-grid opt-in parser; arbitrary opaque 32-bit values remain untouched,
+and frozen accepted-family beautifier paths retain their existing output.
+
 When IC and non-IC packets coexist, the packet beautifier uses separate
 vertical bands with at least 5,080,000 internal units between the parsed IC
 maximum Y and non-IC minimum Y. This is a static correction for the reported

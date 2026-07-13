@@ -6,7 +6,10 @@ import pytest
 
 from proteusgen.component_placer import generate_component_placement_project, load_component_aliases
 from proteusgen.component_catalog import load_component_catalog
-from proteusgen.component_beautifier import translate_packet_by_delta
+from proteusgen.component_beautifier import (
+    layout_coordinate_pairs,
+    translate_packet_by_delta,
+)
 from proteusgen.pdsprj import read_internal_file
 from proteusgen.component_terminal_placer import (
     PROTEUS_TERMINAL_GRID,
@@ -623,6 +626,38 @@ def test_4027_subpart_route_uses_each_donor_anchor_and_grid_native_wires(
             pin["x"],
             pin["y"],
         ]
+
+    # The grid-terminal opt-in also moves the donor-proven non-length-prefixed
+    # SUBCKT NAME label pair for each physical flip-flop. The default parsed
+    # coordinate route remains frozen and deliberately omits that extra field.
+    grid_pairs = layout_coordinate_pairs(
+        result.selected_groups[0].data,
+        "4027",
+        include_subckt_name_coordinates=True,
+    )
+    subckt_coordinates = [
+        tuple(
+            int.from_bytes(
+                result.selected_groups[0].data[offset : offset + 4],
+                "little",
+                signed=True,
+            )
+            for offset in (x_offset, y_offset)
+        )
+        for x_offset, y_offset, reason in grid_pairs
+        if reason == "subckt_name_label"
+    ]
+    assert subckt_coordinates == [
+        (-4_805_670, -5_100_320),
+        (-4_805_670, 2_265_680),
+    ]
+    assert not any(
+        reason == "subckt_name_label"
+        for _x_offset, _y_offset, reason in layout_coordinate_pairs(
+            result.selected_groups[0].data,
+            "4027",
+        )
+    )
 
     report = attach_catalogue_pin_bidir_terminals_to_project(
         source,
