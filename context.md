@@ -2,6 +2,15 @@
 
 
 
+## Agent Final Response - 2026-07-13 +05:00
+
+Implemented and recorded the staged 1× workflow: native oriented terminal first, then grid-contact position, then named short WIRE plus active link; each stage must cold-open before the next. The contact edge must be exactly on a grid intersection.
+
+HC76 is now generated at 1×/9×/15× with 14/126/210 terminal-WIRE pairs. The 9× and 15× candidates cold-opened and cold-reopened locally with no dialog; the 15× screen capture is in `experiments/dil16_dual_jk_ff_terminal_v1_temp_2026_07_13/04_local_proteus_gate/`. No CDB-emission logic was changed.
+
+Validation passed: `python -m pytest tests/test_component_placer.py -q` (154 passed), compileall, catalogue JSON checks, and copied-file loader gates. The checkpoint was committed and pushed as `51599c9a42308f94d85234a3842e67139e63f205`; local and remote hashes match.
+
+
 ## Agent Visible Response - 2026-07-13 +05:00
 
 I’m checkpointing this now with only the HC76/shared-parser changes, documentation, backup, and generated evidence pack. The unrelated dirty donor/debug artifacts remain untouched.
