@@ -966,16 +966,17 @@ def test_dil16_counter_scales_keep_all_grid_short_wire_attachment_units(
     )
 
 
-def test_dil16_register_terminal_leading_stages_preserve_active_pin_links(
+@pytest.mark.parametrize("family", ["74HC174", "74HC283", "74HC85"])
+def test_dil16_terminal_leading_stages_preserve_active_pin_links(
     tmp_path: Path,
+    family: str,
 ) -> None:
-    """74HC174 uses the shared terminal-leading profile without a new emitter."""
+    """DIL16 profiles use the shared terminal-leading route without new emitters."""
 
-    family = "74HC174"
-    base = tmp_path / "74HC174_1x_no_terminal.pdsprj"
-    native = tmp_path / "74HC174_1x_native_contact.pdsprj"
-    grid = tmp_path / "74HC174_1x_grid_contact.pdsprj"
-    active = tmp_path / "74HC174_1x_catalogue_terminal.pdsprj"
+    base = tmp_path / f"{family}_1x_no_terminal.pdsprj"
+    native = tmp_path / f"{family}_1x_native_contact.pdsprj"
+    grid = tmp_path / f"{family}_1x_grid_contact.pdsprj"
+    active = tmp_path / f"{family}_1x_catalogue_terminal.pdsprj"
     placement = generate_component_placement_project(
         {
             "donor": str(NEW_COMPONENT_MEGA_DONOR),
@@ -1072,7 +1073,9 @@ def test_dil16_register_terminal_leading_stages_preserve_active_pin_links(
     marker = b"\xff" + bytes((len(group.key),)) + group.key.encode("ascii")
     component_start = chunk.index(marker)
     component_end = min(int(row["marker_offset"]) - 24 for row in wires)
-    assert component_end - component_start == 445 + len(group.key) - len("U1")
+    assert component_end - component_start == int(
+        geometry["donor_component_packet_bytes"]
+    ) + len(group.key) - len("U1")
     for pin, pin_geometry in geometry["pins"].items():
         position = component_end + int(
             pin_geometry["component_link_offset_from_component_end"]
@@ -1089,14 +1092,24 @@ def test_dil16_register_terminal_leading_stages_preserve_active_pin_links(
     assert read_internal_file(active, "ROOT.CDB") == base_cdb
 
 
-@pytest.mark.parametrize("count", [9, 15])
-def test_dil16_register_scales_keep_all_grid_short_wire_attachment_units(
+@pytest.mark.parametrize(
+    ("family", "count"),
+    [
+        ("74HC174", 9),
+        ("74HC174", 15),
+        ("74HC283", 9),
+        ("74HC283", 15),
+        ("74HC85", 9),
+        ("74HC85", 15),
+    ],
+)
+def test_dil16_terminal_leading_scales_keep_all_grid_short_wire_attachment_units(
     tmp_path: Path,
+    family: str,
     count: int,
 ) -> None:
-    """Every requested 74HC174 scale stays on the shared catalogue path."""
+    """Every requested DIL16 terminal-leading scale stays on the shared path."""
 
-    family = "74HC174"
     base = tmp_path / f"{family}_{count}x_no_terminal.pdsprj"
     output = tmp_path / f"{family}_{count}x_catalogue_terminal.pdsprj"
     placement = generate_component_placement_project(

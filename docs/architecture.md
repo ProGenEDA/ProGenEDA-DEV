@@ -2190,3 +2190,34 @@ locally without a modal error. The validated MVP solo limit is 15 per family;
 it is a tested operating bound, not an invented capacity limit. The user has
 explicitly deferred every mixed output until all remaining groups have passed
 their own 1x/9x/15x solo routes.
+
+### 2026-07-14 DIL16 arithmetic/compare terminal-leading contract
+
+`74HC283` and `74HC85` are additive catalogue profiles on the same shared
+terminal-leading serializer. Each authoritative donor proves the packet shape
+`14 terminal records -> separator -> one live component packet -> 14 WIREs ->
+explicit FF`; their individual donor order, geometry, labels, link offsets,
+and component packet widths remain profile facts rather than a new emitter.
+
+`74HC283` has a 436-byte donor component packet and terminal order
+`4,1,13,10,9,5,3,14,12,6,2,15,11,7`. `74HC85` has a 432-byte donor packet and
+terminal order `7,6,5,10,12,13,15,9,11,14,1,2,3,4`. The fresh locked-mega
+controls differ only in placed reference/coordinates/object identity, fourteen
+blank pin-link slots, and a generator-only raw tail. The shared profile trims
+only that raw tail, retains the live component tail, and never transplants a
+donor packet or alters an accepted family.
+
+For every placed component, the shared placer computes its pins from the
+current component anchor, puts the attaching terminal contact on the
+254,000-unit grid, keeps left pins at 1800 and right pins at 0, emits a
+nonzero short WIRE to the exact pin, and rebases both terminal and component
+`0100` link suffixes from the final ROOT.DSN WIRE address. `ROOT.CDB` remains
+byte-identical to the no-terminal locked-mega control.
+
+Each family passed the staged 1x native-contact, grid-contact, active, and
+active cold-reopen gate, then 9x and 15x active cold-open/cold-reopen gates
+without a modal Proteus error. The 15x captures show repeated full terminal
+sets. The validated MVP solo operating limit is 15 per family; it is evidence
+of tested behavior rather than an invented capacity ceiling. Per user
+direction, mixed terminalization remains deferred until all component groups
+complete their solo 1x/9x/15x routes.

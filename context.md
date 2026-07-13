@@ -13421,3 +13421,29 @@ The scale gate is still in its deliberate cold-reopen phase. I’m checking the 
 ## Agent Visible Response - 2026-07-14 02:39 +05:00
 
 The 74HC174 verification is clean: focused tests 3/3, frozen accepted-route tests 14/14, and compile checks all pass. I’m reviewing the exact staged files and repository diff now, then I’ll commit and push this register-only checkpoint before starting the next solo group.
+
+## Agent Visible Response - 2026-07-14 03:02 +05:00
+
+I’m continuing solo-only: I’ll finish and checkpoint the current arithmetic pair at 1×, 9×, and 15×, then move to the next group. No mixed terminal pack will be generated until every group has completed its solo scales.
+
+## Agent Visible Response - 2026-07-14 03:02 +05:00
+
+The prior checkpoint is still committed and matches the remote branch. I’m preserving the existing unrelated worktree changes and inspecting the two current 15× Proteus captures before recording this group.
+
+## Agent Visible Response - 2026-07-14 03:04 +05:00
+
+Both 15× captures are visually clean: repeated 74HC283 and 74HC85 units show full pin-terminal sets with short attachments. I’m recording the loader/static evidence and checkpointing this solo group before starting the next one.
+
+## User Message - 2026-07-14 03:05 +05:00
+
+donot stop, first have 1x 9x 15x for all group working, then mixed of call component terminalized. btw an important thing for some reasons even in 15x only 2 diodes are being shown, i believe this has something to do with ignoring d20, u are only supoosed to ignore d20 n that is cause of 7 segs, diodes after d20 should also act as normal, see if this is the case, if problem is real fix it, then when all the 15x has been tested, mixed is working properly, then ull start doing thorough testing, here is what ull do in this thorough testing. ull list all the components and its limit, which is belive is 15 for ics and whatever is highest common we can get for 2 pinned etc, should be 50 plus atleast, anyways what ever it is, u take that, u take all the components and get 300 plus real world possible circuits using these compoments, starting from normal everyday to insane complex and then generate the jsons of it with name.
+then then, ull take those json and feed it to the generator, ull not interfer with generator, ull open and check if all these open, if one fails then ull interfer and find out y and fix it.
+so basically, 1x 9x 15x then mixed, then testing
+
+## Agent Visible Response - 2026-07-14 03:06 +05:00
+
+Understood. I’ll keep the sequence fixed: every group’s solo 1× → 9× → 15×, then one all-terminalized mixed pack, then the 300+ JSON circuit acceptance run. I’m also treating the diode report as a real regression: only `D20` in the 7-segment path may be ignored; ordinary diodes after it must remain eligible.
+
+## Agent Visible Response - 2026-07-14 03:08 +05:00
+
+The arithmetic pair is fully verified: all six actual outputs have the expected 14-per-part attachments, grid contacts, nonzero wires, unique final links, unchanged `ROOT.CDB`, and the focused/frozen regressions pass. I’m checkpointing it now, then I’ll audit the diode selection rule before the next group.
