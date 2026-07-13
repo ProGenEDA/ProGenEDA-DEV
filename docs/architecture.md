@@ -2019,3 +2019,26 @@ the complete donor polyline and exact physical-pin endpoint, but retarget the
 terminal-side endpoint (and matching bend) to the planned grid contact. This
 is an additive per-profile fact; it is not permission to change frozen
 accepted-family geometry or replace donor routing with generic stubs.
+
+### 2026-07-13 74HC157 terminal-leading finalizer contract
+
+`74HC157` has a different, donor-proven grammar: fourteen terminal records in
+the donor order `4, 7, 9, 12, 2, 3, 5, 6, 11, 10, 14, 13, 1, 15`, one
+separator, the component packet, then fourteen native WIRE records. Its
+authoritative DSN is
+`proteus_ic/donors/terminalized_catalogue_evidence/dil16_mux/74HC157/74HC157_terminalized_primary.pdsprj`.
+
+The locked component placer gives U33 one more reference byte than donor U1
+and retains a raw trailing `00` only in the selected-group source record. The
+normal placed DSN removes that byte before its stream `FF`. A terminal-leading
+emitter must remove that same raw finalizer before appending WIREs; retaining
+it shifts every component-link field and WIRE marker by one byte and caused a
+local `VGDVC.DLL` fatal. The HC157-only catalogue flag
+`strip_component_placer_finalizer_before_terminal_leading_wires` records this
+contract. It is not a generic packet rewrite.
+
+The final route uses grid-aligned terminal contacts, nonzero short WIREs to
+the exact physical pins, donor-proven `0100` link trailers, and suffixes
+rebased from final ROOT.DSN WIRE addresses. The 1x output passed two visible,
+normal cold opens without a save; its 9x and 15x scale validation must reuse
+this unchanged profile and independently verify every terminal/WIRE pair.

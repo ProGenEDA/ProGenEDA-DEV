@@ -13057,3 +13057,48 @@ Both scaled candidates pass their visible cold-open and cold-reopen gates withou
 - `knowledge/hc151_donor_preflight_2026_07_13.md` and `docs/architecture.md` — recorded the scale contact rule and replaceable-stage contract.
 - `experiments/dil16_mux_terminal_v1_temp_2026_07_13/08_hc151_scale_contact_retarget/` — fresh 9×/15× controls, terminalized candidates, retained 15× loader screenshots, and README.
 - `knowledge/test_results.jsonl` and `context.md` — scale results and chronology.
+
+## Agent Visible Response - 2026-07-13 19:30 +05:00
+
+HC151 9x and 15x are now committed and pushed (`2644d5a8`), with normal cold-open/reopen proof. I’m moving to 74HC157 next and will begin from its accepted donor’s complete DSN stream—not from a guessed layout—and use the recovery comparison only if Proteus actually shows a Bad Object Record.
+
+## Agent Visible Response - 2026-07-13 19:35 +05:00
+
+The donor audit exposed a clean, explainable difference: the locked mega’s bare U33 packet is exactly the donor packet plus one byte for the longer reference, and its fourteen reserved link slots keep the same end-relative positions. The shared placer has produced a 1x candidate with all 14 grid-aligned, nonzero terminal-to-pin wires; I’m now doing the byte audit and the visible Proteus gate before treating it as usable.
+
+## Agent Visible Response - 2026-07-13 19:42 +05:00
+
+The first local gate rejected the HC157 candidate with `VGDVC.DLL` access violation, not a Bad Object Record—so the recovery-save rule does not apply to this file. I captured the fatal dialog before closing it. I’m now cold-opening the authoritative HC157 donor under the same gate, then I’ll compare the exact stream boundary instead of guessing at the failure.
+
+## Agent Visible Response - 2026-07-13 19:48 +05:00
+
+The donor opens normally, and the no-terminal locked-mega control opens normally too. The fatal was isolated to one exact tail defect: the generated final wire coordinate ended in `FF`, so the normal single-FF helper omitted the real structural terminator. I corrected that only in the HC157 catalogue profile; static regression is clean, and I’m cold-opening the corrected candidate now.
+
+## User Message - 2026-07-13 20:07 +05:00
+
+you knwo how to deal with bad object record, click ok, let it open do ctrl s and compare with generated. remember if it opens after ok this means mistake is v small that proteus itself can correct it
+
+## Agent Visible Response - 2026-07-13 20:07 +05:00
+
+I’ll apply that recovery rule exactly: screenshot first; only a Bad Object Record that opens after OK gets Ctrl+S and a DSN comparison. The current HC157 failure is being checked now; if it is a fatal dialog, I will not save it.
+
+## Agent Visible Response - 2026-07-13 20:08 +05:00
+
+The corrected HC157 file is still a `VGDVC.DLL` fatal—not a Bad Object Record—so I did not click through or save it. I’ve now ruled out the missing final terminator as the only defect; I’m comparing the remaining packet boundaries and link layout against the already accepted HC151 route before making one evidence-backed correction.
+
+## Agent Visible Response - 2026-07-13 20:11 +05:00
+
+I found the remaining byte-level defect: the terminal-leading route was putting back a raw trailing `00` that the locked component placer had already removed. That made every HC157 wire marker and link field one byte late. I’ve made the correction profile-gated to HC157 only, added a regression that proves the donor-relative positions, and the focused suite is clean; I’m regenerating the 1x candidate for a fresh cold-open gate now.
+
+## Agent Visible Response - 2026-07-13 20:15 +05:00
+
+The repaired 1x HC157 now passes two delayed cold opens with no dialog or crash, and the copied project hash stayed unchanged because it opened normally and was not saved. The captured schematic visibly has all fourteen terminals. I’m recording this as the HC157 1x checkpoint, committing it, then I’ll use the same frozen route for its 9x and 15x checks.
+
+### Files Edited By Agent In This Continuation
+
+- `backups/component_terminal_placer/component_terminal_placer_20260713_200127_before_hc157_finalizer_trim.py` — pre-edit shared-placer backup.
+- `src/proteusgen/component_terminal_placer.py` — profile-gated removal of a component-placer raw finalizer before terminal-leading native WIRE emission.
+- `knowledge/component_catalog_v0.json` — HC157-only finalizer-trim catalogue fact.
+- `tests/test_component_placer.py` — HC157 donor-relative packet-width and link-offset regression.
+- `knowledge/hc157_donor_preflight_2026_07_13.md` — complete DSN comparison, rejected fatal evidence, and corrected boundary analysis.
+- `experiments/dil16_mux_terminal_v1_temp_2026_07_13/09_hc157_donor_preflight/` — refreshed locked-mega 1x control/candidate, report, and visible cold-open/reopen screenshots.

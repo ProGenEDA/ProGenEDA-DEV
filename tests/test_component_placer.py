@@ -3728,6 +3728,131 @@ def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
     assert changed_positions == terminal_suffix_positions | component_link_positions
 
 
+def test_hc157_terminal_leading_donor_grammar_has_nonzero_short_wires(
+    tmp_path: Path,
+) -> None:
+    """HC157 uses its donor record order but a grid-contact short WIRE."""
+
+    family = "74HC157"
+    donor = (
+        ROOT
+        / "proteus_ic"
+        / "donors"
+        / "terminalized_catalogue_evidence"
+        / "dil16_mux"
+        / family
+        / "74HC157_terminalized_primary.pdsprj"
+    )
+    base = tmp_path / "74HC157_1x_no_terminal.pdsprj"
+    output = tmp_path / "74HC157_1x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["clean_packet_attachment_order"] == (
+        "terminal_leading_component_then_wires"
+    )
+    assert geometry["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert geometry[
+        "strip_component_placer_finalizer_before_terminal_leading_wires"
+    ] is True
+    assert geometry["donor_terminal_record_order"] == [
+        "4", "7", "9", "12", "2", "3", "5", "6", "11", "10", "14", "13", "1", "15"
+    ]
+
+    assert placement.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == 14
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert report["family_reports"][0]["component_placer_finalizer_trimmed"] is True
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+    donor_chunk = _extract_object_chunk(read_internal_file(donor, "ROOT.DSN"))
+    base_chunk = _extract_object_chunk(read_internal_file(base, "ROOT.DSN"))
+    output_dsn = read_internal_file(output, "ROOT.DSN")
+    output_chunk = _extract_object_chunk(output_dsn)
+    # The final transformed y coordinate happens to end in FF, followed by
+    # the one required structural finalizer byte.
+    assert output_chunk.endswith(b"\xff\xff")
+    donor_terminals = terminal_placer._bidir_label_records(donor_chunk)
+    output_terminals = terminal_placer._bidir_label_records(output_chunk)
+    output_wires = terminal_placer._wire_rows_from_chunk(
+        output_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
+    )
+    assert [row["label"] for row in output_terminals] == [
+        row["label"] for row in donor_terminals
+    ]
+    assert [row["angle_tenths"] for row in output_terminals] == [
+        row["angle_tenths"] for row in donor_terminals
+    ]
+    assert len(output_wires) == 14
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in output_wires
+    )
+    assert all(len(row["full_coordinates"]) == 4 for row in output_wires)
+    output_chunk_start = terminal_placer._object_chunk_absolute_start(output_dsn)
+    assert all(
+        int(row["suffix"])
+        == (output_chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
+        for row in output_wires
+    )
+
+    base_group = _raw_groups_from_chunk(base_chunk, (family,))[family][0]
+    output_group = _raw_groups_from_chunk(output_chunk, (family,))[family][0]
+    first_wire_start = terminal_placer._wire_record_spans(output_chunk)[0][0]
+    clean_output = output_group.data[: first_wire_start - output_group.start]
+    # The component placer has already removed its raw finalizer byte in the
+    # base DSN.  The terminal-leading block must use that same live packet
+    # width, rather than reintroducing the stale byte before its native WIREs.
+    assert len(clean_output) == len(base_group.data)
+    donor_wires = terminal_placer._wire_rows_from_chunk(donor_chunk, chunk_start=0)
+    assert output_wires[0]["marker_offset"] == donor_wires[0]["marker_offset"] + 1
+    changed_positions = {
+        position
+        for position, (before, after) in enumerate(
+            zip(base_group.data, clean_output)
+        )
+        if before != after
+    }
+    expected_positions = {
+        position
+        for pin in geometry["pins"].values()
+        for start in [
+            len(base_group.data)
+            + int(pin["component_link_offset_from_component_end"])
+        ]
+        # The fourth byte of the donor-proven `01 00` trailer is already zero
+        # in the bare reserved slot, so the byte-level delta is three bytes
+        # per active link even though the complete field is four bytes.
+        for position in range(start, start + 3)
+    }
+    assert changed_positions == expected_positions
+
+
 def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
     tmp_path: Path,
 ) -> None:

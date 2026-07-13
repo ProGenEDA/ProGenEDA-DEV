@@ -2372,28 +2372,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 f"{family} {key} uses unsupported clean packet attachment order "
                 f"{clean_packet_attachment_order!r}."
             )
-        strip_component_placer_finalizer = bool(
-            geometry.get(
-                "strip_component_placer_finalizer_before_terminal_leading_wires",
-                False,
-            )
-        )
-        if strip_component_placer_finalizer:
-            if clean_packet_attachment_order != "terminal_leading_component_then_wires":
-                raise ValueError(
-                    f"{family} {key} declares a terminal-leading component-finalizer "
-                    "trim with a different attachment order."
-                )
-            if not data.endswith(b"\x00"):
-                raise ValueError(
-                    f"{family} {key} lacks the donor-proven component-placer "
-                    "finalizer byte required for terminal-leading trimming."
-                )
-            # Component placement consumes this raw finalizer before appending
-            # the stream terminator.  A terminal-leading component/WIRE block
-            # must do the same before adding native WIRE records; retaining it
-            # shifts every donor-relative link slot and WIRE marker by one.
-            data = data[:-1]
         object_stream_finalizer = str(
             geometry.get("object_stream_finalizer", "double_ff")
         )
@@ -2829,7 +2807,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                     "last_appended_wire_tail_policy",
                     "preserve",
                 ),
-                "component_placer_finalizer_trimmed": strip_component_placer_finalizer,
                 "object_stream_finalizer": object_stream_finalizer,
                 "allow_zero_length_wire_units": bool(
                     geometry.get("allow_zero_length_wire_units", False)
