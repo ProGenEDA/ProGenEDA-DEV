@@ -2040,5 +2040,9 @@ contract. It is not a generic packet rewrite.
 The final route uses grid-aligned terminal contacts, nonzero short WIREs to
 the exact physical pins, donor-proven `0100` link trailers, and suffixes
 rebased from final ROOT.DSN WIRE addresses. The 1x output passed two visible,
-normal cold opens without a save; its 9x and 15x scale validation must reuse
-this unchanged profile and independently verify every terminal/WIRE pair.
+normal cold opens without a save. The same unchanged profile subsequently
+passed 9x and 15x cold-open/reopen gates; direct DSN checks found 126 and 210
+terminal/WIRE pairs respectively, with each of the 9 or 15 components owning
+fourteen trimmed attachment units. Future mixed work must preserve this
+per-component packet boundary rather than treating the scale result as a
+license to alter any other terminal-leading family.

@@ -159,3 +159,21 @@ recoveries, no Ctrl+S was issued; the disposable copy SHA-256 remained
 
 Scale validation and user visual acceptance remain pending. Frozen families
 were not regenerated or changed.
+
+## 9x and 15x scale result
+
+Fresh locked-mega placements were generated through the unchanged shared
+profile. The 9x file has 126 terminals and 126 nonzero WIREs; the 15x file has
+210 of each. Independent DSN checks verify unique terminal suffixes, matching
+WIRE-address suffix sets, exactly one terminal and one component `01 00` link
+field per WIRE suffix, and grid-aligned terminal contacts for every attachment
+unit. All 9 or 15 components respectively report the profile-gated raw
+finalizer trim.
+
+Both files cold-opened visibly after the 12-second stability wait and then
+cold-reopened normally. No Bad Object Record appeared, so neither copy was
+saved. The 9x copy hash stayed
+`EA9C7BE79915850FAA0F4AF7F733BE5075876D588287D2712DA0872A035B0F7F`; the
+15x copy hash stayed
+`401911BA553C415EEC0BA484478F0721FDAA4CA26221FAE0EAB45296734183AD`.
+User visual acceptance remains pending; frozen families were not changed.

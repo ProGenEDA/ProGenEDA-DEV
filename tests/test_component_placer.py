@@ -3853,6 +3853,63 @@ def test_hc157_terminal_leading_donor_grammar_has_nonzero_short_wires(
     assert changed_positions == expected_positions
 
 
+@pytest.mark.parametrize("count", [9, 15])
+def test_hc157_scale_preserves_each_catalogue_attachment_unit(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """Every scaled HC157 packet keeps its own trimmed native attachment unit."""
+
+    family = "74HC157"
+    base = tmp_path / f"74HC157_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"74HC157_{count}x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    assert placement.valid
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == report["wire_count_added"] == 14 * count
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert all(
+        row["component_placer_finalizer_trimmed"] is True
+        and row["terminal_count"] == row["wire_count"] == 14
+        for row in report["family_reports"]
+    )
+
+    output_dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(output_dsn)
+    terminals = terminal_placer._bidir_label_records(chunk)
+    wires = terminal_placer._wire_rows_from_chunk(
+        chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
+    )
+    assert len(terminals) == len(wires) == 14 * count
+    assert {int(row["suffix"]) for row in terminals} == {
+        int(row["suffix"]) for row in wires
+    }
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:])
+        for row in wires
+    )
+
+
 def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
     tmp_path: Path,
 ) -> None:

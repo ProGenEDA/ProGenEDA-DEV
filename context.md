@@ -13102,3 +13102,22 @@ The repaired 1x HC157 now passes two delayed cold opens with no dialog or crash,
 - `tests/test_component_placer.py` — HC157 donor-relative packet-width and link-offset regression.
 - `knowledge/hc157_donor_preflight_2026_07_13.md` — complete DSN comparison, rejected fatal evidence, and corrected boundary analysis.
 - `experiments/dil16_mux_terminal_v1_temp_2026_07_13/09_hc157_donor_preflight/` — refreshed locked-mega 1x control/candidate, report, and visible cold-open/reopen screenshots.
+
+## Agent Visible Response - 2026-07-13 20:16 +05:00
+
+Checkpoint `53770280` is pushed and matches GitHub. I’m generating HC157 9× and 15× directly from the locked mega through the same shared profile, then I’ll audit every attachment unit before opening the large files.
+
+## Agent Visible Response - 2026-07-13 20:17 +05:00
+
+The direct DSN audit is clean at scale: 9× has 126 terminals/WIREs and 15× has 210, with unique final-address links, on-grid contacts, and nonzero paths to every exact pin. I’m running the delayed visible cold-open/reopen gate on each now; normal opens will remain unsaved.
+
+## Agent Visible Response - 2026-07-13 20:20 +05:00
+
+Both HC157 scales now pass: 9× and 15× each cold-opened and cold-reopened normally, their hashes stayed unchanged, and the 15× screenshot shows the terminalized components laid out cleanly. I’m recording and pushing this scale checkpoint now; the next family can start without reopening HC157.
+
+### Files Edited By Agent In This Continuation
+
+- `tests/test_component_placer.py` — added 9×/15× HC157 attachment-unit regression coverage.
+- `knowledge/component_catalog_v0.json` — recorded HC157 1×/9×/15× local-loader status.
+- `knowledge/hc157_donor_preflight_2026_07_13.md`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — scale audit and loader results.
+- `experiments/dil16_mux_terminal_v1_temp_2026_07_13/10_hc157_scale_finalizer_trim/` — fresh locked-mega 9×/15× controls, terminalized outputs, reports, and visible gate captures.

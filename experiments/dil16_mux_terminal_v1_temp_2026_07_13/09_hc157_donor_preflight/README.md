@@ -26,5 +26,6 @@ and `local_proteus_gate/G06_74HC157_1X_finalizer_trim_cold_reopen_before_close.p
 The normal copy was not Ctrl+S-saved and its SHA-256 remained
 `D97AB3CF99A9B1C558C54D488AFCE24AE71B207984D4BC7A78EC5A139134C64C`.
 
-Status: 1x local loader and persistence acceptance passed; 9x and 15x remain
-the next checks. User visual acceptance remains authoritative for layout.
+Status: 1x local loader and persistence acceptance passed. The same frozen
+route also passed 9x and 15x evidence under `10_hc157_scale_finalizer_trim/`.
+User visual acceptance remains authoritative for layout.
