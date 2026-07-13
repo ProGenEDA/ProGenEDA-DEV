@@ -12935,3 +12935,15 @@ The 1× donor-width repair survived a normal cold reopen. I’m running the full
 ## Agent Visible Response - 2026-07-13 18:07 +05:00
 
 The foregrounded cold reopen is clean as well: both 4027 halves and all fourteen terminals rendered, with no dialog. I’ve recorded the Bad Object recovery delta and the one-byte donor-frame repair; I’m checkpointing this 1× result now, then I’ll take the same shared route to 9× and 15×.
+
+## Agent Visible Response - 2026-07-13 18:09 +05:00
+
+The corrected 1× checkpoint is pushed. I’m generating fresh 9× and 15× packs from the locked mega via the same shared terminal placer—no donor copying and no alternative terminal script—then I’ll audit their actual ROOT.DSN attachment units before opening the large files.
+
+## Agent Visible Response - 2026-07-13 18:11 +05:00
+
+The direct DSN audit is clean at scale: 9× has 126 terminals/126 WIREs across all 18 physical halves; 15× has 210/210 across all 30. Every WIRE endpoint is grid-aligned, suffixes are unique, and each A/B half owns exactly seven attachment units. I’m starting the visible 9× loader gate now.
+
+## Agent Visible Response - 2026-07-13 18:22 +05:00
+
+Both regenerated scale packs pass their visible cold-open/reopen gates with no dialog; the 15× screenshot shows attached terminals on the rendered 4027 halves. I’m recording and pushing these scale results now. After that I’ll begin the other member of this group, 74HC76, from its accepted donor rather than altering 4027 again.
