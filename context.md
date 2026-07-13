@@ -12717,3 +12717,17 @@ The DSN-only 4027 route is mechanically clean: 14 grid contacts, 14 donor-shaped
 ### Files Edited By Agent In This Continuation
 
 - `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/README.md` — clarifies that a normal local open is not saved; a save-and-compare happens only after a dismissed Bad Object Record on a disposable copy.
+
+## Agent Visible Response - 2026-07-13 15:49 +05:00
+
+The DSN-only repair is now committed and pushed as `642cd5a1`. I have not touched any of the unrelated working-tree files or your open Proteus session; the remaining step is a clean local open/reopen after that session is closed.
+
+## Agent Visible Response - 2026-07-13 15:52 +05:00
+
+I’m also materializing the requested three-stage 4027 proof through the existing shared placer: inactive native-contact terminals, inactive grid-contact terminals, then the active WIRE/link candidate. Because the repaired component frame is already grid-aligned, stages 1 and 2 should deliberately have identical contact coordinates—an expected confirmation, not a shortcut.
+
+### Files Edited By Agent In This Continuation
+
+- `tests/test_component_catalog.py` — added a DSN-only regression proving the native-contact, grid-contact, and active-link 4027 stages are monotonic and preserve the grid requirement.
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/00_staged_loader_diagnostics/` — generated the four 4027 1× loader-gate variants through the existing shared placer, with no new terminal script.
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/README.md` — records the staged proof and identifies the active candidate as DSN-identical to the final S02 output.

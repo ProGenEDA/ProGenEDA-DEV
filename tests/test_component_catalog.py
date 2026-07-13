@@ -647,6 +647,69 @@ def test_4027_subpart_route_uses_each_donor_anchor_and_grid_native_wires(
     assert output_chunk.endswith(b"\xff")
 
 
+def test_4027_staged_terminal_contact_gate_is_dsn_only_and_monotonic(tmp_path) -> None:
+    source = tmp_path / "catalogue_4027_stage_bare.pdsprj"
+    native_output = tmp_path / "catalogue_4027_stage_native.pdsprj"
+    grid_output = tmp_path / "catalogue_4027_stage_grid.pdsprj"
+    complete_output = tmp_path / "catalogue_4027_stage_complete.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {"4027": 1},
+            "layout": {
+                "strategy": "beautify",
+                "terminal_grid_alignment": True,
+            },
+        },
+        source,
+        full_cdb=True,
+    )
+
+    native_report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        native_output,
+        result.selected_groups,
+        terminal_families=["4027"],
+        attachment_stage="native_pin_contact",
+    )
+    grid_report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        grid_output,
+        result.selected_groups,
+        terminal_families=["4027"],
+        attachment_stage="grid_contact",
+    )
+    complete_report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        complete_output,
+        result.selected_groups,
+        terminal_families=["4027"],
+        attachment_stage="complete",
+    )
+    native_dsn = read_internal_file(native_output, "ROOT.DSN")
+    grid_dsn = read_internal_file(grid_output, "ROOT.DSN")
+    complete_chunk = _extract_object_chunk(
+        read_internal_file(complete_output, "ROOT.DSN")
+    )
+
+    # Grid-preserving component placement means the native and grid-contact
+    # stages have the same DSN contact coordinates. The stages remain separate
+    # loader gates, while the final stage is the first to add WIRE/link units.
+    assert native_dsn == grid_dsn
+    for report in (native_report, grid_report):
+        assert report["valid"]
+        assert report["terminal_count_added"] == 14
+        assert report["wire_count_added"] == 0
+        assert report["terminal_grid_alignment_valid"]
+        assert report["root_cdb_policy"] == "preserve_source_member_uninspected"
+        assert report["cdb_unchanged"] is None
+    assert complete_report["valid"]
+    assert complete_report["terminal_count_added"] == 14
+    assert complete_report["wire_count_added"] == 14
+    assert complete_chunk.count(b"$TERBIDIR") == 14
+    assert complete_chunk.count(b"\x7fWIRE") == 14
+    assert complete_chunk.endswith(b"\xff")
+
+
 def test_catalogue_display_block_link_offset_generation_remains_blocked(tmp_path) -> None:
     source = tmp_path / "catalogue_display_mixed_bare.pdsprj"
     output = tmp_path / "catalogue_display_mixed_terminalized.pdsprj"
