@@ -12731,3 +12731,7 @@ I’m also materializing the requested three-stage 4027 proof through the existi
 - `tests/test_component_catalog.py` — added a DSN-only regression proving the native-contact, grid-contact, and active-link 4027 stages are monotonic and preserve the grid requirement.
 - `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/00_staged_loader_diagnostics/` — generated the four 4027 1× loader-gate variants through the existing shared placer, with no new terminal script.
 - `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/README.md` — records the staged proof and identifies the active candidate as DSN-identical to the final S02 output.
+
+## Agent Visible Response - 2026-07-13 15:58 +05:00
+
+The three staged 4027 variants are generated and committed in `3127b514`: stage 1 and stage 2 each contain all 14 correctly oriented terminals with zero WIREs; stage 3 contains all 14 terminals plus 14 active donor-shaped WIRE/link units and is DSN-identical to the final candidate.
