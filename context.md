@@ -13133,3 +13133,57 @@ Understood. A Bad Object Record that recovers after **OK** is now treated as a s
 ## Agent Visible Response - 2026-07-13 20:26 +05:00
 
 The previous checkpoint is confirmed pushed and identical locally/remotely (`f4aa9cac`). I’ll leave the existing unrelated experiments untouched and apply this recovery comparison rule while continuing the next DIL14 family from its accepted donor.
+
+## Agent Visible Response - 2026-07-13 20:27 +05:00
+
+Correction: the DIL14 routes are already user-accepted and frozen. The correct next group after HC151/HC157 is the DIL16 decoder/driver pair (`4511`, then `7447`); I will not reopen or modify DIL14.
+
+## Agent Visible Response - 2026-07-13 20:31 +05:00
+
+I have confirmed that authoritative terminalized donors are available for both 4511 and 7447. I am starting with 4511 only: its entire donor must first match the locked-mega packet, stream order, terminal records, component link slots, WIREs, and finalizer before any 7447 output is emitted.
+
+## Agent Visible Response - 2026-07-13 20:38 +05:00
+
+The 4511 donor and the locked-mega U9 packet now agree completely apart from the inactive-versus-active link suffixes. The donor proves a component-first stream with fourteen terminal/WIRE units and an explicit final FF. I have added that generic catalogue grammar to the existing shared terminal placer and am running its staged 1x loader proof.
+
+## User Message - 2026-07-13 20:44 +05:00
+
+you knwo how to deal with bad object record, click ok, let it open do ctrl s and compare with generated. remember if it opens after ok this means mistake is v small that proteus itself can correct it
+
+## Agent Visible Response - 2026-07-13 20:44 +05:00
+
+I’ll use that recovery rule exactly: capture the dialog, click OK, allow the project to load, save only the recovered copy, then compare its `ROOT.DSN` against the generated file. I’m checking the already-captured 4511 grid-stage screen now before closing it.
+
+## Agent Visible Response - 2026-07-13 20:46 +05:00
+
+The grid-contact 4511 stage also opened normally, with all 14 terminals on the donor grid contacts. I closed it without saving; its disposable copy remained byte-identical to the generated stage. I’m moving to the active short-wire stage now.
+
+## User Message - 2026-07-13 20:47 +05:00
+
+the one currently openned terminals were not attached to the pins
+
+## Agent Visible Response - 2026-07-13 20:47 +05:00
+
+You’re right—the open project was the deliberately wireless grid-contact checkpoint, so it is not a handoff candidate. I’ve discarded it unchanged. I’m now testing only the next stage, which includes the 14 short terminal-to-pin wires; if those do not render attached, I will treat the stage as failed.
+
+## Agent Visible Response - 2026-07-13 20:50 +05:00
+
+The active 4511 project opened normally and cold-reopened normally, with no Bad Object Record or library dialog. The captured view shows the short green attachments at every pin; I closed both normal opens without saving, and the disposable copy stayed hash-identical. I’m formalizing that evidence in tests and the experiment record before moving to 7447.
+
+### Files Edited By Agent In This Continuation
+
+- `backups/component_terminal_placer/component_terminal_placer_20260713_203200_before_component_stream_stages.py` — retained pre-edit shared-placer backup.
+- `src/proteusgen/component_terminal_placer.py` — generic, catalogue-gated component-first staged terminal stream support.
+- `knowledge/component_catalog_v0.json` — donor-proven 4511 stream, contact, WIRE, finalizer, and local-loader status facts only.
+- `knowledge/dil16_decoder_driver_donor_preflight_2026_07_13.md` and `docs/architecture.md` — complete donor preflight, staged proof, frozen-route boundaries, and local loader record.
+- `tests/test_component_placer.py` — 4511 stage, active stream, donor-delta, CDB-preservation, and accepted-family regression coverage.
+- `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/` — locked-mega bare control, staged and active 4511 projects, and visible loader screenshots.
+- `knowledge/test_results.jsonl` and `context.md` — structured result and chronological continuation record.
+
+## Agent Visible Response - 2026-07-13 20:58 +05:00
+
+The 4511 evidence is now recorded as a 1x loader pass, not as a user-accepted scale result. The unconnected grid-only project remains diagnostic-only; the active candidate is the `_sa` file with 14 short wires. I’m running the frozen-route regression and final repository checkpoint now.
+
+## Agent Visible Response - 2026-07-13 21:00 +05:00
+
+The staged change set is limited to the shared placer, 4511 catalogue/evidence/tests, and its screenshots; the unrelated donor and experiment files remain unstaged. I’m committing this 1x checkpoint now.

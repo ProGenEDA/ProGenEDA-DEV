@@ -1,0 +1,35 @@
+# DIL16 decoder/driver terminal evidence
+
+This Proteus-only evidence pack uses the locked mega component-placement donor
+and the shared `src/proteusgen/component_terminal_placer.py`. It does not copy
+a terminalized donor packet into a generated circuit.
+
+## 4511 staged 1x proof
+
+`01_4511_staged_1x/` contains one locked-mega bare control and three outputs:
+
+- `S01_4511_1X_NO_TERMINAL.pdsprj` - component-placer control.
+- `S01_4511_1X_NATIVE_CONTACT_STAGE.pdsprj` - correctly oriented terminal
+  records at exact pins, without WIREs; a diagnostic stage only.
+- `S01_4511_1X_GRID_CONTACT_STAGE.pdsprj` - terminals relocated so their
+  attaching contacts are on the donor grid, without WIREs; a diagnostic stage
+  only.
+- `S01_4511_1X_CATALOGUE_TERMINAL_sa.pdsprj` - fourteen active terminals,
+  fourteen nonzero short WIREs, and final-address-rebased terminal/component
+  links. This is the only active candidate.
+
+The authoritative 4511 donor is
+`proteus_ic/donors/terminalized_catalogue_evidence/dil16_decoder_driver/4511/4511_user_terminalized_july04.pdsprj`.
+Its complete DSN comparison is in
+`knowledge/dil16_decoder_driver_donor_preflight_2026_07_13.md`.
+
+Each diagnostic stage and the complete candidate cold-opened visibly in local
+Proteus after a 12-second stability wait. The complete candidate cold-reopened
+normally. No Bad Object Record appeared, so none of the normally opening copies
+was Ctrl+S-saved; their SHA-256 values remained unchanged. Screenshots are in
+`01_4511_staged_1x/local_proteus_gate/`.
+
+Status: 4511 1x loader/persistence proof is complete. 9x/15x scale validation
+and user visual acceptance remain separate next steps. 7447 is intentionally
+not generated because its donor-to-locked-mega packet frame has an unexplained
+50-byte delta.

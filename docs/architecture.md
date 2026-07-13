@@ -2046,3 +2046,37 @@ terminal/WIRE pairs respectively, with each of the 9 or 15 components owning
 fourteen trimmed attachment units. Future mixed work must preserve this
 per-component packet boundary rather than treating the scale result as a
 license to alter any other terminal-leading family.
+
+### 2026-07-13 4511 decoder/driver component-first contract
+
+`4511` uses a third donor-proven stream grammar that must remain a generic
+catalogue capability, not a component-specific script:
+
+`component packet -> terminal/WIRE attachment unit for each pin -> explicit FF`.
+
+The authoritative donor is
+`proteus_ic/donors/terminalized_catalogue_evidence/dil16_decoder_driver/4511/4511_user_terminalized_july04.pdsprj`.
+It fixes the exact attachment-unit order to
+`13, 12, 11, 10, 9, 15, 14, 7, 1, 2, 6, 3, 4, 5`, with `0100` active link
+trailers, `catalogue_leading_separator` WIRE encoding, and one structural FF
+after the final WIRE payload. Each terminal edge is on the 254,000-unit grid;
+the corresponding nonzero short WIRE ends at the unsnapped exact component pin.
+
+The shared staged helper now admits the catalogue value
+`component_stream_then_attachment_units`: for diagnostic 1x stages it emits the
+complete cleaned component stream first and the ordered inactive terminal
+records after it. The active shared path uses the same ordered units and then
+rebases terminal and component link suffixes from the final ROOT.DSN WIRE
+address. This is additive shared behavior. It does not change frozen two-pin,
+DIL14, 4027, HC76, HC151, or HC157 profiles.
+
+The 4511 native-contact stage, grid-contact stage, and complete active 1x all
+passed visible 12-second local Proteus opens; the active output also passed a
+cold reopen. No modal dialog appeared, so no Ctrl+S was used. Direct comparison
+to the accepted donor leaves only 56 rebased suffix bytes different. `ROOT.CDB`
+is preserved unchanged. Scale and user visual checks are still separate gates.
+
+`7447` is not interchangeable with 4511 merely because both are DIL16
+decoder/driver parts. Its authoritative donor is terminal-leading and still has
+an unexplained 50-byte component-to-first-WIRE difference from the locked mega.
+Do not emit or alter 7447 until that full donor delta is explained.

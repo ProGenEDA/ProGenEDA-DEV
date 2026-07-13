@@ -1769,7 +1769,6 @@ def _attach_catalogue_terminal_contact_stage(
         )
 
     local_records: list[bytes] = []
-    trailing_terminal_records: list[bytes] = []
     family_reports: list[dict[str, Any]] = []
     suffix = suffix_start
     object_stream_finalizers: set[str] = set()
@@ -1788,25 +1787,18 @@ def _attach_catalogue_terminal_contact_stage(
             geometry.get("pins"), dict
         ):
             raise ValueError(f"{family} {key} lacks catalogue pin geometry.")
-        clean_packet_attachment_order = str(
-            geometry.get("clean_packet_attachment_order", "")
-        )
-        if clean_packet_attachment_order not in {
-            "subpart_terminal_component_wires",
-            "component_stream_then_attachment_units",
-        }:
+        if (
+            str(geometry.get("clean_packet_attachment_order", ""))
+            != "subpart_terminal_component_wires"
+        ):
             raise ValueError(
-                f"{family} {key} lacks a donor-proven staged stream grammar "
-                "for the terminal contact gate."
+                f"{family} {key} lacks donor-proven subpart stream grammar for "
+                "the staged terminal contact gate."
             )
         object_stream_finalizer = str(
             geometry.get("object_stream_finalizer", "single_ff")
         )
-        if object_stream_finalizer not in {
-            "single_ff",
-            "double_ff",
-            "append_explicit_single_ff",
-        }:
+        if object_stream_finalizer not in {"single_ff", "double_ff"}:
             raise ValueError(
                 f"{family} {key} has unsupported staged object finalizer "
                 f"{object_stream_finalizer!r}."
@@ -1860,61 +1852,19 @@ def _attach_catalogue_terminal_contact_stage(
                 }
             )
             suffix += 1
-        if clean_packet_attachment_order == "subpart_terminal_component_wires":
-            local_records.extend(
-                _catalogue_subpart_attachment_blocks(
-                    family=family,
-                    key=key,
-                    geometry=geometry,
-                    component_refs=tuple(getattr(group, "refs", ())),
-                    patched_component_data=data,
-                    terminal_pins=terminal_pins,
-                    terminal_records=terminal_records,
-                    wire_records=None,
-                    include_wires=False,
-                )
+        local_records.extend(
+            _catalogue_subpart_attachment_blocks(
+                family=family,
+                key=key,
+                geometry=geometry,
+                component_refs=tuple(getattr(group, "refs", ())),
+                patched_component_data=data,
+                terminal_pins=terminal_pins,
+                terminal_records=terminal_records,
+                wire_records=None,
+                include_wires=False,
             )
-        else:
-            # The component placer keeps one raw finalizer byte on the selected
-            # packet, then removes it when building the no-terminal stream. A
-            # staged component-first proof must use that same live packet width
-            # before appending its unlinked terminal records.
-            if not data.endswith(b"\x00"):
-                raise ValueError(
-                    f"{family} {key} lacks the component-placer raw finalizer "
-                    "required by the staged component-stream grammar."
-                )
-            terminal_by_pin = {
-                str(row["pin"]["name"]): terminal_record
-                for row, terminal_record in zip(
-                    terminal_pins,
-                    terminal_records,
-                    strict=True,
-                )
-            }
-            raw_order = geometry.get("donor_attachment_unit_order")
-            if raw_order is None:
-                ordered_terminal_records = terminal_records
-            elif isinstance(raw_order, (list, tuple)):
-                order = [str(pin_name) for pin_name in raw_order]
-                if (
-                    len(order) != len(set(order))
-                    or set(order) != set(terminal_by_pin)
-                ):
-                    raise ValueError(
-                        f"{family} {key} donor attachment order {order} does not "
-                        "exactly cover staged terminal pins "
-                        f"{sorted(terminal_by_pin)}."
-                    )
-                ordered_terminal_records = [
-                    terminal_by_pin[pin_name] for pin_name in order
-                ]
-            else:
-                raise ValueError(
-                    f"{family} {key} donor_attachment_unit_order must be a list."
-                )
-            local_records.append(data[:-1])
-            trailing_terminal_records.extend(ordered_terminal_records)
+        )
         family_reports.append(
             {
                 "family_handler": f"{family}/catalogue-{attachment_stage}-stage-v1",
@@ -1923,7 +1873,7 @@ def _attach_catalogue_terminal_contact_stage(
                 "terminal_count": len(terminal_records),
                 "wire_count": 0,
                 "terminal_pins": terminal_pins,
-                "clean_packet_attachment_order": clean_packet_attachment_order,
+                "clean_packet_attachment_order": "subpart_terminal_component_wires",
                 "object_stream_finalizer": object_stream_finalizer,
                 "root_cdb_policy": "preserve_source_unchanged",
             }
@@ -1935,32 +1885,12 @@ def _attach_catalogue_terminal_contact_stage(
             f"{sorted(object_stream_finalizers)}."
         )
     object_stream_finalizer = next(iter(object_stream_finalizers))
-    if object_stream_finalizer == "single_ff":
-        finalize = _ensure_single_ff_object_stream_terminator
-    elif object_stream_finalizer == "double_ff":
-        finalize = _ensure_double_ff_object_stream_terminator
-    else:
-        finalize = _append_explicit_single_ff_object_stream_terminator
-    if trailing_terminal_records:
-        if not local_records or not all(record.startswith(b"\xff") for record in local_records):
-            raise ValueError(
-                "Staged component-stream terminal emission requires a complete "
-                "component stream before terminal records."
-            )
-        object_component_prefix = original_chunk[1:2]
-        if not object_component_prefix:
-            raise ValueError(
-                "Staged component-stream terminal emission could not recover the "
-                "original object-stream component prefix."
-            )
-        new_chunk = finalize(
-            original_chunk[:1]
-            + object_component_prefix
-            + b"".join(local_records)
-            + b"".join(trailing_terminal_records)
-        )
-    else:
-        new_chunk = finalize(original_chunk[:1] + b"".join(local_records))
+    finalize = (
+        _ensure_single_ff_object_stream_terminator
+        if object_stream_finalizer == "single_ff"
+        else _ensure_double_ff_object_stream_terminator
+    )
+    new_chunk = finalize(original_chunk[:1] + b"".join(local_records))
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
     # This is a DSN-only terminal-stream diagnosis.  The project writer copies
     # every non-replaced member through unchanged; do not inspect ROOT.CDB here.
@@ -2018,10 +1948,7 @@ def _attach_catalogue_terminal_contact_stage(
             and final_chunk.count(b"\x7fWIRE") == 0
             and (
                 final_chunk.endswith(b"\xff")
-                if object_stream_finalizer in {
-                    "single_ff",
-                    "append_explicit_single_ff",
-                }
+                if object_stream_finalizer == "single_ff"
                 else final_chunk.endswith(b"\xff\xff")
             )
         ),
