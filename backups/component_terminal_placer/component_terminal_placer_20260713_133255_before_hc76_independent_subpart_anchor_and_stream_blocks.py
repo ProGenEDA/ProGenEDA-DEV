@@ -870,11 +870,7 @@ def _component_marker_anchors_for_catalogue(
                 and -1_000_000_000 <= y_value <= 1_000_000_000
                 and x_value % 10 == 0
                 and y_value % 10 == 0
-                # This is a strict body marker rather than a broad binary
-                # coordinate scan.  Multipart spreading may legitimately
-                # pass through small nonzero coordinates before the packet is
-                # translated to its final visible shelf.
-                and (x_value != 0 or y_value != 0)
+                and (abs(x_value) >= 1_000_000 or abs(y_value) >= 1_000_000)
             ):
                 anchors.append(
                     {
@@ -1203,20 +1199,6 @@ def plan_catalogue_pin_bidir_terminals(
                     geometry.get("wire_coordinates_policy", "donor_coordinates"),
                 )
             )
-            wire_record_encoding = str(
-                raw_pin_geometry.get(
-                    "wire_record_encoding",
-                    geometry.get("wire_record_encoding", "native_short_wire"),
-                )
-            )
-            if wire_record_encoding not in {
-                "native_short_wire",
-                "catalogue_leading_separator",
-            }:
-                raise ValueError(
-                    f"{family} {key} pin {pin.name} has unsupported WIRE record "
-                    f"encoding {wire_record_encoding!r}."
-                )
             if wire_coordinates_policy == "computed_terminal_contact_to_pin":
                 transformed_wire = None
                 terminal_contact_source = (
@@ -1282,15 +1264,11 @@ def plan_catalogue_pin_bidir_terminals(
                 wire_record = _build_catalogue_wire_unit(wire_coordinates)
             else:
                 wire_coordinates = (wire_start_x, wire_start_y, wire_end_x, wire_end_y)
-                wire_record = (
-                    _build_catalogue_wire_unit(wire_coordinates)
-                    if wire_record_encoding == "catalogue_leading_separator"
-                    else _build_native_short_wire(
-                        wire_start_x,
-                        wire_start_y,
-                        wire_end_x,
-                        wire_end_y,
-                    )
+                wire_record = _build_native_short_wire(
+                    wire_start_x,
+                    wire_start_y,
+                    wire_end_x,
+                    wire_end_y,
                 )
             terminal_dict = terminal.as_dict()
             terminal_dict["link_trailer"] = _catalogue_link_trailer(
@@ -5159,11 +5137,11 @@ def _catalogue_subpart_attachment_blocks(
         if (
             len(terminal_order) != len(set(terminal_order))
             or len(wire_order) != len(set(wire_order))
+            or set(terminal_order) != set(wire_order)
             or any(pin_name not in terminal_by_pin for pin_name in terminal_order)
-            or any(pin_name not in wire_by_pin for pin_name in wire_order)
         ):
             raise ValueError(
-                f"{family} {key} {subpart} has invalid donor subpart terminal/WIRE orders."
+                f"{family} {key} {subpart} has invalid donor subpart pin orders."
             )
         consumed_terminal_pins.extend(terminal_order)
         consumed_wire_pins.extend(wire_order)

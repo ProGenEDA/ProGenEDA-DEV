@@ -1,5 +1,44 @@
 # Recovered Codex Context
 
+
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’m checkpointing this now with only the HC76/shared-parser changes, documentation, backup, and generated evidence pack. The unrelated dirty donor/debug artifacts remain untouched.
+
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The full maintained placement regression is still running; the smaller HC76/HC74/DIL14 suite already passed. I’m keeping this gate running rather than treating static counts as acceptance.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+No failure has surfaced; this suite is simply slow because it regenerates many full Proteus projects. The HC76 files and their hashes are already stable, so this is only the shared-regression check.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The full maintained placement suite passed: 154 tests, plus compile and JSON checks. The only lint note is pre-existing trailing whitespace in the user’s verbatim `context.md` message, which I’m preserving rather than altering.
+
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I’ll use that staged 1× proof for the next group and keep the terminal contact edge snapped to a grid intersection at every stage. I’m first finishing the current HC76 scale-path blocker without changing its accepted 1× terminal stream or `ROOT.CDB`.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The 9× failure is isolated to the beautifier’s marker scan: during subpart spreading, one valid HC76-B body coordinate briefly becomes `(-254000, 294640)`, below an overly broad “must be ≥1,000,000” heuristic. Its marker is otherwise structurally unambiguous, so I’m narrowing that guard only for strict component-body markers rather than altering the terminal stream.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The targeted regression now passes: all nine HC76 packages retain both A and B body anchors after spreading, and the shared terminal placer emits all 126 terminals/WIREs with grid checks passing. I’m regenerating 9× first, then will run the loader gate before producing 15×.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The regenerated 9× file passes a real cold-open and cold-reopen gate with no modal error, and its copied-file hash stayed unchanged because it opened normally (so I did not save it). I’m moving to 15× now; that is the large case I’ll also visually capture locally.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+HC76 is now clean through 15×: 9× and 15× both cold-open and cold-reopen without errors, and the 15× Proteus capture visibly shows repeated A/B subparts with terminal attachments. I’ve recorded the exact loader results and the staged proof rule; I’m running the full regression/compile gate before checkpointing.
 Source thread: `Build resistor generator (Proteus)`  
 Thread ID: `019e7880-c39c-7a03-861a-34cd17dd583a`  
 Source file: local Codex rollout ending 2026-06-29  
@@ -12526,3 +12565,83 @@ HC74 is repaired and checkpointed: its 1×, 9×, and 15× terminalized solos ope
 - `backups/component_terminal_placer/` — four required pre-edit snapshots; prior working versions remain intact.
 - `experiments/dil14_dual_d_ff_terminal_v1_temp_2026_07_13/` — regenerated scale packs, boundary mix, loader record, and clean 1×/15× screenshots.
 - `docs/architecture.md` and `knowledge/test_results.jsonl` — recorded the recovered HC74 binary grammar and acceptance result.
+
+## User Message - 2026-07-13 +05:00
+
+please also learn from ur mistakes here and try to do other groups faster then this. you know all the flow points what to look for so u can do that properly at once cant u? make educational guesses
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Yes. I’ll make evidence-based “educational guesses,” not blind byte edits: complete the donor/locked-mega comparison first, list every structural delta, then apply the whole proven pattern in one additive profile change and regression-test it against HC74/HC04 before handoff.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I will. I’m using the mistakes as a preflight checklist now: donor grammar, grid contacts, link rebasing, subpart boundaries, and frozen-family regressions are checked together before I emit a new pack. I’m finishing the current HC76 proof with that process, then I’ll reuse the verified pattern for the remaining compatible groups rather than rediscovering it one tiny fix at a time.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The HC76 comparison exposed one reusable difference from HC74, not a failure: its terminal records and WIRE records are intentionally split across different A/B stream blocks. I’m adding a focused regression for that exact topology, including grid alignment, short-wire locality, orientation, and final link positions; HC74 remains covered unchanged.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The focused regression passed: HC76’s 14 terminals, 14 short wires, asymmetric donor block order, grid contacts, and rebased active links all validate, while the HC74 and DIL14 regression paths remain unchanged. I’m generating only the HC76 1× pack next and will cold-open it locally before attempting 9× or 15×.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The local gate caught a real loader failure: both cold opens show a Proteus “Fatal Error” dialog, despite the static checks passing. I’m treating that as a rejection, not polishing it. I’m extracting the dialog text and comparing the same local launch against the authoritative donor and the no-terminal component-placer control to isolate whether it is stream grammar or an environment/control issue.
+
+## User Message - 2026-07-13 +05:00
+
+i think there was some error in u opening it not file cause no error or anthign it just disappeared like someone closed it
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+You’re right about the disappearance: my automated gate intentionally stopped PDS after its check, so that was my cleanup—not the project vanishing. The hidden launch did report a VGDVC dialog, but hidden Proteus may itself be the bad test mode. I’ll rerun the candidate visibly, leave it open rather than killing it, and only use that result to decide whether the file is actually faulty.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I reran it visibly and left Proteus open. It is not an automatic-close issue: the project remains open behind a modal **Fatal Error** saying `Internal Exception: access violation in VGDVC.DLL [000190DA]`. The authoritative HC76 donor and the identical no-terminal 1× control open normally in the same test. I’m keeping this candidate rejected and tracing the terminal-stream difference now.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+I found the concrete missing donor fact. HC76 was using the generic “move one grid cell outward” contact rule, so each left/right wire included an invented 254,000-unit horizontal leg. Its donor—and the accepted HC74 route—uses a donor-proven contact directly above/below the pin after vertical grid snapping. I’m adding all fourteen donor contact coordinates at once, which turns every HC76 wire into the same short vertical grid-to-pin attachment pattern; I will not alter HC74 or any accepted family.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The regenerated 1× now matches the donor’s contact pattern: all fourteen wires are grid-to-pin vertical attachments, with no invented horizontal segment. The focused suite still passes. I’m rerunning the same cold-launch test that previously failed; only a normal open and cold reopen will unlock HC76 scale packs.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Before I change any more terminal bytes, I’m isolating the other active difference: the shared terminal stage also reduces the mega donor’s `ROOT.CDB` to the selected package rows. I’m testing four controlled combinations—bare/full CDB, bare/reduced CDB, terminal/full CDB, terminal/reduced CDB—using the same locked-mega HC76 placement. That will tell us whether the loader fault is CDB handling or the terminal stream itself.
+
+## User Message - 2026-07-13 +05:00
+
+it is terminal stream donot touch cdb
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Understood. I have not changed `ROOT.CDB` in the repository or the candidate, and I’m dropping that diagnostic path. I’ll keep the locked-mega CDB untouched and work only on the `ROOT.DSN` terminal/WIRE/link stream—comparing its complete record boundaries and all active fields against the accepted HC76 donor.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The full byte comparison found the actual stream defect: each locked-mega HC76 subpart has one unused zero immediately before its 28-byte pin-link table. The accepted donor removes that byte once the links are active; our emitted stream kept it, making each component/WIRE boundary one byte too long. This is the same donor-proven normalization already used by HC74. I’m enabling that shared, catalogue-declared one-byte trim for HC76 and adding a regression that checks the component-to-first-WIRE span against the donor.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+The repaired stream now has the expected spans: both HC76 subpart records are exactly one byte shorter, and their only remaining donor delta is the wider `U41` reference. The strict regression passes. I’m running the loader gate again now; this is the same candidate path, with only that donor-proven stream byte removed.
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+That was the missing stream byte. The repaired 1× candidate now cold-opens twice normally with no error dialog and no Ctrl+S; the source file stayed unchanged. I’m moving to HC76 9× and 15× through the same shared placer, then I’ll run the large-pack gate before promoting this family.
+
+## User Message - 2026-07-13 +05:00
+
+new approach, from now try like this while building 1x
+just place terminal equal to the pins as per requirement 180 or simple. open it, opens good, then change its cordinates, open opens good then add the wire name it. open. if opens good 
+use this pipeline from next group.
+if this keeps on failing. 1 ull know excatly what is failing, allowing u to byte compare with donor excatly that part.
+always make sure terminals are on gridlines. their edge, the one to be attached should be at the intersaction of vertical n horizontal line
+
+## Agent Visible Response - 2026-07-13 +05:00
+
+Agreed. From the next family’s 1× build onward, I’ll gate the route in exactly three opens: (1) terminal at the donor pin/contact with correct 180°/0° orientation, (2) its donor-derived grid contact position, then (3) the named short WIRE and active link. Each stage must open before the next exists. I’ll record this as the required workflow, and terminal contact—not merely the symbol center—will always land on a grid intersection.

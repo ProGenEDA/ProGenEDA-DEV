@@ -26,11 +26,30 @@ Do not start implementation while any donor-vs-generated structural difference r
 ## 3. Plan only from evidence
 
 - Catalogue the family’s pins: number, name, role, side, relative coordinate, link field and donor source.
-- Terminal contact must land on the Proteus grid.
+- The terminal attaching edge/contact, not merely the symbol origin, must land
+  exactly on a vertical/horizontal Proteus grid intersection.
 - Left pins use `1800`; right pins use `0`.
 - Each terminal has a nonzero, donor-proven short WIRE to the exact pin.
 - Terminal suffix and component pin-link suffix must be allocated from the final WIRE address.
 - Encode only the new family/profile exception; do not replace accepted generic logic.
+- For a terminal-stream repair, do not change `ROOT.CDB` unless the user
+  explicitly reopens CDB work.
+
+## 3a. Required staged 1x loader proof
+
+Before creating a complete new-family 1x candidate, prove each additive stage
+on a disposable output and compare its exact DSN delta to the accepted donor:
+
+1. Emit the correctly oriented terminal at the native donor pin/contact
+   (`1800` left, `0` right); cold-open it.
+2. Move its attaching contact to the donor-derived grid intersection; cold-open
+   it again. The component pin may remain off-grid.
+3. Add the donor-proven terminal label, short WIRE to the exact pin, and final
+   active terminal/component-link suffixes; cold-open and cold-reopen it.
+
+If a stage fails, stop at that stage and byte-compare only the newly introduced
+record fields with the donor. Do not jump directly to a complete speculative
+terminal packet.
 
 ## 4. Verify before a handoff
 
@@ -38,8 +57,12 @@ Do not start implementation while any donor-vs-generated structural difference r
 - Run the full regression set for every accepted family touched by shared code.
 - Regenerate 1× first; compare it byte-for-byte or by fully enumerated structural deltas against the donor.
 - Test 9×/15×/23× only after the 1× route is accepted.
-- Use a 24-second local loader wait for iterative checks; reject every modal error.
-- On a copied output: cold open, Ctrl+S, inspect structural mutation, cold reopen, and record the result.
+- Use the 12-second local loader wait only after the schematic window appears;
+  reject every modal error.
+- On a copied output: cold open, inspect structural mutation, cold reopen, and
+  record the result. Do not Ctrl+S a normally opening project. If a `Bad Object
+  Record` dialog is dismissed and the schematic opens correctly, Ctrl+S only
+  that disposable copy, compare its delta, then cold-reopen it.
 - Only then ask the user for visual/layout acceptance.
 
 ## Current freeze note — 2026-07-12

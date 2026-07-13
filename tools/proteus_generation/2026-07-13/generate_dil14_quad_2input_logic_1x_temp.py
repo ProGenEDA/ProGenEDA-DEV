@@ -86,6 +86,15 @@ def _effective_scale(family: str, requested: int) -> tuple[int, dict[str, object
     }
 
 
+def _visible_catalogue_terminal_pin_count(family: str) -> int:
+    """Return the shared-placer terminal count without family-specific rules."""
+
+    profile = load_component_catalog().get_profile(family)
+    if profile is None:
+        raise ValueError(f"{family} is missing from the component catalogue.")
+    return sum(1 for pin in profile.pins if not pin.hidden)
+
+
 def _case_stem(index: int, family: str, requested: int, effective: int) -> str:
     if effective == requested:
         return f"S{index:02d}_{family}_{effective}X"
@@ -207,7 +216,7 @@ def main(
                 terminal_families=(family,),
                 use_donor_terminal_labels=True,
             )
-            expected = 12 * effective
+            expected = _visible_catalogue_terminal_pin_count(family) * effective
             chunk = _extract_object_chunk(read_internal_file(terminalized, "ROOT.DSN"))
             if (
                 not report["valid"]

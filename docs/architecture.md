@@ -1766,6 +1766,25 @@ and final absolute-address links. A match on coordinates, counts, and suffixes
 is insufficient. A catalogue field is not evidence in practice unless the
 shared emitter consumes and tests it.
 
+### Required staged 1x terminal proof
+
+Every new multi-pin family uses the same shared terminal placer, but its first
+1x proof is intentionally staged so the first failing byte class is known:
+
+1. Emit the correctly oriented terminal at the donor/current pin contact and
+   cold-open it.
+2. Move its attaching contact to the donor-derived Proteus grid intersection
+   and cold-open it. The attaching edge/contact—not merely the terminal symbol
+   coordinate—must be on both grid axes.
+3. Add the terminal name, the short donor-proven WIRE to the exact pin, and
+   final rebased active links; cold-open and cold-reopen it.
+
+These are diagnostic loader gates, not separate terminal implementations or
+shipping routes. The first failing stage is compared completely with the
+preceding passing stage and the accepted donor before one evidence-backed
+shared-placer/profile update. No 9x/15x/mixed candidate is attempted until
+stage 3 passes.
+
 ### 2026-07-12 current-group mixed tail oracle
 
 The accepted current-group mixed donor is
@@ -1929,3 +1948,37 @@ show the actual A/B terminalized output. Normal opens were not Ctrl+S-saved.
 The boundary mix preserves HC74 bare while terminalizing the frozen twenty
 two-pin families; do not emit a hybrid active HC74/two-pin mixed stream until
 an authoritative combined donor proves its order.
+
+### 2026-07-13 74HC76 dual JK flip-flop contract
+
+`74HC76` is a DIL16 dual-subpart family but its active donor is deliberately
+asymmetric: twelve terminal records precede subpart A, followed by A's seven
+WIREs; only two terminal records then precede subpart B, followed by B's seven
+WIREs.  The shared catalogue block serializer therefore permits separate
+terminal-pin and WIRE-pin lists per subpart while requiring exact global
+terminal and WIRE coverage.  That is a donor profile fact, not a new
+family-specific terminal workflow.
+
+The authoritative donor also proves a vertical grid-contact-to-pin WIRE for
+each of the fourteen pins.  Generic outward-horizontal contact construction is
+not allowed for HC76: the profile stores the donor-relative terminal contacts,
+and the shared placer rebases them from each current A/B marker.  The locked
+mega contains one reserved zero before each active seven-link table; the
+catalogue declares a one-byte trim before final WIRE-address rebasing.  This
+repair is additive and leaves HC74, HC04, DIL14, and frozen two-pin routes
+unchanged.
+
+Multipart spreading revealed a placement-stage rule: a valid strict
+component-body marker can pass temporarily through small nonzero coordinates
+before its final shelf translation.  The broad binary coordinate scanner keeps
+its million-unit lower bound, while the direct, non-label body-marker parser
+accepts bounded nonzero coordinates.  This retains both 74HC76 anchors rather
+than stranding B at its pre-translation position; it does not broaden generic
+binary coordinate mutation.
+
+The locked-mega component placer and shared terminal placer generated 1x, 9x,
+and 15x HC76 solos containing 14, 126, and 210 terminal/WIRE pairs.  The 9x
+and 15x copied outputs each cold-opened and cold-reopened normally after the
+12-second stability check without a save or modal dialog.  The 15x capture is
+under `experiments/dil16_dual_jk_ff_terminal_v1_temp_2026_07_13/04_local_proteus_gate/`.
+User visual acceptance remains required before mixed-family terminal emission.

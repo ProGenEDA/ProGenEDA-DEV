@@ -3301,6 +3301,223 @@ def test_hc74_shared_placer_preserves_subpart_native_wire_boundaries(
     assert output_chunk[output_wires[11] + 49] == 0xFF
 
 
+def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
+    tmp_path: Path,
+) -> None:
+    """HC76 keeps its donor's 12-terminal/A/2-terminal/B stream topology."""
+
+    family = "74HC76"
+    donor = (
+        ROOT
+        / "proteus_ic"
+        / "donors"
+        / "terminalized_catalogue_evidence"
+        / "dil16_dual_jk_ff"
+        / family
+        / "74HC76_terminalized_primary.pdsprj"
+    )
+    base = tmp_path / "74HC76_1x_no_terminal.pdsprj"
+    output = tmp_path / "74HC76_1x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    blocks = geometry["donor_subpart_attachment_blocks"]
+    assert geometry["wire_record_encoding"] == "catalogue_leading_separator"
+    assert geometry["subpart_link_prefix_zero_trim_count"] == 1
+    assert [block["subpart"] for block in blocks] == ["A", "B"]
+    assert set(blocks[0]["terminal_pins"]) != set(blocks[0]["wire_pins"])
+    assert set(blocks[1]["terminal_pins"]) != set(blocks[1]["wire_pins"])
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == 1
+    assert report["terminal_count_added"] == 14
+    assert report["wire_count_added"] == 14
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "single_ff"
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+    donor_dsn = read_internal_file(donor, "ROOT.DSN")
+    output_dsn = read_internal_file(output, "ROOT.DSN")
+    donor_chunk = _extract_object_chunk(donor_dsn)
+    output_chunk = _extract_object_chunk(output_dsn)
+    donor_terminals = terminal_placer._bidir_label_records(donor_chunk)
+    output_terminals = terminal_placer._bidir_label_records(output_chunk)
+    output_wires = terminal_placer._wire_rows_from_chunk(
+        output_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
+    )
+    donor_wires = terminal_placer._wire_rows_from_chunk(
+        donor_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(donor_dsn),
+    )
+    assert [row["label"] for row in output_terminals] == [
+        row["label"] for row in donor_terminals
+    ]
+    assert [row["angle_tenths"] for row in output_terminals] == [
+        row["angle_tenths"] for row in donor_terminals
+    ]
+    assert all(
+        row["symbol_x"] % 254_000 == 0 and row["symbol_y"] % 254_000 == 0
+        for row in output_terminals
+    )
+    assert len(output_wires) == 14
+    wire_starts = [int(row["marker_offset"]) - 24 for row in output_wires]
+    assert all(
+        output_chunk[start : start + 1] == b"\x00"
+        and output_chunk[start + 24 : start + 29] == b"\x7fWIRE"
+        for start in wire_starts
+    )
+    assert all(
+        tuple(row["full_coordinates"][:2])
+        != tuple(row["full_coordinates"][-2:])
+        for row in output_wires
+    )
+    # HC76's actual donor contact is directly above/below the pin after grid
+    # snapping.  A generic one-grid outward contact adds an invented horizontal
+    # leg and is rejected by the local Proteus loader for this family.
+    assert all(
+        row["full_coordinates"][0] == row["full_coordinates"][2]
+        and abs(row["full_coordinates"][1] - row["full_coordinates"][3])
+        < 254_000
+        for row in output_wires
+    )
+
+    refs = {
+        ref.rsplit(":", 1)[1]: ref
+        for ref in result.selected_groups[0].refs
+    }
+    component_starts = {
+        subpart: output_chunk.index(
+            b"\xff" + bytes([len(ref.encode("ascii"))]) + ref.encode("ascii")
+        )
+        for subpart, ref in refs.items()
+    }
+    terminal_starts: list[int] = []
+    cursor = 0
+    while True:
+        marker = output_chunk.find(b"$TERBIDIR", cursor)
+        if marker < 0:
+            break
+        terminal_starts.append(marker - 14)
+        cursor = marker + 1
+    assert len(terminal_starts) == 14
+    assert all(start < component_starts["A"] for start in terminal_starts[:12])
+    assert component_starts["A"] < terminal_starts[12] < terminal_starts[13]
+    assert terminal_starts[13] < component_starts["B"]
+    assert all(component_starts["A"] < start < terminal_starts[12] for start in wire_starts[:7])
+    assert all(component_starts["B"] < start for start in wire_starts[7:])
+    donor_wire_starts = [int(row["marker_offset"]) - 24 for row in donor_wires]
+    donor_component_starts = {
+        subpart: donor_chunk.index(
+            b"\xff" + bytes([len(ref.encode("ascii"))]) + ref.encode("ascii")
+        )
+        for subpart, ref in {"A": "U1:A", "B": "U1:B"}.items()
+    }
+    # The locked mega has a one-byte unused prefix immediately before each
+    # zeroed link array. It must be trimmed when those links become active;
+    # after that trim, the only donor/output component-span difference is the
+    # one extra reference character in U41 versus U1.
+    for subpart, output_index, donor_index in (("A", 0, 0), ("B", 7, 7)):
+        assert (
+            wire_starts[output_index] - component_starts[subpart]
+            == donor_wire_starts[donor_index] - donor_component_starts[subpart]
+            + len(refs[subpart])
+            - len(f"U1:{subpart}")
+        )
+
+    pins_by_subpart = geometry["pin_subparts"]
+    allocations = report["link_allocation"]["allocations"]
+    for subpart, expected_wire_start in (("A", wire_starts[0]), ("B", wire_starts[7])):
+        positions = sorted(
+            int(row["component_link_position"])
+            for row in allocations
+            if pins_by_subpart[str(row["role"])] == subpart
+        )
+        assert positions == list(range(positions[0], positions[0] + 28, 4))
+        assert positions[-1] + 4 == expected_wire_start
+        assert component_starts[subpart] <= positions[0]
+
+
+def test_hc76_multipart_spread_keeps_both_body_anchors_at_9x(
+    tmp_path: Path,
+) -> None:
+    """A temporary small B anchor remains movable during the 9x spread.
+
+    HC76's fourth package crosses the small-coordinate area while its A/B
+    symbols are separated.  The strict body-marker scanner must preserve that
+    real marker through the final shelf translation; otherwise the terminal
+    planner only sees one subpart and refuses safe emission.
+    """
+
+    family = "74HC76"
+    base = tmp_path / "74HC76_9x_no_terminal.pdsprj"
+    output = tmp_path / "74HC76_9x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 9},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+
+    assert result.valid
+    assert len(result.selected_groups) == 9
+    anchors_by_ref = {
+        group.refs[0].split(":", 1)[0]: terminal_placer._component_marker_anchors_for_catalogue(
+            group.data,
+            family,
+        )
+        for group in result.selected_groups
+    }
+    assert set(anchors_by_ref) == {"U41", "U42", "U43", "U44", "U182", "U183", "U184", "U185", "U323"}
+    assert all(len(anchors) == 2 for anchors in anchors_by_ref.values())
+    assert anchors_by_ref["U44"][0]["x"] == anchors_by_ref["U44"][1]["x"]
+    assert anchors_by_ref["U44"][0]["y"] != anchors_by_ref["U44"][1]["y"]
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == 9
+    assert report["terminal_count_added"] == 9 * 14
+    assert report["wire_count_added"] == 9 * 14
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+
+
 def test_dil14_mixed_baseline_keeps_new_logic_groups_unterminalized(
     tmp_path: Path,
 ) -> None:

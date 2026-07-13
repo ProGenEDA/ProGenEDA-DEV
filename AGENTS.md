@@ -206,13 +206,32 @@ the evidence-backed set together, then run focused and accepted-family
 regressions.
 
 Every terminal candidate must pass this mechanical checklist before handoff:
-grid-aligned terminal contact; 1800 angle for left-side pins and 0 for
+grid-aligned terminal contact (the attaching edge/contact, not merely the
+terminal symbol origin, must lie at a horizontal/vertical Proteus grid
+intersection); 1800 angle for left-side pins and 0 for
 right-side pins; nonzero donor-proven short WIRE from terminal contact to exact
 pin; matching active terminal/component-link suffix allocated from final
 ROOT.DSN WIRE address; correct packet and stream boundary bytes; unchanged
 accepted-family regression outputs; and a local Proteus open/save/cold-reopen
 gate. New family work must never downgrade, replace, or rewrite a previously
 accepted family path.
+
+For every newly researched multi-pin family, prove its 1x route in these exact
+loader-gated diagnostic stages before generating scale or mixed packs. These
+are diagnostic artifacts only, never alternative final terminal workflows:
+
+1. Place each terminal at the donor/current pin contact with the donor-proven
+   1800-left or 0-right orientation; cold-open it.
+2. Move the terminal contact to the donor-derived Proteus grid intersection;
+   cold-open it again. The contact edge must be grid aligned even if the
+   component pin is not.
+3. Add the donor-proven terminal label, short WIRE to the exact pin, and final
+   active terminal/component-link suffixes; cold-open and cold-reopen it.
+
+Stop at the first failed stage. Compare the failed stream only against the
+preceding passing stage and the authoritative donor, then implement the whole
+evidence-backed difference set before retrying. Do not progress to a later
+stage, 9x/15x, or a mixed pack on static validation alone.
 
 ## Local Proteus Acceptance Gate
 
@@ -221,9 +240,11 @@ handoff condition. Before reporting a generated `.pdsprj` candidate as ready,
 run this gate on a copied output: cold-launch Proteus after stopping prior PDS
 and ISIS processes; wait until the schematic window has appeared and then at
 least ten additional seconds; reject any modal `Fatal Error`, `LXLCORE`, `Bad
-Object Record`, or device-library dialog; invoke Ctrl+S; verify no unexpected
-project-member/object-stream mutation; stop Proteus; then cold-reopen the saved
-copy and repeat the delayed dialog check. Record every result beside the pack.
+Object Record`, or device-library dialog; stop Proteus; then cold-reopen the
+copy and repeat the delayed dialog check. Do not Ctrl+S a normally opening
+project. If `Bad Object Record` appears but dismissing it allows a correct
+schematic to open, Ctrl+S only that disposable copy, compare the delta, and
+cold-reopen it. Record every result beside the pack.
 
 Window screenshots are supplemental only. The local Proteus schematic canvas
 may not render through `PrintWindow`/screen capture even for the authoritative

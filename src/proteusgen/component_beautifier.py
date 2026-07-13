@@ -271,6 +271,26 @@ def _packet_coord_pair_ok(x_value: int, y_value: int) -> bool:
     )
 
 
+def _strict_marker_body_coord_pair_ok(x_value: int, y_value: int) -> bool:
+    """Return whether a direct component-body marker coordinate is valid.
+
+    The general packet scanner deliberately ignores small integer pairs because
+    arbitrary binary payload can resemble coordinates.  A strict marker-body
+    record is narrower: the family marker is not a length-prefixed label or an
+    embedded identifier, and its two following fields are the native body
+    anchor.  Multipart spreading can legitimately move one subpart through
+    the small-coordinate area before the whole packet is translated to its
+    visible shelf.  Keep the general scanner conservative while preserving
+    that real anchor for the second placement pass.
+    """
+
+    return (
+        _packet_coord_ok(x_value)
+        and _packet_coord_ok(y_value)
+        and (x_value != 0 or y_value != 0)
+    )
+
+
 def _is_ascii_payload(data: bytes) -> bool:
     return bool(data) and all(byte in (9, 10, 13) or 32 <= byte < 127 for byte in data)
 
@@ -450,7 +470,7 @@ def _strict_marker_body_coordinate_pairs(
         ):
             x_value = _s32_at(fragment, x_offset)
             y_value = _s32_at(fragment, y_offset)
-            if _packet_coord_pair_ok(x_value, y_value):
+            if _strict_marker_body_coord_pair_ok(x_value, y_value):
                 pairs.append((x_offset, y_offset, f"marker_body:{marker_text}"))
         offset = marker_offset + 1
 
