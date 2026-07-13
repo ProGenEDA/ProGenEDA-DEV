@@ -12831,3 +12831,7 @@ Both scale packs now pass the actual DSN audit: 9× has 126 grid-aligned termina
 - `tests/test_component_placer.py` and `tests/test_component_catalog.py` — add 15× complete-package selection and emitted-DSN nonzero-WIRE regressions.
 - `knowledge/4027_scale_selection_preflight_2026_07_13.md` — DSN-only full package audit, evidence-backed cause, and 9×/15× static results.
 - `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/04_solo_9x/`, `05_solo_15x/`, and `scale_generation_report.json` — locked-mega no-terminal controls and shared terminalized 4027 scale packs.
+
+## Agent Visible Response - 2026-07-13 16:58 +05:00
+
+Your active Proteus window is still `sa4027_complete`, responsive, so I’m leaving it untouched. The 4027 scale files are already generated at `04_solo_9x` and `05_solo_15x`; as soon as that window closes, I’ll run the required 1× → 9× → 15× cold-open/reopen gate rather than treating static validation as acceptance.
