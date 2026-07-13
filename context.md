@@ -11573,3 +11573,28 @@ Files edited this continuation:
 - `ltspice/tests/test_ltspice_timing_contract.py`
 - `ltspice/tests/test_oracle_netlist_validator.py`
 - `ltspice/tests/test_visual_placement.py`
+
+## 2026-07-14T02:06:35+05:00 — Committed and pushed LTspice hardening checkpoint
+
+Visible assistant responses (verbatim):
+
+> All implementation and verification are complete. I’m staging only the LTspice/backend changes and the required continuation record now; the unrelated pre-existing KiCad visual-run folders remain untouched.
+
+> The scoped checkpoint is committed as `4435b5e4f` (“Harden LTspice executable generation”). I’m pushing it to `memory` and verifying the remote hash next.
+
+Commit and remote verification:
+
+- Commit: `4435b5e4feb72c66b0b13f9e390966c8a8588cb4` (`Harden LTspice executable generation`)
+- Push: `main` advanced from `cff4b00ac` to `4435b5e4f` on `origin`.
+- Verified local and `origin/main` both resolve to
+  `4435b5e4feb72c66b0b13f9e390966c8a8588cb4`.
+
+Planned visible final response:
+
+> Completed and pushed the LTspice hardening checkpoint: `4435b5e4f`.
+>
+> - Added real 1×/2× timing enforcement, atomic download release, partial-archive cleanup, and oracle deadline caps.
+> - Added VCVS/VCCS support, stable analysis-trace labels, exported-netlist connectivity checks, and a readable automatic RC layout.
+> - Verified 45 tests pass (one optional oracle test skipped); the final RC project also netlisted, batch-simulated, and opened cleanly in installed LTspice 26.
+>
+> I left unrelated untracked KiCad example folders untouched.
