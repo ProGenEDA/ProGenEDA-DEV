@@ -13236,3 +13236,50 @@ The regenerated active file is byte-identical to the locally gated version (`608
 ## Agent Visible Response - 2026-07-13 21:45 +05:00
 
 The repaired 7447 active candidate is committed and pushed as `6c3b9034`; local HEAD, upstream, and GitHub match. Use `S02_7447_1X_CATALOGUE_TERMINAL_sa.pdsprj` for visual testing: it has 14 actual grid-contact-to-pin short WIREs, not floating terminals.
+
+## User Message - 2026-07-14 01:17 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-14 01:17 +05:00
+
+I’m continuing from the repaired 7447 route: first I’m collecting the already-running 9×/15× Proteus gate, then I’ll record only verified results and keep the accepted routes untouched.
+
+## User Message - 2026-07-14 01:18 +05:00
+
+r u stuck?
+
+## Agent Visible Response - 2026-07-14 01:18 +05:00
+
+No — the earlier local-gate process handle was lost when the session compacted, not the work itself. I’m restarting the verification from the generated 9×/15× files and checking the repository checkpoint first.
+
+## Agent Visible Response - 2026-07-14 01:19 +05:00
+
+The 15× cold reopen is visibly clean: multiple 7447s are present, each has its full left/right terminal set, and no error dialog appeared. The 9× reopen also completed without a dialog; its automated capture is partly black, so I’m treating the binary audit and the clean 15× visual as evidence—not inventing a claim from that capture.
+
+## Agent Visible Response - 2026-07-14 01:20 +05:00
+
+I’ve confirmed both generated source files stayed byte-identical after the normal opens, so Proteus did not silently rewrite them. I’m adding the 9×/15× regression and the loader record now; this does not alter the shared terminal code or any accepted family.
+
+## Agent Visible Response - 2026-07-14 01:21 +05:00
+
+The code test hit a Windows permission problem in pytest’s default Temp directory before any test body ran. I’ve isolated it to a writable repository-local test directory and am rerunning the same focused regression there; the catalogue JSON and compile check already passed.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json` - records the 7447 1x/9x/15x loader status; the existing progressive-validation cap remains 15.
+- `tests/test_component_placer.py` - adds the 7447 9x/15x shared-placer regression without changing terminal implementation.
+- `knowledge/dil16_decoder_driver_donor_preflight_2026_07_13.md`, `docs/architecture.md`, `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/README.md`, and `knowledge/test_results.jsonl` - records evidence and limits.
+- `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/04_7447_scale_9x_15x/` - locked-mega 9x/15x controls, active terminalized outputs, screenshots, and loader record; disposable `*_COPY.pdsprj` files are excluded from the checkpoint.
+
+## Agent Visible Response - 2026-07-14 01:22 +05:00
+
+The 7447 checkpoint itself is ready, but this session is currently blocked from writing Git’s index: `.git` has an explicit Windows deny rule, so `git add` cannot create `index.lock` (there is no stale lock or Git process). I’ll keep the verified files intact and continue read-only donor analysis rather than risk uncommitted terminal changes.
+
+## User Message - 2026-07-14 01:34 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-14 01:34 +05:00
+
+Continuing. The workspace now has permission to write Git again, so I’m checkpointing the verified 7447 9×/15× work first, then I’ll proceed from the next donor group without changing frozen routes.

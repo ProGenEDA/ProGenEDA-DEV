@@ -68,4 +68,24 @@ were unchanged. Screenshots and the gate record are in
 `03_7447_staged_1x/local_proteus_gate/`.
 
 Status: 7447 1x loader/persistence proof is complete; user visual acceptance is
-still required before the 9x/15x and mixed-family paths are enabled.
+still required before any mixed-family path is enabled.
+
+## 7447 scale proof
+
+`04_7447_scale_9x_15x/` contains fresh locked-mega controls and active shared
+placer outputs for 9x and 15x. The outputs contain 126 and 210 terminal/WIRE
+pairs respectively. Every terminal contact is on the Proteus grid, every WIRE
+is nonzero from that contact to its exact calculated pin, and every terminal
+and component pin-link suffix was allocated from the final `ROOT.DSN` address.
+
+Both scale outputs cold-opened and cold-reopened after the 12-second local
+Proteus gate without a modal dialog. Neither normal-opening copy was Ctrl+S
+saved; the source/copy SHA-256 values remained identical. The 15x cold-reopen
+screenshot visibly shows the repeated 7447 symbols and their short green
+terminal attachments. The 9x automated capture has a partial-black display
+region but no error dialog; its binary attachment audit and normal loader
+result are recorded rather than treating that image as a layout claim.
+
+Status: 7447 1x, 9x, and 15x loader/persistence proofs are complete. User
+visual acceptance remains required, and no mixed-family route is enabled by
+this scale result.

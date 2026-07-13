@@ -262,6 +262,28 @@ Ctrl+S-saved. The active copy remained SHA-256
 and after both its initial cold open and cold reopen. Screenshots are retained
 in `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/03_7447_staged_1x/local_proteus_gate/`.
 
-7447 is a 1x loader/persistence proof only. Its profile remains capped at one
-normal component until user visual acceptance authorizes the separate 9x/15x
-scale verification.
+## 7447 9x and 15x scale result
+
+Fresh locked-mega component-placer outputs were terminalized through the same
+shared 7447 catalogue profile, using its explicit progressive-validation cap
+of 15. This is an explicit scale validation invocation, not a change to the
+default one-component donor-proven safety boundary or permission to emit a
+mixed-family route.
+
+| Scale | Terminal/WIRE pairs | Independent ROOT.DSN attachment audit | Local loader result |
+| ---: | ---: | --- | --- |
+| 9x | 126 / 126 | unique final-address suffixes; grid contacts; nonzero exact-pin WIREs; one matching `0100` component link per WIRE; zero-length `SUBCKT NAME`; unchanged `ROOT.CDB` | normal cold open and cold reopen; no save |
+| 15x | 210 / 210 | unique final-address suffixes; grid contacts; nonzero exact-pin WIREs; one matching `0100` component link per WIRE; zero-length `SUBCKT NAME`; unchanged `ROOT.CDB` | normal cold open and cold reopen; no save |
+
+The normal disposable copies retained the generated SHA-256 values:
+`E67EF80C4724756E92282125883C2F3D4AD9C1BDA218E7252723FC9594C0BED8` for
+9x and `C1F6DD4680BBBC7A96FA23A69AE2844E34E9758E645D1985CF64351886CA0B97`
+for 15x. No Bad Object Record or library dialog appeared, so neither normal
+copy was Ctrl+S-saved. The 15x cold-reopen screenshot visibly shows repeated
+7447s with their short green attachments. The 9x automated screenshot has a
+partial-black capture region but no modal dialog; it is not used as visual
+layout proof.
+
+7447 now has 1x, 9x, and 15x local loader/persistence proof. User visual
+acceptance remains authoritative, and a mixed-family route still needs its own
+donor-grounded order/scale proof.

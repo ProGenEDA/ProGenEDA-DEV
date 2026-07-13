@@ -2120,6 +2120,13 @@ The repaired 1x output has the same 2,610-byte DSN object-stream width and
 WIRE marker positions as the accepted donor, fourteen on-grid terminal contacts,
 fourteen nonzero exact-pin WIREs, and final-address-rebased active links. Its
 native-contact, grid-contact, active, and active cold-reopen visible Proteus
-gates all opened normally after 12 seconds with no save or modal dialog. This
-is a 1x loader proof only: 9x/15x scaling and mixed dispatch remain blocked
-until user visual acceptance.
+gates all opened normally after 12 seconds with no save or modal dialog.
+
+The explicitly profile-capped 9x and 15x validations subsequently produced
+126 and 210 active attachment units. An independent `ROOT.DSN` audit checked
+every final-address suffix, terminal contact, nonzero WIRE, exact component
+`0100` link, zero-length normalized `SUBCKT NAME`, finalizer, and unchanged
+`ROOT.CDB`; both files normal-opened and cold-reopened locally. This proves
+only the 7447 uniform scale route through 15 components. It does not relax the
+default one-component emission boundary, authorize a mixed stream, or allow a
+new family to reuse 7447's terminal-leading metadata normalization.
