@@ -2233,3 +2233,34 @@ placement, and an actual local Proteus render all show those fifteen packets.
 The render viewport may show only a shelf subset at once, but its minimap and
 placed packet count contain all fifteen. A focused regression guards against
 accidentally filtering every diode after `D20`.
+
+### 2026-07-14 DIL8 analog terminal-leading identity contract
+
+`LM741` and `NE555` use the existing catalogue-driven terminal-leading route:
+the catalogue supplies pin-relative geometry, donor terminal/WIRE order,
+left/right orientation, end-relative `0100` link slots, labels, and the
+component packet facts. The shared placer emits a terminal whose attaching
+edge is on the 254,000-unit grid, a nonzero short WIRE to the exact physical
+pin, and final-ROOT.DSN-address terminal/component links as one atomic unit.
+No DIL8-specific terminal script or serializer was added.
+
+The accepted donor component bodies are shorter than fresh locked-mega packets
+because those projects use their own component identity/CDB frame. A
+donor-looking `COMPONENT ID` record in the fresh packet is therefore live
+placed-design data, not removable decoration. Removing it caused a reproducible
+Proteus VGDVC.DLL `[000190DA]` fatal error in native, grid, and active stages.
+Retaining it while consuming only the known generator-only raw tail restores
+normal loading. This is recorded in the catalogue as
+`preserve_locked_mega_component_id_record`, with both donor and live packet
+widths retained as separate evidence; future families must not infer a broad
+metadata-removal rule from a shorter donor packet.
+
+The direct exact-pin diagnostic is off-grid for these beautified placements but
+normal-opens; it is diagnostic only and never a final terminal candidate. The
+valid DIL8 route starts at grid contact; both families pass native/grid/active
+1x plus active cold reopen, then 9x and 15x active cold-open/cold-reopen gates.
+Static checks prove `7/63/105` LM741 and
+`8/72/120` NE555 terminal/WIRE units at 1x/9x/15x, all grid-aligned and
+nonzero. This establishes a tested solo limit of 15 per family only; mixed
+terminalization remains deferred until every remaining group has the same
+solo evidence.

@@ -1093,6 +1093,126 @@ def test_dil16_terminal_leading_stages_preserve_active_pin_links(
 
 
 @pytest.mark.parametrize(
+    ("family", "expected_terminal_count"),
+    [("LM741", 7), ("NE555", 8)],
+)
+def test_dil8_analog_terminal_stages_preserve_locked_mega_identity_packet(
+    tmp_path: Path,
+    family: str,
+    expected_terminal_count: int,
+) -> None:
+    """DIL8 analogue parts keep their locked-mega identity record and link tails."""
+
+    base = tmp_path / f"{family}_1x_no_terminal.pdsprj"
+    native = tmp_path / f"{family}_1x_native_contact.pdsprj"
+    grid = tmp_path / f"{family}_1x_grid_contact.pdsprj"
+    active = tmp_path / f"{family}_1x_catalogue_terminal.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(NEW_COMPONENT_MEGA_DONOR),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    native_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        native,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="native_pin_contact",
+    )
+    grid_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        grid,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="grid_contact",
+    )
+    active_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        active,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    catalog = load_component_catalog()
+    profile = catalog.get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["clean_packet_attachment_order"] == (
+        "terminal_leading_component_then_wires"
+    )
+    assert geometry["component_identity_record_policy"] == (
+        "preserve_locked_mega_component_id_record"
+    )
+    assert geometry["locked_mega_leading_component_id_record_bytes"] > 0
+
+    assert placement.valid
+    for report in (native_report, grid_report):
+        assert report["valid"]
+        assert report["terminal_count_added"] == expected_terminal_count
+        assert report["wire_count_added"] == 0
+    assert native_report["terminal_grid_alignment_valid"] is False
+    assert grid_report["terminal_grid_alignment_valid"] is True
+    assert active_report["valid"]
+    assert active_report["terminal_count_added"] == expected_terminal_count
+    assert active_report["wire_count_added"] == expected_terminal_count
+    assert active_report["terminal_grid_alignment_valid"]
+    assert active_report["wire_path_contacts_valid"]
+    assert active_report["terminal_suffix_links_valid"]
+
+    dsn = read_internal_file(active, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = _bidir_label_records(chunk)
+    wires = _wire_rows_from_chunk(
+        chunk,
+        chunk_start=_object_chunk_absolute_start(dsn),
+    )
+    suffixes = {int(row["suffix"]) for row in terminals}
+    expected_labels = [
+        geometry["pins"][pin]["donor_terminal_label"]
+        for pin in geometry["donor_terminal_record_order"]
+    ]
+    assert [row["label"] for row in terminals] == expected_labels
+    assert len(terminals) == len(wires) == expected_terminal_count
+    assert all(
+        _terminal_contact_xy(row)[0] % PROTEUS_TERMINAL_GRID == 0
+        and _terminal_contact_xy(row)[1] % PROTEUS_TERMINAL_GRID == 0
+        for row in terminals
+    )
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in wires
+    )
+    group = placement.selected_groups[0]
+    marker = b"\xff" + bytes((len(group.key),)) + group.key.encode("ascii")
+    component_start = chunk.index(marker)
+    component_end = min(int(row["marker_offset"]) - 24 for row in wires)
+    assert component_end - component_start == int(
+        geometry["locked_mega_component_packet_bytes"]
+    )
+    for pin, pin_geometry in geometry["pins"].items():
+        position = component_end + int(
+            pin_geometry["component_link_offset_from_component_end"]
+        )
+        suffix = int.from_bytes(chunk[position : position + 2], "little")
+        assert suffix in suffixes, pin
+        assert chunk[position + 2 : position + 4] == bytes.fromhex(
+            pin_geometry["component_link_trailer"]
+        )
+    assert chunk.endswith(b"\xff")
+    base_cdb = read_internal_file(base, "ROOT.CDB")
+    assert read_internal_file(native, "ROOT.CDB") == base_cdb
+    assert read_internal_file(grid, "ROOT.CDB") == base_cdb
+    assert read_internal_file(active, "ROOT.CDB") == base_cdb
+
+
+@pytest.mark.parametrize(
     ("family", "count"),
     [
         ("74HC174", 9),
@@ -1135,6 +1255,91 @@ def test_dil16_terminal_leading_scales_keep_all_grid_short_wire_attachment_units
     )
 
     expected = 14 * count
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = _bidir_label_records(chunk)
+    wires = _wire_rows_from_chunk(
+        chunk,
+        chunk_start=_object_chunk_absolute_start(dsn),
+    )
+    suffixes = [int(row["suffix"]) for row in wires]
+    assert placement.valid
+    assert len(placement.selected_groups) == count
+    assert report["valid"]
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == expected
+    assert report["wire_count_added"] == expected
+    assert report["terminal_grid_alignment_valid"]
+    assert report["wire_path_contacts_valid"]
+    assert report["terminal_suffix_links_valid"]
+    assert len(terminals) == len(wires) == expected
+    assert len(set(suffixes)) == expected
+    assert all(
+        _terminal_contact_xy(row)[0] % PROTEUS_TERMINAL_GRID == 0
+        and _terminal_contact_xy(row)[1] % PROTEUS_TERMINAL_GRID == 0
+        for row in terminals
+    )
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in wires
+    )
+    chunk_start = _object_chunk_absolute_start(dsn)
+    assert all(
+        suffix == (chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
+        for suffix, row in zip(suffixes, wires, strict=True)
+    )
+    assert all(
+        chunk.count(suffix.to_bytes(2, "little") + b"\x01\x00") == 2
+        for suffix in suffixes
+    )
+    assert chunk.endswith(b"\xff")
+    assert read_internal_file(output, "ROOT.CDB") == read_internal_file(
+        base, "ROOT.CDB"
+    )
+
+
+@pytest.mark.parametrize(
+    ("family", "count", "pins_per_component"),
+    [
+        ("LM741", 9, 7),
+        ("LM741", 15, 7),
+        ("NE555", 9, 8),
+        ("NE555", 15, 8),
+    ],
+)
+def test_dil8_analog_scales_keep_all_grid_short_wire_attachment_units(
+    tmp_path: Path,
+    family: str,
+    count: int,
+    pins_per_component: int,
+) -> None:
+    """DIL8 analogue scale packs preserve every complete active attachment unit."""
+
+    base = tmp_path / f"{family}_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"{family}_{count}x_catalogue_terminal.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(NEW_COMPONENT_MEGA_DONOR),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
+    )
+
+    expected = pins_per_component * count
     dsn = read_internal_file(output, "ROOT.DSN")
     chunk = _extract_object_chunk(dsn)
     terminals = _bidir_label_records(chunk)

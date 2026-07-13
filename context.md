@@ -13459,3 +13459,67 @@ The selection rule itself already shows the intended behavior: the fresh 15× di
 ## Agent Visible Response - 2026-07-14 03:15 +05:00
 
 The diode issue is not a `D20` cutoff bug: a fresh 15× request selects 15 ordinary diodes—including 13 after `D20`—and Proteus renders that full shelf (the visible viewport shows a subset; the minimap has all 15). I added a regression that locks this exact behavior, with no change to accepted terminal routes. Next I’m moving to the DIL8 analog group: `LM741` and `NE555`.
+
+## Agent Visible Response - 2026-07-14 03:16 +05:00
+
+I’m continuing solo-only work: the diode check confirmed ordinary diodes after D20 are not excluded. I’m now finishing the next DIL8 group (LM741 and NE555) through the shared terminal placer at 1×, 9×, and 15× before any mixed circuit.
+
+## Agent Visible Response - 2026-07-14 03:17 +05:00
+
+Both DIL8 families have authoritative terminalized donors. Their locked-mega packets contain one donor-proven leading `COMPONENT ID` annotation that the accepted donor lacks; I’ve isolated that as a catalogue-declared normalization in the shared placer and am now regenerating both staged 1× paths before opening anything.
+
+## Agent Visible Response - 2026-07-14 03:19 +05:00
+
+The shared staged emitter now produces both DIL8 1× paths structurally: LM741 has 7 grid-aligned terminals and 7 short wires; NE555 has 8 and 8. I’m comparing the resulting packets against the accepted donors at record level next, then I’ll run their actual Proteus open/reopen gate.
+
+## Agent Visible Response - 2026-07-14 03:20 +05:00
+
+The record-level audit matches each donor’s packet width and required attachment contract. I’m running the required staged Proteus gate now—native contact, grid contact, active attachment, then active cold reopen—for both families; no normal-opening file will be saved.
+
+## Agent Visible Response - 2026-07-14 03:22 +05:00
+
+The first LM741 gate run reached Proteus, but the window-title collector failed after the required wait; I accepted no result and saved nothing. I’m closing only that disposable test instance and rerunning the identical files with the collector corrected.
+
+## Agent Visible Response - 2026-07-14 03:23 +05:00
+
+The corrected process check exposed an actual `Fatal Error` dialog on LM741’s native-contact stage, so the normalizer candidate is rejected. I’m capturing that failure and comparing the donor/control packet boundaries before changing anything.
+
+## Agent Visible Response - 2026-07-14 03:26 +05:00
+
+The failure is specifically the expected non-grid Stage‑1 condition: LM741’s direct pin contacts fall off Proteus grid intersections, while the authoritative donor’s contacts are grid-aligned. I’m treating that as the evidence for the required grid-contact path—not as a valid candidate—and testing the grid and active stages next.
+
+## Agent Visible Response - 2026-07-14 03:30 +05:00
+
+Both grid and active LM741 variants still hit the same VGDVC fatal dialog. The direct donor and fresh no-terminal locked-mega control both open normally, so I’ve narrowed the next comparison to the one remaining structural delta: retaining versus removing the locked-mega `COMPONENT ID` record while keeping the same shared emitter and link layout.
+
+## Agent Visible Response - 2026-07-14 03:42 +05:00
+
+The donor-proven correction is now applied: the locked mega’s identity record must be preserved. I’ve regenerated both clean staged files through the same shared placer; I’m re-running the grid and active gates from those final outputs, including an active cold reopen.
+
+## Agent Visible Response - 2026-07-14 03:45 +05:00
+
+LM741 now passes its grid, active, and cold-reopen gates with no dialog or rewrite; the active capture shows all seven donor-labelled terminals on the symbol. I’m applying the exact same preserved-identity route to NE555 now.
+
+## Agent Visible Response - 2026-07-14 03:47 +05:00
+
+The focused DIL8 shared-placer regression passes all six staged/scale cases. I’m generating the real locked-mega 9× and 15× solo packs now; I’ll cold-open both and retain visual captures only for the 15× outputs.
+
+## Agent Visible Response - 2026-07-14 03:49 +05:00
+
+LM741’s 9× and 15× packs both cold-open and cold-reopen cleanly. The retained 15× capture shows the repeated units with all seven short-wire terminal attachments; I’m running NE555’s 9×/15× gate now.
+
+## Agent Visible Response - 2026-07-14 03:53 +05:00
+
+Both DIL8 families now pass their 1×, 9×, and 15× loader gates. I’m recording the rejected identity-removal hypothesis, the final static audits, and the accepted 15× evidence before running frozen-route regressions and checkpointing this solo group.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json` — added donor-derived LM741/NE555 pin/link facts, kept their required locked-mega identity records, and marked both solo 1×/9×/15× routes loader-passed.
+- `tests/test_component_catalog.py` — added focused shared-placer staged and scale regressions for the two DIL8 families.
+- `knowledge/dil8_analog_donor_preflight_2026_07_14.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `experiments/dil8_analog_terminal_v1_temp_2026_07_14/README.md` — record full donor/control evidence, rejected VGDVC fatal hypothesis, final route, and loader results.
+- `experiments/dil8_analog_terminal_v1_temp_2026_07_14/` — fresh locked-mega 1×, 9×, and 15× controls/active projects, loader result record, fatal diagnostic captures, and required accepted 1×/15× visual captures.
+- `backups/component_terminal_placer/` — preserved both pre-edit shared-placer snapshots; no family-specific terminal script was created.
+
+## Agent Visible Response - 2026-07-14 03:58 +05:00
+
+The final native diagnostics also open normally; they are deliberately diagnostic-only because their contacts are off-grid. The user-facing active route remains grid contact plus a nonzero short wire, and both families have passed that route through 15×.
