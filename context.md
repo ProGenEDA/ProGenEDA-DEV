@@ -12975,3 +12975,49 @@ The fresh 74HC76 1× output opens cleanly and renders both halves with terminals
 - experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/10_hc76_scale_revalidation/ — fresh 9×/15× controls, terminalized results, and screenshots.
 - knowledge/test_results.jsonl — actual DSN and loader-gate result.
 - context.md — this continuation log.
+
+## Agent Visible Response - 2026-07-13 18:44 +05:00
+
+I’ll use that recovery path exactly: capture the dialog, dismiss it, let Proteus finish opening, save only then, and compare the generated and repaired `ROOT.DSN` files. I’m continuing the 74HC151 donor-led repair from the one remaining byte-level difference.
+
+## Agent Visible Response - 2026-07-13 18:47 +05:00
+
+The remaining byte is now explained: the final 74HC151 wire’s last coordinate itself ends in `FF`, so the old “single FF” helper mistook coordinate data for the stream terminator and omitted the real finalizer. The donor has one additional structural `FF`. This is an additive catalogue policy for 74HC151, not a change to accepted families or the shared emitter.
+
+## Agent Visible Response - 2026-07-13 18:49 +05:00
+
+I caught and contained a patch-targeting mistake before it reached any handoff: it changed 4027’s frozen finalizer rather than HC151’s. I’m restoring 4027 immediately and applying the explicit-finalizer policy only under the 74HC151 profile; no accepted output was regenerated or altered.
+
+## Agent Visible Response - 2026-07-13 18:53 +05:00
+
+The corrected packet now matches the donor’s length, attachment order, all 14 WIRE offsets, and explicit finalizer. Its remaining static failure is catalogue pin semantics: six paths prove the stored “pin coordinate” is the snapped grid bend, not the physical pin. I’m correcting those relative pin coordinates from the donor’s first WIRE endpoint while keeping the terminal contacts and paths unchanged.
+
+## Agent Visible Response - 2026-07-13 18:55 +05:00
+
+I verified the donor before editing: the catalogue’s physical pin coordinates are already correct. The defect is narrower—the planner applies `pin_endpoint_snap_axes` to the *pin* itself. I’ll remove that snap only for HC151: terminals remain grid-aligned; the donor’s short wire ends at the unsnapped physical pin, exactly as required.
+
+## Agent Visible Response - 2026-07-13 18:58 +05:00
+
+The HC151 focused regression passed, including 4027/HC76 regression coverage. The complete DSN audit now finds no unexplained byte differences: exactly 56 changed bytes, all fourteen terminal and fourteen component active-link suffixes rebased from final WIRE addresses. I’m moving this exact candidate through the local Proteus open/save/reopen gate next.
+
+## Agent Visible Response - 2026-07-13 18:59 +05:00
+
+I’m using a disposable copy for the loader check. If a Bad Object Record appears, I’ll capture it first, dismiss it, wait for the schematic, save, capture again, and compare that saved DSN with the generated one; a normal open will not be saved.
+
+## Agent Visible Response - 2026-07-13 19:01 +05:00
+
+The local gate itself completed cleanly: first cold open and cold reopen both showed the normal Proteus schematic window, with no Bad Object Record or other modal dialog. The command only failed afterward while formatting the screenshot filename list; the actual checks and screenshots completed. I’m verifying the saved-copy hash and the captured screen now.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json` — 74HC151 donor provenance, packet order, complete WIRE polylines, exact physical-pin semantics, and explicit finalizer policy.
+- `tests/test_component_placer.py` — focused 74HC151 complete donor-packet regression.
+- `knowledge/hc151_donor_preflight_2026_07_13.md` — DSN-only donor, packet, endpoint, finalizer, and local-loader analysis.
+- `docs/architecture.md` — reusable 74HC151 mux terminal contract and profile-isolation rule.
+- `experiments/dil16_mux_terminal_v1_temp_2026_07_13/05_hc151_donor_endpoint_verified/` — locked-mega 1x control, terminalized candidate, visible loader screenshots, and evidence README.
+- `knowledge/test_results.jsonl` — static and local-loader result.
+- `context.md` — chronological continuation log.
+
+## Agent Visible Response - 2026-07-13 19:05 +05:00
+
+74HC151 1× is now clean in the donor comparison and visibly opens twice in Proteus with every terminal routed to the symbol. I’m checkpointing this HC151-only catalogue repair now; then I’ll generate and audit 9× and 15× through the same frozen shared path.

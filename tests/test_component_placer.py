@@ -3604,6 +3604,129 @@ def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
         assert component_starts[subpart] <= positions[0]
 
 
+def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
+    tmp_path: Path,
+) -> None:
+    """HC151 preserves its donor's routed attachment units and explicit FF."""
+
+    family = "74HC151"
+    donor = (
+        ROOT
+        / "proteus_ic"
+        / "donors"
+        / "terminalized_catalogue_evidence"
+        / "dil16_mux"
+        / family
+        / "74HC151_user_terminalized_july04.pdsprj"
+    )
+    base = tmp_path / "74HC151_1x_no_terminal.pdsprj"
+    output = tmp_path / "74HC151_1x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["clean_packet_attachment_order"] == (
+        "component_stream_then_attachment_units"
+    )
+    assert geometry["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert tuple(geometry["donor_attachment_unit_order"]) == (
+        "5", "6", "4", "3", "2", "1", "15", "14", "13", "12", "11", "10", "9", "7"
+    )
+
+    assert placement.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == 14
+    assert report["wire_count_added"] == 14
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+
+    donor_dsn = read_internal_file(donor, "ROOT.DSN")
+    output_dsn = read_internal_file(output, "ROOT.DSN")
+    donor_chunk = _extract_object_chunk(donor_dsn)
+    output_chunk = _extract_object_chunk(output_dsn)
+    donor_terminals = terminal_placer._bidir_label_records(donor_chunk)
+    output_terminals = terminal_placer._bidir_label_records(output_chunk)
+    donor_wires = terminal_placer._wire_rows_from_chunk(
+        donor_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(donor_dsn),
+    )
+    output_wires = terminal_placer._wire_rows_from_chunk(
+        output_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
+    )
+
+    # The locked mega resolves this solo to the donor's physical slot. All
+    # static packet differences must therefore be the fourteen rebased active
+    # links (terminal and component fields), never routing or packet grammar.
+    assert len(output_chunk) == len(donor_chunk) == 2_687
+    assert output_chunk[-27:] == donor_chunk[-27:]
+    assert [row["label"] for row in output_terminals] == [
+        row["label"] for row in donor_terminals
+    ]
+    assert [row["angle_tenths"] for row in output_terminals] == [
+        row["angle_tenths"] for row in donor_terminals
+    ]
+    assert [row["marker_offset"] for row in output_wires] == [
+        row["marker_offset"] for row in donor_wires
+    ]
+    assert [row["full_coordinates"] for row in output_wires] == [
+        row["full_coordinates"] for row in donor_wires
+    ]
+    assert all(
+        row["symbol_x"] % 254_000 == 0 and row["symbol_y"] % 254_000 == 0
+        for row in output_terminals
+    )
+    output_chunk_start = terminal_placer._object_chunk_absolute_start(output_dsn)
+    assert all(
+        int(row["suffix"])
+        == (output_chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
+        for row in output_wires
+    )
+
+    terminal_suffix_positions = {
+        position
+        for positions in terminal_placer._bidir_terminal_suffix_positions(
+            donor_chunk
+        ).values()
+        for suffix_position in positions
+        for position in (suffix_position, suffix_position + 1)
+    }
+    component_link_positions = {
+        position
+        for pin in geometry["donor_attachment_unit_order"]
+        for position in range(
+            int(geometry["pins"][pin]["component_link_position_in_evidence"]),
+            int(geometry["pins"][pin]["component_link_position_in_evidence"]) + 2,
+        )
+    }
+    changed_positions = {
+        position
+        for position, (donor_byte, output_byte) in enumerate(
+            zip(donor_chunk, output_chunk)
+        )
+        if donor_byte != output_byte
+    }
+    assert changed_positions == terminal_suffix_positions | component_link_positions
+
+
 def test_hc76_multipart_spread_keeps_both_body_anchors_at_9x(
     tmp_path: Path,
 ) -> None:

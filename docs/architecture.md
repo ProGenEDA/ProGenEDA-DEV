@@ -1982,3 +1982,31 @@ and 15x copied outputs each cold-opened and cold-reopened normally after the
 12-second stability check without a save or modal dialog.  The 15x capture is
 under `experiments/dil16_dual_jk_ff_terminal_v1_temp_2026_07_13/04_local_proteus_gate/`.
 User visual acceptance remains required before mixed-family terminal emission.
+
+### 2026-07-13 74HC151 mux donor contract
+
+`74HC151` is a component-first DIL16 mux stream: its component packet is
+followed by fourteen exact donor-ordered terminal/WIRE units for pins
+`5, 6, 4, 3, 2, 1, 15, 14, 13, 12, 11, 10, 9, 7`.  The authoritative donor is
+`proteus_ic/donors/terminalized_catalogue_evidence/dil16_mux/74HC151/74HC151_user_terminalized_july04.pdsprj`.
+
+Several of its WIREs are three-point donor paths, not generic two-point stubs.
+The shared terminal placer must consume the full component-relative polyline
+from the catalogue.  A physical pin endpoint may be off the terminal grid;
+only the terminal contact is grid-aligned.  The correct contract is therefore
+`grid terminal contact -> donor-shaped short WIRE -> exact unsnapped pin`.
+Do not apply grid snapping to a pin coordinate merely because the terminal is
+grid snapped.
+
+The last HC151 WIRE payload naturally ends in byte `FF`. Its donor has one
+additional structural `FF` after that data byte, so the profile uses
+`append_explicit_single_ff`, not the suffix-inspecting `single_ff` policy. A
+complete donor-to-locked-mega 1x comparison leaves exactly the terminal and
+component active-link suffixes different; each is rebased from the final
+ROOT.DSN WIRE address. Packet length, labels, angles, terminal coordinates,
+WIRE markers, full paths, separators, and tail match the donor.
+
+Implementation isolation is mandatory: profile edits must be anchored to the
+target family section, then the resulting diff must be audited to prove no
+frozen profile changed. A generic text match is not a safe way to alter a
+shared catalogue field with repeated names.
