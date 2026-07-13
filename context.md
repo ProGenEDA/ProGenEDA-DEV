@@ -12654,3 +12654,66 @@ always make sure terminals are on gridlines. their edge, the one to be attached 
 ## Agent Visible Response - 2026-07-13 +05:00
 
 Agreed. From the next family’s 1× build onward, I’ll gate the route in exactly three opens: (1) terminal at the donor pin/contact with correct 180°/0° orientation, (2) its donor-derived grid contact position, then (3) the named short WIRE and active link. Each stage must open before the next exists. I’ll record this as the required workflow, and terminal contact—not merely the symbol center—will always land on a grid intersection.
+
+## User Message - 2026-07-13 15:00 +05:00
+
+y did u stop? continue with the new method now
+continue new methond from the other member of this group unless u are skipping over it for some reason? then next group
+
+## User Message - 2026-07-13 15:05 +05:00
+
+THE 4027 complete opened but gave bad object record open again ctrl s it then match
+
+## User Message - 2026-07-13 15:08 +05:00
+
+bro??
+just open it ill do it for u
+
+## User Message - 2026-07-13 15:08 +05:00
+
+did
+
+## User Message - 2026-07-13 15:09 +05:00
+
+no need to check cdb only dsn will do the trick
+
+## Agent Visible Response - 2026-07-13 15:10 +05:00
+
+I’ll compare only the regenerated and Ctrl+S-saved `ROOT.DSN` streams, then fix the exact remaining 4027 terminal-stream difference—without touching CDB or accepted families.
+
+## Agent Visible Response - 2026-07-13 15:14 +05:00
+
+The saved file exposed the useful clue: after Proteus accepted the dialog and saved, its `ROOT.DSN` retained only the first seven terminals and one subpart, while discarding both wire blocks and the second subpart. I’m tracing that exact stream-boundary/link error against the accepted 4027 donor now.
+
+## Agent Visible Response - 2026-07-13 15:22 +05:00
+
+I found the full set of 4027 causes, not a CDB issue: the beautifier moved its native pin frame off-grid, the second JK subpart was still calibrated against the first donor anchor, and the emitted WIRE geometry differed from the donor’s valid zero-length attachment units. I’m applying those three linked fixes together, scoped only to the new 4027 route.
+
+## Agent Visible Response - 2026-07-13 15:35 +05:00
+
+The repaired 4027 route now passes its static DSN checks with all 14 terminals, all 14 native WIRE units, both A/B anchors, and grid-aligned contacts. I also kept accepted two-pin and HC76 regression paths unchanged; I’m running the broader focused regression set before creating the next candidate.
+
+## Agent Visible Response - 2026-07-13 15:42 +05:00
+
+The repaired 4027 candidate and its no-terminal control are generated through the locked component placer and shared terminal placer. The DSN-only audit is recorded in `knowledge/4027_terminal_stream_preflight_2026_07_13.md`; local Proteus open/save/cold-reopen is pending because the existing user Proteus window remains open and will not be interrupted.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_terminal_placer.py` — shared 4027 physical donor-anchor selection, compact donor WIRE evidence lookup, staged DSN-only handling, and no accepted-family changes.
+- `src/proteusgen/component_beautifier.py` and `src/proteusgen/component_placer.py` — opt-in whole-grid translation mode for new terminal routes, preserving native pin frames without moving components in the terminal stage.
+- `knowledge/component_catalog_v0.json` and `knowledge/4027_terminal_stream_preflight_2026_07_13.md` — donor-derived 4027 subpart/WIRE facts and the complete DSN comparison.
+- `tests/test_component_catalog.py` and `docs/progen_eda_canonical_pipeline.md` — focused regression and architecture rule.
+- `backups/component_terminal_placer/` — required pre-edit shared-placer snapshots retained.
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/` — regenerated 4027 1× no-terminal control and terminalized candidate.
+
+## Agent Visible Response - 2026-07-13 15:43 +05:00
+
+Understood — for this 4027 repair I’ll treat `ROOT.DSN` as the sole binary source of truth and leave `ROOT.CDB` entirely untouched.
+
+## Agent Visible Response - 2026-07-13 15:46 +05:00
+
+The DSN-only 4027 route is mechanically clean: 14 grid contacts, 14 donor-shaped WIRE units, and separate A/B anchor frames. The focused regression and compile checks pass. Your manually opened Proteus window is still active, so I’m leaving it alone until it is closed rather than interrupting your check.
+
+### Files Edited By Agent In This Continuation
+
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/README.md` — clarifies that a normal local open is not saved; a save-and-compare happens only after a dismissed Bad Object Record on a disposable copy.

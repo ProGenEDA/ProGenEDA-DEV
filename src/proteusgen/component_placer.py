@@ -1380,6 +1380,18 @@ def _binary_beautifier_enabled(payload: Any) -> bool:
     return True
 
 
+def _binary_terminal_grid_alignment_enabled(payload: Any) -> bool:
+    """Opt into grid-preserving packet translations for terminal attachment.
+
+    This is deliberately opt-in: accepted families retain their frozen packet
+    coordinates, while a newly researched catalogue route can require every
+    native pin frame to move by whole Proteus terminal-grid increments.
+    """
+
+    raw_layout = _raw_layout_payload(payload)
+    return _payload_bool(raw_layout.get("terminal_grid_alignment"))
+
+
 def _binary_layout_shelf_width(payload: Any) -> int:
     """Return the requested reusable shelf width for binary beautification.
 
@@ -1415,6 +1427,8 @@ def _apply_binary_beautifier(
 ) -> tuple[tuple[RawComponentGroup, ...], list[dict[str, Any]], int]:
     if not _binary_beautifier_enabled(payload):
         return groups, [], start_slot
+
+    terminal_grid_alignment = _binary_terminal_grid_alignment_enabled(payload)
 
     hidden_ids = {id(group) for group in hidden_groups}
     shelf_width = _binary_layout_shelf_width(payload)
@@ -1469,6 +1483,7 @@ def _apply_binary_beautifier(
                 group.data,
                 group.family,
                 group.refs,
+                snap_translation_to_terminal_grid=terminal_grid_alignment,
             )
             pairs = layout_coordinate_pairs(layout_source_data, group.family)
             if pairs:
@@ -1521,6 +1536,7 @@ def _apply_binary_beautifier(
                 column=column_index,
                 allocation_width=allocation_width,
                 allocation_height=allocation_height,
+                snap_translation_to_terminal_grid=terminal_grid_alignment,
             )
             known_refs_unchanged = all(
                 group.data.count(ref.encode("ascii"))
@@ -1537,6 +1553,7 @@ def _apply_binary_beautifier(
             entry["family_block_index"] = family_block_index
             entry["family_row_break"] = bool(family_changed)
             entry["layout_shelf_width"] = shelf_width
+            entry["terminal_grid_alignment"] = terminal_grid_alignment
             if not known_refs_unchanged:
                 raise ValueError(
                     f"Beautifier changed references for {group.key}; "

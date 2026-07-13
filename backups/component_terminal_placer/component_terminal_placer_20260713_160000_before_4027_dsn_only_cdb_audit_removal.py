@@ -1872,11 +1872,13 @@ def _attach_catalogue_terminal_contact_stage(
     )
     new_chunk = finalize(original_chunk[:1] + b"".join(local_records))
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    # This is a DSN-only terminal-stream diagnosis.  The project writer copies
-    # every non-replaced member through unchanged; do not inspect ROOT.CDB here.
+    source_cdb = read_internal_file(source, "ROOT.CDB")
+    # This is terminal-stream diagnosis only. Preserve the component-placer CDB
+    # byte-for-byte; CDB normalization is explicitly not part of this route.
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_dsn = read_internal_file(destination, "ROOT.DSN")
     final_chunk = _extract_object_chunk(final_dsn)
+    output_cdb = read_internal_file(destination, "ROOT.CDB")
 
     terminal_rows = _bidir_label_records(final_chunk)
     contact_rows: list[dict[str, Any]] = []
@@ -1904,8 +1906,8 @@ def _attach_catalogue_terminal_contact_stage(
         "status": "loader_gate_required_before_active_wire_link_stage",
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
-        "root_cdb_policy": "preserve_source_member_uninspected",
-        "cdb_unchanged": None,
+        "root_cdb_policy": "preserve_source_unchanged",
+        "cdb_unchanged": output_cdb == source_cdb,
         "terminal_count_added": expected_terminal_count,
         "wire_count_added": 0,
         "wire_count_rewritten": 0,
@@ -1926,6 +1928,7 @@ def _attach_catalogue_terminal_contact_stage(
             final_chunk == new_chunk
             and len(terminal_rows) == expected_terminal_count
             and final_chunk.count(b"\x7fWIRE") == 0
+            and output_cdb == source_cdb
             and (
                 final_chunk.endswith(b"\xff")
                 if object_stream_finalizer == "single_ff"
@@ -2863,6 +2866,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             original_chunk[:1] + b"".join(rebuilt_records)
         )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
+    source_cdb = read_internal_file(source, "ROOT.CDB")
     if len(root_cdb_preservation_policies) > 1:
         raise ValueError(
             "Catalogue terminal attachment cannot mix ROOT.CDB preservation and "
@@ -2870,13 +2874,15 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         )
     preserve_root_cdb = root_cdb_preservation_policies == {True}
     if preserve_root_cdb:
-        # This is a DSN-only route.  The project writer preserves untouched
-        # members, so ROOT.CDB neither needs inspection nor reconstruction.
+        # 4027 donor preflight proved that its terminal-stream investigation is
+        # independent of ROOT.CDB. Keep the locked component-placer CDB exactly
+        # as received; no CDB reconstruction belongs in this family route.
         write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
         cdb_normalization_report = {
-            "policy": "preserve_source_member_uninspected",
+            "policy": "preserve_source_unchanged",
             "keep_packages": None,
-            "inspected": False,
+            "size_before": len(source_cdb),
+            "size_after": len(source_cdb),
         }
     else:
         # The locked mega donor intentionally keeps its complete ROOT.CDB during
@@ -2888,7 +2894,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             build_component_placer_cdb_subset,
             parse_component_placer_cdb,
         )
-        source_cdb = read_internal_file(source, "ROOT.CDB")
 
         cdb_keep_packages = sorted(
             {

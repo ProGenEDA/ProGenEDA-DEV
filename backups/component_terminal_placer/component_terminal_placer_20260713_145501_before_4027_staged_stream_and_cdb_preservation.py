@@ -572,41 +572,6 @@ def _terminal_at_explicit_grid_contact(
     )
 
 
-def _terminal_at_native_pin_contact(
-    terminal: TerminalSpec,
-    *,
-    pin_x: int,
-    pin_y: int,
-) -> tuple[TerminalSpec, int, int]:
-    """Place a diagnostic terminal directly at the current native pin contact.
-
-    This is deliberately a staged-loader diagnostic rather than a final
-    terminal policy.  A beautified native component may put its pin between
-    grid intersections; the following grid-contact stage must correct only
-    the terminal contact before active WIRE/link emission begins.
-    """
-
-    if terminal.angle_tenths == LEFT_SIDE_ANGLE:
-        symbol_x = pin_x - TERMINAL_CONTACT_TO_PIN
-    elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
-        symbol_x = pin_x + TERMINAL_CONTACT_TO_PIN
-    else:
-        raise ValueError(
-            f"Native-pin terminal placement does not support angle "
-            f"{terminal.angle_tenths}."
-        )
-    return (
-        replace(
-            terminal,
-            symbol_x=symbol_x,
-            symbol_y=pin_y,
-            attachment_policy="native_pin_contact_unlinked_loader_stage",
-        ),
-        pin_x,
-        pin_y,
-    )
-
-
 def _snap_terminal_pair_to_grid(
     pair: ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair,
 ) -> ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair:
@@ -956,7 +921,6 @@ def plan_catalogue_pin_bidir_terminals(
     catalog: Any | None = None,
     suffix_start: int = 0x7300,
     use_donor_terminal_labels: bool = True,
-    terminal_contact_mode: str = "grid_contact",
 ) -> dict[str, Any]:
     """Plan multi-pin terminals from catalogue Proteus pin geometry.
 
@@ -970,11 +934,6 @@ def plan_catalogue_pin_bidir_terminals(
         from .component_catalog import load_component_catalog
 
         catalog = load_component_catalog()
-    if terminal_contact_mode not in {"native_pin_contact", "grid_contact"}:
-        raise ValueError(
-            "Catalogue terminal planner supports only native_pin_contact or "
-            f"grid_contact modes, got {terminal_contact_mode!r}."
-        )
     terminal_plans: list[dict[str, Any]] = []
     missing_geometry: list[dict[str, str]] = []
     suffix = suffix_start
@@ -1002,10 +961,6 @@ def plan_catalogue_pin_bidir_terminals(
         anchor_cache: dict[str, list[dict[str, Any]]] = {}
         wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
         donor_anchor = geometry.get("component_anchor")
-        donor_wire_units_by_pin = geometry.get("donor_wire_units_by_pin", {})
-        donor_anchor_selection = str(
-            geometry.get("donor_anchor_selection", "component_anchor")
-        )
         raw_pin_subparts = geometry.get("pin_subparts", {})
         raw_subpart_anchor_indices = geometry.get("subpart_anchor_indices", {})
         raw_subpart_anchor_offsets = geometry.get(
@@ -1027,16 +982,6 @@ def plan_catalogue_pin_bidir_terminals(
                     }
                 )
                 continue
-            donor_wire_unit = (
-                donor_wire_units_by_pin.get(pin.name)
-                if isinstance(donor_wire_units_by_pin, dict)
-                else None
-            )
-            if isinstance(donor_wire_unit, dict):
-                # Keep the per-pin descriptor authoritative when it supplies
-                # an override, while allowing one compact donor-WIRE table to
-                # provide the repeated binary coordinates for multipart parts.
-                raw_pin_geometry = {**donor_wire_unit, **raw_pin_geometry}
             side = str(raw_pin_geometry.get("side", "")).lower()
             if side == "left":
                 angle = LEFT_SIDE_ANGLE
@@ -1133,49 +1078,6 @@ def plan_catalogue_pin_bidir_terminals(
                     continue
             else:
                 component_anchor = component_anchors[-1] if component_anchors else None
-            coordinate_donor_anchor = donor_anchor
-            if donor_anchor_selection == "component_anchor_index":
-                raw_donor_anchors = geometry.get("component_anchors")
-                if (
-                    not isinstance(anchor_index, int)
-                    or not isinstance(raw_donor_anchors, (list, tuple))
-                    or not 0 <= anchor_index < len(raw_donor_anchors)
-                    or not isinstance(raw_donor_anchors[anchor_index], dict)
-                ):
-                    missing_geometry.append(
-                        {
-                            "component_key": key,
-                            "component_family": family,
-                            "pin": pin.name,
-                            "reason": "donor_component_anchor_index_out_of_range",
-                        }
-                    )
-                    continue
-                candidate_donor_anchor = raw_donor_anchors[anchor_index]
-                if (
-                    candidate_donor_anchor.get("x") is None
-                    or candidate_donor_anchor.get("y") is None
-                ):
-                    missing_geometry.append(
-                        {
-                            "component_key": key,
-                            "component_family": family,
-                            "pin": pin.name,
-                            "reason": "incomplete_donor_component_anchor",
-                        }
-                    )
-                    continue
-                coordinate_donor_anchor = candidate_donor_anchor
-            elif donor_anchor_selection != "component_anchor":
-                missing_geometry.append(
-                    {
-                        "component_key": key,
-                        "component_family": family,
-                        "pin": pin.name,
-                        "reason": "unsupported_donor_anchor_selection",
-                    }
-                )
-                continue
             if (
                 component_anchor is not None
                 and "x_offset_from_component_anchor" in raw_pin_geometry
@@ -1225,6 +1127,7 @@ def plan_catalogue_pin_bidir_terminals(
                 coordinate_source += "_pin_endpoint_snap_" + "".join(snapped_axes)
             explicit_contact: tuple[int, int] | None = None
             terminal_contact_source = "generic_grid_contact"
+            coordinate_donor_anchor = donor_anchor
             if (
                 subpart_anchor_delta is not None
                 and isinstance(donor_anchor, dict)
@@ -1270,14 +1173,7 @@ def plan_catalogue_pin_bidir_terminals(
                 pin_hint=f"{pin.name}:{pin.role}",
                 attachment_policy="catalogue_pin_geometry_grid_short_wire",
             )
-            if terminal_contact_mode == "native_pin_contact":
-                terminal, wire_start_x, wire_start_y = _terminal_at_native_pin_contact(
-                    terminal,
-                    pin_x=pin_x,
-                    pin_y=pin_y,
-                )
-                terminal_contact_source = "native_component_pin_contact"
-            elif explicit_contact is not None:
+            if explicit_contact is not None:
                 terminal, wire_start_x, wire_start_y = (
                     _terminal_at_explicit_grid_contact(
                         terminal,
@@ -1701,240 +1597,6 @@ def _current_bidir_suffixes_by_pin(
     return suffixes
 
 
-def _attach_catalogue_terminal_contact_stage(
-    *,
-    source: Path,
-    destination: Path,
-    dsn: bytes,
-    original_chunk: bytes,
-    ordered_groups: tuple[Any, ...],
-    catalog: Any,
-    requested: set[str] | None,
-    suffix_start: int,
-    use_donor_terminal_labels: bool,
-    attachment_stage: str,
-) -> dict[str, Any]:
-    """Emit one unlinked native/grid terminal loader stage through the shared path.
-
-    This intentionally supports only a homogeneous catalogue family whose
-    evidence declares physical subpart terminal/component blocks.  It gives a
-    new family a narrow loader proof before its component link slots, WIRE
-    units, or final-address suffixes are changed.
-    """
-
-    contact_modes = {
-        "native_pin_contact": "native_pin_contact",
-        "grid_contact": "grid_contact",
-    }
-    contact_mode = contact_modes.get(attachment_stage)
-    if contact_mode is None:
-        raise ValueError(
-            "Terminal contact stage must be native_pin_contact or grid_contact, "
-            f"got {attachment_stage!r}."
-        )
-    requested_families = {
-        _group_family(group)
-        for group in ordered_groups
-        if requested is None or _group_family(group) in requested
-    }
-    if not requested_families:
-        raise ValueError("Terminal contact stage has no requested family.")
-    if len(requested_families) != 1 or any(
-        _group_family(group) not in requested_families for group in ordered_groups
-    ):
-        raise ValueError(
-            "Terminal contact stages require one homogeneous family-only project; "
-            "mixed streams are admitted only after the complete active route is "
-            "donor-proven."
-        )
-
-    local_records: list[bytes] = []
-    family_reports: list[dict[str, Any]] = []
-    suffix = suffix_start
-    object_stream_finalizers: set[str] = set()
-    for group in ordered_groups:
-        family = _group_family(group)
-        key = _group_key(group)
-        data = bytes(getattr(group, "data", b""))
-        if not data or data.count(BIDIR_MARKER) or data.count(b"\x7fWIRE"):
-            raise ValueError(
-                f"{family} {key} native/grid terminal stage requires one clean "
-                "component-placer packet without existing terminal or WIRE records."
-            )
-        profile = catalog.get_profile(family)
-        geometry = profile.proteus.get("pin_geometry", {}) if profile is not None else {}
-        if not isinstance(geometry, dict) or not isinstance(
-            geometry.get("pins"), dict
-        ):
-            raise ValueError(f"{family} {key} lacks catalogue pin geometry.")
-        if (
-            str(geometry.get("clean_packet_attachment_order", ""))
-            != "subpart_terminal_component_wires"
-        ):
-            raise ValueError(
-                f"{family} {key} lacks donor-proven subpart stream grammar for "
-                "the staged terminal contact gate."
-            )
-        object_stream_finalizer = str(
-            geometry.get("object_stream_finalizer", "single_ff")
-        )
-        if object_stream_finalizer not in {"single_ff", "double_ff"}:
-            raise ValueError(
-                f"{family} {key} has unsupported staged object finalizer "
-                f"{object_stream_finalizer!r}."
-            )
-        object_stream_finalizers.add(object_stream_finalizer)
-        plan = plan_catalogue_pin_bidir_terminals(
-            [group],
-            catalog=catalog,
-            suffix_start=suffix,
-            use_donor_terminal_labels=use_donor_terminal_labels,
-            terminal_contact_mode=contact_mode,
-        )
-        if not plan["valid"]:
-            raise ValueError(
-                f"Catalogue terminal plan for {family} {key} is incomplete: "
-                f"{plan['missing_geometry']}."
-            )
-        terminal_records: list[bytes] = []
-        terminal_pins: list[dict[str, Any]] = []
-        for row in plan["terminal_plans"]:
-            terminal_dict = dict(row["terminal"])
-            terminal_dict["suffix"] = "0000"
-            terminal_records.append(
-                build_bidir_record(
-                    NATIVE_BIDIR_TEMPLATES,
-                    label=str(terminal_dict["label"]),
-                    symbol_x=int(terminal_dict["symbol_x"]),
-                    symbol_y=int(terminal_dict["symbol_y"]),
-                    angle_tenths=int(terminal_dict["angle_tenths"]),
-                    suffix=0,
-                    active_link=False,
-                )
-            )
-            terminal_pins.append(
-                {
-                    "component_key": key,
-                    "component_family": family,
-                    "pin": dict(row["pin"]),
-                    "terminal": terminal_dict,
-                    "catalogue_geometry": dict(row["catalogue_geometry"]),
-                    "component_anchor": (
-                        dict(row["component_anchor"])
-                        if isinstance(row.get("component_anchor"), dict)
-                        else None
-                    ),
-                    "coordinate_source": row["coordinate_source"],
-                    "terminal_contact_source": row.get(
-                        "terminal_contact_source",
-                        "native_component_pin_contact",
-                    ),
-                }
-            )
-            suffix += 1
-        local_records.extend(
-            _catalogue_subpart_attachment_blocks(
-                family=family,
-                key=key,
-                geometry=geometry,
-                component_refs=tuple(getattr(group, "refs", ())),
-                patched_component_data=data,
-                terminal_pins=terminal_pins,
-                terminal_records=terminal_records,
-                wire_records=None,
-                include_wires=False,
-            )
-        )
-        family_reports.append(
-            {
-                "family_handler": f"{family}/catalogue-{attachment_stage}-stage-v1",
-                "component_key": key,
-                "component_family": family,
-                "terminal_count": len(terminal_records),
-                "wire_count": 0,
-                "terminal_pins": terminal_pins,
-                "clean_packet_attachment_order": "subpart_terminal_component_wires",
-                "object_stream_finalizer": object_stream_finalizer,
-                "root_cdb_policy": "preserve_source_unchanged",
-            }
-        )
-
-    if len(object_stream_finalizers) != 1:
-        raise ValueError(
-            "Terminal contact stage needs one donor-proven object finalizer, got "
-            f"{sorted(object_stream_finalizers)}."
-        )
-    object_stream_finalizer = next(iter(object_stream_finalizers))
-    finalize = (
-        _ensure_single_ff_object_stream_terminator
-        if object_stream_finalizer == "single_ff"
-        else _ensure_double_ff_object_stream_terminator
-    )
-    new_chunk = finalize(original_chunk[:1] + b"".join(local_records))
-    new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    # This is a DSN-only terminal-stream diagnosis.  The project writer copies
-    # every non-replaced member through unchanged; do not inspect ROOT.CDB here.
-    write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
-    final_dsn = read_internal_file(destination, "ROOT.DSN")
-    final_chunk = _extract_object_chunk(final_dsn)
-
-    terminal_rows = _bidir_label_records(final_chunk)
-    contact_rows: list[dict[str, Any]] = []
-    for row in terminal_rows:
-        contact_x, contact_y = _terminal_contact_xy(row)
-        contact_rows.append(
-            {
-                "label": row["label"],
-                "contact": {"x": contact_x, "y": contact_y},
-                "contact_grid_aligned": (
-                    contact_x % PROTEUS_TERMINAL_GRID == 0
-                    and contact_y % PROTEUS_TERMINAL_GRID == 0
-                ),
-                "angle_tenths": row["angle_tenths"],
-                "suffix": f"{int(row['suffix']):04x}",
-            }
-        )
-    expected_terminal_count = sum(
-        int(report["terminal_count"]) for report in family_reports
-    )
-    return {
-        "stage": "terminal_placer",
-        "attachment_stage": attachment_stage,
-        "family_handler": "CATALOGUE/staged-unlinked-terminal-contact-v1",
-        "status": "loader_gate_required_before_active_wire_link_stage",
-        "runtime_circuit_donor_dependency": False,
-        "component_coordinate_mutation": False,
-        "root_cdb_policy": "preserve_source_member_uninspected",
-        "cdb_unchanged": None,
-        "terminal_count_added": expected_terminal_count,
-        "wire_count_added": 0,
-        "wire_count_rewritten": 0,
-        "terminalized_component_count": len(family_reports),
-        "family_reports": family_reports,
-        "terminal_contacts": contact_rows,
-        "terminal_grid_alignment_valid": all(
-            bool(row["contact_grid_aligned"]) for row in contact_rows
-        ),
-        "bidir_count_before": original_chunk.count(BIDIR_MARKER),
-        "bidir_count_after": final_chunk.count(BIDIR_MARKER),
-        "wire_count_before": original_chunk.count(b"\x7fWIRE"),
-        "wire_count_after": final_chunk.count(b"\x7fWIRE"),
-        "object_chunk_size_before": len(original_chunk),
-        "object_chunk_size_after": len(final_chunk),
-        "object_stream_finalizer": object_stream_finalizer,
-        "valid": (
-            final_chunk == new_chunk
-            and len(terminal_rows) == expected_terminal_count
-            and final_chunk.count(b"\x7fWIRE") == 0
-            and (
-                final_chunk.endswith(b"\xff")
-                if object_stream_finalizer == "single_ff"
-                else final_chunk.endswith(b"\xff\xff")
-            )
-        ),
-    }
-
-
 def attach_catalogue_pin_bidir_terminals_to_project(
     project: str | Path,
     output: str | Path,
@@ -1945,7 +1607,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     suffix_start: int = 0x7300,
     use_donor_terminal_labels: bool = True,
     allow_progressive_scaling: bool = False,
-    attachment_stage: str = "complete",
 ) -> dict[str, Any]:
     """Attach catalogue-backed multi-pin terminals using placed WIRE skeletons.
 
@@ -1962,16 +1623,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     user-requested, independently gated scaling experiment.
     """
 
-    if attachment_stage not in {
-        "complete",
-        "native_pin_contact",
-        "grid_contact",
-    }:
-        raise ValueError(
-            "Catalogue terminal attachment stage must be complete, "
-            "native_pin_contact, or grid_contact; got "
-            f"{attachment_stage!r}."
-        )
     if catalog is None:
         from .component_catalog import load_component_catalog
 
@@ -1993,26 +1644,12 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         original_chunk,
         groups,
     )
-    if attachment_stage != "complete":
-        return _attach_catalogue_terminal_contact_stage(
-            source=source,
-            destination=destination,
-            dsn=dsn,
-            original_chunk=original_chunk,
-            ordered_groups=ordered_groups,
-            catalog=catalog,
-            requested=requested,
-            suffix_start=suffix_start,
-            use_donor_terminal_labels=use_donor_terminal_labels,
-            attachment_stage=attachment_stage,
-        )
     terminal_templates = NATIVE_BIDIR_TEMPLATES
 
     local_records: list[bytes] = []
     trailing_attachment_records: list[bytes] = []
     object_stream_finalizers: set[str] = set()
     clean_packet_attachment_orders: set[str] = set()
-    root_cdb_preservation_policies: set[bool] = set()
     terminal_leading_block_count = 0
     family_reports: list[dict[str, Any]] = []
     preserved_rows: list[dict[str, Any]] = []
@@ -2366,9 +2003,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
         object_stream_finalizers.add(object_stream_finalizer)
         clean_packet_attachment_orders.add(clean_packet_attachment_order)
-        root_cdb_preservation_policies.add(
-            bool(geometry.get("preserve_root_cdb", False))
-        )
 
         current_suffix_by_pin = _current_bidir_suffixes_by_pin(
             original_group_data,
@@ -2863,60 +2497,41 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             original_chunk[:1] + b"".join(rebuilt_records)
         )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    if len(root_cdb_preservation_policies) > 1:
-        raise ValueError(
-            "Catalogue terminal attachment cannot mix ROOT.CDB preservation and "
-            "normalization policies in one output."
-        )
-    preserve_root_cdb = root_cdb_preservation_policies == {True}
-    if preserve_root_cdb:
-        # This is a DSN-only route.  The project writer preserves untouched
-        # members, so ROOT.CDB neither needs inspection nor reconstruction.
-        write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
-        cdb_normalization_report = {
-            "policy": "preserve_source_member_uninspected",
-            "keep_packages": None,
-            "inspected": False,
-        }
-    else:
-        # The locked mega donor intentionally keeps its complete ROOT.CDB during
-        # component placement. Once this stage emits active terminal/component
-        # links, the established accepted routes normalize it to the packages
-        # actually present. Keep that frozen behavior for profiles that did not
-        # explicitly opt into source-CDB preservation.
-        from .component_placer import (
-            build_component_placer_cdb_subset,
-            parse_component_placer_cdb,
-        )
-        source_cdb = read_internal_file(source, "ROOT.CDB")
+    # The locked mega donor intentionally keeps its complete ROOT.CDB during
+    # component placement.  Once this stage emits active terminal/component
+    # links, however, Proteus 8.13 normalizes ROOT.CDB to the packages that are
+    # actually present.  Keeping all 4,520 mega-donor rows caused the NPN Bad
+    # Object Record/LXLCORE failures even though ROOT.DSN was donor-isomorphic.
+    # Build the same selected-package CDB here, through the shared component
+    # placer parser/builder, so terminal output is byte-equivalent to Proteus's
+    # own Ctrl+S normalization rather than depending on a family-specific fix.
+    from .component_placer import (
+        build_component_placer_cdb_subset,
+        parse_component_placer_cdb,
+    )
 
-        cdb_keep_packages = sorted(
-            {
-                _group_key(group)
-                for group in groups
-                if _group_key(group) and not _group_key(group).startswith("ANON")
-            }
-        )
-        if not cdb_keep_packages:
-            raise ValueError(
-                "Catalogue terminal attachment could not identify any package "
-                "references for ROOT.CDB normalization."
-            )
-        normalized_cdb = build_component_placer_cdb_subset(
-            parse_component_placer_cdb(source_cdb),
-            cdb_keep_packages,
-        )
-        write_project_from_parts(
-            source,
-            destination,
-            {"ROOT.DSN": new_dsn, "ROOT.CDB": normalized_cdb},
-        )
-        cdb_normalization_report = {
-            "policy": "selected_package_rows_matching_proteus_ctrl_s",
-            "keep_packages": cdb_keep_packages,
-            "size_before": len(source_cdb),
-            "size_after": len(normalized_cdb),
+    source_cdb = read_internal_file(source, "ROOT.CDB")
+    cdb_keep_packages = sorted(
+        {
+            _group_key(group)
+            for group in groups
+            if _group_key(group) and not _group_key(group).startswith("ANON")
         }
+    )
+    if not cdb_keep_packages:
+        raise ValueError(
+            "Catalogue terminal attachment could not identify any package "
+            "references for ROOT.CDB normalization."
+        )
+    normalized_cdb = build_component_placer_cdb_subset(
+        parse_component_placer_cdb(source_cdb),
+        cdb_keep_packages,
+    )
+    write_project_from_parts(
+        source,
+        destination,
+        {"ROOT.DSN": new_dsn, "ROOT.CDB": normalized_cdb},
+    )
     final_chunk = _extract_object_chunk(read_internal_file(destination, "ROOT.DSN"))
 
     terminal_count = sum(report["terminal_count"] for report in family_reports)
@@ -3047,7 +2662,12 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         "object_chunk_double_ff_valid": final_chunk.endswith(b"\xff\xff"),
         "object_stream_finalizer": object_stream_finalizer,
         "base_component_stream_covered": True,
-        "cdb_normalization": cdb_normalization_report,
+        "cdb_normalization": {
+            "policy": "selected_package_rows_matching_proteus_ctrl_s",
+            "keep_packages": cdb_keep_packages,
+            "size_before": len(source_cdb),
+            "size_after": len(normalized_cdb),
+        },
     }
     return _rebase_terminal_links_to_final_wire_addresses(destination, report)
 
@@ -5380,8 +5000,7 @@ def _catalogue_subpart_attachment_blocks(
     patched_component_data: bytes,
     terminal_pins: list[dict[str, Any]],
     terminal_records: list[bytes],
-    wire_records: list[bytes] | None = None,
-    include_wires: bool = True,
+    wire_records: list[bytes],
 ) -> list[bytes]:
     """Serialize donor-proven terminal/component/WIRE blocks per subpart.
 
@@ -5396,33 +5015,22 @@ def _catalogue_subpart_attachment_blocks(
         raise ValueError(
             f"{family} {key} requires non-empty donor_subpart_attachment_blocks."
         )
-    if include_wires and (
-        wire_records is None
-        or not (
-            len(terminal_pins) == len(terminal_records) == len(wire_records)
-        )
+    if not (
+        len(terminal_pins) == len(terminal_records) == len(wire_records)
     ):
         raise ValueError(
             f"{family} {key} has mismatched subpart attachment inputs: "
             f"pins={len(terminal_pins)}, terminals={len(terminal_records)}, "
-            f"wires={0 if wire_records is None else len(wire_records)}."
-        )
-    if not include_wires and wire_records not in (None, []):
-        raise ValueError(
-            f"{family} {key} terminal-only subpart stage received WIRE records."
+            f"wires={len(wire_records)}."
         )
     terminal_by_pin = {
         str(row["pin"]["name"]): record
         for row, record in zip(terminal_pins, terminal_records, strict=True)
     }
-    wire_by_pin = (
-        {
-            str(row["pin"]["name"]): record
-            for row, record in zip(terminal_pins, wire_records or [], strict=True)
-        }
-        if include_wires
-        else {}
-    )
+    wire_by_pin = {
+        str(row["pin"]["name"]): record
+        for row, record in zip(terminal_pins, wire_records, strict=True)
+    }
     if len(terminal_by_pin) != len(terminal_pins):
         raise ValueError(f"{family} {key} has duplicate terminal pin plans.")
 
@@ -5552,25 +5160,17 @@ def _catalogue_subpart_attachment_blocks(
             len(terminal_order) != len(set(terminal_order))
             or len(wire_order) != len(set(wire_order))
             or any(pin_name not in terminal_by_pin for pin_name in terminal_order)
-            or (
-                include_wires
-                and any(pin_name not in wire_by_pin for pin_name in wire_order)
-            )
+            or any(pin_name not in wire_by_pin for pin_name in wire_order)
         ):
             raise ValueError(
                 f"{family} {key} {subpart} has invalid donor subpart terminal/WIRE orders."
-        )
+            )
         consumed_terminal_pins.extend(terminal_order)
-        if include_wires:
-            consumed_wire_pins.extend(wire_order)
+        consumed_wire_pins.extend(wire_order)
         blocks.extend(terminal_by_pin[pin_name] for pin_name in terminal_order)
         blocks.append(b"\x00")
-        ordered_wire_records = (
-            [wire_by_pin[pin_name] for pin_name in wire_order]
-            if include_wires
-            else []
-        )
-        if include_wires and first_wire_separator_policy == "strip_first_leading_separator":
+        ordered_wire_records = [wire_by_pin[pin_name] for pin_name in wire_order]
+        if first_wire_separator_policy == "strip_first_leading_separator":
             first_wire = ordered_wire_records[0]
             expected_leading_wire = b"\x00" + NATIVE_WIRE_PREFIX
             if not first_wire.startswith(expected_leading_wire):
@@ -5592,7 +5192,7 @@ def _catalogue_subpart_attachment_blocks(
             # final WIRE before the next terminal/object record.
             ordered_wire_records[0] = first_wire[1:]
         component_segment = component_segments[subpart]
-        if include_wires and link_prefix_zero_trim_count:
+        if link_prefix_zero_trim_count:
             link_offsets: list[int] = []
             for raw_slot in raw_subpart_link_slots.values():
                 if not isinstance(raw_slot, dict):
@@ -5649,7 +5249,7 @@ def _catalogue_subpart_attachment_blocks(
         # / WIRE record boundary and must be declared by the donor profile.
         component_wire_separator = (
             b"\x00"
-            if include_wires and component_wire_separator_policy == "append_single_zero"
+            if component_wire_separator_policy == "append_single_zero"
             else b""
         )
         blocks.append(
@@ -5661,12 +5261,9 @@ def _catalogue_subpart_attachment_blocks(
     expected_pins = set(terminal_by_pin)
     if (
         len(consumed_terminal_pins) != len(set(consumed_terminal_pins))
-        or (
-            include_wires
-            and len(consumed_wire_pins) != len(set(consumed_wire_pins))
-        )
+        or len(consumed_wire_pins) != len(set(consumed_wire_pins))
         or set(consumed_terminal_pins) != expected_pins
-        or (include_wires and set(consumed_wire_pins) != expected_pins)
+        or set(consumed_wire_pins) != expected_pins
         or set(component_segments) != {
             str(block.get("subpart", "")).upper()
             for block in raw_blocks

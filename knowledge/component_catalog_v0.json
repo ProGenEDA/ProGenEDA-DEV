@@ -1433,6 +1433,8 @@
       },
       "proteus": {
         "pin_geometry": {
+          "active_link_evidence_source_project": "proteus_ic/donors/terminalized_catalogue_evidence/dil16_dual_jk_ff/4027/4027_terminalized_primary.pdsprj",
+          "allow_zero_length_wire_units": true,
           "anchor_family": "4027",
           "component_anchor": {
             "marker": "4027",
@@ -1463,6 +1465,7 @@
               "y_offset": 858
             }
           ],
+          "donor_anchor_selection": "component_anchor_index",
           "component_bbox": {
             "height": 5628640,
             "max_x": -7747000,
@@ -1471,7 +1474,53 @@
             "min_y": 2011680,
             "width": 2667000
           },
+          "clean_packet_attachment_order": "subpart_terminal_component_wires",
+          "component_link_subpart_end_offsets": {
+            "1": {"offset": -24, "subpart": "A"},
+            "2": {"offset": -12, "subpart": "A"},
+            "3": {"offset": -20, "subpart": "A"},
+            "4": {"offset": -4, "subpart": "A"},
+            "5": {"offset": -16, "subpart": "A"},
+            "6": {"offset": -28, "subpart": "A"},
+            "7": {"offset": -8, "subpart": "A"},
+            "9": {"offset": -8, "subpart": "B"},
+            "10": {"offset": -28, "subpart": "B"},
+            "11": {"offset": -16, "subpart": "B"},
+            "12": {"offset": -4, "subpart": "B"},
+            "13": {"offset": -20, "subpart": "B"},
+            "14": {"offset": -12, "subpart": "B"},
+            "15": {"offset": -24, "subpart": "B"}
+          },
           "coordinate_frame": "component_marker_anchor_from_terminal_stripped_donor_packet",
+          "donor_subpart_attachment_blocks": [
+            {
+              "subpart": "A",
+              "terminal_pins": ["1", "2", "4", "6", "3", "5", "7"],
+              "wire_pins": ["6", "1", "3", "5", "2", "7", "4"]
+            },
+            {
+              "subpart": "B",
+              "terminal_pins": ["15", "14", "12", "10", "13", "11", "9"],
+              "wire_pins": ["10", "15", "13", "11", "14", "9", "12"]
+            }
+          ],
+          "donor_wire_units_by_pin": {
+            "1": {"terminal_contact_x": -8382000, "terminal_contact_y": 7112000, "matched_wire_endpoint_x": -8382000, "matched_wire_endpoint_y": 7112000, "wire_unit_coordinates": [-8382000, 7112000, -8382000, 7112000]},
+            "2": {"terminal_contact_x": -8382000, "terminal_contact_y": 6096000, "matched_wire_endpoint_x": -8382000, "matched_wire_endpoint_y": 6096000, "wire_unit_coordinates": [-8382000, 6096000, -8382000, 6096000]},
+            "3": {"terminal_contact_x": -10922000, "terminal_contact_y": 6604000, "matched_wire_endpoint_x": -10922000, "matched_wire_endpoint_y": 6604000, "wire_unit_coordinates": [-10922000, 6604000, -10922000, 6604000]},
+            "4": {"terminal_contact_x": -9652000, "terminal_contact_y": 5334000, "matched_wire_endpoint_x": -9652000, "matched_wire_endpoint_y": 5334000, "wire_unit_coordinates": [-9652000, 5334000, -9652000, 5334000]},
+            "5": {"terminal_contact_x": -10922000, "terminal_contact_y": 6096000, "matched_wire_endpoint_x": -10922000, "matched_wire_endpoint_y": 6096000, "wire_unit_coordinates": [-10922000, 6096000, -10922000, 6096000]},
+            "6": {"terminal_contact_x": -10922000, "terminal_contact_y": 7112000, "matched_wire_endpoint_x": -10922000, "matched_wire_endpoint_y": 7112000, "wire_unit_coordinates": [-10922000, 7112000, -10922000, 7112000]},
+            "7": {"terminal_contact_x": -9652000, "terminal_contact_y": 7874000, "matched_wire_endpoint_x": -9652000, "matched_wire_endpoint_y": 7874000, "wire_unit_coordinates": [-9652000, 7874000, -9652000, 7874000]},
+            "9": {"terminal_contact_x": -9652000, "terminal_contact_y": 4572000, "matched_wire_endpoint_x": -9652000, "matched_wire_endpoint_y": 4572000, "wire_unit_coordinates": [-9652000, 4572000, -9652000, 4572000]},
+            "10": {"terminal_contact_x": -10922000, "terminal_contact_y": 3810000, "matched_wire_endpoint_x": -10922000, "matched_wire_endpoint_y": 3810000, "wire_unit_coordinates": [-10922000, 3810000, -10922000, 3810000]},
+            "11": {"terminal_contact_x": -10922000, "terminal_contact_y": 2794000, "matched_wire_endpoint_x": -10922000, "matched_wire_endpoint_y": 2794000, "wire_unit_coordinates": [-10922000, 2794000, -10922000, 2794000]},
+            "12": {"terminal_contact_x": -9652000, "terminal_contact_y": 2032000, "matched_wire_endpoint_x": -9652000, "matched_wire_endpoint_y": 2032000, "wire_unit_coordinates": [-9652000, 2032000, -9652000, 2032000]},
+            "13": {"terminal_contact_x": -10922000, "terminal_contact_y": 3302000, "matched_wire_endpoint_x": -10922000, "matched_wire_endpoint_y": 3302000, "wire_unit_coordinates": [-10922000, 3302000, -10922000, 3302000]},
+            "14": {"terminal_contact_x": -8382000, "terminal_contact_y": 2794000, "matched_wire_endpoint_x": -8382000, "matched_wire_endpoint_y": 2794000, "wire_unit_coordinates": [-8382000, 2794000, -8382000, 2794000]},
+            "15": {"terminal_contact_x": -8382000, "terminal_contact_y": 3810000, "matched_wire_endpoint_x": -8382000, "matched_wire_endpoint_y": 3810000, "wire_unit_coordinates": [-8382000, 3810000, -8382000, 3810000]}
+          },
+          "object_stream_finalizer": "single_ff",
           "pins": {
             "1": {
               "anchor_family": "4027",
@@ -1712,14 +1761,19 @@
               "y_offset_from_component_bbox_min": 2560320
             }
           },
-          "source_project": "C:\\Users\\Empty\\Documents\\Progentotal\\protuesgen\\proteus_ic\\donors\\manual_downloads_20260611\\..\\sequential_ics_batch3\\4027.pdsprj",
+          "preserve_root_cdb": true,
+          "source_project": "proteus_ic/donors/terminalized_catalogue_evidence/dil16_dual_jk_ff/4027/4027_terminalized_primary.pdsprj",
           "source_registry_key": "4027",
-          "status": "donor_extracted_pending_terminal_emission_tests",
-          "terminal_policy": "grid_snapped_terminal_contact_plus_short_wire_to_exact_pin"
+          "status": "donor_preflight_complete_pending_staged_terminal_emission_tests",
+          "subpart_link_prefix_zero_trim_count": 2,
+          "terminal_contact_outward_grid_steps": 0,
+          "terminal_policy": "donor_grid_contact_with_zero_length_native_wire_unit",
+          "wire_coordinates_policy": "donor_coordinates",
+          "wire_record_encoding": "catalogue_leading_separator"
         }
       },
       "proteus_marker": "4027",
-      "terminal_support": "catalogue_geometry_ready_existing_wire_terminalization_pending"
+      "terminal_support": "catalogue_subpart_block_terminal_preflight_complete"
     },
     "40EPS08": {
       "aliases": [],

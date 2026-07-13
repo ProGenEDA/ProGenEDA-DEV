@@ -1002,10 +1002,6 @@ def plan_catalogue_pin_bidir_terminals(
         anchor_cache: dict[str, list[dict[str, Any]]] = {}
         wire_rows = _wire_rows_from_chunk(data, chunk_start=0)
         donor_anchor = geometry.get("component_anchor")
-        donor_wire_units_by_pin = geometry.get("donor_wire_units_by_pin", {})
-        donor_anchor_selection = str(
-            geometry.get("donor_anchor_selection", "component_anchor")
-        )
         raw_pin_subparts = geometry.get("pin_subparts", {})
         raw_subpart_anchor_indices = geometry.get("subpart_anchor_indices", {})
         raw_subpart_anchor_offsets = geometry.get(
@@ -1027,16 +1023,6 @@ def plan_catalogue_pin_bidir_terminals(
                     }
                 )
                 continue
-            donor_wire_unit = (
-                donor_wire_units_by_pin.get(pin.name)
-                if isinstance(donor_wire_units_by_pin, dict)
-                else None
-            )
-            if isinstance(donor_wire_unit, dict):
-                # Keep the per-pin descriptor authoritative when it supplies
-                # an override, while allowing one compact donor-WIRE table to
-                # provide the repeated binary coordinates for multipart parts.
-                raw_pin_geometry = {**donor_wire_unit, **raw_pin_geometry}
             side = str(raw_pin_geometry.get("side", "")).lower()
             if side == "left":
                 angle = LEFT_SIDE_ANGLE
@@ -1133,49 +1119,6 @@ def plan_catalogue_pin_bidir_terminals(
                     continue
             else:
                 component_anchor = component_anchors[-1] if component_anchors else None
-            coordinate_donor_anchor = donor_anchor
-            if donor_anchor_selection == "component_anchor_index":
-                raw_donor_anchors = geometry.get("component_anchors")
-                if (
-                    not isinstance(anchor_index, int)
-                    or not isinstance(raw_donor_anchors, (list, tuple))
-                    or not 0 <= anchor_index < len(raw_donor_anchors)
-                    or not isinstance(raw_donor_anchors[anchor_index], dict)
-                ):
-                    missing_geometry.append(
-                        {
-                            "component_key": key,
-                            "component_family": family,
-                            "pin": pin.name,
-                            "reason": "donor_component_anchor_index_out_of_range",
-                        }
-                    )
-                    continue
-                candidate_donor_anchor = raw_donor_anchors[anchor_index]
-                if (
-                    candidate_donor_anchor.get("x") is None
-                    or candidate_donor_anchor.get("y") is None
-                ):
-                    missing_geometry.append(
-                        {
-                            "component_key": key,
-                            "component_family": family,
-                            "pin": pin.name,
-                            "reason": "incomplete_donor_component_anchor",
-                        }
-                    )
-                    continue
-                coordinate_donor_anchor = candidate_donor_anchor
-            elif donor_anchor_selection != "component_anchor":
-                missing_geometry.append(
-                    {
-                        "component_key": key,
-                        "component_family": family,
-                        "pin": pin.name,
-                        "reason": "unsupported_donor_anchor_selection",
-                    }
-                )
-                continue
             if (
                 component_anchor is not None
                 and "x_offset_from_component_anchor" in raw_pin_geometry
@@ -1225,6 +1168,7 @@ def plan_catalogue_pin_bidir_terminals(
                 coordinate_source += "_pin_endpoint_snap_" + "".join(snapped_axes)
             explicit_contact: tuple[int, int] | None = None
             terminal_contact_source = "generic_grid_contact"
+            coordinate_donor_anchor = donor_anchor
             if (
                 subpart_anchor_delta is not None
                 and isinstance(donor_anchor, dict)
@@ -1872,11 +1816,13 @@ def _attach_catalogue_terminal_contact_stage(
     )
     new_chunk = finalize(original_chunk[:1] + b"".join(local_records))
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
-    # This is a DSN-only terminal-stream diagnosis.  The project writer copies
-    # every non-replaced member through unchanged; do not inspect ROOT.CDB here.
+    source_cdb = read_internal_file(source, "ROOT.CDB")
+    # This is terminal-stream diagnosis only. Preserve the component-placer CDB
+    # byte-for-byte; CDB normalization is explicitly not part of this route.
     write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
     final_dsn = read_internal_file(destination, "ROOT.DSN")
     final_chunk = _extract_object_chunk(final_dsn)
+    output_cdb = read_internal_file(destination, "ROOT.CDB")
 
     terminal_rows = _bidir_label_records(final_chunk)
     contact_rows: list[dict[str, Any]] = []
@@ -1904,8 +1850,8 @@ def _attach_catalogue_terminal_contact_stage(
         "status": "loader_gate_required_before_active_wire_link_stage",
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
-        "root_cdb_policy": "preserve_source_member_uninspected",
-        "cdb_unchanged": None,
+        "root_cdb_policy": "preserve_source_unchanged",
+        "cdb_unchanged": output_cdb == source_cdb,
         "terminal_count_added": expected_terminal_count,
         "wire_count_added": 0,
         "wire_count_rewritten": 0,
@@ -1926,6 +1872,7 @@ def _attach_catalogue_terminal_contact_stage(
             final_chunk == new_chunk
             and len(terminal_rows) == expected_terminal_count
             and final_chunk.count(b"\x7fWIRE") == 0
+            and output_cdb == source_cdb
             and (
                 final_chunk.endswith(b"\xff")
                 if object_stream_finalizer == "single_ff"
@@ -2863,6 +2810,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             original_chunk[:1] + b"".join(rebuilt_records)
         )
     new_dsn, _pointers = build_dsn(dsn, dsn, new_chunk)
+    source_cdb = read_internal_file(source, "ROOT.CDB")
     if len(root_cdb_preservation_policies) > 1:
         raise ValueError(
             "Catalogue terminal attachment cannot mix ROOT.CDB preservation and "
@@ -2870,13 +2818,15 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         )
     preserve_root_cdb = root_cdb_preservation_policies == {True}
     if preserve_root_cdb:
-        # This is a DSN-only route.  The project writer preserves untouched
-        # members, so ROOT.CDB neither needs inspection nor reconstruction.
+        # 4027 donor preflight proved that its terminal-stream investigation is
+        # independent of ROOT.CDB. Keep the locked component-placer CDB exactly
+        # as received; no CDB reconstruction belongs in this family route.
         write_project_from_parts(source, destination, {"ROOT.DSN": new_dsn})
         cdb_normalization_report = {
-            "policy": "preserve_source_member_uninspected",
+            "policy": "preserve_source_unchanged",
             "keep_packages": None,
-            "inspected": False,
+            "size_before": len(source_cdb),
+            "size_after": len(source_cdb),
         }
     else:
         # The locked mega donor intentionally keeps its complete ROOT.CDB during
@@ -2888,7 +2838,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             build_component_placer_cdb_subset,
             parse_component_placer_cdb,
         )
-        source_cdb = read_internal_file(source, "ROOT.CDB")
 
         cdb_keep_packages = sorted(
             {

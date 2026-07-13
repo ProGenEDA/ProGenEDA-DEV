@@ -36,6 +36,10 @@ DIFFERENT_FAMILY_LAYOUT_GAP_Y = 5_080_000
 DIFFERENT_FAMILY_LAYOUT_MIN_SPACING = 3_810_000
 MULTIPART_SUBPART_GAP_X = 5_080_000
 MULTIPART_SUBPART_GAP_Y = 5_080_000
+# Proteus terminal contacts use a 10-thou schematic grid.  This stays local to
+# the beautifier so it can preserve native component pin frames without taking
+# a dependency on the terminal emitter.
+PROTEUS_TERMINAL_GRID = 254_000
 SCAN_COORD_LIMIT = 30_000_000
 MIN_COORD_ABS = 50_000
 # The terminalized mixed route is Proteus-loader-safe through 15x.  Larger
@@ -573,6 +577,15 @@ def _multipart_columns(count: int) -> int:
     return 3
 
 
+def _snap_translation_delta_to_terminal_grid(delta: int) -> int:
+    """Return the nearest signed translation that preserves terminal-grid pins."""
+
+    half_grid = PROTEUS_TERMINAL_GRID // 2
+    if delta >= 0:
+        return ((delta + half_grid) // PROTEUS_TERMINAL_GRID) * PROTEUS_TERMINAL_GRID
+    return -(((-delta + half_grid) // PROTEUS_TERMINAL_GRID) * PROTEUS_TERMINAL_GRID)
+
+
 def spread_multipart_subpart_coordinates(
     data: bytes,
     family: str,
@@ -580,6 +593,7 @@ def spread_multipart_subpart_coordinates(
     *,
     gap_x: int = MULTIPART_SUBPART_GAP_X,
     gap_y: int = MULTIPART_SUBPART_GAP_Y,
+    snap_translation_to_terminal_grid: bool = False,
 ) -> tuple[bytes, dict[str, Any]]:
     """Spread native A/B/C subpart clusters inside one Proteus packet.
 
@@ -657,6 +671,13 @@ def spread_multipart_subpart_coordinates(
         target_min_y = before_all["min_y"] + row * (max_height + gap_y)
         dx = target_min_x - int(bbox["min_x"])
         dy = target_min_y - int(bbox["min_y"])
+        requested_target_min_x = target_min_x
+        requested_target_min_y = target_min_y
+        if snap_translation_to_terminal_grid:
+            dx = _snap_translation_delta_to_terminal_grid(dx)
+            dy = _snap_translation_delta_to_terminal_grid(dy)
+            target_min_x = int(bbox["min_x"]) + dx
+            target_min_y = int(bbox["min_y"]) + dy
         for x_offset, y_offset, _reason in cluster:
             _put_s32_at(out, x_offset, _s32_at(out, x_offset) + dx)
             _put_s32_at(out, y_offset, _s32_at(out, y_offset) + dy)
@@ -669,6 +690,9 @@ def spread_multipart_subpart_coordinates(
             "height": int(bbox["height"]),
             "dx": dx,
             "dy": dy,
+            "terminal_grid_translation": snap_translation_to_terminal_grid,
+            "requested_target_min_x": requested_target_min_x,
+            "requested_target_min_y": requested_target_min_y,
             "row": row,
             "column": column,
         }
@@ -758,6 +782,7 @@ def translate_packet_to_position(
     column: int | None = None,
     allocation_width: int | None = None,
     allocation_height: int | None = None,
+    snap_translation_to_terminal_grid: bool = False,
 ) -> tuple[bytes, dict[str, Any]]:
     """Move a complete packet so its parsed bbox begins at an explicit point."""
 
@@ -783,6 +808,13 @@ def translate_packet_to_position(
     before = coordinate_bbox(data, pairs)
     dx = target_min_x - before["min_x"]
     dy = target_min_y - before["min_y"]
+    requested_target_min_x = target_min_x
+    requested_target_min_y = target_min_y
+    if snap_translation_to_terminal_grid:
+        dx = _snap_translation_delta_to_terminal_grid(dx)
+        dy = _snap_translation_delta_to_terminal_grid(dy)
+        target_min_x = int(before["min_x"]) + dx
+        target_min_y = int(before["min_y"]) + dy
     out = bytearray(data)
     for x_offset, y_offset, _reason in pairs:
         _put_s32_at(out, x_offset, _s32_at(out, x_offset) + dx)
@@ -799,6 +831,9 @@ def translate_packet_to_position(
         "dy": dy,
         "target_min_x": target_min_x,
         "target_min_y": target_min_y,
+        "requested_target_min_x": requested_target_min_x,
+        "requested_target_min_y": requested_target_min_y,
+        "terminal_grid_translation": snap_translation_to_terminal_grid,
         "coordinate_pair_count": len(pairs),
         "coordinate_reason_counts": dict(sorted(reason_counts.items())),
         "before_bbox": before,

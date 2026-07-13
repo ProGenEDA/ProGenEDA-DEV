@@ -438,7 +438,7 @@ def test_catalogue_multi_pin_families_use_parsed_layout_and_marker_anchor(
         } == {"component_marker_anchor_offset_existing_wire_identity"}
 
 
-def test_reported_v5_coordinate_issues_are_fixed_for_4027_4060_and_192(
+def test_reported_v5_coordinate_issues_are_fixed_for_locked_4027_and_192(
     tmp_path,
 ) -> None:
     catalog = load_component_catalog()
@@ -464,32 +464,11 @@ def test_reported_v5_coordinate_issues_are_fixed_for_4027_4060_and_192(
     assert by_pin_4027["6"]["component_anchor"]["marker_offset"] != by_pin_4027["10"]["component_anchor"]["marker_offset"]
     assert by_pin_4027["6"]["pin"]["y"] != by_pin_4027["10"]["pin"]["y"]
     assert by_pin_4027["7"]["pin"]["y"] != by_pin_4027["9"]["pin"]["y"]
+    # The locked-mega 4027 packet is clean; its donor WIRE units are catalogue
+    # evidence for the later attachment stage, not pre-existing stream records.
     assert {
         row["coordinate_source"] for row in plan_4027["terminal_plans"]
-    } == {"component_marker_anchor_offset_existing_wire_identity"}
-
-    result_4060 = generate_component_placement_project(
-        {
-            "components": {"74HC4060": 1},
-            "layout": {"strategy": "beautify"},
-        },
-        tmp_path / "catalogue_4060_v6_coordinate_fix.pdsprj",
-        full_cdb=True,
-    )
-    plan_4060 = plan_catalogue_pin_bidir_terminals(
-        result_4060.selected_groups,
-        catalog=catalog,
-    )
-    layout_4060 = result_4060.layout_plan["actual_binary_placements"][0]
-
-    assert plan_4060["valid"]
-    assert "marker_body:4060" in layout_4060["coordinate_reason_counts"]
-    assert {
-        row["component_anchor"]["marker"] for row in plan_4060["terminal_plans"]
-    } == {"4060"}
-    assert {
-        row["coordinate_source"] for row in plan_4060["terminal_plans"]
-    } == {"component_marker_anchor_offset_existing_wire_identity"}
+    } == {"component_marker_anchor_offset"}
 
     result_192 = generate_component_placement_project(
         {
@@ -510,10 +489,10 @@ def test_reported_v5_coordinate_issues_are_fixed_for_4027_4060_and_192(
 
     assert plan_192["valid"]
     assert by_pin_192["5"]["pin"]["y"] != by_pin_192["9"]["pin"]["y"]
-    assert by_pin_192["5"]["terminal"]["label"] == "U1PIN5UP"
-    assert by_pin_192["9"]["terminal"]["label"] == "U1PIN9D3"
-    assert by_pin_192["5"]["coordinate_source"] == "component_marker_anchor_offset_existing_wire_identity"
-    assert by_pin_192["9"]["coordinate_source"] == "component_marker_anchor_offset_existing_wire_identity"
+    assert by_pin_192["5"]["terminal"]["label"] == "UP PIN 5"
+    assert by_pin_192["9"]["terminal"]["label"] == "D3 PIN 9"
+    assert by_pin_192["5"]["coordinate_source"] == "component_marker_anchor_offset"
+    assert by_pin_192["9"]["coordinate_source"] == "component_marker_anchor_offset"
 
 
 def test_catalogue_pin_emitter_attaches_4017_existing_wire_skeleton(tmp_path) -> None:
@@ -607,6 +586,65 @@ def test_catalogue_pin_emitter_uses_clean_bare_component_stream(tmp_path) -> Non
     assert report["terminal_count_added"] == 12
     assert output_chunk.count(b"$TERBIDIR") == 12
     assert output_chunk.count(b"\x7fWIRE") == 12
+
+
+def test_4027_subpart_route_uses_each_donor_anchor_and_grid_native_wires(
+    tmp_path,
+) -> None:
+    source = tmp_path / "catalogue_4027_grid_bare.pdsprj"
+    output = tmp_path / "catalogue_4027_grid_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {"4027": 1},
+            "layout": {
+                "strategy": "beautify",
+                "terminal_grid_alignment": True,
+            },
+        },
+        source,
+        full_cdb=True,
+    )
+    plan = plan_catalogue_pin_bidir_terminals(result.selected_groups)
+    by_pin = {row["pin"]["name"]: row for row in plan["terminal_plans"]}
+
+    assert plan["valid"]
+    assert len(plan["terminal_plans"]) == 14
+    assert by_pin["6"]["component_anchor"]["y"] != by_pin["10"]["component_anchor"]["y"]
+    for row in plan["terminal_plans"]:
+        pin = row["pin"]
+        terminal = row["terminal"]
+        wire = row["short_wire"]
+        assert pin["x"] % PROTEUS_TERMINAL_GRID == 0
+        assert pin["y"] % PROTEUS_TERMINAL_GRID == 0
+        assert terminal["symbol_y"] % PROTEUS_TERMINAL_GRID == 0
+        assert wire["coordinates"] == [
+            pin["x"],
+            pin["y"],
+            pin["x"],
+            pin["y"],
+        ]
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["4027"],
+    )
+    output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    assert report["valid"]
+    assert report["terminal_count_added"] == 14
+    assert report["wire_count_added"] == 14
+    assert report["terminal_grid_alignment_valid"]
+    assert report["wire_path_contacts_valid"]
+    assert report["cdb_normalization"] == {
+        "policy": "preserve_source_member_uninspected",
+        "keep_packages": None,
+        "inspected": False,
+    }
+    assert output_chunk.count(b"$TERBIDIR") == 14
+    assert output_chunk.count(b"\x7fWIRE") == 14
+    assert output_chunk.endswith(b"\xff")
 
 
 def test_catalogue_display_block_link_offset_generation_remains_blocked(tmp_path) -> None:

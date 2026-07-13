@@ -156,6 +156,14 @@ Components remain at their beautified coordinates. This rule is a Proteus
 backend profile; the stage still consumes placed packets and pin descriptors,
 not donor identity.
 
+For a family whose accepted donor instead proves a zero-length native WIRE
+unit at a grid-aligned pin (currently the 4027 investigation), the terminal
+stage must not invent a short off-grid segment. The beautifier may opt into
+whole-grid packet translations before terminal placement so the native pin
+frame remains on-grid; the terminal stage still never moves component packets.
+The catalogue declares that exceptional WIRE grammar, physical subpart anchor,
+and proof source.
+
 When IC and non-IC packets coexist, the packet beautifier uses separate
 vertical bands with at least 5,080,000 internal units between the parsed IC
 maximum Y and non-IC minimum Y. This is a static correction for the reported
@@ -216,3 +224,6 @@ attachment proof. The complete donor request is
     absolute sheet coordinates. Store donor-derived pin offsets with a declared
     coordinate frame, recalculate absolute pins from the placed component, snap
     terminal contacts to the Proteus grid, and connect with short WIRE records.
+    If the accepted family proves a zero-length native WIRE attachment, preserve
+    that grammar and request grid-preserving beautifier translations instead of
+    synthesizing a nonzero wire.
