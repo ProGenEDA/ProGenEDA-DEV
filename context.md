@@ -13121,3 +13121,15 @@ Both HC157 scales now pass: 9× and 15× each cold-opened and cold-reopened norm
 - `knowledge/component_catalog_v0.json` — recorded HC157 1×/9×/15× local-loader status.
 - `knowledge/hc157_donor_preflight_2026_07_13.md`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — scale audit and loader results.
 - `experiments/dil16_mux_terminal_v1_temp_2026_07_13/10_hc157_scale_finalizer_trim/` — fresh locked-mega 9×/15× controls, terminalized outputs, reports, and visible gate captures.
+
+## User Message - 2026-07-13 20:25 +05:00
+
+you knwo how to deal with bad object record, click ok, let it open do ctrl s and compare with generated. remember if it opens after ok this means mistake is v small that proteus itself can correct it
+
+## Agent Visible Response - 2026-07-13 20:25 +05:00
+
+Understood. A Bad Object Record that recovers after **OK** is now treated as a small, repairable serialization mismatch: I’ll capture the dialog first, save only the recovered copy, and compare its `ROOT.DSN` against the generated file.
+
+## Agent Visible Response - 2026-07-13 20:26 +05:00
+
+The previous checkpoint is confirmed pushed and identical locally/remotely (`f4aa9cac`). I’ll leave the existing unrelated experiments untouched and apply this recovery comparison rule while continuing the next DIL14 family from its accepted donor.
