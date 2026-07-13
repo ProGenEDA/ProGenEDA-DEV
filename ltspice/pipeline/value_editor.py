@@ -126,6 +126,15 @@ def normalize_source_expression(value: object, *, field: str) -> str:
         if len(values) < lower or upper is not None and len(values) > upper or prefix == "PWL(" and len(values) % 2:
             expected = f"{lower}" if upper == lower else f"{lower}–{upper}" if upper is not None else f"an even count of at least {lower}"
             raise ValueValidationError(f"{field} {prefix[:-1]} requires {expected} numeric arguments.")
+        # LTspice accepts an optional eighth PULSE argument as a cycle count.
+        # A newly supplied donor uses ``0`` here; LTspice merely warns and
+        # ignores it.  Normal mode must not quietly retain a parameter the
+        # simulator discards, so require a positive integer or ask the caller
+        # to omit the optional argument entirely.
+        if prefix == "PULSE(" and len(values) == 8 and not re.fullmatch(r"[1-9]\d*", values[-1]):
+            raise ValueValidationError(
+                f"{field} PULSE Ncycles must be a positive integer when supplied; omit the eighth argument for continuous pulses."
+            )
         normalized_values = [
             normalize_spice_number(item, field=f"{field} {prefix[:-1]} argument {index}")
             for index, item in enumerate(values, 1)

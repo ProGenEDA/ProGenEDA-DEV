@@ -11631,6 +11631,49 @@ Acceptance result:
 - PCB: generated and accepted, nine physical supported components, three nonphysical symbols omitted, and zero unrouted PCB nets.
 - The user project ZIP passed `unzip -t` and contains the `.kicad_pro`, `.kicad_sch`, and `.kicad_pcb` project files.
 
+## 2026-07-14T02:39:08+05:00 — Expanded LTspice donor corpus
+
+User request (verbatim):
+
+> i have added alot more new donors so that u may learn from
+
+Visible assistant progress (verbatim):
+
+> I’ll catalogue the newly added donor schematics, compare them against the current LTspice editor/model rules, and use the differences to expand supported properties without treating the donor set as the limit.
+
+> The new set is useful: it adds dense resistor ladders/bridges, dual sources, current sources, AC, sine, and pulse examples. The component/property coverage is mostly already present; the meaningful gap is drawing safe multi-terminal wire trees instead of falling back to labels, so I’m adding that next and turning the donors into regression cases.
+
+> I’ve also verified the important edge cases against installed LTspice: the donors’ AC source representation is already emitted correctly as `Value2 AC 1`; `0.1F` stays rejected because it is ambiguous/femto in SPICE; and a donor’s zero PULSE cycle-count now gets rejected instead of being silently ignored by LTspice.
+
+> The donor-derived regressions now cover the 20-part R/L/C case, AC source attributes, legacy units, invalid pulse cycles, and safe/fallback tree routing. I’m doing the final real-LTspice netlist check on the new physical wire-tree output now.
+
+Donor evidence and implementation:
+
+- Audited the 19 newly added `Draft*`, `lab*`, and `lca*` ASC donors. Installed LTspice 26.0.2.1 netlisted all of them; they add no new semiconductor/IC/model family beyond current support.
+- Added a bounded deterministic same-net Manhattan tree router for safe non-ground nets with three or more physical endpoints. It allows deliberate same-net T junctions but rejects foreign pins/wires; unprovable layouts retain LTspice terminal-label fallback.
+- Added donor-derived regressions for an AC `Value2 AC 1` source, CP1252 micro signs, safe passive formatting, a 20-passive R/L/C ladder, physical tree routing, unsafe-tree fallback, and oracle log diagnostics.
+- Normal mode now rejects an optional eighth `PULSE Ncycles` argument unless it is a positive integer. It keeps rejecting ambiguous capacitor notation such as `0.1F` because LTspice's `f/F` is femto scale.
+- The external oracle now turns LTspice floating-node and ignored-PULSE-Ncycles warnings into blocking validation errors even if LTspice exits with status 0.
+- Added `ltspice/docs/LTSPICE_DONOR_COVERAGE.md` and updated the LTspice/source-pack documentation with the source evidence and deliberate compatibility decisions.
+
+Verification:
+
+- `PYTHONPATH=. python -m unittest discover -s ltspice/tests -v`: 53 passed, 1 existing optional installed-oracle test skipped.
+- `PYTHONPATH=. python -m compileall -q ltspice` and `git diff --check`: passed.
+- A generated three-resistor physical tree passed static validation and installed LTspice exported-netlist validation with no terminal flags for its shared bus.
+- A generated 22-component project (20 R/L/C passives plus voltage source and ground) passed static validation, LTspice netlisting, batch simulation, and exported-netlist connectivity validation.
+
+Planned visible final response:
+
+> Done — the added donors are now part of the LTspice evidence and regression coverage.
+>
+> - The 19 new donors all netlist in installed LTspice. They confirm the existing R/C/L, voltage/current-source, AC/SINE/PULSE, orientation, and dense-network support; they did not require guessing new IC/model families.
+> - The generator now draws a safe physical Manhattan tree for provable 3+ endpoint nets. Crowded/ambiguous nets still fall back to real LTspice terminal labels instead of risking a short.
+> - A 20-passive R/L/C circuit now has a regression test and passed installed LTspice netlisting, batch simulation, and connectivity verification.
+> - Added stricter donor-derived validation: zero/invalid `PULSE Ncycles`, floating-node warnings, and ignored PULSE warnings are failures; ambiguous `0.1F` capacitance stays refused.
+>
+> Verification: 53 tests passed (1 existing optional oracle test skipped), and the new donor decisions are recorded in `ltspice/docs/LTSPICE_DONOR_COVERAGE.md`.
+
 ## 2026-07-14T02:17:44+05:00 — LTspice capability scope question
 
 User request (verbatim):

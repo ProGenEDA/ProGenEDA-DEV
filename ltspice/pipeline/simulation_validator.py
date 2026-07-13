@@ -21,6 +21,20 @@ from .oracle_netlist_validator import validate_oracle_netlist
 
 SIMULATION_SCHEMA = "progen-ltspice-simulation-validator/v0.1"
 
+# LTspice can return a successful process status while explicitly warning that
+# it solved a circuit with an undefined absolute node voltage, or that it
+# ignored the optional PULSE cycle count.  Neither outcome is a trustworthy
+# executable-oracle pass for a generated circuit, so preserve these concrete
+# diagnostics as blocking errors instead of relying on the process status.
+_FLOATING_NODE_WARNING = re.compile(
+    r"\bwarning:\s*node\s+(?P<node>[^\s.]+)\s+is\s+floating\b",
+    flags=re.IGNORECASE,
+)
+_IGNORED_PULSE_NCYCLES_WARNING = re.compile(
+    r"\bwarning:\s*ncycles\s+must\s+be\s+a\s+positive\s+number\s*,\s*will\s+be\s+ignored\b",
+    flags=re.IGNORECASE,
+)
+
 
 @dataclass(frozen=True)
 class OracleCommand:
@@ -28,6 +42,31 @@ class OracleCommand:
     timeout_seconds: float = 90
     path_style: str = "native"
     deadline_monotonic: float | None = None
+
+
+def _batch_log_diagnostics(log_text: str) -> list[str]:
+    """Return executable warnings that invalidate a generated simulation.
+
+    The patterns intentionally follow LTspice 26's persisted log wording.
+    They are narrower than a blanket warning rejection: normal numerical
+    convergence notices can be useful, whereas these two messages mean that
+    the topology or requested source behavior was not faithfully simulated.
+    """
+
+    floating_nodes = sorted(
+        {match.group("node") for match in _FLOATING_NODE_WARNING.finditer(log_text)},
+        key=str.casefold,
+    )
+    errors: list[str] = []
+    if floating_nodes:
+        errors.append(
+            "LTspice batch log reported floating node(s): " + ", ".join(floating_nodes) + "."
+        )
+    if _IGNORED_PULSE_NCYCLES_WARNING.search(log_text):
+        errors.append(
+            "LTspice batch log reported an invalid PULSE Ncycles value that LTspice ignored."
+        )
+    return errors
 
 
 def _oracle_path(asc_path: Path, style: str) -> str:
@@ -186,6 +225,7 @@ def run_external_oracle(
                     batch_errors.append("LTspice batch simulation did not produce a .log file.")
                 if error_markers:
                     batch_errors.append("LTspice batch log reported: " + ", ".join(error_markers) + ".")
+                batch_errors.extend(_batch_log_diagnostics(log_text))
                 batch = {
                     "command": batch_command,
                     "returncode": batch_completed.returncode,

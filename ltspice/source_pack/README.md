@@ -20,3 +20,6 @@ The implementation is informed by:
 No proprietary ASY or model file is committed here. When a future profile uses
 a vendor model, its source, licensing, pin order, and content digest must be
 recorded before it can become `project_local_model`.
+
+The current donor conclusions and explicit compatibility/safety decisions are
+recorded in [../docs/LTSPICE_DONOR_COVERAGE.md](../docs/LTSPICE_DONOR_COVERAGE.md).

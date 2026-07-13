@@ -76,6 +76,9 @@ PYTHONPATH=. python -m ltspice input.json \
 The oracle runs `-netlist` and, when an allowed analysis card exists, `-b`.
 An LTspice log that reports an unknown parameter/model parameter is a failed
 oracle result, not a warning that can be packaged as a pass.
+Likewise, a successful LTspice process exit does not override an explicit
+floating-node warning or an ignored invalid `PULSE` cycle count: both are
+reported as blocking oracle errors.
 The command is never evaluated by a shell; `$HOME`/other environment variables
 and `~` are expanded token-by-token before it is invoked.
 When an export is available, the backend also compares LTspice's actual
@@ -102,6 +105,9 @@ silently choosing one. Analysis cards are similarly narrow: `.ac`, `.dc`,
 `.tran`, `.op`, `.tf`, `.noise`, `.four`, and explicit `.save`; external
 includes and control cards are refused. Referenced sweep/current sources are
 checked against selected components before static packaging.
+When `PULSE` uses its optional eighth `Ncycles` argument, it must be a
+positive integer; omit it for continuous pulses. This prevents LTspice from
+silently ignoring an invalid cycle count.
 
 ## Supported initial slice
 
@@ -127,6 +133,13 @@ explicit (emitter/source respectively), avoiding an accidental hidden ground
 node. A future explicit-body MOS profile can be added without changing the
 shared circuit schema.
 
+The router writes a bounded, deterministic Manhattan tree for a safe
+three-or-more-pin non-ground net when it can prove every junction belongs to
+that same net and no foreign pin or existing wire is touched. It is not a
+general maze autorouter: crowded or ambiguous trees deliberately fall back to
+native LTspice terminal flags, which preserve connectivity without inventing a
+short.
+
 ## Format evidence
 
 The writer emits ASCII `Version 4.1`, `SHEET`, `SYMBOL`, `SYMATTR`, `WIRE`,
@@ -146,4 +159,5 @@ oracle subprocesses are capped by the same remaining hard deadline.
 
 See [source_pack/README.md](source_pack/README.md) for provenance and the
 asset policy, [local LTspice 26 oracle evidence](docs/LTSPICE_26_ORACLE_VALIDATION.md),
-and [tests](tests/) for regression coverage.
+the [donor-coverage record](docs/LTSPICE_DONOR_COVERAGE.md), and [tests](tests/)
+for regression coverage.

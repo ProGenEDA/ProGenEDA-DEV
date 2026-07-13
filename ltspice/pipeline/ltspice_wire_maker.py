@@ -11,6 +11,7 @@ from .geometry import GRID, Point, Segment, orthogonal_path, segment_intersectio
 
 
 WIRE_PLAN_SCHEMA = "progen-ltspice-wire-plan/v0.1"
+TREE_ROUTE_MAX_HUB_CANDIDATES = 48
 
 
 @dataclass(frozen=True)
@@ -174,6 +175,167 @@ def _direct_route(first: Point, second: Point, existing: list[Segment], forbidde
     return None
 
 
+def _canonical_tree_segments(segments: Iterable[Segment]) -> list[Segment]:
+    """Merge collinear pieces of one proposed tree into a non-overlapping set.
+
+    A star-shaped Manhattan tree naturally contains overlapping branch
+    portions when two endpoints approach the same trunk from one side.  LTspice
+    does not need duplicate WIRE records there, and the independent geometry
+    validator quite rightly treats an interior overlap as ambiguous.  Merge
+    only same-axis, same-line intervals; perpendicular branches remain
+    separate so their shared endpoint is an explicit electrical junction.
+    """
+
+    horizontal: dict[int, list[tuple[int, int]]] = {}
+    vertical: dict[int, list[tuple[int, int]]] = {}
+    for segment in segments:
+        if segment.start == segment.end:
+            continue
+        if segment.is_horizontal:
+            low, high = sorted((segment.start.x, segment.end.x))
+            horizontal.setdefault(segment.start.y, []).append((low, high))
+        elif segment.is_vertical:
+            low, high = sorted((segment.start.y, segment.end.y))
+            vertical.setdefault(segment.start.x, []).append((low, high))
+        else:
+            # Callers only construct paths with ``orthogonal_path``.  Keep the
+            # defensive branch so a future route strategy cannot accidentally
+            # make diagonal output appear valid.
+            return []
+
+    result: list[Segment] = []
+    for y, intervals in sorted(horizontal.items()):
+        left: int | None = None
+        right: int | None = None
+        for low, high in sorted(intervals):
+            if left is None or right is None:
+                left, right = low, high
+            elif low <= right:
+                right = max(right, high)
+            else:
+                result.append(Segment(Point(left, y), Point(right, y)))
+                left, right = low, high
+        if left is not None and right is not None:
+            result.append(Segment(Point(left, y), Point(right, y)))
+    for x, intervals in sorted(vertical.items()):
+        top: int | None = None
+        bottom: int | None = None
+        for low, high in sorted(intervals):
+            if top is None or bottom is None:
+                top, bottom = low, high
+            elif low <= bottom:
+                bottom = max(bottom, high)
+            else:
+                result.append(Segment(Point(x, top), Point(x, bottom)))
+                top, bottom = low, high
+        if top is not None and bottom is not None:
+            result.append(Segment(Point(x, top), Point(x, bottom)))
+    return result
+
+
+def _tree_route_is_safe(candidate: Iterable[Segment], existing: Iterable[Segment], forbidden: set[Point]) -> bool:
+    """Prove that a proposed single-net tree cannot create an accidental join.
+
+    Unlike ``_route_is_safe``, an explicit tree may meet itself at a T-junction
+    or a shared endpoint.  It may *not* cross itself where neither segment
+    terminates, touch any foreign component pin, or intersect any wire already
+    claimed by an earlier logical net.
+    """
+
+    proposed = list(candidate)
+    if not proposed:
+        return False
+    for segment in proposed:
+        if not (segment.is_horizontal or segment.is_vertical):
+            return False
+        if any(segment.contains(point) for point in forbidden):
+            return False
+        for previous in existing:
+            if segment_intersection(segment, previous) is not None:
+                return False
+    for index, first in enumerate(proposed):
+        for second in proposed[index + 1 :]:
+            crossing = segment_intersection(first, second)
+            if crossing is None:
+                continue
+            first_end = crossing in {first.start, first.end}
+            second_end = crossing in {second.start, second.end}
+            # A branch ending on the trunk is a deliberate same-net junction;
+            # an interior/interior crossing would be an unproven short.
+            if not first_end and not second_end:
+                return False
+    return True
+
+
+def _tree_axis_candidates(values: Iterable[int]) -> list[int]:
+    """Return a compact deterministic set of possible trunk coordinates."""
+
+    ordered = sorted(set(values))
+    if not ordered:
+        return []
+    median = ordered[(len(ordered) - 1) // 2]
+    # Native placement is on a 16-unit grid.  Two nearby outer lanes give the
+    # bounded router a chance to avoid a central pin without turning this into
+    # an unbounded maze search.
+    candidates = [median]
+    candidates.extend(sorted(ordered, key=lambda value: (abs(value - median), value)))
+    lower = ordered[0] - GRID * 2
+    if lower >= 0:
+        candidates.append(lower)
+    candidates.append(ordered[-1] + GRID * 2)
+    return list(dict.fromkeys(candidates))
+
+
+def _tree_hub_candidates(points: Iterable[Point]) -> list[Point]:
+    """Choose bounded star hubs ordered by compactness and stable coordinates."""
+
+    endpoints = sorted(set(points))
+    if not endpoints:
+        return []
+    x_values = _tree_axis_candidates(point.x for point in endpoints)
+    y_values = _tree_axis_candidates(point.y for point in endpoints)
+    median_x = sorted(point.x for point in endpoints)[(len(endpoints) - 1) // 2]
+    median_y = sorted(point.y for point in endpoints)[(len(endpoints) - 1) // 2]
+    candidates = {Point(x, y) for x in x_values for y in y_values}
+    return sorted(
+        candidates,
+        key=lambda point: (
+            sum(abs(point.x - endpoint.x) + abs(point.y - endpoint.y) for endpoint in endpoints),
+            abs(point.x - median_x) + abs(point.y - median_y),
+            point.x,
+            point.y,
+        ),
+    )[:TREE_ROUTE_MAX_HUB_CANDIDATES]
+
+
+def _safe_tree_route(points: Iterable[Point], existing: list[Segment], forbidden: set[Point]) -> list[Segment] | None:
+    """Return a conservative Manhattan tree for three or more endpoint pins.
+
+    Each candidate is an H/V star: either a vertical trunk with horizontal
+    branches, or its transpose.  This deliberately small search gives a
+    readable result for donor-style resistor ladders while retaining a
+    deterministic proof obligation.  It is not a general autorouter; callers
+    retain labelled-terminal fallback whenever no candidate clears the proof.
+    """
+
+    endpoints = sorted(set(points))
+    if len(endpoints) < 3:
+        return None
+    for hub in _tree_hub_candidates(endpoints):
+        # Try a vertical trunk first, then a horizontal trunk.  The ordering is
+        # fixed, so equal-cost layouts stay byte-for-byte deterministic.
+        for prefer_horizontal in (True, False):
+            raw = [
+                segment
+                for endpoint in endpoints
+                for segment in orthogonal_path(endpoint, hub, prefer_horizontal=prefer_horizontal)
+            ]
+            candidate = _canonical_tree_segments(raw)
+            if _tree_route_is_safe(candidate, existing, forbidden):
+                return candidate
+    return None
+
+
 def build_wire_plan(
     circuit: dict[str, Any],
     placed: list[PlacedComponent],
@@ -183,9 +345,11 @@ def build_wire_plan(
     """Build an inspectable physical-wire/terminal hybrid plan.
 
     Two-pin non-rail nets receive a direct orthogonal wire only when it is
-    provably clear on the current grid. Everything else is represented by a
-    short pin lead and an LTspice FLAG. This is native terminal connectivity,
-    not a guessed invisible net: each fallback is recorded in the plan.
+    provably clear on the current grid. Larger non-rail nets receive a bounded
+    same-net Manhattan tree when every branch, junction, and foreign obstacle
+    can be proven safe. Everything else is represented by a short pin lead and
+    an LTspice FLAG. This is native terminal connectivity, not a guessed
+    invisible net: each fallback is recorded in the plan.
     """
 
     nets = _logical_nets(circuit)
@@ -238,12 +402,31 @@ def build_wire_plan(
             and not _is_ground(net)
             and not force_terminal
         )
+        can_try_tree = (
+            requested_mode in {"wire", "combination"}
+            and len(physical) >= 3
+            and not _is_ground(net)
+            and not force_terminal
+        )
         if can_try_direct:
             route = _direct_route(endpoint_points[physical[0]], endpoint_points[physical[1]], segments, all_pin_points - {endpoint_points[physical[0]], endpoint_points[physical[1]]})
             if route is not None:
                 segments.extend(route)
                 continue
             rejected.append({"net": net, "reason": "direct_route_intersects_existing_geometry", "fallback": "terminal_flags"})
+        elif can_try_tree:
+            physical_points = {endpoint_points[endpoint] for endpoint in physical}
+            route = _safe_tree_route(physical_points, segments, all_pin_points - physical_points)
+            if route is not None:
+                segments.extend(route)
+                continue
+            rejected.append(
+                {
+                    "net": net,
+                    "reason": "safe_tree_router_could_not_prove_route",
+                    "fallback": "terminal_flags",
+                }
+            )
         elif force_terminal and physical:
             # An analysis V(net) expression must name a native LTspice node.
             # Direct wires lack a persisted label and netlist as simulator
