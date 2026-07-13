@@ -133,6 +133,37 @@ def _symbol_graphics(template: str) -> list[str]:
             "LINE Normal 0 32 -8 44",
             "LINE Normal 0 32 8 44",
         ],
+        "controlled_voltage_source": [
+            "LINE Normal 0 16 0 24",
+            "LINE Normal 0 24 32 56",
+            "LINE Normal 32 56 0 88",
+            "LINE Normal 0 88 -32 56",
+            "LINE Normal -32 56 0 24",
+            "LINE Normal 0 88 0 96",
+            "LINE Normal -64 32 -32 32",
+            "LINE Normal -64 80 -32 80",
+            "LINE Normal -48 28 -48 36",
+            "LINE Normal -52 32 -44 32",
+            "LINE Normal -52 80 -44 80",
+            "LINE Normal -8 48 8 48",
+            "LINE Normal 0 40 0 56",
+        ],
+        "controlled_current_source": [
+            "LINE Normal 0 16 0 24",
+            "LINE Normal 0 24 32 56",
+            "LINE Normal 32 56 0 88",
+            "LINE Normal 0 88 -32 56",
+            "LINE Normal -32 56 0 24",
+            "LINE Normal 0 88 0 96",
+            "LINE Normal -64 32 -32 32",
+            "LINE Normal -64 80 -32 80",
+            "LINE Normal -48 28 -48 36",
+            "LINE Normal -52 32 -44 32",
+            "LINE Normal -52 80 -44 80",
+            "LINE Normal 0 72 0 40",
+            "LINE Normal 0 40 -8 52",
+            "LINE Normal 0 40 8 52",
+        ],
         "diode": [
             "LINE Normal 0 0 0 24",
             "LINE Normal -28 24 28 24",
@@ -246,7 +277,12 @@ def asy_text(profile: ComponentProfile) -> str:
         lines.append(_line("SYMATTR", "Prefix", profile.electrical_prefix))
     lines.append(_line("SYMATTR", "Value", profile.default_value))
     for pin in profile.pins:
-        lines.append(_line("PIN", pin.x, pin.y, pin.justification, 8))
+        # Pin direction is meaningful to the deterministic router, but native
+        # LTspice also draws that token as a pin label when emitted here.  The
+        # generated symbols already carry the electrical PinName/SpiceOrder;
+        # hide the visual pin name so it cannot collide with the symbol or its
+        # reference/value windows.
+        lines.append(_line("PIN", pin.x, pin.y, "NONE", 0))
         lines.append(_line("PINATTR", "PinName", pin.name))
         lines.append(_line("PINATTR", "SpiceOrder", pin.number))
     return "\n".join(lines) + "\n"
@@ -369,7 +405,16 @@ def write_asc(
 
     placed_list = list(placed)
     segments = list(wire_segments)
-    flags_list = list(flags)
+    flags_by_native_anchor: dict[tuple[str, int, int], _FlagLike] = {}
+    for flag in flags:
+        # A pseudo GND component can intentionally share the same native
+        # terminal anchor as a physical ground lead.  Repeating an identical
+        # FLAG has no electrical meaning and makes LTspice draw stacked ground
+        # glyphs, so write that native anchor once. Different names at the
+        # same coordinate are deliberately retained: they expose a real short
+        # to the deterministic validators instead of being hidden here.
+        flags_by_native_anchor.setdefault((flag.name, flag.point.x, flag.point.y), flag)
+    flags_list = list(flags_by_native_anchor.values())
     profiles = [item.component.profile for item in placed_list]
     symbol_assets = write_symbol_assets(project_dir, profiles)
     model_asset = write_model_library(project_dir, profiles)

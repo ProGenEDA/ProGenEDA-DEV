@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import re
 import shlex
@@ -14,7 +15,7 @@ from typing import Any, Callable, Iterable
 
 from .component_placer import place_components
 from .component_selector import select_components
-from .directive_validator import translate_voltage_trace_labels, validate_analysis_references
+from .directive_validator import analysis_voltage_trace_nodes, translate_voltage_trace_labels, validate_analysis_references
 from .final_validator import build_final_validation
 from .input_adapter import canonicalize_source, write_json
 from .ltspice_asc_writer import write_asc
@@ -23,6 +24,13 @@ from .native_pin_mapper import translate_circuit_pins
 from .netlist_validator import validate_native_netlist
 from .output_packager import package_output
 from .simulation_validator import OracleCommand, run_external_oracle, simulation_not_requested
+from .timing_contract import (
+    AnimationBudgetExceeded,
+    AnimationTimingWatchdog,
+    HARD_FAILURE_MESSAGE,
+    OVERDUE_MESSAGE,
+    validate_animation_budget_seconds,
+)
 
 
 EXECUTABLE_SCHEMA = "progen-ltspice-executable-run/v0.1"
@@ -41,8 +49,8 @@ PROGRESS_POLICY = {
     "download_visibility": "only_after_package_artifacts_completed",
     "overdue_notice_at_animation_multiplier": 1,
     "hard_failure_at_animation_multiplier": 2,
-    "overdue_message": "Taking longer than expected—please hold on.",
-    "hard_failure_message": "Generation took longer than allowed time. Please try a simpler circuit.",
+    "overdue_message": OVERDUE_MESSAGE,
+    "hard_failure_message": HARD_FAILURE_MESSAGE,
 }
 
 
@@ -94,12 +102,54 @@ def _source_files(source: Path) -> list[Path]:
     raise ValueError(f"No JSON source input found at {source}.")
 
 
+def parse_oracle_command(value: str) -> list[str]:
+    """Parse the CLI oracle prefix with safe environment/home expansion.
+
+    The command is passed directly to ``subprocess`` (never through a shell),
+    so documented values such as ``WINEPREFIX=$HOME/...`` need deterministic
+    expansion here.  Expand only token values; shell operators remain inert.
+    """
+
+    expanded: list[str] = []
+    for token in shlex.split(value):
+        token = os.path.expandvars(token)
+        assignment = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", token)
+        if assignment:
+            token = f"{assignment.group(1)}={os.path.expanduser(assignment.group(2))}"
+        else:
+            token = os.path.expanduser(token)
+        expanded.append(token)
+    return expanded
+
+
+def parse_animation_budget_seconds(value: str) -> float:
+    """Argparse adapter for the explicitly supplied frontend animation budget."""
+
+    try:
+        budget = validate_animation_budget_seconds(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+    assert budget is not None
+    return budget
+
+
 def _event(callback: Callable[[dict[str, Any]], None] | None, **payload: Any) -> None:
     if callback is not None:
         callback(payload)
 
 
-def _stage(callback: Callable[[dict[str, Any]], None] | None, circuit_id: str, stage: str, percent: int, state: str, **extra: Any) -> None:
+def _stage(
+    callback: Callable[[dict[str, Any]], None] | None,
+    circuit_id: str,
+    stage: str,
+    percent: int,
+    state: str,
+    *,
+    timing: AnimationTimingWatchdog | None = None,
+    **extra: Any,
+) -> None:
+    if timing is not None:
+        timing.set_active_stage(stage, percent)
     _event(
         callback,
         event="stage",
@@ -110,9 +160,17 @@ def _stage(callback: Callable[[dict[str, Any]], None] | None, circuit_id: str, s
         timestamp=datetime.now(timezone.utc).isoformat(),
         **extra,
     )
+    if timing is not None:
+        timing.checkpoint(f"{stage}:{state}")
 
 
-def _write_failure(run_dir: Path, source: Path, error: Exception) -> dict[str, Any]:
+def _write_failure(
+    run_dir: Path,
+    source: Path,
+    error: Exception,
+    *,
+    timing_evidence: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     failure_dir = run_dir / "failures" / _slug(source.stem)
     failure_dir.mkdir(parents=True, exist_ok=True)
     report = {
@@ -121,8 +179,68 @@ def _write_failure(run_dir: Path, source: Path, error: Exception) -> dict[str, A
         "ok": False,
         "error": str(error),
     }
+    if timing_evidence is not None:
+        report["timing"] = timing_evidence
     write_json(failure_dir / "failure.json", report)
     return report
+
+
+def _retract_user_artifact(
+    run_dir: Path,
+    artifacts: dict[str, Any] | None,
+    *,
+    output_id: str | None = None,
+) -> None:
+    """Remove a just-written download if its budget expires during packaging."""
+
+    root = run_dir.resolve()
+    raw_path: str | None = None
+    if artifacts:
+        user_project = artifacts.get("user_project")
+        if isinstance(user_project, dict) and isinstance(user_project.get("path"), str):
+            raw_path = user_project["path"]
+    if raw_path is None and output_id:
+        # ``output_id`` is reserved by this executable via ``_slug``. This
+        # fallback covers package_output failing after its user ZIP is written
+        # but before it can return a manifest to the caller.
+        raw_path = f"outputs/{_slug(output_id)}/user_project/PROGEN_LTSPICE_PROJECT.zip"
+    if raw_path is None:
+        return
+    candidate = (root / raw_path).resolve()
+    try:
+        candidate.relative_to(root)
+    except ValueError:
+        return
+    candidate.unlink(missing_ok=True)
+    manifest = candidate.parent.parent / "output_manifest.json"
+    if manifest.is_file():
+        manifest.unlink()
+
+
+def _oracle_with_timing_deadline(
+    oracle: OracleCommand | None,
+    timing: AnimationTimingWatchdog | None,
+) -> OracleCommand | None:
+    """Cap every optional oracle subprocess at the remaining 2× budget."""
+
+    if oracle is None or timing is None or not timing.enabled:
+        return oracle
+    timing.checkpoint("optional_simulation:before_oracle")
+    remaining = timing.remaining_until_hard_failure()
+    if remaining is None:
+        return oracle
+    if remaining <= 0:
+        # ``checkpoint`` above raises once 2× has elapsed. This defensive
+        # branch keeps the contract intact if a custom clock changes between
+        # the two calls.
+        timing.checkpoint("optional_simulation:hard_deadline")
+        raise AnimationBudgetExceeded(timing.evidence())
+    return OracleCommand(
+        command=oracle.command,
+        timeout_seconds=oracle.timeout_seconds,
+        path_style=oracle.path_style,
+        deadline_monotonic=time.monotonic() + remaining,
+    )
 
 
 def generate_one(
@@ -133,14 +251,25 @@ def generate_one(
     oracle: OracleCommand | None,
     reserved_artifact_ids: set[str] | None = None,
     event_callback: Callable[[dict[str, Any]], None] | None = None,
+    timing: AnimationTimingWatchdog | None = None,
 ) -> dict[str, Any]:
     """Run the whole deterministic backend for one canonical/loose JSON file."""
 
     start = time.monotonic()
     temporary_id = source.stem
-    _stage(event_callback, temporary_id, "canonicalize_input", 1, "started", message="Validating shared ProGenEDA JSON.")
+    _stage(
+        event_callback,
+        temporary_id,
+        "canonicalize_input",
+        1,
+        "started",
+        timing=timing,
+        message="Validating shared ProGenEDA JSON.",
+    )
     circuit, input_report, original = canonicalize_source(source, routing_mode=routing_mode)
     circuit_id = str(circuit.get("circuit_id") or temporary_id)
+    if timing is not None:
+        timing.set_circuit_id(circuit_id)
     artifact_id = _reserve_artifact_id(circuit_id, source, reserved_artifact_ids if reserved_artifact_ids is not None else set())
     base_dir = run_dir / "generation" / artifact_id
     stage_dir = base_dir / "internal"
@@ -149,12 +278,36 @@ def generate_one(
     project_dir.mkdir(parents=True, exist_ok=True)
     write_json(stage_dir / "main-input-canonical.json", circuit)
     write_json(stage_dir / "input-adapter-report.json", input_report)
-    _stage(event_callback, circuit_id, "canonicalize_input", 8, "completed", message="Canonical circuit JSON is ready.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "canonicalize_input",
+        8,
+        "completed",
+        timing=timing,
+        message="Canonical circuit JSON is ready.",
+    )
 
-    _stage(event_callback, circuit_id, "select_components", 10, "started", message="Resolving LTspice symbols, pins, models, and safe fields.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "select_components",
+        10,
+        "started",
+        timing=timing,
+        message="Resolving LTspice symbols, pins, models, and safe fields.",
+    )
     selected, selection_report = select_components(circuit)
     write_json(stage_dir / "component-selection.json", selection_report)
-    _stage(event_callback, circuit_id, "select_components", 20, "completed", message="Component profiles resolved.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "select_components",
+        20,
+        "completed",
+        timing=timing,
+        message="Component profiles resolved.",
+    )
 
     raw_directives = list(circuit.get("spice_directives", [])) if isinstance(circuit.get("spice_directives"), list) else []
     project = circuit.get("project")
@@ -173,21 +326,65 @@ def generate_one(
     write_json(stage_dir / "native-pin-translation.json", pin_mapper_report)
     write_json(stage_dir / "main-input-native-pins.json", native_circuit)
 
-    _stage(event_callback, circuit_id, "place_components", 22, "started", message="Placing native LTspice symbols on the 16-unit grid.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "place_components",
+        22,
+        "started",
+        timing=timing,
+        message="Placing native LTspice symbols on the 16-unit grid.",
+    )
     placed, placement_report = place_components(native_circuit, selected)
     write_json(stage_dir / "placement.json", placement_report)
-    _stage(event_callback, circuit_id, "place_components", 34, "completed", message="Placement contract generated.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "place_components",
+        34,
+        "completed",
+        timing=timing,
+        message="Placement contract generated.",
+    )
 
-    _stage(event_callback, circuit_id, "plan_connectivity", 36, "started", message="Planning orthogonal wires and safe terminal labels.")
-    wire_plan = build_wire_plan(native_circuit, placed)
+    _stage(
+        event_callback,
+        circuit_id,
+        "plan_connectivity",
+        36,
+        "started",
+        timing=timing,
+        message="Planning orthogonal wires and safe terminal labels.",
+    )
+    wire_plan = build_wire_plan(
+        native_circuit,
+        placed,
+        force_terminal_nets=analysis_voltage_trace_nodes(directives),
+    )
     wire_plan_data = wire_plan.as_dict()
     write_json(stage_dir / "wire-plan.json", wire_plan_data)
-    _stage(event_callback, circuit_id, "plan_connectivity", 48, "completed", message="Native connectivity plan generated.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "plan_connectivity",
+        48,
+        "completed",
+        timing=timing,
+        message="Native connectivity plan generated.",
+    )
 
     native_directives, directive_net_report = translate_voltage_trace_labels(directives, wire_plan.label_map)
     write_json(stage_dir / "analysis-net-label-translation.json", directive_net_report)
 
-    _stage(event_callback, circuit_id, "write_native_project", 50, "started", message="Writing deterministic ASC, ASY, and model assets.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "write_native_project",
+        50,
+        "started",
+        timing=timing,
+        message="Writing deterministic ASC, ASY, and model assets.",
+    )
     writer_result = write_asc(
         project_dir=project_dir,
         project_name=str(native_circuit.get("project", {}).get("name") or native_circuit.get("circuit_name") or circuit_id),
@@ -198,9 +395,25 @@ def generate_one(
     )
     writer_report = writer_result.as_dict(project_dir)
     write_json(stage_dir / "native-writer-report.json", writer_report)
-    _stage(event_callback, circuit_id, "write_native_project", 63, "completed", message="Project-local LTspice files written.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "write_native_project",
+        63,
+        "completed",
+        timing=timing,
+        message="Project-local LTspice files written.",
+    )
 
-    _stage(event_callback, circuit_id, "validate_native_project", 65, "started", message="Reparsing ASC and ASY files and checking exact net membership.")
+    _stage(
+        event_callback,
+        circuit_id,
+        "validate_native_project",
+        65,
+        "started",
+        timing=timing,
+        message="Reparsing ASC and ASY files and checking exact net membership.",
+    )
     native_report = validate_native_netlist(
         asc_path=writer_result.asc_path,
         project_dir=project_dir,
@@ -218,14 +431,36 @@ def generate_one(
         "validate_native_project",
         79,
         "completed" if native_report.get("ok") else "failed",
+        timing=timing,
         message="Native connectivity validation " + ("passed." if native_report.get("ok") else "failed."),
     )
 
-    _stage(event_callback, circuit_id, "optional_simulation", 81, "started", message="Recording optional LTspice oracle status.")
-    simulation_report = run_external_oracle(writer_result.asc_path, oracle=oracle) if oracle else simulation_not_requested()
+    _stage(
+        event_callback,
+        circuit_id,
+        "optional_simulation",
+        81,
+        "started",
+        timing=timing,
+        message="Recording optional LTspice oracle status.",
+    )
+    timed_oracle = _oracle_with_timing_deadline(oracle, timing)
+    simulation_report = (
+        run_external_oracle(writer_result.asc_path, oracle=timed_oracle, selected=selected, wire_plan=wire_plan)
+        if timed_oracle
+        else simulation_not_requested()
+    )
     write_json(stage_dir / "simulation-report.json", simulation_report)
     simulation_state = "failed" if simulation_report.get("status") in {"failed", "timeout"} else "completed"
-    _stage(event_callback, circuit_id, "optional_simulation", 89, simulation_state, message=str(simulation_report.get("status")))
+    _stage(
+        event_callback,
+        circuit_id,
+        "optional_simulation",
+        89,
+        simulation_state,
+        timing=timing,
+        message=str(simulation_report.get("status")),
+    )
 
     final_report = build_final_validation(
         input_report=input_report,
@@ -237,42 +472,85 @@ def generate_one(
     write_json(stage_dir / "final-validation-report.json", final_report)
     output_artifacts: dict[str, Any] | None = None
     if final_report["ok"]:
-        _stage(event_callback, circuit_id, "package_artifacts", 91, "started", message="Creating user and internal artifact archives.")
-        output_artifacts = package_output(
-            run_dir=run_dir,
-            circuit_id=circuit_id,
-            output_id=artifact_id,
-            project_dir=project_dir,
-            asc_path=writer_result.asc_path,
-            original_input=original,
-            stage_json={
-                "main-input-canonical": circuit,
-                "main-input-native-pins": native_circuit,
-                "input-adapter-report": input_report,
-                "component-selection": selection_report,
-                "native-pin-translation": pin_mapper_report,
-                "analysis-reference-validation": analysis_reference_report,
-                "analysis-net-label-translation": directive_net_report,
-                "placement": placement_report,
-                "wire-plan": wire_plan_data,
-                "native-writer-report": writer_report,
-                "native-netlist-validation-report": native_report,
-                "simulation-report": simulation_report,
-                "final-validation-report": final_report,
-            },
+        _stage(
+            event_callback,
+            circuit_id,
+            "package_artifacts",
+            91,
+            "started",
+            timing=timing,
+            message="Creating user and internal artifact archives.",
         )
-        write_json(stage_dir / "output-artifacts.json", output_artifacts)
-        _stage(event_callback, circuit_id, "package_artifacts", 100, "completed", message="Validated user project archive is ready.")
+        timing_report = timing.evidence() if timing is not None and timing.enabled else None
+        if timing_report is not None:
+            write_json(stage_dir / "timing-contract-report.json", timing_report)
+        stage_json = {
+            "main-input-canonical": circuit,
+            "main-input-native-pins": native_circuit,
+            "input-adapter-report": input_report,
+            "component-selection": selection_report,
+            "native-pin-translation": pin_mapper_report,
+            "analysis-reference-validation": analysis_reference_report,
+            "analysis-net-label-translation": directive_net_report,
+            "placement": placement_report,
+            "wire-plan": wire_plan_data,
+            "native-writer-report": writer_report,
+            "native-netlist-validation-report": native_report,
+            "simulation-report": simulation_report,
+            "final-validation-report": final_report,
+        }
+        if timing_report is not None:
+            stage_json["timing-contract"] = timing_report
+        try:
+            output_artifacts = package_output(
+                run_dir=run_dir,
+                circuit_id=circuit_id,
+                output_id=artifact_id,
+                project_dir=project_dir,
+                asc_path=writer_result.asc_path,
+                original_input=original,
+                stage_json=stage_json,
+            )
+            write_json(stage_dir / "output-artifacts.json", output_artifacts)
+            if timing is not None:
+                timing.approve_artifact_release("package_artifacts:release_gate")
+            _stage(
+                event_callback,
+                circuit_id,
+                "package_artifacts",
+                100,
+                "completed",
+                message="Validated user project archive is ready.",
+            )
+        except Exception:
+            _retract_user_artifact(run_dir, output_artifacts, output_id=artifact_id)
+            output_artifacts = None
+            (stage_dir / "output-artifacts.json").unlink(missing_ok=True)
+            raise
     else:
-        _stage(event_callback, circuit_id, "package_artifacts", 100, "skipped", message="No user archive is created when deterministic validation fails.")
+        _stage(
+            event_callback,
+            circuit_id,
+            "package_artifacts",
+            100,
+            "skipped",
+            timing=timing,
+            message="No user archive is created when deterministic validation fails.",
+        )
         _stage(
             event_callback,
             circuit_id,
             "pipeline",
             100,
             "failed",
+            timing=timing,
             message="; ".join(final_report.get("errors", [])) or "Deterministic validation failed.",
         )
+    timing_report: dict[str, Any] | None = None
+    if timing is not None and timing.enabled:
+        timing.stop()
+        timing_report = timing.evidence()
+        write_json(stage_dir / "timing-contract-report.json", timing_report)
     result = {
         "schema": EXECUTABLE_SCHEMA,
         "circuit_id": circuit_id,
@@ -285,6 +563,8 @@ def generate_one(
         "final_validation": final_report,
         "output_artifacts": output_artifacts,
     }
+    if timing_report is not None:
+        result["timing"] = timing_report
     write_json(base_dir / "result.json", result)
     return result
 
@@ -299,9 +579,23 @@ def run_executable(
     oracle_timeout_seconds: int = 90,
     oracle_path_style: str = "native",
     event_callback: Callable[[dict[str, Any]], None] | None = None,
+    animation_budget_seconds: float | None = None,
+    timing_clock: Callable[[], float] | None = None,
 ) -> dict[str, Any]:
+    animation_budget_seconds = validate_animation_budget_seconds(animation_budget_seconds)
     run_dir = _create_run_dir(output_root, label)
     _event(event_callback, event="progress_policy", policy=PROGRESS_POLICY, timestamp=datetime.now(timezone.utc).isoformat())
+    if animation_budget_seconds is not None:
+        _event(
+            event_callback,
+            event="timing_policy",
+            schema="progen-ltspice-animation-timing/v0.1",
+            animation_budget_seconds=animation_budget_seconds,
+            hard_failure_after_seconds=animation_budget_seconds * 2,
+            overdue_message=OVERDUE_MESSAGE,
+            hard_failure_message=HARD_FAILURE_MESSAGE,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+        )
     oracle = OracleCommand(tuple(oracle_command), oracle_timeout_seconds, oracle_path_style) if oracle_command else None
     results: list[dict[str, Any]] = []
     try:
@@ -313,6 +607,14 @@ def run_executable(
         files = []
     reserved_artifact_ids: set[str] = set()
     for file in files:
+        timing = AnimationTimingWatchdog(
+            animation_budget_seconds=animation_budget_seconds,
+            circuit_id=file.stem,
+            event_callback=event_callback,
+            clock=timing_clock or time.monotonic,
+            use_background_timers=timing_clock is None,
+        )
+        timing.start()
         try:
             result = generate_one(
                 file,
@@ -321,10 +623,22 @@ def run_executable(
                 oracle=oracle,
                 reserved_artifact_ids=reserved_artifact_ids,
                 event_callback=event_callback,
+                timing=timing,
             )
+        except AnimationBudgetExceeded as exc:
+            timing.stop()
+            result = _write_failure(run_dir, file, exc, timing_evidence=timing.evidence())
         except Exception as exc:
-            result = _write_failure(run_dir, file, exc)
+            timing.stop()
+            result = _write_failure(
+                run_dir,
+                file,
+                exc,
+                timing_evidence=timing.evidence() if timing.enabled else None,
+            )
             _event(event_callback, event="stage", circuit_id=file.stem, stage="pipeline", percent=100, state="failed", message=str(exc))
+        else:
+            timing.stop()
         results.append(result)
     summary = {
         "schema": EXECUTABLE_SCHEMA,
@@ -338,6 +652,12 @@ def run_executable(
         "ok": bool(results) and all(item.get("ok") for item in results),
         "results": results,
     }
+    if animation_budget_seconds is not None:
+        summary["animation_timing"] = {
+            "enabled": True,
+            "animation_budget_seconds": animation_budget_seconds,
+            "hard_failure_after_seconds": animation_budget_seconds * 2,
+        }
     write_json(run_dir / "run_manifest.json", summary)
     (run_dir / "README.md").write_text(
         "# ProGenEDA LTspice executable run\n\n"
@@ -357,6 +677,11 @@ def main() -> None:
     parser.add_argument("--oracle-command", help="Optional shell-style LTspice command prefix; the executable adds -netlist and the ASC path.")
     parser.add_argument("--oracle-timeout", type=int, default=90)
     parser.add_argument("--oracle-path-style", choices=("native", "wine_z"), default="native", help="How the optional oracle receives generated ASC paths.")
+    parser.add_argument(
+        "--animation-budget-seconds",
+        type=parse_animation_budget_seconds,
+        help="Optional frontend animation duration. Emits an overdue event at 1× and rejects user artifacts at 2×; no default is assumed.",
+    )
     parser.add_argument("--events", choices=("summary", "ndjson"), default="summary", help="Emit structured stage events for UI/API forwarding.")
     args = parser.parse_args()
 
@@ -369,10 +694,11 @@ def main() -> None:
         output_root=args.outdir,
         label=args.label,
         routing_mode=args.routing_mode,
-        oracle_command=shlex.split(args.oracle_command) if args.oracle_command else None,
+        oracle_command=parse_oracle_command(args.oracle_command) if args.oracle_command else None,
         oracle_timeout_seconds=args.oracle_timeout,
         oracle_path_style=args.oracle_path_style,
         event_callback=emit if args.events == "ndjson" else None,
+        animation_budget_seconds=args.animation_budget_seconds,
     )
     if args.events == "ndjson":
         emit({"event": "complete", "summary": summary})

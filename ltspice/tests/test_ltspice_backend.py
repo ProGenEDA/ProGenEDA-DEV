@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import tempfile
 import unittest
 import zipfile
@@ -287,6 +288,28 @@ class SafeNormalModeEditorTests(unittest.TestCase):
 
 
 class StaticPipelineAndPackagingTests(unittest.TestCase):
+    def test_relative_output_root_packages_an_accepted_project(self) -> None:
+        """The documented CLI default is relative, so its package paths must work."""
+
+        circuit = _static_circuit()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "relative-source.json"
+            source.write_text(json.dumps(circuit), encoding="utf-8")
+            previous_cwd = Path.cwd()
+            os.chdir(root)
+            try:
+                summary = run_executable(source, output_root=Path("relative-output"), label="relative")
+            finally:
+                os.chdir(previous_cwd)
+
+            self.assertTrue(summary["ok"], summary)
+            run_dir = root / summary["run_dir"]
+            artifacts = summary["results"][0]["output_artifacts"]
+            assert artifacts is not None
+            self.assertTrue((run_dir / artifacts["user_project"]["path"]).is_file())
+            self.assertTrue((run_dir / artifacts["internal_bundle"]["path"]).is_file())
+
     def test_static_pipeline_reparses_native_assets_and_separates_archives(self) -> None:
         circuit = _static_circuit()
         with tempfile.TemporaryDirectory() as temp_dir:

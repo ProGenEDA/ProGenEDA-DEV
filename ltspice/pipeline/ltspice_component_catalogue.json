@@ -135,6 +135,46 @@
       "metadata_fields": [],
       "model_key": null
     },
+    "VCVS": {
+      "aliases": ["E", "VOLTAGE_CONTROLLED_VOLTAGE_SOURCE", "VOLTAGE_DEPENDENT_VOLTAGE_SOURCE"],
+      "symbol": "progeneda_vcvs",
+      "symbol_template": "controlled_voltage_source",
+      "reference_prefix": "E",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "OUT+", "role": "output_positive", "x": 0, "y": 16, "justification": "Top"},
+        {"number": "2", "name": "OUT-", "role": "output_negative", "x": 0, "y": 96, "justification": "Bottom"},
+        {"number": "3", "name": "CTRL+", "role": "control_positive", "x": -64, "y": 32, "justification": "Left"},
+        {"number": "4", "name": "CTRL-", "role": "control_negative", "x": -64, "y": 80, "justification": "Left"}
+      ],
+      "default_value": "1",
+      "value_rule": "voltage_gain",
+      "editable_parameters": [],
+      "metadata_fields": [],
+      "model_key": null,
+      "canonical_pin_map": {"1": "1", "2": "2", "3": "3", "4": "4", "+": "1", "-": "2", "OUT+": "1", "OUT-": "2", "CTRL+": "3", "CTRL-": "4", "CONTROL+": "3", "CONTROL-": "4", "P": "3", "N": "4"},
+      "native_semantics": {"netlist": "Exxx n+ n- nc+ nc- gain", "gain": "dimensionless voltage gain", "oracle_evidence": "LTspice 26 built-in e.asy declares SpiceOrder 1=output+, 2=output-, 3=control+, 4=control-."}
+    },
+    "VCCS": {
+      "aliases": ["G", "VOLTAGE_CONTROLLED_CURRENT_SOURCE", "VOLTAGE_DEPENDENT_CURRENT_SOURCE"],
+      "symbol": "progeneda_vccs",
+      "symbol_template": "controlled_current_source",
+      "reference_prefix": "G",
+      "support_state": "native_simulation",
+      "pins": [
+        {"number": "1", "name": "OUT+", "role": "output_positive", "x": 0, "y": 16, "justification": "Top"},
+        {"number": "2", "name": "OUT-", "role": "output_negative", "x": 0, "y": 96, "justification": "Bottom"},
+        {"number": "3", "name": "CTRL+", "role": "control_positive", "x": -64, "y": 32, "justification": "Left"},
+        {"number": "4", "name": "CTRL-", "role": "control_negative", "x": -64, "y": 80, "justification": "Left"}
+      ],
+      "default_value": "1m",
+      "value_rule": "transconductance",
+      "editable_parameters": [],
+      "metadata_fields": [],
+      "model_key": null,
+      "canonical_pin_map": {"1": "1", "2": "2", "3": "3", "4": "4", "+": "1", "-": "2", "OUT+": "1", "OUT-": "2", "CTRL+": "3", "CTRL-": "4", "CONTROL+": "3", "CONTROL-": "4", "P": "3", "N": "4"},
+      "native_semantics": {"netlist": "Gxxx n+ n- nc+ nc- gain", "gain": "transconductance in siemens", "oracle_evidence": "LTspice 26 built-in g.asy declares SpiceOrder 1=output+, 2=output-, 3=control+, 4=control-."}
+    },
     "D": {
       "aliases": ["DIODE", "DIODE_AXIAL", "GENERIC_DIODE"],
       "symbol": "progeneda_diode",

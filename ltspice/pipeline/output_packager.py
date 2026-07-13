@@ -66,7 +66,13 @@ def package_output(
 ) -> dict[str, Any]:
     """Package only openable project assets for users; retain evidence privately."""
 
-    output_dir, safe_circuit_id = _contained_output_dir(run_dir, output_id)
+    # The public CLI intentionally accepts a relative ``--outdir``.  Resolve
+    # the immutable run once so containment and manifest-relative paths share
+    # the same absolute root.  Without this, an absolute ZIP path could not be
+    # made relative to a still-relative run directory after an otherwise valid
+    # CLI generation.
+    run_root = run_dir.resolve()
+    output_dir, safe_circuit_id = _contained_output_dir(run_root, output_id)
     user_zip = output_dir / "user_project" / USER_ZIP_NAME
     internal_zip = output_dir / "internal" / INTERNAL_ZIP_NAME
     allowed = {".asc", ".asy", ".lib"}
@@ -100,14 +106,14 @@ def package_output(
         "serial": None,
         "serial_note": "No LTspice website service code is reserved yet; this package intentionally does not invent one.",
         "user_project": {
-            "path": str(user_zip.relative_to(run_dir)),
+            "path": str(user_zip.relative_to(run_root)),
             "file_name": user_zip.name,
             "sha256": _sha(user_zip),
             "size_bytes": user_zip.stat().st_size,
             "visibility": "user_downloadable",
         },
         "internal_bundle": {
-            "path": str(internal_zip.relative_to(run_dir)),
+            "path": str(internal_zip.relative_to(run_root)),
             "file_name": internal_zip.name,
             "sha256": _sha(internal_zip),
             "size_bytes": internal_zip.stat().st_size,

@@ -74,6 +74,30 @@ def normalize_spice_number(value: object, *, field: str, capacitance: bool = Fal
     return f"{number}{scale.lower() if scale.lower() == 'meg' else scale}"
 
 
+def normalize_voltage_gain(value: object, *, field: str) -> str:
+    """Normalize an E-source gain without silently accepting a physical unit.
+
+    A VCVS gain is a voltage ratio.  LTspice's primitive consumes a bare
+    scalar, so accepting a value such as ``2V`` and stripping the unit would
+    make a normal-mode edit look more precise than it is.  Keep this field
+    intentionally narrower than a generic passive number.
+    """
+
+    number, scale, unit = _numeric_parts(value, field=field)
+    if unit:
+        raise ValueValidationError(f"{field} is a dimensionless V/V gain and cannot include unit {unit!r}.")
+    return f"{number}{scale.lower() if scale.lower() == 'meg' else scale}"
+
+
+def normalize_transconductance(value: object, *, field: str) -> str:
+    """Normalize a G-source transconductance to LTspice's bare siemens scalar."""
+
+    number, scale, unit = _numeric_parts(value, field=field)
+    if unit.lower() not in {"", "s", "siemens"}:
+        raise ValueValidationError(f"{field} is a transconductance and accepts only a bare value or an S/siemens suffix.")
+    return f"{number}{scale.lower() if scale.lower() == 'meg' else scale}"
+
+
 def normalize_source_expression(value: object, *, field: str) -> str:
     text = _plain_text(value, field=field)
     uppercase = text.upper()
@@ -124,6 +148,10 @@ def validate_component_value(profile: ComponentProfile, value: object) -> str:
         return normalize_spice_number(raw, field=f"{profile.kind}.value", capacitance=True)
     if profile.value_rule == "inductance":
         return normalize_spice_number(raw, field=f"{profile.kind}.value")
+    if profile.value_rule == "voltage_gain":
+        return normalize_voltage_gain(raw, field=f"{profile.kind}.value")
+    if profile.value_rule == "transconductance":
+        return normalize_transconductance(raw, field=f"{profile.kind}.value")
     if profile.value_rule == "source_expression":
         return normalize_source_expression(raw, field=f"{profile.kind}.value")
     if profile.value_rule == "model_name":

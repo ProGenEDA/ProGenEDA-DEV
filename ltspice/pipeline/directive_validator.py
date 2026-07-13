@@ -272,6 +272,36 @@ def validate_analysis_references(
     }
 
 
+def analysis_voltage_trace_nodes(values: Iterable[object]) -> list[str]:
+    """Return logical nodes named by safe ``V(...)`` analysis expressions.
+
+    A direct wire with no terminal flag has no stable user-visible name in an
+    LTspice netlist (the simulator may choose ``N001``).  The wire planner
+    uses this small, already-validated set to retain native labels for any
+    node that an analysis card must address.  ``0`` and ``*`` are LTspice
+    built-ins rather than logical circuit labels and therefore need no flag.
+    """
+
+    directives, _repairs = validate_analysis_directives(values)
+    trace = re.compile(
+        r"\bV\((?P<body>[A-Za-z0-9_#*.+-]+(?:,[A-Za-z0-9_#*.+-]+)?)\)",
+        re.IGNORECASE,
+    )
+    nodes: list[str] = []
+    seen: set[str] = set()
+    for directive in directives:
+        for match in trace.finditer(directive):
+            for raw_node in match.group("body").split(","):
+                node = raw_node.strip()
+                if node in {"*", "0"}:
+                    continue
+                key = node.upper()
+                if key not in seen:
+                    seen.add(key)
+                    nodes.append(node)
+    return nodes
+
+
 def translate_voltage_trace_labels(values: Iterable[object], logical_to_native: dict[str, str]) -> tuple[list[str], dict[str, Any]]:
     """Rewrite vetted ``V(logical_net)`` traces to native FLAG label names.
 

@@ -1,6 +1,6 @@
 # Local LTspice 26 Oracle Validation
 
-Date: 2026-07-13 (Asia/Karachi)
+Date: 2026-07-14 (Asia/Karachi)
 
 The user-authorized local install is LTspice 26.0.2.1 under the isolated Wine
 prefix:
@@ -28,7 +28,9 @@ env WINEPREFIX=~/.local/share/progeneda-ltspice-wine WINEDEBUG=-all \
 For an allowed analysis card it additionally invokes `-b`. Netlisting and
 batch execution are both required for an oracle `passed` result. The simulator
 log is rejected for syntax/fatal errors, unknown parameters, and ignored model
-parameters.
+parameters. The exported netlist is additionally compared against the planned
+native endpoint partition; auto-named direct-wire nodes such as `N001` are
+checked by connectivity, not guessed label spelling.
 
 ## Evidence exercised
 
@@ -39,8 +41,18 @@ parameters.
 - A generated generic `I` current-source–R–GND `.op` project passed after the
   adapter began restoring LTspice-supported aliases that the shared KiCad fixer
   does not recognize.
-- The diode IV and RC transient JSON fixtures pass the static pipeline; their
-  native analysis cards and model/include policy are independently reparsed.
+- Seven generated fixtures were exercised through `-netlist` and `-b`:
+  common-emitter NPN `.op`, generic-current-source `.op`, diode IV `.dc`,
+  terminal-style diode IV `.dc`, NMOS pulse `.tran`, RC low-pass `.ac`, and a
+  voltage-controlled-switch `.tran`. All ultimately passed after two real
+  cross-stage repairs: V(net) traces force a stable native FLAG label, and
+  project-local wrapper identities use LTspice's `X§REF` spelling.
+- Native VCVS (`E`) and VCCS (`G`) output was also accepted by LTspice 26 in
+  an `.op` fixture using all four native terminals.
+- A generated RC transient project was opened interactively in LTspice 26
+  under an isolated reflinked Wine prefix and Xvfb. The rendered schematic was
+  visually inspected after the automatic placement fix: readable R0 labels,
+  source–resistor–capacitor L layout, and real ground-pin anchors.
 
 No generated waveform data or executable output is committed: unit tests use
 temporary directories, while this document records the repeatable command

@@ -56,6 +56,7 @@ class WirePlan:
     virtual_anchors: tuple[VirtualNativeAnchor, ...]
     expected_native_nets: dict[str, list[str]]
     label_map: dict[str, str]
+    forced_terminal_nets: tuple[str, ...]
     rejected_wire_routes: tuple[dict[str, Any], ...]
 
     def as_dict(self) -> dict[str, Any]:
@@ -71,6 +72,7 @@ class WirePlan:
             "virtual_native_anchors": [item.as_dict() for item in self.virtual_anchors],
             "expected_native_nets": self.expected_native_nets,
             "logical_to_native_label": self.label_map,
+            "forced_terminal_nets": list(self.forced_terminal_nets),
             "rejected_wire_routes": list(self.rejected_wire_routes),
         }
 
@@ -172,7 +174,12 @@ def _direct_route(first: Point, second: Point, existing: list[Segment], forbidde
     return None
 
 
-def build_wire_plan(circuit: dict[str, Any], placed: list[PlacedComponent]) -> WirePlan:
+def build_wire_plan(
+    circuit: dict[str, Any],
+    placed: list[PlacedComponent],
+    *,
+    force_terminal_nets: Iterable[str] = (),
+) -> WirePlan:
     """Build an inspectable physical-wire/terminal hybrid plan.
 
     Two-pin non-rail nets receive a direct orthogonal wire only when it is
@@ -182,6 +189,7 @@ def build_wire_plan(circuit: dict[str, Any], placed: list[PlacedComponent]) -> W
     """
 
     nets = _logical_nets(circuit)
+    forced_terminal_names = {str(name).strip().upper() for name in force_terminal_nets if str(name).strip()}
     requested_mode = str(circuit.get("routing", {}).get("mode", "combination"))
     if requested_mode not in {"wire", "terminal", "combination"}:
         requested_mode = "combination"
@@ -223,13 +231,30 @@ def build_wire_plan(circuit: dict[str, Any], placed: list[PlacedComponent]) -> W
             else:
                 native_members.append(endpoint)
         expected_native[net] = native_members
-        can_try_direct = requested_mode in {"wire", "combination"} and len(physical) == 2 and not _is_ground(net)
+        force_terminal = net.upper() in forced_terminal_names
+        can_try_direct = (
+            requested_mode in {"wire", "combination"}
+            and len(physical) == 2
+            and not _is_ground(net)
+            and not force_terminal
+        )
         if can_try_direct:
             route = _direct_route(endpoint_points[physical[0]], endpoint_points[physical[1]], segments, all_pin_points - {endpoint_points[physical[0]], endpoint_points[physical[1]]})
             if route is not None:
                 segments.extend(route)
                 continue
             rejected.append({"net": net, "reason": "direct_route_intersects_existing_geometry", "fallback": "terminal_flags"})
+        elif force_terminal and physical:
+            # An analysis V(net) expression must name a native LTspice node.
+            # Direct wires lack a persisted label and netlist as simulator
+            # generated Nxxx nodes, so retain deterministic terminal flags.
+            rejected.append(
+                {
+                    "net": net,
+                    "reason": "analysis_voltage_trace_requires_stable_native_label",
+                    "fallback": "terminal_flags",
+                }
+            )
         elif requested_mode == "wire" and physical:
             rejected.append({"net": net, "reason": "strict_wire_mode_requires_safe_tree_router", "fallback": "terminal_flags"})
         for endpoint in physical:
@@ -257,5 +282,6 @@ def build_wire_plan(circuit: dict[str, Any], placed: list[PlacedComponent]) -> W
         virtual_anchors=tuple(virtual),
         expected_native_nets=expected_native,
         label_map=label_map,
+        forced_terminal_nets=tuple(net for net in nets if net.upper() in forced_terminal_names),
         rejected_wire_routes=tuple(rejected),
     )

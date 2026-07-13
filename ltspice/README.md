@@ -35,6 +35,19 @@ The internal bundle contains the original input, canonical JSON, selection,
 placement, wire plan, model resolution, parser output, and all validation
 reports. It must not be served to users.
 
+For a client that knows its animation duration, pass it explicitly instead of
+letting the backend guess:
+
+```bash
+PYTHONPATH=. python -m ltspice path/to/circuit.json \
+  --animation-budget-seconds 20 --events ndjson
+```
+
+This emits an overdue timing event at 20 seconds and, at 40 seconds, emits the
+required hard-failure event and suppresses the user archive. There is no
+default duration. The release gate is atomic: an archive is not announced
+until it, its internal manifest, and the timing check have all completed.
+
 ## Installed-LTspice oracle
 
 Static validation never requires LTspice. When an authorized local install is
@@ -63,6 +76,12 @@ PYTHONPATH=. python -m ltspice input.json \
 The oracle runs `-netlist` and, when an allowed analysis card exists, `-b`.
 An LTspice log that reports an unknown parameter/model parameter is a failed
 oracle result, not a warning that can be packaged as a pass.
+The command is never evaluated by a shell; `$HOME`/other environment variables
+and `~` are expanded token-by-token before it is invoked.
+When an export is available, the backend also compares LTspice's actual
+instance node partition against the planned native endpoints. This catches a
+simulator-visible short, split net, or pin-order mismatch even when the static
+ASC parser agrees with the writer.
 
 ## Safe editor contract
 
@@ -87,7 +106,10 @@ checked against selected components before static packaging.
 ## Supported initial slice
 
 Native primitive simulation: `R`, `C`, `C_ELEC`, `L`, `VDC`, `VSIN`,
-`VPULSE`, `I`, `FUSE` (a documented low-resistance approximation), and `GND`.
+`VPULSE`, `I`, `VCVS`/`E`, `VCCS`/`G`, `FUSE` (a documented low-resistance
+approximation), and `GND`. Controlled sources use the native four-terminal
+order `OUT+`, `OUT-`, `CTRL+`, `CTRL-`; normal-mode VCVS gain is dimensionless
+and VCCS transconductance accepts a bare siemens scalar (or an `S` suffix).
 
 Project-local model support: generic/named diode profiles, `LED`, `NPN`, `PNP`,
 `NMOS`, `PMOS`, `2N7000`, `BS170`, `SW`, `POT`, `OPAMP`, and `LM741`.
@@ -117,9 +139,10 @@ SpiceOrder rather than a display pin name or declaration order.
 The NDJSON stage events are the UI progress contract: they report actual
 started/completed/failed native stages, including validation and oracle status.
 The client must keep the download state hidden until `package_artifacts`
-completes; after its animation estimate elapses it should show “Taking longer
-than expected—please hold on”, and only surface “Generation took longer than
-allowed time. Please try a simpler circuit.” after its 2× timeout policy.
+completes. With an explicit animation budget it also receives real `timing`
+events: “Taking longer than expected—please hold on” at 1× and “Generation
+took longer than allowed time. Please try a simpler circuit.” at 2×. The
+oracle subprocesses are capped by the same remaining hard deadline.
 
 See [source_pack/README.md](source_pack/README.md) for provenance and the
 asset policy, [local LTspice 26 oracle evidence](docs/LTSPICE_26_ORACLE_VALIDATION.md),

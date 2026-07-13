@@ -11441,3 +11441,135 @@ Planned visible final response:
 > - Added deterministic JSON editing, profile-driven components, placement/routing, native ASC/ASY/LIB output, strict validation, and stage/progress events.
 > - Installed LTspice 26.0.2.1 locally in an isolated Wine prefix and verified real netlisting plus batch simulation.
 > - Added 24 passing backend tests and documented the local oracle setup.
+
+## 2026-07-14T01:15:47+05:00 — Continue LTspice generator and executable testing
+
+User message (verbatim):
+
+> # Context from my IDE setup:
+>
+> ## Active file: todo
+>
+> ## Active selection of the file:
+> the edit button u see is the json editor. as we know generator actually takes json, so even when ai is being used it is actually generating a json. so this edit, will be deterministic and will scan the json file for all the easily editable values, like values of components, their refrense names etc easier to edit things that wont break the circuit, obv this will keep a strong record of all the supported component for the software(currently being proteus and kicad), and what from their json can easily be edited, what are accepted values etc etc. this will allow user to make small changes. but in demo or admin mode, when clicked edit allow for a advance mode which will be locked for normal user. this will just show them the whole json in editable text form and they can edit it them fully.
+> offcourse it will after editing pass through strong validators and json tester(deterministic ones not AI) allowing for simple flawless edits(and i also realize here the current proteus is not the latest proteus and we will have to change it later, so rn donot allow this editng feature for proteus and keep this editor easily upgradeable for more components differnt softwares.). it wil like a Lab that pop ups on the screen. make sure it follows the patttern of the whole website, the plan black no shadeds etc etc.
+> and make sure the errors are properly represented, and while generating, try to get accurate stage information from the excutable to display. if u dont have it, u can look in kicad folder for pipeline and a github repo of mine called memory for proteus archietecture(obv but i realise rn the proteus we have currently embbed is not the same one in archietecure, but do it anyway for later when we have that) and make up those stages based on guess what will take how much time, and add in it if sometimes a generation ends up taking more then animation time, the message box in the top right corner actually should say that it is taking longer then expected plz hold on as user w8 at the end of animation where download box should appear, donot give empty or premature boxes if it is taking longer. only throw error if it is taking more then 2x the animation time. Then give clear error saying, generation took longer then allowed time. Plz try simpler circuit.
+> ## Open tabs:
+> - todo: todo
+>
+> ## My request for Codex:
+> continue build the main generator scripts and test generations by opening in installed LTspice
+
+Visible assistant response (verbatim):
+
+> I’m continuing the LTspice generator from the existing backend, then I’ll validate real generated projects in the installed LTspice environment rather than only relying on static checks. I’m also following the repository’s publish workflow so the tested work is preserved upstream.
+
+Files edited so far:
+
+- `context.md`
+
+Visible assistant responses (verbatim):
+
+> The existing 24-test suite is clean. I’m now exercising the actual CLI on representative source, passive, diode, and transistor circuits; I’ll use the executable results to decide which generator stage needs strengthening rather than expanding support speculatively.
+
+> The first real CLI run exposed a release-blocking path bug: static tests used absolute temporary paths, while the documented relative `--outdir` caused packaging to reject its own ZIP after LTspice completed. I’m fixing that path normalization and adding a regression before rerunning the same generated RC project.
+
+> Two more executable-only issues surfaced while broadening the fixtures: voltage-trace directives need real native labels, and the documented Wine command left `$HOME` literal. The trace fix is now covered; I’m making the CLI expand environment variables deliberately and adding an exported-netlist cross-check so LTspice’s own node connectivity must agree with the generated plan.
+
+## 2026-07-14T01:36:26+05:00 — User requested continuation
+
+User message (verbatim):
+
+> # Context from my IDE setup:
+>
+> ## Active file: todo
+>
+> ## Active selection of the file:
+> and make sure the errors are properly represented, and while generating, try to get accurate stage information from the excutable to display. if u dont have it, u can look in kicad folder for pipeline and a github repo of mine called memory for proteus archietecture(obv but i realise rn the proteus we have currently embbed is not the same one in archietecure, but do it anyway for later when we have that) and make up those stages based on guess what will take how much time, and add in it if sometimes a generation ends up taking more then animation time, the message box in the top right corner actually should say that it is taking longer then expected plz hold on as user w8 at the end of animation where download box should appear, donot give empty or premature boxes if it is taking longer. only throw error if it is taking more then 2x the animation time. Then give clear error saying, generation took longer then allowed time. Plz try simpler circuit.
+>
+> ## Open tabs:
+> - todo: todo
+>
+> ## My request for Codex:
+> continue
+
+Visible assistant response (verbatim):
+
+> Continuing. The real LTspice fixture suite is already catching cross-stage issues that static parsing cannot; the diode waveform case now opens/simulates successfully after the label fix, and I’m finishing the broader oracle and GUI-open checks before I package the next checkpoint.
+
+Files edited so far this continuation:
+
+- `context.md`
+
+## 2026-07-14T02:04:28+05:00 — LTspice continuation completed locally; pending scoped commit
+
+Visible assistant responses (verbatim):
+
+> The GUI check is now real, not just a batch process: LTspice opened and rendered the generated RC schematic in an isolated display. It exposed a visual placer issue—some default R90 two-pin symbols make attributes overlap—so I’m tightening that layout before treating the visual result as a release-quality artifact.
+
+> The broader real-oracle sweep found one validator mismatch, not a circuit failure: LTspice correctly simulated the BJT/MOS wrapper circuits but uses its native `X§Q1`/`X§M1` instance naming. I’m updating the external-netlist check to use the generator’s already-recorded native identity, then rerunning the blocked models.
+
+> The generator is now at a useful proof point: the seven-circuit oracle matrix passes after correcting real LTspice semantics, and I’m finishing the two remaining product-facing hardenings—visible schematic layout and the actual 1×/2× timing watchdog rather than a policy-only placeholder.
+
+> I’m keeping the bulky `.raw`, `.net`, ZIP, and GUI-run artifacts as immutable local evidence rather than adding simulator output to Git; the repository will retain the reproducible generator, fixtures/tests, and compact validation record.
+
+> The timing behavior is being made executable rather than merely documented: the UI can supply its own animation budget, receive an overdue event at 1×, and the backend will suppress the user archive after 2× with the exact requested error.
+
+> A release review caught a subtle race where a late timeout could briefly announce a download before being retracted. I’ve redirected the timing work to gate completion before release and to cap the external LTspice subprocess by the remaining 2× budget.
+
+> The visual placer’s candidate now uses readable unrotated defaults, a compact source–resistor–capacitor layout, and grounds only on an actual ground pin. I’m holding the checkpoint until its GUI render and the timeout race tests both confirm those guarantees.
+
+> The strict release rule is now being enforced at two levels: no “download ready” event before the final timing gate, and no retained partial user archive if later packaging fails. I’m keeping those safeguards deterministic and testable rather than relying on the UI alone.
+
+> The GUI retest now renders a clean, readable RC schematic—upright text, sensible source→R→C layout, and ground flags on real ground pins. The timing release gate has also passed its race-focused review, including delayed UI callbacks and partial-package cleanup.
+
+> The final static suite is green: 44 tests passed (one optional external-oracle test skipped by default). I’m doing one last end-to-end RC generation against the installed LTspice executable with the new timing contract and readable layout before committing.
+
+Implementation completed this continuation:
+
+- Fixed relative CLI output packaging and made partial ZIP cleanup deterministic.
+- Added exported-LTspice-netlist endpoint validation, including native `X§REF`
+  wrapper identities and case-insensitive SPICE node comparison.
+- Added stable terminal labels for analysis `V(net)` directives, VCVS/VCCS
+  component profiles, readable automatic LTspice placement, and hidden visual
+  pin labels that preserve electrical `SpiceOrder` metadata.
+- Added opt-in `--animation-budget-seconds` timing events, 1× overdue notice,
+  2× hard failure, external-oracle deadline caps, and an atomic archive-release
+  gate.
+- Kept bulky local oracle artifacts ignored under `ltspice/examples/` while
+  documenting the reproducible LTspice 26 results.
+
+Final verification before commit:
+
+- `PYTHONPATH=. python -m compileall -q ltspice kicad/pipeline/input_json_validator_fixer.py`: passed.
+- `PYTHONPATH=. python -m unittest discover -s ltspice/tests -v`: 45 passed,
+  1 optional installed-oracle test skipped.
+- Final installed-LTspice CLI run of `rc_lowpass_tran.json` with a 30-second
+  animation budget: accepted with netlist, batch simulation, endpoint check,
+  timing evidence, and user ZIP released only after the atomic gate.
+- Actual LTspice GUI opened the final generated RC `.asc`; the final screenshot
+  is local-only at `/tmp/progen_ltspice_oracle_open/gui_layout_fix_final2/ltspice-layout-fix-final2.png`.
+
+Files edited this continuation:
+
+- `context.md`
+- `ltspice/README.md`
+- `ltspice/docs/LTSPICE_26_ORACLE_VALIDATION.md`
+- `ltspice/examples/.gitignore`
+- `ltspice/pipeline/component_placer.py`
+- `ltspice/pipeline/directive_validator.py`
+- `ltspice/pipeline/ltspice_asc_writer.py`
+- `ltspice/pipeline/ltspice_component_catalogue.json`
+- `ltspice/pipeline/ltspice_wire_maker.py`
+- `ltspice/pipeline/oracle_netlist_validator.py`
+- `ltspice/pipeline/output_packager.py`
+- `ltspice/pipeline/progen_ltspice_executable.py`
+- `ltspice/pipeline/simulation_validator.py`
+- `ltspice/pipeline/timing_contract.py`
+- `ltspice/pipeline/value_editor.py`
+- `ltspice/tests/test_analysis_trace_labels.py`
+- `ltspice/tests/test_ltspice_backend.py`
+- `ltspice/tests/test_ltspice_controlled_sources.py`
+- `ltspice/tests/test_ltspice_timing_contract.py`
+- `ltspice/tests/test_oracle_netlist_validator.py`
+- `ltspice/tests/test_visual_placement.py`
