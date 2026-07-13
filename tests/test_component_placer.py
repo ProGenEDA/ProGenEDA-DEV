@@ -610,6 +610,47 @@ def test_component_placement_display_bridge_is_immutable(tmp_path: Path) -> None
     assert "D20 movement request ignored" in hidden.cdb_policy
 
 
+def test_component_placement_diode_scale_excludes_only_display_bridge(
+    tmp_path: Path,
+) -> None:
+    """A diode scale may skip D20, but must retain later ordinary diode packets."""
+
+    result = generate_component_placement_project(
+        {
+            "components": {"DIODE": 15},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        tmp_path / "diode_15x.pdsprj",
+        full_cdb=True,
+    )
+
+    selected_keys = [group.key for group in result.selected_groups]
+    assert result.valid
+    assert len(selected_keys) == 15
+    assert "D20" not in selected_keys
+    assert selected_keys == [
+        "D18",
+        "D19",
+        "D232",
+        "D233",
+        "D234",
+        "D235",
+        "D236",
+        "D237",
+        "D238",
+        "D239",
+        "D240",
+        "D241",
+        "D242",
+        "D243",
+        "D244",
+    ]
+    assert sum(int(key[1:]) > 20 for key in selected_keys) == 13
+    assert result.validation_reports["generated_output_validator"]["actual_counts"] == {
+        "DIODE": 15
+    }
+
+
 def test_terminal_dispatcher_ignores_d20_display_bridge_when_display_only(
     tmp_path: Path,
 ) -> None:

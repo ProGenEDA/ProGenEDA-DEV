@@ -13447,3 +13447,15 @@ Understood. I’ll keep the sequence fixed: every group’s solo 1× → 9× →
 ## Agent Visible Response - 2026-07-14 03:08 +05:00
 
 The arithmetic pair is fully verified: all six actual outputs have the expected 14-per-part attachments, grid contacts, nonzero wires, unique final links, unchanged `ROOT.CDB`, and the focused/frozen regressions pass. I’m checkpointing it now, then I’ll audit the diode selection rule before the next group.
+
+## Agent Visible Response - 2026-07-14 03:10 +05:00
+
+Checkpoint `a59f238c` is pushed and remote-verified. I’m auditing the diode report against the locked mega’s actual selection records now; this will be an additive repair only if the current 15× selection really stops after `D20`.
+
+## Agent Visible Response - 2026-07-14 03:11 +05:00
+
+The selection rule itself already shows the intended behavior: the fresh 15× diode manifest contains 15 normal diode packets (`D18`, `D19`, then later `D232`–`D244`), with only `D20` excluded. I’m opening that actual 15× project now to confirm the rendered sheet rather than relying on the manifest.
+
+## Agent Visible Response - 2026-07-14 03:15 +05:00
+
+The diode issue is not a `D20` cutoff bug: a fresh 15× request selects 15 ordinary diodes—including 13 after `D20`—and Proteus renders that full shelf (the visible viewport shows a subset; the minimap has all 15). I added a regression that locks this exact behavior, with no change to accepted terminal routes. Next I’m moving to the DIL8 analog group: `LM741` and `NE555`.

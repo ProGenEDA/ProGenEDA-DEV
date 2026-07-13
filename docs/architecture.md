@@ -2221,3 +2221,15 @@ sets. The validated MVP solo operating limit is 15 per family; it is evidence
 of tested behavior rather than an invented capacity ceiling. Per user
 direction, mixed terminalization remains deferred until all component groups
 complete their solo 1x/9x/15x routes.
+
+### 2026-07-14 D20 display-bridge isolation rule
+
+`D20` is a display-infrastructure diode only when a 7-segment display request
+uses its donor bridge. It is not a cut-off marker for ordinary diodes. A
+locked-mega `DIODE: 15` request must therefore select exactly fifteen normal
+diode packets while omitting only `D20`; the current donor sequence is
+`D18`, `D19`, and `D232` through `D244`. The 15x manifest, fresh current-code
+placement, and an actual local Proteus render all show those fifteen packets.
+The render viewport may show only a shelf subset at once, but its minimap and
+placed packet count contain all fifteen. A focused regression guards against
+accidentally filtering every diode after `D20`.
