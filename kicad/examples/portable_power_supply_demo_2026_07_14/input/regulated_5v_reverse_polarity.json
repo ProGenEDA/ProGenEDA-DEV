@@ -1,0 +1,216 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "Deterministic code validates and compiles this complete main JSON."
+  },
+  "project": {
+    "name": "regulated_5v_reverse_polarity",
+    "title": "Regulated 5V Power Supply with Reverse-Polarity Protection",
+    "purpose": "DC barrel input with 1N4007 series reverse-polarity protection, 7805 regulation, filtering, LED status, and a regulated 5V output terminal.",
+    "target": "kicad_schematic",
+    "schematic_only": false
+  },
+  "circuit_id": "DEMO_REGULATED_5V_01",
+  "circuit_name": "Regulated 5V Power Supply with Reverse-Polarity Protection and LED Status",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": ["wire", "terminal", "combination"],
+    "decision_source": "user_request",
+    "wire_mode_contract": "Every wire-mode endpoint must be connected by the physical wire/junction/pin graph.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 6,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "power_left_to_right",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "blocks",
+    "keep_related_blocks_close": true
+  },
+  "blocks": [
+    {"id": "input", "role": "power_input", "order": 1},
+    {"id": "protection", "role": "reverse_polarity_protection", "order": 2},
+    {"id": "regulation", "role": "linear_regulation", "order": 3},
+    {"id": "status", "role": "power_status", "order": 4},
+    {"id": "output", "role": "regulated_output", "order": 5}
+  ],
+  "components": [
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "DC_BARREL_JACK",
+      "type": "DC_BARREL_JACK",
+      "value": "DC input, 7-24V",
+      "role": "power_input_connector",
+      "block": "input",
+      "pins": {"1": "VIN_RAW", "2": "GND"}
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "1N4007",
+      "type": "1N4007",
+      "value": "1N4007",
+      "role": "series_reverse_polarity_protection",
+      "block": "protection",
+      "pins": {"A": "VIN_RAW", "K": "VIN_PROTECTED"}
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "CAP_ELEC",
+      "type": "CAP_ELEC",
+      "value": "100uF, 25V",
+      "role": "input_bulk_filter",
+      "block": "regulation",
+      "pins": {"1": "VIN_PROTECTED", "2": "GND"}
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "100nF",
+      "role": "input_bypass",
+      "block": "regulation",
+      "pins": {"1": "VIN_PROTECTED", "2": "GND"}
+    },
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "LM7805",
+      "type": "LM7805",
+      "value": "LM7805",
+      "role": "5v_linear_regulator",
+      "block": "regulation",
+      "pins": {"IN": "VIN_PROTECTED", "GND": "GND", "OUT": "+5V"}
+    },
+    {
+      "id": "C3",
+      "ref": "C3",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "100nF",
+      "role": "output_bypass",
+      "block": "regulation",
+      "pins": {"1": "+5V", "2": "GND"}
+    },
+    {
+      "id": "C4",
+      "ref": "C4",
+      "kind": "CAP_ELEC",
+      "type": "CAP_ELEC",
+      "value": "100uF, 10V",
+      "role": "output_bulk_filter",
+      "block": "regulation",
+      "pins": {"1": "+5V", "2": "GND"}
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RES",
+      "type": "RES",
+      "value": "1k",
+      "role": "status_led_current_limit",
+      "block": "status",
+      "pins": {"1": "+5V", "2": "LED_ANODE"}
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "LED",
+      "type": "LED",
+      "value": "Green power LED",
+      "role": "5v_status_indicator",
+      "block": "status",
+      "pins": {"A": "LED_ANODE", "K": "GND"}
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Regulated 5V output",
+      "role": "power_output_connector",
+      "block": "output",
+      "pins": {"1": "+5V", "2": "GND"}
+    },
+    {
+      "id": "PWR1",
+      "ref": "PWR01",
+      "kind": "GND_SYMBOL",
+      "type": "GND_SYMBOL",
+      "value": "GND",
+      "role": "ground_symbol",
+      "block": "regulation",
+      "pins": {"1": "GND"}
+    },
+    {
+      "id": "PWR2",
+      "ref": "PWR02",
+      "kind": "PWR_5V",
+      "type": "PWR_5V",
+      "value": "+5V",
+      "role": "power_symbol",
+      "block": "output",
+      "pins": {"1": "+5V"}
+    }
+  ],
+  "nets": {
+    "VIN_RAW": ["J1.1", "D1.A"],
+    "VIN_PROTECTED": ["D1.K", "C1.1", "C2.1", "U1.IN"],
+    "+5V": ["U1.OUT", "C3.1", "C4.1", "R1.1", "J2.1", "PWR02.1"],
+    "LED_ANODE": ["R1.2", "D2.A"],
+    "GND": ["J1.2", "C1.2", "C2.2", "U1.GND", "C3.2", "C4.2", "D2.K", "J2.2", "PWR01.1"]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {"name": "VIN_RAW", "members": ["J1.1", "D1.A"], "member_count": 2},
+      {"name": "VIN_PROTECTED", "members": ["D1.K", "C1.1", "C2.1", "U1.IN"], "member_count": 4},
+      {"name": "+5V", "members": ["U1.OUT", "C3.1", "C4.1", "R1.1", "J2.1", "PWR02.1"], "member_count": 6},
+      {"name": "LED_ANODE", "members": ["R1.2", "D2.A"], "member_count": 2},
+      {"name": "GND", "members": ["J1.2", "C1.2", "C2.2", "U1.GND", "C3.2", "C4.2", "D2.K", "J2.2", "PWR01.1"], "member_count": 9}
+    ],
+    "important_nets": ["VIN_RAW", "VIN_PROTECTED", "+5V", "GND"]
+  },
+  "stage_contracts": {
+    "component_placer": {"input": "components", "output": "placed_design"},
+    "arrangement_decider": {"input": "components, nets, layout_intent", "output": "layout_decision"},
+    "beautifier": {"input": "layout_decision", "output": "beautified_placement"},
+    "wire_planner": {"input": "beautified_placement, nets", "output": "wire_plan"},
+    "terminal_placer": {"input": "terminal_policy, unresolved_nets", "output": "terminal_plan"}
+  },
+  "generation_notes": {
+    "input_voltage": "7-24V DC, center-positive barrel jack",
+    "reverse_polarity_method": "series 1N4007 diode",
+    "output": "regulated nominal 5V DC",
+    "safety_note": "The LM7805 requires adequate heatsinking for high input voltage or load current."
+  },
+  "validation": {}
+}

@@ -11598,3 +11598,35 @@ Planned visible final response:
 > - Verified 45 tests pass (one optional oracle test skipped); the final RC project also netlisted, batch-simulated, and opened cleanly in installed LTspice 26.
 >
 > I left unrelated untracked KiCad example folders untouched.
+
+## 2026-07-14T02:06:45+05:00 — Portable KiCad regulated 5 V demo
+
+User request (verbatim):
+
+> can u make this using this portable?
+> Create a regulated 5V power supply with reverse-polarity protection and LED status.
+
+Visible assistant progress (verbatim):
+
+> I’ll generate this through the portable executable as a real KiCad project, using a fresh output folder and its normal validation path.
+
+> The first executable pass correctly refused to call the project valid: placement and geometry were clean, but four connector/power-symbol pins were unresolved. I’m tracing that report now and will correct the JSON or supported mapping rather than handing you a merely-openable but electrically unverified file.
+
+> The corrected portable run has passed every internal gate: 12 symbols, zero unresolved pins, zero failed nets, no shorts/floating pins, no body/label collisions, no unrouted/partial nets, and an accepted PCB with zero unrouted PCB nets. I’m running independent KiCad CLI checks next as an external confirmation.
+
+> This environment does not currently expose `kicad-cli`, which is exactly the hosted/no-KiCad case the portable validator is designed for. I’m doing the final portable-artifact integrity check now; the generated output remains internally source-backed and fully validated.
+
+Files added:
+
+- `kicad/examples/portable_power_supply_demo_2026_07_14/input/regulated_5v_reverse_polarity.json` is the complete canonical main JSON for a 7-24 V DC barrel input, series 1N4007 reverse-polarity protection, LM7805 regulator, input/output 100 uF plus 100 nF filtering, 1 kOhm LED status branch, and regulated 5 V output terminal.
+- `kicad/examples/portable_power_supply_demo_2026_07_14/README.md` records the first rejected run and the corrected acceptance run. Neither generated run was overwritten.
+- `progen_kicad_executable_run_2026_07_14_020429_regulated_5v_reverse_polarity` is retained as the rejected record: `POS`/`NEG` did not resolve through the native polarized-capacitor pin graph and raw `#PWR` refs were normalized.
+- `progen_kicad_executable_run_2026_07_14_020605_regulated_5v_reverse_polarity_corrected` is the accepted immutable output.
+
+Acceptance result:
+
+- Input fixer: pass, zero repairs.
+- Final validation and local expected-netlist comparison: pass, zero blocking failures, zero unresolved pins, zero failed nets, zero merged nets, zero power/ground shorts, and zero floating expected pins.
+- Schematic geometry: zero component-body overlaps, zero pin-coordinate overlaps, zero terminal-label overlaps, zero unrouted/partial nets, and zero strict wire/geometry violations.
+- PCB: generated and accepted, nine physical supported components, three nonphysical symbols omitted, and zero unrouted PCB nets.
+- The user project ZIP passed `unzip -t` and contains the `.kicad_pro`, `.kicad_sch`, and `.kicad_pcb` project files.
