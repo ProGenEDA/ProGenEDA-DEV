@@ -13228,3 +13228,11 @@ One broader catalogue test suite exposed ten existing failures in unrelated lock
 - `tests/test_component_placer.py` - 7447 staged/active donor-frame, exact-link, CDB-preservation, and strict payload-rejection regression coverage.
 - `knowledge/dil16_decoder_driver_donor_preflight_2026_07_13.md`, `docs/architecture.md`, `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/README.md`, and `knowledge/test_results.jsonl` - donor delta, repair rationale, loader evidence, and test result.
 - `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/03_7447_staged_1x/` - fresh locked-mega 1x control, native/grid diagnostic stages, active terminalized output, and local Proteus screenshots/gate record.
+
+## Agent Visible Response - 2026-07-13 21:44 +05:00
+
+The regenerated active file is byte-identical to the locally gated version (`608DD824…D668E`). Focused terminal regressions now pass for 7447, 4511, HC151, HC157, HC76, and HC74. I kept the unrelated dirty experiments and donor files out of this checkpoint.
+
+## Agent Visible Response - 2026-07-13 21:45 +05:00
+
+The repaired 7447 active candidate is committed and pushed as `6c3b9034`; local HEAD, upstream, and GitHub match. Use `S02_7447_1X_CATALOGUE_TERMINAL_sa.pdsprj` for visual testing: it has 14 actual grid-contact-to-pin short WIREs, not floating terminals.
