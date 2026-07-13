@@ -2003,6 +2003,25 @@ finalizer, and unchanged `ROOT.CDB`. The 15x capture is retained under
 `experiments/dil16_dual_jk_ff_74hc76_terminal_v3_temp_2026_07_14/`.
 Mixed emission stays deferred until every group has this same solo evidence.
 
+### 2026-07-14 4027 fresh locked-mega revalidation
+
+The accepted `4027` donor is a frozen native zero-length attachment exception:
+every terminal contact and pin endpoint is the same Proteus grid intersection,
+but the terminal suffix, matching component-link suffix, and adjacent WIRE are
+still a single active attachment unit. A user-recovered seven-terminal prefix
+is merely a Bad Object Record recovery artifact, not a valid donor or source
+for generation. The fresh locked-mega output preserves its current `U13:A/B`
+reference width, trims only the one donor-proven reserved zero before each
+active link array, and rebases all suffixes from final ROOT.DSN WIRE addresses.
+
+Because all native contacts are already grid-aligned, the inactive native and
+grid diagnostics are byte-identical and both visibly fail with VGDVC.DLL.
+This is negative evidence that an incomplete unit cannot be emitted, not a
+reason to modify the accepted complete route. The full active stream passed
+fresh 1x, 9x, and 15x normal-open/cold-reopen gates with 14, 126, and 210
+terminal/WIRE units. It remains solo-only until all groups reach the same
+evidence level.
+
 ### 2026-07-13 74HC151 mux donor contract
 
 `74HC151` is a component-first DIL16 mux stream: its component packet is

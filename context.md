@@ -13580,3 +13580,37 @@ The HC76-focused suite now passes all four targeted tests, and the frozen two-pi
 - `knowledge/component_catalog_v0.json`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — marked the complete 1×/9×/15× HC76 active route loader-passed while retaining user visual validation as pending.
 - `tests/test_component_placer.py` — added a shared-placer 9×/15× HC76 regression; no terminal-placement source was changed.
 - `experiments/dil16_dual_jk_ff_74hc76_terminal_v3_temp_2026_07_14/` — fresh locked-mega controls, staged diagnostics, 9×/15× terminalized packs, loader copies, fatal captures, 15× visual captures, README, and loader-result record.
+
+## Agent Visible Response - 2026-07-14 04:25 +05:00
+
+Checkpoint `ecfec700` is pushed and remote-verified. HC76 is now recorded as complete at 1×/9×/15×; I’m taking the remaining DIL16 dual-JK family, 4027, next through the same donor-first solo route—no mixed pack yet.
+
+## Agent Visible Response - 2026-07-14 04:27 +05:00
+
+The 4027 donor audit confirms why it must stay separate from HC76: its accepted native route uses fourteen zero-length active WIRE records at exact grid intersections, and the user’s Ctrl+S “fixed” file is only Proteus’s recovered first-half prefix—not a valid full donor. I’m regenerating its complete locked-mega 1× route from the authoritative donor contract now; I will not substitute that truncated recovery file or alter HC76.
+
+## Agent Visible Response - 2026-07-14 04:28 +05:00
+
+Fresh 4027 generation exactly reproduces the prior reference-width-corrected active stream byte-for-byte: 14 labels, 14 active native WIRE/link units, proper A/B package references, and all contacts on the grid. Its native and grid diagnostic bytes are identical because its donor pin contacts are already on-grid; I’m running the actual Proteus gate now and will follow the required Ctrl+S comparison only if a Bad Object Record appears.
+
+## Agent Visible Response - 2026-07-14 04:30 +05:00
+
+The fresh locked-mega 4027 control and authoritative donor open normally. The byte-identical inactive native/grid diagnostic hits the same `VGDVC.DLL [000190DA]` fatal as expected for a missing active attachment unit; I’ve captured it and am now gating only the full donor-proven active stream and its cold reopen.
+
+## Agent Visible Response - 2026-07-14 04:32 +05:00
+
+The full active 4027 stream and cold reopen both pass normally, and the capture shows all seven terminals on each physical A/B half. This family’s accepted donor route is an explicit frozen zero-length WIRE exception; it opens because the terminal, component link, and WIRE remain one atomic native attachment unit. I’m scaling that unchanged route to 9× and 15× now.
+
+## Agent Visible Response - 2026-07-14 04:37 +05:00
+
+The full 4027 route, plus 9× and 15× cold reopens, all pass without a dialog or rewrite. I’ve corrected the focused test expectations to the donor’s actual zero-length native attachment rule—only the tests, not the working terminal placer—and I’m running the isolated 4027 regression now.
+
+## Agent Visible Response - 2026-07-14 04:39 +05:00
+
+4027 is now fully revalidated at 1×, 9×, and 15× without changing its active terminal route: 7 focused 4027 tests and 28 frozen two-pin tests pass. I’m recording this donor-native exception and checkpointing it, then I’ll move to the next unfinished solo group.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/dil16_dual_jk_ff_4027_donor_preflight_2026_07_14.md`, `knowledge/component_catalog_v0.json`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record the actual complete donor facts, the recovered-prefix warning, the zero-length attachment exception, and fresh 1×/9×/15× loader results.
+- `tests/test_component_catalog.py` — corrected stale 4027 expectations to the authoritative donor’s already-working native WIRE geometry and added 9× coverage; no terminal placer behavior changed.
+- `experiments/dil16_dual_jk_ff_4027_terminal_v3_temp_2026_07_14/` — fresh locked-mega controls, staged diagnostics, 9×/15× packs, fatal/accepted screenshots, README, and loader record.

@@ -599,7 +599,7 @@ def test_catalogue_pin_emitter_uses_clean_bare_component_stream(tmp_path) -> Non
     assert output_chunk.count(b"\x7fWIRE") == 12
 
 
-def test_4027_subpart_route_uses_each_donor_anchor_and_grid_short_wires(
+def test_4027_subpart_route_uses_each_donor_anchor_and_grid_native_wires(
     tmp_path,
 ) -> None:
     source = tmp_path / "catalogue_4027_grid_bare.pdsprj"
@@ -636,7 +636,9 @@ def test_4027_subpart_route_uses_each_donor_anchor_and_grid_short_wires(
             pin["x"],
             pin["y"],
         ]
-        assert wire["terminal_contact"] != wire["pin_contact"]
+        # The authoritative 4027 donor is a frozen native-contact exception:
+        # each active WIRE has equal endpoints at the exact grid pin contact.
+        assert wire["terminal_contact"] == wire["pin_contact"]
 
     # The grid-terminal opt-in also moves the donor-proven non-length-prefixed
     # SUBCKT NAME label pair for each physical flip-flop. The default parsed
@@ -683,6 +685,11 @@ def test_4027_subpart_route_uses_each_donor_anchor_and_grid_short_wires(
     assert report["wire_count_added"] == 14
     assert report["terminal_grid_alignment_valid"]
     assert report["wire_path_contacts_valid"]
+    assert all(
+        row["zero_length_wire_allowed"]
+        and not row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
     assert report["cdb_normalization"] == {
         "policy": "preserve_source_member_uninspected",
         "keep_packages": None,
@@ -737,10 +744,9 @@ def test_4027_staged_terminal_contact_gate_is_dsn_only_and_monotonic(tmp_path) -
         read_internal_file(complete_output, "ROOT.DSN")
     )
 
-    # Stage 2 moves each terminal contact one grid step outward while keeping
-    # the component untouched. Stage 3 is the first stage that adds WIRE/link
-    # units back to the exact component pins.
-    assert native_dsn != grid_dsn
+    # The accepted native 4027 contacts are already grid intersections, so
+    # Stage 2 is byte-identical to Stage 1. Stage 3 adds the active unit.
+    assert native_dsn == grid_dsn
     for report in (native_report, grid_report):
         assert report["valid"]
         assert report["terminal_count_added"] == 14
@@ -1383,14 +1389,18 @@ def test_dil8_analog_scales_keep_all_grid_short_wire_attachment_units(
     )
 
 
-def test_4027_15x_uses_real_complete_packages_and_grid_short_wires(tmp_path) -> None:
-    """The locked mega supplies fifteen whole 4027 packages without cloning."""
+@pytest.mark.parametrize("count", [9, 15])
+def test_4027_scale_uses_real_complete_packages_and_grid_native_wires(
+    tmp_path,
+    count: int,
+) -> None:
+    """The locked mega supplies whole A/B 4027 packages without cloning."""
 
-    source = tmp_path / "catalogue_4027_15x_bare.pdsprj"
-    output = tmp_path / "catalogue_4027_15x_terminalized.pdsprj"
+    source = tmp_path / f"catalogue_4027_{count}x_bare.pdsprj"
+    output = tmp_path / f"catalogue_4027_{count}x_terminalized.pdsprj"
     result = generate_component_placement_project(
         {
-            "components": {"4027": 15},
+            "components": {"4027": count},
             "layout": {
                 "strategy": "beautify",
                 "binary_coordinate_mutation": True,
@@ -1402,7 +1412,7 @@ def test_4027_15x_uses_real_complete_packages_and_grid_short_wires(tmp_path) -> 
         full_cdb=True,
     )
     assert result.valid
-    assert [group.key for group in result.selected_groups] == [
+    expected_keys = [
         "U13",
         "U14",
         "U15",
@@ -1418,7 +1428,8 @@ def test_4027_15x_uses_real_complete_packages_and_grid_short_wires(tmp_path) -> 
         "U577",
         "U578",
         "U579",
-    ]
+    ][:count]
+    assert [group.key for group in result.selected_groups] == expected_keys
     assert all(len(group.refs) == 2 for group in result.selected_groups)
 
     report = attach_catalogue_pin_bidir_terminals_to_project(
@@ -1431,13 +1442,18 @@ def test_4027_15x_uses_real_complete_packages_and_grid_short_wires(tmp_path) -> 
     wires = _wire_rows_from_chunk(chunk, chunk_start=0)
 
     assert report["valid"]
-    assert report["terminal_count_added"] == 210
-    assert report["wire_count_added"] == 210
+    assert report["terminal_count_added"] == count * 14
+    assert report["wire_count_added"] == count * 14
     assert report["terminal_grid_alignment_valid"]
     assert report["wire_path_contacts_valid"]
-    assert chunk.count(b"$TERBIDIR") == 210
-    assert len(wires) == 210
-    assert all(row["coordinates"][:2] != row["coordinates"][2:4] for row in wires)
+    assert chunk.count(b"$TERBIDIR") == count * 14
+    assert len(wires) == count * 14
+    assert all(row["coordinates"][:2] == row["coordinates"][2:4] for row in wires)
+    assert all(
+        row["zero_length_wire_allowed"]
+        and not row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
     assert chunk.endswith(b"\xff")
 
 
