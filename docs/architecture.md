@@ -1983,6 +1983,26 @@ and 15x copied outputs each cold-opened and cold-reopened normally after the
 under `experiments/dil16_dual_jk_ff_terminal_v1_temp_2026_07_13/04_local_proteus_gate/`.
 User visual acceptance remains required before mixed-family terminal emission.
 
+### 2026-07-14 74HC76 fresh locked-mega revalidation
+
+A fresh donor/control/full-stream comparison reconfirmed that `74HC76` has no
+valid terminal-only intermediate packet: its two-subpart stream must contain
+the terminal suffixes, the matching component pin-link suffixes, and its
+adjacent donor-ordered WIRE units together. The deliberately inactive
+native-contact and grid-contact diagnostic artifacts therefore reproduce a
+`VGDVC.DLL [000190DA]` fatal and remain negative evidence only; they are not
+alternative terminal workflows and were not repaired by changing the accepted
+complete route. The locked-mega no-terminal control, the authoritative donor,
+and the shared-placer complete 1x route each normal-opened unchanged.
+
+The complete catalogue route passed fresh 1x, 9x, and 15x active loader and
+cold-reopen gates, with `14`, `126`, and `210` terminal/WIRE units respectively.
+Every final route has grid-aligned attaching contacts, left `1800`/right `0`
+angles, nonzero vertical exact-pin WIREs, final-address active links, one `FF`
+finalizer, and unchanged `ROOT.CDB`. The 15x capture is retained under
+`experiments/dil16_dual_jk_ff_74hc76_terminal_v3_temp_2026_07_14/`.
+Mixed emission stays deferred until every group has this same solo evidence.
+
 ### 2026-07-13 74HC151 mux donor contract
 
 `74HC151` is a component-first DIL16 mux stream: its component packet is

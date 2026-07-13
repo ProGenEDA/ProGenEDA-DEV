@@ -4602,6 +4602,63 @@ def test_hc76_multipart_spread_keeps_both_body_anchors_at_9x(
     assert report["wire_path_contacts_valid"] is True
 
 
+@pytest.mark.parametrize("count", [9, 15])
+def test_hc76_progressive_scales_keep_complete_attachment_units(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """HC76's donor-proven multipart route remains complete through 15x."""
+
+    family = "74HC76"
+    base = tmp_path / f"74HC76_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"74HC76_{count}x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
+    )
+
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    anchors = {
+        ref.split(":", 1)[0]: terminal_placer._component_marker_anchors_for_catalogue(
+            group.data,
+            family,
+        )
+        for group in result.selected_groups
+        for ref in group.refs[:1]
+    }
+    assert result.valid
+    assert len(result.selected_groups) == count
+    assert len(anchors) == count
+    assert all(len(package_anchors) == 2 for package_anchors in anchors.values())
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == count * 14
+    assert report["wire_count_added"] == count * 14
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert chunk.count(b"$TERBIDIR") == count * 14
+    assert chunk.count(b"\x7fWIRE") == count * 14
+    assert chunk.endswith(b"\xff")
+
+
 def test_dil14_mixed_baseline_keeps_new_logic_groups_unterminalized(
     tmp_path: Path,
 ) -> None:
