@@ -129,3 +129,44 @@ Bad Object Record or other modal error, so neither was Ctrl+S-saved. The copy
 SHA-256 remained byte-identical to the generated candidate. Screenshots are
 stored beside the candidate under `local_proteus_gate/`. User visual acceptance
 remains the final layout authority.
+
+## Scale contact-retarget correction
+
+At 9x and 15x, the locked component placer begins a second layout row. A
+component marker can then be off the terminal grid even when its body is
+visually well placed. The first scale output proved the failure mode exactly:
+all WIREs reached their physical pins, but the terminal record contact and the
+translated donor WIRE contact differed for the second-row component.
+
+This is not a reason to require a particular component placer or to force a
+new donor. The shared terminal planner already supports the donor-backed
+profile policy `wire_coordinates_retarget_to_current_contacts`. HC151 now
+enables it. The shared retargeter preserves every donor path's point count and
+physical-pin endpoint while replacing its terminal-side endpoint with the
+current snapped terminal contact. For a three-point route, the matching bend
+is retargeted consistently as well.
+
+This makes terminal placement independent of whether a placed design was
+created by the locked mega, a future byte-forming placer, or a human. A
+non-grid component pin is valid; the terminal contact is what must land on the
+grid, and the short WIRE joins the two.
+
+Fresh ordinary-beautifier outputs now pass at both scales:
+
+- 9x: 126 terminals and 126 nonzero WIREs; 72 two-point and 54 three-point
+  routes.
+- 15x: 210 terminals and 210 nonzero WIREs; 120 two-point and 90 three-point
+  routes.
+
+For each output, active terminal suffixes are unique, equal the WIRE suffix
+set, and follow the final ROOT.DSN WIRE-address formula. Every terminal
+contact is grid aligned and appears in its linked WIRE; the focused 9x
+regression also verifies every WIRE reaches its exact physical pin.
+
+## Scale loader gates
+
+Copied 9x and 15x outputs each visibly cold-opened and cold-reopened after the
+stability wait, with no Bad Object Record, library, fatal, or LXLCORE dialog.
+Both opened normally, so neither was Ctrl+S-saved. Each disposable copy's
+SHA-256 remained equal to its generated candidate. The 15x captures are in
+`experiments/dil16_mux_terminal_v1_temp_2026_07_13/08_hc151_scale_contact_retarget/local_proteus_gate/`.

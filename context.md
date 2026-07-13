@@ -13021,3 +13021,39 @@ The local gate itself completed cleanly: first cold open and cold reopen both sh
 ## Agent Visible Response - 2026-07-13 19:05 +05:00
 
 74HC151 1× is now clean in the donor comparison and visibly opens twice in Proteus with every terminal routed to the symbol. I’m checkpointing this HC151-only catalogue repair now; then I’ll generate and audit 9× and 15× through the same frozen shared path.
+
+## Agent Visible Response - 2026-07-13 19:07 +05:00
+
+Checkpoint `dd4e5662` is pushed and matches GitHub. I’m generating fresh HC151 9× and 15× controls plus terminalized outputs from the locked mega and the same shared profile now; I’ll audit their actual attachment streams before opening the large cases.
+
+## Agent Visible Response - 2026-07-13 19:09 +05:00
+
+The first scale attempt exposed one placement-stage issue, not a terminal encoding issue: the ninth HC151 was moved by a non-grid row offset, so its WIREs reached the pins but its terminals sat 44,640 units away from their contacts. The existing component-placer grid-translation mode fixes exactly this without changing any accepted family route. I’m regenerating both scales with that explicit layout contract.
+
+## Agent Visible Response - 2026-07-13 19:11 +05:00
+
+The shared placer already has the correct general mechanism: it can retarget a donor polyline’s terminal endpoint to the current snapped grid contact while leaving the physical pin endpoint intact. HC151’s profile had not enabled it. I’m enabling that one catalogue fact and testing the default (non-grid-dependent) 9×/15× placement, so terminal attachment stays independent of the component placer.
+
+## Agent Visible Response - 2026-07-13 19:13 +05:00
+
+The independent scale regression now passes: even with ordinary beautified placement, HC151 retargets each donor-shaped WIRE to the grid terminal contact and exact component pin. The 9× and 15× streams have 126 and 210 active terminal/WIRE pairs respectively. I’m starting their delayed visible cold-open/reopen gates now.
+
+## Agent Visible Response - 2026-07-13 19:15 +05:00
+
+HC151 9× passed both visible cold opens with no modal dialog. I’m doing the 15× gate now; it uses the same shared catalogue route and is the large-case visual check.
+
+## Agent Visible Response - 2026-07-13 19:18 +05:00
+
+### Recovery-rule acknowledgement - 2026-07-13 19:26 +05:00
+
+I have locked in that recovery rule: on a Bad Object Record, I will capture it, click through, let Proteus finish opening, save only that recovered copy, and compare its `ROOT.DSN` against the generated file. I am finishing the HC151 scale checkpoint now, then I will apply the donor-first process to the next DIL16 mux member.
+
+Both scaled candidates pass their visible cold-open and cold-reopen gates without Bad Object Record; their untouched copies retain identical hashes. The 15× capture shows the terminalized HC151 symbols with their short attachment wires. I’m recording the scale-specific contact-retarget rule and checkpointing the 9×/15× evidence next.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json` — enabled the donor-proven shared WIRE contact-retarget policy for HC151 only.
+- `tests/test_component_placer.py` — added an ordinary-placement 9× regression proving terminal-planner independence from component-grid position.
+- `knowledge/hc151_donor_preflight_2026_07_13.md` and `docs/architecture.md` — recorded the scale contact rule and replaceable-stage contract.
+- `experiments/dil16_mux_terminal_v1_temp_2026_07_13/08_hc151_scale_contact_retarget/` — fresh 9×/15× controls, terminalized candidates, retained 15× loader screenshots, and README.
+- `knowledge/test_results.jsonl` and `context.md` — scale results and chronology.

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 import json
 from pathlib import Path
 import struct
@@ -3725,6 +3726,77 @@ def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
         if donor_byte != output_byte
     }
     assert changed_positions == terminal_suffix_positions | component_link_positions
+
+
+def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
+    tmp_path: Path,
+) -> None:
+    """HC151 preserves routed donor topology when a later row is off-grid."""
+
+    family = "74HC151"
+    base = tmp_path / "74HC151_9x_no_terminal.pdsprj"
+    output = tmp_path / "74HC151_9x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 9},
+            # Deliberately do not request a grid-aware component placement:
+            # terminal attachment itself must handle a human/non-grid input.
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    assert placement.valid
+    assert report["valid"] is True
+    assert report["terminalized_component_count"] == 9
+    assert report["terminal_count_added"] == 126
+    assert report["wire_count_added"] == 126
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = terminal_placer._bidir_label_records(chunk)
+    wires = terminal_placer._wire_rows_from_chunk(
+        chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(dsn),
+    )
+    wires_by_suffix = {int(row["suffix"]): row for row in wires}
+    assert len(terminals) == len(wires) == 126
+    assert Counter(len(row["full_coordinates"]) // 2 for row in wires) == {
+        2: 72,
+        3: 54,
+    }
+    for terminal in terminals:
+        if int(terminal["angle_tenths"]) == 0:
+            contact = (
+                int(terminal["symbol_x"]) - terminal_placer.TERMINAL_CONTACT_TO_PIN,
+                int(terminal["symbol_y"]),
+            )
+        else:
+            assert int(terminal["angle_tenths"]) == 1800
+            contact = (
+                int(terminal["symbol_x"]) + terminal_placer.TERMINAL_CONTACT_TO_PIN,
+                int(terminal["symbol_y"]),
+            )
+        assert contact[0] % 254_000 == 0 and contact[1] % 254_000 == 0
+        wire = wires_by_suffix[int(terminal["suffix"])]
+        points = tuple(zip(wire["full_coordinates"][::2], wire["full_coordinates"][1::2]))
+        assert contact in points
 
 
 def test_hc76_multipart_spread_keeps_both_body_anchors_at_9x(

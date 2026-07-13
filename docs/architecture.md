@@ -2010,3 +2010,12 @@ Implementation isolation is mandatory: profile edits must be anchored to the
 target family section, then the resulting diff must be audited to prove no
 frozen profile changed. A generic text match is not a safe way to alter a
 shared catalogue field with repeated names.
+
+At scale, the component placer may move a component marker off the terminal
+grid. This must not make terminalization dependent on a particular placement
+implementation. Profiles whose donor WIREs include a terminal endpoint use
+the shared `wire_coordinates_retarget_to_current_contacts` policy: preserve
+the complete donor polyline and exact physical-pin endpoint, but retarget the
+terminal-side endpoint (and matching bend) to the planned grid contact. This
+is an additive per-profile fact; it is not permission to change frozen
+accepted-family geometry or replace donor routing with generic stubs.
