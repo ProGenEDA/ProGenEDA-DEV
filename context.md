@@ -12947,3 +12947,31 @@ The direct DSN audit is clean at scale: 9× has 126 terminals/126 WIREs across a
 ## Agent Visible Response - 2026-07-13 18:22 +05:00
 
 Both regenerated scale packs pass their visible cold-open/reopen gates with no dialog; the 15× screenshot shows attached terminals on the rendered 4027 halves. I’m recording and pushing these scale results now. After that I’ll begin the other member of this group, 74HC76, from its accepted donor rather than altering 4027 again.
+
+## Agent Visible Response - 2026-07-13 18:24 +05:00
+
+The accepted 74HC76 donor is structurally different from 4027: it has an asymmetric native stream (twelve terminal records before A, two before B) but still fourteen active donor-native WIRE/link units. I’ve confirmed those facts from its actual ROOT.DSN; I’m regenerating a fresh locked-mega 1× through the existing shared profile so we can verify it rather than assume the earlier result remains valid.
+
+## Agent Visible Response - 2026-07-13 18:26 +05:00
+
+The fresh 74HC76 1× output opens cleanly and renders both halves with terminals; its actual DSN keeps the donor’s asymmetric block order, fourteen zero-length grid WIREs, unique active suffixes, and the expected one-reference-byte WIRE offset. I’m doing its cold reopen now; normal opens remain unsaved.
+
+## Agent Visible Response - 2026-07-13 18:27 +05:00
+
+74HC76 1× also passes a normal cold reopen, so its accepted donor profile is now revalidated without changing 4027 or the frozen two-pin routes. I’ve recorded the donor’s asymmetric A/B grammar and am generating its 9× and 15× packs through that exact shared profile next.
+
+## Agent Visible Response - 2026-07-13 18:28 +05:00
+
+74HC76 scales also pass actual DSN parsing: 126 and 210 active terminal/WIRE units, every A/B half has seven, all contacts are grid-aligned, and no suffix repeats. I’m running the same visible 9× then 15× cold-open/reopen checks now.
+
+## Agent Visible Response - 2026-07-13 18:31 +05:00
+
+74HC76 now completes the same sequence cleanly: 1×, 9×, and 15× all cold-open and cold-reopen with no modal error, and their rendered halves retain their attached terminals. I’m running its focused frozen-route regression and recording the evidence before moving to the next group.
+
+### Files Edited By Agent In This Continuation
+
+- knowledge/hc76_donor_revalidation_2026_07_13.md — donor-first DSN-only stream analysis and loader evidence.
+- experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/09_hc76_donor_revalidation/ — fresh 1× control, terminalized result, and screenshots.
+- experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/10_hc76_scale_revalidation/ — fresh 9×/15× controls, terminalized results, and screenshots.
+- knowledge/test_results.jsonl — actual DSN and loader-gate result.
+- context.md — this continuation log.
