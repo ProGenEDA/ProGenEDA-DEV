@@ -41,5 +41,31 @@ gate. No Bad Object Record appeared, so normal copies were not Ctrl+S-saved.
 The 15x loader screenshots are retained in that scale directory.
 
 Status: 4511 1x, 9x, and 15x loader/persistence proofs are complete; user
-visual acceptance remains authoritative. 7447 is intentionally not generated
-because its donor-to-locked-mega packet frame has an unexplained 50-byte delta.
+visual acceptance remains authoritative.
+
+## 7447 staged 1x proof
+
+`03_7447_staged_1x/` contains a fresh locked-mega 7447 control and the three
+shared-placer stages:
+
+- `S02_7447_1X_NO_TERMINAL.pdsprj` - component-placer control.
+- `S02_7447_1X_NATIVE_CONTACT_STAGE_sa.pdsprj` - diagnostic native-pin
+  terminal placement without WIREs.
+- `S02_7447_1X_GRID_CONTACT_STAGE_sa.pdsprj` - diagnostic grid-contact terminal
+  placement without WIREs.
+- `S02_7447_1X_CATALOGUE_TERMINAL_sa.pdsprj` - the only active candidate:
+  fourteen active terminals, fourteen nonzero terminal-to-exact-pin WIREs, and
+  final-address-rebased terminal/component links.
+
+The full active output has the same 2,610-byte object-stream width, 374-byte
+component packet, and fourteen WIRE marker positions as the authoritative 7447
+donor. Its terminal contacts are on the Proteus grid; the physical pins remain
+at their calculated component-relative locations and are joined by short WIREs.
+The three stages cold-opened normally after the 12-second visible gate, and the
+active copied project cold-reopened normally. No Bad Object Record or library
+dialog appeared, so normal copies were not Ctrl+S-saved and their SHA-256 values
+were unchanged. Screenshots and the gate record are in
+`03_7447_staged_1x/local_proteus_gate/`.
+
+Status: 7447 1x loader/persistence proof is complete; user visual acceptance is
+still required before the 9x/15x and mixed-family paths are enabled.

@@ -3901,6 +3901,204 @@ def test_4511_component_stream_stages_and_complete_route_match_donor_contract(
     assert read_internal_file(output, "ROOT.CDB") == base_cdb
 
 
+def test_7447_terminal_leading_route_normalizes_exact_metadata_and_links_pins(
+    tmp_path: Path,
+) -> None:
+    """7447 uses its complete donor grammar with active grid-contact wires."""
+
+    family = "7447"
+    donor = (
+        ROOT
+        / "proteus_ic"
+        / "donors"
+        / "terminalized_catalogue_evidence"
+        / "dil16_decoder_driver"
+        / family
+        / "7447_terminalized_primary.pdsprj"
+    )
+    base = tmp_path / "7447_1x_no_terminal.pdsprj"
+    native_stage = tmp_path / "7447_1x_native_contact_stage.pdsprj"
+    grid_stage = tmp_path / "7447_1x_grid_contact_stage.pdsprj"
+    output = tmp_path / "7447_1x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    native_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        native_stage,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="native_pin_contact",
+    )
+    grid_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        grid_stage,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="grid_contact",
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["clean_packet_attachment_order"] == (
+        "terminal_leading_component_then_wires"
+    )
+    assert geometry[
+        "strip_component_placer_finalizer_before_terminal_leading_wires"
+    ] is True
+    assert geometry["donor_terminal_record_order"] == [
+        "13", "12", "11", "10", "9", "15", "14", "7", "1", "2", "6",
+        "4", "5", "3",
+    ]
+
+    assert placement.valid
+    assert native_report["terminal_count_added"] == grid_report["terminal_count_added"] == 14
+    assert native_report["wire_count_added"] == grid_report["wire_count_added"] == 0
+    assert native_report["terminal_grid_alignment_valid"] is False
+    assert grid_report["terminal_grid_alignment_valid"] is True
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == 14
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+    assert report["family_reports"][0]["component_placer_finalizer_trimmed"] is True
+    assert report["family_reports"][0]["component_text_payload_removals"] == [
+        {
+            "field": "SUBCKT NAME",
+            "expected_occurrences": 1,
+            "removed_occurrences": 1,
+            "removed_payload_bytes": 50,
+            "replacement": "zero_length_payload",
+        }
+    ]
+
+    donor_dsn = read_internal_file(donor, "ROOT.DSN")
+    output_dsn = read_internal_file(output, "ROOT.DSN")
+    donor_chunk = _extract_object_chunk(donor_dsn)
+    native_chunk = _extract_object_chunk(read_internal_file(native_stage, "ROOT.DSN"))
+    grid_chunk = _extract_object_chunk(read_internal_file(grid_stage, "ROOT.DSN"))
+    output_chunk = _extract_object_chunk(output_dsn)
+    donor_terminals = terminal_placer._bidir_label_records(donor_chunk)
+    native_terminals = terminal_placer._bidir_label_records(native_chunk)
+    grid_terminals = terminal_placer._bidir_label_records(grid_chunk)
+    output_terminals = terminal_placer._bidir_label_records(output_chunk)
+    donor_wires = terminal_placer._wire_rows_from_chunk(
+        donor_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(donor_dsn),
+    )
+    output_wires = terminal_placer._wire_rows_from_chunk(
+        output_chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
+    )
+
+    expected_labels = [row["label"] for row in donor_terminals]
+    assert [row["label"] for row in native_terminals] == expected_labels
+    assert [row["label"] for row in grid_terminals] == expected_labels
+    assert [row["label"] for row in output_terminals] == expected_labels
+    assert native_chunk.count(b"\x7fWIRE") == grid_chunk.count(b"\x7fWIRE") == 0
+    assert all(
+        terminal_placer._terminal_contact_xy(row)[0] % 254_000 == 0
+        and terminal_placer._terminal_contact_xy(row)[1] % 254_000 == 0
+        for row in grid_terminals
+    )
+    assert [row["marker_offset"] for row in output_wires] == [
+        row["marker_offset"] for row in donor_wires
+    ]
+    assert len(output_chunk) == len(donor_chunk) == 2_610
+    assert b"74XX47.MDF" not in output_chunk
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in output_wires
+    )
+
+    output_chunk_start = terminal_placer._object_chunk_absolute_start(output_dsn)
+    terminals_by_suffix = {
+        int(row["suffix"]): row for row in output_terminals
+    }
+    assert all(
+        int(row["suffix"])
+        == (output_chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
+        for row in output_wires
+    )
+    assert all(int(row["suffix"]) in terminals_by_suffix for row in output_wires)
+
+    component_start = output_chunk.index(b"\xff\x02U1")
+    first_wire_start = int(output_wires[0]["marker_offset"]) - 24
+    component_end = first_wire_start
+    assert component_end - component_start == 374
+    for pin, raw_pin_geometry in geometry["pins"].items():
+        position = component_end + int(
+            raw_pin_geometry["component_link_offset_from_component_end"]
+        )
+        suffix = int.from_bytes(output_chunk[position : position + 2], "little")
+        assert output_chunk[position + 2 : position + 4] == bytes.fromhex(
+            raw_pin_geometry["component_link_trailer"]
+        )
+        assert suffix in terminals_by_suffix, pin
+
+    base_cdb = read_internal_file(base, "ROOT.CDB")
+    assert read_internal_file(native_stage, "ROOT.CDB") == base_cdb
+    assert read_internal_file(grid_stage, "ROOT.CDB") == base_cdb
+    assert read_internal_file(output, "ROOT.CDB") == base_cdb
+
+
+def test_catalogue_text_payload_normalization_rejects_unproven_removal() -> None:
+    """Metadata removal is exact, not a general-purpose packet text rewrite."""
+
+    profile = load_component_catalog().get_profile("7447")
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    rule = geometry["component_text_field_payload_removals"][0]
+    payload = str(rule["expected_payload_ascii"]).encode("ascii")
+    marker = b"SUBCKT NAME" + b"\x00" * 5 + b"\xff"
+    packet = b"prefix" + marker + bytes((len(payload),)) + payload + b"suffix"
+
+    normalized, report = terminal_placer._remove_catalogue_component_text_field_payloads(
+        packet,
+        geometry,
+        family="7447",
+        key="U1",
+    )
+    assert normalized == b"prefix" + marker + b"\x00suffix"
+    assert report[0]["removed_payload_bytes"] == 50
+
+    wrong_payload = b"X" + payload[1:]
+    with pytest.raises(ValueError, match="differs from the donor-proven"):
+        terminal_placer._remove_catalogue_component_text_field_payloads(
+            b"prefix" + marker + bytes((len(wrong_payload),)) + wrong_payload + b"suffix",
+            geometry,
+            family="7447",
+            key="U1",
+        )
+    with pytest.raises(ValueError, match="expected exactly 1"):
+        terminal_placer._remove_catalogue_component_text_field_payloads(
+            packet + packet,
+            geometry,
+            family="7447",
+            key="U1",
+        )
+
+
 @pytest.mark.parametrize("count", [9, 15])
 def test_4511_scales_preserve_component_first_attachment_units(
     tmp_path: Path,

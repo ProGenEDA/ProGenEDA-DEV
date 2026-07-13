@@ -13199,3 +13199,32 @@ Static scale audit is clean: 4511 now has 126 attached terminal/WIRE units at 9x
 ## Agent Visible Response - 2026-07-13 21:09 +05:00
 
 Both 4511 scale projects opened and cold-reopened normally. The 15x screen shows multiple 4511s with the same short green terminal-to-pin attachments; neither scale showed a Bad Object Record, so neither was saved. I’m adding the scale regression and checkpointing this before auditing 7447.
+
+## Agent Visible Response - 2026-07-13 21:10 +05:00
+
+You are right: the currently opened project is not acceptable. Its terminals must have a real short wire to the exact pin, not merely sit nearby. I will treat it as a failed active-attachment stage, preserve accepted routes, and verify the 7447 donor-derived link/WIRE route before generating another candidate.
+
+## Agent Visible Response - 2026-07-13 21:15 +05:00
+
+I found the concrete gap: the 7447 family had geometry but no active pin-link slots, no donor terminal order, and no strict normalization of the locked mega 50-byte `SUBCKT NAME` metadata. I added those facts only to the 7447 profile and extended the shared placer so the active path emits the required terminal, short WIRE, and matching link as one unit. I am auditing the generated 1x stream against the accepted donor before opening it.
+
+## Agent Visible Response - 2026-07-13 21:21 +05:00
+
+The repaired active stream now exactly matches the donor 2,610-byte frame and WIRE marker positions. It has 14 grid-contact terminals, 14 nonzero WIREs, and every component pin-link resolves to its corresponding terminal suffix. I am running the requested local Proteus sequence next: native contact, grid contact, then active attachment with a cold reopen, capturing the screen before each close.
+
+## Agent Visible Response - 2026-07-13 21:35 +05:00
+
+The active 7447 screenshot is clean: it opens normally, stays open on cold reopen, and visually shows terminal attachments on both sides. The important correction was removing only the extra component-group tail, not the donor packet final zero, so the WIREs now begin at the donor-proven address and actually link to the pins.
+
+## Agent Visible Response - 2026-07-13 21:40 +05:00
+
+One broader catalogue test suite exposed ten existing failures in unrelated locked-donor routes; I am not changing those routes. I did catch and reverse one unnecessary 7447 semantic-alias change: donor terminal labels remain authoritative for placement, while the existing logical pin aliases stay unchanged. The focused 7447/accepted-family suite is still clean.
+
+### Files Edited By Agent In This Continuation
+
+- `backups/component_terminal_placer/component_terminal_placer_20260713_211300_before_7447_component_text_payload_normalization.py` - retained pre-edit shared-placer backup.
+- `src/proteusgen/component_terminal_placer.py` - strict catalogue-declared component text normalization plus staged terminal-leading grammar support; no component-specific terminal script created.
+- `knowledge/component_catalog_v0.json` - 7447 donor-derived terminal order, pin-link slots, grid-contact/WIRE policies, strict metadata rule, and 1x loader status.
+- `tests/test_component_placer.py` - 7447 staged/active donor-frame, exact-link, CDB-preservation, and strict payload-rejection regression coverage.
+- `knowledge/dil16_decoder_driver_donor_preflight_2026_07_13.md`, `docs/architecture.md`, `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/README.md`, and `knowledge/test_results.jsonl` - donor delta, repair rationale, loader evidence, and test result.
+- `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/03_7447_staged_1x/` - fresh locked-mega 1x control, native/grid diagnostic stages, active terminalized output, and local Proteus screenshots/gate record.

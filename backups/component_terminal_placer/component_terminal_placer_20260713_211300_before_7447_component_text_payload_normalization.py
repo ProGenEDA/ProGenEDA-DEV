@@ -1721,129 +1721,6 @@ def _current_bidir_suffixes_by_pin(
     return suffixes
 
 
-def _remove_catalogue_component_text_field_payloads(
-    data: bytes,
-    geometry: dict[str, Any],
-    *,
-    family: str,
-    key: str,
-) -> tuple[bytes, list[dict[str, Any]]]:
-    """Apply an exact donor-proven component-text payload normalization.
-
-    Some native component-placer packets retain an implementation metadata
-    payload in a length-prefixed ``SUBCKT NAME`` field while the accepted
-    terminalized donor explicitly stores that same field with a zero length.
-    The catalogue may declare this difference only when the entire field,
-    expected payload, and occurrence count are known.  This helper deliberately
-    rejects missing, duplicate, malformed, or nonmatching fields rather than
-    deleting arbitrary component text.
-    """
-
-    raw_rules = geometry.get("component_text_field_payload_removals", ())
-    if raw_rules in (None, ()):
-        return data, []
-    if not isinstance(raw_rules, (list, tuple)):
-        raise ValueError(
-            f"{family} {key} component_text_field_payload_removals must be a list."
-        )
-
-    normalized = data
-    reports: list[dict[str, Any]] = []
-    for raw_rule in raw_rules:
-        if not isinstance(raw_rule, dict):
-            raise ValueError(
-                f"{family} {key} has a malformed component-text payload rule."
-            )
-        raw_field = raw_rule.get("field")
-        raw_payload = raw_rule.get("expected_payload_ascii")
-        if not isinstance(raw_field, str) or not raw_field:
-            raise ValueError(
-                f"{family} {key} component-text payload rule needs a nonempty field."
-            )
-        if not isinstance(raw_payload, str):
-            raise ValueError(
-                f"{family} {key} component-text payload rule for {raw_field!r} "
-                "needs expected_payload_ascii."
-            )
-        try:
-            field = raw_field.encode("ascii")
-            expected_payload = raw_payload.encode("ascii")
-        except UnicodeEncodeError as exc:
-            raise ValueError(
-                f"{family} {key} component-text payload rule must be ASCII."
-            ) from exc
-        expected_occurrences = int(raw_rule.get("expected_occurrences", 1))
-        if expected_occurrences < 1:
-            raise ValueError(
-                f"{family} {key} component-text payload rule for {raw_field!r} "
-                "must expect at least one occurrence."
-            )
-
-        marker = field + b"\x00" * 5 + b"\xff"
-        occurrences: list[tuple[int, int, bytes]] = []
-        cursor = 0
-        while True:
-            marker_offset = normalized.find(marker, cursor)
-            if marker_offset < 0:
-                break
-            length_offset = marker_offset + len(marker)
-            if length_offset >= len(normalized):
-                raise ValueError(
-                    f"{family} {key} {raw_field!r} field has no length byte."
-                )
-            payload_length = normalized[length_offset]
-            payload_start = length_offset + 1
-            payload_end = payload_start + payload_length
-            if payload_end > len(normalized):
-                raise ValueError(
-                    f"{family} {key} {raw_field!r} payload exceeds its packet boundary."
-                )
-            occurrences.append(
-                (
-                    length_offset,
-                    payload_length,
-                    normalized[payload_start:payload_end],
-                )
-            )
-            cursor = payload_end if payload_end > marker_offset else marker_offset + 1
-
-        if len(occurrences) != expected_occurrences:
-            raise ValueError(
-                f"{family} {key} expected exactly {expected_occurrences} {raw_field!r} "
-                f"payload field(s), found {len(occurrences)}."
-            )
-        mismatched = [
-            payload.hex()
-            for _length_offset, _payload_length, payload in occurrences
-            if payload != expected_payload
-        ]
-        if mismatched:
-            raise ValueError(
-                f"{family} {key} {raw_field!r} payload differs from the donor-proven "
-                f"catalogue value: {mismatched}."
-            )
-
-        # Work from the end so every recorded length offset remains valid while
-        # prior fields are shortened.  Keep the field header and replace only
-        # the length byte plus declared payload with a zero-length byte.
-        for length_offset, payload_length, _payload in reversed(occurrences):
-            normalized = (
-                normalized[:length_offset]
-                + b"\x00"
-                + normalized[length_offset + 1 + payload_length :]
-            )
-        reports.append(
-            {
-                "field": raw_field,
-                "expected_occurrences": expected_occurrences,
-                "removed_occurrences": len(occurrences),
-                "removed_payload_bytes": len(expected_payload) * len(occurrences),
-                "replacement": "zero_length_payload",
-            }
-        )
-    return normalized, reports
-
-
 def _attach_catalogue_terminal_contact_stage(
     *,
     source: Path,
@@ -1911,49 +1788,17 @@ def _attach_catalogue_terminal_contact_stage(
             geometry.get("pins"), dict
         ):
             raise ValueError(f"{family} {key} lacks catalogue pin geometry.")
-        data, component_text_payload_removals = (
-            _remove_catalogue_component_text_field_payloads(
-                data,
-                geometry,
-                family=family,
-                key=key,
-            )
-        )
         clean_packet_attachment_order = str(
             geometry.get("clean_packet_attachment_order", "")
         )
         if clean_packet_attachment_order not in {
             "subpart_terminal_component_wires",
             "component_stream_then_attachment_units",
-            "terminal_leading_component_then_wires",
         }:
             raise ValueError(
                 f"{family} {key} lacks a donor-proven staged stream grammar "
                 "for the terminal contact gate."
             )
-        strip_component_placer_finalizer = bool(
-            geometry.get(
-                "strip_component_placer_finalizer_before_terminal_leading_wires",
-                False,
-            )
-        )
-        if strip_component_placer_finalizer:
-            if clean_packet_attachment_order != "terminal_leading_component_then_wires":
-                raise ValueError(
-                    f"{family} {key} declares a terminal-leading component-finalizer "
-                    "trim with a different attachment order."
-                )
-            if not data.endswith(b"\x00"):
-                raise ValueError(
-                    f"{family} {key} lacks the component-placer raw finalizer "
-                    "required by the staged terminal-leading grammar."
-                )
-            # ComponentGroup.data retains one generator tail beyond the matched
-            # ROOT.DSN packet. Donor-terminal-leading grammars retain the
-            # packet's own final zero, but consume that extra group tail before
-            # the first WIRE unit is appended.
-            data = data[:-1]
-        stage_group = replace(group, data=data)
         object_stream_finalizer = str(
             geometry.get("object_stream_finalizer", "single_ff")
         )
@@ -1968,7 +1813,7 @@ def _attach_catalogue_terminal_contact_stage(
             )
         object_stream_finalizers.add(object_stream_finalizer)
         plan = plan_catalogue_pin_bidir_terminals(
-            [stage_group],
+            [group],
             catalog=catalog,
             suffix_start=suffix,
             use_donor_terminal_labels=use_donor_terminal_labels,
@@ -2047,13 +1892,7 @@ def _attach_catalogue_terminal_contact_stage(
                     strict=True,
                 )
             }
-            raw_order_key = (
-                "donor_terminal_record_order"
-                if clean_packet_attachment_order
-                == "terminal_leading_component_then_wires"
-                else "donor_attachment_unit_order"
-            )
-            raw_order = geometry.get(raw_order_key)
+            raw_order = geometry.get("donor_attachment_unit_order")
             if raw_order is None:
                 ordered_terminal_records = terminal_records
             elif isinstance(raw_order, (list, tuple)):
@@ -2063,7 +1902,7 @@ def _attach_catalogue_terminal_contact_stage(
                     or set(order) != set(terminal_by_pin)
                 ):
                     raise ValueError(
-                        f"{family} {key} {raw_order_key} {order} does not "
+                        f"{family} {key} donor attachment order {order} does not "
                         "exactly cover staged terminal pins "
                         f"{sorted(terminal_by_pin)}."
                     )
@@ -2072,19 +1911,10 @@ def _attach_catalogue_terminal_contact_stage(
                 ]
             else:
                 raise ValueError(
-                    f"{family} {key} {raw_order_key} must be a list."
+                    f"{family} {key} donor_attachment_unit_order must be a list."
                 )
-            if clean_packet_attachment_order == "terminal_leading_component_then_wires":
-                # Preserve the terminal-leading separator and the raw component
-                # tail exactly as the donor grammar requires.  Unlike the
-                # component-first stage, this tail sits at the component/WIRE
-                # boundary and must not be consumed before active WIREs exist.
-                local_records.extend(ordered_terminal_records)
-                local_records.append(b"\x00")
-                local_records.append(data)
-            else:
-                local_records.append(data[:-1])
-                trailing_terminal_records.extend(ordered_terminal_records)
+            local_records.append(data[:-1])
+            trailing_terminal_records.extend(ordered_terminal_records)
         family_reports.append(
             {
                 "family_handler": f"{family}/catalogue-{attachment_stage}-stage-v1",
@@ -2096,7 +1926,6 @@ def _attach_catalogue_terminal_contact_stage(
                 "clean_packet_attachment_order": clean_packet_attachment_order,
                 "object_stream_finalizer": object_stream_finalizer,
                 "root_cdb_policy": "preserve_source_unchanged",
-                "component_text_payload_removals": component_text_payload_removals,
             }
         )
 
@@ -2601,28 +2430,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
             continue
 
-        data, component_text_payload_removals = (
-            _remove_catalogue_component_text_field_payloads(
-                data,
-                geometry,
-                family=family,
-                key=key,
-            )
-        )
-        planning_data, planning_text_payload_removals = (
-            _remove_catalogue_component_text_field_payloads(
-                planning_data,
-                geometry,
-                family=family,
-                key=key,
-            )
-        )
-        if planning_text_payload_removals != component_text_payload_removals:
-            raise ValueError(
-                f"{family} {key} component-text normalization differs between "
-                "the emission and planning packets."
-            )
-
         clean_packet_attachment_order = str(
             geometry.get(
                 "clean_packet_attachment_order",
@@ -3100,7 +2907,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 "allow_zero_length_wire_units": bool(
                     geometry.get("allow_zero_length_wire_units", False)
                 ),
-                "component_text_payload_removals": component_text_payload_removals,
                 "stripped_existing_terminal_count": stripped_existing_terminals,
                 "terminal_pins": terminal_pins,
             }

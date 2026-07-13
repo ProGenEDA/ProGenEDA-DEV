@@ -132,18 +132,64 @@ Its stream is materially different from 4511:
   `QD PIN 10`, `QE PIN 9`, `QF PIN 15`, `QG PIN 14`, `A PIN 7`, `B PIN 1`,
   `C PIN 2`, `D PIN 6`, `BI/RBO PIN 4`, `RBI PIN 5`, `LT PIN 3`.
 
-The locked-mega no-terminal `U1` packet is 425 raw bytes / 424 emitted bytes,
-whereas the terminal donor's component-to-first-WIRE span is 374 bytes. That
-50-byte DSN difference is not yet explained by a complete donor-versus-locked
-packet comparison. 7447 therefore remains unmodified and un-emitted while the
-4511 route is proven. Its zero-length donor WIREs are evidence of link order,
-not permission to omit the required grid-contact nonzero short WIRE in a new
-output.
+### Resolved locked-mega component-frame delta
+
+The locked-mega no-terminal `U1` packet is 424 raw bytes, whereas the terminal
+donor's component-to-first-WIRE span is 374 bytes. The entire 50-byte delta is
+now accounted for by one exact text-field payload, not by a terminal, WIRE,
+link, or CDB difference:
+
+```text
+field: SUBCKT NAME
+locked payload (length 0x32):
+{MODFILE=74XX47.MDF}\n{PACKAGE=DIL16}\n{ITFMOD=TTL}\n
+accepted donor payload: empty (length 0x00)
+```
+
+The field header is unique in the DSN packet. Its length byte is at raw packet
+offset `211`; replacing the exact 50-byte ASCII payload with an empty payload
+reduces the locked DSN packet to 374 bytes while retaining its final raw `00`.
+`ComponentGroup.data` separately carries one extra generator-tail `00` beyond
+that matched DSN packet. The terminal-leading profile must consume only this
+extra group tail before its first WIRE unit; it must retain the DSN packet's own
+raw `00`, which is part of the donor component-to-WIRE boundary.
+
+After that strict normalization and translation of the donor-independent
+component coordinates, every remaining difference is enumerated:
+
+1. seven bytes in the leading `U1` position pair, which belong to the current
+   component placement rather than terminal serialization;
+2. one opaque native instance byte (`04` locked mega versus `0D` donor), which
+   is preserved; and
+3. the 42 active bytes of the fourteen donor component-link fields. Each field
+   is an end-relative slot at `-64, -60, ..., -12`, has trailer `0100`, and
+   receives its suffix only after final ROOT.DSN WIRE addresses are known.
+
+No unexplained component-stream difference remains. The terminal and WIRE
+orders are intentionally different and must be represented separately:
+
+- terminal records: `13,12,11,10,9,15,14,7,1,2,6,4,5,3`;
+- WIRE/link slots: `7,13,1,12,2,11,6,10,4,9,5,15,3,14`.
+
+The accepted donor WIREs are 50-byte `catalogue_leading_separator` units whose
+two coordinate points are equal. They prove the record/link order only. The
+new output must instead use the required shared mechanics: a left/right
+oriented terminal contact one grid step outward, then a nonzero short WIRE to
+the exact pin. The terminal-leading record order remains donor-proven, and the
+WIRE order is taken from the per-pin donor WIRE indices.
+
+The next implementation is constrained to one generic profile-driven operation:
+strictly remove only a catalogue-declared expected text-field payload before
+the existing shared terminal serializer acts. It must reject missing, duplicate,
+or nonmatching payloads; no arbitrary metadata deletion is permitted.
 
 ## Preflight result
 
-4511 has no unexplained DSN structural delta. 7447 does, so the new shared
-ordering support and the first loader proof will be scoped to **4511 only**.
+4511 has no unexplained DSN structural delta. 7447's packet frame is fully
+explained and its strict generic payload-normalization rule is profile-gated:
+it removes only the declared, exact `SUBCKT NAME` payload and consumes only the
+extra `ComponentGroup.data` tail before terminal-leading WIRE emission. No
+frozen family profile changed.
 
 ## 4511 staged 1x and local Proteus result
 
@@ -170,9 +216,7 @@ to their generated source files. Screenshots are retained under
 `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/01_4511_staged_1x/local_proteus_gate/`.
 
 4511 is ready for its separately gated scale work, subject to user visual
-acceptance. 7447 remains deliberately un-emitted: its unexplained 50-byte
-component-to-first-WIRE difference must be fully resolved from its authoritative
-donor before its profile or stream is changed.
+acceptance.
 
 ## 4511 9x and 15x scale result
 
@@ -190,3 +234,34 @@ The normal disposable copies retained the generated SHA-256 values:
 for 15x. The large 15x screenshots visibly show repeated 4511 symbols with
 their green short terminal attachments. No Bad Object Record appeared, so no
 normal copy was Ctrl+S-saved.
+
+## 7447 staged 1x and local Proteus result
+
+The shared placer emitted the native-contact, grid-contact, and complete active
+stages from a fresh locked-mega 7447 control. No terminalized donor packet was
+copied into the generated project.
+
+| Stage | Project | ROOT.DSN result | Local Proteus 8.13 result |
+| --- | --- | --- | --- |
+| Bare control | `S02_7447_1X_NO_TERMINAL.pdsprj` | locked-mega placement control | retained for attachment-only fault isolation |
+| Native contact | `S02_7447_1X_NATIVE_CONTACT_STAGE_sa.pdsprj` | fourteen inactive donor-order terminals, no WIREs | normal visible cold open after 12 seconds; no save |
+| Grid contact | `S02_7447_1X_GRID_CONTACT_STAGE_sa.pdsprj` | fourteen inactive grid-contact terminals, no WIREs | normal visible cold open after 12 seconds; no save |
+| Complete active | `S02_7447_1X_CATALOGUE_TERMINAL_sa.pdsprj` | fourteen active terminal/component links and fourteen nonzero grid-contact-to-exact-pin WIREs | normal visible cold open and normal cold reopen after 12 seconds each; no save |
+
+The active result has the donor's 2,610-byte object-stream length, component
+start `1535`, first WIRE marker `1933`, and 374-byte component-to-first-WIRE
+span. It preserves the source `ROOT.CDB` unchanged. Its fourteen terminal
+records preserve the donor label/order/orientation; every terminal contact is
+on the 254,000-unit grid, every WIRE begins at that contact and ends at the
+calculated unsnapped physical pin, and every `0100` component link resolves to
+the final-address suffix of that WIRE.
+
+No Bad Object Record occurred in the visible local gate, so no normal copy was
+Ctrl+S-saved. The active copy remained SHA-256
+`608DD824E9D76A16C106D4DFC8300EFF77BE2102964BEB6FFAECAE3C3DBD668E` before
+and after both its initial cold open and cold reopen. Screenshots are retained
+in `experiments/dil16_decoder_driver_terminal_v1_temp_2026_07_13/03_7447_staged_1x/local_proteus_gate/`.
+
+7447 is a 1x loader/persistence proof only. Its profile remains capped at one
+normal component until user visual acceptance authorizes the separate 9x/15x
+scale verification.

@@ -2084,6 +2084,42 @@ no modal error and unchanged normal-copy hashes. User visual acceptance remains
 the final layout authority; this scale result does not authorize a mixed grammar.
 
 `7447` is not interchangeable with 4511 merely because both are DIL16
-decoder/driver parts. Its authoritative donor is terminal-leading and still has
-an unexplained 50-byte component-to-first-WIRE difference from the locked mega.
-Do not emit or alter 7447 until that full donor delta is explained.
+decoder/driver parts. Its authoritative donor uses a terminal-leading grammar,
+so it must be researched and emitted through its own catalogue facts.
+
+### 2026-07-13 7447 decoder/driver terminal-leading metadata contract
+
+The authoritative donor is
+`proteus_ic/donors/terminalized_catalogue_evidence/dil16_decoder_driver/7447/7447_terminalized_primary.pdsprj`.
+Its only valid active order is:
+
+`14 terminal records -> separator -> 374-byte component packet -> 14 WIREs -> explicit FF`.
+
+The terminal order is
+`13,12,11,10,9,15,14,7,1,2,6,4,5,3`; its independent WIRE/link order is
+`7,13,1,12,2,11,6,10,4,9,5,15,3,14`. The catalogue stores both orders,
+left/right orientation, exact component-relative pin coordinates, every
+end-relative `0100` pin-link slot, and the accepted donor labels. The shared
+placer therefore emits a grid-contact terminal, a nonzero short WIRE to the
+exact unsnapped pin, and the matching final-address suffix as one attachment
+unit. A terminal merely sitting beside a pin is a failed diagnostic, never a
+candidate.
+
+The complete donor comparison found a strict 50-byte difference: the locked
+mega's `SUBCKT NAME` field has the exact ASCII payload
+`{MODFILE=74XX47.MDF}\n{PACKAGE=DIL16}\n{ITFMOD=TTL}\n`, while the accepted
+donor declares the same unique field with a zero-length payload. The shared
+placer now supports a catalogue-declared, exact payload removal. It rejects a
+missing, duplicated, malformed, or different payload; it never performs broad
+metadata deletion. Separately, `ComponentGroup.data` contains one extra raw
+generator-tail `00` beyond the placed ROOT.DSN packet. The terminal-leading
+profile consumes only that extra byte while retaining the DSN packet's own
+trailing `00`; otherwise every WIRE marker and pin-link field shifts by one.
+
+The repaired 1x output has the same 2,610-byte DSN object-stream width and
+WIRE marker positions as the accepted donor, fourteen on-grid terminal contacts,
+fourteen nonzero exact-pin WIREs, and final-address-rebased active links. Its
+native-contact, grid-contact, active, and active cold-reopen visible Proteus
+gates all opened normally after 12 seconds with no save or modal dialog. This
+is a 1x loader proof only: 9x/15x scaling and mixed dispatch remain blocked
+until user visual acceptance.
