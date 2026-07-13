@@ -591,7 +591,7 @@ def test_catalogue_pin_emitter_uses_clean_bare_component_stream(tmp_path) -> Non
     assert output_chunk.count(b"\x7fWIRE") == 12
 
 
-def test_4027_subpart_route_uses_each_donor_anchor_and_grid_native_wires(
+def test_4027_subpart_route_uses_each_donor_anchor_and_grid_short_wires(
     tmp_path,
 ) -> None:
     source = tmp_path / "catalogue_4027_grid_bare.pdsprj"
@@ -620,12 +620,15 @@ def test_4027_subpart_route_uses_each_donor_anchor_and_grid_native_wires(
         assert pin["x"] % PROTEUS_TERMINAL_GRID == 0
         assert pin["y"] % PROTEUS_TERMINAL_GRID == 0
         assert terminal["symbol_y"] % PROTEUS_TERMINAL_GRID == 0
+        assert wire["terminal_contact"]["x"] % PROTEUS_TERMINAL_GRID == 0
+        assert wire["terminal_contact"]["y"] % PROTEUS_TERMINAL_GRID == 0
         assert wire["coordinates"] == [
-            pin["x"],
-            pin["y"],
+            wire["terminal_contact"]["x"],
+            wire["terminal_contact"]["y"],
             pin["x"],
             pin["y"],
         ]
+        assert wire["terminal_contact"] != wire["pin_contact"]
 
     # The grid-terminal opt-in also moves the donor-proven non-length-prefixed
     # SUBCKT NAME label pair for each physical flip-flop. The default parsed
@@ -726,10 +729,10 @@ def test_4027_staged_terminal_contact_gate_is_dsn_only_and_monotonic(tmp_path) -
         read_internal_file(complete_output, "ROOT.DSN")
     )
 
-    # Grid-preserving component placement means the native and grid-contact
-    # stages have the same DSN contact coordinates. The stages remain separate
-    # loader gates, while the final stage is the first to add WIRE/link units.
-    assert native_dsn == grid_dsn
+    # Stage 2 moves each terminal contact one grid step outward while keeping
+    # the component untouched. Stage 3 is the first stage that adds WIRE/link
+    # units back to the exact component pins.
+    assert native_dsn != grid_dsn
     for report in (native_report, grid_report):
         assert report["valid"]
         assert report["terminal_count_added"] == 14

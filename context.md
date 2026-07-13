@@ -12772,3 +12772,35 @@ The corrected 1× sequence is ready at `experiments/dil16_dual_jk_ff_terminal_v2
 - `knowledge/4027_terminal_stream_preflight_2026_07_13.md` and `docs/progen_eda_canonical_pipeline.md` — record the user-saved recovery boundary, the complete DSN evidence, and the coordinate-frame rule.
 - `tests/test_component_catalog.py` — regression for the two corrected physical 4027 `SUBCKT NAME` positions while asserting default parsed layouts remain frozen.
 - `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/02_subckt_frame_retry/` — regenerated 1× stage 0–3 outputs using the same shared placer; no new terminal-placement script.
+
+## Agent Visible Response - 2026-07-13 16:18 +05:00
+
+The repaired 4027 frame and staged 1× pack are committed and pushed as `c4a3e9aa`. I am keeping the existing user Proteus window untouched while I finish the remaining donor analysis needed for the next 1× retry.
+
+## Agent Visible Response - 2026-07-13 16:26 +05:00
+
+The earlier accepted 4027 evidence exposes the remaining mistake: the donor-shaped attachment grammar supports a nonzero short wire, while the existing route was retaining a zero-length donor wire. I am changing only the new 4027 catalogue policy so the shared placer uses a grid contact one step outward and a short WIRE back to the exact pin.
+
+## Agent Visible Response - 2026-07-13 16:34 +05:00
+
+The shared planner now makes the three 4027 stages genuinely distinct: native pin contact, outward grid contact, then a nonzero short wire with its active link. The accepted two-pin and HC76 paths remain unchanged.
+
+## Agent Visible Response - 2026-07-13 16:40 +05:00
+
+The real three-step 1× pack is now in `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/03_short_wire_retry`. Its final file has 14 terminals and 14 nonzero short wires, with every terminal contact snapped to the grid and every other wire endpoint on the exact 4027 pin.
+
+### Files Edited By Agent In This Continuation
+
+- `src/proteusgen/component_terminal_placer.py` — adds the shared, opt-in `computed_outward_grid` terminal-contact policy; existing donor-explicit profiles are unchanged.
+- `knowledge/component_catalog_v0.json` — declares the 4027 grid-contact/short-wire policy from donor evidence.
+- `knowledge/4027_terminal_stream_preflight_2026_07_13.md` and `tests/test_component_catalog.py` — record and test the nonzero grid-to-pin 4027 route.
+- `backups/component_terminal_placer/component_terminal_placer_20260713_162731_before_4027_computed_outward_grid.py` — required preserved pre-edit shared-placer backup.
+- `experiments/dil16_dual_jk_ff_terminal_v2_temp_2026_07_13/03_short_wire_retry/` — regenerated four staged 4027 DSN-only candidates through the locked component placer and shared terminal placer.
+
+## User Message - 2026-07-13 16:46 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-13 16:46 +05:00
+
+I’m continuing from the corrected 4027 route: first prove the 1× short-wire build through Proteus, then generate and verify 9× and 15× before moving to the next group. I’ll keep the accepted families frozen and use ROOT.DSN only for this repair.

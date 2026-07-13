@@ -200,3 +200,22 @@ This is DSN evidence for an additive, opt-in component-beautifier repair: move
 the `SUBCKT NAME` pair only when the terminal-grid layout option is requested.
 Default accepted-family beautifier paths remain unchanged. No `ROOT.CDB`
 member is read, compared, or mutated for this work.
+
+## Grid-contact short-WIRE evidence
+
+The older real Proteus project
+`experiments/multi_pin_catalogue_terminal_solo_v6_temp_2026_07_04/S07_4027_1X_V6_COORD_FIX/S07_4027_1X_V6_COORD_FIX.pdsprj`
+contains the same fourteen active `WIRE` record shapes with nonzero
+terminal-contact-to-pin segments. Its terminal contacts are on the grid while
+its component pin endpoints retain the source packet's 20,320-unit vertical
+residual. Its coordinate/layout quality was not accepted as a final output,
+but it is valid DSN evidence that 4027's native `00 + WIRE` record grammar
+supports a nonzero short segment.
+
+The corrected staged route therefore keeps the accepted donor's record order,
+link trailer, final-address rebasing, and physical A/B block structure, but
+uses the shared catalogue retargeting mechanism: stage 2 moves a terminal
+contact one grid step outward from the exact pin and stage 3 retargets the
+donor-shaped WIRE topology from that grid contact to the exact pin. This both
+follows the user-required native → grid-contact → short-WIRE proof and avoids
+using a zero-length WIRE as the first active record in the locked-mega output.

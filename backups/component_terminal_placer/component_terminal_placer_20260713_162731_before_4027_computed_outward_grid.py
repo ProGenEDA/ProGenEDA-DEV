@@ -1236,28 +1236,8 @@ def plan_catalogue_pin_bidir_terminals(
                     "x": int(donor_anchor["x"]) + subpart_anchor_delta["x"],
                     "y": int(donor_anchor["y"]) + subpart_anchor_delta["y"],
                 }
-            terminal_contact_policy = str(
-                raw_pin_geometry.get(
-                    "terminal_contact_policy",
-                    geometry.get("terminal_contact_policy", "donor_explicit"),
-                )
-            ).lower()
-            if terminal_contact_policy not in {
-                "donor_explicit",
-                "computed_outward_grid",
-            }:
-                missing_geometry.append(
-                    {
-                        "component_key": key,
-                        "component_family": family,
-                        "pin": pin.name,
-                        "reason": "unsupported_terminal_contact_policy",
-                    }
-                )
-                continue
             if (
-                terminal_contact_policy == "donor_explicit"
-                and component_anchor is not None
+                component_anchor is not None
                 and isinstance(coordinate_donor_anchor, dict)
                 and raw_pin_geometry.get("terminal_contact_x") is not None
                 and raw_pin_geometry.get("terminal_contact_y") is not None
