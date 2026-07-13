@@ -13283,3 +13283,17 @@ continue
 ## Agent Visible Response - 2026-07-14 01:34 +05:00
 
 Continuing. The workspace now has permission to write Git again, so I’m checkpointing the verified 7447 9×/15× work first, then I’ll proceed from the next donor group without changing frozen routes.
+
+## Agent Visible Response - 2026-07-14 01:36 +05:00
+
+The 7447 scale checkpoint is now committed and pushed (`49a86ec0`). I’m moving to the DIL16 counter group—74HC160 and 74HC192—and first auditing the complete accepted donor streams against fresh locked-mega controls before touching the shared placer.
+
+## Agent Visible Response - 2026-07-14 01:43 +05:00
+
+The counter donors are structurally clear. Both use the same terminal-leading packet shape as 7447, but their donor WIREs are zero-length—useful for record/link offsets, not acceptable as final output. The shared placer can add the required one-grid-step short WIREs if I add only these families’ profile facts.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/dil16_counter_donor_preflight_2026_07_14.md` - complete donor/control comparison, terminal/WIRE/link facts, known zero-WIRE limitation, and the 74HC192 UP pin-label correction.
+- `experiments/dil16_counter_terminal_v1_temp_2026_07_14/00_preflight_controls/` - fresh locked-mega 1x controls and manifests for 74HC160 and 74HC192.
+- `experiments/dil16_counter_terminal_v1_temp_2026_07_14/README.md` - experiment scope and preflight-only status.
