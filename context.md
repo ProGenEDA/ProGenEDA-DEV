@@ -13651,3 +13651,28 @@ HC151 has passed its full local gate at 1×, 9×, and 15× without a modal error
 ### Files Edited By Agent In This Continuation
 
 - `tests/test_component_placer.py` — extends the shared HC151 regression to the actual 15× route and asserts its loader-passed catalogue state; the focused suite is now 3 passed.
+
+## Agent Visible Response - 2026-07-14 05:01 +05:00
+
+Checkpoint `d4c8baa7` is pushed and remote-verified. The mux group still needs a fresh revalidation of 74HC157, so I’m taking that next from its authoritative donor and keeping HC151/4027/HC76 frozen.
+
+## Agent Visible Response - 2026-07-14 05:03 +05:00
+
+The HC157 donor confirms a different frozen grammar: terminal-leading records and a donor-proven one-byte finalizer trim before its active WIRE table. I’ve recorded that complete contract and am generating the three 1× diagnostic stages from the same shared placer now.
+
+## Agent Visible Response - 2026-07-14 05:04 +05:00
+
+HC157’s fresh 1× static route is complete and additive: it retains the terminal-leading donor order and trim, produces 14 grid-aligned nonzero exact-pin wires, and preserves the no-terminal control CDB. I’m running the three live loader stages now to catch the same failure class before any scale generation.
+
+## Agent Visible Response - 2026-07-14 05:06 +05:00
+
+All HC157 stage files open cleanly, including the terminal-leading diagnostics. The active 1× view shows all fourteen labels and short wires correctly; 9× and 15× are statically clean at 126 and 210 attachment units, so I’m doing their cold-open gates now.
+
+## Agent Visible Response - 2026-07-14 05:10 +05:00
+
+HC157 has now passed the full 1×/9×/15× cold-open sequence, including its terminal-leading stages. Its existing focused regression passes all three cases, and I’m recording/pushing it before continuing to the next unfinished family.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/dil16_mux_74hc157_donor_revalidation_preflight_2026_07_14.md`, `knowledge/component_catalog_v0.json`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record donor-first HC157 evidence and fresh 1×/9×/15× loader results.
+- `experiments/dil16_mux_74hc157_terminal_v2_temp_2026_07_14/` — fresh controls, staged/active packs, loader capture evidence, README, and structured result.

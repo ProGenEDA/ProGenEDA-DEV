@@ -2323,3 +2323,22 @@ retargeting the terminal-side donor geometry to each placed component. 9x and
 Proteus cold-open/cold-reopen gates passed without a save. This establishes a
 tested solo operating limit of 15 for 74HC151; mixed construction remains
 deferred until every component group has equivalent solo evidence.
+
+### 2026-07-14 74HC157 fresh mux revalidation
+
+74HC157 uses a different, terminal-leading DIL16 grammar: fourteen terminals,
+then the live locked-mega component packet, then fourteen attachment WIREs and
+one structural finalizer. The accepted donor's WIREs are zero-length native
+link evidence, but the unified generated route keeps the donor order and
+link-field positions while producing a grid-aligned terminal contact and a
+nonzero WIRE to each exact pin. The four right pins use 0 degrees; the ten
+left pins use 1800.
+
+The per-profile `strip_component_placer_finalizer_before_terminal_leading_wires`
+rule is mandatory. It removes only the stale raw generator finalizer that
+normal placed designs have already consumed; without it every link/WIRE shifts
+one byte and Proteus raises the documented VGDVC error. This is not a global
+cleanup rule. Fresh current-code 1x, 9x, and 15x outputs passed delayed cold
+open/cold reopen gates with 14, 126, and 210 grid-aligned nonzero attachment
+units. The tested solo operating limit is 15; mixed construction remains
+deferred until all groups have equivalent evidence.
