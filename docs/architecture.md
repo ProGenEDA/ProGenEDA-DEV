@@ -2453,4 +2453,7 @@ terminal-contact point for pins 6/3/11/4/9/10/12. The additive catalogue fix
 restores only those donor paths and provenance metadata; no shared algorithm or
 accepted route changed. The native, grid, complete, and cold-reopen 1x gates
 all normal-opened without a modal dialog or copy mutation. Scale proof remains
-separately gated.
+separately gated. Its independent 9x and 15x routes preserve 108/180 active
+attachments, including every restored third point, and normal-open/cold-reopen
+without a modal error. The 15x cold-reopen capture visibly shows repeated XOR
+gates with the donor-shaped terminal wiring.
