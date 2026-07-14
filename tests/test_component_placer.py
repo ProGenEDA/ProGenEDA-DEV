@@ -3192,6 +3192,10 @@ def test_dil14_catalogues_wide_reference_safe_link_slots(family: str) -> None:
 
     profile = load_component_catalog().get_profile(family)
     assert profile is not None
+    assert (
+        profile.terminal_support
+        == "catalogue_terminal_1x_9x_15x_loader_passed_pending_user_visual_validation"
+    )
     geometry = profile.proteus["pin_geometry"]
     slots = geometry["component_link_subpart_end_offsets"]
     assert geometry["object_stream_finalizer"] == "single_ff"
@@ -4474,18 +4478,25 @@ def test_hc157_scale_preserves_each_catalogue_attachment_unit(
     )
 
 
+@pytest.mark.parametrize(
+    ("count", "expected_two_point", "expected_three_point"),
+    ((9, 72, 54), (15, 120, 90)),
+)
 def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
     tmp_path: Path,
+    count: int,
+    expected_two_point: int,
+    expected_three_point: int,
 ) -> None:
     """HC151 preserves routed donor topology when a later row is off-grid."""
 
     family = "74HC151"
-    base = tmp_path / "74HC151_9x_no_terminal.pdsprj"
-    output = tmp_path / "74HC151_9x_terminalized.pdsprj"
+    base = tmp_path / f"74HC151_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"74HC151_{count}x_terminalized.pdsprj"
     placement = generate_component_placement_project(
         {
             "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
-            "components": {family: 9},
+            "components": {family: count},
             # Deliberately do not request a grid-aware component placement:
             # terminal attachment itself must handle a human/non-grid input.
             "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
@@ -4499,13 +4510,14 @@ def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
         placement.selected_groups,
         terminal_families=(family,),
         use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
     )
 
     assert placement.valid
     assert report["valid"] is True
-    assert report["terminalized_component_count"] == 9
-    assert report["terminal_count_added"] == 126
-    assert report["wire_count_added"] == 126
+    assert report["terminalized_component_count"] == count
+    assert report["terminal_count_added"] == 14 * count
+    assert report["wire_count_added"] == 14 * count
     assert report["terminal_grid_alignment_valid"] is True
     assert report["wire_path_contacts_valid"] is True
     assert report["terminal_suffix_links_valid"] is True
@@ -4522,10 +4534,10 @@ def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
         chunk_start=terminal_placer._object_chunk_absolute_start(dsn),
     )
     wires_by_suffix = {int(row["suffix"]): row for row in wires}
-    assert len(terminals) == len(wires) == 126
+    assert len(terminals) == len(wires) == 14 * count
     assert Counter(len(row["full_coordinates"]) // 2 for row in wires) == {
-        2: 72,
-        3: 54,
+        2: expected_two_point,
+        3: expected_three_point,
     }
     for terminal in terminals:
         if int(terminal["angle_tenths"]) == 0:

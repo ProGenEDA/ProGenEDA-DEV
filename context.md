@@ -13607,6 +13607,18 @@ The full 4027 route, plus 9× and 15× cold reopens, all pass without a dialog o
 
 ## Agent Visible Response - 2026-07-14 04:39 +05:00
 
+## Agent Visible Response - 2026-07-14 04:40 +05:00
+
+Checkpoint `a2055616` is pushed and remote-verified. The dual-JK group is complete through 15x, so I’m now surveying only the locked-mega catalogue statuses to select the next unfinished solo group; I’ll continue with its authoritative Proteus donor, not KiCad or a new donor.
+
+## Agent Visible Response - 2026-07-14 04:41 +05:00
+
+The next incomplete member in the locked-mega catalogue is `74HC151` (mux group; 74HC157 already has recorded 1x/9x/15x loader evidence). I’m starting its fresh donor preflight now, preserving all completed 4027/HC76 behavior.
+
+## Agent Visible Response - 2026-07-14 04:43 +05:00
+
+I’m continuing the solo-first sequence. I’ll keep the accepted routes frozen, audit the ordinary-diode/D20 selection separately, and finish the remaining groups at 1x, 9x, and 15x before attempting any mixed pack.
+
 4027 is now fully revalidated at 1×, 9×, and 15× without changing its active terminal route: 7 focused 4027 tests and 28 frozen two-pin tests pass. I’m recording this donor-native exception and checkpointing it, then I’ll move to the next unfinished solo group.
 
 ### Files Edited By Agent In This Continuation
@@ -13614,3 +13626,28 @@ The full 4027 route, plus 9× and 15× cold reopens, all pass without a dialog o
 - `knowledge/dil16_dual_jk_ff_4027_donor_preflight_2026_07_14.md`, `knowledge/component_catalog_v0.json`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record the actual complete donor facts, the recovered-prefix warning, the zero-length attachment exception, and fresh 1×/9×/15× loader results.
 - `tests/test_component_catalog.py` — corrected stale 4027 expectations to the authoritative donor’s already-working native WIRE geometry and added 9× coverage; no terminal placer behavior changed.
 - `experiments/dil16_dual_jk_ff_4027_terminal_v3_temp_2026_07_14/` — fresh locked-mega controls, staged diagnostics, 9×/15× packs, fatal/accepted screenshots, README, and loader record.
+
+## Agent Visible Response - 2026-07-14 04:44 +05:00
+
+The fresh audit corrects my selection: 74HC151 is not unproven—it already has donor-backed 1×/9×/15× loader evidence. I’m revalidating that accepted shared route against the actual donor rather than modifying it, then I’ll move to the next genuinely unfinished family.
+
+## Agent Visible Response - 2026-07-14 04:46 +05:00
+
+The regenerated HC151 1× stream matches the authoritative donor in every structural route fact: 14 grid contacts, 14 nonzero donor-shaped wires, identical labels/orientations/marker offsets and only the expected rebased active-link bytes differ. I’m running the live Proteus stages now; I will not save a normally opening project.
+
+## Agent Visible Response - 2026-07-14 04:53 +05:00
+
+HC151 now has clean static scale evidence: 9× has 126 active terminal/WIRE pairs; 15× has 210. Every terminal contact is grid-aligned, each wire is nonzero and reaches its pin, and all link suffix sets match. I’m doing the delayed 9× and 15× cold-open checks next, with a visual capture only for 15×.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/dil16_mux_74hc151_donor_revalidation_preflight_2026_07_14.md`, `knowledge/component_catalog_v0.json`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record the actual full 74HC151 donor audit and fresh loader-tested 1×/9×/15× route.
+- `experiments/dil16_mux_74hc151_terminal_v2_temp_2026_07_14/` — contains fresh locked-mega no-terminal controls, staged 1× diagnostics, complete 1×/9×/15× terminalized projects, gate captures, README, and structured loader result.
+
+## Agent Visible Response - 2026-07-14 05:00 +05:00
+
+HC151 has passed its full local gate at 1×, 9×, and 15× without a modal error or a save/rewrite. I added a regression that now covers both 9× and 15×, while leaving the shared terminal placer unchanged; I’m checkpointing this revalidation and then moving to the next unresolved family.
+
+### Files Edited By Agent In This Continuation
+
+- `tests/test_component_placer.py` — extends the shared HC151 regression to the actual 15× route and asserts its loader-passed catalogue state; the focused suite is now 3 passed.

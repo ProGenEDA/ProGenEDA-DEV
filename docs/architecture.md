@@ -2303,3 +2303,23 @@ Static checks prove `7/63/105` LM741 and
 nonzero. This establishes a tested solo limit of 15 per family only; mixed
 terminalization remains deferred until every remaining group has the same
 solo evidence.
+
+### 2026-07-14 74HC151 fresh mux revalidation
+
+74HC151 is a frozen catalogue-driven DIL16 mux route, not a generic
+label-only terminal case. Its authoritative project has fourteen ordered
+terminal/WIRE units: two right-side 0-degree output terminals and twelve
+left-side 1800 terminals, all with grid-aligned attaching contacts. Every
+unit uses a nonzero donor-shaped wire to the exact physical pin; six wires
+retain their donor three-point bend. The final coordinate can end in `FF`, so
+the separate structural finalizer must be explicitly emitted.
+
+The current shared placer, locked-mega component placer, and donor catalogue
+were freshly revalidated at 1x, 9x, and 15x. The 1x object stream matches all
+donor routing facts, with only final-address-rebased active terminal/component
+link fields differing. Scale output keeps terminal contacts on grid while
+retargeting the terminal-side donor geometry to each placed component. 9x and
+15x contain 126 and 210 nonzero active units respectively, and normal
+Proteus cold-open/cold-reopen gates passed without a save. This establishes a
+tested solo operating limit of 15 for 74HC151; mixed construction remains
+deferred until every component group has equivalent solo evidence.
