@@ -2414,3 +2414,13 @@ twelve grid-aligned, nonzero terminal-to-exact-pin WIREs and matching active
 link suffixes. 9x and 12x outputs passed normal/cold-reopen gates with 108 and
 144 units. A fresh 15x control cannot form 15 complete packages from the
 locked donor; this is source availability rather than a terminal-emitter cap.
+
+### 2026-07-14 74HC08 DIL14 quad-gate revalidation
+
+The HC08 profile is a donor-grounded component-stream-first route with four
+placed AND gates followed by twelve terminal/WIRE units in exact order
+`8,11,3,6,1,2,4,5,9,10,12,13`. All donor wires are two-point, while all
+current positions derive from a current subpart anchor and relative pin data.
+The complete 1x staged/cold-reopen gate passed with 12 grid-attached nonzero
+links. The independent 9x/15x scale gate remains next; it must not reuse HC00
+or HC02 availability facts.
