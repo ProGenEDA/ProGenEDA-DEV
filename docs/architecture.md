@@ -2477,3 +2477,23 @@ units, the donor's exact per-package labels and 3/2-point WIRE pattern, grid
 contacts, final-address suffixes, and 9/15-package CDBs. Both normal-opened
 and cold-reopened without a modal error or copy mutation; the 15x captures
 visibly show repeated terminalized XNOR gates.
+
+### 2026-07-14 74HC04 DIL14 hex-inverter record mapping
+
+74HC04 is a component-stream-first, six-subpart route from the locked mega
+placer. Its authoritative E04 donor exposes an important backend detail that
+cannot be inferred from ordinary gate naming: the internal Proteus `D` record
+contains electrical pins 13/12 and the internal `F` record contains 9/8. The
+catalogue therefore keeps the normalized human gate-letter metadata intact,
+while its separate backend `pin_subparts`, anchor indices, and active link
+slots use the donor-proven record mapping. This lets terminal coordinates and
+active links remain correct after component placement or beautification.
+
+The repair changes only those HC04 profile facts. The shared terminal placer,
+locked mega component placer, terminal/WIRE order, donor paths, and all frozen
+families remain unchanged. Fresh control/native-contact/grid-contact/complete
+outputs all normal-opened after the delayed local Proteus check; the complete
+output cold-reopened unchanged without a modal error. It has 12 grid contacts,
+12 nonzero donor-shaped short wires, matching final-address terminal/component
+links, and the E04 point-count pattern `3,3,3,3,3,3,4,3,4,4,4,4`. Scale
+promotion remains a separate 9x/15x checkpoint.

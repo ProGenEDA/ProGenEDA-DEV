@@ -13969,3 +13969,41 @@ The HC266 scale gate is still in progress through its independent cold opens. I�
 
 - `knowledge/component_catalog_v0.json`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `tests/test_component_placer.py` — promote HC266’s proven 15× capacity and add scale regression coverage.
 - `experiments/dil14_quad_2input_logic_74hc266_terminal_v2_temp_2026_07_14/03_scale_9x_15x/` and `04_local_proteus_scale_gate/` — generated scale controls, complete outputs, independent static audit data, and retained 15× evidence.
+
+## Agent Visible Response - 2026-07-14 07:12 +05:00
+
+HC266 now completes the DIL14 quad-gate group through 15× and is pushed as `57adb8ba`. I’m moving to the next group, 74HC04, and will begin again from its actual accepted donor rather than reusing any other family’s byte assumptions.
+
+## Agent Visible Response - 2026-07-14 22:34 +05:00
+
+I’m continuing from the completed HC266 checkpoint. I’ll finish 74HC04 from its accepted donor first—auditing the actual pin-link slots before changing anything—then prove its 1×, 9×, and 15× routes.
+
+## User Message - 2026-07-14 22:35 +05:00
+
+are u sure that u are not just redoing the ones u have already tested? or are just finalizing makign sure all work?
+
+## Agent Visible Response - 2026-07-14 22:35 +05:00
+
+No. I’m not redoing accepted groups: RESISTOR/two-pin families, HC86, and HC266 are frozen after their own checks. I moved to 74HC04 because it has not yet passed a reliable unified 1×→9×→15× terminal route; I’m only finalizing that new family from its accepted donor.
+
+## Agent Visible Response - 2026-07-14 22:36 +05:00
+
+The HC04 donor has six internal subparts, and I’ve isolated the risky point: its last two pin-link slots are not in the logical subpart positions the current catalogue claims. I’m producing a disposable shared-placer diagnostic now to prove the exact byte positions before I alter the catalogue.
+
+## Agent Visible Response - 2026-07-14 22:37 +05:00
+
+The donor comparison is now concrete: it proved the existing HC04 D/F record assignment was reversed for pins 8/9 versus 12/13. I corrected only that family’s catalogue mapping; the shared emitter and all accepted families remain untouched. The regenerated 1× output has the donor’s 12 labels, 12 active wires, exact routed-point pattern, matching links, and grid contacts.
+
+## Agent Visible Response - 2026-07-14 22:38 +05:00
+
+The staged local Proteus gate is running now: bare control, native-contact stage, grid-contact stage, complete stage, then a cold reopen of the complete file. I’m preserving only this HC04 experiment’s disposable copies for the loader audit.
+
+### Files Edited By Agent In This Continuation
+
+- `backups/component_terminal_placer/component_terminal_placer_before_hc04_catalogue_20260714_0715.py` — retained the requested pre-HC04 shared-placer recovery snapshot; shared terminal code remains unchanged.
+- `knowledge/component_catalog_v0.json`, `knowledge/dil14_hex_inverter_74hc04_donor_revalidation_preflight_2026_07_14.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `tests/test_component_placer.py` — recorded the authoritative E04 audit, corrected only the HC04 internal D/F record mapping, architecture rule, result, and regression.
+- `experiments/dil14_hex_inverter_74hc04_terminal_v2_temp_2026_07_14/` — locked-mega staged 1× projects, static audit, loader result record, and route README.
+
+## Agent Visible Response - 2026-07-14 22:40 +05:00
+
+HC04’s 1× route now passes the actual loader sequence: locked-mega control, native contacts, grid contacts, complete active links/wires, and a cold reopen all opened normally. The donor’s D/F record mapping is now pinned by regression, so I’m checkpointing this 1× proof before attempting 9× and 15×.

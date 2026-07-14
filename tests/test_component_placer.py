@@ -3845,6 +3845,27 @@ def test_hc04_catalogue_uses_complete_e04_attachment_grammar() -> None:
     assert geometry["subpart_anchor_coordinate_rebase"] is True
     assert geometry["object_stream_finalizer"] == "double_ff"
     assert set(geometry["subpart_anchor_indices"]) == {"A", "B", "C", "D", "E", "F"}
+    # E04's internal Proteus record order is not the human gate-letter order:
+    # record D owns physical pins 13/12, while record F owns 9/8.  Keep this
+    # binary fact separate from the normalized logical pin model.
+    assert geometry["pin_subparts"]["13"] == geometry["pin_subparts"]["12"] == "D"
+    assert geometry["pin_subparts"]["9"] == geometry["pin_subparts"]["8"] == "F"
+    assert geometry["component_link_subpart_end_offsets"]["13"] == {
+        "subpart": "D", "offset": -9
+    }
+    assert geometry["component_link_subpart_end_offsets"]["12"] == {
+        "subpart": "D", "offset": -5
+    }
+    assert geometry["component_link_subpart_end_offsets"]["9"] == {
+        "subpart": "F", "offset": -9
+    }
+    assert geometry["component_link_subpart_end_offsets"]["8"] == {
+        "subpart": "F", "offset": -5
+    }
+    assert geometry["pins"]["13"]["component_anchor_index"] == 3
+    assert geometry["pins"]["12"]["component_anchor_index"] == 3
+    assert geometry["pins"]["9"]["component_anchor_index"] == 5
+    assert geometry["pins"]["8"]["component_anchor_index"] == 5
     assert all(
         len(geometry["pins"][pin]["wire_unit_coordinates"]) // 2 in {3, 4}
         for pin in HC04_E04_ATTACHMENT_ORDER
