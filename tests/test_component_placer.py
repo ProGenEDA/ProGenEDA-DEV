@@ -4358,6 +4358,8 @@ def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
         / "74HC76_terminalized_primary.pdsprj"
     )
     base = tmp_path / "74HC76_1x_no_terminal.pdsprj"
+    native_stage = tmp_path / "74HC76_1x_native_contact.pdsprj"
+    grid_stage = tmp_path / "74HC76_1x_grid_contact.pdsprj"
     output = tmp_path / "74HC76_1x_terminalized.pdsprj"
     result = generate_component_placement_project(
         {
@@ -4367,6 +4369,22 @@ def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
         },
         base,
         full_cdb=True,
+    )
+    native_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        native_stage,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="native_pin_contact",
+    )
+    grid_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        grid_stage,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="grid_contact",
     )
     report = attach_catalogue_pin_bidir_terminals_to_project(
         base,
@@ -4382,11 +4400,22 @@ def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
     blocks = geometry["donor_subpart_attachment_blocks"]
     assert geometry["wire_record_encoding"] == "catalogue_leading_separator"
     assert geometry["subpart_link_prefix_zero_trim_count"] == 1
+    assert geometry["staged_contact_requires_active_attachment_unit"] is True
+    assert geometry["terminal_contact_policy"] == "computed_outward_grid"
+    assert geometry["terminal_contact_outward_grid_steps"] == 1
     assert [block["subpart"] for block in blocks] == ["A", "B"]
     assert set(blocks[0]["terminal_pins"]) != set(blocks[0]["wire_pins"])
     assert set(blocks[1]["terminal_pins"]) != set(blocks[1]["wire_pins"])
 
     assert result.valid
+    assert native_report["active_attachment_unit_loader_stage"] is True
+    assert grid_report["active_attachment_unit_loader_stage"] is True
+    assert native_report["terminal_count_added"] == native_report["wire_count_added"] == 14
+    assert grid_report["terminal_count_added"] == grid_report["wire_count_added"] == 14
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in grid_report["wire_path_contact_checks"]
+    )
     assert report["valid"] is True
     assert report["terminalized_component_count"] == 1
     assert report["terminal_count_added"] == 14
@@ -4436,11 +4465,12 @@ def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
         != tuple(row["full_coordinates"][-2:])
         for row in output_wires
     )
-    # HC76's actual donor contact is directly above/below the pin after grid
-    # snapping.  A generic one-grid outward contact adds an invented horizontal
-    # leg and is rejected by the local Proteus loader for this family.
+    # Its native donor WIRE is zero length. The final shared route instead uses
+    # a one-grid horizontal contact-to-exact-pin segment, as loader-gated on
+    # the locked-mega 1x/9x/15x outputs.
     assert all(
-        row["full_coordinates"][0] == row["full_coordinates"][2]
+        abs(row["full_coordinates"][0] - row["full_coordinates"][2])
+        == 254_000
         and abs(row["full_coordinates"][1] - row["full_coordinates"][3])
         < 254_000
         for row in output_wires
@@ -5518,6 +5548,12 @@ def test_hc76_progressive_scales_keep_complete_attachment_units(
     assert report["terminal_grid_alignment_valid"] is True
     assert report["wire_path_contacts_valid"] is True
     assert report["terminal_suffix_links_valid"] is True
+    assert all(
+        row["terminal_to_wire"]
+        and row["wire_to_pin"]
+        and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
     assert chunk.count(b"$TERBIDIR") == count * 14
     assert chunk.count(b"\x7fWIRE") == count * 14
     assert chunk.endswith(b"\xff")

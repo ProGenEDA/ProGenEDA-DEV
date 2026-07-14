@@ -156,14 +156,15 @@ the exact pin coordinate from the placed-design packet. The component packet
 is never moved by the terminal stage. The test runner hash-locks one mega donor,
 but donor identity is not passed to terminal placement or beautification.
 
-4027 exposed an important diagnostic-versus-final distinction: its accepted
-donor's active WIREs are zero length because their terminal contacts coincide
-with already grid-aligned pins. Those records prove packet/link grammar and
-remain valid only for the native-contact loader diagnostic. They must not be
-replayed as a final terminal route. The catalogue-driven final 4027 route uses
-one outward 254000-unit grid contact and a nonzero exact-pin WIRE, while
-preserving the donor's two-subpart order, link slots, CDB policy, and component
-packets. This was normal/cold-reopen gated at 1x, 9x, and 15x on 2026-07-15.
+4027 and 74HC76 exposed an important diagnostic-versus-final distinction:
+their accepted donors' active WIREs are zero length because terminal contacts
+coincide with already grid-aligned pins. Those records prove packet/link
+grammar and remain valid only for the native-contact loader diagnostic. They
+must not be replayed as a final terminal route. The catalogue-driven final
+routes use one outward 254000-unit grid contact and a nonzero exact-pin WIRE,
+while preserving each donor's subpart order, link slots, CDB policy, and
+component packets. Both were normal/cold-reopen gated at 1x, 9x, and 15x on
+2026-07-15.
 
 ### Backend-neutral catalogue and routing TODOs
 
