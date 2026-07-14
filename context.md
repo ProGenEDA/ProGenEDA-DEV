@@ -13676,3 +13676,28 @@ HC157 has now passed the full 1×/9×/15× cold-open sequence, including its ter
 
 - `knowledge/dil16_mux_74hc157_donor_revalidation_preflight_2026_07_14.md`, `knowledge/component_catalog_v0.json`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record donor-first HC157 evidence and fresh 1×/9×/15× loader results.
 - `experiments/dil16_mux_74hc157_terminal_v2_temp_2026_07_14/` — fresh controls, staged/active packs, loader capture evidence, README, and structured result.
+
+## Agent Visible Response - 2026-07-14 05:11 +05:00
+
+Checkpoint `d5fd6a55` is pushed and remote-verified. The DIL16 mux group is now complete through 15×; I’m moving to the DIL16 decoder/driver group, beginning with 4511 from its actual accepted donor.
+
+## Agent Visible Response - 2026-07-14 05:13 +05:00
+
+4511’s donor is a component-first fourteen-unit route with nonzero two-point wires and a structural-finalizer edge case. Its profile already contains that donor grammar; I’m regenerating its fresh staged 1× control now rather than changing any shared behavior.
+
+## Agent Visible Response - 2026-07-14 05:14 +05:00
+
+4511’s fresh active stream is donor-clean: identical 2,644-byte routing structure, 14 grid contacts/nonzero wires, and only the expected rebased link bytes differ. I’m running its staged Proteus gate before allowing 9× or 15×.
+
+## Agent Visible Response - 2026-07-14 05:17 +05:00
+
+4511’s full 1× gate and visual record are clean. The scale generation is also structurally clean at 126 and 210 active pairs, so I’m doing the two delayed scale opens now and will retain the 15× visual proof.
+
+## Agent Visible Response - 2026-07-14 05:19 +05:00
+
+4511 is now fully revalidated through 15×: all live gates passed, and the three focused shared-route tests pass. I’m documenting and pushing this checkpoint; 7447 is the next member of the same decoder/driver group.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/dil16_decoder_driver_4511_donor_revalidation_preflight_2026_07_14.md`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record full donor facts and fresh 1×/9×/15× loader evidence.
+- `experiments/dil16_decoder_driver_4511_terminal_v2_temp_2026_07_14/` — staged/scale controls, active packs, captures, README, and loader result.

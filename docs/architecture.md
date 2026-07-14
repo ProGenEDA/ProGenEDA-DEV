@@ -2342,3 +2342,19 @@ cleanup rule. Fresh current-code 1x, 9x, and 15x outputs passed delayed cold
 open/cold reopen gates with 14, 126, and 210 grid-aligned nonzero attachment
 units. The tested solo operating limit is 15; mixed construction remains
 deferred until all groups have equivalent evidence.
+
+### 2026-07-14 4511 fresh decoder/driver revalidation
+
+4511 uses a component-first attachment stream: its live component packet is
+followed by fourteen adjacent terminal/WIRE units. The unified profile derives
+the terminal order, grid contact, orientation, leading-separator WIRE encoding,
+active component link slots, and explicit structural finalizer from the actual
+accepted donor. Seven right-side segment terminals use 0 degrees and seven
+left-side inputs use 1800; each unit has a nonzero two-point wire to the exact
+physical pin.
+
+Fresh locked-mega/shared-placer 1x, 9x, and 15x routes passed delayed normal
+cold open/cold reopen gates without saving. Static results prove 14, 126, and
+210 grid-aligned nonzero active units with unique matching final-address
+suffixes. The tested solo operating limit is 15; no mixed route is attempted
+until every remaining component group has matching solo evidence.
