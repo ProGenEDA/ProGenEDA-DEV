@@ -2411,4 +2411,6 @@ geometry loss when a placed package is spread by the beautifier.
 The fresh locked-mega 1x native-contact, grid-contact, complete, and complete
 cold-reopen gates all normal-opened without a save. The final route contains
 twelve grid-aligned, nonzero terminal-to-exact-pin WIREs and matching active
-link suffixes. Scale/mixed work remains separate from this 1x acceptance.
+link suffixes. 9x and 12x outputs passed normal/cold-reopen gates with 108 and
+144 units. A fresh 15x control cannot form 15 complete packages from the
+locked donor; this is source availability rather than a terminal-emitter cap.

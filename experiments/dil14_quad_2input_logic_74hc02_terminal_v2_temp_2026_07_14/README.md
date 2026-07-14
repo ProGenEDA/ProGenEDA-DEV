@@ -16,5 +16,9 @@ Bad Object Record, fatal, LXLCORE, or library dialog. Their hashes were
 unchanged, so no normal project was Ctrl+S saved. `G04_C04_74HC02_COMPLETE.png`
 is the pre-close visual record showing all four gate subparts terminalized.
 
-9x and 12x are the next scale gates; 15x must first be tested as a locked-mega
-component-placer availability control.
+`03_scale_9x_12x/` contains the complete 9x and 12x controls/terminalized
+outputs. They have 108 and 144 grid-attached nonzero WIREs respectively, and
+both their initial cold opens and cold reopens were normal. A fresh 15x
+component-placer control fails before terminal attachment because the locked
+mega has only twelve complete HC02 packages. This is a source availability
+boundary, not an emitter limit.

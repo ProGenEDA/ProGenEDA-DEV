@@ -45,6 +45,8 @@ suffixes, `01 00` trailers, and single-FF finalization.
 
 ## Scale condition
 
-The locked mega has twelve complete safe HC02 packages. 1x must be loader-gated
-before 9x/12x emission; 15x must be attempted as a component-placer control
-and recorded as source availability if it cannot form fifteen complete packages.
+The locked mega has twelve complete safe HC02 packages. The 9x (108 units) and
+12x (144 units) complete paths passed normal/cold-reopen gates. A fresh 15x
+component-placer control stops before terminal emission with only twelve
+complete packages, so this is a measured source availability boundary rather
+than a terminal-placement limitation.
