@@ -13701,3 +13701,28 @@ Checkpoint `d5fd6a55` is pushed and remote-verified. The DIL16 mux group is now 
 
 - `knowledge/dil16_decoder_driver_4511_donor_revalidation_preflight_2026_07_14.md`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record full donor facts and fresh 1×/9×/15× loader evidence.
 - `experiments/dil16_decoder_driver_4511_terminal_v2_temp_2026_07_14/` — staged/scale controls, active packs, captures, README, and loader result.
+
+## Agent Visible Response - 2026-07-14 05:20 +05:00
+
+Checkpoint `77ef62ed` is pushed and remote-verified. I’m continuing within the same decoder/driver group with 7447, using its separate terminal-leading donor contract rather than reusing 4511’s component-first route.
+
+## Agent Visible Response - 2026-07-14 05:21 +05:00
+
+7447 has one extra donor-specific requirement: an exact `SUBCKT NAME` payload normalization before terminal-leading WIRE emission. It is already profile-gated, so I’m testing that existing evidence-backed route directly rather than broadening the rule.
+
+## Agent Visible Response - 2026-07-14 05:22 +05:00
+
+The fresh 7447 output applies exactly one declared 50-byte `SUBCKT NAME` normalization and then matches the donor’s 2,610-byte frame and WIRE markers. It has 14 grid contacts and nonzero exact-pin wires; I’m gating its three 1× stages now.
+
+## Agent Visible Response - 2026-07-14 05:24 +05:00
+
+7447’s 1× live gate is clean. Its 9×/15× outputs retain exactly one profile-gated metadata normalization per component, with 126/210 grid-aligned nonzero active pairs; I’m cold-opening those scales now.
+
+## Agent Visible Response - 2026-07-14 05:26 +05:00
+
+7447 has passed its fresh 1×/9×/15× gates with the strict payload rule intact; all three focused tests pass. This completes the decoder/driver pair through 15×, and I’m checkpointing it before selecting the next unfinished group.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/dil16_decoder_driver_7447_donor_revalidation_preflight_2026_07_14.md`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record donor facts, strict normalization, and fresh loader results.
+- `experiments/dil16_decoder_driver_7447_terminal_v2_temp_2026_07_14/` — staged/scale source packs, loader screenshots, README, and structured result.

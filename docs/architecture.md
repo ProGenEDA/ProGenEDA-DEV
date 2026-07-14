@@ -2358,3 +2358,19 @@ cold open/cold reopen gates without saving. Static results prove 14, 126, and
 210 grid-aligned nonzero active units with unique matching final-address
 suffixes. The tested solo operating limit is 15; no mixed route is attempted
 until every remaining component group has matching solo evidence.
+
+### 2026-07-14 7447 fresh decoder/driver revalidation
+
+7447 is a terminal-leading DIL16 route with fourteen terminal records,
+the normalized live component frame, fourteen native attachment units, and an
+explicit finalizer. Its accepted donor proves a strict one-occurrence
+`SUBCKT NAME` payload removal; that 50-byte profile rule is validated before
+emission and must never become a generic metadata-strip pass. The separate raw
+component-placer tail trim is likewise profile-scoped.
+
+The emitted route keeps seven right-facing output terminals at 0 degrees and
+seven left-facing input terminals at 1800, snaps every attaching edge to the
+grid, and replaces donor zero-length WIRE evidence with nonzero short wires to
+the physical pins. Fresh 1x, 9x, and 15x outputs passed delayed cold-open/cold-
+reopen gates and static audits at 14, 126, and 210 attachment units. The
+tested solo operating limit is 15; mixed terminalization remains deferred.
