@@ -15,4 +15,9 @@ normal Proteus windows after the 12-second wait. No modal error was detected,
 copy hashes stayed unchanged, and no normal project was Ctrl+S saved. The
 pre-close complete capture is `02_local_proteus_gate/G04_C04_74HC08_COMPLETE.png`.
 
-The locked mega has 15 complete packages, so the next outputs are 9x and 15x.
+`03_scale_9x_15x/` contains the independently generated 9x and 15x
+no-terminal controls and complete active outputs. Their static audits found
+108/180 grid contacts, nonzero exact-pin WIREs, and the full donor label/order
+per package. Both outputs normal-opened and cold-reopened after the delayed
+window gate; the 15x pre-close captures are retained in
+`04_local_proteus_scale_gate/`.

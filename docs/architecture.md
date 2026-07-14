@@ -2422,5 +2422,10 @@ placed AND gates followed by twelve terminal/WIRE units in exact order
 `8,11,3,6,1,2,4,5,9,10,12,13`. All donor wires are two-point, while all
 current positions derive from a current subpart anchor and relative pin data.
 The complete 1x staged/cold-reopen gate passed with 12 grid-attached nonzero
-links. The independent 9x/15x scale gate remains next; it must not reuse HC00
-or HC02 availability facts.
+links. Its independent 9x and 15x scale outputs have 108 and 180 active
+terminal/WIRE units, respectively; each normal-opened and cold-reopened with
+no modal dialog. The 15x pre-close and cold-reopen captures visibly show all
+fifteen placed AND gates, each with three short terminal attachments. The
+terminal stage correctly normalizes the selected CDB to 9/15 property rows;
+the expected final-address component-link bytes are the only retained-packet
+mutation beyond the emitted attachment units.

@@ -3512,6 +3512,48 @@ def test_hc08_shared_placer_preserves_authoritative_attachment_contract(
     assert [row["point_count"] for row in wire_rows] == [2] * 12
 
 
+@pytest.mark.parametrize("count", (9, 15))
+def test_hc08_shared_placer_scales_through_locked_mega_capacity(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """HC08's 9x/15x route keeps all donor-derived active units."""
+
+    family = "74HC08"
+    base = tmp_path / f"74HC08_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"74HC08_{count}x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
+    )
+
+    assert result.valid
+    assert len(result.selected_groups) == count
+    assert report["valid"] is True
+    assert report["progressive_scaling_enabled"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == count * 12
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+
+
 def test_hc04_catalogue_uses_complete_e04_attachment_grammar() -> None:
     """HC04 must retain its actual donor's routed WIRE units and order."""
 
