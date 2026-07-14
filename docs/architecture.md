@@ -2398,3 +2398,17 @@ the accepted safe offset; the remaining native fragments are not valid
 packages. That is a source availability boundary, not an inferred
 terminal-emitter limit. Mixed construction remains deferred until all solo
 families receive comparable evidence.
+
+### 2026-07-14 74HC02 DIL14 quad-gate revalidation
+
+74HC02 shares the catalogue-driven DIL14 stage contract but not HC00's wire
+facts. Its four current subpart anchors and all twelve pin positions are
+donor-relative. The actual donor orders terminal/WIRE units
+`10,13,4,1,2,3,5,6,8,9,11,12`; it has two input polylines with three points.
+Those full paths and terminal-contact endpoints are profile data, preventing
+geometry loss when a placed package is spread by the beautifier.
+
+The fresh locked-mega 1x native-contact, grid-contact, complete, and complete
+cold-reopen gates all normal-opened without a save. The final route contains
+twelve grid-aligned, nonzero terminal-to-exact-pin WIREs and matching active
+link suffixes. Scale/mixed work remains separate from this 1x acceptance.
