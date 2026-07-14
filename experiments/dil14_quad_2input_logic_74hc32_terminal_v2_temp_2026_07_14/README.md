@@ -16,6 +16,8 @@ Proteus window after the 12-second delayed gate. No modal error appeared, no
 normally opening copy was Ctrl+S-saved, and copy hashes were unchanged. The
 complete active captures are retained under `02_local_proteus_gate/`.
 
-The locked mega has fifteen complete HC32 packages. Its 9x and 15x routes must
-be independently generated and loader-gated before this profile is promoted
-beyond its 1x donor proof.
+`03_scale_9x_15x/` contains independently generated 9x and 15x controls and
+complete active outputs. Static audits found 108/180 grid contacts, nonzero
+exact-pin WIREs, and the full donor label/order per package. Both normal-opened
+and cold-reopened after the delayed gate; retained 15x captures are under
+`04_local_proteus_scale_gate/`.

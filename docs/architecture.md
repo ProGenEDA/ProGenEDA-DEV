@@ -2439,4 +2439,7 @@ labels, angles, link slots, and all two-point WIRE paths match that donor.
 The only catalogue repair is donor provenance/order/capacity metadata; the
 shared terminal emitter is untouched. Its native-contact, grid-contact,
 complete-active, and cold-reopen 1x stages all reached normal Proteus windows
-without a modal error or save mutation. Scale proof remains separately gated.
+without a modal error or save mutation. Its independent 9x/15x outputs have
+108/180 grid-aligned nonzero active units and normalized 9/15-package CDBs;
+both normal-opened and cold-reopened without a modal error. The retained 15x
+cold-reopen capture shows the repeated OR-gate layout with attached terminals.

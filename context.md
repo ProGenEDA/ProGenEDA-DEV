@@ -13850,3 +13850,20 @@ The HC32 loader sequence is still progressing through independent launches. I’
 ## Agent Visible Response - 2026-07-14 06:35 +05:00
 
 HC32’s full staged 1× route has passed: every loader stage opened normally, and the cold-reopen capture shows all four OR gates terminalized with their short wires. I’m running its focused regression and frozen-family check before committing this 1× checkpoint.
+
+## Agent Visible Response - 2026-07-14 06:38 +05:00
+
+Checkpoint `7d6bfd5c` is pushed and remote-verified. I’m generating HC32’s independent 9× and 15× controls now; the shared terminal algorithm remains unchanged from the clean 1× proof.
+
+## Agent Visible Response - 2026-07-14 06:39 +05:00
+
+HC32’s 9× and 15× outputs have the expected 108 and 180 active terminal/WIRE pairs. I’m now applying the same normal-open/cold-reopen gate, with screenshots retained for the 15× circuit.
+
+## Agent Visible Response - 2026-07-14 06:44 +05:00
+
+HC32 is now proven through 1×, 9×, and 15×. Both scale outputs normal-opened and cold-reopened cleanly; the retained 15× cold-reopen capture shows the repeated OR gates with attached terminal wiring. I’m checkpointing it before moving to HC86’s separate donor audit.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `tests/test_component_placer.py` — promote HC32's loader-gated 15× capacity and scale regression.
+- `experiments/dil14_quad_2input_logic_74hc32_terminal_v2_temp_2026_07_14/03_scale_9x_15x/` and `04_local_proteus_scale_gate/` — generated scale controls, terminalized outputs, and retained 15× captures.
