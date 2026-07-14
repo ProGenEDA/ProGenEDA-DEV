@@ -14007,3 +14007,25 @@ The staged local Proteus gate is running now: bare control, native-contact stage
 ## Agent Visible Response - 2026-07-14 22:40 +05:00
 
 HC04’s 1× route now passes the actual loader sequence: locked-mega control, native contacts, grid contacts, complete active links/wires, and a cold reopen all opened normally. The donor’s D/F record mapping is now pinned by regression, so I’m checkpointing this 1× proof before attempting 9× and 15×.
+
+## Agent Visible Response - 2026-07-14 22:44 +05:00
+
+The HC04 scale files are generated from the same locked-mega placer and shared terminal route: 9× has 108 terminal/WIRE pairs, and 15× has 180, with the donor’s full routed-point pattern preserved. I’m running the normal/cold Proteus gate now and retaining screenshots only for 15×.
+
+## Agent Visible Response - 2026-07-14 22:46 +05:00
+
+The 9× normal and cold launches cleared before the screenshot helper hit a Windows Forms availability issue on the 15× capture. The circuit did not fail; I’ve stopped that test process, fixed the capture helper, and am rerunning only the two required 15× launches.
+
+## Agent Visible Response - 2026-07-14 22:49 +05:00
+
+The 15× loader checks themselves passed; the saved images captured the editor window instead of the foreground Proteus window, so I’m replacing those two images with real PDS-window captures rather than treating them as evidence.
+
+## Agent Visible Response - 2026-07-14 22:53 +05:00
+
+HC04 now passes its 1×, 9×, and 15× terminal route. All four scale launches reached normal Proteus windows with no modal error or copy mutation; the host compositor could not reliably capture the PDS canvas, so I excluded unrelated desktop captures rather than calling them evidence. I’m checkpointing the proven 15× capacity next.
+
+### Files Edited By Agent In This Continuation
+
+- `knowledge/component_catalog_v0.json`, `tests/test_component_placer.py`, `docs/architecture.md`, and `knowledge/test_results.jsonl` — record and regression-lock the validated 15× HC04 capacity without changing any other family.
+- `experiments/dil14_hex_inverter_74hc04_terminal_v2_temp_2026_07_14/03_scale_9x_15x/` — locked-mega 9×/15× controls and complete terminalized outputs.
+- `experiments/dil14_hex_inverter_74hc04_terminal_v2_temp_2026_07_14/generation_report.json`, `independent_static_audit_scale.json`, and `loader_results_scale.json` — scale counts, independent byte checks, and delayed normal/cold loader evidence.

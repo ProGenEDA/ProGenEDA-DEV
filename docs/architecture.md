@@ -2495,5 +2495,9 @@ families remain unchanged. Fresh control/native-contact/grid-contact/complete
 outputs all normal-opened after the delayed local Proteus check; the complete
 output cold-reopened unchanged without a modal error. It has 12 grid contacts,
 12 nonzero donor-shaped short wires, matching final-address terminal/component
-links, and the E04 point-count pattern `3,3,3,3,3,3,4,3,4,4,4,4`. Scale
-promotion remains a separate 9x/15x checkpoint.
+links, and the E04 point-count pattern `3,3,3,3,3,3,4,3,4,4,4,4`. Its
+independent 9x/15x routes preserve 108/180 grid-aligned active attachment
+units, exact routed paths, final-address suffixes, and 9/15-package CDBs. Both
+normal-opened and cold-reopened without a modal error or copy mutation. The
+host compositor cannot reliably capture the PDS canvas, so loader windows and
+byte audits—not blank desktop captures—are the retained local evidence.

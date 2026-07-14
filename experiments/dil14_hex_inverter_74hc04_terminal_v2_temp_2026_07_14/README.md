@@ -21,3 +21,13 @@ short WIREs, and the exact E04 point-count pattern
 Every stage normal-opened in local Proteus after the delayed check; the final
 project then cold-reopened cleanly.  See `loader_results.json` and
 `independent_static_audit_1x.json`.
+
+`03_scale_9x_15x/` contains the locked-mega controls and complete active
+outputs for nine and fifteen packages. They retain 108 and 180 active
+terminal/WIRE pairs, respectively, along with the exact E04 unit order,
+full routed-point pattern, grid contacts, final-address suffixes, and
+normalized selected-package CDBs. Both scales normal-opened and cold-reopened
+without a modal dialog or copy mutation. The host compositor could not capture
+the PDS canvas reliably, so no misleading screenshot is retained; local loader
+results and static checks remain recorded in `loader_results_scale.json` and
+`independent_static_audit_scale.json`.

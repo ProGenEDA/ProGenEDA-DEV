@@ -3965,6 +3965,64 @@ def test_hc04_shared_placer_uses_e04_ordered_routed_units_and_safe_links(
     assert actual_positions["13"] + 4 == actual_positions["12"]
 
 
+@pytest.mark.parametrize("count", (9, 15))
+def test_hc04_shared_placer_scales_with_donor_record_mapping(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """HC04 scales without reverting its donor-proven D/F record mapping."""
+
+    family = "74HC04"
+    base = tmp_path / f"74HC04_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"74HC04_{count}x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert profile.limits["locked_new_components_5x_mega_clean_group_max"] == 15
+    assert geometry["clean_packet_max_proven_components"] == 15
+    assert result.valid
+    assert len(result.selected_groups) == count
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == count * 12
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    terminal_rows = terminal_placer._bidir_label_records(chunk)
+    wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
+    expected_order = HC04_E04_ATTACHMENT_ORDER
+    expected_labels = [
+        f"{'OUT' if pin in {'2', '4', '6', '8', '10', '12'} else 'IN'}pin{pin}"
+        for pin in expected_order
+    ]
+    assert [row["label"] for row in terminal_rows] == expected_labels * count
+    assert [row["point_count"] for row in wire_rows] == [
+        3, 3, 3, 3, 3, 3, 4, 3, 4, 4, 4, 4
+    ] * count
+
+
 def test_hc74_shared_placer_preserves_subpart_native_wire_boundaries(
     tmp_path: Path,
 ) -> None:
