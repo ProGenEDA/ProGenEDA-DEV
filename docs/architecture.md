@@ -2374,3 +2374,24 @@ grid, and replaces donor zero-length WIRE evidence with nonzero short wires to
 the physical pins. Fresh 1x, 9x, and 15x outputs passed delayed cold-open/cold-
 reopen gates and static audits at 14, 126, and 210 attachment units. The
 tested solo operating limit is 15; mixed terminalization remains deferred.
+
+### 2026-07-14 74HC00 DIL14 quad-gate revalidation
+
+74HC00 is a component-stream-first DIL14 route: four native gate records are
+emitted by the replaceable locked-mega component placer, followed by twelve
+ordered terminal/WIRE attachment units. The order and full wire topology are
+profile facts from the actual user-accepted donor, not a generic gate
+assumption. In particular, six input wires retain donor-proven three-point
+shapes; truncating them to two points makes the catalogue no longer represent
+the accepted attachment geometry.
+
+The planner derives every current pin from a current subpart anchor plus a
+donor-relative offset, then applies the donor grid contact, 1800 left / 0
+right orientation, native WIRE topology, and final-address suffix rebasing.
+Fresh 1x control/native/grid/complete gates and a complete cold reopen reached
+normal Proteus windows without a save. The complete project has twelve
+grid-aligned nonzero terminal/WIRE pairs and visibly attaches all three pins
+of each of the four gates. Scale remains a separate availability proof: the
+locked mega's known safe HC00 inventory is eight packages after rejected early
+offsets, not an inferred terminal-emitter limit. Mixed construction remains
+deferred until all solo families receive comparable evidence.
