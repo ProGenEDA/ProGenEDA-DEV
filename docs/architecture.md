@@ -2429,3 +2429,14 @@ fifteen placed AND gates, each with three short terminal attachments. The
 terminal stage correctly normalizes the selected CDB to 9/15 property rows;
 the expected final-address component-link bytes are the only retained-packet
 mutation beyond the emitted attachment units.
+
+### 2026-07-14 74HC32 DIL14 quad-gate revalidation
+
+74HC32 has its own authoritative component-stream-first donor contract: four
+OR-gate records followed by 12 terminal/WIRE units in order
+`8,11,3,6,1,2,4,5,9,10,12,13`. The current profile's relative pin geometry,
+labels, angles, link slots, and all two-point WIRE paths match that donor.
+The only catalogue repair is donor provenance/order/capacity metadata; the
+shared terminal emitter is untouched. Its native-contact, grid-contact,
+complete-active, and cold-reopen 1x stages all reached normal Proteus windows
+without a modal error or save mutation. Scale proof remains separately gated.
