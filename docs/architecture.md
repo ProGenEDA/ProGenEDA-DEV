@@ -2524,3 +2524,9 @@ normal-opened locally. The final 1× output has twelve grid-aligned, nonzero
 terminal/WIRE pairs, correct left/right orientation, final-address-rebased
 links, the donor A/B block order, a single-FF finalizer, and a normalized
 three-row (`U45:A`, `U45:B`, `U45`) CDB.
+
+The independently gated 9× and 15× scale outputs retain 108 and 180 active
+grid-contact/nonzero-WIRE units and normal-open/cold-reopen without a modal
+error or save mutation. The locked-mega capacity is therefore recorded as a
+proven 15-package HC74 solo limit for the MVP, rather than assumed from a
+different DIL14 family.

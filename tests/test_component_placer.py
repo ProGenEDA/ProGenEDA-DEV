@@ -4175,6 +4175,77 @@ def test_hc74_shared_placer_preserves_subpart_native_wire_boundaries(
     assert output_chunk[output_wires[11] + 49] == 0xFF
 
 
+@pytest.mark.parametrize("count", (9, 15))
+def test_hc74_shared_placer_scales_through_proven_locked_mega_limit(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """HC74 keeps every A/B active attachment block through 15 packages."""
+
+    family = "74HC74"
+    base = tmp_path / f"74HC74_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"74HC74_{count}x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    assert profile.limits["locked_new_components_5x_mega_clean_group_max"] == 15
+    assert profile.proteus["pin_geometry"]["clean_packet_max_proven_components"] == 15
+    assert placement.valid
+    assert len(placement.selected_groups) == count
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == count * 12
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = terminal_placer._bidir_label_records(chunk)
+    wires = terminal_placer._wire_rows_from_chunk(
+        chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(dsn),
+    )
+    expected_labels = [
+        "Q PIN 5", "NQ PIN 6", "S PIN 4", "R PIN 1", "CLK PIN 3", "D PIN 2",
+        "D PIN 12", "D PIN 11", "Q PIN 9", "NQ PIN 8", "S PIN 10", "R PIN 13",
+    ]
+    assert [row["label"] for row in terminals] == expected_labels * count
+    assert len(wires) == count * 12
+    assert all(row["point_count"] == 2 for row in wires)
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in wires
+    )
+    assert {
+        int(row["suffix"]) for row in terminals
+    } == {int(row["suffix"]) for row in wires}
+    assert chunk.endswith(b"\xff") and not chunk.endswith(b"\xff\xff")
+
+    cdb = parse_component_placer_cdb(read_internal_file(output, "ROOT.CDB"))
+    assert len(cdb.pin_rows) == count * 2
+    assert len(cdb.property_rows) == count
+
+
 def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
     tmp_path: Path,
 ) -> None:

@@ -19,3 +19,10 @@ right-side `0` orientation, a single `FF` finalizer, active final-address
 suffix links, and the exact A/B donor block order. Its complete project was
 cold-reopened after the delayed local Proteus gate. See `loader_results.json`
 and `independent_static_audit_1x.json`.
+
+`03_scale_9x_15x/` contains locked-mega controls and complete terminalized
+outputs for nine and fifteen packages. They retain 108 and 180 grid-aligned,
+nonzero terminal/WIRE pairs, respectively, with the same A/B block order,
+final-address suffix rebasing, and normalized 9/15-package CDBs. Both scales
+normal-opened and cold-reopened without a modal dialog or copy mutation; see
+`loader_results_scale.json` and `independent_static_audit_scale.json`.
