@@ -4039,6 +4039,8 @@ def test_hc74_shared_placer_preserves_subpart_native_wire_boundaries(
         / "74HC74_terminalized_primary.pdsprj"
     )
     base = tmp_path / "74HC74_1x_no_terminal.pdsprj"
+    native_stage = tmp_path / "74HC74_1x_native_contact_stage.pdsprj"
+    grid_stage = tmp_path / "74HC74_1x_grid_contact_stage.pdsprj"
     output = tmp_path / "74HC74_1x_terminalized.pdsprj"
     result = generate_component_placement_project(
         {
@@ -4048,6 +4050,22 @@ def test_hc74_shared_placer_preserves_subpart_native_wire_boundaries(
         },
         base,
         full_cdb=True,
+    )
+    native_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        native_stage,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="native_pin_contact",
+    )
+    grid_report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        grid_stage,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        attachment_stage="grid_contact",
     )
     report = attach_catalogue_pin_bidir_terminals_to_project(
         base,
@@ -4070,13 +4088,39 @@ def test_hc74_shared_placer_preserves_subpart_native_wire_boundaries(
         "append_single_zero"
     )
     assert geometry["subpart_link_prefix_zero_trim_count"] == 1
+    assert geometry["staged_contact_requires_active_attachment_unit"] is True
     assert result.valid
+    assert native_report["valid"] is True
+    assert native_report["active_attachment_unit_loader_stage"] is True
+    assert native_report["native_contact_loader_stage_valid"] is True
+    assert native_report["terminal_count_added"] == native_report["wire_count_added"] == 12
+    assert native_report["terminal_grid_alignment_valid"] is False
+    assert grid_report["valid"] is True
+    assert grid_report["active_attachment_unit_loader_stage"] is True
+    assert grid_report["terminal_count_added"] == grid_report["wire_count_added"] == 12
+    assert grid_report["terminal_grid_alignment_valid"] is True
+    assert grid_report["wire_path_contacts_valid"] is True
     assert report["valid"] is True
     assert report["terminal_count_added"] == 12
     assert report["wire_count_added"] == 12
 
     donor_chunk = _extract_object_chunk(read_internal_file(donor, "ROOT.DSN"))
+    native_chunk = _extract_object_chunk(read_internal_file(native_stage, "ROOT.DSN"))
+    grid_chunk = _extract_object_chunk(read_internal_file(grid_stage, "ROOT.DSN"))
     output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    native_wires = terminal_placer._wire_rows_from_chunk(native_chunk, chunk_start=0)
+    grid_wires = terminal_placer._wire_rows_from_chunk(grid_chunk, chunk_start=0)
+    assert len(native_wires) == len(grid_wires) == 12
+    assert all(
+        tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])
+        for row in native_wires
+    )
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in grid_wires
+    )
+    assert grid_chunk == output_chunk
 
     def native_wire_starts(chunk: bytes) -> list[int]:
         starts: list[int] = []

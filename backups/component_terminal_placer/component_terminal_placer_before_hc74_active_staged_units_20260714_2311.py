@@ -2257,58 +2257,19 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         original_chunk,
         groups,
     )
-    active_attachment_contact_mode: str | None = None
     if attachment_stage != "complete":
-        stage_groups = tuple(
-            group
-            for group in ordered_groups
-            if requested is None or _group_family(group) in requested
+        return _attach_catalogue_terminal_contact_stage(
+            source=source,
+            destination=destination,
+            dsn=dsn,
+            original_chunk=original_chunk,
+            ordered_groups=ordered_groups,
+            catalog=catalog,
+            requested=requested,
+            suffix_start=suffix_start,
+            use_donor_terminal_labels=use_donor_terminal_labels,
+            attachment_stage=attachment_stage,
         )
-        stage_families = {_group_family(group) for group in stage_groups}
-        active_unit_flags: list[bool] = []
-        for group in stage_groups:
-            profile = catalog.get_profile(_group_family(group))
-            geometry = (
-                profile.proteus.get("pin_geometry", {})
-                if profile is not None
-                else {}
-            )
-            active_unit_flags.append(
-                bool(
-                    geometry.get(
-                        "staged_contact_requires_active_attachment_unit",
-                        False,
-                    )
-                )
-                if isinstance(geometry, dict)
-                else False
-            )
-        if (
-            stage_groups
-            and len(stage_groups) == len(ordered_groups)
-            and len(stage_families) == 1
-            and active_unit_flags
-            and all(active_unit_flags)
-        ):
-            # Some authoritative multipart donors prove that a terminal cannot
-            # exist as a detached object: its terminal suffix, matching pin-link
-            # field, and WIRE record are one loader-required unit.  Preserve the
-            # same shared active emitter for their native/grid diagnostics; only
-            # the terminal contact coordinate differs by stage.
-            active_attachment_contact_mode = attachment_stage
-        else:
-            return _attach_catalogue_terminal_contact_stage(
-                source=source,
-                destination=destination,
-                dsn=dsn,
-                original_chunk=original_chunk,
-                ordered_groups=ordered_groups,
-                catalog=catalog,
-                requested=requested,
-                suffix_start=suffix_start,
-                use_donor_terminal_labels=use_donor_terminal_labels,
-                attachment_stage=attachment_stage,
-            )
     terminal_templates = NATIVE_BIDIR_TEMPLATES
 
     local_records: list[bytes] = []
@@ -2727,9 +2688,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             catalog=catalog,
             suffix_start=suffix,
             use_donor_terminal_labels=use_donor_terminal_labels,
-            terminal_contact_mode=(
-                active_attachment_contact_mode or "grid_contact"
-            ),
         )
         if not plan["valid"]:
             raise ValueError(
@@ -3351,10 +3309,6 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
     report = {
         "stage": "terminal_placer",
-        "attachment_stage": attachment_stage,
-        "active_attachment_unit_loader_stage": (
-            active_attachment_contact_mode is not None
-        ),
         "family_handler": (
             "CATALOGUE/link-offset-wire-v1"
             if wire_count_added
@@ -3362,12 +3316,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         ),
         "status": "pending_proteus_user_acceptance",
         "attachment_policy": (
-            "catalogue_pin_identity_component_link_offset_"
-            + (
-                "native_contact_attachment_unit_diagnostic"
-                if active_attachment_contact_mode == "native_pin_contact"
-                else "grid_short_wire"
-            )
+            "catalogue_pin_identity_component_link_offset_grid_short_wire"
         ),
         "progressive_scaling_enabled": allow_progressive_scaling,
         "runtime_circuit_donor_dependency": False,
@@ -3410,52 +3359,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         "base_component_stream_covered": True,
         "cdb_normalization": cdb_normalization_report,
     }
-    rebased_report = _rebase_terminal_links_to_final_wire_addresses(
-        destination,
-        report,
-    )
-    if active_attachment_contact_mode == "native_pin_contact":
-        # A native-pin diagnostic deliberately precedes grid snapping.  It is
-        # loader-valid only when its complete active attachment units are
-        # internally coherent; it is never a final grid-contact output.
-        native_contact_paths_valid = all(
-            row["terminal_to_wire"]
-            and row["wire_to_pin"]
-            and (
-                row["wire_is_nonzero"]
-                or row["zero_length_wire_allowed"]
-            )
-            for row in rebased_report["wire_path_contact_checks"]
-        )
-        expected_wire_count = int(rebased_report.get("wire_count_added") or 0) + int(
-            rebased_report.get("wire_count_rewritten") or 0
-        )
-        native_finalizer = str(rebased_report.get("object_stream_finalizer", ""))
-        native_finalizer_valid = native_finalizer in {
-            "single_ff",
-            "double_ff",
-            "append_explicit_single_ff",
-        } and (
-            native_finalizer != "double_ff"
-            or bool(rebased_report.get("object_chunk_double_ff_valid", False))
-        )
-        rebased_report["native_contact_loader_stage_valid"] = bool(
-            rebased_report["terminal_suffixes_unique"]
-            and rebased_report["terminal_suffix_links_valid"]
-            and native_contact_paths_valid
-            and rebased_report.get("base_component_stream_covered", True)
-            and rebased_report["bidir_count_after"]
-            == rebased_report["terminal_count_added"]
-            and rebased_report["wire_count_after"] == expected_wire_count
-            and native_finalizer_valid
-        )
-        rebased_report["status"] = (
-            "loader_gate_required_before_grid_contact_stage"
-        )
-        rebased_report["valid"] = rebased_report[
-            "native_contact_loader_stage_valid"
-        ]
-    return rebased_report
+    return _rebase_terminal_links_to_final_wire_addresses(destination, report)
 
 
 def _mixed_catalogue_attachment_order(

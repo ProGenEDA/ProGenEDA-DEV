@@ -2501,3 +2501,26 @@ units, exact routed paths, final-address suffixes, and 9/15-package CDBs. Both
 normal-opened and cold-reopened without a modal error or copy mutation. The
 host compositor cannot reliably capture the PDS canvas, so loader windows and
 byte audits—not blank desktop captures—are the retained local evidence.
+
+### 2026-07-14 74HC74 DIL14 dual-D-flip-flop active staged units
+
+74HC74 proves a stricter multipart packet rule than the earlier DIL14 gates.
+Its accepted donor is two consecutive `terminal → component → WIRE` blocks:
+the A block has terminal order `5,6,4,1,3,2` and WIRE order `2,5,3,6,4,1`;
+the B block has terminal order `12,11,9,8,10,13` and WIRE order
+`12,9,11,8,10,13`. The donor's direct-pin WIREs are zero-length, but that is
+only the native diagnostic form. The final shared route grid-snaps terminal
+contacts and emits a nonzero short WIRE from every terminal to its exact pin.
+
+An inactive-terminal-only diagnostic is invalid for this grammar even when the
+visible terminal records look well formed: it lacks the matching active pin
+links, WIRE records, and required one-byte link-prefix normalization, and
+Proteus raises `VGDVC.DLL` access violation. The shared catalogue emitter now
+allows a profile to declare that the native/grid diagnostic must retain the
+whole active attachment unit. This is a generic profile rule, not a HC74
+alternate script or a change to frozen families. The locked-mega control,
+native active unit, grid active unit, complete output, and cold reopen all
+normal-opened locally. The final 1× output has twelve grid-aligned, nonzero
+terminal/WIRE pairs, correct left/right orientation, final-address-rebased
+links, the donor A/B block order, a single-FF finalizer, and a normalized
+three-row (`U45:A`, `U45:B`, `U45`) CDB.
