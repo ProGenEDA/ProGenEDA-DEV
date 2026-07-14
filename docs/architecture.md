@@ -2443,3 +2443,14 @@ without a modal error or save mutation. Its independent 9x/15x outputs have
 108/180 grid-aligned nonzero active units and normalized 9/15-package CDBs;
 both normal-opened and cold-reopened without a modal error. The retained 15x
 cold-reopen capture shows the repeated OR-gate layout with attached terminals.
+
+### 2026-07-14 74HC86 DIL14 quad-gate revalidation
+
+HC86 uses a different donor order and a mix of two- and three-point WIRE
+paths: `6,3,8,11,4,5,1,2,9,10,12,13` with point counts
+`3,3,2,3,3,2,2,2,3,3,3,2`. The old profile had silently truncated the final
+terminal-contact point for pins 6/3/11/4/9/10/12. The additive catalogue fix
+restores only those donor paths and provenance metadata; no shared algorithm or
+accepted route changed. The native, grid, complete, and cold-reopen 1x gates
+all normal-opened without a modal dialog or copy mutation. Scale proof remains
+separately gated.

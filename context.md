@@ -13863,6 +13863,32 @@ HC32’s 9× and 15× outputs have the expected 108 and 180 active terminal/WIRE
 
 HC32 is now proven through 1×, 9×, and 15×. Both scale outputs normal-opened and cold-reopened cleanly; the retained 15× cold-reopen capture shows the repeated OR gates with attached terminal wiring. I’m checkpointing it before moving to HC86’s separate donor audit.
 
+## Agent Visible Response - 2026-07-14 06:47 +05:00
+
+Checkpoint `b9171662` is pushed and remote-verified. The only remaining members of this quad-gate group are HC86 and HC266; I’m auditing HC86’s donor next because its older catalogue has known truncated wire geometry that must be corrected from the donor.
+
+## Agent Visible Response - 2026-07-14 06:49 +05:00
+
+HC86’s donor audit found the real issue: seven catalogue WIRE paths were truncated by one final contact point. I restored all seven exact donor polylines in the shared catalogue profile—without changing the terminal placer or any accepted family—and I’m generating the staged 1× proof.
+
+## Agent Visible Response - 2026-07-14 06:50 +05:00
+
+HC86’s repaired staged outputs now contain the correct 12 terminal records and, in the complete stage, all 12 full donor WIRE paths. I’m running the live staged gate now; this is the point where the restored third-point routes must prove themselves in Proteus.
+
+## Agent Visible Response - 2026-07-14 06:51 +05:00
+
+The HC86 live proof is still running through the five cold launches. I’m keeping it at the staged gate until every launch has cleared the modal-error check and the complete output has cold-reopened unchanged.
+
+## Agent Visible Response - 2026-07-14 06:53 +05:00
+
+HC86’s repaired 1× route passed every staged loader check and cold reopen. The live screenshot confirms all four XOR gates have their terminals and the donor-required three-point attachments, so I’m recording this as the 1× checkpoint before scale testing.
+
+### Files Edited By Agent In This Continuation
+
+- `backups/component_terminal_placer/component_terminal_placer_before_hc86_catalogue_20260714_0648.py` — retained pre-HC86 shared-placer snapshot; the shared terminal code is unchanged.
+- `knowledge/component_catalog_v0.json`, `knowledge/dil14_quad_2input_74hc86_donor_revalidation_preflight_2026_07_14.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `tests/test_component_placer.py` — donor-grounded full-wire repair, staged evidence, and regression.
+- `experiments/dil14_quad_2input_logic_74hc86_terminal_v2_temp_2026_07_14/` — locked-mega staged control/output, loader captures, README, and result records.
+
 ### Files Edited By Agent In This Continuation
 
 - `knowledge/component_catalog_v0.json`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `tests/test_component_placer.py` — promote HC32's loader-gated 15× capacity and scale regression.
