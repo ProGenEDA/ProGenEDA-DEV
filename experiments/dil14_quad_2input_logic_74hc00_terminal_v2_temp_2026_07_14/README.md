@@ -33,8 +33,11 @@ gates and their three terminal attachments.
 
 ## Next gate
 
-The 1x route is loader-passed. The profile still records only one
-donor-proven terminalized package while 9x/15x are generated separately. The
-locked mega has eight previously safe HC00 packages after the rejected early
-offsets, so scale work must establish availability rather than invent a
-terminal limit.
+The 1x and 8x routes are loader-passed. `03_scale_8x_boundary/` contains the
+8x locked-mega control and its complete 96-terminal/96-WIRE output; both the
+first cold open and cold reopen were normal. The safe locked offset exposes
+only eight complete HC00 packages. Fresh component-placer 9x and 15x control
+requests fail before terminal placement with `Need N complete 74HC00 package
+groups with 4 refs after offset=8, found 16.` Those 16 are incomplete native
+fragments, not usable packages. This is recorded as a locked-donor source
+availability boundary, not a terminal-emitter limitation.

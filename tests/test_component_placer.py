@@ -3331,6 +3331,46 @@ def test_hc00_shared_placer_preserves_authoritative_attachment_order_and_paths(
     assert len(report["link_allocation"]["allocations"]) == 12
 
 
+def test_hc00_shared_placer_progressively_scales_all_safe_locked_packages(
+    tmp_path: Path,
+) -> None:
+    """HC00's eight safe locked-mega packages retain complete attachments."""
+
+    family = "74HC00"
+    base = tmp_path / "74HC00_8x_no_terminal.pdsprj"
+    output = tmp_path / "74HC00_8x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 8},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
+    )
+
+    assert result.valid
+    assert len(result.selected_groups) == 8
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == 96
+    assert report["wire_count_added"] == 96
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+
+
 def test_hc04_catalogue_uses_complete_e04_attachment_grammar() -> None:
     """HC04 must retain its actual donor's routed WIRE units and order."""
 

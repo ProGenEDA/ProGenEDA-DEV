@@ -2391,7 +2391,10 @@ right orientation, native WIRE topology, and final-address suffix rebasing.
 Fresh 1x control/native/grid/complete gates and a complete cold reopen reached
 normal Proteus windows without a save. The complete project has twelve
 grid-aligned nonzero terminal/WIRE pairs and visibly attaches all three pins
-of each of the four gates. Scale remains a separate availability proof: the
-locked mega's known safe HC00 inventory is eight packages after rejected early
-offsets, not an inferred terminal-emitter limit. Mixed construction remains
-deferred until all solo families receive comparable evidence.
+of each of the four gates. The safe eight-package scale has 96 pairs and
+passed normal/cold-reopen gates. Fresh 9x and 15x locked-mega control requests
+fail before terminal placement because only eight complete packages exist at
+the accepted safe offset; the remaining native fragments are not valid
+packages. That is a source availability boundary, not an inferred
+terminal-emitter limit. Mixed construction remains deferred until all solo
+families receive comparable evidence.

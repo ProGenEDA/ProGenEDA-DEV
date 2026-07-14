@@ -72,9 +72,11 @@ gate.
 
 ## Staged route
 
-The exact same shared catalogue path will be loader-gated as native-contact,
-grid-contact, and complete active attachment.  Only a normal/cold-reopen
-complete route can progress to 8/9/15 scale work.  The locked donor's known
-safe HC00 inventory is eight complete packages after rejected offsets 0 and 4;
-that is a source-packet availability condition to be tested and recorded, not
-a terminal-placement limit.
+The exact same shared catalogue path was loader-gated as native-contact,
+grid-contact, and complete active attachment. The 8x complete path then passed
+normal/cold-reopen gates with 96 grid contacts and 96 nonzero wires. Fresh 9x,
+10x, 12x, and 15x component-placer controls all stop before terminal emission:
+the accepted safe offset 8 yields eight complete four-subpart packages and
+only incomplete fragments thereafter. This is a demonstrated locked-donor
+source availability boundary, not a terminal-placement limit or a reason to
+alter the frozen terminal route.
