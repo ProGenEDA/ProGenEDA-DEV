@@ -14260,3 +14260,47 @@ HC76 15× also passes normal/cold opens; the capture shows repeated two-subpart 
 ## Agent Visible Response - 2026-07-15 00:45 +05:00
 
 HC76’s bounded repair is verified: 1×/9×/15× all pass gates, and the focused regression set now has 20 passes. I’m committing this profile-only fix and will then continue with the next donor family.
+
+## Agent Visible Response - 2026-07-15 00:47 +05:00
+
+HC76 is committed and remote-verified at `82f67532`. I’m continuing with 74HC151 next; I’ll audit its actual donor first, then generate its 1×/9×/15× batch only if the active route is evidence-complete.
+
+## User Message - 2026-07-15 00:48 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-15 00:48 +05:00
+
+I’m continuing from the validated HC76 checkpoint with 74HC151. I’ll verify the narrow catalogue change first, regenerate its staged 1× route, and only proceed to 9×/15× if the final short-wire route opens cleanly.
+
+## Agent Visible Response - 2026-07-15 00:50 +05:00
+
+The first regenerated 74HC151 final is structurally valid, but its terminals sit two grid steps too far out. The donor proves their correct grid contacts directly, so I’m keeping the new computed short wires but restoring donor-derived terminal contacts before the loader gate.
+
+## Agent Visible Response - 2026-07-15 00:52 +05:00
+
+The corrected 74HC151 1× now has all 14 terminals at the donor’s grid contacts and 14 nonzero contact-to-pin wires. I’m running the local normal-open/cold-reopen gate on the three diagnostic stages and the final before scaling.
+
+## Agent Visible Response - 2026-07-15 00:54 +05:00
+
+The local gate is still cycling through the diagnostic projects. I’m leaving the full delayed checks in place rather than treating a fast launch as acceptance.
+
+## Agent Visible Response - 2026-07-15 00:56 +05:00
+
+The first gate script was hiding Proteus itself, so I corrected the gate rather than misclassifying the files. The visible delayed gate is now running and has confirmed the schematic window can launch.
+
+## Agent Visible Response - 2026-07-15 00:59 +05:00
+
+74HC151’s full 1× route now opens normally and cold-reopens cleanly; the screenshot shows all 14 labels at the component rather than a detached terminal cloud. I’m generating its 9× and 15× from the locked mega donor through the same shared placer now.
+
+## Agent Visible Response - 2026-07-15 01:01 +05:00
+
+The 74HC151 9×/15× outputs are also clean: 126 and 210 nonzero, grid-aligned terminal-to-pin wires, and both normal/cold gate pairs passed. I’m updating the focused regression from the old unsafe donor-retarget expectation to this evidence-backed route, then I’ll commit this real repair.
+
+## Agent Visible Response - 2026-07-15 01:12 +05:00
+
+74HC151’s focused regression is green: 24 targeted/frozen checks passed, with compilation and catalogue JSON validation clean. I’m staging only this family’s evidence, documentation, catalogue profile, and regression update for the required scoped commit.
+
+## Agent Visible Response - 2026-07-15 01:14 +05:00
+
+The broad catalogue test file has 11 pre-existing failures in unsupported/old routes (4017 selection, old labels, and 4027 zero-wire assertions); none touch 74HC151. I’m leaving those frozen routes alone and confirming the targeted catalogue coverage separately.

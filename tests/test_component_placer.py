@@ -4535,7 +4535,7 @@ def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
 def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
     tmp_path: Path,
 ) -> None:
-    """HC151 preserves its donor's routed attachment units and explicit FF."""
+    """HC151 preserves donor labels/links and emits direct grid short wires."""
 
     family = "74HC151"
     donor = (
@@ -4573,6 +4573,9 @@ def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
         "component_stream_then_attachment_units"
     )
     assert geometry["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert geometry["terminal_contact_policy"] == "donor_explicit"
+    assert geometry["wire_coordinates_policy"] == "computed_terminal_contact_to_pin"
+    assert geometry["wire_coordinates_retarget_to_current_contacts"] is False
     assert tuple(geometry["donor_attachment_unit_order"]) == (
         "5", "6", "4", "3", "2", "1", "15", "14", "13", "12", "11", "10", "9", "7"
     )
@@ -4585,6 +4588,10 @@ def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
     assert report["wire_path_contacts_valid"] is True
     assert report["terminal_suffix_links_valid"] is True
     assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert all(
+        row["terminal_to_wire"] and row["wire_to_pin"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
 
     donor_dsn = read_internal_file(donor, "ROOT.DSN")
     output_dsn = read_internal_file(output, "ROOT.DSN")
@@ -4601,23 +4608,30 @@ def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
         chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
     )
 
-    # The locked mega resolves this solo to the donor's physical slot. All
-    # static packet differences must therefore be the fourteen rebased active
-    # links (terminal and component fields), never routing or packet grammar.
-    assert len(output_chunk) == len(donor_chunk) == 2_687
-    assert output_chunk[-27:] == donor_chunk[-27:]
+    # The donor remains authoritative for the labels, grid contacts, record
+    # order, and finalizer.  Its routed 2/3-point paths are intentionally
+    # replaced by the accepted terminal-contact -> exact-pin short WIRE form.
+    assert len(output_chunk) < len(donor_chunk) == 2_687
+    assert output_chunk.endswith(b"\xff")
     assert [row["label"] for row in output_terminals] == [
         row["label"] for row in donor_terminals
+    ]
+    assert [
+        (row["symbol_x"], row["symbol_y"])
+        for row in output_terminals
+    ] == [
+        (row["symbol_x"], row["symbol_y"])
+        for row in donor_terminals
     ]
     assert [row["angle_tenths"] for row in output_terminals] == [
         row["angle_tenths"] for row in donor_terminals
     ]
-    assert [row["marker_offset"] for row in output_wires] == [
-        row["marker_offset"] for row in donor_wires
-    ]
-    assert [row["full_coordinates"] for row in output_wires] == [
-        row["full_coordinates"] for row in donor_wires
-    ]
+    assert len(output_wires) == len(donor_wires) == 14
+    assert all(len(row["full_coordinates"]) == 4 for row in output_wires)
+    assert all(
+        tuple(row["full_coordinates"][:2]) != tuple(row["full_coordinates"][2:])
+        for row in output_wires
+    )
     assert all(
         row["symbol_x"] % 254_000 == 0 and row["symbol_y"] % 254_000 == 0
         for row in output_terminals
@@ -4628,31 +4642,22 @@ def test_hc151_shared_placer_matches_complete_terminalized_donor_packet(
         == (output_chunk_start + int(row["marker_offset"]) - 24) & 0xFFFF
         for row in output_wires
     )
-
-    terminal_suffix_positions = {
-        position
-        for positions in terminal_placer._bidir_terminal_suffix_positions(
-            donor_chunk
-        ).values()
-        for suffix_position in positions
-        for position in (suffix_position, suffix_position + 1)
-    }
-    component_link_positions = {
-        position
-        for pin in geometry["donor_attachment_unit_order"]
-        for position in range(
-            int(geometry["pins"][pin]["component_link_position_in_evidence"]),
-            int(geometry["pins"][pin]["component_link_position_in_evidence"]) + 2,
-        )
-    }
-    changed_positions = {
-        position
-        for position, (donor_byte, output_byte) in enumerate(
-            zip(donor_chunk, output_chunk)
-        )
-        if donor_byte != output_byte
-    }
-    assert changed_positions == terminal_suffix_positions | component_link_positions
+    wires_by_suffix = {int(row["suffix"]): row for row in output_wires}
+    for terminal in output_terminals:
+        if int(terminal["angle_tenths"]) == 0:
+            contact = (
+                int(terminal["symbol_x"]) - terminal_placer.TERMINAL_CONTACT_TO_PIN,
+                int(terminal["symbol_y"]),
+            )
+        else:
+            assert int(terminal["angle_tenths"]) == 1800
+            contact = (
+                int(terminal["symbol_x"]) + terminal_placer.TERMINAL_CONTACT_TO_PIN,
+                int(terminal["symbol_y"]),
+            )
+        assert contact[0] % 254_000 == 0 and contact[1] % 254_000 == 0
+        wire = wires_by_suffix[int(terminal["suffix"])]
+        assert tuple(wire["full_coordinates"][:2]) == contact
 
 
 def test_4511_component_stream_stages_and_complete_route_match_donor_contract(
@@ -5360,17 +5365,12 @@ def test_hc157_scale_preserves_each_catalogue_attachment_unit(
     )
 
 
-@pytest.mark.parametrize(
-    ("count", "expected_two_point", "expected_three_point"),
-    ((9, 72, 54), (15, 120, 90)),
-)
-def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
+@pytest.mark.parametrize("count", (9, 15))
+def test_hc151_scale_emits_grid_short_wires_without_placer_dependency(
     tmp_path: Path,
     count: int,
-    expected_two_point: int,
-    expected_three_point: int,
 ) -> None:
-    """HC151 preserves routed donor topology when a later row is off-grid."""
+    """HC151 keeps donor grid contacts and uses direct exact-pin wires at scale."""
 
     family = "74HC151"
     base = tmp_path / f"74HC151_{count}x_no_terminal.pdsprj"
@@ -5417,10 +5417,11 @@ def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
     )
     wires_by_suffix = {int(row["suffix"]): row for row in wires}
     assert len(terminals) == len(wires) == 14 * count
-    assert Counter(len(row["full_coordinates"]) // 2 for row in wires) == {
-        2: expected_two_point,
-        3: expected_three_point,
-    }
+    assert all(len(row["full_coordinates"]) == 4 for row in wires)
+    assert all(
+        tuple(row["full_coordinates"][:2]) != tuple(row["full_coordinates"][2:])
+        for row in wires
+    )
     for terminal in terminals:
         if int(terminal["angle_tenths"]) == 0:
             contact = (
@@ -5436,7 +5437,8 @@ def test_hc151_scale_retargets_grid_terminal_contacts_without_placer_dependency(
         assert contact[0] % 254_000 == 0 and contact[1] % 254_000 == 0
         wire = wires_by_suffix[int(terminal["suffix"])]
         points = tuple(zip(wire["full_coordinates"][::2], wire["full_coordinates"][1::2]))
-        assert contact in points
+        assert points[0] == contact
+        assert points[0] != points[-1]
 
 
 def test_hc76_multipart_spread_keeps_both_body_anchors_at_9x(

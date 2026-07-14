@@ -166,6 +166,19 @@ while preserving each donor's subpart order, link slots, CDB policy, and
 component packets. Both were normal/cold-reopen gated at 1x, 9x, and 15x on
 2026-07-15.
 
+74HC151 exposed a different donor-route trap: its donor has nonzero two- and
+three-point WIREs, but its stored `terminal_contact_x/y` equals the pin endpoint
+for endpoint-selection purposes. Replaying and retargeting that polyline can
+therefore choose the pin as both WIRE ends and silently collapse every final
+WIRE. The additive family repair keeps the donor-relative grid terminal contact
+and uses the catalogue's direct `computed_terminal_contact_to_pin` route with
+retargeting disabled. It changed no shared emitter or frozen-family profile.
+The fresh shared-placer outputs for 1x, 9x, and 15x have 14/126/210 nonzero,
+grid-contact WIREs and passed normal/cold local Proteus gates on 2026-07-15.
+This is a general review rule: a donor's terminal contact field is not by
+itself proof of the donor WIRE endpoint orientation; compare every full
+polyline before selecting a retargeting strategy.
+
 ### Backend-neutral catalogue and routing TODOs
 
 The GitHub `memory/main:kicad` pipeline provides useful patterns that should be
