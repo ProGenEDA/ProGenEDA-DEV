@@ -14584,3 +14584,12 @@ The DIL8 checkpoint is pushed: `f87a5ed9` matches the remote. I’m continuing n
 ## Agent Visible Response - 2026-07-15 02:46 +05:00
 
 Both actual display donors are present. The catalogue currently labels them a special case, so I’m auditing their real packet grammar first; I won’t treat the D20 display exception as a reason to skip ordinary diode behavior.
+
+## Agent Visible Response - 2026-07-15 02:47 +05:00
+
+Continued and checkpointed.
+
+- Verified and pushed 1×/9×/15× terminal packs for 74HC157, 4511, 7447, 74HC160, 74HC192, 74HC174, 74HC283, 74HC85, LM741, and NE555.
+- Every final pack passed visible normal/cold Proteus loader gates with no modal errors and unchanged disposable copies; all use the existing shared placer without a new terminal script.
+- Pushed checkpoints `bf754967`, `f87a5ed9`, and the continuation log at `1a50c120`; local and remote hashes match.
+- Began donor-first audit of both 7-segment displays. Their packet grammar includes display-specific D20 context, which will remain isolated from ordinary diode handling.
