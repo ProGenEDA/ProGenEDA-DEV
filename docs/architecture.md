@@ -2452,8 +2452,25 @@ paths: `6,3,8,11,4,5,1,2,9,10,12,13` with point counts
 terminal-contact point for pins 6/3/11/4/9/10/12. The additive catalogue fix
 restores only those donor paths and provenance metadata; no shared algorithm or
 accepted route changed. The native, grid, complete, and cold-reopen 1x gates
-all normal-opened without a modal dialog or copy mutation. Scale proof remains
-separately gated. Its independent 9x and 15x routes preserve 108/180 active
+all normal-opened without a modal dialog or copy mutation. Its independent 9x and 15x routes preserve 108/180 active
 attachments, including every restored third point, and normal-open/cold-reopen
 without a modal error. The 15x cold-reopen capture visibly shows repeated XOR
 gates with the donor-shaped terminal wiring.
+
+### 2026-07-14 74HC266 DIL14 quad-gate revalidation
+
+HC266 is a component-stream-first route with its own authoritative order
+`3,4,10,11,1,2,5,6,8,9,12,13`. The actual accepted donor proves nine
+three-point WIRE paths and three two-point paths; the previous catalogue had
+silently omitted the final exact-pin point from nine of them. It also proves
+that physical pin 6's visible donor label is literally `Pin5I4`, while the
+normalized pin catalogue still identifies it as physical pin 6 / `2B`.
+
+The additive profile repair updates only that family’s full paths, label, and
+provenance. The shared terminal placer remains unchanged. The locked-mega
+control, native-contact stage, grid-contact stage, complete active stage, and
+complete cold reopen all reached normal Proteus windows after the delayed gate
+with no modal dialog or copy mutation. The complete output has twelve
+grid-aligned active terminal/WIRE units, matching final-address component links,
+and a normalized four-subpart/one-package CDB. Scale proof remains separately
+gated.

@@ -3734,6 +3734,57 @@ def test_hc86_shared_placer_scales_with_full_routed_wire_contract(
     assert report["terminal_suffix_links_valid"] is True
 
 
+def test_hc266_shared_placer_matches_authoritative_routed_attachment_contract(
+    tmp_path: Path,
+) -> None:
+    """HC266 retains the user donor's labels, links, and full WIRE paths."""
+
+    family = "74HC266"
+    base = tmp_path / "74HC266_1x_no_terminal.pdsprj"
+    output = tmp_path / "74HC266_1x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == 12
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    profile = load_component_catalog().profile(family)
+    geometry = profile.proteus["pin_geometry"]
+    expected_order = ("3", "4", "10", "11", "1", "2", "5", "6", "8", "9", "12", "13")
+    assert tuple(geometry["donor_attachment_unit_order"]) == expected_order
+    assert geometry["authoritative_terminal_donor"].endswith(
+        "74HC266_user_terminalized_july04.pdsprj"
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    terminal_rows = terminal_placer._bidir_label_records(chunk)
+    wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
+    assert [row["label"] for row in terminal_rows] == [
+        geometry["pins"][pin]["terminal_label"] for pin in expected_order
+    ]
+    assert [row["point_count"] for row in wire_rows] == [3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 2]
+
+
 def test_hc04_catalogue_uses_complete_e04_attachment_grammar() -> None:
     """HC04 must retain its actual donor's routed WIRE units and order."""
 
