@@ -3785,6 +3785,53 @@ def test_hc266_shared_placer_matches_authoritative_routed_attachment_contract(
     assert [row["point_count"] for row in wire_rows] == [3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 2]
 
 
+@pytest.mark.parametrize("count", (9, 15))
+def test_hc266_shared_placer_scales_with_authoritative_full_wire_contract(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """HC266 scale routes preserve every donor-proven routed attachment."""
+
+    family = "74HC266"
+    base = tmp_path / f"74HC266_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"74HC266_{count}x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+        allow_progressive_scaling=True,
+    )
+
+    assert result.valid
+    assert len(result.selected_groups) == count
+    assert report["valid"] is True
+    assert report["progressive_scaling_enabled"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == count * 12
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
+    assert [row["point_count"] for row in wire_rows] == [
+        3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 2
+    ] * count
+
+
 def test_hc04_catalogue_uses_complete_e04_attachment_grammar() -> None:
     """HC04 must retain its actual donor's routed WIRE units and order."""
 

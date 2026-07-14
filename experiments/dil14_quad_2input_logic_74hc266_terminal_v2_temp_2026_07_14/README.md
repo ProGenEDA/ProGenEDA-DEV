@@ -19,3 +19,10 @@ appeared and all disposable copies retained their original hashes. See
 `loader_results.json`; `independent_static_audit_1x.json` independently
 records labels, WIRE point counts, suffix links, component pin links, and the
 normalized selected-package CDB.
+
+`03_scale_9x_15x/` contains independent locked-mega controls and complete
+terminalized 9×/15× outputs. They preserve 108/180 active terminal/WIRE units,
+the exact donor order and three/two-point mix for every package, grid contacts,
+and normalized 9/15-package CDBs. Both scales normal-opened and cold-reopened
+without a dialog or copy mutation; the retained 15× normal/cold captures are
+under `04_local_proteus_scale_gate/`.

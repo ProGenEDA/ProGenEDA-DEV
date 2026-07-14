@@ -2472,5 +2472,8 @@ control, native-contact stage, grid-contact stage, complete active stage, and
 complete cold reopen all reached normal Proteus windows after the delayed gate
 with no modal dialog or copy mutation. The complete output has twelve
 grid-aligned active terminal/WIRE units, matching final-address component links,
-and a normalized four-subpart/one-package CDB. Scale proof remains separately
-gated.
+and a normalized four-subpart/one-package CDB. Its independent 9x/15x routes preserve 108/180 active attachment
+units, the donor's exact per-package labels and 3/2-point WIRE pattern, grid
+contacts, final-address suffixes, and 9/15-package CDBs. Both normal-opened
+and cold-reopened without a modal error or copy mutation; the 15x captures
+visibly show repeated terminalized XNOR gates.
