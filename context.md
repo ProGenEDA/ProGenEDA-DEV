@@ -14152,3 +14152,67 @@ The first 7490 loader failure was one stale packet-tail byte before the first WI
 ## Agent Visible Response - 2026-07-14 23:57 +05:00
 
 7490’s 15× output also passed normal and cold Proteus gates, so the family now has verified 1×/9×/15× shared-generator outputs. The only repair was the donor-proven one-byte terminal-leading packet-tail trim; focused regression, compilation, and catalogue JSON validation all pass. I’m saving this as a real shared-behavior repair checkpoint, then the next clean family will accumulate toward the final solo-sweep checkpoint.
+
+## Agent Visible Response - 2026-07-14 23:59 +05:00
+
+The 7490 repair checkpoint is committed and remote-verified at `8c9bf559`. I’m moving to 4027 next and will run its 1×/9×/15× batch through the same donor-first staged gate.
+
+## Agent Visible Response - 2026-07-15 00:02 +05:00
+
+4027’s donor already had the correct two-subpart packet grammar. The one real issue was that its final route replayed zero-length donor WIREs, leaving terminals disconnected; the profile now uses the shared grid-contact-to-exact-pin WIRE rule. Its fresh 1× grid and complete outputs have all 14 nonzero attachments; I’m loader-gating the three stages now.
+
+## Agent Visible Response - 2026-07-15 00:05 +05:00
+
+4027’s native, grid, and complete 1× outputs all passed normal/cold opens. The final route now truly uses terminal-contact-to-pin wires, rather than donor-shaped zero-length wires. I’m generating and gating its 9× and 15× batch now.
+
+## User Message - 2026-07-15 00:09 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-15 00:09 +05:00
+
+I’m continuing the 4027 batch from its already-passing 1× and 9× outputs, then I’ll complete the 15× gate and record the result before moving to the next family.
+
+## Agent Visible Response - 2026-07-15 00:09 +05:00
+
+Continuing from 4027: its 1× and 9× terminalized outputs are passing local Proteus gates with nonzero grid-contact wires. I’m verifying the previous checkpoint before completing the 15× gate and recording this batch.
+
+## Agent Visible Response - 2026-07-15 00:10 +05:00
+
+The previous committed checkpoint is confirmed on its upstream. I’m running the required large-output normal/cold Proteus gate on 4027’s 15× file now, including modal-error detection and a pre-close capture.
+
+## Agent Visible Response - 2026-07-15 00:12 +05:00
+
+The first gate invocation hit a PowerShell type-name error before it could assess the project; it did not modify the source file. I’ve corrected the gate helper and am rerunning the same normal/cold check.
+
+## Agent Visible Response - 2026-07-15 00:14 +05:00
+
+The loader gate proved the 15× file parses, but the static audit exposed an important issue before handoff: 4027’s donor contacts coincide with its grid-aligned pins, so the current final WIREs are zero-length. I’m correcting only 4027’s catalogue policy to use the already-proven one-grid outward contact plus short WIRE, then I’ll re-gate 1×/9×/15×.
+
+## Agent Visible Response - 2026-07-15 00:16 +05:00
+
+The corrected 4027 emitter now gives 14 nonzero, grid-aligned short wires in 1× and 126/210 in 9×/15×. I’m loader-gating the regenerated native/grid 1× diagnostics first; only the final grid/complete routes are candidates for acceptance.
+
+## Agent Visible Response - 2026-07-15 00:18 +05:00
+
+The regenerated 1× native and grid gates are still running their cold-reopen interval; no modal error has been detected so far.
+
+## Agent Visible Response - 2026-07-15 00:19 +05:00
+
+Both 4027 diagnostics passed normal and cold local Proteus opens with unchanged disposable copies. I’m gating the 1× complete route and the regenerated 9× final next; then only the screenshot-backed 15× final remains.
+
+## Agent Visible Response - 2026-07-15 00:21 +05:00
+
+The complete 1× and 9× cold-reopen gates are in their final wait; the 4027 output has remained free of loader dialogs so far.
+
+## Agent Visible Response - 2026-07-15 00:22 +05:00
+
+4027’s corrected complete 1× and 9× routes both pass normal/cold gates. I’m doing the final 15× gate now with a pre-close screen capture, then I’ll update the regression and evidence record.
+
+## Agent Visible Response - 2026-07-15 00:24 +05:00
+
+The 15× final gate also passed and its screenshot shows repeated 4027 sections with nearby terminals. I’ve now locked the evidence into the catalogue/docs and am running the focused 1×/9×/15× regression plus frozen two-pin checks before committing this real repair.
+
+## Agent Visible Response - 2026-07-15 00:27 +05:00
+
+4027 is now clean at 1×/9×/15×: final routes have nonzero grid-contact wires, all local normal/cold gates pass, and 16 focused/frozen regressions pass. I’m committing this bounded catalogue repair; the next family will start from its own donor without changing 4027 or any accepted route.

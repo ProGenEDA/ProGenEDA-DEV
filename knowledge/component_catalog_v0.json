@@ -241,7 +241,7 @@
             "E",
             "B"
           ],
-          "allow_zero_length_wire_units": false,
+          "allow_zero_length_wire_units": true,
           "wire_coordinates_policy": "computed_terminal_contact_to_pin"
         }
       }
@@ -1434,7 +1434,7 @@
       "proteus": {
         "pin_geometry": {
           "active_link_evidence_source_project": "proteus_ic/donors/terminalized_catalogue_evidence/dil16_dual_jk_ff/4027/4027_terminalized_primary.pdsprj",
-          "allow_zero_length_wire_units": true,
+          "allow_zero_length_wire_units": false,
           "anchor_family": "4027",
           "component_anchor": {
             "marker": "4027",
@@ -1520,7 +1520,8 @@
             "14": {"terminal_contact_x": -8382000, "terminal_contact_y": 2794000, "matched_wire_endpoint_x": -8382000, "matched_wire_endpoint_y": 2794000, "wire_unit_coordinates": [-8382000, 2794000, -8382000, 2794000]},
             "15": {"terminal_contact_x": -8382000, "terminal_contact_y": 3810000, "matched_wire_endpoint_x": -8382000, "matched_wire_endpoint_y": 3810000, "wire_unit_coordinates": [-8382000, 3810000, -8382000, 3810000]}
           },
-          "object_stream_finalizer": "single_ff",
+      "object_stream_finalizer": "single_ff",
+      "staged_contact_requires_active_attachment_unit": true,
           "pins": {
             "1": {
               "anchor_family": "4027",
@@ -1764,22 +1765,22 @@
           "preserve_root_cdb": true,
           "source_project": "proteus_ic/donors/terminalized_catalogue_evidence/dil16_dual_jk_ff/4027/4027_terminalized_primary.pdsprj",
           "source_registry_key": "4027",
-          "status": "catalogue_terminal_1x_9x_15x_loader_passed_pending_user_visual_validation",
+      "status": "authoritative_donor_revalidated_1x_9x_15x_grid_short_wire_loader_passed_pending_user_visual_validation",
           "subpart_link_prefix_zero_trim_count": 1,
-          "terminal_contact_policy": "donor_explicit",
-          "terminal_contact_outward_grid_steps": 0,
+          "terminal_contact_policy": "computed_outward_grid",
+          "terminal_contact_outward_grid_steps": 1,
           "validated_solo_scales": [
             1,
             9,
             15
           ],
-          "terminal_policy": "donor_grid_contact_with_zero_length_native_wire_unit",
-          "wire_coordinates_policy": "donor_coordinates",
+      "terminal_policy": "donor_grid_contact_with_nonzero_short_wire_to_exact_pin",
+      "wire_coordinates_policy": "computed_terminal_contact_to_pin",
           "wire_record_encoding": "catalogue_leading_separator"
         }
       },
       "proteus_marker": "4027",
-      "terminal_support": "catalogue_subpart_block_native_zero_length_1x_9x_15x_loader_passed_pending_user_visual_validation"
+  "terminal_support": "catalogue_subpart_block_grid_short_wire_1x_9x_15x_loader_passed_pending_user_visual_validation"
     },
     "40EPS08": {
       "aliases": [],

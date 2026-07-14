@@ -156,13 +156,13 @@ Components remain at their beautified coordinates. This rule is a Proteus
 backend profile; the stage still consumes placed packets and pin descriptors,
 not donor identity.
 
-For a family whose accepted donor instead proves a zero-length native WIRE
-unit at a grid-aligned pin (currently the 4027 investigation), the terminal
-stage must not invent a short off-grid segment. The beautifier may opt into
-whole-grid packet translations before terminal placement so the native pin
-frame remains on-grid; the terminal stage still never moves component packets.
-The catalogue declares that exceptional WIRE grammar, physical subpart anchor,
-and proof source.
+For a family whose accepted donor proves a zero-length native WIRE unit at a
+grid-aligned pin (such as 4027), that unit proves the loader-required packet,
+link, and record grammar only. The native-contact diagnostic preserves it.
+The grid and final stages still place the terminal contact on the grid and use
+a nonzero short WIRE to the exact pin; they never move the component packet.
+The catalogue declares both the exceptional native grammar and the final
+contact policy, physical subpart anchor, and proof source.
 
 When that opt-in moves a native IC packet, it must move every donor-proven
 visible-frame coordinate, not only the ordinary length-prefixed reference and
@@ -232,5 +232,5 @@ attachment proof. The complete donor request is
     coordinate frame, recalculate absolute pins from the placed component, snap
     terminal contacts to the Proteus grid, and connect with short WIRE records.
     If the accepted family proves a zero-length native WIRE attachment, preserve
-    that grammar and request grid-preserving beautifier translations instead of
-    synthesizing a nonzero wire.
+    that grammar only in the native loader diagnostic. The final route must use
+    a grid-aligned contact and nonzero short WIRE to the exact pin.

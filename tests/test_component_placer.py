@@ -954,10 +954,12 @@ def test_locked_mega_4027_scale_selection_uses_only_complete_ab_packages(
     assert all(group.refs == (f"{group.key}:A", f"{group.key}:B") for group in result.selected_groups)
 
 
+@pytest.mark.parametrize("count", (1, 9, 15))
 def test_4027_shared_placer_preserves_reference_width_in_active_subpart_blocks(
     tmp_path: Path,
+    count: int,
 ) -> None:
-    """4027 keeps one reference-width byte instead of forcing donor packet size.
+    """4027 preserves its packet width while emitting grid-to-pin short wires.
 
     The user-accepted donor has ``U1:A/B`` records.  The locked mega places
     ``U13:A/B``; its active packets must therefore remain one byte wider than
@@ -974,12 +976,12 @@ def test_4027_shared_placer_preserves_reference_width_in_active_subpart_blocks(
         / family
         / "4027_terminalized_primary.pdsprj"
     )
-    base = tmp_path / "4027_1x_no_terminal.pdsprj"
-    output = tmp_path / "4027_1x_terminalized.pdsprj"
+    base = tmp_path / f"4027_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"4027_{count}x_terminalized.pdsprj"
     result = generate_component_placement_project(
         {
             "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
-            "components": {family: 1},
+            "components": {family: count},
             "layout": {
                 "strategy": "beautify",
                 "binary_coordinate_mutation": True,
@@ -999,14 +1001,16 @@ def test_4027_shared_placer_preserves_reference_width_in_active_subpart_blocks(
 
     assert result.valid
     assert report["valid"] is True
-    assert report["terminal_count_added"] == 14
-    assert report["wire_count_added"] == 14
+    assert report["terminal_count_added"] == 14 * count
+    assert report["wire_count_added"] == 14 * count
     assert report["terminal_grid_alignment_valid"] is True
     assert report["wire_path_contacts_valid"] is True
     assert report["terminal_suffix_links_valid"] is True
     assert report["object_stream_finalizer"] == "single_ff"
     assert all(
-        not row["wire_is_nonzero"] and row["zero_length_wire_allowed"]
+        row["terminal_to_wire"]
+        and row["wire_to_pin"]
+        and row["wire_is_nonzero"]
         for row in report["wire_path_contact_checks"]
     )
 
@@ -1022,10 +1026,17 @@ def test_4027_shared_placer_preserves_reference_width_in_active_subpart_blocks(
         output_chunk,
         chunk_start=terminal_placer._object_chunk_absolute_start(output_dsn),
     )
-    assert len(donor_wires) == len(output_wires) == 14
+    assert len(donor_wires) == 14
+    assert len(output_wires) == 14 * count
     assert all(
         tuple(row["full_coordinates"][:2])
-        == tuple(row["full_coordinates"][-2:])
+        != tuple(row["full_coordinates"][-2:])
+        for row in output_wires
+    )
+    assert all(
+        abs(int(row["full_coordinates"][0]) - int(row["full_coordinates"][2]))
+        == 254_000
+        and int(row["full_coordinates"][1]) == int(row["full_coordinates"][3])
         for row in output_wires
     )
 
