@@ -2530,3 +2530,21 @@ grid-contact/nonzero-WIRE units and normal-open/cold-reopen without a modal
 error or save mutation. The locked-mega capacity is therefore recorded as a
 proven 15-package HC74 solo limit for the MVP, rather than assumed from a
 different DIL14 family.
+
+### 2026-07-14 7490 DIL14 counter terminal-leading packet rule
+
+The authoritative 7490 donor has ten terminal records, one component packet,
+and ten catalogue-leading WIRE units. Its terminal order and WIRE/link order
+are different: terminal records are `14,1,2,3,6,7,12,9,8,11`, while active
+component link slots/WIREs are `14,12,1,9,8,11,2,3,6,7`. The locked mega
+contains the same ten reserved 4-byte link slots at component-end offsets
+`-48` through `-12`; catalogue facts map the correct pin to each one.
+
+The first native-contact candidate exposed one stale component-placer tail
+byte, moving every WIRE by one byte and causing a Proteus Fatal Error. The
+profile now declares the donor-proven terminal-leading finalizer trim. No
+shared-emitter or frozen-family behavior changed. After the trim, native,
+grid, and complete 1x diagnostics as well as 9x and 15x final outputs
+normal-opened and cold-reopened locally without a modal error or mutation.
+Final routes have grid-aligned terminal contacts and nonzero short WIREs to
+their untouched exact pins.

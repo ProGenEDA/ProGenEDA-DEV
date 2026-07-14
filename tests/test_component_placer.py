@@ -4246,6 +4246,91 @@ def test_hc74_shared_placer_scales_through_proven_locked_mega_limit(
     assert len(cdb.property_rows) == count
 
 
+@pytest.mark.parametrize("count", (1, 9, 15))
+def test_7490_shared_placer_keeps_terminal_leading_attachment_grammar(
+    tmp_path: Path,
+    count: int,
+) -> None:
+    """7490 uses one shared terminal path through its proven 15x scale."""
+
+    family = "7490"
+    base = tmp_path / f"7490_{count}x_no_terminal.pdsprj"
+    output = tmp_path / f"7490_{count}x_terminalized.pdsprj"
+    placement = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {family: count},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "shelf_width": 75_000_000,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        base,
+        output,
+        placement.selected_groups,
+        terminal_families=(family,),
+        use_donor_terminal_labels=True,
+    )
+
+    profile = load_component_catalog().get_profile(family)
+    assert profile is not None
+    geometry = profile.proteus["pin_geometry"]
+    assert geometry["clean_packet_attachment_order"] == (
+        "terminal_leading_component_then_wires"
+    )
+    assert geometry["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert geometry["strip_component_placer_finalizer_before_terminal_leading_wires"] is True
+    assert geometry["staged_contact_requires_active_attachment_unit"] is True
+    assert geometry["donor_terminal_record_order"] == [
+        "14", "1", "2", "3", "6", "7", "12", "9", "8", "11"
+    ]
+
+    assert placement.valid
+    assert len(placement.selected_groups) == count
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == report["wire_count_added"] == count * 10
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "append_explicit_single_ff"
+
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = terminal_placer._bidir_label_records(chunk)
+    wires = terminal_placer._wire_rows_from_chunk(
+        chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(dsn),
+    )
+    assert [row["label"] for row in terminals] == [
+        "CKA PIN14", "CKB PIN 1", "R0(1) PIN 2", "R0(2) PIN 3",
+        "R9(1) PIN 6", "R9(2) PIN 7", "Q0 PIN 12", "Q1 PIN 9",
+        "Q2 PIN 8", "Q3 PIN 11",
+    ] * count
+    assert len(wires) == count * 10
+    assert all(row["point_count"] == 2 for row in wires)
+    assert all(
+        tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
+        for row in wires
+    )
+    assert all(
+        terminal_placer._terminal_contact_xy(row)[0] % 254_000 == 0
+        and terminal_placer._terminal_contact_xy(row)[1] % 254_000 == 0
+        for row in terminals
+    )
+    assert {
+        int(row["suffix"]) for row in terminals
+    } == {int(row["suffix"]) for row in wires}
+    assert chunk[-1:] == b"\xff"
+
+    cdb = parse_component_placer_cdb(read_internal_file(output, "ROOT.CDB"))
+    assert len(cdb.pin_rows) == len(cdb.property_rows) == count
+
+
 def test_hc76_shared_placer_serializes_asymmetric_subpart_blocks(
     tmp_path: Path,
 ) -> None:
