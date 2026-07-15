@@ -3136,6 +3136,60 @@ def test_totalmix_ne555_uses_donor_proven_terminal_and_wire_orders(
     )
 
 
+def test_totalmix_lm741_uses_donor_proven_terminal_and_wire_orders(
+    tmp_path: Path,
+) -> None:
+    """LM741 joins the same inline grammar through its own donor ordering."""
+
+    base = tmp_path / "totalmix_lm741_base.pdsprj"
+    output = tmp_path / "totalmix_lm741_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"RESISTOR": 1, "CAP": 1, "LM741": 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "front_families": ["LM741"],
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP"),
+        catalogue_terminal_families=("LM741",),
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+
+    lm741 = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") == "LM741"
+    )
+    assert result.valid
+    assert report["valid"] is True
+    assert lm741["donor_terminal_record_order"] == [
+        "6", "1", "7", "5", "4", "3", "2"
+    ]
+    assert lm741["donor_wire_record_order"] == [
+        "3", "2", "6", "7", "4", "1", "5"
+    ]
+    assert all(
+        row["terminal_contact_grid_aligned"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:

@@ -121,3 +121,23 @@ normal-opened and cold-reopened in local Proteus after the required delayed
 wait. No Bad Object Record, LXLCORE, fatal, or device-library dialog appeared,
 and its SHA-256 did not change (`9A5817B300FA9E2851E27E07F527D41F855D466228B081A12E7EBAFFB1ACFCCB`).
 No Ctrl+S was used.
+
+## LM741 40-family result
+
+`experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/02_lm741_40f`
+was freshly placed from the same locked mega with the 39-family NE555 result
+plus `LM741`. `LM741` is fronted at visual slot zero under the same compact,
+grid-preserving 50,000,000-unit test shelf. Static validation reports 40
+selected components, 193 active terminal/WIRE pairs, grid-aligned contacts,
+and nonzero terminal-to-exact-pin WIREs.
+
+Its generated terminal order is exactly `6,1,7,5,4,3,2` and its WIRE order is
+exactly `3,2,6,7,4,1,5`, matching the authoritative donor. Differences from
+the donor are limited to expected freshly placed coordinates, final-address
+suffixes, the locked-mega component packet form, and the deliberately nonzero
+mixed WIRE segments.
+
+The disposable gate copy normal-opened and cold-reopened in local Proteus with
+no Bad Object Record, LXLCORE, fatal, or library dialog and no hash mutation:
+`19B1E71FF2D224F7A9D555C68EBDF1ABA9C6CDC6A1B71A5AC3BC873AEC90EF1D`.
+No Ctrl+S was used.
