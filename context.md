@@ -11634,6 +11634,23 @@ Research result:
   stage is a read-only record extractor; native `.SchDoc` emission remains
   blocked until Altium Designer or CircuitMaker accepts a generated file.
 
+### 2026-07-15T00:00:00+05:00
+
+User request (verbatim):
+
+> download them
+
+Visible response:
+
+> They’re already downloaded into the repository as pinned donor fixtures.
+
+Verification:
+
+- `pspice_rc_mit/RC_CIRCUIT.DSN` is present at 20,480 bytes and matches its
+  recorded SHA-256.
+- `altium_rc_mit/Charging_and_Discharging_Capacitors.SchDoc` is present at
+  34,304 bytes and matches its recorded SHA-256.
+
 ## 2026-07-14T02:06:45+05:00 — Portable KiCad regulated 5 V demo
 
 User request (verbatim):
