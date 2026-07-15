@@ -14715,3 +14715,33 @@ I’m starting the mixed phase with the 30-family route that already has shared 
 The first mixed build is structurally complete: 30 placed families, 70 grid-terminal/WIRE attachments, and no extra terminal script. I’m opening this large mixed project in Proteus now and taking the required pre-close screenshots.
 
 The 30-family mixed circuit passed normal open and cold reopen with no modal error or save mutation. I’m checkpointing that result, then I’ll build the IC mixed group next (with only the donor-proven R/C native prelude, as required by the shared mixed-stream rule).
+
+## User Message - 2026-07-15 08:40 +05:00
+
+continue
+
+## Agent Visible Responses - 2026-07-15 08:40-09:06 +05:00
+
+I am continuing from the valid 30-family mixed checkpoint. I will keep the accepted routes frozen, group the ICs by actual donor attachment grammar, and build only the compatible mixed outputs while I research the missing shared 4027 rule from its donor.
+
+The existing shared mixed route generated a valid 19-component IC mix: 17 compatible IC families plus resistor/capacitor, with 224 terminal-WIRE attachments. I applied the real Proteus normal/cold-open gate; the three dual flip-flop packages remained isolated for donor-first mixed-stream research rather than being guessed into that output.
+
+Proteus rejected that 19-component hybrid at load time with `VGDVC.DLL [00190AD]`; this is not a visual-only issue. I isolated the two donor-proven grammar zones (component-tail versus terminal-leading) as full groups and compared the failed hybrid boundary against donor evidence instead of changing an accepted solo route.
+
+The boundary was isolated: the 9 component-tail ICs open normally; each terminal-leading IC fails even in a tiny `RESISTOR + CAP + IC` mix.
+
+## User Message - 2026-07-15 08:54 +05:00
+
+give me a terminalized none ic mix and a terminalized ic mix, ill manual combine them for u
+
+## Agent Visible Responses - 2026-07-15 08:54-09:06 +05:00
+
+I can give you a clean, usable split without inventing a cross-grammar merge: the accepted non-IC mix already exists, and I generated the IC side as terminalized grammar packs. Each uses the locked mega placer and the same shared terminal placer, for manual combination.
+
+The IC side is split by proven stream grammar and CDB policy, not by component-specific scripts. All seven emitted packs are statically valid with grid-aligned terminals, short wires, and rebased links.
+
+All seven IC grammar packs passed delayed normal and cold Proteus opens with no modal error and no disposable-copy mutation. Files edited: `experiments/terminalized_ic_grammar_packs_v1_temp_2026_07_15/` (fresh placed outputs and summaries), `knowledge/test_results.jsonl`, and `context.md`.
+
+## Agent Visible Response - 2026-07-15 09:07 +05:00
+
+The requested handoff is complete: one proven 30-family non-IC mix and seven loader-gated IC packs covering all 20 supported IC families. I recorded only the real outputs and reports, excluding disposable gate copies, then committed and pushed the checkpoint.
