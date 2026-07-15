@@ -1174,6 +1174,50 @@ def test_compact_family_flow_preserves_spacing_across_shelf_wraps(
     ) == []
 
 
+def test_interleaved_compact_flow_uses_single_validated_slot_margin(
+    tmp_path: Path,
+) -> None:
+    """An interleaved stress shelf must not pay a second gap per family hop."""
+
+    components = {"RESISTOR": 2, "CAP": 2, "DIODE": 2}
+    base_layout = {
+        "strategy": "beautify",
+        "binary_coordinate_mutation": True,
+        "terminal_grid_alignment": True,
+        "compact_family_flow": True,
+        "shelf_width": 75_000_000,
+    }
+    block_flow = generate_component_placement_project(
+        {"components": components, "layout": base_layout},
+        tmp_path / "interleave_block_flow.pdsprj",
+        full_cdb=True,
+    )
+    interleaved = generate_component_placement_project(
+        {
+            "components": components,
+            "layout": {**base_layout, "mixed_family_interleave": True},
+        },
+        tmp_path / "interleave_compact_flow.pdsprj",
+        full_cdb=True,
+    )
+
+    block_entries = block_flow.layout_plan["actual_binary_placements"]
+    entries = interleaved.layout_plan["actual_binary_placements"]
+
+    assert interleaved.valid
+    assert all(entry["mixed_family_interleave"] for entry in entries)
+    assert layout_overlap_pairs(entries) == []
+    assert layout_different_family_spacing_pairs(
+        entries,
+        min_spacing=3_810_000,
+    ) == []
+    # The interleaved path must remain denser than block flow, whose retained
+    # family-block gaps are intentionally part of the frozen normal layout.
+    assert max(int(entry["after_bbox"]["max_x"]) for entry in entries) < max(
+        int(entry["after_bbox"]["max_x"]) for entry in block_entries
+    )
+
+
 def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {

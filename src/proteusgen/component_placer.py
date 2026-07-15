@@ -1691,12 +1691,25 @@ def _apply_binary_beautifier(
                     row_height = 0
                     row_index += 1
                     column_index = 0
-                elif compact_family_flow and cursor_x != VISIBLE_LAYOUT_ORIGIN_X:
+                elif (
+                    compact_family_flow
+                    and not mixed_family_interleave
+                    and cursor_x != VISIBLE_LAYOUT_ORIGIN_X
+                ):
                     # Preserve a full different-family gap while keeping the
                     # next block on the same shelf row when space permits.
                     # Grid snapping can move the two neighbouring packets
                     # toward one another by a combined one grid step, so
                     # reserve that step before the post-layout spacing gate.
+                    #
+                    # An explicitly interleaved mixed test already changes
+                    # family at virtually every packet.  Every allocation
+                    # below includes the normal validated spacing margin, so
+                    # adding this second full family gap would make a compact
+                    # all-family sheet grow by one unused gap per component.
+                    # Keep the established block-flow behaviour frozen, but
+                    # let the explicit interleave policy use its allocated
+                    # margin as the required different-family separation.
                     compact_gap_x = DIFFERENT_FAMILY_LAYOUT_MIN_SPACING + (
                         PROTEUS_TERMINAL_GRID if terminal_grid_alignment else 0
                     )
