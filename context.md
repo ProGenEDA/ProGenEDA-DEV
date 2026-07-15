@@ -14848,3 +14848,7 @@ The unified 15× file passed both normal open and cold reopen in Proteus with no
 Files edited: `experiments/mixed_all_supported_totalmix_v1_temp_2026_07_15/dsn_audit_repair_scales/04_all_49_mixed_15x_hc00_8x/` (all-family 15× outputs, reports, capacity audit, and loader screenshots), `knowledge/totalmix_dense_grid_contact_preflight_2026_07_15.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `context.md`.
 
 The frozen-route regression set still passes (6 tests) and compilation is clean. I’m staging only the verified 15× artifacts, reports, screenshots, and records—never the disposable Proteus copy.
+
+## Agent Final Response - 2026-07-15 12:25 +05:00
+
+Done. The mix is one unified IC + non-IC project, not two packs. It includes all 49 currently supported families: 15 of each except the real locked-mega complete-package constraints of 8 HC00 and 12 HC02, for 725 placed components and 4,650 grid-aligned terminal/WIRE attachments. Normal open and cold reopen both passed in Proteus without a dialog or mutation; the verified artifacts, reports, and screenshots are under `experiments/mixed_all_supported_totalmix_v1_temp_2026_07_15/dsn_audit_repair_scales/04_all_49_mixed_15x_hc00_8x/`.
