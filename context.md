@@ -14826,3 +14826,25 @@ Files edited: `src/proteusgen/component_terminal_placer.py`, `tests/test_compone
 ## Agent Visible Response - 2026-07-15 11:45 +05:00
 
 The 9× unified IC + non-IC mix also passed Proteus normal open and cold reopen with no dialog or file mutation. I’m checkpointing this verified scale result now, then I’ll use the same all-family route for the 15× build.
+
+## Agent Visible Responses - 2026-07-15 11:45-12:20 +05:00
+
+The 9× all-family checkpoint is committed and pushed (`bfc7f54d`). I’m generating the same unified route at 15× now—still every supported IC and non‑IC in one circuit, with HC00 held at its verified eight native packets.
+
+The 15× build correctly stopped before emission: the locked mega has only 12 complete `74HC02` packages, so asking for 15 would be fabricated. I’m deriving the real complete-package ceiling for every family and will use each family’s highest proven count rather than inventing a limit.
+
+The full 15× all-family emitter is still running its final address-rebase and audit pass; it contains 725 placed components, not a split pack. The only donor-proven exceptions are HC00 at 8 and HC02 at 12 complete package groups.
+
+The 15× run is now completing the same final WIRE-address allocation that the 9× file passed. I’ve left the shared implementation unchanged; this is a scale-only run against the locked mega with its actual package ceilings.
+
+The rerun is only restoring the full static audit record after the first 15× output finished but the summary serializer used the wrong placement field. The component stream itself is regenerated from the same locked donor; no terminal behavior is being changed.
+
+The static 15× unified mix is complete: 725 components, 4,650 terminal/WIRE attachment units, and every static grid/contact/link check passes. I’m running the local Proteus normal-open and cold-reopen gate next.
+
+The generated file is static-valid. The loader gate is temporarily blocked only because the previous executable path is no longer on `PATH`; I’m locating the installed Proteus executable rather than substituting any other checker.
+
+The unified 15× file passed both normal open and cold reopen in Proteus with no dialog and no file mutation. The screenshots show terminalized 7447s in the all-family sheet; I’m recording the evidence and pushing this checkpoint.
+
+Files edited: `experiments/mixed_all_supported_totalmix_v1_temp_2026_07_15/dsn_audit_repair_scales/04_all_49_mixed_15x_hc00_8x/` (all-family 15× outputs, reports, capacity audit, and loader screenshots), `knowledge/totalmix_dense_grid_contact_preflight_2026_07_15.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, and `context.md`.
+
+The frozen-route regression set still passes (6 tests) and compilation is clean. I’m staging only the verified 15× artifacts, reports, screenshots, and records—never the disposable Proteus copy.

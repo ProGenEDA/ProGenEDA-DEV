@@ -95,3 +95,20 @@ The focused set includes the frozen default mixed route, donor-proven BJT tail
 route, 1x `totalmix` order/finalizer route, and a new dense-grid regression
 covering native two-pin, SWITCH endpoint correction, BJT/FET tail topology,
 OPAMP/LM317T, 4511, and DIL14 logic in one shared emitter call.
+
+## 15x all-family result
+
+Artifact:
+`experiments/mixed_all_supported_totalmix_v1_temp_2026_07_15/dsn_audit_repair_scales/04_all_49_mixed_15x_hc00_8x/ALL_TOTALMIX_49F_15X_HC00_8X_HC02_12X_TERMINAL_sa.pdsprj`.
+
+- This remains one unified IC + non-IC circuit: 725 placed packets across all
+  49 current totalmix families.
+- The real locked-mega selector supports 15 complete packets for 47 families,
+  12 for `74HC02`, and 8 for `74HC00`. The complete-package evidence is
+  stored in `family_capacity_at_or_below_15.json`; neither exception is a
+  layout limit.
+- The shared dense mode emitted 4,650 grid-aligned terminals and 4,650
+  nonzero short WIREs. The report validates every terminal/WIRE/pin contact
+  and final-address-rebased active link.
+- A disposable copy passed delayed normal open and cold reopen locally in
+  Proteus with no modal dialog or hash mutation. No Ctrl+S was used.

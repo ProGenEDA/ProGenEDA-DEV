@@ -2647,3 +2647,10 @@ address-rebased links for every unit. A disposable normal-open/cold-reopen
 Proteus gate passed without a dialog or project mutation. The full preflight,
 including the independently observed HC00 eight-package source constraint, is
 recorded in `knowledge/totalmix_dense_grid_contact_preflight_2026_07_15.md`.
+
+The same all-family route now has a 15x loader-gated scale artifact. It keeps
+all IC and non-IC families in one stream and uses real locked-mega
+complete-package availability rather than pretending every family has fifteen
+safe packets: HC00 has eight and HC02 has twelve; the other 47 current
+totalmix families have fifteen. These are component-placer selector constraints
+with explicit evidence, not beautifier or terminal-placement limits.
