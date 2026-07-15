@@ -84,3 +84,11 @@ The shared generic two-pin route (diodes, zeners, 40EPS08, LED-RED, FUSE and SWI
 - Backup: `backups/component_terminal_placer/component_terminal_placer_20260715_202651_before_missing7_totalmix_bridge_profile.py`.
 - Evidence checks: `RIGHT, TOP, BOTTOM, LEFT` terminal/WIRE unit order; 0/0/0/1800 orientations; grid contact; nonzero wire to the exact pin; address-derived terminal/component link suffixes; and explicit `FF FF` object finalizer.
 - Gate: focused BRIDGE and all totalmix/mixed regressions, JSON/compile checks, plus a fresh 42-family normal/cold Proteus open gate. The normally opening disposable copy was not saved.
+
+## Completed preflight - 2026-07-15 TRAN-2P2S 43-family additive route
+
+- Authority: `proteus_ic/donors/terminalized_catalogue_evidence/four_pin_rectifier_transformer/TRAN-2P2S/TRAN-2P2S_user_terminalized_july04.pdsprj`; full member, DSN/CDB, component, pin-link, terminal, WIRE, relative-frame, separator, and finalizer inventory is recorded in `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`.
+- Freeze: BRIDGE and every previously accepted family remain unchanged. The additive profile facts are only TRAN-2P2S's active `0200` link class, four-pin tail-zone membership/rank, and donor unit order.
+- Backup: `backups/component_terminal_placer/component_terminal_placer_20260715_203750_before_missing7_totalmix_tran_2p2s_profile.py`.
+- Evidence checks: `TOPRIGHT, BOTTOMRIGHT, TOPLEFT, BOTTOMLEFT` terminal/WIRE order; `0,0,1800,1800` orientation; grid contact; nonzero wire to exact pin; final-address terminal/component suffixes; and `FF FF` termination. The donor's bent bottom-left wire is documented; the fresh collinear grid contact safely emits a direct segment.
+- Gate: focused transformer and all totalmix/mixed regressions, JSON/compile checks, plus a fresh 43-family normal/cold Proteus open gate. The normally opening disposable copy was not saved.

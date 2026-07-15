@@ -122,6 +122,31 @@ wait. No Bad Object Record, LXLCORE, fatal, or device-library dialog appeared,
 and its SHA-256 did not change (`9A5817B300FA9E2851E27E07F527D41F855D466228B081A12E7EBAFFB1ACFCCB`).
 No Ctrl+S was used.
 
+## TRAN-2P2S 43-family result
+
+`experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/05_tran_2p2s_43f`
+adds exactly one `TRAN-2P2S` transformer to the committed 42-family baseline.
+The actual donor establishes four active `0200` attachment units in this
+exact order: `TOPRIGHT`, `BOTTOMRIGHT`, `TOPLEFT`, `BOTTOMLEFT`. The shared
+placer retains the freshly placed component packet and applies only those
+catalogued per-pin link/terminal/WIRE facts in the dedicated four-pin tail
+zone.
+
+Static validation passed: 43 component packets, 213 active terminal/WIRE
+pairs, grid-aligned terminal contacts, nonzero exact-pin WIREs, matching
+active terminal/component link trailers, four valid final-address suffix
+allocations, and final `FF FF`. The serialized terminal order and orientations
+are exactly `TOPRIGHT,BOTTOMRIGHT,TOPLEFT,BOTTOMLEFT` and `0,0,1800,1800`.
+The authoritative donor uses a three-point bottom-left wire because its
+source contact is not collinear with the pin; the fresh layout produces a
+collinear grid contact, so the unified planner emits the equivalent nonzero
+two-point segment rather than copying donor coordinates.
+
+The disposable local gate copy normal-opened and cold-reopened with no Bad
+Object Record, LXLCORE, fatal, or device-library dialog and no file mutation:
+`FDD10797A7D223F8DB87F08A38F2FC4555F0B59718BDD60683F29D7C79782DEF`.
+No Ctrl+S was used.
+
 ## 74HC74 41-family result
 
 `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/03_74hc74_41f`

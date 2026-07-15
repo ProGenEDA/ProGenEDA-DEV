@@ -3300,6 +3300,68 @@ def test_totalmix_bridge_uses_donor_proven_tail_units(
     )
 
 
+def test_totalmix_tran_2p2s_uses_donor_proven_tail_units(
+    tmp_path: Path,
+) -> None:
+    """TRAN-2P2S retains its four-unit transformer donor order in a mix."""
+
+    base = tmp_path / "totalmix_tran_2p2s_base.pdsprj"
+    output = tmp_path / "totalmix_tran_2p2s_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"RESISTOR": 1, "CAP": 1, "TRAN-2P2S": 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "front_families": ["TRAN-2P2S"],
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP"),
+        catalogue_terminal_families=("TRAN-2P2S",),
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+    transformer = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") == "TRAN-2P2S"
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    transformer_labels = [
+        row["label"]
+        for row in terminal_placer._bidir_label_records(chunk)
+        if row["label"] in {"topright", "bottomright", "topleft", "bottomleft"}
+    ]
+    zones = {row["zone"]: row for row in report["tail_attachment_zones"]}
+
+    assert result.valid
+    assert report["valid"] is True
+    assert transformer["mixed_attachment_order"] == "component_stream_then_attachment_units"
+    assert transformer["mixed_tail_group_rank"] == 20
+    assert transformer["terminal_count"] == 4
+    assert transformer_labels == [
+        "topright", "bottomright", "topleft", "bottomleft"
+    ]
+    assert zones["missing_four_pin_tail"]["record_count"] == 8
+    assert all(
+        row["terminal_contact_grid_aligned"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:

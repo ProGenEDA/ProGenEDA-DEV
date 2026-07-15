@@ -15322,3 +15322,19 @@ The generated 42-family file has all 209 planned terminals and short wires, incl
 ### Agent update - 2026-07-15 20:35 +05:00
 
 BRIDGE was added additively to the 41-family compact baseline using the locked mega component placer and the existing shared terminal placer. The 42-family output has 209 active terminal/WIRE pairs. BRIDGE serializes its donor-proven `RIGHT`, `TOP`, `BOTTOM`, `LEFT` terminal/WIRE units with active `0200` links, grid contacts, nonzero short wires to exact pins, and final-address suffix rebasing. A disposable copy normal-opened and cold-reopened in Proteus without a modal error or hash mutation; no Ctrl+S was used. Edited/created: `knowledge/component_catalog_v0.json`, `tests/test_component_placer.py`, `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, `knowledge/test_results.jsonl`, `backups/component_terminal_placer/component_terminal_placer_20260715_202651_before_missing7_totalmix_bridge_profile.py`, and `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/04_bridge_42f`.
+
+### Agent response - 2026-07-15 20:36 +05:00
+
+BRIDGE is committed and pushed at `2618f9fb`; the remote hash matches. Iâ€™m moving straight to `TRAN-2P2S` from its actual four-pin donor, keeping BRIDGE and the 41 earlier families frozen.
+
+### Agent response - 2026-07-15 20:38 +05:00
+
+The transformer donor confirms the same active `0200` tail-unit family as BRIDGE, but with its own order and one three-point wire. Its focused regression passes; Iâ€™m now generating the 43-family compact mix with `TRAN-2P2S` visibly fronted.
+
+### Agent response - 2026-07-15 20:40 +05:00
+
+The 43-family transformer pack generated cleanly, but the first local-gate command itself had a PowerShell syntax fault before Proteus was launched. Iâ€™m rerunning the same gate in smaller normal/cold steps; the generated file has not been modified.
+
+### Agent update - 2026-07-15 20:46 +05:00
+
+`TRAN-2P2S` was added additively to the 42-family compact baseline through the locked mega component placer and the shared terminal placer. The output has 43 selected components and 213 active terminal/WIRE pairs. It serializes terminals in donor order `TOPRIGHT`, `BOTTOMRIGHT`, `TOPLEFT`, `BOTTOMLEFT`, with angles `0,0,1800,1800`, active `0200` links, grid contacts, nonzero exact-pin wires, and final-address suffix rebasing. The source donor's bottom-left path has a bend; the fresh collinear grid contact emits an equivalent direct segment. Local normal and cold Proteus opens showed no modal error and no copy hash mutation; no Ctrl+S was used. Edited/created: `knowledge/component_catalog_v0.json`, `tests/test_component_placer.py`, `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, `knowledge/test_results.jsonl`, `backups/component_terminal_placer/component_terminal_placer_20260715_203750_before_missing7_totalmix_tran_2p2s_profile.py`, and `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/05_tran_2p2s_43f`.
