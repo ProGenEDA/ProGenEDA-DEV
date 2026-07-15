@@ -11599,6 +11599,41 @@ Planned visible final response:
 >
 > I left unrelated untracked KiCad example folders untouched.
 
+## 2026-07-15T00:00:00+05:00 — Altium and PSpice donor research
+
+User request (verbatim):
+
+> can u screach the internet, github etc whatever u can find
+> For donor files of altium and/or pspice?
+> to build a smaller much smaller test versions of this just to include it as a possibility?
+> 3 4 components like resisters etc are enough
+
+Visible assistant responses (verbatim):
+
+> I’ll look for legally reusable, native Altium and PSpice donor projects with a tiny passive circuit, prioritizing repositories that include the actual editable design files rather than screenshots or exports.
+
+> I found two donors that are genuinely good enough to preserve locally: an MIT PSpice/OrCAD RC project with exactly a pulse source, resistor, and capacitor, and an MIT Altium charging/discharging-capacitor sheet with five physical passives/source plus two simulation directives. I’m adding them only as pinned, read-only research fixtures with their licenses and machine-checkable provenance; they will not be advertised as supported generation backends yet.
+
+Research result:
+
+- PSpice / OrCAD donor: `RC_CIRCUIT.DSN` from the MIT-licensed
+  `YudiXiao/Parametric-sweeping-in-Simulink-PSpice-co-simulation` repository,
+  pinned at `f44d5d6104f102ff6371fac850dcdeae9882abc5`. It is a 20,480-byte
+  native compound file containing `VPULSE`, `R_series`, and `C_load`.
+- Altium donor: `Charging and Discharging Capacitors.schdoc` from the
+  MIT-licensed `a3ng7n/Altium-Schematic-Parser` test corpus, pinned at
+  `4446e927ee7cd09b359e03c3329419acfaaebc95`. It is a 34,304-byte native
+  compound file containing `V1`, `R1`, `R2`, `C1`, and `C2`, plus `IC1` and
+  `IC2` simulation directives.
+- The initial donors are stored under
+  `kicad/research/external_eda_donors_2026_07_15/` with upstream licenses,
+  a README, and a SHA-256-pinned manifest. Validation confirmed each file's
+  compound-file signature and expected component identities.
+- This is intentionally research-only. The PSpice next stage is a V/R/C text
+  netlist prototype followed by real PSpice/OrCAD acceptance. The Altium next
+  stage is a read-only record extractor; native `.SchDoc` emission remains
+  blocked until Altium Designer or CircuitMaker accepts a generated file.
+
 ## 2026-07-14T02:06:45+05:00 — Portable KiCad regulated 5 V demo
 
 User request (verbatim):
