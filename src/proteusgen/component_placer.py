@@ -48,6 +48,7 @@ from .component_beautifier import (
     D20_SMALL_COORD_DX,
     D20_SMALL_COORD_DY,
     HIDDEN_PACKET_START,
+    PROTEUS_TERMINAL_GRID,
     VISIBLE_LAYOUT_COLUMNS,
     VISIBLE_LAYOUT_MARGIN_X,
     VISIBLE_LAYOUT_MARGIN_Y,
@@ -1431,6 +1432,20 @@ def _binary_layout_shelf_width(payload: Any) -> int:
     return width
 
 
+def _binary_layout_compact_family_flow(payload: Any) -> bool:
+    """Return whether a dense request may flow family blocks across a shelf.
+
+    The normal beautifier deliberately starts every new family on a new row so
+    ordinary mixed schematics have generous visual separation.  A large
+    all-family stress/matrix request can otherwise consume the entire safe
+    coordinate frame merely through repeated vertical family gaps.  Keep that
+    accepted default frozen and require an explicit layout opt-in for the
+    compact shelf policy.
+    """
+
+    return _payload_bool(_raw_layout_payload(payload).get("compact_family_flow"))
+
+
 def _apply_binary_beautifier(
     payload: Any,
     groups: tuple[RawComponentGroup, ...],
@@ -1445,6 +1460,7 @@ def _apply_binary_beautifier(
 
     hidden_ids = {id(group) for group in hidden_groups}
     shelf_width = _binary_layout_shelf_width(payload)
+    compact_family_flow = _binary_layout_compact_family_flow(payload)
     visible_groups = tuple(group for group in groups if id(group) not in hidden_ids)
     ic_groups = tuple(group for group in visible_groups if is_ic_layout_family(group.family))
     non_ic_groups = tuple(
@@ -1518,28 +1534,47 @@ def _apply_binary_beautifier(
                 allocation_width = VISIBLE_LAYOUT_SLOT_X + VISIBLE_LAYOUT_MARGIN_X
                 allocation_height = VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y
             family_changed = previous_family is not None and group.family != previous_family
-            if family_changed and (cursor_x != VISIBLE_LAYOUT_ORIGIN_X or row_height):
-                cursor_x = VISIBLE_LAYOUT_ORIGIN_X
-                cursor_y += (
-                    max(
-                        row_height,
-                        VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y,
-                    )
-                    + DIFFERENT_FAMILY_LAYOUT_GAP_Y
-                )
-                row_height = 0
-                row_index += 1
-                column_index = 0
+            if family_changed:
                 family_block_index += 1
+                if not compact_family_flow and (
+                    cursor_x != VISIBLE_LAYOUT_ORIGIN_X or row_height
+                ):
+                    cursor_x = VISIBLE_LAYOUT_ORIGIN_X
+                    cursor_y += (
+                        max(
+                            row_height,
+                            VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y,
+                        )
+                        + DIFFERENT_FAMILY_LAYOUT_GAP_Y
+                    )
+                    row_height = 0
+                    row_index += 1
+                    column_index = 0
+                elif compact_family_flow and cursor_x != VISIBLE_LAYOUT_ORIGIN_X:
+                    # Preserve a full different-family gap while keeping the
+                    # next block on the same shelf row when space permits.
+                    # Grid snapping can move the two neighbouring packets
+                    # toward one another by a combined one grid step, so
+                    # reserve that step before the post-layout spacing gate.
+                    compact_gap_x = DIFFERENT_FAMILY_LAYOUT_MIN_SPACING + (
+                        PROTEUS_TERMINAL_GRID if terminal_grid_alignment else 0
+                    )
+                    cursor_x += compact_gap_x
             if (
                 cursor_x != VISIBLE_LAYOUT_ORIGIN_X
                 and cursor_x + allocation_width > shelf_right
             ):
                 cursor_x = VISIBLE_LAYOUT_ORIGIN_X
+                compact_row_gap_y = (
+                    DIFFERENT_FAMILY_LAYOUT_MIN_SPACING
+                    + (PROTEUS_TERMINAL_GRID if terminal_grid_alignment else 0)
+                    if compact_family_flow
+                    else 0
+                )
                 cursor_y += max(
                     row_height,
                     VISIBLE_LAYOUT_SLOT_Y + VISIBLE_LAYOUT_MARGIN_Y,
-                )
+                ) + compact_row_gap_y
                 row_height = 0
                 row_index += 1
                 column_index = 0
@@ -1570,7 +1605,10 @@ def _apply_binary_beautifier(
             entry["layout_band"] = band_name
             entry["mixed_band_separation"] = use_separate_bands
             entry["family_block_index"] = family_block_index
-            entry["family_row_break"] = bool(family_changed)
+            entry["family_row_break"] = bool(
+                family_changed and not compact_family_flow
+            )
+            entry["compact_family_flow"] = compact_family_flow
             entry["layout_shelf_width"] = shelf_width
             entry["terminal_grid_alignment"] = terminal_grid_alignment
             if not known_refs_unchanged:

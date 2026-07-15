@@ -14808,3 +14808,21 @@ mix should be mix of all ic non ic
 ## Agent Visible Response - 2026-07-15 10:50 +05:00
 
 Yes. The target is one unified circuit containing every supported IC and non-IC familyâ€”not separate mixes. The repaired 49-family 1Ã— candidate is that unified baseline; after the regression checkpoint Iâ€™ll use this same all-family mix for the scale runs.
+
+## Agent Visible Responses - 2026-07-15 10:50-11:45 +05:00
+
+I’m continuing with one unified IC + non‑IC mix. I’m checking the regenerated 9× result first; it will only go to Proteus if its terminal, wire, link, grid, and spacing checks all pass.
+
+The 9× package exists, but I’m not treating it as ready: the report found grid/contact failures in the emitted terminal stream. I’m extracting the exact failed pins and coordinates now, then I’ll correct the shared compact-layout handoff rather than alter any accepted family route.
+
+I found the real interaction: snapping component packets to the terminal grid made many pin and terminal contacts coincide, producing zero-length “wires”; donor-tail evidence then reintroduced off-grid contacts for the transistor packets. I’m adding an opt-in shared-planner mode that keeps the accepted routes unchanged but forces grid-contact, nonzero short wires and retargets donor-proven polylines for the dense unified mix.
+
+The shared-mode proof now passes on the exact failure classes: two-pin parts, BJT/FET tail packets, OPAMP/LM317T, logic, and 4511 all have grid contacts, nonzero wires, correct endpoints, and rebased links. I’m regenerating the full unified 49-family 9× mix using that same mode now.
+
+The complete 9× unified mix now passes every static attachment gate: all 440 components are terminalized, with 2,850 grid-aligned nonzero short wires and valid final link rebasing. I’m moving to the actual Proteus normal-open/cold-reopen check now.
+
+Files edited: `src/proteusgen/component_terminal_placer.py`, `tests/test_component_placer.py`, `backups/component_terminal_placer/component_terminal_placer_20260715_114000_before_dense_totalmix_grid_contact.py`, `knowledge/totalmix_dense_grid_contact_preflight_2026_07_15.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, `experiments/mixed_all_supported_totalmix_v1_temp_2026_07_15/dsn_audit_repair_scales/03_all_49_mixed_9x_hc00_8x/` (including its README and local loader screenshots), and `context.md`.
+
+## Agent Visible Response - 2026-07-15 11:45 +05:00
+
+The 9× unified IC + non-IC mix also passed Proteus normal open and cold reopen with no dialog or file mutation. I’m checkpointing this verified scale result now, then I’ll use the same all-family route for the 15× build.

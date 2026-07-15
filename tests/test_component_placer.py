@@ -1094,6 +1094,86 @@ def test_mixed_layout_keeps_large_visual_spacing_between_types(tmp_path: Path) -
     assert result.validation_reports["generated_output_validator"]["valid"] is True
 
 
+def test_compact_family_flow_keeps_dense_blocks_separate_without_vertical_stack(
+    tmp_path: Path,
+) -> None:
+    """Dense all-family layouts may opt into horizontal family flow only."""
+
+    components = {"RESISTOR": 2, "CAP": 2, "DIODE": 2}
+    base_payload = {
+        "components": components,
+        "layout": {
+            "strategy": "beautify",
+            "binary_coordinate_mutation": True,
+            "shelf_width": 75_000_000,
+            "terminal_grid_alignment": True,
+        },
+    }
+    default = generate_component_placement_project(
+        base_payload,
+        tmp_path / "default_family_rows.pdsprj",
+        full_cdb=True,
+    )
+    compact = generate_component_placement_project(
+        {
+            **base_payload,
+            "layout": {
+                **base_payload["layout"],
+                "compact_family_flow": True,
+            },
+        },
+        tmp_path / "compact_family_flow.pdsprj",
+        full_cdb=True,
+    )
+
+    default_entries = default.layout_plan["actual_binary_placements"]
+    compact_entries = compact.layout_plan["actual_binary_placements"]
+
+    assert default.valid
+    assert compact.valid
+    assert any(entry["family_row_break"] for entry in default_entries)
+    assert not any(entry["family_row_break"] for entry in compact_entries)
+    assert all(entry["compact_family_flow"] for entry in compact_entries)
+    assert layout_overlap_pairs(compact_entries) == []
+    assert layout_different_family_spacing_pairs(
+        compact_entries,
+        min_spacing=3_810_000,
+    ) == []
+    assert max(int(entry["after_bbox"]["max_y"]) for entry in compact_entries) < max(
+        int(entry["after_bbox"]["max_y"]) for entry in default_entries
+    )
+
+
+def test_compact_family_flow_preserves_spacing_across_shelf_wraps(
+    tmp_path: Path,
+) -> None:
+    """Grid-snapped compact shelves reserve a family gap at every wrap."""
+
+    result = generate_component_placement_project(
+        {
+            "components": {"RESISTOR": 2, "CAP": 2, "DIODE": 2},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "terminal_grid_alignment": True,
+                "compact_family_flow": True,
+                "shelf_width": 20_000_000,
+            },
+        },
+        tmp_path / "compact_family_flow_wrapped.pdsprj",
+        full_cdb=True,
+    )
+    entries = result.layout_plan["actual_binary_placements"]
+
+    assert result.valid
+    assert len({int(entry["row"]) for entry in entries}) > 1
+    assert layout_overlap_pairs(entries) == []
+    assert layout_different_family_spacing_pairs(
+        entries,
+        min_spacing=3_810_000,
+    ) == []
+
+
 def test_component_placement_uses_registered_ic_coordinates(tmp_path: Path) -> None:
     result = generate_component_placement_project(
         {
@@ -2849,6 +2929,65 @@ def test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo(
     assert chunk.count(b"$TERBIDIR") == expected_terminals
     assert chunk.count(b"\x7fWIRE") == expected_terminals
     assert chunk.endswith(b"\xff\xff")
+
+
+def test_totalmix_dense_grid_contacts_retarget_donor_evidence_without_zero_wires(
+    tmp_path: Path,
+) -> None:
+    """Dense all-family layouts keep every terminal contact on-grid and wired.
+
+    The opt-in path must handle all evidence classes together: native two-pin
+    shapes, native SWITCH endpoint correction, BJT donor-tail geometry, and
+    catalogue donor-polylines. It is deliberately separate from frozen default
+    routes so existing accepted-family geometry remains unchanged.
+    """
+
+    native_families = ("RESISTOR", "CAP", "SWITCH")
+    catalogue_families = ("NPN", "NMOSFET", "OPAMP", "LM317T", "4511", "74HC08")
+    base = tmp_path / "totalmix_dense_grid_base.pdsprj"
+    output = tmp_path / "totalmix_dense_grid_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                **{family: 1 for family in native_families},
+                **{family: 1 for family in catalogue_families},
+            },
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=native_families,
+        catalogue_terminal_families=catalogue_families,
+        use_donor_terminal_labels=False,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["force_grid_contact_short_wires"] is True
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert report["native_wire_path_contacts_valid"] is True
+    assert all(
+        row["terminal_contact_grid_aligned"]
+        and row["terminal_to_wire"]
+        and row["wire_to_pin"]
+        and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
 
 
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(

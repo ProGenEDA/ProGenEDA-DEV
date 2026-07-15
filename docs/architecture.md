@@ -2620,3 +2620,30 @@ trim. Absolute `coordinate % 254000 == 0` is not a valid global grid test:
 the accepted donor has several legitimate component/sheet grid phases. Future
 validation must test the terminal contact against its component-local grid
 frame.
+
+### 2026-07-15 dense unified all-family grid-contact mode
+
+The all-family `totalmix` scale route is one circuit containing both IC and
+non-IC families; it is not split into separate terminal streams. A dense
+49-family 9x request needs a compact family-flow layout to remain inside the
+existing terminal-safe coordinate frame. That layout is explicit and opt-in;
+the normal spacious family-row beautifier remains the default for accepted
+schematics.
+
+Grid-aligning component packets alone is insufficient: a pin that lands on the
+same grid point as its terminal produces a zero-length WIRE, while raw
+anchor-relative donor-tail terminal offsets can move terminal contacts off the
+grid. The unified shared terminal placer therefore has an opt-in
+`force_grid_contact_short_wires` mode for the dense mixed route. It chooses a
+one-step outward grid contact when needed, obtains exact corrected pin endpoints
+from donor evidence before choosing that contact, and retargets donor-proven
+WIRE topology to the current terminal/pin endpoints. Default family routes are
+unchanged.
+
+The resulting 9x all-family circuit contains 440 placed components and 2,850
+active terminal/WIRE units. Its report proves grid contacts, nonzero WIREs,
+terminal-to-WIRE and WIRE-to-exact-pin continuity, and final ROOT.DSN
+address-rebased links for every unit. A disposable normal-open/cold-reopen
+Proteus gate passed without a dialog or project mutation. The full preflight,
+including the independently observed HC00 eight-package source constraint, is
+recorded in `knowledge/totalmix_dense_grid_contact_preflight_2026_07_15.md`.

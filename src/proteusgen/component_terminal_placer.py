@@ -506,16 +506,24 @@ def _terminal_at_grid_contact(
     pin_x: int,
     pin_y: int,
     outward_grid_steps: int = 0,
+    ensure_nonzero_wire: bool = False,
 ) -> tuple[TerminalSpec, int, int]:
     if outward_grid_steps < 0:
         raise ValueError("Terminal outward grid steps must be non-negative.")
     contact_x = snap_to_proteus_terminal_grid(pin_x)
     contact_y = snap_to_proteus_terminal_grid(pin_y)
+    effective_outward_steps = outward_grid_steps
+    # A component whose pin is already on the terminal grid otherwise creates
+    # a degenerate contact-to-pin WIRE. Dense grid-aligned layouts opt into one
+    # outward step in that exact case; established routes retain their
+    # donor-proven geometry because this flag defaults to false.
+    if ensure_nonzero_wire and contact_x == pin_x and contact_y == pin_y:
+        effective_outward_steps = max(effective_outward_steps, 1)
     if terminal.angle_tenths == LEFT_SIDE_ANGLE:
-        contact_x -= outward_grid_steps * PROTEUS_TERMINAL_GRID
+        contact_x -= effective_outward_steps * PROTEUS_TERMINAL_GRID
         symbol_x = contact_x - TERMINAL_CONTACT_TO_PIN
     elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
-        contact_x += outward_grid_steps * PROTEUS_TERMINAL_GRID
+        contact_x += effective_outward_steps * PROTEUS_TERMINAL_GRID
         symbol_x = contact_x + TERMINAL_CONTACT_TO_PIN
     else:
         raise ValueError(
@@ -529,7 +537,7 @@ def _terminal_at_grid_contact(
             symbol_y=contact_y,
             attachment_policy=(
                 "grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
-                if outward_grid_steps == 0
+                if effective_outward_steps == 0
                 else "outward_grid_snapped_terminal_contact_with_short_wire_to_exact_pin"
             ),
         ),
@@ -614,6 +622,8 @@ def _terminal_at_native_pin_contact(
 
 def _snap_terminal_pair_to_grid(
     pair: ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair,
+    *,
+    ensure_nonzero_wire: bool = False,
 ) -> ResistorTerminalPair | CapacitorTerminalPair | SourceTerminalPair:
     profile = GENERIC_TWO_PIN_PROFILES.get(pair.component_family, {})
     outward_grid_steps = int(profile.get("terminal_contact_outward_grid_steps", 0))
@@ -622,11 +632,13 @@ def _snap_terminal_pair_to_grid(
             pair.input,
             pin_x=pair.input_pin_x,
             pin_y=pair.input_pin_y,
+            ensure_nonzero_wire=ensure_nonzero_wire,
         )
         output_terminal, output_x, output_y = _terminal_at_grid_contact(
             pair.output,
             pin_x=pair.output_pin_x,
             pin_y=pair.output_pin_y,
+            ensure_nonzero_wire=ensure_nonzero_wire,
         )
         return replace(
             pair,
@@ -643,12 +655,14 @@ def _snap_terminal_pair_to_grid(
         pin_x=pair.left_pin_x,
         pin_y=pair.left_pin_y,
         outward_grid_steps=outward_grid_steps,
+        ensure_nonzero_wire=ensure_nonzero_wire,
     )
     right_terminal, right_x, right_y = _terminal_at_grid_contact(
         pair.right,
         pin_x=pair.right_pin_x,
         pin_y=pair.right_pin_y,
         outward_grid_steps=outward_grid_steps,
+        ensure_nonzero_wire=ensure_nonzero_wire,
     )
     return replace(
         pair,
@@ -962,6 +976,7 @@ def plan_catalogue_pin_bidir_terminals(
     suffix_start: int = 0x7300,
     use_donor_terminal_labels: bool = True,
     terminal_contact_mode: str = "grid_contact",
+    force_grid_contact_short_wires: bool = False,
 ) -> dict[str, Any]:
     """Plan multi-pin terminals from catalogue Proteus pin geometry.
 
@@ -1314,7 +1329,7 @@ def plan_catalogue_pin_bidir_terminals(
                     pin_y=pin_y,
                 )
                 terminal_contact_source = "native_component_pin_contact"
-            elif explicit_contact is not None:
+            elif explicit_contact is not None and not force_grid_contact_short_wires:
                 terminal, wire_start_x, wire_start_y = (
                     _terminal_at_explicit_grid_contact(
                         terminal,
@@ -1333,6 +1348,7 @@ def plan_catalogue_pin_bidir_terminals(
                             geometry.get("terminal_contact_outward_grid_steps", 1),
                         )
                     ),
+                    ensure_nonzero_wire=force_grid_contact_short_wires,
                 )
             wire_end_x = pin_x
             wire_end_y = pin_y
@@ -1375,7 +1391,7 @@ def plan_catalogue_pin_bidir_terminals(
                 )
             if transformed_wire is not None:
                 wire_coordinates, matched_wire_endpoint = transformed_wire
-                if bool(
+                if force_grid_contact_short_wires or bool(
                     raw_pin_geometry.get(
                         "wire_coordinates_retarget_to_current_contacts",
                         geometry.get(
@@ -3718,6 +3734,7 @@ def _apply_mixed_tail_pin_evidence(
     family: str,
     key: str,
     geometry: dict[str, Any],
+    retarget_grid_contact_short_wires: bool = False,
 ) -> list[dict[str, Any]]:
     """Replace generic mixed-plan geometry with combined-donor evidence.
 
@@ -3766,8 +3783,8 @@ def _apply_mixed_tail_pin_evidence(
             raise ValueError(
                 f"{family} {key} pin {pin_name} has malformed mixed tail offsets."
             )
-        symbol_x = anchor_x + int(raw_symbol_offset[0])
-        symbol_y = anchor_y + int(raw_symbol_offset[1])
+        donor_symbol_x = anchor_x + int(raw_symbol_offset[0])
+        donor_symbol_y = anchor_y + int(raw_symbol_offset[1])
         angle = int(evidence.get("angle_tenths", row["terminal"]["angle_tenths"]))
         if angle not in (LEFT_SIDE_ANGLE, RIGHT_SIDE_ANGLE):
             raise ValueError(
@@ -3777,34 +3794,89 @@ def _apply_mixed_tail_pin_evidence(
             int(value) + (anchor_x if index % 2 == 0 else anchor_y)
             for index, value in enumerate(raw_wire_offsets)
         )
-        terminal_contact = (
-            symbol_x + TERMINAL_CONTACT_TO_PIN
+        donor_terminal_contact = (
+            donor_symbol_x + TERMINAL_CONTACT_TO_PIN
             if angle == LEFT_SIDE_ANGLE
-            else symbol_x - TERMINAL_CONTACT_TO_PIN,
-            symbol_y,
+            else donor_symbol_x - TERMINAL_CONTACT_TO_PIN,
+            donor_symbol_y,
         )
         points = _wire_coordinate_points(coordinates)
-        if terminal_contact not in points:
+        if donor_terminal_contact not in points:
             raise ValueError(
                 f"{family} {key} pin {pin_name} mixed donor WIRE does not touch "
                 "its terminal contact."
             )
+        if retarget_grid_contact_short_wires:
+            # The donor remains the authority for terminal ordering, labels,
+            # and polyline topology. A dense grid-aligned layout must however
+            # use the current grid contact and current exact pin endpoints;
+            # translating raw donor offsets alone can leave a terminal between
+            # grid intersections.
+            terminal = dict(row["terminal"])
+            if int(terminal["angle_tenths"]) != angle:
+                raise ValueError(
+                    f"{family} {key} pin {pin_name} grid-plan angle disagrees "
+                    "with its donor tail evidence."
+                )
+            terminal_contact = (
+                int(terminal["symbol_x"]) + TERMINAL_CONTACT_TO_PIN
+                if angle == LEFT_SIDE_ANGLE
+                else int(terminal["symbol_x"]) - TERMINAL_CONTACT_TO_PIN,
+                int(terminal["symbol_y"]),
+            )
+            target_pin = (int(pin["x"]), int(pin["y"]))
+            if terminal_contact == target_pin:
+                raise ValueError(
+                    f"{family} {key} pin {pin_name} dense grid contact would "
+                    "create a zero-length WIRE."
+                )
+            coordinates, _matched = _retarget_catalogue_wire_coordinates(
+                coordinates,
+                transformed_terminal_contact=donor_terminal_contact,
+                target_terminal_contact=terminal_contact,
+                target_pin_contact=target_pin,
+            )
+            terminal["label"] = str(evidence.get("terminal_label", terminal["label"]))
+            row["pin"] = pin
+            row["terminal"] = terminal
+            row["short_wire"] = {
+                "start": {"x": terminal_contact[0], "y": terminal_contact[1]},
+                "end": {"x": target_pin[0], "y": target_pin[1]},
+                "terminal_contact": {
+                    "x": terminal_contact[0],
+                    "y": terminal_contact[1],
+                },
+                "pin_contact": {"x": target_pin[0], "y": target_pin[1]},
+                "coordinates": list(coordinates),
+                "record": _build_catalogue_wire_unit(coordinates).hex(),
+            }
+            row["coordinate_source"] = (
+                "combined_user_donor_tail_topology_retargeted_to_grid_contact"
+            )
+            row["terminal_contact_source"] = (
+                "combined_user_donor_tail_topology_retargeted_to_grid_contact"
+            )
+            out.append(row)
+            continue
         pin_x, pin_y = points[0]
         pin["x"] = pin_x
         pin["y"] = pin_y
         terminal = dict(row["terminal"])
         terminal["label"] = str(evidence.get("terminal_label", terminal["label"]))
-        terminal["symbol_x"] = symbol_x
-        terminal["symbol_y"] = symbol_y
+        terminal["symbol_x"] = donor_symbol_x
+        terminal["symbol_y"] = donor_symbol_y
         terminal["angle_tenths"] = angle
         row["pin"] = pin
         row["terminal"] = terminal
         row["short_wire"] = {
-            "start": {"x": terminal_contact[0], "y": terminal_contact[1]},
+            "start": {
+                "x": donor_terminal_contact[0],
+                "y": donor_terminal_contact[1],
+            },
             "end": {"x": pin_x, "y": pin_y},
             "terminal_contact": {
-                "x": terminal_contact[0],
-                "y": terminal_contact[1],
+                "x": donor_terminal_contact[0],
+                "y": donor_terminal_contact[1],
             },
             "pin_contact": {"x": pin_x, "y": pin_y},
             "coordinates": list(coordinates),
@@ -3832,6 +3904,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     catalogue_suffix_start: int = 0x7A00,
     use_donor_terminal_labels: bool = False,
     stream_mode: str = "conservative",
+    force_grid_contact_short_wires: bool = False,
 ) -> dict[str, Any]:
     """Attach accepted two-pin and catalogue multi-pin terminals in one stream.
 
@@ -4082,7 +4155,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     if is_totalmix_combined or has_terminal_leading_catalogue_zone
                     else ("right", "left")
                 ),
-                snap_terminal_contacts_to_grid=False,
+                snap_terminal_contacts_to_grid=force_grid_contact_short_wires,
+                ensure_nonzero_grid_wire=force_grid_contact_short_wires,
                 mixed_native_wire_evidence=raw_mixed_native_wire_evidence,
             )
         )
@@ -4248,6 +4322,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             catalog=catalog,
             suffix_start=suffix,
             use_donor_terminal_labels=mixed_use_donor_terminal_labels,
+            force_grid_contact_short_wires=force_grid_contact_short_wires,
         )
         if not plan["valid"]:
             raise ValueError(
@@ -4259,6 +4334,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             family=family,
             key=key,
             geometry=geometry,
+            retarget_grid_contact_short_wires=force_grid_contact_short_wires,
         )
         patched_data = original_group_data
         raw_subpart_link_slots = (
@@ -5065,11 +5141,18 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ),
         "native_wire_path_contact_checks": native_wire_path_checks,
         "native_terminal_contact_basis": (
-            "accepted_mixed_donor_terminal_contact_coordinates"
+            "grid_contact_retargeted_from_accepted_mixed_donor_evidence"
+            if force_grid_contact_short_wires
+            else "accepted_mixed_donor_terminal_contact_coordinates"
         ),
+        "force_grid_contact_short_wires": force_grid_contact_short_wires,
         "native_wire_path_contacts_valid": all(
             row.get("terminal_to_wire", False)
             and row.get("wire_to_pin", False)
+            and (
+                row.get("wire_is_nonzero", True)
+                or not force_grid_contact_short_wires
+            )
             for row in native_wire_path_checks
         ),
         "wire_path_contact_checks": (
@@ -5086,11 +5169,22 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ) and all(
             row.get("terminal_to_wire", False)
             and row.get("wire_to_pin", False)
+            and (
+                row.get("wire_is_nonzero", True)
+                or not force_grid_contact_short_wires
+            )
             for row in native_wire_path_checks
         ),
         "terminal_grid_alignment_valid": all(
             row.get("terminal_contact_grid_aligned", True)
             for row in catalogue_contact_checks
+        ) and (
+            all(
+                row.get("terminal_contact_grid_aligned", True)
+                for row in native_wire_path_checks
+            )
+            if force_grid_contact_short_wires
+            else True
         ),
         "component_stream_prefix_preserved": final_chunk.startswith(
             accepted_native_order_stream
@@ -7824,6 +7918,7 @@ def _apply_mixed_native_wire_evidence_to_pairs(
     *,
     family: str,
     evidence: dict[str, Any] | None,
+    retarget_grid_contact_short_wires: bool = False,
 ) -> tuple[Any, ...]:
     """Apply accepted combined-donor WIRE endpoints in the mixed path only.
 
@@ -7904,7 +7999,7 @@ def _apply_mixed_native_wire_evidence_to_pairs(
             )
         anchor_x = _s32_at(data, component_x_offset)
         anchor_y = _s32_at(data, component_y_offset)
-        updates: dict[str, int] = {}
+        updates: dict[str, Any] = {}
         for role, raw_row in raw_roles.items():
             start_offset, end_offset = offsets(raw_row, role=str(role))
             start_x = anchor_x + start_offset[0]
@@ -7912,24 +8007,52 @@ def _apply_mixed_native_wire_evidence_to_pairs(
             end_x = anchor_x + end_offset[0]
             end_y = anchor_y + end_offset[1]
             terminal = getattr(pair, role)
-            if terminal.angle_tenths == LEFT_SIDE_ANGLE:
-                contact_x = terminal.symbol_x + TERMINAL_CONTACT_TO_PIN
-            elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
-                contact_x = terminal.symbol_x - TERMINAL_CONTACT_TO_PIN
-            else:
-                raise ValueError(
-                    f"{family} {getattr(group, 'key', '')} {role} terminal has "
-                    f"unsupported angle {terminal.angle_tenths}."
+            if retarget_grid_contact_short_wires:
+                # The mixed donor can correct a generic pair's exact pin
+                # endpoint (SWITCH is the relevant case). Establish the grid
+                # terminal contact from that corrected endpoint, not from the
+                # provisional planner endpoint, otherwise an outward step can
+                # land directly on the real pin and collapse the short WIRE.
+                profile = GENERIC_TWO_PIN_PROFILES.get(family, {})
+                terminal, contact_x, contact_y = _terminal_at_grid_contact(
+                    terminal,
+                    pin_x=end_x,
+                    pin_y=end_y,
+                    outward_grid_steps=int(
+                        profile.get("terminal_contact_outward_grid_steps", 0)
+                    ),
+                    ensure_nonzero_wire=True,
                 )
-            if (start_x, start_y) != (contact_x, terminal.symbol_y):
+                updates[role] = terminal
+            else:
+                contact_y = terminal.symbol_y
+                if terminal.angle_tenths == LEFT_SIDE_ANGLE:
+                    contact_x = terminal.symbol_x + TERMINAL_CONTACT_TO_PIN
+                elif terminal.angle_tenths == RIGHT_SIDE_ANGLE:
+                    contact_x = terminal.symbol_x - TERMINAL_CONTACT_TO_PIN
+                else:
+                    raise ValueError(
+                        f"{family} {getattr(group, 'key', '')} {role} terminal has "
+                        f"unsupported angle {terminal.angle_tenths}."
+                    )
+            if (
+                not retarget_grid_contact_short_wires
+                and (start_x, start_y) != (contact_x, contact_y)
+            ):
                 raise ValueError(
                     f"{family} {getattr(group, 'key', '')} {role} donor WIRE "
                     "start does not match its grid-snapped terminal contact."
                 )
             updates.update(
                 {
-                    f"{role}_wire_start_x": start_x,
-                    f"{role}_wire_start_y": start_y,
+                    f"{role}_wire_start_x": (
+                        contact_x if retarget_grid_contact_short_wires else start_x
+                    ),
+                    f"{role}_wire_start_y": (
+                        contact_y
+                        if retarget_grid_contact_short_wires
+                        else start_y
+                    ),
                     f"{role}_pin_x": end_x,
                     f"{role}_pin_y": end_y,
                 }
@@ -7948,6 +8071,7 @@ def _mixed_overlay_family_parts(
     active_link_trailer: bytes = b"\x01\x00",
     cap_wire_order: tuple[str, str] = ("right", "left"),
     snap_terminal_contacts_to_grid: bool = False,
+    ensure_nonzero_grid_wire: bool = False,
     mixed_native_wire_evidence: dict[str, Any] | None = None,
 ) -> tuple[
     tuple[Any, ...],
@@ -8046,13 +8170,24 @@ def _mixed_overlay_family_parts(
     else:
         raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
 
+    if ensure_nonzero_grid_wire and not snap_terminal_contacts_to_grid:
+        raise ValueError(
+            "A nonzero grid WIRE requires grid-snapped terminal contacts."
+        )
     if snap_terminal_contacts_to_grid:
-        pairs = tuple(_snap_terminal_pair_to_grid(pair) for pair in pairs)
+        pairs = tuple(
+            _snap_terminal_pair_to_grid(
+                pair,
+                ensure_nonzero_wire=ensure_nonzero_grid_wire,
+            )
+            for pair in pairs
+        )
     pairs = _apply_mixed_native_wire_evidence_to_pairs(
         pairs,
         groups,
         family=family,
         evidence=mixed_native_wire_evidence,
+        retarget_grid_contact_short_wires=ensure_nonzero_grid_wire,
     )
     if family == "RESISTOR":
         terminals = [
@@ -8617,7 +8752,10 @@ def attach_mixed_native_bidir_terminals_to_project(
     matching component pin-link fields, and two schema-encoded WIRE records
     immediately following the patched component. The component placer's order
     is preserved; final link values are normalized by the public stage after
-    ROOT.DSN serialization.
+    ROOT.DSN serialization. ``force_grid_contact_short_wires`` is an opt-in
+    dense-layout mode: it preserves the same schema/packet route while
+    requiring every terminal contact to be grid-aligned and every WIRE to be
+    nonzero.
     """
 
     groups = tuple(selected_groups)
