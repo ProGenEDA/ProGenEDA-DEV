@@ -161,3 +161,26 @@ The disposable gate copy normal-opened and cold-reopened in local Proteus with
 no Bad Object Record, LXLCORE, fatal, or library dialog and no hash mutation:
 `19B1E71FF2D224F7A9D555C68EBDF1ABA9C6CDC6A1B71A5AC3BC873AEC90EF1D`.
 No Ctrl+S was used.
+
+## BRIDGE 42-family result
+
+`experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/04_bridge_42f`
+adds exactly one `BRIDGE` package to the committed 41-family baseline. The
+fresh project retains the placed component packet where the mega placer put it
+and emits the four attachment units in the authoritative donor order:
+`RIGHT`, `TOP`, `BOTTOM`, `LEFT`. Its `0200` terminal/component pin-link
+trailers and final-address suffixes are independently audited against the
+final ROOT.DSN WIRE locations.
+
+Static validation passed: 42 component packets, 209 active terminal/WIRE
+pairs, grid-aligned terminal contacts, nonzero terminal-to-exact-pin wires,
+matching active link trailers, and an explicit final `FF FF`. The BRIDGE
+sub-audit found the expected terminal order, angles `0,0,0,1800`, four valid
+suffix/address matches, and four valid component link fields. Differences
+from the user donor are limited to the fresh locked-mega component packet
+location, the final address-derived suffixes, and translated nonzero wires.
+
+The disposable local gate copy normal-opened and cold-reopened with no Bad
+Object Record, LXLCORE, fatal, or device-library dialog and no file mutation:
+`BA02C9A65F2E033E63BBF78D30DB04B243DD8454B8A809C8577000C4E3D8773F`.
+No Ctrl+S was used.

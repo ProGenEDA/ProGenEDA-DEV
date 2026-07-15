@@ -3240,6 +3240,66 @@ def test_totalmix_74hc74_uses_donor_proven_subpart_blocks(
     )
 
 
+def test_totalmix_bridge_uses_donor_proven_tail_units(
+    tmp_path: Path,
+) -> None:
+    """BRIDGE keeps its packet in place and serializes four donor-order units."""
+
+    base = tmp_path / "totalmix_bridge_base.pdsprj"
+    output = tmp_path / "totalmix_bridge_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"RESISTOR": 1, "CAP": 1, "BRIDGE": 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "front_families": ["BRIDGE"],
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP"),
+        catalogue_terminal_families=("BRIDGE",),
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+    bridge = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") == "BRIDGE"
+    )
+    chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    bridge_labels = [
+        row["label"]
+        for row in terminal_placer._bidir_label_records(chunk)
+        if row["label"] in {"right", "top", "bottom", "left"}
+    ]
+    zones = {row["zone"]: row for row in report["tail_attachment_zones"]}
+
+    assert result.valid
+    assert report["valid"] is True
+    assert bridge["mixed_attachment_order"] == "component_stream_then_attachment_units"
+    assert bridge["mixed_tail_group_rank"] == 10
+    assert bridge["terminal_count"] == 4
+    assert bridge_labels == ["right", "top", "bottom", "left"]
+    assert zones["missing_four_pin_tail"]["record_count"] == 8
+    assert all(
+        row["terminal_contact_grid_aligned"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:

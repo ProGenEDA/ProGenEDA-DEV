@@ -76,3 +76,11 @@ The shared generic two-pin route (diodes, zeners, 40EPS08, LED-RED, FUSE and SWI
 - Complete DSN inventory and donor-vs-candidate diff: `knowledge/totalmix_combined_donor_audit_2026_07_15.md` plus the machine-readable audit beside its experiment.
 - Evidence-backed changes only: trim the eight proven inline `00` packet finalizers, split the two donor-proven attachment zones, and remove the rejected canonical component sort. Accepted two-pin/current routes remain unchanged.
 - Gate: focused mixed/totalmix regression tests passed; compile/catalogue-JSON checks passed; freshly placed 49-family 1x candidate passed normal open and cold reopen without a modal error or save mutation.
+
+## Completed preflight - 2026-07-15 BRIDGE 42-family additive route
+
+- Authority: `proteus_ic/donors/terminalized_catalogue_evidence/four_pin_rectifier_transformer/BRIDGE/BRIDGE_user_terminalized_july04.pdsprj`; full member, DSN/CDB, component, pin-link, terminal, WIRE, relative-frame, separator, and finalizer inventory is recorded in `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`.
+- Freeze: accepted two-pin/current/BJT/control/NE555/LM741/74HC74 behavior is unchanged. The sole additive facts are BRIDGE's `0200` link class, its independent tail zone, rank, and four donor unit order entries in the component catalogue.
+- Backup: `backups/component_terminal_placer/component_terminal_placer_20260715_202651_before_missing7_totalmix_bridge_profile.py`.
+- Evidence checks: `RIGHT, TOP, BOTTOM, LEFT` terminal/WIRE unit order; 0/0/0/1800 orientations; grid contact; nonzero wire to the exact pin; address-derived terminal/component link suffixes; and explicit `FF FF` object finalizer.
+- Gate: focused BRIDGE and all totalmix/mixed regressions, JSON/compile checks, plus a fresh 42-family normal/cold Proteus open gate. The normally opening disposable copy was not saved.
