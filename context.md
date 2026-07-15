@@ -14745,3 +14745,66 @@ All seven IC grammar packs passed delayed normal and cold Proteus opens with no 
 ## Agent Visible Response - 2026-07-15 09:07 +05:00
 
 The requested handoff is complete: one proven 30-family non-IC mix and seven loader-gated IC packs covering all 20 supported IC families. I recorded only the real outputs and reports, excluding disposable gate copies, then committed and pushed the checkpoint.
+
+## User Message - 2026-07-15 09:22:01 +05:00
+
+here u go, learn from it, then try all combinations of supported, max 15 of each type of ic what ever this unified 2 pin limit is, i think around 80 is fine
+
+Files supplied:
+
+- `experiments/mixed_current_accepted_1x_v2_temp_2026_07_15/totalmix.pdsprj`
+
+## Agent Visible Response - 2026-07-15 09:22:01 +05:00
+
+I’m starting from your `totalmix.pdsprj` as the authoritative combined example. I’ll first map its actual terminal/link/wire ordering and real component capacities, then generate the largest evidence-backed supported mixes rather than inventing unsafe packets.
+
+Files edited: `context.md`.
+
+## Agent Visible Responses - 2026-07-15 09:23-10:09 +05:00
+
+The donor exposes the missing rule: its mixed stream uses two active link grammars, not one. In particular, 126 terminal/component links use `03 00` (not an inactive label), while the other 192 use `02 00`; all 318 suffixes map uniquely to final WIRE addresses. I’m recording the full evidence before changing the shared placer.
+
+The shared placer now emits the full 49-family 1× stream with 318 terminals and 318 short wires, all link suffixes rebased from final WIRE addresses. I found one order-dependent issue in the locked mega: its `4027` packet appears before several IC tail sources, so I changed the new combined mode to append that tail only after all of its component links rather than creating forward links.
+
+The local loader gate narrows this cleanly: the established 30-family mix opens, and adding `74HC76` also opens. The first failing boundary is within the next terminal-leading IC block, so I’m isolating that block against the accepted donor rather than changing any already accepted family.
+
+You’re right. I found the first failure through gating, but I’m stopping emission changes now. I’ll do a complete donor-versus-generated stream audit—record boundaries, every terminal/link/WIRE unit, separators, packet tails, CDB, and finalizers—then make one evidence-backed repair set rather than continuing incremental guesses.
+
+I’m now running the complete stream audit, not another generator attempt. It includes every archive member, full ROOT.DSN byte alignment, CDB rows, all 318 terminal records, WIRE records, all component packets, active-link fields, separators, and final bytes; the audit is still processing the two 79 KB decoded streams.
+
+## User Message - 2026-07-15 10:10 +05:00
+
+no need for cdb, just dsn
+
+## Agent Visible Response - 2026-07-15 10:10 +05:00
+
+Understood—DSN only. I’m dropping CDB from this repair investigation and completing the byte-level `ROOT.DSN` comparison: exact object order, terminal/link/WIRE units, separators, packet tails, and the finalizer.
+
+## User Message - 2026-07-15 10:10 +05:00
+
+y dont u compare, the donor and this full byte ot byte first then see the problem
+do full analysis first
+
+## User Message - 2026-07-15 10:10 +05:00
+
+no need for cdb, just dsn
+
+## Agent Visible Responses - 2026-07-15 10:10-10:48 +05:00
+
+The full DSN audit is complete. It proves the links and all 318 short wires are already structurally correct; the real defects are exactly two: eight inline IC packets retain one forbidden trailing `00`, and the 30 current/control/BJT attachment units are inserted after the IC-leading block instead of before it. I also confirmed the current code illegally reorders component packets to imitate the donor; Iâ€™ll remove that rather than preserve a donor-order dependency.
+
+The repair is now regenerated from the locked mega without donor packet reordering. It preserves all 49 placed packets, emits 318 terminals/318 wires, and records the two required tail zones. Iâ€™m running the real Proteus normal-open/cold-reopen gate on this previously failing 1Ã— candidate now.
+
+The repair is now DSN-only as requested. Iâ€™ve completed the byte-level comparison and am finishing regression and the required commit/push checkpoint on the repaired 1Ã— candidate.
+
+The repaired output has already passed its normal-open and cold-reopen loader checks without a modal error or an unintended save mutation. Iâ€™m waiting on the full component-placer regression run before I commit the evidence-backed fix.
+
+Files edited: `src/proteusgen/component_catalog.py`, `src/proteusgen/component_terminal_placer.py`, `knowledge/component_catalog_v0.json`, `knowledge/totalmix_combined_donor_audit_2026_07_15.md`, `docs/architecture.md`, `knowledge/test_results.jsonl`, `tests/test_component_placer.py`, `experiments/mixed_all_supported_totalmix_v1_temp_2026_07_15/dsn_audit_repair_1x/`, shared-placer backups, and `context.md`.
+
+## User Message - 2026-07-15 10:50 +05:00
+
+mix should be mix of all ic non ic
+
+## Agent Visible Response - 2026-07-15 10:50 +05:00
+
+Yes. The target is one unified circuit containing every supported IC and non-IC familyâ€”not separate mixes. The repaired 49-family 1Ã— candidate is that unified baseline; after the regression checkpoint Iâ€™ll use this same all-family mix for the scale runs.

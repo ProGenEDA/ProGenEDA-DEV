@@ -3577,7 +3577,8 @@ def _combined_totalmix_stream_profile(catalog: Any, stream_mode: str) -> dict[st
     trailers = raw_profile.get("family_active_link_trailers")
     native_order = raw_profile.get("native_leading_family_order")
     native_trailer = raw_profile.get("native_active_link_trailer")
-    tail_zones = raw_profile.get("tail_attachment_zones")
+    tail_boundary = raw_profile.get("tail_attachment_insert_before_families")
+    canonical_order = raw_profile.get("canonical_component_family_order")
     if not (
         isinstance(inline_orders, (list, tuple))
         and set(str(item) for item in inline_orders)
@@ -3589,49 +3590,14 @@ def _combined_totalmix_stream_profile(catalog: Any, stream_mode: str) -> dict[st
         and isinstance(native_order, (list, tuple))
         and tuple(str(item) for item in native_order) == ("CAP", "RESISTOR")
         and isinstance(native_trailer, str)
-        and isinstance(tail_zones, (list, tuple))
-        and tail_zones
+        and isinstance(tail_boundary, (list, tuple))
+        and tuple(str(item) for item in tail_boundary) == ("4027",)
+        and isinstance(canonical_order, (list, tuple))
+        and len(canonical_order) == len(set(str(item) for item in canonical_order))
     ):
         raise ValueError(
             "totalmix_combined_v1 route profile is incomplete or malformed."
         )
-    seen_tail_families: set[str] = set()
-    seen_tail_zone_names: set[str] = set()
-    for raw_zone in tail_zones:
-        if not isinstance(raw_zone, dict):
-            raise ValueError(
-                "totalmix_combined_v1 tail_attachment_zones entries must be objects."
-            )
-        name = str(raw_zone.get("name", ""))
-        families = raw_zone.get("families")
-        boundaries = raw_zone.get("insert_before_first_of")
-        fallback = str(raw_zone.get("fallback", ""))
-        if (
-            not name
-            or name in seen_tail_zone_names
-            or not isinstance(families, (list, tuple))
-            or not families
-            or not isinstance(boundaries, (list, tuple))
-            or not boundaries
-            or fallback != "after_last_source_component"
-        ):
-            raise ValueError(
-                "totalmix_combined_v1 tail_attachment_zones is incomplete or "
-                f"malformed at {name!r}."
-            )
-        normalized_families = tuple(str(item) for item in families)
-        if len(normalized_families) != len(set(normalized_families)):
-            raise ValueError(
-                f"totalmix_combined_v1 tail zone {name!r} repeats a family."
-            )
-        overlap = seen_tail_families & set(normalized_families)
-        if overlap:
-            raise ValueError(
-                "totalmix_combined_v1 tail zones overlap on families "
-                f"{sorted(overlap)}."
-            )
-        seen_tail_zone_names.add(name)
-        seen_tail_families.update(normalized_families)
     native_trailer_bytes = bytes.fromhex(native_trailer)
     if native_trailer_bytes not in COMPONENT_PIN_LINK_TRAILERS:
         raise ValueError(
@@ -3872,6 +3838,36 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         original_chunk,
         groups,
     )
+    if is_totalmix_combined:
+        canonical_family_order = tuple(
+            str(item)
+            for item in combined_stream_profile["canonical_component_family_order"]
+        )
+        canonical_rank = {
+            family: index for index, family in enumerate(canonical_family_order)
+        }
+        unranked_families = sorted(
+            {_group_family(group) for group in ordered_groups} - set(canonical_rank)
+        )
+        if unranked_families:
+            raise ValueError(
+                "totalmix_combined_v1 has no canonical stream rank for selected "
+                f"families: {unranked_families}."
+            )
+        # This canonical backend serialization order is family/profile based,
+        # never a mega-donor slot number.  Each complete placed packet keeps
+        # its own identity and coordinates; only the object-stream sequence is
+        # normalized to the accepted combined grammar so attachment units never
+        # precede their component pin-link records.
+        ordered_groups = tuple(
+            sorted(
+                ordered_groups,
+                key=lambda group: (
+                    canonical_rank[_group_family(group)],
+                    int(getattr(group, "start", 0)),
+                ),
+            )
+        )
     families = {_group_family(group) for group in ordered_groups}
     native_accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     native_available = tuple(
@@ -4015,22 +4011,23 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     native_wire_by_group_id: dict[int, tuple[bytes, bytes]] = {}
     catalogue_attachment_records: list[bytes] = []
     catalogue_attachment_groups: list[tuple[int, int, list[bytes]]] = []
-    catalogue_attachment_zone_by_group_index: dict[int, str] = {}
+    catalogue_attachment_finalizer_rows: list[tuple[int, int, str]] = []
     catalogue_leading_by_group_id: dict[int, tuple[bytes, ...]] = {}
     catalogue_leading_finalizers: set[str] = set()
     mixed_tail_finalizer_overrides: set[str] = set()
     family_reports: list[dict[str, Any]] = []
     terminalized_count = 0
     reserved_temporary_suffixes: set[int] = set()
-    combined_tail_zones: dict[str, dict[str, Any]] = {}
-    combined_tail_zone_by_family: dict[str, str] = {}
-    if is_totalmix_combined:
-        for raw_zone in combined_stream_profile["tail_attachment_zones"]:
-            zone = dict(raw_zone)
-            name = str(zone["name"])
-            combined_tail_zones[name] = zone
-            for family in zone["families"]:
-                combined_tail_zone_by_family[str(family)] = name
+    tail_attachment_insert_before_families = (
+        tuple(
+            str(item)
+            for item in combined_stream_profile[
+                "tail_attachment_insert_before_families"
+            ]
+        )
+        if is_totalmix_combined
+        else ()
+    )
 
     source_index_start = 1
     for family in requested_native:
@@ -4210,28 +4207,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     f"{mixed_tail_finalizer!r}."
                 )
         original_group_data = bytes(getattr(group, "data", b""))
-        if (
-            is_totalmix_combined
-            and mixed_attachment_order
-            == "terminal_leading_component_then_wires"
-            and bool(
-                geometry.get(
-                    "strip_component_placer_finalizer_before_terminal_leading_wires",
-                    False,
-                )
-            )
-        ):
-            if not original_group_data.endswith(b"\x00"):
-                raise ValueError(
-                    f"{family} {key} lacks the donor-proven terminal-leading "
-                    "component finalizer byte."
-                )
-            # The authoritative combined donor and the established solo route
-            # both consume this bare-packet finalizer before patching an inline
-            # terminal-leading component.  Keeping it shifts every
-            # component-end-relative pin-link slot and produces a one-byte
-            # larger packet (the isolated 7490 failure).
-            original_group_data = original_group_data[:-1]
         if BIDIR_MARKER in original_group_data or b"\x7fWIRE" in original_group_data:
             raise ValueError(
                 f"{family} {key} mixed catalogue emission requires a clean "
@@ -4512,14 +4487,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     ),
                 )
             )
-            if is_totalmix_combined:
-                zone_name = combined_tail_zone_by_family.get(family)
-                if zone_name is None:
-                    raise ValueError(
-                        "totalmix_combined_v1 has no donor-proven tail zone for "
-                        f"{family} {key}."
-                    )
-                catalogue_attachment_zone_by_group_index[group_index] = zone_name
+            catalogue_attachment_finalizer_rows.append(
+                (
+                    mixed_tail_group_rank,
+                    group_index,
+                    str(mixed_tail_finalizer or object_stream_finalizer),
+                )
+            )
             if mixed_tail_finalizer is not None:
                 mixed_tail_finalizer_overrides.add(mixed_tail_finalizer)
         if id(group) in patched_by_id:
@@ -4580,84 +4554,54 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             "stream before the final BJT serialization zone."
         )
     last_nonleading_group_index = nonleading_group_indices[-1]
-    # A tail attachment must follow the component pin-link it references. The
-    # accepted totalmix donor proves two distinct tail zones, but the locked
-    # mega can legitimately provide the same placed components in a different
-    # packet order. Each zone therefore uses its donor boundary only when all
-    # of its source packets precede it; otherwise it falls back immediately
-    # after its last source packet. This preserves the placed component stream
-    # and never creates a forward component-link reference.
-    tail_attachment_records_before_group: dict[int, list[bytes]] = {}
-    tail_attachment_zone_rows: list[dict[str, Any]] = []
-    if is_totalmix_combined and catalogue_attachment_groups:
-        grouped_tail_entries: dict[str, list[tuple[int, int, list[bytes]]]] = {
-            name: [] for name in combined_tail_zones
-        }
-        for rank, group_index, units in catalogue_attachment_groups:
-            zone_name = catalogue_attachment_zone_by_group_index.get(group_index)
-            if zone_name is None:
-                raise ValueError(
-                    "totalmix_combined_v1 tail record has no declared zone at "
-                    f"component-stream index {group_index}."
-                )
-            grouped_tail_entries[zone_name].append((rank, group_index, units))
-        planned_tail_record_count = 0
-        for zone_name, zone in combined_tail_zones.items():
-            entries = sorted(grouped_tail_entries[zone_name])
-            if not entries:
-                continue
-            source_indices = [group_index for _rank, group_index, _units in entries]
-            preferred_boundary_families = {
-                str(item) for item in zone["insert_before_first_of"]
-            }
-            preferred_insertion_index = next(
-                (
-                    index
-                    for index, group in enumerate(ordered_groups)
-                    if _group_family(group) in preferred_boundary_families
-                ),
-                None,
-            )
-            if (
-                preferred_insertion_index is not None
-                and all(index < preferred_insertion_index for index in source_indices)
-            ):
-                insertion_index = preferred_insertion_index
-                placement = "donor_boundary"
-            else:
-                insertion_index = max(source_indices) + 1
-                placement = "after_last_source_component"
-            zone_records = [
-                record
-                for _rank, _group_index, units in entries
-                for record in units
+    requested_tail_insertion_index = next(
+        (
+            index
+            for index, group in enumerate(ordered_groups)
+            if _group_family(group) in tail_attachment_insert_before_families
+        ),
+        None,
+    )
+    # The combined donor places its ranked tail units immediately before 4027,
+    # but that is valid only when every patched tail component packet has
+    # already appeared in the placed stream.  The locked mega's stable packet
+    # order may put 4027 earlier; then emitting a tail terminal before its
+    # component link makes an invalid forward link.  Preserve the placed
+    # design and append the entire ranked tail after its last source packet.
+    # This is a stream-order continuation rule, not a donor-slot assumption.
+    tail_insertion_index = requested_tail_insertion_index
+    if (
+        is_totalmix_combined
+        and tail_insertion_index is not None
+        and any(
+            attachment_group_index >= tail_insertion_index
+            for _rank, attachment_group_index, _units in catalogue_attachment_groups
+        )
+    ):
+        tail_insertion_index = None
+    if is_totalmix_combined and catalogue_attachment_records:
+        if tail_insertion_index is None:
+            tail_attachment_boundary_index = last_nonleading_group_index
+        else:
+            prior_indices = [
+                index
+                for index in nonleading_group_indices
+                if index < tail_insertion_index
             ]
-            tail_attachment_records_before_group.setdefault(
-                insertion_index,
-                [],
-            ).extend(zone_records)
-            tail_attachment_zone_rows.append(
-                {
-                    "zone": zone_name,
-                    "source_component_indexes": source_indices,
-                    "preferred_insertion_index": preferred_insertion_index,
-                    "insertion_index": insertion_index,
-                    "placement": placement,
-                    "record_count": len(zone_records),
-                }
-            )
-            planned_tail_record_count += len(zone_records)
-        if planned_tail_record_count != len(catalogue_attachment_records):
-            raise ValueError(
-                "totalmix_combined_v1 tail-zone planning did not account for "
-                "every terminal/WIRE attachment record."
-            )
+            if not prior_indices:
+                raise ValueError(
+                    "totalmix_combined_v1 tail attachment boundary has no "
+                    "preceding component record."
+                )
+            tail_attachment_boundary_index = prior_indices[-1]
+    else:
+        tail_attachment_boundary_index = last_nonleading_group_index
     local_records: list[bytes] = []
     preserved_rows: list[dict[str, Any]] = []
     boundary_normalizations = 0
     donor_stream_boundary_overrides: list[dict[str, Any]] = []
     terminalized_ids = set(patched_by_id)
-    tail_attachment_records_emitted = 0
+    tail_attachments_inserted = False
 
     def mixed_stream_profile(family: str) -> dict[str, Any]:
         profile = catalog.get_profile(family)
@@ -4689,11 +4633,14 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     for index, group in enumerate(ordered_groups):
         group_id = id(group)
         family = _group_family(group)
-        if is_totalmix_combined:
-            zone_records = tail_attachment_records_before_group.get(index, ())
-            if zone_records:
-                local_records.extend(zone_records)
-                tail_attachment_records_emitted += len(zone_records)
+        if (
+            is_totalmix_combined
+            and not tail_attachments_inserted
+            and catalogue_attachment_records
+            and tail_insertion_index == index
+        ):
+            local_records.extend(catalogue_attachment_records)
+            tail_attachments_inserted = True
         stream_profile = mixed_stream_profile(family)
         if index:
             raw_preceding_boundary = stream_profile.get("preceding_boundary")
@@ -4728,7 +4675,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             and local_starts_with_terminal[index + 1]
         )
         terminal_units_follow_stream = (
-            index + 1 in tail_attachment_records_before_group
+            index == tail_attachment_boundary_index
+            and bool(catalogue_attachment_records)
             if is_totalmix_combined
             else index == last_nonleading_group_index
             and bool(catalogue_attachment_records or catalogue_leading_by_group_id)
@@ -4814,14 +4762,16 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     "boundary_tail_normalized": trim_component_tail_before_terminal,
                 }
             )
-    if is_totalmix_combined:
-        terminal_tail_records = tail_attachment_records_before_group.get(
-            len(ordered_groups),
-            (),
-        )
-        if terminal_tail_records:
-            local_records.extend(terminal_tail_records)
-            tail_attachment_records_emitted += len(terminal_tail_records)
+    if (
+        is_totalmix_combined
+        and catalogue_attachment_records
+        and not tail_attachments_inserted
+    ):
+        # A subset may omit the profile's normal 4027 boundary.  The same
+        # ranked tail units then follow the final surviving component record;
+        # its terminal-zone tail was trimmed above.
+        local_records.extend(catalogue_attachment_records)
+        tail_attachments_inserted = True
     if not original_chunk[:1]:
         raise ValueError(
             "Mixed native/catalogue attachment could not recover the original "
@@ -4849,17 +4799,36 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ]
     )
     if is_totalmix_combined:
-        if tail_attachment_records_emitted != len(catalogue_attachment_records):
+        if catalogue_attachment_records and not tail_attachments_inserted:
             raise ValueError(
-                "totalmix_combined_v1 did not emit every planned tail attachment "
-                "record."
+                "totalmix_combined_v1 did not emit all ranked tail attachment units."
             )
-        object_stream_finalizer = str(
-            combined_stream_profile.get(
-                "fallback_object_stream_finalizer",
-                "single_ff",
+        if tail_insertion_index is None and catalogue_attachment_finalizer_rows:
+            object_stream_finalizer = sorted(catalogue_attachment_finalizer_rows)[-1][2]
+        else:
+            object_stream_finalizer = str(
+                combined_stream_profile.get(
+                    "fallback_object_stream_finalizer",
+                    "single_ff",
+                )
             )
-        )
+            for group in reversed(ordered_groups):
+                if id(group) not in terminalized_ids:
+                    continue
+                profile = catalog.get_profile(_group_family(group))
+                geometry = (
+                    profile.proteus.get("pin_geometry", {})
+                    if profile is not None and isinstance(profile.proteus, dict)
+                    else {}
+                )
+                if isinstance(geometry, dict):
+                    object_stream_finalizer = str(
+                        geometry.get(
+                            "object_stream_finalizer",
+                            object_stream_finalizer,
+                        )
+                    )
+                break
         if object_stream_finalizer == "single_ff":
             new_chunk = _ensure_single_ff_object_stream_terminator(
                 accepted_native_order_stream
@@ -5030,10 +4999,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ),
         "object_order": (
             "preserved_placed_component_order_with_native_attachment_units_"
-            "profile_driven_tail_zones_and_inline_terminal_leading_units"
-            if is_totalmix_combined
-            else "preserved_placed_component_order_with_native_attachment_units_"
             "and_ranked_catalogue_tail_attachment_units"
+            if not catalogue_leading_by_group_id
+            else "preserved_placed_component_order_with_native_attachment_units_"
+            "catalogue_trailing_attachment_units_then_contiguous_final_"
+            "terminal-leading_zone"
         ),
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
@@ -5049,7 +5019,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             for group in ordered_groups
             if id(group) in catalogue_leading_by_group_id
         ],
-        "tail_attachment_zones": tail_attachment_zone_rows,
         "object_stream_finalizer": object_stream_finalizer,
         "family_reports": family_reports,
         "terminal_count_added": expected_terminals,
@@ -5098,7 +5067,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "accepted_native_order_stream_preserved": final_chunk.startswith(
             accepted_native_order_stream
         ),
-        "component_record_order_mutation": False,
+        "component_record_order_mutation": bool(
+            catalogue_leading_by_group_id
+        ),
         "boundary_tail_normalizations": boundary_normalizations,
         "donor_stream_boundary_overrides": donor_stream_boundary_overrides,
         "native_wire_boundary_checks": native_wire_boundary_checks,

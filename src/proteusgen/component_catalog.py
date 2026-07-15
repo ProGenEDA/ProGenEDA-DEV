@@ -145,6 +145,9 @@ class ComponentCatalog:
     components: Mapping[str, ComponentProfile]
     alias_to_part: Mapping[str, str]
     terminal_label_policy: Mapping[str, str]
+    proteus_route_profiles: Mapping[str, Mapping[str, Any]] = field(
+        default_factory=dict
+    )
 
     def normalize_part(self, value: str) -> str:
         token = _token(value)
@@ -161,6 +164,17 @@ class ComponentCatalog:
             return self.profile(value)
         except ValueError:
             return None
+
+    def proteus_route_profile(self, name: str) -> Mapping[str, Any]:
+        """Return a named, catalogue-owned Proteus stream profile.
+
+        These profiles hold combined-stream evidence that belongs to a route,
+        rather than to one individual component.  Consumers must still use the
+        normal component profiles for packet and pin geometry.
+        """
+
+        value = self.proteus_route_profiles.get(str(name), {})
+        return value if isinstance(value, Mapping) else {}
 
     def pin_vocabulary(
         self,
@@ -319,4 +333,9 @@ def load_component_catalog(path: str | Path | None = None) -> ComponentCatalog:
         components=dict(sorted(resolved.items())),
         alias_to_part=aliases,
         terminal_label_policy=dict(raw.get("terminal_label_policy", {})),
+        proteus_route_profiles={
+            str(name): dict(value)
+            for name, value in dict(raw.get("proteus_route_profiles", {})).items()
+            if isinstance(value, Mapping)
+        },
     )

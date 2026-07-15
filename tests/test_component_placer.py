@@ -3120,6 +3120,98 @@ def test_full_current_group_matches_user_accepted_mixed_tail_oracle(
     assert not output_chunk.endswith(b"\xff\xff")
 
 
+def test_totalmix_profile_preserves_component_order_and_trims_inline_packets(
+    tmp_path: Path,
+) -> None:
+    """The combined profile adds zones without donor-order packet sorting."""
+
+    native_families = ("RESISTOR", "CAP")
+    catalogue_families = (
+        "POT-HG",
+        "NPN",
+        "74HC76",
+        "7490",
+        "74HC08",
+        "4027",
+    )
+    base = tmp_path / "totalmix_profile_base.pdsprj"
+    output = tmp_path / "totalmix_profile_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                **{family: 1 for family in native_families},
+                **{family: 1 for family in catalogue_families},
+            },
+            "layout": {"strategy": "beautify", "binary_coordinate_mutation": True},
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=native_families,
+        catalogue_terminal_families=catalogue_families,
+        use_donor_terminal_labels=False,
+        stream_mode="totalmix_combined_v1",
+    )
+    base_chunk = _extract_object_chunk(read_internal_file(base, "ROOT.DSN"))
+    output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    output_component_chunk = terminal_placer._component_only_chunk_from_terminalized_chunk(
+        output_chunk
+    )
+    base_groups = sorted(
+        (
+            group
+            for groups in _raw_groups_from_chunk(
+                base_chunk,
+                _generation_markers(),
+            ).values()
+            for group in groups
+        ),
+        key=lambda group: group.start,
+    )
+    output_groups = sorted(
+        (
+            group
+            for groups in _raw_groups_from_chunk(
+                output_component_chunk,
+                _generation_markers(),
+            ).values()
+            for group in groups
+        ),
+        key=lambda group: group.start,
+    )
+
+    assert result.valid
+    assert report["component_record_order_mutation"] is False
+    assert report["terminal_suffix_links_valid"] is True
+    assert report["object_stream_finalizer"] == "single_ff"
+    assert output_chunk.count(b"$TERBIDIR") == report["terminal_count_added"]
+    assert output_chunk.count(b"\x7fWIRE") == report["wire_count_added"]
+    assert [(group.key, group.family) for group in output_groups] == [
+        (group.key, group.family) for group in base_groups
+    ]
+    base_7490 = next(group for group in base_groups if group.family == "7490")
+    output_7490_start = output_chunk.find(b"\xff\x02U5")
+    assert output_7490_start >= 0
+    output_7490_first_wire = next(
+        start
+        for start, _end in terminal_placer._wire_record_spans(output_chunk)
+        if start > output_7490_start
+    )
+    assert output_7490_first_wire - output_7490_start == len(base_7490.data) - 1
+    zones = {row["zone"]: row for row in report["tail_attachment_zones"]}
+    assert set(zones) == {"current_control_bjt_tail", "logic_tail"}
+    assert all(
+        row["placement"] == "after_last_source_component"
+        and row["insertion_index"] == max(row["source_component_indexes"]) + 1
+        for row in zones.values()
+    )
+
+
 @pytest.mark.parametrize("family", DIL14_QUAD_2INPUT_FAMILIES)
 def test_dil14_quad_2input_solo_retargets_donor_wires_to_grid_contacts(
     tmp_path: Path,

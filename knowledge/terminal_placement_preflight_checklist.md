@@ -68,3 +68,11 @@ terminal packet.
 ## Current freeze note — 2026-07-12
 
 The shared generic two-pin route (diodes, zeners, 40EPS08, LED-RED, FUSE and SWITCH) is user-accepted and frozen. An attempted geometry rewrite made during mixed BJT research was reverted. Do not change it without a user-supplied failure and an accepted donor for that exact route.
+
+## Completed preflight — 2026-07-15 `totalmix` DSN repair
+
+- Authority: user-provided `experiments/mixed_current_accepted_1x_v2_temp_2026_07_15/totalmix.pdsprj`; the user explicitly limited this investigation to `ROOT.DSN`, so no `ROOT.CDB` comparison or mutation was used.
+- Backup created before the repair: `backups/component_terminal_placer/component_terminal_placer_20260715_102311_before_totalmix_dsn_audit_repair.py`.
+- Complete DSN inventory and donor-vs-candidate diff: `knowledge/totalmix_combined_donor_audit_2026_07_15.md` plus the machine-readable audit beside its experiment.
+- Evidence-backed changes only: trim the eight proven inline `00` packet finalizers, split the two donor-proven attachment zones, and remove the rejected canonical component sort. Accepted two-pin/current routes remain unchanged.
+- Gate: focused mixed/totalmix regression tests passed; compile/catalogue-JSON checks passed; freshly placed 49-family 1x candidate passed normal open and cold reopen without a modal error or save mutation.

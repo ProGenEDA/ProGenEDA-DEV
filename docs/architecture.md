@@ -2595,3 +2595,28 @@ limits.  The former is currently constrained by a safe-packet offset that
 skips previously rejected donor packages; the latter by a finalizer/tail
 selection rule.  Both are separate donor-packet research items, not evidence
 that a third placement row is required.
+
+### 2026-07-15 combined totalmix ROOT.DSN repair rule
+
+The user-provided `totalmix.pdsprj` is a stream-grammar oracle, not a runtime
+template. Its complete ROOT.DSN audit proved that the shared combined emitter
+already had correct active suffix rebasing, `02 00`/`03 00` trailers, and
+terminal-to-WIRE/component-link topology. The failure was instead two
+serialization mistakes: eight inline terminal-leading IC packets kept a bare
+one-byte component finalizer, and all component-tail attachments were placed
+in one final zone even though the donor proves two zones.
+
+The shared placer now removes the proven finalizer before patching those eight
+packets and models two catalogue-driven tail zones. A zone uses its donor
+boundary only when all of its source component links already precede that
+boundary; otherwise it follows its own last source component. This preserves
+the placed design's packet order and prevents illegal forward links. It must
+never sort or reorder component packets merely to imitate a donor circuit.
+
+The all-family 1x regenerated project normal-opened and cold-reopened locally
+without a modal error or save mutation. The focused mixed regression suite also
+checks component order preservation and the one-byte 7490 component-to-WIRE
+trim. Absolute `coordinate % 254000 == 0` is not a valid global grid test:
+the accepted donor has several legitimate component/sheet grid phases. Future
+validation must test the terminal contact against its component-local grid
+frame.

@@ -26,6 +26,101 @@
     },
     "source_reference": "\\\\192.168.122.1\\shared\\kicad catalogue/pipeline read-only architecture reference on 2026-07-07"
   },
+  "proteus_route_profiles": {
+    "totalmix_combined_v1": {
+      "evidence_project": "experiments/mixed_current_accepted_1x_v2_temp_2026_07_15/totalmix.pdsprj",
+      "evidence_sha256": "9721666fb5ae49a87e6cd717a6d98c699d1f1ec14ed99fa0f8985b654569009a",
+      "purpose": "Catalogue-driven combined stream order for the 49-family user-provided mixed terminal donor; never a runtime template.",
+      "native_leading_family_order": [
+        "CAP",
+        "RESISTOR"
+      ],
+      "native_active_link_trailer": "0200",
+      "inline_attachment_orders": [
+        "terminal_leading_component_then_wires",
+        "subpart_terminal_component_wires"
+      ],
+      "tail_attachment_zones": [
+        {
+          "name": "current_control_bjt_tail",
+          "families": [
+            "POT-HG",
+            "OPAMP",
+            "LM317T",
+            "NMOSFET",
+            "2N3904",
+            "2N4401",
+            "2N7000",
+            "BS170",
+            "NPN",
+            "PNP"
+          ],
+          "insert_before_first_of": [
+            "74HC76",
+            "7490",
+            "7447",
+            "74HC283",
+            "74HC192",
+            "74HC174",
+            "74HC160",
+            "74HC157",
+            "74HC85"
+          ],
+          "fallback": "after_last_source_component"
+        },
+        {
+          "name": "logic_tail",
+          "families": [
+            "74HC08",
+            "74HC32",
+            "74HC86",
+            "74HC266",
+            "74HC02",
+            "74HC00",
+            "74HC04",
+            "4511",
+            "74HC151"
+          ],
+          "insert_before_first_of": [
+            "4027"
+          ],
+          "fallback": "after_last_source_component"
+        }
+      ],
+      "family_active_link_trailers": {
+        "2N3904": "0200",
+        "2N4401": "0200",
+        "2N7000": "0200",
+        "74HC00": "0300",
+        "74HC02": "0300",
+        "74HC04": "0300",
+        "74HC08": "0300",
+        "74HC151": "0300",
+        "74HC157": "0200",
+        "74HC160": "0200",
+        "74HC174": "0200",
+        "74HC192": "0200",
+        "74HC266": "0300",
+        "74HC283": "0200",
+        "74HC32": "0300",
+        "74HC76": "0200",
+        "74HC85": "0200",
+        "74HC86": "0300",
+        "4027": "0300",
+        "4511": "0300",
+        "7447": "0200",
+        "7490": "0200",
+        "BS170": "0200",
+        "LM317T": "0200",
+        "NMOSFET": "0200",
+        "NPN": "0200",
+        "OPAMP": "0200",
+        "PNP": "0200",
+        "POT-HG": "0200"
+      },
+      "fallback_object_stream_finalizer": "single_ff"
+    }
+  },
   "components": {
     "1N4007": {
       "aliases": [],
