@@ -15389,3 +15389,23 @@ Focused catalogue/totalmix regressions passed (`4 passed`), the Python source an
 ### Agent response - 2026-07-15 21:26 +05:00
 
 The 44-family anode baseline is committed and pushed at `1c18340a`; local and remote hashes match. I’m preserving it unchanged and moving to the cathode donor as family 45, generated from the 44-family request.
+
+### Agent response - 2026-07-15 22:00 +05:00
+
+Understood. The cumulative base is locked: each new family is added to the preceding accepted mix, never rebuilt from 38. I’m treating the anode display as family 44 and will build the cathode display on that 44-family base as family 45.
+
+### Agent response - 2026-07-15 22:01 +05:00
+
+Locked in: every real mix is cumulative. The cathode display is being added to the accepted 44-family circuit, producing a 45-family circuit—not a fresh 38-family base.
+
+### Agent response - 2026-07-15 22:03 +05:00
+
+The 45-family file is generated with all prior families retained. I’m doing the required local open/cold-reopen check on a disposable copy now; the original output will remain untouched.
+
+### Agent response - 2026-07-15 22:07 +05:00
+
+The 45-family cumulative copy passed normal and cold Proteus opens with no modal error and no file mutation. I’m adding a regression now so a future display change cannot silently revert to a partial base.
+
+### Agent update - 2026-07-15 22:12 +05:00
+
+The common-cathode display was added to the actual accepted 44-family mix, producing a 45-visible-family circuit rather than a 38-plus-one rebuild. The shared terminal placer now emits the cathode plus the immediately following visible anode packet as one donor-proven patch block, preserving both visible display components and giving each eight active terminal/WIRE units. The cumulative pack has 229 terminals and 229 WIREs; grid/path checks passed and a disposable copy normal-opened and cold-reopened in Proteus without `Bad Object Record`, `Fatal Error`, `LXLCORE`, library dialog, or hash mutation. Edited/created: `src/proteusgen/component_terminal_placer.py`, `knowledge/component_catalog_v0.json`, `tests/test_component_placer.py`, `knowledge/display_cathode_terminal_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, `knowledge/test_results.jsonl`, two shared-placer backups, and `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/07_display_cathode_45f`.

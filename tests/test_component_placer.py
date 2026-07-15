@@ -3439,6 +3439,94 @@ def test_totalmix_anode_display_uses_local_grid_attachment_units(
     )
 
 
+def test_totalmix_cathode_and_visible_anode_emit_as_one_safe_display_block(
+    tmp_path: Path,
+) -> None:
+    """Keep both requested displays in the cumulative mixed output.
+
+    The accepted common-cathode donor proves that its final active pin-link
+    crosses the immediately following common-anode packet.  That following
+    packet is visible in the cumulative 45-family mix, so it must be retained
+    and terminalized rather than treated as disposable display infrastructure.
+    """
+
+    base = tmp_path / "totalmix_both_displays_base.pdsprj"
+    output = tmp_path / "totalmix_both_displays_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                "RESISTOR": 1,
+                "CAP": 1,
+                "7SEG-COM-CAT-BLUE": 1,
+                "7SEG-COM-AN-BLUE": 1,
+            },
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP"),
+        catalogue_terminal_families=(
+            "7SEG-COM-CAT-BLUE",
+            "7SEG-COM-AN-BLUE",
+        ),
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+    display_reports = {
+        row["component_family"]: row
+        for row in report["family_reports"]
+        if row.get("component_family")
+        in {"7SEG-COM-CAT-BLUE", "7SEG-COM-AN-BLUE"}
+    }
+
+    assert result.valid
+    assert report["valid"] is True
+    assert report["terminal_count_added"] == 20
+    assert report["wire_count_added"] == 20
+    assert report["terminal_grid_alignment_valid"] is True
+    assert report["wire_path_contacts_valid"] is True
+    assert set(display_reports) == {"7SEG-COM-CAT-BLUE", "7SEG-COM-AN-BLUE"}
+    assert all(row["terminal_count"] == 8 for row in display_reports.values())
+    assert display_reports["7SEG-COM-CAT-BLUE"]["combined_infrastructure"] == {
+        "key": "DISPLAY_AN_001_FINAL",
+        "family": "7SEG-COM-AN-BLUE",
+        "reason": (
+            "common-cathode display pin-link table crosses the immediately "
+            "following anode packet boundary; both packets are emitted as one "
+            "patched display block"
+        ),
+    }
+    assert display_reports["7SEG-COM-AN-BLUE"]["combined_infrastructure"] == {
+        "key": "DISPLAY_CC_001",
+        "family": "7SEG-COM-CAT-BLUE",
+        "reason": (
+            "visible anode display row is embedded with its immediately "
+            "preceding cathode display because the cathode's final pin-link "
+            "crosses the row boundary"
+        ),
+    }
+    assert report["catalogue_component_stream_component_keys"] == [
+        "DISPLAY_CC_001"
+    ]
+    assert any(
+        row["component_key"] == "D20" for row in report["preserved_groups"]
+    )
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:

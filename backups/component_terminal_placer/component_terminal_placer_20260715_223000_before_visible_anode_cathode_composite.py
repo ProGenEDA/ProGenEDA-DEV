@@ -4229,29 +4229,26 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             "native family and one catalogue family."
         )
 
-    # A common-cathode display's final pin-link field crosses the following
-    # common-anode row.  In a cathode-only request that row is immutable
-    # infrastructure; in a cumulative request it is the preceding accepted
-    # visible anode display.  Either way, the cathode and the immediately
-    # following anode packet are one donor-proven patch/emission block.
-    combined_catalogue_following_by_group_id: dict[int, Any] = {}
-    combined_catalogue_parent_by_group_id: dict[int, Any] = {}
-    combined_catalogue_embedded_group_ids: set[int] = set()
+    # A common-cathode display's last pin-link field crosses the following
+    # finalized anode display row.  The placed-design contract keeps that row
+    # as explicit immutable infrastructure, but the donor proves that both
+    # rows are one patch/emission block.  Record the adjacent pairing before
+    # planning so the shared mixed writer can patch and serialize it once.
+    combined_catalogue_infrastructure_by_group_id: dict[int, Any] = {}
     combined_catalogue_infrastructure_group_ids: set[int] = set()
     if "7SEG-COM-CAT-BLUE" in requested_catalogue:
         for group_index, group in enumerate(ordered_groups[:-1]):
             following_group = ordered_groups[group_index + 1]
             if (
                 _group_family(group) == "7SEG-COM-CAT-BLUE"
-                and _group_family(following_group) == "7SEG-COM-AN-BLUE"
+                and _group_key(following_group) == "DISPLAY_ANODE_SENTINEL"
             ):
-                combined_catalogue_following_by_group_id[id(group)] = following_group
-                combined_catalogue_parent_by_group_id[id(following_group)] = group
-                combined_catalogue_embedded_group_ids.add(id(following_group))
-                if _group_key(following_group) == "DISPLAY_ANODE_SENTINEL":
-                    combined_catalogue_infrastructure_group_ids.add(
-                        id(following_group)
-                    )
+                combined_catalogue_infrastructure_by_group_id[id(group)] = (
+                    following_group
+                )
+                combined_catalogue_infrastructure_group_ids.add(
+                    id(following_group)
+                )
 
     terminal_templates = load_production_templates(FixtureRegistry.load())
     patched_by_id: dict[int, bytes] = {}
@@ -4476,38 +4473,21 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         original_group_data = bytes(getattr(group, "data", b""))
         combined_infrastructure: dict[str, Any] | None = None
         combined_link_base_end: int | None = None
-        combined_parent = combined_catalogue_parent_by_group_id.get(id(group))
-        following_component = combined_catalogue_following_by_group_id.get(id(group))
-        if combined_parent is not None:
-            parent_data = patched_by_id.get(id(combined_parent))
-            if parent_data is None:
-                raise ValueError(
-                    f"{family} {key} follows a cathode display block that was not "
-                    "patched before its visible anode links were planned."
-                )
-            original_group_data = parent_data
-            combined_link_base_end = len(original_group_data)
-            combined_infrastructure = {
-                "key": _group_key(combined_parent),
-                "family": _group_family(combined_parent),
-                "reason": (
-                    "visible anode display row is embedded with its immediately "
-                    "preceding cathode display because the cathode's final pin-link "
-                    "crosses the row boundary"
-                ),
-            }
-        elif following_component is not None:
+        following_infrastructure = combined_catalogue_infrastructure_by_group_id.get(
+            id(group)
+        )
+        if following_infrastructure is not None:
             combined_link_base_end = len(original_group_data)
             original_group_data += bytes(
-                getattr(following_component, "data", b"")
+                getattr(following_infrastructure, "data", b"")
             )
             combined_infrastructure = {
-                "key": _group_key(following_component),
-                "family": _group_family(following_component),
+                "key": _group_key(following_infrastructure),
+                "family": _group_family(following_infrastructure),
                 "reason": (
                     "common-cathode display pin-link table crosses the "
-                    "immediately following anode packet boundary; both packets "
-                    "are emitted as one patched display block"
+                    "required anode sentinel boundary; sentinel packet is "
+                    "preserved inside the patched display stream"
                 ),
             }
         if (
@@ -4733,16 +4713,17 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             is_totalmix_combined
             and family in combined_local_component_attachment_families
         )
-        attachment_target_group_id = (
-            id(combined_parent) if combined_parent is not None else id(group)
-        )
         if mixed_local_component_attachment:
             if mixed_attachment_order != "component_stream_then_attachment_units":
                 raise ValueError(
                     f"{family} {key} local combined attachment requires "
                     "component_stream_then_attachment_units evidence."
                 )
-            attachment_units = tuple(
+            if id(group) in catalogue_local_attachment_by_group_id:
+                raise ValueError(
+                    f"Duplicate local catalogue attachment target for {family} {key}."
+                )
+            catalogue_local_attachment_by_group_id[id(group)] = tuple(
                 record
                 for terminal_record, wire_record in _ordered_clean_packet_attachment_units(
                     family=family,
@@ -4754,19 +4735,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 )
                 for record in (terminal_record, wire_record)
             )
-            if attachment_target_group_id in catalogue_local_attachment_by_group_id:
-                if combined_parent is None:
-                    raise ValueError(
-                        f"Duplicate local catalogue attachment target for {family} {key}."
-                    )
-                catalogue_local_attachment_by_group_id[attachment_target_group_id] = (
-                    *catalogue_local_attachment_by_group_id[attachment_target_group_id],
-                    *attachment_units,
-                )
-            else:
-                catalogue_local_attachment_by_group_id[attachment_target_group_id] = (
-                    attachment_units
-                )
         elif mixed_attachment_order == "terminal_leading_component_then_wires":
             if object_stream_finalizer != "append_explicit_single_ff":
                 raise ValueError(
@@ -4918,16 +4886,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 catalogue_attachment_zone_by_group_index[group_index] = zone_name
             if mixed_tail_finalizer is not None:
                 mixed_tail_finalizer_overrides.add(mixed_tail_finalizer)
-        if combined_parent is None:
-            if id(group) in patched_by_id:
-                raise ValueError(f"Duplicate catalogue patch target for {family} {key}.")
-            patched_by_id[id(group)] = patched_data
-        else:
-            if id(combined_parent) not in patched_by_id:
-                raise ValueError(
-                    f"{family} {key} has no cathode display patch target to update."
-                )
-            patched_by_id[id(combined_parent)] = patched_data
+        if id(group) in patched_by_id:
+            raise ValueError(f"Duplicate catalogue patch target for {family} {key}.")
+        patched_by_id[id(group)] = patched_data
         family_reports.append(
             {
                 "family_handler": f"{family}/catalogue-mixed-link-offset-wire-v1",
@@ -5011,7 +4972,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         index
         for index, group in enumerate(ordered_groups)
         if id(group) not in catalogue_leading_by_group_id
-        and id(group) not in combined_catalogue_embedded_group_ids
+        and id(group) not in combined_catalogue_infrastructure_group_ids
     ]
     if not nonleading_group_indices:
         raise ValueError(
@@ -5128,18 +5089,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     for index, group in enumerate(ordered_groups):
         group_id = id(group)
         family = _group_family(group)
-        if group_id in combined_catalogue_embedded_group_ids:
+        if group_id in combined_catalogue_infrastructure_group_ids:
             preserved_rows.append(
                 {
                     "component_key": _group_key(group),
                     "component_family": family,
-                    "reason": (
-                        "combined_common_cathode_display_sentinel"
-                        if group_id in combined_catalogue_infrastructure_group_ids
-                        else "combined_common_cathode_visible_anode"
-                    ),
-                    "byte_preserved": group_id
-                    in combined_catalogue_infrastructure_group_ids,
+                    "reason": "combined_common_cathode_display_sentinel",
+                    "byte_preserved": True,
                 }
             )
             continue

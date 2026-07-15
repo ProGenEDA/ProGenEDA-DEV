@@ -36,8 +36,9 @@
         "RESISTOR"
       ],
       "runtime_component_order": "preserve_placed_design_order",
-      "local_component_attachment_families": [
-        "74HC00",
+    "local_component_attachment_families": [
+      "7SEG-COM-CAT-BLUE",
+      "74HC00",
         "74HC02",
         "74HC04",
         "74HC08",
@@ -100,11 +101,12 @@
           "fallback": "after_last_source_component"
         }
       ],
-      "family_active_link_trailers": {
-        "2N3904": "0200",
-        "2N4401": "0200",
-        "2N7000": "0200",
-        "7SEG-COM-AN-BLUE": "0100",
+  "family_active_link_trailers": {
+    "2N3904": "0200",
+    "2N4401": "0200",
+    "2N7000": "0200",
+    "7SEG-COM-AN-BLUE": "0100",
+    "7SEG-COM-CAT-BLUE": "0100",
         "74HC00": "0300",
         "74HC02": "0300",
         "74HC04": "0300",
@@ -15311,10 +15313,10 @@
           "object_stream_finalizer": "double_ff",
           "preserve_root_cdb": true,
           "staged_contact_requires_active_attachment_unit": true,
-          "terminal_contact_policy": "donor_explicit",
+          "terminal_contact_policy": "computed_outward_grid",
           "terminal_policy": "grid_snapped_terminal_contact_plus_nonzero_short_wire_to_exact_pin",
-          "wire_coordinates_policy": "donor_coordinates",
-          "wire_coordinates_retarget_to_current_contacts": true,
+          "wire_coordinates_policy": "computed_terminal_contact_to_pin",
+          "wire_coordinates_retarget_to_current_contacts": false,
           "wire_record_encoding": "catalogue_leading_separator",
           "pins": {
             "a": {

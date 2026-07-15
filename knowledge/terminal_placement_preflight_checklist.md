@@ -100,3 +100,11 @@ The shared generic two-pin route (diodes, zeners, 40EPS08, LED-RED, FUSE and SWI
 - Backup: shared placer behavior was not edited; the change is catalogue-only.
 - Evidence checks: eight terminal/WIRE units, contacts on grid intersections, required left/right orientations, eight nonzero exact-pin wires, matching final-address `0100` terminal/component suffixes, local attachment immediately after the display packet, immutable D20 preservation, and explicit finalizer.
 - Gate: focused anode/catalogue/totalmix regressions, compile check, a fresh solo anode normal/cold gate, a fresh RESISTOR+CAP+anode normal/cold mixed gate, and the actual cumulative 44-family normal/cold gate. No normally opening file was saved.
+
+## Completed preflight - 2026-07-15 7SEG-COM-CAT-BLUE 45-family cumulative route
+
+- Authority: `proteus_ic/donors/terminalized_catalogue_evidence/display_7seg/7SEG-COM-CAT-BLUE/7SEG-COM-CAT-BLUE_user_terminalized_july04.pdsprj`; its complete DSN/CDB, packet, terminal, WIRE, link, coordinate, order, and finalizer audit is in `knowledge/display_cathode_terminal_preflight_2026_07_15.md`.
+- Cumulative invariant: the candidate starts with the committed 44-visible-family anode request and adds cathode as visible family 45; it does not recreate a 38-family base. `D20` remains display infrastructure only.
+- Freeze: no accepted 44-family route is changed. The only shared-emitter extension handles the donor-proven common-cathode/common-anode adjacent packet boundary and is exercised by a focused two-visible-display regression.
+- Evidence checks: the cathode's `commoncath` `-3` link offset is patched relative to the original 403-byte cathode row while the adjacent visible anode row is retained in the same emitted block; both display families have eight terminal/WIRE units, grid-aligned contacts, correct left/right angle, nonzero exact-pin wire paths, and final-address `0100` link suffixes.
+- Gate: focused anode/cathode mixed regressions passed (`2 passed`), source compiled, and the newly placed real cumulative 45-family output normal-opened and cold-reopened with no modal error or hash mutation. No normally opening file was saved.
