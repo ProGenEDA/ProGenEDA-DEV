@@ -976,7 +976,7 @@ def plan_catalogue_pin_bidir_terminals(
     suffix_start: int = 0x7300,
     use_donor_terminal_labels: bool = True,
     terminal_contact_mode: str = "grid_contact",
-    force_grid_contact_short_wires: bool = False,
+    force_grid_contact_short_wires: bool | None = None,
 ) -> dict[str, Any]:
     """Plan multi-pin terminals from catalogue Proteus pin geometry.
 
@@ -3592,6 +3592,7 @@ def _combined_totalmix_stream_profile(catalog: Any, stream_mode: str) -> dict[st
     inline_orders = raw_profile.get("inline_attachment_orders")
     trailers = raw_profile.get("family_active_link_trailers")
     native_order = raw_profile.get("native_leading_family_order")
+    component_family_order = raw_profile.get("backend_component_family_order")
     native_trailer = raw_profile.get("native_active_link_trailer")
     tail_zones = raw_profile.get("tail_attachment_zones")
     if not (
@@ -3604,6 +3605,12 @@ def _combined_totalmix_stream_profile(catalog: Any, stream_mode: str) -> dict[st
         and isinstance(trailers, dict)
         and isinstance(native_order, (list, tuple))
         and tuple(str(item) for item in native_order) == ("CAP", "RESISTOR")
+        and isinstance(component_family_order, (list, tuple))
+        and len(component_family_order) == len(
+            {str(item) for item in component_family_order}
+        )
+        and tuple(str(item) for item in component_family_order)[:2]
+        == ("RESISTOR", "CAP")
         and isinstance(native_trailer, str)
         and isinstance(tail_zones, (list, tuple))
         and tail_zones
@@ -3923,6 +3930,15 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         catalog = load_component_catalog()
     combined_stream_profile = _combined_totalmix_stream_profile(catalog, stream_mode)
     is_totalmix_combined = bool(combined_stream_profile)
+    # A totalmix is the integration route that must prove real terminal
+    # attachment across families.  The audit found that allowing this flag to
+    # default to false silently emitted zero-length units for the DIL gates.
+    # Preserve frozen standalone-route behavior, but make the combined route
+    # unconditionally use the shared grid-contact/nonzero-short-WIRE policy.
+    if is_totalmix_combined:
+        force_grid_contact_short_wires = True
+    elif force_grid_contact_short_wires is None:
+        force_grid_contact_short_wires = False
     combined_family_link_trailers = (
         dict(combined_stream_profile["family_active_link_trailers"])
         if is_totalmix_combined
@@ -3945,6 +3961,57 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         original_chunk,
         groups,
     )
+    source_component_order = tuple(ordered_groups)
+    component_backend_serialization: dict[str, Any] = {
+        "policy": "placed_design_order",
+        "source_order": [
+            {"component_key": _group_key(group), "component_family": _group_family(group)}
+            for group in source_component_order
+        ],
+    }
+    if is_totalmix_combined:
+        # The accepted all-family donor proves a semantic backend packet phase:
+        # native R/C comes first, native/control packets establish their tail
+        # zone, terminal-leading catalogue packets follow, then the remaining
+        # catalogue-tail packets. This is not a placement rewrite: each
+        # selected component packet, reference, and translated coordinate is
+        # still exactly the component placer's. The catalogue stores family
+        # semantics rather than donor slots/IDs, so a future placed-design
+        # producer remains interchangeable.
+        family_order = tuple(
+            str(item)
+            for item in combined_stream_profile[
+                "backend_component_family_order"
+            ]
+        )
+        priority_groups = [
+            group
+            for family in family_order
+            for group in source_component_order
+            if _group_family(group) == family
+        ]
+        priority_group_ids = {id(group) for group in priority_groups}
+        ordered_groups = tuple(
+            priority_groups
+            + [
+                group
+                for group in source_component_order
+                if id(group) not in priority_group_ids
+            ]
+        )
+        component_backend_serialization.update(
+            {
+                "policy": "totalmix_profile_family_phases",
+                "family_order": list(family_order),
+            }
+        )
+    component_backend_serialization["emitted_order"] = [
+        {"component_key": _group_key(group), "component_family": _group_family(group)}
+        for group in ordered_groups
+    ]
+    component_record_order_mutation = tuple(
+        id(group) for group in ordered_groups
+    ) != tuple(id(group) for group in source_component_order)
     families = {_group_family(group) for group in ordered_groups}
     native_accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     native_available = tuple(
@@ -4637,13 +4704,40 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         for _rank, _index, units in sorted(catalogue_attachment_groups)
         for record in units
     ]
+    # The accepted totalmix donor keeps the R/C leading terminal prefix
+    # contiguous with the first R/C component unit.  The locked mega can place
+    # catalogue components first, so a global prefix would leave those native
+    # terminals separated from R1/C1 by unrelated active objects.  Localize
+    # the existing prefix before the first R/C packet without reordering any
+    # component packet.  Frozen standalone/two-pin paths keep their existing
+    # global-prefix behavior.
+    native_leading_prefix_group_index: int | None = None
+    if is_totalmix_combined and native_leading_records:
+        native_leading_prefix_group_index = next(
+            (
+                index
+                for index, group in enumerate(ordered_groups)
+                if id(group) in native_wire_by_group_id
+                and _group_family(group) in {"RESISTOR", "CAP"}
+            ),
+            None,
+        )
+        if native_leading_prefix_group_index is None:
+            raise ValueError(
+                "totalmix_combined_v1 planned an R/C leading terminal prefix "
+                "without a corresponding R/C component packet."
+            )
     local_starts_with_terminal = [
         bool(native_terminal_by_group_id.get(id(group), ()))
         or (
             is_totalmix_combined
+            and index == native_leading_prefix_group_index
+        )
+        or (
+            is_totalmix_combined
             and id(group) in catalogue_leading_by_group_id
         )
-        for group in ordered_groups
+        for index, group in enumerate(ordered_groups)
     ]
     nonleading_group_indices = [
         index
@@ -4770,6 +4864,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             if zone_records:
                 local_records.extend(zone_records)
                 tail_attachment_records_emitted += len(zone_records)
+        if index == native_leading_prefix_group_index:
+            local_records.extend(native_leading_records)
+            # In the accepted donor this is the sole terminal-to-native-packet
+            # separator: `C1`, `R001A`, `R001B`, `00`, then the R1 packet.
+            # It must travel with the localized prefix rather than depend on
+            # the first record of the overall mixed stream.
+            local_records.append(b"\x00")
         stream_profile = mixed_stream_profile(family)
         if index:
             raw_preceding_boundary = stream_profile.get("preceding_boundary")
@@ -4910,7 +5011,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     separator = b"" if first_local_starts_with_terminal else b"\x00"
     accepted_native_order_stream = (
         original_chunk[:1]
-        + b"".join(native_leading_records)
+        + b"".join(
+            ()
+            if native_leading_prefix_group_index is not None
+            else native_leading_records
+        )
         + separator
         + b"".join(component_stream_records)
     )
@@ -5192,7 +5297,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "accepted_native_order_stream_preserved": final_chunk.startswith(
             accepted_native_order_stream
         ),
-        "component_record_order_mutation": False,
+        "component_record_order_mutation": component_record_order_mutation,
+        "component_backend_serialization": component_backend_serialization,
         "boundary_tail_normalizations": boundary_normalizations,
         "donor_stream_boundary_overrides": donor_stream_boundary_overrides,
         "native_wire_boundary_checks": native_wire_boundary_checks,

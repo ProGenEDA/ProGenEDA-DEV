@@ -2990,6 +2990,52 @@ def test_totalmix_dense_grid_contacts_retarget_donor_evidence_without_zero_wires
     )
 
 
+def test_mixed_family_interleave_changes_visual_schedule_not_component_stream(
+    tmp_path: Path,
+) -> None:
+    """A mixed stress layout visibly samples every family in each round."""
+
+    families = {
+        "RESISTOR": 2,
+        "CAP": 2,
+        "74HC08": 2,
+        "4511": 2,
+    }
+    output = tmp_path / "mixed_interleave_no_terminal.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": families,
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        output,
+        full_cdb=True,
+    )
+
+    placements = sorted(
+        result.layout_plan["actual_binary_placements"],
+        key=lambda row: int(row["slot"]),
+    )
+    first_round = placements[: len(families)]
+
+    assert result.valid
+    assert {row["family"] for row in first_round} == set(families)
+    assert all(row["layout_band"] == "combined" for row in placements)
+    assert all(row["mixed_family_interleave"] is True for row in placements)
+    # Returned component groups retain ROOT.DSN donor order; only their visual
+    # slots are round-robin.
+    assert [group.family for group in result.selected_groups] != [
+        row["family"] for row in placements
+    ]
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:
@@ -3259,10 +3305,10 @@ def test_full_current_group_matches_user_accepted_mixed_tail_oracle(
     assert not output_chunk.endswith(b"\xff\xff")
 
 
-def test_totalmix_profile_preserves_component_order_and_trims_inline_packets(
+def test_totalmix_profile_serializes_semantic_family_phases_and_trims_inline_packets(
     tmp_path: Path,
 ) -> None:
-    """The combined profile adds zones without donor-order packet sorting."""
+    """The combined profile uses its documented backend family phases."""
 
     native_families = ("RESISTOR", "CAP")
     catalogue_families = (
@@ -3271,6 +3317,14 @@ def test_totalmix_profile_preserves_component_order_and_trims_inline_packets(
         "74HC76",
         "7490",
         "74HC08",
+        "74HC32",
+        "74HC86",
+        "74HC266",
+        "74HC02",
+        "74HC00",
+        "74HC04",
+        "4511",
+        "74HC151",
         "4027",
     )
     base = tmp_path / "totalmix_profile_base.pdsprj"
@@ -3325,14 +3379,56 @@ def test_totalmix_profile_preserves_component_order_and_trims_inline_packets(
     )
 
     assert result.valid
-    assert report["component_record_order_mutation"] is False
+    assert report["component_record_order_mutation"] is True
+    assert report["component_backend_serialization"]["policy"] == (
+        "totalmix_profile_family_phases"
+    )
+    assert report["component_backend_serialization"]["family_order"][:2] == [
+        "RESISTOR",
+        "CAP",
+    ]
     assert report["terminal_suffix_links_valid"] is True
     assert report["object_stream_finalizer"] == "single_ff"
     assert output_chunk.count(b"$TERBIDIR") == report["terminal_count_added"]
     assert output_chunk.count(b"\x7fWIRE") == report["wire_count_added"]
+    profile_families = set(
+        report["component_backend_serialization"]["family_order"]
+    )
     assert [(group.key, group.family) for group in output_groups] == [
-        (group.key, group.family) for group in base_groups
+        *[
+            (group.key, group.family)
+            for family in report["component_backend_serialization"]["family_order"]
+            for group in base_groups
+            if group.family == family
+        ],
+        *[
+            (group.key, group.family)
+            for group in base_groups
+            if group.family not in profile_families
+        ],
     ]
+    # The totalmix donor proves that the R/C leading prefix cannot stay at the
+    # global stream head when the placed R1 packet follows catalogue packets.
+    # It must be contiguous with R1: CAP right terminal, both R terminals,
+    # donor-proven 00 separator, then R1. The profile emits the full semantic
+    # packet phase order while preserving every placed packet's identity and
+    # coordinate, preventing native bodies from disappearing behind unrelated
+    # terminal blocks in a true IC + non-IC mix.
+    output_r1_start = output_chunk.find(b"\xff\x02R1")
+    assert output_r1_start >= 0
+    terminals_before_r1 = [
+        row
+        for row in terminal_placer._bidir_label_records(output_chunk)
+        if row["start"] < output_r1_start
+    ][-3:]
+    assert [row["label"] for row in terminals_before_r1] == [
+        "C1",
+        "R001A",
+        "R001B",
+    ]
+    r1_terminal_end = int(terminals_before_r1[-1]["start"]) + 101 + len("R001B")
+    assert output_r1_start == r1_terminal_end + 1
+    assert output_chunk[r1_terminal_end] == 0x00
     base_7490 = next(group for group in base_groups if group.family == "7490")
     output_7490_start = output_chunk.find(b"\xff\x02U5")
     assert output_7490_start >= 0
@@ -3343,11 +3439,150 @@ def test_totalmix_profile_preserves_component_order_and_trims_inline_packets(
     )
     assert output_7490_first_wire - output_7490_start == len(base_7490.data) - 1
     zones = {row["zone"]: row for row in report["tail_attachment_zones"]}
-    assert set(zones) == {"current_control_bjt_tail", "logic_tail"}
+    assert set(zones) == {
+        "current_control_bjt_tail",
+        "logic_quad_gate_tail",
+        "logic_inverter_tail",
+        "logic_mux_tail",
+    }
     assert all(
-        row["placement"] == "after_last_source_component"
-        and row["insertion_index"] == max(row["source_component_indexes"]) + 1
+        row["placement"] == "donor_boundary"
+        and row["preferred_insertion_index"] == row["insertion_index"]
+        and max(row["source_component_indexes"]) < row["insertion_index"]
         for row in zones.values()
+    )
+    # The authoritative user-saved all-49 donor puts 4511's active terminal
+    # block directly before U9 with 0200 links.  Delaying it into the mux tail
+    # begins the post-4511 stream loss; only 74HC151 remains in that tail.
+    output_stream_groups = {
+        group.key: group
+        for families in _raw_groups_from_chunk(
+            output_chunk,
+            _generation_markers(),
+        ).values()
+        for group in families
+    }
+    terminals = terminal_placer._bidir_label_records(output_chunk)
+
+    def first_terminal_start(prefix: str) -> int:
+        return min(
+            int(row["start"])
+            for row in terminals
+            if str(row["label"]).startswith(prefix)
+        )
+
+    assert (
+        output_stream_groups["U476"].start
+        < first_terminal_start("U66")
+        < output_stream_groups["U202"].start
+    )
+    assert (
+        output_stream_groups["U202"].start
+        < first_terminal_start("U202")
+        < first_terminal_start("U9")
+        < output_stream_groups["U9"].start
+    )
+    assert (
+        output_stream_groups["U9"].start
+        < output_stream_groups["U49"].start
+        < first_terminal_start("U49")
+        < output_stream_groups["U13"].start
+    )
+    u9_report = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") == "4511"
+    )
+    assert {row["component_link_trailer"] for row in u9_report["terminal_pins"]} == {
+        "0200"
+    }
+
+
+def test_totalmix_all_49_keeps_every_component_after_4511_inline_repair(
+    tmp_path: Path,
+) -> None:
+    """The full user mix must retain every placed group beyond the 4511 boundary."""
+
+    request_path = (
+        ROOT
+        / "experiments"
+        / "totalmix_cdb_isolation_v1_temp_2026_07_15"
+        / "fresh_regeneration_01"
+        / "input_reused_for_fresh_regeneration.json"
+    )
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+    request["donor"] = str(_repo_path(NEW_COMPONENT_MEGA_DONOR))
+    request["layout"] = {
+        "strategy": "beautify",
+        "binary_coordinate_mutation": True,
+    }
+    base = tmp_path / "totalmix_all_49_base.pdsprj"
+    output = tmp_path / "totalmix_all_49_terminalized.pdsprj"
+    result = generate_component_placement_project(request, base, full_cdb=True)
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=tuple(request["native_terminal_families"]),
+        catalogue_terminal_families=tuple(request["catalogue_terminal_families"]),
+        use_donor_terminal_labels=False,
+        stream_mode="totalmix_combined_v1",
+    )
+    base_chunk = _extract_object_chunk(read_internal_file(base, "ROOT.DSN"))
+    output_chunk = _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+    output_component_chunk = terminal_placer._component_only_chunk_from_terminalized_chunk(
+        output_chunk
+    )
+    base_groups = _raw_groups_from_chunk(base_chunk, _generation_markers())
+    output_groups = _raw_groups_from_chunk(
+        output_component_chunk,
+        _generation_markers(),
+    )
+    output_stream_groups = {
+        group.key: group
+        for groups in _raw_groups_from_chunk(
+            output_chunk,
+            _generation_markers(),
+        ).values()
+        for group in groups
+    }
+    base_counts = Counter(
+        group.family for groups in base_groups.values() for group in groups
+    )
+    output_counts = Counter(
+        group.family for groups in output_groups.values() for group in groups
+    )
+    u9_report = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_key") == "U9"
+    )
+    u9_terminals = [
+        row
+        for row in terminal_placer._bidir_label_records(output_chunk)
+        if str(row["label"]).startswith("U9")
+    ]
+
+    assert result.valid
+    assert report["valid"] is True
+    assert len(result.selected_groups) == 49
+    assert sum(output_counts.values()) == 49
+    assert output_counts == base_counts
+    assert report["terminal_count_added"] == 318
+    assert report["wire_count_added"] == 318
+    assert len(u9_report["terminal_pins"]) == 14
+    assert {
+        row["component_link_trailer"] for row in u9_report["terminal_pins"]
+    } == {"0200"}
+    assert len(u9_terminals) == 14
+    assert max(
+        int(row["start"]) + 101 + int(row["label_length"])
+        for row in u9_terminals
+    ) < output_stream_groups["U9"].start
+    assert (
+        output_stream_groups["U9"].start
+        < output_stream_groups["U49"].start
+        < output_stream_groups["U13"].start
     )
 
 

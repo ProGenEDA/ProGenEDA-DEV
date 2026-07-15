@@ -1446,6 +1446,81 @@ def _binary_layout_compact_family_flow(payload: Any) -> bool:
     return _payload_bool(_raw_layout_payload(payload).get("compact_family_flow"))
 
 
+def _binary_layout_mixed_family_interleave(payload: Any) -> bool:
+    """Return whether visual layout must round-robin the requested families.
+
+    This is deliberately a *layout* policy, not a ROOT.DSN stream-order
+    policy. The component stream must retain its donor-derived ordering for
+    finalization and terminal-link attachment, while a stress-test schematic
+    needs every visible round to contain a real mixture of requested families.
+    """
+
+    return _payload_bool(
+        _raw_layout_payload(payload).get("mixed_family_interleave")
+    )
+
+
+def _interleave_groups_by_requested_family(
+    payload: Any,
+    groups: tuple[RawComponentGroup, ...],
+) -> tuple[RawComponentGroup, ...]:
+    """Return a round-robin visual schedule without changing stream ordering.
+
+    The requested-family order is the stable user-facing order. Each visual
+    round gets one available packet from every family before a second packet
+    from any family is laid out. Any infrastructure group not represented in
+    the request remains appended in its original relative order.
+    """
+
+    if not groups:
+        return groups
+    groups_by_family: dict[str, list[RawComponentGroup]] = defaultdict(list)
+    for group in groups:
+        groups_by_family[group.family].append(group)
+    # Keep the placed-design's family order within each class, then alternate
+    # non-IC and IC families. The first visual shelf therefore looks like a
+    # real mixed circuit (for example RESISTOR, 7447, CAP, 7490) instead of a
+    # lexically grouped diode or IC-only run. This changes visual slots only;
+    # the returned component stream remains in its original order below.
+    stream_family_order = tuple(dict.fromkeys(group.family for group in groups))
+    non_ic_families = [
+        family
+        for family in stream_family_order
+        if not is_ic_layout_family(family)
+    ]
+    ic_families = [
+        family
+        for family in stream_family_order
+        if is_ic_layout_family(family)
+    ]
+    family_order: list[str] = []
+    for index in range(max(len(non_ic_families), len(ic_families))):
+        if index < len(non_ic_families):
+            family_order.append(non_ic_families[index])
+        if index < len(ic_families):
+            family_order.append(ic_families[index])
+    emitted: list[RawComponentGroup] = []
+    family_index = {family: 0 for family in family_order}
+    while True:
+        added = False
+        for family in family_order:
+            index = family_index[family]
+            candidates = groups_by_family[family]
+            if index >= len(candidates):
+                continue
+            emitted.append(candidates[index])
+            family_index[family] = index + 1
+            added = True
+        if not added:
+            break
+    if len(emitted) != len(groups) or len({id(group) for group in emitted}) != len(groups):
+        raise ValueError(
+            "Mixed-family visual interleave did not preserve every selected "
+            "group exactly once."
+        )
+    return tuple(emitted)
+
+
 def _apply_binary_beautifier(
     payload: Any,
     groups: tuple[RawComponentGroup, ...],
@@ -1461,16 +1536,32 @@ def _apply_binary_beautifier(
     hidden_ids = {id(group) for group in hidden_groups}
     shelf_width = _binary_layout_shelf_width(payload)
     compact_family_flow = _binary_layout_compact_family_flow(payload)
+    mixed_family_interleave = _binary_layout_mixed_family_interleave(payload)
+    if mixed_family_interleave and not compact_family_flow:
+        raise ValueError(
+            "layout.mixed_family_interleave requires "
+            "layout.compact_family_flow so different requested families "
+            "remain on the same visual shelf."
+        )
     visible_groups = tuple(group for group in groups if id(group) not in hidden_ids)
-    ic_groups = tuple(group for group in visible_groups if is_ic_layout_family(group.family))
-    non_ic_groups = tuple(
-        group for group in visible_groups if not is_ic_layout_family(group.family)
+    visual_groups = (
+        _interleave_groups_by_requested_family(payload, visible_groups)
+        if mixed_family_interleave
+        else visible_groups
     )
-    use_separate_bands = bool(ic_groups and non_ic_groups)
+    ic_groups = tuple(
+        group for group in visual_groups if is_ic_layout_family(group.family)
+    )
+    non_ic_groups = tuple(
+        group for group in visual_groups if not is_ic_layout_family(group.family)
+    )
+    use_separate_bands = bool(
+        ic_groups and non_ic_groups and not mixed_family_interleave
+    )
     bands = (
         (("ic", ic_groups), ("non_ic", non_ic_groups))
         if use_separate_bands
-        else (("combined", visible_groups),)
+        else (("combined", visual_groups),)
     )
 
     translated_by_id: dict[int, RawComponentGroup] = {}
@@ -1609,6 +1700,7 @@ def _apply_binary_beautifier(
                 family_changed and not compact_family_flow
             )
             entry["compact_family_flow"] = compact_family_flow
+            entry["mixed_family_interleave"] = mixed_family_interleave
             entry["layout_shelf_width"] = shelf_width
             entry["terminal_grid_alignment"] = terminal_grid_alignment
             if not known_refs_unchanged:

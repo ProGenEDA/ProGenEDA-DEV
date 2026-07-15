@@ -35,6 +35,57 @@
         "CAP",
         "RESISTOR"
       ],
+      "backend_component_family_order": [
+        "RESISTOR",
+        "CAP",
+        "PNP",
+        "DIODE",
+        "VSINE",
+        "VSOURCE",
+        "CSOURCE",
+        "VPULSE",
+        "POT-HG",
+        "LED-RED",
+        "NMOSFET",
+        "OPAMP",
+        "LM317T",
+        "2N3904",
+        "2N4401",
+        "2N7000",
+        "BS170",
+        "1N4733A",
+        "SWITCH",
+        "40EPS08",
+        "BZY88C",
+        "1N4007",
+        "1N4148",
+        "1N6000B",
+        "BZX55C5V1",
+        "BZX79C5V1",
+        "FUSE",
+        "REALIND",
+        "CAP-ELEC",
+        "NPN",
+        "74HC76",
+        "7490",
+        "7447",
+        "74HC283",
+        "74HC192",
+        "74HC174",
+        "74HC160",
+        "74HC157",
+        "74HC85",
+        "74HC08",
+        "74HC32",
+        "74HC86",
+        "74HC266",
+        "74HC02",
+        "74HC00",
+        "74HC04",
+        "4511",
+        "74HC151",
+        "4027"
+      ],
       "native_active_link_trailer": "0200",
       "inline_attachment_orders": [
         "terminal_leading_component_then_wires",
@@ -69,16 +120,33 @@
           "fallback": "after_last_source_component"
         },
         {
-          "name": "logic_tail",
+          "name": "logic_quad_gate_tail",
           "families": [
             "74HC08",
             "74HC32",
             "74HC86",
             "74HC266",
             "74HC02",
-            "74HC00",
-            "74HC04",
-            "4511",
+            "74HC00"
+          ],
+          "insert_before_first_of": [
+            "74HC04"
+          ],
+          "fallback": "after_last_source_component"
+        },
+        {
+          "name": "logic_inverter_tail",
+          "families": [
+            "74HC04"
+          ],
+          "insert_before_first_of": [
+            "4511"
+          ],
+          "fallback": "after_last_source_component"
+        },
+        {
+          "name": "logic_mux_tail",
+          "families": [
             "74HC151"
           ],
           "insert_before_first_of": [
@@ -107,7 +175,7 @@
         "74HC85": "0200",
         "74HC86": "0300",
         "4027": "0300",
-        "4511": "0300",
+        "4511": "0200",
         "7447": "0200",
         "7490": "0200",
         "BS170": "0200",
@@ -2050,7 +2118,24 @@
             "4",
             "5"
           ],
+          "donor_terminal_record_order": [
+            "13",
+            "12",
+            "11",
+            "10",
+            "9",
+            "15",
+            "14",
+            "7",
+            "1",
+            "2",
+            "6",
+            "3",
+            "4",
+            "5"
+          ],
           "donor_terminalized_project": "proteus_ic/donors/terminalized_catalogue_evidence/dil16_decoder_driver/4511/4511_user_terminalized_july04.pdsprj",
+          "mixed_attachment_order": "terminal_leading_component_then_wires",
           "object_stream_finalizer": "append_explicit_single_ff",
           "preserve_root_cdb": true,
           "status": "one_x_9x_15x_local_loader_passed_pending_user_visual_validation",
