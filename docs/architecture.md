@@ -2571,3 +2571,27 @@ grid, and complete 1x diagnostics as well as 9x and 15x final outputs
 normal-opened and cold-reopened locally without a modal error or mutation.
 Final routes have grid-aligned terminal contacts and nonzero short WIREs to
 their untouched exact pins.
+
+### 2026-07-15 display and pending-solo reconciliation
+
+The common-anode and common-cathode seven-segment profiles are now emitted by
+the existing shared terminal placer, not a display-specific script.  Both use
+the locked component mega, grid-aligned terminal contacts, donor-shaped
+nonzero terminal-to-pin WIREs, and final-address-rebased active links.  The
+cathode route keeps its required finalized anode sentinel as hidden stream
+infrastructure; it is never exposed as a requested component or terminalized.
+Both complete 1x routes passed normal and cold Proteus opens without a modal
+error or save mutation.
+
+The fast 1x reconciliation also proved that `IRDIODE` is not a separate
+component packet in the locked mega: it is the `SPICELIB` token inside native
+`40EPS08` packets.  It is therefore an input alias to `40EPS08`, retaining
+one real device route rather than inventing a duplicate component.  The full
+pending-solo result table is in
+`experiments/terminal_pending_fast_solo_v1_temp_2026_07_15/RESULTS.md`.
+
+The old `74HC00` 8x and `74HC02` 12x notes must not be described as layout
+limits.  The former is currently constrained by a safe-packet offset that
+skips previously rejected donor packages; the latter by a finalizer/tail
+selection rule.  Both are separate donor-packet research items, not evidence
+that a third placement row is required.

@@ -14637,3 +14637,75 @@ The records confirm the old 8×/12× labels came from a fixed packet-offset/plac
 ## Agent Visible Response - 2026-07-15 05:32 +05:00
 
 Yes. You are remembering the correct direction. The fastest route is evidence reconciliation first, then only the truly unproved families. The old `74HC00` 8× and `74HC02` 12× labels are not accepted limits: recover the accepted coordinate-continuation arrangement for the next package blocks, preserve the same two-line layout, regenerate 9×/15× through the shared placer, and only record a limit if the corrected layout still fails. Existing donor/loader evidence means `74HC04`, `74HC08`, `74HC32`, `74HC86`, `74HC266`, and the BJT aliases should be reconciled and re-gated rather than designed again. Then finish direct donor-backed three-pin controls, four-pin symbols, and both display profiles; leave IRDIODE last as the only candidate that may require new explicit byte evidence. Files edited: context.md.
+
+## User Message - 2026-07-15 06:35 +05:00
+
+donot take just my word for it / see is that is actually true / and the way to fast track this is / generate all these components solo rn, thenopen them mark which worked, n which didnt ull simply fix them / cut down on extra stuff and be quick
+
+## Agent Visible Responses - 2026-07-15 06:35 +05:00
+
+I’ll verify the 74HC00/74HC02 claim against the actual generated projects first, then run a fast 1× solo gate for every still-unfinalized family through the existing shared placer. I’ll mark each from real Proteus opens, not the catalogue text.
+
+I found the old 8×/12× outputs, but no recorded 15× coordinate-continuation candidate. I’ll let fresh output decide: first generate every pending 1× solo plus no-terminal control, and separately generate fresh 15× HC00/HC02 probes without changing terminal code.
+
+The fast matrix is generated from the locked mega and shared placer: 13 clean static candidates, plus BRIDGE and TRAN-2P2S as structural warnings; both displays and IRDIODE stopped before unsafe emission. I’m starting real Proteus opens on every generated terminal file now.
+
+First real-open batch is clean: BRIDGE, NPN, and PNP all reached normal Proteus schematic windows with no modal error. I’m continuing the same gate on the next solo batch; I’ll only investigate families that actually fail.
+
+Second batch is also clean: 2N3904, 2N4401, and TRAN-2P2S open normally with no dialog. I’m moving to the regulator/control symbols next.
+
+LM317T, OPAMP, and POT-HG also open cleanly. The shared placer is holding across the previously troublesome control-symbol group; I’m now testing SWITCH and the first DIL14 packages.
+
+SWITCH, 74HC04, and 74HC08 are clean as well. One final DIL14 batch remains; then I’ll have a real pass/fail list instead of assumptions.
+
+All 15 emitted candidates reached normal Proteus schematic windows with no Bad Object Record, LXLCORE, fatal, or library dialog. I’m running their cold reopens next, and in parallel I’ll test the HC00/HC02 15× coordinate claim rather than preserve the old 8×/12× note.
+
+Cold reopens are clean for BRIDGE, NPN, and PNP too. That confirms the first structural-warning file is loader-safe; I’m continuing the remaining reopens without altering the placer.
+
+The transistor and control-symbol cold reopens are all clean. No file has failed the real loader gate so far; only the two display profiles and IRDIODE remain un-emitted, not failed opens.
+
+Fact check result: 74HC00 has 16 clean complete packages in the locked mega; 15× placement succeeds when the old offset is removed, but the terminal profile itself still hard-caps at 8. For 74HC02, the placer currently exposes only 12 finalizable packages because four package tails are filtered—not because of a layout row. I’m treating both as code/profile constraints to repair, not physical limits.
+
+Result so far: every generated pending 1× solo passed normal and cold Proteus opens. The only remaining solo blockers are both 7-segment routes; `IRDIODE` is not physically present in the locked mega, so it must be removed from the supported inventory rather than faked. I’m repairing the display path next from its accepted donors.
+
+The display donors explain the two remaining failures: the anode route is blocked by an overly strict stream-shape guard, while cathode’s common pin genuinely crosses the following display/sentinel boundary. I’m checking the locked mega’s actual display rows now before changing anything—so the repair is evidence-based, not a guess.
+
+I have enough donor evidence to make a small additive repair: preserve the mega’s real anode sentinel for cathode displays, and allow display packets’ legitimate `00 08 FF…` stream shape through the existing trailing attachment route. I’m backing up the shared placer and recording that analysis before touching it.
+
+The catalogue now carries the donors’ actual display anchors, attachment order, grid contacts, wire topology, and CDB-preservation rule. I’m running focused validation before generating the staged 1× projects; the only touched behavior is the two display profiles plus their hidden sentinel.
+
+The staged anode route now generates cleanly with all eight terminal/WIRE links and grid contacts. Cathode exposed one precise remaining defect: an old branch wrongly combines its hidden sentinel into the cathode packet before patching, shifting the pin-link slot. I’m removing only that stale combine step, then rerunning both displays.
+
+The display streams now generate through all three diagnostic stages; I hit a PowerShell variable-name collision in the local gate before it could classify the first open. I’ve corrected the gate harness and am rerunning it—no project was saved or promoted from that aborted launch.
+
+The corrected gate is running the anode’s three real Proteus opens with the required stability delay and pre-close screenshots. Once those finish, I’ll use the same copied-file gate on cathode, then cold-reopen the complete stages.
+
+Both display screenshots now show the expected geometry: eight terminals, grid-aligned left segment contacts, and the right/common terminal with a donor-shaped short wire. Their three stage opens have no dialogs; I’m doing the final complete-project cold reopens now.
+
+The final cold-open/reopen gate is still running on disposable copies only. Nothing is being Ctrl+S-saved because no Bad Object Record has appeared; the original generated projects remain untouched.
+
+I verified the claim from the actual locked mega, rather than relying on the earlier note. I’m finishing the fast real-open matrix now: the pending 1× solos have been generated through the shared placer and are being classified from Proteus opens; I’ll only repair the components that demonstrably fail.
+
+The factual result is narrower than the old note: 74HC00 can place 15 real packages from the locked mega with its old offset removed, so its 8× cap is stale policy—not a “third-line” physical limit. 74HC02 currently stops at 12 because four candidate packets are filtered by their finalizer/tail, not because of layout; I’ll leave that as a separate packet-selection repair rather than guessing coordinates.
+
+I found and isolated the only actual 1× placement failure: `IRDIODE` is not a separate Proteus packet in the locked mega. It is the `SPICELIB=IRDIODE` field inside each real `40EPS08` device packet. I’m correcting it as an evidence-backed alias to `40EPS08`, then will open its generated solo like the rest.
+
+The alias route now emits a real `40EPS08` packet with two shared terminal/WIRE attachments, not a copied donor. I’m doing the same delayed Proteus open and cold-reopen gate on it now; this closes the only failed item in the fast 1× matrix if it loads.
+
+The fast 1× pass/fail matrix is now closed: all 18 pending cases load through Proteus after the display repair and the IRDIODE→40EPS08 correction. I’m recording the exact result table and the correction to the old 8×/12× claim, then I’ll checkpoint it.
+
+## User Message - 2026-07-15 06:35 +05:00
+
+after solos are done dont stop start mixed
+
+## Agent Visible Response - 2026-07-15 06:35 +05:00
+
+Understood. The 1× solo matrix is closed, so I’m not stopping here: after I checkpoint the verified solo fixes, I’ll generate the first all-accepted-family 1× mixed circuit through the same locked placer and shared terminal placer, then open it and repair only any component that demonstrably fails.
+
+## User Message - 2026-07-15 06:35 +05:00
+
+continue
+
+## Agent Visible Response - 2026-07-15 06:35 +05:00
+
+Continuing. The solo checkpoint is complete; I’m moving straight into the first 1× mixed build after saving the verified result log, using only the locked mega and the shared terminal placer.

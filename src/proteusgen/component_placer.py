@@ -243,6 +243,10 @@ COMPONENT_PLACER_EXTRA_ALIASES = {
     "BZX79C5": "BZX79C5V1",
     "BZX79C5V1": "BZX79C5V1",
     "BZX88C": "BZY88C",
+    # The locked mega has no standalone IRDIODE component packet.  Its 160
+    # real 40EPS08 packets carry `{SPICELIB=IRDIODE}`, so preserve prompt
+    # compatibility by resolving the model name to the actual native device.
+    "IRDIODE": "40EPS08",
     "1N60": "1N6000B",
     "NMOS": "NMOSFET",
     "LM317": "LM317T",
@@ -993,15 +997,21 @@ def _display_rows_for_request(records: dict[str, list[bytes]], request: dict[str
             )
         )
 
+    cathode_sentinel_row = final_anode or (anode_rows[0] if anode_rows else None)
+    if cathode_count and cathode_sentinel_row is None:
+        raise ValueError(
+            "Common-cathode display placement requires one locked-mega common-anode "
+            "sentinel row."
+        )
+
     if cathode_count:
         cathode_selection = cathode_rows[:cathode_count]
         for index, row in enumerate(cathode_selection, start=1):
-            is_last_without_anode_finalizer = not anode_count and final_anode is None and index == len(cathode_selection)
             append_row(
                 key=f"DISPLAY_CC_{index:03d}",
                 family="7SEG-COM-CAT-BLUE",
                 ref=f"CC{index}",
-                row=_display_row_as_final(row) if is_last_without_anode_finalizer else _display_row_as_middle(row),
+                row=_display_row_as_middle(row),
             )
         notes.append("common-cathode displays use individually placeable mega cathode middle rows")
 
@@ -1024,20 +1034,20 @@ def _display_rows_for_request(records: dict[str, list[bytes]], request: dict[str
                 "common-anode displays use locked-donor rows with the last selected row finalized in-place"
             )
     elif cathode_count:
-        if final_anode:
-            append_row(
-                key="DISPLAY_ANODE_SENTINEL",
-                family="7SEG-COM-AN-BLUE",
-                ref="ANODE_SENTINEL",
-                row=final_anode,
-            )
-            notes.append(
-                "common-cathode-only displays retain the true donor-final red-anode sentinel as hidden infrastructure"
-            )
-        else:
-            notes.append(
-                "common-cathode-only displays finalize the last selected locked-donor cathode row"
-            )
+        # The accepted cathode terminal donor keeps a finalized anode display
+        # row after the visible cathode packet.  The raw locked mega has no
+        # pre-finalized anode rows, so use the same established display-row
+        # finalizer as normal anode placement.  This is hidden stream
+        # infrastructure, not a user component and never terminalized.
+        append_row(
+            key="DISPLAY_ANODE_SENTINEL",
+            family="7SEG-COM-AN-BLUE",
+            ref="ANODE_SENTINEL",
+            row=_display_row_as_final(cathode_sentinel_row),
+        )
+        notes.append(
+            "common-cathode-only displays retain a finalized locked-mega red-anode sentinel as hidden infrastructure"
+        )
 
     if not selected:
         return (), ()

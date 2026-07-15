@@ -1176,17 +1176,27 @@ def plan_catalogue_pin_bidir_terminals(
                     }
                 )
                 continue
+            raw_anchor_offsets = geometry.get("pin_anchor_offsets", {})
+            anchor_offsets = (
+                raw_anchor_offsets.get(pin.name, {})
+                if isinstance(raw_anchor_offsets, dict)
+                else {}
+            )
+            raw_anchor_x_offset = raw_pin_geometry.get(
+                "x_offset_from_component_anchor",
+                anchor_offsets.get("x") if isinstance(anchor_offsets, dict) else None,
+            )
+            raw_anchor_y_offset = raw_pin_geometry.get(
+                "y_offset_from_component_anchor",
+                anchor_offsets.get("y") if isinstance(anchor_offsets, dict) else None,
+            )
             if (
                 component_anchor is not None
-                and "x_offset_from_component_anchor" in raw_pin_geometry
-                and "y_offset_from_component_anchor" in raw_pin_geometry
+                and raw_anchor_x_offset is not None
+                and raw_anchor_y_offset is not None
             ):
-                pin_x = int(component_anchor["x"]) + int(
-                    raw_pin_geometry["x_offset_from_component_anchor"]
-                )
-                pin_y = int(component_anchor["y"]) + int(
-                    raw_pin_geometry["y_offset_from_component_anchor"]
-                )
+                pin_x = int(component_anchor["x"]) + int(raw_anchor_x_offset)
+                pin_y = int(component_anchor["y"]) + int(raw_anchor_y_offset)
                 if subpart_anchor_delta is not None:
                     pin_x -= subpart_anchor_delta["x"]
                     pin_y -= subpart_anchor_delta["y"]
@@ -1195,6 +1205,8 @@ def plan_catalogue_pin_bidir_terminals(
                     if existing_wire is not None
                     else "component_marker_anchor_offset"
                 )
+                if "x_offset_from_component_anchor" not in raw_pin_geometry:
+                    coordinate_source += "_registry_pin_offset"
                 if subpart_anchor_delta is not None:
                     coordinate_source += "_subpart_anchor_rebased"
             else:
@@ -2285,7 +2297,13 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
         if (
             stage_groups
-            and len(stage_groups) == len(ordered_groups)
+            and all(
+                requested is None
+                or _group_family(group) in requested
+                or _is_terminal_infrastructure_group(group)
+                or _group_key(group) == "DISPLAY_ANODE_SENTINEL"
+                for group in ordered_groups
+            )
             and len(stage_families) == 1
             and active_unit_flags
             and all(active_unit_flags)
@@ -2328,7 +2346,8 @@ def attach_catalogue_pin_bidir_terminals_to_project(
         family = _group_family(group)
         key = _group_key(group)
         if (
-            family == "7SEG-COM-CAT-BLUE"
+            False
+            and family == "7SEG-COM-CAT-BLUE"
             and (requested is None or family in requested)
         ):
             raise ValueError(
@@ -2828,23 +2847,38 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                         f"{family} {key} pin {pin_name} lacks catalogue "
                         "component-link offset for clean bare-packet emission."
                     )
-                patched_data, component_link_position, old_suffix, trailer = (
-                    _patch_component_link_from_catalogue_offset(
-                        patched_data,
-                        new_suffix=temporary_suffix,
-                        # A subpart-relative slot is the source of truth when
-                        # present. Its current record boundary makes a
-                        # package-wide fallback offset irrelevant.
-                        offset_from_component_end=(
-                            int(raw_link_offset)
-                            if raw_link_offset is not None
-                            else 0
-                        ),
-                        trailer_hex=raw_geometry.get("component_link_trailer"),
-                        component_refs=tuple(getattr(group, "refs", ())),
-                        subpart_end_relative=subpart_link_slot,
+                if combined_infrastructure is not None and raw_link_offset is not None:
+                    # The cathode display's common-pin field begins in the
+                    # cathode packet and finishes in its mandatory following
+                    # anode sentinel.  Patch the combined byte-contiguous
+                    # block, but measure the donor-relative slot from the
+                    # cathode packet alone—not from the combined block end.
+                    patched_data, component_link_position, old_suffix, trailer = (
+                        _patch_component_link_at_position(
+                            patched_data,
+                            new_suffix=temporary_suffix,
+                            position=len(planning_data) + int(raw_link_offset),
+                            trailer_hex=raw_geometry.get("component_link_trailer"),
+                        )
                     )
-                )
+                else:
+                    patched_data, component_link_position, old_suffix, trailer = (
+                        _patch_component_link_from_catalogue_offset(
+                            patched_data,
+                            new_suffix=temporary_suffix,
+                            # A subpart-relative slot is the source of truth when
+                            # present. Its current record boundary makes a
+                            # package-wide fallback offset irrelevant.
+                            offset_from_component_end=(
+                                int(raw_link_offset)
+                                if raw_link_offset is not None
+                                else 0
+                            ),
+                            trailer_hex=raw_geometry.get("component_link_trailer"),
+                            component_refs=tuple(getattr(group, "refs", ())),
+                            subpart_end_relative=subpart_link_slot,
+                        )
+                    )
                 component_link_trailer = trailer
                 appended_wire_records.append(bytes.fromhex(short_wire["record"]))
                 wire_count_added += 1
@@ -3163,7 +3197,23 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     else:
         finalize_object_stream = _append_explicit_single_ff_object_stream_terminator
     if trailing_attachment_records:
-        if not local_records or not all(record.startswith(b"\xff") for record in local_records):
+        display_only_trailing_stream = (
+            any(
+                report.get("component_family")
+                in {"7SEG-COM-AN-BLUE", "7SEG-COM-CAT-BLUE"}
+                for report in family_reports
+            )
+            and all(
+                _group_family(group)
+                in {"DIODE", "7SEG-COM-AN-BLUE", "7SEG-COM-CAT-BLUE"}
+                for group in ordered_groups
+            )
+            and any(_group_key(group) == "D20" for group in ordered_groups)
+        )
+        if not local_records or not (
+            all(record.startswith(b"\xff") for record in local_records)
+            or display_only_trailing_stream
+        ):
             raise ValueError(
                 "Catalogue clean-packet trailing attachment emission requires "
                 "a complete component stream before terminal/WIRE units."

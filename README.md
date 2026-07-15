@@ -84,7 +84,7 @@ The active mega-donor placer supports bare placement of:
 **Passives and discrete devices**
 
 `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `DIODE`, `1N4007`, `1N4148`,
-`1N4733A`, `1N6000B`, `IRDIODE`, `40EPS08`, `BZX55C5V1`, `BZX79C5V1`,
+`1N4733A`, `1N6000B`, `40EPS08` (`IRDIODE` prompt alias), `BZX55C5V1`, `BZX79C5V1`,
 `BZY88C`, `LED-RED`, `BRIDGE`, `FUSE`, `NPN`, `PNP`, `2N3904`, `2N4401`,
 `NMOSFET`, `2N7000`, `BS170`, and `TRAN-2P2S`.
 
