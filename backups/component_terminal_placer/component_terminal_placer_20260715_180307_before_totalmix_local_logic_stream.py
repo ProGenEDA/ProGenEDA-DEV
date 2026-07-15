@@ -810,75 +810,6 @@ def _retarget_catalogue_wire_coordinates(
     return flattened, target_terminal_contact
 
 
-def _apply_mixed_tail_ctrl_s_wire_policy(
-    coordinates: Iterable[int],
-    *,
-    policy: str,
-    terminal_contact: tuple[int, int],
-    target_pin: tuple[int, int],
-    pin_contact_required: bool,
-    family: str,
-    key: str,
-    pin_name: str,
-) -> tuple[int, ...]:
-    """Apply the narrow Ctrl+S normalization proven for a mixed tail pin.
-
-    A user-saved all-family I15 control proved that Proteus preserves the
-    donor polyline topology, but normalizes a small set of mixed-only paths.
-    This belongs to the existing profile-driven mixed-tail branch, never to
-    the frozen standalone terminal routes. Normally both the terminal contact
-    and exact component pin remain represented in the path. The user-saved I15
-    control has two explicit exceptions: the direct Drain paths of 2N7000 and
-    BS170 contain two terminal-contact coordinates and rely on their active
-    component-pin link rather than a coordinate at the pin.
-    """
-
-    points = list(_wire_coordinate_points(coordinates))
-    normalized_policy = str(policy or "preserve")
-    if normalized_policy == "preserve":
-        pass
-    elif normalized_policy == "first_point_terminal_contact":
-        points[0] = (int(terminal_contact[0]), int(terminal_contact[1]))
-        if pin_contact_required and (int(target_pin[0]), int(target_pin[1])) not in points:
-            # On the I15 compact layout the donor's next vertex already equals
-            # the exact pin. A taller placed layout can move that bend onto the
-            # terminal y-coordinate instead. Retain the same three-point
-            # topology, but restore the closest *interior* vertex to the exact
-            # pin rather than letting the first-point normalization erase it.
-            if len(points) < 3:
-                raise ValueError(
-                    f"{family} {key} pin {pin_name} lacks an interior WIRE "
-                    "vertex needed to preserve its exact pin after Ctrl+S "
-                    "normalization."
-                )
-            target = (int(target_pin[0]), int(target_pin[1]))
-            interior_index = min(
-                range(1, len(points) - 1),
-                key=lambda index: (
-                    abs(points[index][0] - target[0])
-                    + abs(points[index][1] - target[1])
-                ),
-            )
-            points[interior_index] = target
-    elif normalized_policy == "reverse_points":
-        points.reverse()
-    else:
-        raise ValueError(
-            f"{family} {key} pin {pin_name} has unsupported mixed Ctrl+S "
-            f"WIRE policy {normalized_policy!r}."
-        )
-    required_points = {(int(terminal_contact[0]), int(terminal_contact[1]))}
-    if pin_contact_required:
-        required_points.add((int(target_pin[0]), int(target_pin[1])))
-    if not required_points.issubset(set(points)):
-        expected = "terminal contact and exact pin" if pin_contact_required else "terminal contact"
-        raise ValueError(
-            f"{family} {key} pin {pin_name} mixed Ctrl+S WIRE policy "
-            f"removed its required {expected}."
-        )
-    return tuple(value for point in points for value in point)
-
-
 def _wire_coordinate_points(coordinates: Iterable[int]) -> tuple[tuple[int, int], ...]:
     values = tuple(int(value) for value in coordinates)
     if len(values) < 4 or len(values) % 2 != 0:
@@ -3661,12 +3592,7 @@ def _combined_totalmix_stream_profile(catalog: Any, stream_mode: str) -> dict[st
     inline_orders = raw_profile.get("inline_attachment_orders")
     trailers = raw_profile.get("family_active_link_trailers")
     native_order = raw_profile.get("native_leading_family_order")
-    runtime_component_order = str(
-        raw_profile.get("runtime_component_order", "")
-    )
-    local_component_attachment_families = raw_profile.get(
-        "local_component_attachment_families",
-    )
+    component_family_order = raw_profile.get("backend_component_family_order")
     native_trailer = raw_profile.get("native_active_link_trailer")
     tail_zones = raw_profile.get("tail_attachment_zones")
     if not (
@@ -3679,10 +3605,12 @@ def _combined_totalmix_stream_profile(catalog: Any, stream_mode: str) -> dict[st
         and isinstance(trailers, dict)
         and isinstance(native_order, (list, tuple))
         and tuple(str(item) for item in native_order) == ("CAP", "RESISTOR")
-        and runtime_component_order == "preserve_placed_design_order"
-        and isinstance(local_component_attachment_families, (list, tuple))
-        and len(local_component_attachment_families)
-        == len({str(item) for item in local_component_attachment_families})
+        and isinstance(component_family_order, (list, tuple))
+        and len(component_family_order) == len(
+            {str(item) for item in component_family_order}
+        )
+        and tuple(str(item) for item in component_family_order)[:2]
+        == ("RESISTOR", "CAP")
         and isinstance(native_trailer, str)
         and isinstance(tail_zones, (list, tuple))
         and tail_zones
@@ -3727,15 +3655,6 @@ def _combined_totalmix_stream_profile(catalog: Any, stream_mode: str) -> dict[st
             )
         seen_tail_zone_names.add(name)
         seen_tail_families.update(normalized_families)
-    local_attachment_family_set = {
-        str(item) for item in local_component_attachment_families
-    }
-    overlap = local_attachment_family_set & seen_tail_families
-    if overlap:
-        raise ValueError(
-            "totalmix_combined_v1 local component attachments overlap tail zones "
-            f"for {sorted(overlap)}."
-        )
     native_trailer_bytes = bytes.fromhex(native_trailer)
     if native_trailer_bytes not in COMPONENT_PIN_LINK_TRAILERS:
         raise ValueError(
@@ -3924,18 +3843,6 @@ def _apply_mixed_tail_pin_evidence(
                 target_terminal_contact=terminal_contact,
                 target_pin_contact=target_pin,
             )
-            coordinates = _apply_mixed_tail_ctrl_s_wire_policy(
-                coordinates,
-                policy=str(evidence.get("post_ctrl_s_wire_policy", "preserve")),
-                terminal_contact=terminal_contact,
-                target_pin=target_pin,
-                pin_contact_required=bool(
-                    evidence.get("post_ctrl_s_pin_contact_required", True)
-                ),
-                family=family,
-                key=key,
-                pin_name=pin_name,
-            )
             terminal["label"] = str(evidence.get("terminal_label", terminal["label"]))
             row["pin"] = pin
             row["terminal"] = terminal
@@ -3949,15 +3856,6 @@ def _apply_mixed_tail_pin_evidence(
                 "pin_contact": {"x": target_pin[0], "y": target_pin[1]},
                 "coordinates": list(coordinates),
                 "record": _build_catalogue_wire_unit(coordinates).hex(),
-                # The authoritative Ctrl+S I15 donor contains two direct MOSFET
-                # Drain records whose geometry deliberately omits the pin point.
-                # Their active component-pin suffix is the attachment proof.
-                "pin_contact_proven_by_active_link": not bool(
-                    evidence.get("post_ctrl_s_pin_contact_required", True)
-                ),
-                "zero_length_wire_allowed": not bool(
-                    evidence.get("post_ctrl_s_pin_contact_required", True)
-                ),
             }
             row["coordinate_source"] = (
                 "combined_user_donor_tail_topology_retargeted_to_grid_contact"
@@ -4072,18 +3970,39 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ],
     }
     if is_totalmix_combined:
-        # The user-resaved all-49 donor disproves the former semantic family
-        # rewrite: the older reordered stream is the same rejected shape that
-        # hid post-U37 bodies.  Terminal placement is downstream of the
-        # replaceable component placer and must preserve its ordered packets.
-        # Profile facts may control only the attachment grammar around an
-        # individual packet, never a donor-like global packet schedule.
+        # The accepted all-family donor proves a semantic backend packet phase:
+        # native R/C comes first, native/control packets establish their tail
+        # zone, terminal-leading catalogue packets follow, then the remaining
+        # catalogue-tail packets. This is not a placement rewrite: each
+        # selected component packet, reference, and translated coordinate is
+        # still exactly the component placer's. The catalogue stores family
+        # semantics rather than donor slots/IDs, so a future placed-design
+        # producer remains interchangeable.
+        family_order = tuple(
+            str(item)
+            for item in combined_stream_profile[
+                "backend_component_family_order"
+            ]
+        )
+        priority_groups = [
+            group
+            for family in family_order
+            for group in source_component_order
+            if _group_family(group) == family
+        ]
+        priority_group_ids = {id(group) for group in priority_groups}
+        ordered_groups = tuple(
+            priority_groups
+            + [
+                group
+                for group in source_component_order
+                if id(group) not in priority_group_ids
+            ]
+        )
         component_backend_serialization.update(
             {
-                "policy": "preserve_placed_design_order",
-                "runtime_component_order": combined_stream_profile[
-                    "runtime_component_order"
-                ],
+                "policy": "totalmix_profile_family_phases",
+                "family_order": list(family_order),
             }
         )
     component_backend_serialization["emitted_order"] = [
@@ -4237,7 +4156,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     catalogue_attachment_records: list[bytes] = []
     catalogue_attachment_groups: list[tuple[int, int, list[bytes]]] = []
     catalogue_attachment_zone_by_group_index: dict[int, str] = {}
-    catalogue_local_attachment_by_group_id: dict[int, tuple[bytes, ...]] = {}
     catalogue_leading_by_group_id: dict[int, tuple[bytes, ...]] = {}
     catalogue_leading_finalizers: set[str] = set()
     mixed_tail_finalizer_overrides: set[str] = set()
@@ -4246,14 +4164,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     reserved_temporary_suffixes: set[int] = set()
     combined_tail_zones: dict[str, dict[str, Any]] = {}
     combined_tail_zone_by_family: dict[str, str] = {}
-    combined_local_component_attachment_families: set[str] = set()
     if is_totalmix_combined:
-        combined_local_component_attachment_families = {
-            str(item)
-            for item in combined_stream_profile[
-                "local_component_attachment_families"
-            ]
-        }
         for raw_zone in combined_stream_profile["tail_attachment_zones"]:
             zone = dict(raw_zone)
             name = str(zone["name"])
@@ -4307,13 +4218,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     else b"\x02\x00"
                 ),
                 cap_wire_order=(
-                    ("right", "left")
-                    if is_totalmix_combined
-                    else (
-                        ("left", "right")
-                        if has_terminal_leading_catalogue_zone
-                        else ("right", "left")
-                    )
+                    ("left", "right")
+                    if is_totalmix_combined or has_terminal_leading_catalogue_zone
+                    else ("right", "left")
                 ),
                 snap_terminal_contacts_to_grid=force_grid_contact_short_wires,
                 ensure_nonzero_grid_wire=force_grid_contact_short_wires,
@@ -4373,16 +4280,10 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 **(
                     {
                         "cap_wire_order": list(
-                            # The user-provided I15 Ctrl+S control swapped
-                            # only the combined-stream CAP pair. Preserve the
-                            # accepted standalone/terminal-leading routes.
-                            ("right", "left")
+                            ("left", "right")
                             if is_totalmix_combined
-                            else (
-                                ("left", "right")
-                                if has_terminal_leading_catalogue_zone
-                                else ("right", "left")
-                            )
+                            or has_terminal_leading_catalogue_zone
+                            else ("right", "left")
                         )
                     }
                     if family == "CAP"
@@ -4618,18 +4519,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                             if isinstance(short_wire.get("pin_contact"), dict)
                             else {}
                         ),
-                        **(
-                            {
-                                "pin_contact_proven_by_active_link": True,
-                                "zero_length_wire_allowed": True,
-                            }
-                            if bool(
-                                short_wire.get(
-                                    "pin_contact_proven_by_active_link", False
-                                )
-                            )
-                            else {}
-                        ),
                     },
                     "catalogue_geometry": dict(raw_geometry),
                     "component_bbox": dict(row.get("component_bbox", {})),
@@ -4658,33 +4547,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 f"{len(appended_wire_records)} short WIRE records in mixed emission."
             )
         mixed_tail_group_rank: int | None = None
-        mixed_local_component_attachment = (
-            is_totalmix_combined
-            and family in combined_local_component_attachment_families
-        )
-        if mixed_local_component_attachment:
-            if mixed_attachment_order != "component_stream_then_attachment_units":
-                raise ValueError(
-                    f"{family} {key} local combined attachment requires "
-                    "component_stream_then_attachment_units evidence."
-                )
-            if id(group) in catalogue_local_attachment_by_group_id:
-                raise ValueError(
-                    f"Duplicate local catalogue attachment target for {family} {key}."
-                )
-            catalogue_local_attachment_by_group_id[id(group)] = tuple(
-                record
-                for terminal_record, wire_record in _ordered_clean_packet_attachment_units(
-                    family=family,
-                    key=key,
-                    geometry=geometry,
-                    terminal_pins=terminal_pins,
-                    terminal_records=terminal_records,
-                    wire_records=appended_wire_records,
-                )
-                for record in (terminal_record, wire_record)
-            )
-        elif mixed_attachment_order == "terminal_leading_component_then_wires":
+        if mixed_attachment_order == "terminal_leading_component_then_wires":
             if object_stream_finalizer != "append_explicit_single_ff":
                 raise ValueError(
                     f"{family} {key} terminal-leading mixed emission requires "
@@ -4820,7 +4683,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "mixed_attachment_order": mixed_attachment_order,
                 "mixed_object_stream_finalizer": mixed_tail_finalizer,
                 "mixed_tail_group_rank": mixed_tail_group_rank,
-                "mixed_local_component_attachment": mixed_local_component_attachment,
                 "mixed_use_donor_terminal_labels": mixed_use_donor_terminal_labels,
                 "object_stream_finalizer": object_stream_finalizer,
                 "donor_terminal_record_order": (
@@ -5042,9 +4904,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             index + 1 < len(local_starts_with_terminal)
             and local_starts_with_terminal[index + 1]
         )
-        has_local_component_attachments = (
-            group_id in catalogue_local_attachment_by_group_id
-        )
         terminal_units_follow_stream = (
             index + 1 in tail_attachment_records_before_group
             if is_totalmix_combined
@@ -5052,9 +4911,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             and bool(catalogue_attachment_records or catalogue_leading_by_group_id)
         )
         trim_component_tail_before_terminal = (
-            has_local_component_attachments
-            or next_starts_with_terminal
-            or terminal_units_follow_stream
+            next_starts_with_terminal or terminal_units_follow_stream
         )
         if group_id in catalogue_leading_by_group_id:
             if is_totalmix_combined:
@@ -5120,8 +4977,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "before an active terminal unit."
             )
         local_records.append(emitted)
-        if has_local_component_attachments:
-            local_records.extend(catalogue_local_attachment_by_group_id[group_id])
         if trim_component_tail_before_terminal:
             boundary_normalizations += 1
         if group_id not in terminalized_ids:
@@ -5319,13 +5174,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "pin_contact",
                 {"x": int(row["pin"]["x"]), "y": int(row["pin"]["y"])},
             )
-            active_pin_link_proven = bool(
-                wire.get("pin_contact_proven_by_active_link", False)
-            )
-            geometric_wire_to_pin = (
-                (int(row["pin"]["x"]), int(row["pin"]["y"])) in wire_points
-                and (int(pin_contact["x"]), int(pin_contact["y"])) in wire_points
-            )
             catalogue_contact_checks.append(
                 {
                     "component_key": row["component_key"],
@@ -5343,13 +5191,14 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                         )
                         in wire_points
                     ),
-                    "wire_geometry_to_pin": geometric_wire_to_pin,
-                    "active_component_pin_link_proven": active_pin_link_proven,
-                    "wire_to_pin": geometric_wire_to_pin or active_pin_link_proven,
+                    "wire_to_pin": (
+                        (int(row["pin"]["x"]), int(row["pin"]["y"])) in wire_points
+                        and (int(pin_contact["x"]), int(pin_contact["y"]))
+                        in wire_points
+                    ),
                     "wire_is_nonzero": len(wire_points) > 1,
                     "zero_length_wire_allowed": bool(
                         report_row.get("allow_zero_length_wire_units", False)
-                        or wire.get("zero_length_wire_allowed", False)
                     ),
                 }
             )
@@ -5362,7 +5211,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         ),
         "object_order": (
             "preserved_placed_component_order_with_native_attachment_units_"
-            "profile_driven_tail_zones_terminal_leading_subpart_and_local_units"
+            "profile_driven_tail_zones_and_inline_terminal_leading_units"
             if is_totalmix_combined
             else "preserved_placed_component_order_with_native_attachment_units_"
             "and_ranked_catalogue_tail_attachment_units"
@@ -5374,14 +5223,8 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "catalogue_terminal_leading_component_count": len(
             catalogue_leading_by_group_id
         ),
-        "catalogue_component_stream_component_count": len(
-            catalogue_local_attachment_by_group_id
-        ),
-        "catalogue_component_stream_component_keys": [
-            _group_key(group)
-            for group in ordered_groups
-            if id(group) in catalogue_local_attachment_by_group_id
-        ],
+        "catalogue_component_stream_component_count": 0,
+        "catalogue_component_stream_component_keys": [],
         "catalogue_terminal_leading_component_keys": [
             _group_key(group)
             for group in ordered_groups

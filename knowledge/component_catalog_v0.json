@@ -28,63 +28,23 @@
   },
   "proteus_route_profiles": {
     "totalmix_combined_v1": {
-      "evidence_project": "experiments/mixed_current_accepted_1x_v2_temp_2026_07_15/totalmix.pdsprj",
-      "evidence_sha256": "9721666fb5ae49a87e6cd717a6d98c699d1f1ec14ed99fa0f8985b654569009a",
-      "purpose": "Catalogue-driven combined stream order for the 49-family user-provided mixed terminal donor; never a runtime template.",
+      "evidence_project": "experiments/totalmix_gate_manual_terminal_donor_v1_temp_2026_07_15/terminalized49.pdsprj",
+      "evidence_sha256": "3837d6d4d20e69ab0e9092d002e561213563eda1956f5562ea31724eccd4ffd7",
+      "purpose": "Catalogue-driven local attachment grammar for the 49-family user-resaved mixed terminal donor; never a runtime template or packet-order source.",
       "native_leading_family_order": [
         "CAP",
         "RESISTOR"
       ],
-      "backend_component_family_order": [
-        "RESISTOR",
-        "CAP",
-        "PNP",
-        "DIODE",
-        "VSINE",
-        "VSOURCE",
-        "CSOURCE",
-        "VPULSE",
-        "POT-HG",
-        "LED-RED",
-        "NMOSFET",
-        "OPAMP",
-        "LM317T",
-        "2N3904",
-        "2N4401",
-        "2N7000",
-        "BS170",
-        "1N4733A",
-        "SWITCH",
-        "40EPS08",
-        "BZY88C",
-        "1N4007",
-        "1N4148",
-        "1N6000B",
-        "BZX55C5V1",
-        "BZX79C5V1",
-        "FUSE",
-        "REALIND",
-        "CAP-ELEC",
-        "NPN",
-        "74HC76",
-        "7490",
-        "7447",
-        "74HC283",
-        "74HC192",
-        "74HC174",
-        "74HC160",
-        "74HC157",
-        "74HC85",
+      "runtime_component_order": "preserve_placed_design_order",
+      "local_component_attachment_families": [
+        "74HC00",
+        "74HC02",
+        "74HC04",
         "74HC08",
         "74HC32",
         "74HC86",
-        "74HC266",
-        "74HC02",
-        "74HC00",
-        "74HC04",
-        "4511",
         "74HC151",
-        "4027"
+        "74HC266"
       ],
       "native_active_link_trailer": "0200",
       "inline_attachment_orders": [
@@ -116,41 +76,6 @@
             "74HC160",
             "74HC157",
             "74HC85"
-          ],
-          "fallback": "after_last_source_component"
-        },
-        {
-          "name": "logic_quad_gate_tail",
-          "families": [
-            "74HC08",
-            "74HC32",
-            "74HC86",
-            "74HC266",
-            "74HC02",
-            "74HC00"
-          ],
-          "insert_before_first_of": [
-            "74HC04"
-          ],
-          "fallback": "after_last_source_component"
-        },
-        {
-          "name": "logic_inverter_tail",
-          "families": [
-            "74HC04"
-          ],
-          "insert_before_first_of": [
-            "4511"
-          ],
-          "fallback": "after_last_source_component"
-        },
-        {
-          "name": "logic_mux_tail",
-          "families": [
-            "74HC151"
-          ],
-          "insert_before_first_of": [
-            "4027"
           ],
           "fallback": "after_last_source_component"
         }
@@ -186,7 +111,7 @@
         "PNP": "0200",
         "POT-HG": "0200"
       },
-      "fallback_object_stream_finalizer": "single_ff"
+      "fallback_object_stream_finalizer": "double_ff"
     }
   },
   "components": {
@@ -752,13 +677,16 @@
               "terminal_label": "Drain",
               "angle_tenths": 0,
               "terminal_symbol_offset": [762000, 909320],
-              "wire_coordinate_offsets": [508000, 762000, 508000, 909320]
+              "wire_coordinate_offsets": [508000, 762000, 508000, 909320],
+              "post_ctrl_s_wire_policy": "first_point_terminal_contact",
+              "post_ctrl_s_pin_contact_required": false
             },
             "S": {
               "terminal_label": "Source",
               "angle_tenths": 0,
               "terminal_symbol_offset": [762000, -868680],
-              "wire_coordinate_offsets": [508000, -762000, 254000, -762000, 254000, -868680, 508000, -868680]
+              "wire_coordinate_offsets": [508000, -762000, 254000, -762000, 254000, -868680, 508000, -868680],
+              "post_ctrl_s_wire_policy": "first_point_terminal_contact"
             },
             "G": {
               "terminal_label": "Gate",
@@ -16072,13 +16000,16 @@
               "terminal_label": "Drain",
               "angle_tenths": 0,
               "terminal_symbol_offset": [762000, 985520],
-              "wire_coordinate_offsets": [508000, 762000, 508000, 985520]
+              "wire_coordinate_offsets": [508000, 762000, 508000, 985520],
+              "post_ctrl_s_wire_policy": "first_point_terminal_contact",
+              "post_ctrl_s_pin_contact_required": false
             },
             "S": {
               "terminal_label": "Source",
               "angle_tenths": 0,
               "terminal_symbol_offset": [762000, -1046480],
-              "wire_coordinate_offsets": [508000, -762000, 254000, -762000, 254000, -1046480, 508000, -1046480]
+              "wire_coordinate_offsets": [508000, -762000, 254000, -762000, 254000, -1046480, 508000, -1046480],
+              "post_ctrl_s_wire_policy": "first_point_terminal_contact"
             },
             "G": {
               "terminal_label": "Gate",
@@ -17356,13 +17287,15 @@
               "terminal_label": "Drain",
               "angle_tenths": 0,
               "terminal_symbol_offset": [1016000, 909320],
-              "wire_coordinate_offsets": [508000, 762000, 508000, 909320, 762000, 909320]
+              "wire_coordinate_offsets": [508000, 762000, 508000, 909320, 762000, 909320],
+              "post_ctrl_s_wire_policy": "first_point_terminal_contact"
             },
             "S": {
               "terminal_label": "Source",
               "angle_tenths": 0,
               "terminal_symbol_offset": [1016000, -868680],
-              "wire_coordinate_offsets": [508000, -762000, 508000, -868680, 762000, -868680]
+              "wire_coordinate_offsets": [508000, -762000, 508000, -868680, 762000, -868680],
+              "post_ctrl_s_wire_policy": "first_point_terminal_contact"
             },
             "G": {
               "terminal_label": "Gate",
@@ -17511,19 +17444,22 @@
               "terminal_label": "BASE",
               "angle_tenths": 1800,
               "terminal_symbol_offset": [-1270000, 762000],
-              "wire_coordinate_offsets": [-1016000, 762000, -1016000, 762000]
+              "wire_coordinate_offsets": [-1016000, 762000, -1016000, 762000],
+              "post_ctrl_s_wire_policy": "reverse_points"
             },
             "C": {
               "terminal_label": "COLLECTOR",
               "angle_tenths": 0,
               "terminal_symbol_offset": [254000, 1524000],
-              "wire_coordinate_offsets": [0, 1524000, 0, 1524000]
+              "wire_coordinate_offsets": [0, 1524000, 0, 1524000],
+              "post_ctrl_s_wire_policy": "reverse_points"
             },
             "E": {
               "terminal_label": "EMITTER",
               "angle_tenths": 0,
               "terminal_symbol_offset": [254000, 0],
-              "wire_coordinate_offsets": [0, 0, 0, 0]
+              "wire_coordinate_offsets": [0, 0, 0, 0],
+              "post_ctrl_s_wire_policy": "reverse_points"
             }
           },
           "clean_packet_max_proven_components": 24,
@@ -17869,19 +17805,22 @@
               "terminal_label": "BASE",
               "angle_tenths": 1800,
               "terminal_symbol_offset": [-1270000, 762000],
-              "wire_coordinate_offsets": [-1016000, 762000, -1016000, 762000]
+              "wire_coordinate_offsets": [-1016000, 762000, -1016000, 762000],
+              "post_ctrl_s_wire_policy": "reverse_points"
             },
             "C": {
               "terminal_label": "COLLECTOR",
               "angle_tenths": 0,
               "terminal_symbol_offset": [254000, 1524000],
-              "wire_coordinate_offsets": [0, 1524000, 0, 1524000]
+              "wire_coordinate_offsets": [0, 1524000, 0, 1524000],
+              "post_ctrl_s_wire_policy": "reverse_points"
             },
             "E": {
               "terminal_label": "EMITTER",
               "angle_tenths": 0,
               "terminal_symbol_offset": [254000, 0],
-              "wire_coordinate_offsets": [0, 0, 0, 0]
+              "wire_coordinate_offsets": [0, 0, 0, 0],
+              "post_ctrl_s_wire_policy": "reverse_points"
             }
           },
           "clean_packet_max_proven_components": 24,

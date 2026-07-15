@@ -839,27 +839,6 @@ def _apply_mixed_tail_ctrl_s_wire_policy(
         pass
     elif normalized_policy == "first_point_terminal_contact":
         points[0] = (int(terminal_contact[0]), int(terminal_contact[1]))
-        if pin_contact_required and (int(target_pin[0]), int(target_pin[1])) not in points:
-            # On the I15 compact layout the donor's next vertex already equals
-            # the exact pin. A taller placed layout can move that bend onto the
-            # terminal y-coordinate instead. Retain the same three-point
-            # topology, but restore the closest *interior* vertex to the exact
-            # pin rather than letting the first-point normalization erase it.
-            if len(points) < 3:
-                raise ValueError(
-                    f"{family} {key} pin {pin_name} lacks an interior WIRE "
-                    "vertex needed to preserve its exact pin after Ctrl+S "
-                    "normalization."
-                )
-            target = (int(target_pin[0]), int(target_pin[1]))
-            interior_index = min(
-                range(1, len(points) - 1),
-                key=lambda index: (
-                    abs(points[index][0] - target[0])
-                    + abs(points[index][1] - target[1])
-                ),
-            )
-            points[interior_index] = target
     elif normalized_policy == "reverse_points":
         points.reverse()
     else:
@@ -3023,6 +3002,18 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                             if isinstance(short_wire.get("pin_contact"), dict)
                             else {}
                         ),
+                        **(
+                            {
+                                "pin_contact_proven_by_active_link": True,
+                                "zero_length_wire_allowed": True,
+                            }
+                            if bool(
+                                short_wire.get(
+                                    "pin_contact_proven_by_active_link", False
+                                )
+                            )
+                            else {}
+                        ),
                     },
                     "catalogue_geometry": dict(raw_geometry),
                     "component_bbox": dict(row.get("component_bbox", {})),
@@ -4307,13 +4298,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     else b"\x02\x00"
                 ),
                 cap_wire_order=(
-                    ("right", "left")
-                    if is_totalmix_combined
-                    else (
-                        ("left", "right")
-                        if has_terminal_leading_catalogue_zone
-                        else ("right", "left")
-                    )
+                    ("left", "right")
+                    if is_totalmix_combined or has_terminal_leading_catalogue_zone
+                    else ("right", "left")
                 ),
                 snap_terminal_contacts_to_grid=force_grid_contact_short_wires,
                 ensure_nonzero_grid_wire=force_grid_contact_short_wires,

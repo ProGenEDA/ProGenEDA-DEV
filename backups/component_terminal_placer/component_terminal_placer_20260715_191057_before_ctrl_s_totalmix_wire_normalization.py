@@ -810,75 +810,6 @@ def _retarget_catalogue_wire_coordinates(
     return flattened, target_terminal_contact
 
 
-def _apply_mixed_tail_ctrl_s_wire_policy(
-    coordinates: Iterable[int],
-    *,
-    policy: str,
-    terminal_contact: tuple[int, int],
-    target_pin: tuple[int, int],
-    pin_contact_required: bool,
-    family: str,
-    key: str,
-    pin_name: str,
-) -> tuple[int, ...]:
-    """Apply the narrow Ctrl+S normalization proven for a mixed tail pin.
-
-    A user-saved all-family I15 control proved that Proteus preserves the
-    donor polyline topology, but normalizes a small set of mixed-only paths.
-    This belongs to the existing profile-driven mixed-tail branch, never to
-    the frozen standalone terminal routes. Normally both the terminal contact
-    and exact component pin remain represented in the path. The user-saved I15
-    control has two explicit exceptions: the direct Drain paths of 2N7000 and
-    BS170 contain two terminal-contact coordinates and rely on their active
-    component-pin link rather than a coordinate at the pin.
-    """
-
-    points = list(_wire_coordinate_points(coordinates))
-    normalized_policy = str(policy or "preserve")
-    if normalized_policy == "preserve":
-        pass
-    elif normalized_policy == "first_point_terminal_contact":
-        points[0] = (int(terminal_contact[0]), int(terminal_contact[1]))
-        if pin_contact_required and (int(target_pin[0]), int(target_pin[1])) not in points:
-            # On the I15 compact layout the donor's next vertex already equals
-            # the exact pin. A taller placed layout can move that bend onto the
-            # terminal y-coordinate instead. Retain the same three-point
-            # topology, but restore the closest *interior* vertex to the exact
-            # pin rather than letting the first-point normalization erase it.
-            if len(points) < 3:
-                raise ValueError(
-                    f"{family} {key} pin {pin_name} lacks an interior WIRE "
-                    "vertex needed to preserve its exact pin after Ctrl+S "
-                    "normalization."
-                )
-            target = (int(target_pin[0]), int(target_pin[1]))
-            interior_index = min(
-                range(1, len(points) - 1),
-                key=lambda index: (
-                    abs(points[index][0] - target[0])
-                    + abs(points[index][1] - target[1])
-                ),
-            )
-            points[interior_index] = target
-    elif normalized_policy == "reverse_points":
-        points.reverse()
-    else:
-        raise ValueError(
-            f"{family} {key} pin {pin_name} has unsupported mixed Ctrl+S "
-            f"WIRE policy {normalized_policy!r}."
-        )
-    required_points = {(int(terminal_contact[0]), int(terminal_contact[1]))}
-    if pin_contact_required:
-        required_points.add((int(target_pin[0]), int(target_pin[1])))
-    if not required_points.issubset(set(points)):
-        expected = "terminal contact and exact pin" if pin_contact_required else "terminal contact"
-        raise ValueError(
-            f"{family} {key} pin {pin_name} mixed Ctrl+S WIRE policy "
-            f"removed its required {expected}."
-        )
-    return tuple(value for point in points for value in point)
-
-
 def _wire_coordinate_points(coordinates: Iterable[int]) -> tuple[tuple[int, int], ...]:
     values = tuple(int(value) for value in coordinates)
     if len(values) < 4 or len(values) % 2 != 0:
@@ -3924,18 +3855,6 @@ def _apply_mixed_tail_pin_evidence(
                 target_terminal_contact=terminal_contact,
                 target_pin_contact=target_pin,
             )
-            coordinates = _apply_mixed_tail_ctrl_s_wire_policy(
-                coordinates,
-                policy=str(evidence.get("post_ctrl_s_wire_policy", "preserve")),
-                terminal_contact=terminal_contact,
-                target_pin=target_pin,
-                pin_contact_required=bool(
-                    evidence.get("post_ctrl_s_pin_contact_required", True)
-                ),
-                family=family,
-                key=key,
-                pin_name=pin_name,
-            )
             terminal["label"] = str(evidence.get("terminal_label", terminal["label"]))
             row["pin"] = pin
             row["terminal"] = terminal
@@ -3949,15 +3868,6 @@ def _apply_mixed_tail_pin_evidence(
                 "pin_contact": {"x": target_pin[0], "y": target_pin[1]},
                 "coordinates": list(coordinates),
                 "record": _build_catalogue_wire_unit(coordinates).hex(),
-                # The authoritative Ctrl+S I15 donor contains two direct MOSFET
-                # Drain records whose geometry deliberately omits the pin point.
-                # Their active component-pin suffix is the attachment proof.
-                "pin_contact_proven_by_active_link": not bool(
-                    evidence.get("post_ctrl_s_pin_contact_required", True)
-                ),
-                "zero_length_wire_allowed": not bool(
-                    evidence.get("post_ctrl_s_pin_contact_required", True)
-                ),
             }
             row["coordinate_source"] = (
                 "combined_user_donor_tail_topology_retargeted_to_grid_contact"
@@ -4307,13 +4217,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     else b"\x02\x00"
                 ),
                 cap_wire_order=(
-                    ("right", "left")
-                    if is_totalmix_combined
-                    else (
-                        ("left", "right")
-                        if has_terminal_leading_catalogue_zone
-                        else ("right", "left")
-                    )
+                    ("left", "right")
+                    if is_totalmix_combined or has_terminal_leading_catalogue_zone
+                    else ("right", "left")
                 ),
                 snap_terminal_contacts_to_grid=force_grid_contact_short_wires,
                 ensure_nonzero_grid_wire=force_grid_contact_short_wires,
@@ -4373,16 +4279,10 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 **(
                     {
                         "cap_wire_order": list(
-                            # The user-provided I15 Ctrl+S control swapped
-                            # only the combined-stream CAP pair. Preserve the
-                            # accepted standalone/terminal-leading routes.
-                            ("right", "left")
+                            ("left", "right")
                             if is_totalmix_combined
-                            else (
-                                ("left", "right")
-                                if has_terminal_leading_catalogue_zone
-                                else ("right", "left")
-                            )
+                            or has_terminal_leading_catalogue_zone
+                            else ("right", "left")
                         )
                     }
                     if family == "CAP"
@@ -4616,18 +4516,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                         **(
                             {"pin_contact": dict(short_wire["pin_contact"])}
                             if isinstance(short_wire.get("pin_contact"), dict)
-                            else {}
-                        ),
-                        **(
-                            {
-                                "pin_contact_proven_by_active_link": True,
-                                "zero_length_wire_allowed": True,
-                            }
-                            if bool(
-                                short_wire.get(
-                                    "pin_contact_proven_by_active_link", False
-                                )
-                            )
                             else {}
                         ),
                     },
@@ -5319,13 +5207,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "pin_contact",
                 {"x": int(row["pin"]["x"]), "y": int(row["pin"]["y"])},
             )
-            active_pin_link_proven = bool(
-                wire.get("pin_contact_proven_by_active_link", False)
-            )
-            geometric_wire_to_pin = (
-                (int(row["pin"]["x"]), int(row["pin"]["y"])) in wire_points
-                and (int(pin_contact["x"]), int(pin_contact["y"])) in wire_points
-            )
             catalogue_contact_checks.append(
                 {
                     "component_key": row["component_key"],
@@ -5343,13 +5224,14 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                         )
                         in wire_points
                     ),
-                    "wire_geometry_to_pin": geometric_wire_to_pin,
-                    "active_component_pin_link_proven": active_pin_link_proven,
-                    "wire_to_pin": geometric_wire_to_pin or active_pin_link_proven,
+                    "wire_to_pin": (
+                        (int(row["pin"]["x"]), int(row["pin"]["y"])) in wire_points
+                        and (int(pin_contact["x"]), int(pin_contact["y"]))
+                        in wire_points
+                    ),
                     "wire_is_nonzero": len(wire_points) > 1,
                     "zero_length_wire_allowed": bool(
                         report_row.get("allow_zero_length_wire_units", False)
-                        or wire.get("zero_length_wire_allowed", False)
                     ),
                 }
             )
