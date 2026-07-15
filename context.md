@@ -15523,3 +15523,31 @@ Use the existing terminalized 1× shared-placer files:
 Each contains 8 terminal/WIRE attachment units and a full 614,696-byte ROOT.CDB. The 45-family audit is intentionally deferred until the user supplies the requested 45-family donor.
 
 Files edited: `context.md`.
+
+### User message - 2026-07-15 23:40 +05:00
+
+Attached file: `C:\Users\Empty\Downloads\both7segplaced.pdsprj`.
+
+### Agent response - 2026-07-15 23:40 +05:00
+
+I’ve got it. I’ll treat `both7segplaced.pdsprj` as the authoritative display donor and first compare its DSN object stream to the generated 45-family route—without changing the placer yet.
+
+Files edited: none at this point.
+
+### Agent response - 2026-07-15 23:40 +05:00
+
+The donor is decisive: it contains all 45 terminalized families (229 terminals/WIREs), including both displays. Its display attachments are interleaved beside their own display packets, whereas the generated 45-family file batches both display packets before their terminal/WIRE units. I’m documenting the complete comparison now; I will not change the shared placer until that audit is complete.
+
+Files edited: none at this point.
+
+### Agent response - 2026-07-15 23:41 +05:00
+
+The audit is complete and the evidence is clear: the components were never absent from the DSN. The generated stream had the wrong display attachment order, wrong mixed trailer classes, generic labels, and placed both displays far outside the donor’s working frame.
+
+Files created/edited: `proteus_ic/donors/terminalized_catalogue_evidence/display_7seg/combined_45_family/both7segplaced_user_terminalized_45f_20260715.pdsprj`, `knowledge/combined_7seg_45f_donor_audit_2026_07_15.md`, `knowledge/display_cathode_terminal_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, and `context.md`.
+
+### Agent response - 2026-07-15 23:41 +05:00
+
+Audit complete. The user donor proves that the generated 45-family file contains both display packets but serializes them incorrectly: `CC → AN → all 16 display terminal/WIRE units`, instead of the donor's local `AN → eight units → CC → eight units` structure. It also uses `0100` for both display link classes and generic clipped labels, while the donor uses exact pin labels with `0200` for anode and `0300` for cathode. The display anchors are also far above the donor's working frame. The donor and audit are saved; no implementation behavior was changed during this audit-only step.
+
+Files created/edited: `proteus_ic/donors/terminalized_catalogue_evidence/display_7seg/combined_45_family/both7segplaced_user_terminalized_45f_20260715.pdsprj`, `knowledge/combined_7seg_45f_donor_audit_2026_07_15.md`, `knowledge/display_cathode_terminal_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, and `context.md`.

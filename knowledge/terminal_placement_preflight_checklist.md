@@ -108,3 +108,20 @@ The shared generic two-pin route (diodes, zeners, 40EPS08, LED-RED, FUSE and SWI
 - Freeze: no accepted 44-family route is changed. The only shared-emitter extension handles the donor-proven common-cathode/common-anode adjacent packet boundary and is exercised by a focused two-visible-display regression.
 - Evidence checks: the cathode's `commoncath` `-3` link offset is patched relative to the original 403-byte cathode row while the adjacent visible anode row is retained in the same emitted block; both display families have eight terminal/WIRE units, grid-aligned contacts, correct left/right angle, nonzero exact-pin wire paths, and final-address `0100` link suffixes.
 - Gate: focused anode/cathode mixed regressions passed (`2 passed`), source compiled, and the newly placed real cumulative 45-family output normal-opened and cold-reopened with no modal error or hash mutation. No normally opening file was saved.
+
+## Superseding combined-display audit - 2026-07-15
+
+- Authority: user-provided
+  `proteus_ic/donors/terminalized_catalogue_evidence/display_7seg/combined_45_family/both7segplaced_user_terminalized_45f_20260715.pdsprj`.
+- The generated G08 45-family file is visually rejected. Its static report
+  claimed local display attachment, but the final DSN instead batches both
+  display terminal/WIRE blocks after both display packets.
+- The authoritative combined donor proves local `AN component → AN units → CC
+  component → CC units` ordering, exact display pin labels, and context-specific
+  `0200` anode / `0300` cathode active link trailers.
+- Treat the preceding combined-display completion as superseded for future
+  emission. The isolated display donors remain valid only for their separately
+  proven solo routes.
+- See `knowledge/combined_7seg_45f_donor_audit_2026_07_15.md`. No source or
+  catalogue change may be made until the repair preflight is completed from
+  this donor.

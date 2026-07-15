@@ -1,5 +1,15 @@
 # 7SEG-COM-CAT-BLUE terminal preflight — 2026-07-15
 
+> **Combined-45 correction (2026-07-15):** This note remains valid evidence
+> for the isolated cathode donor and its solo geometry. Its later
+> "Completed composite rule and 45-family cumulative proof" is not acceptance
+> evidence for the current generated 45-family stream. The user-provided
+> combined donor, audited in
+> `knowledge/combined_7seg_45f_donor_audit_2026_07_15.md`, proves different
+> local attachment order, labels, and active trailer classes (`0200` anode,
+> `0300` cathode). Do not use the old `0100` combined-stream claim to emit a
+> new candidate.
+
 ## Authority and scope
 
 Authoritative donor:
