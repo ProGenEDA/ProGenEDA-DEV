@@ -122,6 +122,26 @@ wait. No Bad Object Record, LXLCORE, fatal, or device-library dialog appeared,
 and its SHA-256 did not change (`9A5817B300FA9E2851E27E07F527D41F855D466228B081A12E7EBAFFB1ACFCCB`).
 No Ctrl+S was used.
 
+## 74HC74 41-family result
+
+`experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/03_74hc74_41f`
+adds exactly one dual-D-flip-flop package to the committed 40-family baseline.
+The shared placer emits the donor-proven A/B subpart sequence rather than a
+generic all-pins tail: each subpart receives its active terminals, component
+packet links, and WIREs together. The new package is fronted in the compact
+visual shelf without changing the mixed packet order.
+
+Static validation passed: 41 components, 205 active terminal/WIRE pairs,
+grid-aligned contacts, and nonzero terminal-to-exact-pin WIREs. The donor's
+zero-length subpart records are intentionally retargeted to the required
+nonzero grid-contact segments for the mixed route; pin/link offsets, active
+`0100` trailer, A/B block order, terminal labels, and final-address suffix
+rebase remain donor-proven.
+
+The disposable local gate copy normal-opened and cold-reopened without a
+modal error or hash mutation (`E78F4361E3AFEE776168EB8FC68D743ABF23CE1E684E1F3565EA6657E0C5F28E`).
+No Ctrl+S was used.
+
 ## LM741 40-family result
 
 `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/02_lm741_40f`

@@ -3190,6 +3190,56 @@ def test_totalmix_lm741_uses_donor_proven_terminal_and_wire_orders(
     )
 
 
+def test_totalmix_74hc74_uses_donor_proven_subpart_blocks(
+    tmp_path: Path,
+) -> None:
+    """74HC74 uses its own active per-subpart attachment grammar in a mix."""
+
+    base = tmp_path / "totalmix_74hc74_base.pdsprj"
+    output = tmp_path / "totalmix_74hc74_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"RESISTOR": 1, "CAP": 1, "74HC74": 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "front_families": ["74HC74"],
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP"),
+        catalogue_terminal_families=("74HC74",),
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+
+    hc74 = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") == "74HC74"
+    )
+    assert result.valid
+    assert report["valid"] is True
+    assert hc74["mixed_attachment_order"] == "subpart_terminal_component_wires"
+    assert hc74["terminal_count"] == 12
+    assert all(
+        row["terminal_contact_grid_aligned"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:
