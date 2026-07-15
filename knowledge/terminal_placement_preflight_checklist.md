@@ -92,3 +92,11 @@ The shared generic two-pin route (diodes, zeners, 40EPS08, LED-RED, FUSE and SWI
 - Backup: `backups/component_terminal_placer/component_terminal_placer_20260715_203750_before_missing7_totalmix_tran_2p2s_profile.py`.
 - Evidence checks: `TOPRIGHT, BOTTOMRIGHT, TOPLEFT, BOTTOMLEFT` terminal/WIRE order; `0,0,1800,1800` orientation; grid contact; nonzero wire to exact pin; final-address terminal/component suffixes; and `FF FF` termination. The donor's bent bottom-left wire is documented; the fresh collinear grid contact safely emits a direct segment.
 - Gate: focused transformer and all totalmix/mixed regressions, JSON/compile checks, plus a fresh 43-family normal/cold Proteus open gate. The normally opening disposable copy was not saved.
+
+## Completed preflight - 2026-07-15 7SEG-COM-AN-BLUE 44-family additive route
+
+- Authority: `proteus_ic/donors/terminalized_catalogue_evidence/display_7seg/7SEG-COM-AN-BLUE/7SEG-COM-AN-BLUE_user_terminalized_july04.pdsprj`; full DSN/CDB, component, terminal, WIRE, pin-link, frame, separator, and finalizer audit is recorded in `knowledge/display_terminal_preflight_2026_07_15.md` and `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`.
+- Freeze: all 43 accepted family routes remain byte- and geometry-unchanged. The additive facts are only the anode display's grid-body contact policy, direct grid-contact-to-current-pin WIRE policy, local attachment membership, and `0100` active-link trailer.
+- Backup: shared placer behavior was not edited; the change is catalogue-only.
+- Evidence checks: eight terminal/WIRE units, contacts on grid intersections, required left/right orientations, eight nonzero exact-pin wires, matching final-address `0100` terminal/component suffixes, local attachment immediately after the display packet, immutable D20 preservation, and explicit finalizer.
+- Gate: focused anode/catalogue/totalmix regressions, compile check, a fresh solo anode normal/cold gate, a fresh RESISTOR+CAP+anode normal/cold mixed gate, and the actual cumulative 44-family normal/cold gate. No normally opening file was saved.

@@ -122,6 +122,25 @@ wait. No Bad Object Record, LXLCORE, fatal, or device-library dialog appeared,
 and its SHA-256 did not change (`9A5817B300FA9E2851E27E07F527D41F855D466228B081A12E7EBAFFB1ACFCCB`).
 No Ctrl+S was used.
 
+## 7SEG-COM-AN-BLUE 44-family result
+
+`experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/06_display_anode_44f`
+adds exactly one common-anode display to the committed 43-family
+`TRAN-2P2S` baseline. The user donor's display anchor is off-grid by 20,320
+coordinate units relative to the locked-mega grid body. Retargeting its donor
+polyline collapsed segment wires, so the catalogue uses its existing
+donor-proven one-grid outward contacts and direct grid-contact-to-current-pin
+wires instead. This affects only the anode profile.
+
+The complete donor and a fresh three-family mixed probe prove `0100` active
+terminal/component link trailers and local `component_stream_then_attachment_units`
+ordering. The cumulative output retains the immutable D20 display
+infrastructure untouched, contains 44 requested families (45 placed packets),
+and emits 221 active terminal/WIRE pairs. The final output normal-opened and
+cold-reopened without a modal dialog or file mutation:
+`15EFFDFCB8E660CA43F01D85FAAFBE03D54EF22E89592F0E42ABE7D7E7926669`.
+No Ctrl+S was used.
+
 ## TRAN-2P2S 43-family result
 
 `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/05_tran_2p2s_43f`

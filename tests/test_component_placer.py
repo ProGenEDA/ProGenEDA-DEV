@@ -3362,6 +3362,83 @@ def test_totalmix_tran_2p2s_uses_donor_proven_tail_units(
     )
 
 
+def test_totalmix_anode_display_uses_local_grid_attachment_units(
+    tmp_path: Path,
+) -> None:
+    """A grid-aligned anode display remains attached in a mixed stream."""
+
+    base = tmp_path / "totalmix_anode_display_base.pdsprj"
+    output = tmp_path / "totalmix_anode_display_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                "RESISTOR": 1,
+                "CAP": 1,
+                "7SEG-COM-AN-BLUE": 1,
+            },
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP"),
+        catalogue_terminal_families=("7SEG-COM-AN-BLUE",),
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+    display = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") == "7SEG-COM-AN-BLUE"
+    )
+    display_checks = [
+        row
+        for row in report["wire_path_contact_checks"]
+        if row.get("component_family") == "7SEG-COM-AN-BLUE"
+    ]
+    display_links = [
+        row
+        for row in report["terminal_suffix_link_checks"]
+        if row.get("component_family") == "7SEG-COM-AN-BLUE"
+    ]
+
+    assert result.valid
+    assert report["valid"]
+    assert display["mixed_local_component_attachment"] is True
+    assert display["mixed_attachment_order"] == "component_stream_then_attachment_units"
+    assert display["terminal_count"] == 8
+    assert any(row["component_key"] == "D20" for row in report["preserved_groups"])
+    assert len(display_checks) == 8
+    assert all(
+        row["terminal_contact_grid_aligned"]
+        and row["terminal_to_wire"]
+        and row["wire_to_pin"]
+        and row["wire_is_nonzero"]
+        for row in display_checks
+    )
+    assert len(display_links) == 8
+    assert all(
+        row["terminal_trailer"] == "0100"
+        and row["component_trailer"] == "0100"
+        and row["terminal_valid"]
+        and row["component_valid"]
+        for row in display_links
+    )
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:

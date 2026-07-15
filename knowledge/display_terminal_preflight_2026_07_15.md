@@ -90,6 +90,22 @@ mutation; this display terminal repair is DSN-only.
 4. The generic display path would otherwise normalize `ROOT.CDB` using
    synthetic display keys.  The accepted control proves preserving the locked
    mega CDB is the conservative route.
+5. The accepted anode donor's body anchor is off-grid by 20,320 units, while
+   the current component placer deliberately moves the bare body onto the
+   Proteus grid.  Re-targeting its donor polyline to that grid body collapsed
+   the seven segment WIREs to zero length.  The evidence-backed grid-body
+   route therefore keeps the placed body unchanged, uses each catalogue
+   pin's existing one-grid outward contact step, and emits the existing
+   catalogue-leading short WIRE encoding directly from that grid contact to
+   the current pin.  This is additive to `7SEG-COM-AN-BLUE` only; the cathode
+   profile and every accepted family remain unchanged.
+6. The anode's complete donor proves its `0100` active-link class and its
+   `component_stream_then_attachment_units` order.  A fresh locked-mega
+   `RESISTOR + CAP + 7SEG-COM-AN-BLUE` output proved that the display units can
+   be emitted immediately after the display's own finalized packet in the
+   shared totalmix route, with D20 byte-preserved.  It must therefore be a
+   local component attachment in that route, rather than a synthetic tail
+   zone or an imported donor packet.
 
 No accepted-family geometry, terminal encoding, pin mapping, D20 bytes,
 component placement coordinates, or two-pin behavior will be changed.

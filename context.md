@@ -15338,3 +15338,50 @@ The 43-family transformer pack generated cleanly, but the first local-gate comma
 ### Agent update - 2026-07-15 20:46 +05:00
 
 `TRAN-2P2S` was added additively to the 42-family compact baseline through the locked mega component placer and the shared terminal placer. The output has 43 selected components and 213 active terminal/WIRE pairs. It serializes terminals in donor order `TOPRIGHT`, `BOTTOMRIGHT`, `TOPLEFT`, `BOTTOMLEFT`, with angles `0,0,1800,1800`, active `0200` links, grid contacts, nonzero exact-pin wires, and final-address suffix rebasing. The source donor's bottom-left path has a bend; the fresh collinear grid contact emits an equivalent direct segment. Local normal and cold Proteus opens showed no modal error and no copy hash mutation; no Ctrl+S was used. Edited/created: `knowledge/component_catalog_v0.json`, `tests/test_component_placer.py`, `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, `knowledge/test_results.jsonl`, `backups/component_terminal_placer/component_terminal_placer_20260715_203750_before_missing7_totalmix_tran_2p2s_profile.py`, and `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/05_tran_2p2s_43f`.
+
+### User message - 2026-07-15 20:50 +05:00
+
+everynext one u build it must contain the previous one too not 38 plus one no base should increase after every component meaning currently the base on which display should be add should be 43 i think
+
+### Agent response - 2026-07-15 20:50 +05:00
+
+Yes. The actual anode addition will be **43 existing families + the display = 44**, then the cathode will be added to that 44-family baseline. The 1Ã— display-only files are only the required diagnostic stages; they are not a replacement base or a candidate mix.
+### Agent response - 2026-07-15 20:51 +05:00
+
+I’m keeping the cumulative chain intact: the accepted anode display is being added to the 43-family base as family 44, and the cathode will start only from that 44-family result—not from the old 38-family base.
+
+### Agent response - 2026-07-15 20:53 +05:00
+
+I found the immediate display-stage fault: the shared planner is collapsing donor-proven display wires when it retargets both ends to a snapped contact. I’m checking the authoritative wire endpoints against the catalogue transform before changing anything.
+
+### Agent response - 2026-07-15 20:56 +05:00
+
+The donor explains the mismatch: its display body was off-grid, while the current component-placer output correctly snaps the body/pins to grid. I generated a disposable shared-emitter trial that keeps the body grid-aligned and moves only each terminal contact one grid step outward, giving eight real short wires instead of collapsed zero-length ones.
+
+### Agent response - 2026-07-15 20:59 +05:00
+
+The native-contact diagnostic cold-opened cleanly and rendered all eight display terminals. I’m now gating the grid-contact stage, then I’ll cold-reopen the complete stage before making the persistent catalogue change.
+
+### Agent response - 2026-07-15 21:03 +05:00
+
+The persistent anode profile now passes its focused regression: one grid-aligned display body, eight grid-aligned terminals, eight nonzero short wires, and D20 preserved. I’m running the final fresh 1x normal/cold Proteus gate on that actual shared-placer output.
+
+### Agent response - 2026-07-15 21:07 +05:00
+
+The 43-to-44 route needs one additional mixed-stream fact, not a new workflow: the anode uses its donor-proven `0100` link class and attaches immediately after its own final display packet. A fresh resistor/capacitor/display mixed probe is statically valid; I’m checking it in Proteus before adding that fact to the route profile.
+
+### Agent response - 2026-07-15 21:11 +05:00
+
+The mixed probe also passed normal and cold Proteus opens. I’ve now recorded the anode’s `0100` local mixed attachment rule and added focused regressions; I’m generating the actual cumulative 44-family pack from the full 43-family request plus the display.
+
+### Agent response - 2026-07-15 21:16 +05:00
+
+The actual cumulative pack is generated: 44 user component families plus immutable D20 infrastructure (45 placed packets), with 221 active terminals/WIREs. Normal and cold Proteus launches are clean; I’m completing the regression/documentation checkpoint before moving on to the cathode as family 45.
+
+### Agent update - 2026-07-15 21:22 +05:00
+
+The cumulative family rule is now recorded in the 44-family anode artifact. The anode route is additive to the 43-family base only; no prior family was replaced or re-emitted from a smaller base. Edited/created: `knowledge/component_catalog_v0.json`, `knowledge/display_terminal_preflight_2026_07_15.md`, `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, `knowledge/test_results.jsonl`, `tests/test_component_catalog.py`, `tests/test_component_placer.py`, and `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/06_display_anode_44f`.
+
+### Agent update - 2026-07-15 21:24 +05:00
+
+Focused catalogue/totalmix regressions passed (`4 passed`), the Python source and tests compiled, and the component catalogue plus test-results JSONL parsed cleanly. The earlier local Proteus normal/cold gate remains the acceptance evidence for the actual cumulative output; no extra Ctrl+S was performed.

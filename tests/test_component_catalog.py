@@ -1481,6 +1481,43 @@ def test_catalogue_display_block_link_offset_generation_remains_blocked(tmp_path
         )
 
 
+def test_catalogue_anode_display_grid_body_route_has_eight_nonzero_wires(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "catalogue_anode_display_bare.pdsprj"
+    output = tmp_path / "catalogue_anode_display_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "components": {"7SEG-COM-AN-BLUE": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        source,
+        full_cdb=True,
+    )
+
+    report = attach_catalogue_pin_bidir_terminals_to_project(
+        source,
+        output,
+        result.selected_groups,
+        terminal_families=["7SEG-COM-AN-BLUE"],
+    )
+
+    assert report["valid"]
+    assert report["terminal_count_added"] == 8
+    assert report["terminal_grid_alignment_valid"]
+    assert report["wire_path_contacts_valid"]
+    pins = report["family_reports"][0]["terminal_pins"]
+    assert len(pins) == 8
+    assert all(
+        pin["short_wire"]["start"] != pin["short_wire"]["end"]
+        for pin in pins
+    )
+    assert all(
+        pin["component_key"] != "D20"
+        for pin in pins
+    )
+
+
 def test_validation_pin_vocabulary_comes_from_catalogue() -> None:
     assert COMPONENT_PINS["RESISTOR"] == {"1", "2"}
     assert COMPONENT_PINS["74HC08"] == {
