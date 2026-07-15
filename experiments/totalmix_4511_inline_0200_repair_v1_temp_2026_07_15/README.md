@@ -20,5 +20,15 @@ Mechanical checks passed:
 - all terminal suffixes match final ROOT.DSN WIRE addresses;
 - U9 has 14 active terminal/component-pin links using `0200`.
 
-No local Proteus process was launched, saved, or closed for this pack. It still
-needs the user’s Proteus visual/open acceptance.
+At generation time, no local Proteus process was launched, saved, or closed.
+The following gate records the subsequent explicit user-authorized check.
+
+## Local Proteus gate — 2026-07-15
+
+After the user explicitly authorized Proteus process control, a disposable copy
+of the terminalized candidate was cold-launched twice. Both launches reached
+the Schematic Capture window, remained stable for the required additional
+12-second delay, and exposed no `Bad Object Record`, `Fatal Error`, `LXLCORE`,
+or device-library dialog. The second launch left the copied project hash
+unchanged, so no Ctrl+S repair was needed. The copy was then opened visibly for
+the user's visual inspection and deliberately left open.

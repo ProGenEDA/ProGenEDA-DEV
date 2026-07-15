@@ -15043,3 +15043,35 @@ That is a credible separate cause. I’m not going to assume the 4511 stream rep
 ### Agent response - 2026-07-15 17:34 +05:00
 
 I checked the actual generated geometry: every gate package is already split into a 2×2 (or 3×2 for 74HC04) layout with 5,080,000 units between subpart clusters. Its terminal wires are all local—maximum 452,120 units, below the 508,000 two-grid threshold. So I’m keeping the beautifier unchanged; the evidence still points to the 4511 stream boundary, not gate crowding.
+
+### Agent response - 2026-07-15 17:37 +05:00
+
+The all-49 candidate is generated and has a paired bare control. I’ve completed the static stream, link-address, grid-contact, and regression checks; I’m recording this exact repair now without starting or closing Proteus.
+
+### User message - 2026-07-15 17:41 +05:00
+
+u can now start n close protues np
+
+### Agent response - 2026-07-15 17:41 +05:00
+
+Got it—now that I have explicit permission, I’ll run the real cold-open gate on the all-49 terminalized candidate, including a second cold reopen. I’ll only Ctrl+S a disposable copy if Proteus shows Bad Object Record but then opens normally.
+
+### Agent response - 2026-07-15 17:42 +05:00
+
+I found one existing Proteus process, so I’ll close it as part of the authorized cold-start procedure, then test only a disposable copy of the repaired project.
+
+### Agent response - 2026-07-15 17:43 +05:00
+
+First cold launch passed: Proteus displayed the schematic window for the disposable copy, stayed alive for the required delay, and exposed no Bad Object Record, Fatal Error, LXLCORE, or library dialog. I’m closing it and repeating the same cold launch once.
+
+### User message - 2026-07-15 17:44 +05:00
+
+it never opens fully y?
+
+### Agent response - 2026-07-15 17:44 +05:00
+
+It did load successfully, but I launched it hidden for the automated gate—so no visible Proteus window appeared for you. I’ll now open the same disposable candidate visibly and leave it open for inspection.
+
+### Agent response - 2026-07-15 17:45 +05:00
+
+Proteus is visibly open now on `ALL49_TERMINALIZED_1X_4511_INLINE_0200_REPAIR_GATE_COPY`; I’m leaving that window alone for your inspection.
