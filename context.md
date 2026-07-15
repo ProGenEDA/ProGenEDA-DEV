@@ -11768,3 +11768,25 @@ Visible assistant final response (verbatim):
 > - Full regression: 63 passed, 1 optional oracle test skipped. Pushed on `main`.
 >
 > This is intentionally not a claim of arbitrary LTspice support: vendor macromodels, digital ICs, transformers/coupling, behavioral sources, and unsupported semiconductor variants still need explicit profiles rather than being guessed.
+
+## 2026-07-15T05:39:16+05:00 — Desktop LTspice ASC association
+
+User request (verbatim):
+
+> can u make it so that double clicking asc files auto open them in Ltspice
+
+Visible assistant progress (verbatim):
+
+> I’ll register a desktop MIME association for `.asc` that launches your installed LTspice through its Wine prefix, then verify the desktop database resolves `.asc` to it.
+
+> LTspice is installed inside the Wine prefix, but the current Wine association treats `.asc` as generic text and depends on a `wine` binary that is not on this desktop’s normal PATH. I’m replacing that with a dedicated `.asc` MIME type and a launcher that invokes the installed LTspice reliably.
+
+> The `.asc` MIME detection now resolves correctly to `application/x-ltspice-schematic`, and its default application is the new LTspice launcher. I’m opening one generated schematic through the desktop association once to verify the end-to-end behavior.
+
+Visible assistant final response (verbatim):
+
+> Done. Double-clicking a generated LTspice `.asc` file in KDE/Dolphin now opens it with the installed LTspice Wine prefix.
+>
+> I registered a dedicated `application/x-ltspice-schematic` MIME type, made `progeneda-ltspice.desktop` its default handler, and added a launcher that starts LTspice through the Nix Wine environment. KDE’s cache has been rebuilt.
+>
+> Verified with the generated regulated-5 V schematic: the file resolves to the new MIME type/default handler and LTspice launches successfully. The configuration lives outside the repository in `~/.local/bin`, `~/.local/share/applications`, and `~/.local/share/mime`.
