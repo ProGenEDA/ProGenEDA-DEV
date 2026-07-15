@@ -14609,3 +14609,31 @@ The locked mega inventory is 57 families. The terminal catalogue says 39 have an
 ## Agent Visible Response - 2026-07-15 05:25 +05:00
 
 No. The solo sweep is not complete across every locked-mega component. The definitive inventory is 57 component families. Terminal status is: 22 already accepted/frozen routes; 12 multi-pin/analog families with 1×/9×/15× loader-gated solo evidence; five families with only a lower-scale or 1× result; and 18 still pending terminal completion. The full component-placer inventory and exact pending list were reported in this response. Files edited: context.md.
+
+## User Message - 2026-07-15 05:26 +05:00
+
+what would bet the quickest way for u to complete this terminal pending ones?
+
+## Agent Visible Response - 2026-07-15 05:26 +05:00
+
+I’ll verify the checkpoint and compare the pending list against the actual terminalized donor corpus, so the fastest path is based on what we can prove rather than another broad rewrite.
+
+## Agent Visible Response - 2026-07-15 05:27 +05:00
+
+I found an important correction: the status field is stale for several families. For example, `74HC04`, `2N3904`, `2N4401`, and likely `SWITCH` already have evidence packs, so the quickest route starts by reconciling evidence—not rebuilding all 18 as if none existed.
+
+## User Message - 2026-07-15 05:31 +05:00
+
+the 8x n 12x i remmeber u fixing that by changing the cordinates of next ones, i.e. not adding a 3rd line
+
+## Agent Visible Response - 2026-07-15 05:31 +05:00
+
+You’re right to call that out. I treated those as hard source limits in my status summary, but if 8×/12× were fixed by re-positioning the next package, they are placement/beautifier defects—not terminal capacity limits. I’m checking the recorded evidence before correcting the plan.
+
+## Agent Visible Response - 2026-07-15 05:32 +05:00
+
+The records confirm the old 8×/12× labels came from a fixed packet-offset/placement boundary. I’m withdrawing them as limits: they need the accepted coordinate-continuation rule reapplied and retested to 15×, without introducing a third layout line.
+
+## Agent Visible Response - 2026-07-15 05:32 +05:00
+
+Yes. You are remembering the correct direction. The fastest route is evidence reconciliation first, then only the truly unproved families. The old `74HC00` 8× and `74HC02` 12× labels are not accepted limits: recover the accepted coordinate-continuation arrangement for the next package blocks, preserve the same two-line layout, regenerate 9×/15× through the shared placer, and only record a limit if the corrected layout still fails. Existing donor/loader evidence means `74HC04`, `74HC08`, `74HC32`, `74HC86`, `74HC266`, and the BJT aliases should be reconciled and re-gated rather than designed again. Then finish direct donor-backed three-pin controls, four-pin symbols, and both display profiles; leave IRDIODE last as the only candidate that may require new explicit byte evidence. Files edited: context.md.
