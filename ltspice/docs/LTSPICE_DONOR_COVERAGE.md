@@ -1,5 +1,21 @@
 # LTspice Donor Coverage Record
 
+## Legacy prototype scope — not donor-native support
+
+This historical record predates the donor-native rebuild. It documents useful
+donor parsing and LTspice behaviour discovered while the old prototype still
+used project-local `progeneda_*` symbols, generated model libraries, and—in
+some fallback cases—named terminal flags. Statements below about those assets,
+terminal fallback, behavioural models, semiconductors, or broad component
+coverage are **not** current donor-native support claims.
+
+For the active path, the authoritative records are the
+[donor-native architecture](../ARCHITECTURE.md), the
+[permanent native catalogue](../catalogues/ltspice_main_catalogue.json), and
+the [support-gap register](SUPPORT_GAPS.md). A component needs stock-symbol
+donor evidence plus the required generated physical-wire and GUI evidence
+before it can become supported.
+
 This record captures the deterministic conclusions drawn from the donor ASC
 files in `Documents/Ltspice/Donor`. They are format and behavior evidence;
 they are not copied into the generator and do not make proprietary LTspice

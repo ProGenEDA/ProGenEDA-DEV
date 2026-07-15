@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "progen-ltspice-native-main-catalogue/v1",
+  "title": "ProGenEDA donor-native LTspice main catalogue",
+  "type": "object",
+  "required": ["schema", "unit", "grid", "max_components_per_circuit", "native_output_policy", "status_semantics", "normal_editor", "components"],
+  "properties": {
+    "schema": {"const": "progen-ltspice-native-main-catalogue/v1"},
+    "unit": {"const": "ltspice_asc_grid"},
+    "grid": {"type": "integer", "exclusiveMinimum": 0},
+    "max_components_per_circuit": {"type": "integer", "minimum": 1},
+    "source_of_truth": {"type": "string", "minLength": 1},
+    "native_output_policy": {
+      "type": "object",
+      "required": ["stock_symbols_only", "ordinary_connectivity", "permitted_flag", "forbidden"],
+      "properties": {
+        "stock_symbols_only": {"const": true},
+        "ordinary_connectivity": {"const": "direct physical WIRE records only"},
+        "permitted_flag": {"const": "FLAG X Y 0 at a physical ground wire endpoint only"},
+        "forbidden": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "status_semantics": {
+      "type": "object",
+      "required": ["donor_observed", "gui_verified", "supported"],
+      "properties": {
+        "donor_observed": {"type": "string", "minLength": 1},
+        "gui_verified": {"type": "string", "minLength": 1},
+        "supported": {"type": "string", "minLength": 1}
+      }
+    },
+    "normal_editor": {
+      "type": "object",
+      "required": ["status", "adapter_implemented_properties", "donor_observed_but_not_normal_editor_mapped", "advanced_raw_asc"],
+      "properties": {
+        "status": {"const": "all_current_catalogue_properties_mapped"},
+        "adapter_implemented_properties": {"type": "object"},
+        "donor_observed_but_not_normal_editor_mapped": {"type": "object"},
+        "advanced_raw_asc": {
+          "type": "object",
+          "required": ["available", "reason"],
+          "properties": {
+            "available": {"const": false},
+            "reason": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "generated_evidence": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "documentation", "source_json", "families", "limitation"],
+        "properties": {
+          "status": {"enum": ["gui_smoke_verified_not_support_promotion", "static_asc_and_count20_netlist_verified_not_support_promotion"]},
+          "documentation": {"type": "string", "minLength": 1},
+          "source_json": {"type": "string", "minLength": 1},
+          "families": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "limitation": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "components": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "#/$defs/component"}
+    }
+  },
+  "$defs": {
+    "point": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"type": "integer"}
+    },
+    "component": {
+      "type": "object",
+      "required": ["aliases", "category", "status", "native", "body", "legal_orientations", "default_orientation", "pin_model", "properties", "placement_evidence"],
+      "properties": {
+        "aliases": {"type": "array", "items": {"type": "string"}},
+        "category": {"type": "string", "minLength": 1},
+        "status": {"enum": ["pending_donor", "donor_observed", "generated_static", "gui_verified", "supported"]},
+        "native": {
+          "type": "object",
+          "required": ["record", "donor_evidence"],
+          "properties": {
+            "symbol": {"type": "string", "minLength": 1},
+            "stock_library_path": {"type": "string", "minLength": 1},
+            "record": {"type": "string", "minLength": 1},
+            "prefix": {"type": "string"},
+            "stock_symbol": {"type": "boolean"},
+            "donor_evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+          }
+        },
+        "body": {
+          "type": "object",
+          "required": ["coordinate_system", "local_bounds", "wire_clearance"],
+          "properties": {
+            "coordinate_system": {"enum": ["asc_symbol_anchor", "physical_anchor"]},
+            "local_bounds": {
+              "type": "object",
+              "required": ["left", "right", "top", "bottom"],
+              "properties": {
+                "left": {"type": "integer"},
+                "right": {"type": "integer"},
+                "top": {"type": "integer"},
+                "bottom": {"type": "integer"}
+              }
+            },
+            "wire_clearance": {"type": "integer", "minimum": 0}
+          }
+        },
+        "legal_orientations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"enum": ["R0", "R90", "R180", "R270", "M0", "M90", "M180", "M270"]}
+        },
+        "default_orientation": {"enum": ["R0", "R90", "R180", "R270", "M0", "M90", "M180", "M270"]},
+        "pin_model": {
+          "type": "object",
+          "required": ["coordinate_system", "pins"],
+          "properties": {
+            "coordinate_system": {"enum": ["asc_symbol_anchor", "physical_anchor"]},
+            "pins": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "object",
+                "required": ["number", "name", "local", "side", "type", "roles"],
+                "properties": {
+                  "number": {"type": "string"},
+                  "name": {"type": "string"},
+                  "local": {"$ref": "#/$defs/point"},
+                  "side": {"enum": ["left", "right", "top", "bottom"]},
+                  "type": {"type": "string"},
+                  "roles": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "properties": {"type": "object"},
+        "placement_evidence": {
+          "type": "object",
+          "required": ["observed_count", "donor_max_count", "target_progression", "target_status", "mixed_family_status"],
+          "properties": {
+            "observed_count": {"type": "integer", "minimum": 0},
+            "donor_max_count": {"type": "integer", "minimum": 0},
+            "target_progression": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+            "target_status": {"type": "string"},
+            "mixed_family_status": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}

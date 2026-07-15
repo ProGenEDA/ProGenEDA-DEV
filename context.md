@@ -11842,3 +11842,70 @@ Visible assistant final response (verbatim):
 > I registered a dedicated `application/x-ltspice-schematic` MIME type, made `progeneda-ltspice.desktop` its default handler, and added a launcher that starts LTspice through the Nix Wine environment. KDE’s cache has been rebuilt.
 >
 > Verified with the generated regulated-5 V schematic: the file resolves to the new MIME type/default handler and LTspice launches successfully. The configuration lives outside the repository in `~/.local/bin`, `~/.local/share/applications`, and `~/.local/share/mime`.
+
+## 2026-07-15T07:25:00+05:00 — Donor-native LTspice correction and rebuild
+
+User request (verbatim):
+
+> now u can open and see what are u actually doing
+> what is is progeneda library? and are u using terminals not wires?
+> i think u have compleletly the wrong idea of what u are supposed to do
+> here ill explain to u so u can start doing it properly
+> u have donors, alot of donors, ull learn from them how to actually make a real replicas of files, as if hand made on the software itself
+> how ull do this? by learning from donors
+> lets take example of a resistor
+> u have resistor donors
+> component placer will learn from it how to place resistors. basically it will learn how to make file with resisters in it, it will see how 1 resistor act how 2 3 4 or as much as donor presents it, it will learn replicate then it will try to extend its abilities as far as it can in a simpliest manner. Currently our limit is under 20 to keep it simple. then it will see the next component learn how to do all this for it, then it will try to combine them, i.e. lets say it has succesfully reached 20 cap as well as resistor, it will see how to make a file with both resistor and cap, their different combinations like 10 reistos 5 cap more less and their limits of 20 res n 20 cap. then it will move on to next component, check its generation then combinations with previously supported ones. now max no of component in a single circuit will be 43, so as no of components increases the combination testing of all supported components in one single file will result in less n less no of each component, this is natural
+> after all the available components are done and placer is confident it can generate any combination of all these components or any no of them, with in arbitarily specified limit for the current sake of dev simplicity, it will move on to next py script, which in case of Ltspice will be property editor, it will learn again from donors and its own self assumptions how edits properties of each component, each component comes with alot of editable properties it will learn ideally all properties of all components or as much as it can. when it is confidant about editing properties, properties for example are resister name value its tolerance, for vsource it will be like the ac trasient wtc stuff we will move on to next important thing that is wiring. Ltspice will be wiring only
+> import the routing rust and pythong figuring out logic from Kicad folder, in kicad then again kicad then i think in pipeline ull find it.
+> repurpose it here, wiring only, all pins must must be connected, wires can touch each other, but must not touch components under any circumstances and ofcourse the beautifier that will change the components cordinates arrange them etc. u can see the arangement logic from kicad too.
+> how will all be managed? using catelogues and md file.
+> there will archietecture.md which will contain high defination detailed information of interna archieture of Ltspice files as well as generator.
+> there will be a main json catelogue, the placer will write it in it what components it supports, the properties editor will write it under each of those component what properties in can edit. it will also contain excate pin location of each component with respect to placed component so routing can use it.
+> exacte structure of main catelogue and temp catelogue also learn it from Kicad.
+> there will be another md file that contains information of this main catelogue but in text form along with what donors u think are need to support further stuff, forexample lets say u cannot figure out how to edit tolerance for resistor, or how to edit it when resistors are more tehn 10, then u mention it in this md file.
+> then a main ltspice root md file, containing all this text in detailed form i am giving u rn plus other basic information about the whole process.
+> and how ull test it? ur assumptions it? ull test by actually opening those files in ltpsice, like by double clicking then take screenshots and analysis those screenshots
+
+Visible assistant progress (verbatim):
+
+> You’re right. The current output uses owned `progeneda_*.asy` symbols and `FLAG` label fallbacks; that is not a hand-made LTspice replica. I’ll treat that as legacy prototype evidence, then rebuild the active path around donor-backed native symbols, native properties, physical wires only, and GUI-verified output.
+
+> I’ve verified your criticism against the donors: they use only LTspice stock symbols, direct `WIRE` records, and ground flags—never the custom `progeneda_*` library or named-terminal approach. I’ve put that old path behind a legacy boundary and am rebuilding the active path from donor evidence: native placement first, properties second, then physical routing and screen verification.
+
+> The first donor-native layer is now in place: a CP1252-aware donor parser has confirmed 41 real donor files (including diagonal wires), and the native writer rejects custom symbols, named flags, and unconnected pins. I’m connecting that to the shared JSON and the wire-only placer/router now; I also caught and am correcting an exact `Misc\\signal` path-escaping detail from the real LTspice records.
+
+> The shared JSON now drives a real stock-symbol circuit path. I’ve also moved the layout from a blind grid to a graph-layered placement pass, then reserved a physical return lane for ground; the first 20-passive ladder now routes and validates with 110 direct wires and no labels or custom assets.
+
+> I’ve also confirmed one important LTspice behavior empirically: a strict interior horizontal/vertical wire crossing is not a junction in LTspice 26, while endpoint/T/overlap contacts are. The router now preserves that distinction instead of treating all wire crossings as shorts.
+
+> I’m finishing the native path by carrying the generation timing contract into it, then I’ll rerun the donor-native tests and LTspice visual checks before committing the rebuild.
+
+> While auditing the donor facts, I found a real property gap rather than an intentional limitation: the `Misc\signal` donor’s AC and display records were parsed but not yet reachable from the shared JSON. I’m adding those exact donor-backed fields and the corresponding source-window fields now.
+
+> The first all-family fixture exposed a useful real-world failure: the shared KiCad normalizer replaced a blank `Misc\signal` source value with “Pin Header.” That is exactly the kind of cross-backend mutation this rebuild must block, so I’m preserving the original blank native source field through normalization rather than letting a generic fallback leak into the ASC.
+
+> The generated all-family schematic is now open in the installed LTspice GUI and visually checks out: real stock voltage/current/signal, R/C/L symbols, direct blue wires, and no custom symbols or load dialog. I’m doing the native netlist pass next, then I’ll record this as GUI evidence rather than merely claiming it opens.
+
+> The 20-source GUI fixture opened cleanly, but its initial layout revealed a readability issue: disconnected source/load pairs were being laid out as one very long row. I’m correcting the beautifier’s graph packing so independent blocks tile into a compact grid while retaining the same stock symbols, properties, nets, and direct-wire rules.
+
+> The bounded matrix is now real rather than just planned: all 36 family/count inputs generated actual stock-only ASC files, all six 20-count boundaries netlisted in LTspice, and the compact 20-source grid opened without an error dialog. I’m on the final regression and repository audit now.
+
+> One remaining gap is automation around the real-app check. I’ve been doing it manually through the desktop association; I’m adding that as an explicit GUI-verifier command now so future donor/count fixtures capture a screenshot and structured evidence instead of relying on ad hoc terminal steps.
+
+> The final audit is clean so far. I’m recording the donor-native decision trail and verification evidence in the repository context, then I’ll make the checkpoint commit and push it.
+
+Visible assistant final response (verbatim):
+
+> Done — the active LTspice generator is now donor-native and pushed to `main`.
+>
+> - Default generation uses only real stock `res`, `cap`, `ind`, `voltage`, `current`, `Misc\\signal`, `FLAG 0`, and direct `WIRE` records. `progeneda_*` assets and named terminals are legacy-only.
+> - It accepts the shared canonical JSON, validates the expected-netlist contract, records the permanent/native-live catalogues, supports donor-backed properties, and enforces the 43 logical-component cap.
+> - The 1/2/3/5/10/20 progression matrix generated 36 real `.asc` files; all six 20-count edge cases netlisted in installed LTspice. The all-family file and compact 20-source layout were also opened and screenshot-checked.
+> - Generation timing now reports an overdue state at 1× the expected duration and only fails/retracts downloads at 2×. A reusable GUI-evidence command is included.
+>
+> Actual generated file: [native_observed_family_mix.asc](/home/zaruka/Documents/kicad/ltspice/examples/progen_ltspice_donor_native_run_2026_07_15_021118_observed_family_mix_gui_checked/generation/native_observed_family_mix/project/native_observed_family_mix.asc). See [README](/home/zaruka/Documents/kicad/ltspice/README.md), [architecture](/home/zaruka/Documents/kicad/ltspice/ARCHITECTURE.md), [catalogue](/home/zaruka/Documents/kicad/ltspice/catalogues/ltspice_main_catalogue.json), [GUI evidence](/home/zaruka/Documents/kicad/ltspice/docs/NATIVE_GUI_VERIFICATION.md), and [known gaps](/home/zaruka/Documents/kicad/ltspice/docs/SUPPORT_GAPS.md).
+>
+> Verification: 90 passed, 1 optional test skipped; actual LTspice 26.0.2 netlists passed.
+>
+> Current boundary: the native path supports only these donor-backed families. Arbitrary ICs, semiconductors, vendor macromodels, and full per-property/per-mix GUI coverage remain explicitly tracked gaps—not guessed support.

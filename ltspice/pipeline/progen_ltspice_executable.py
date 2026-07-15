@@ -15,6 +15,7 @@ from typing import Any, Callable, Iterable
 
 from .component_placer import place_components
 from .component_selector import select_components
+from .donor_native_executable import run_donor_native_executable
 from .directive_validator import analysis_voltage_trace_nodes, translate_voltage_trace_labels, validate_analysis_references
 from .final_validator import build_final_validation
 from .input_adapter import canonicalize_source, write_json
@@ -756,6 +757,12 @@ def main() -> None:
     parser.add_argument("--outdir", type=Path, default=Path("ltspice/examples"), help="Parent directory for a new immutable run.")
     parser.add_argument("--label", default="ltspice", help="Human-readable immutable run label.")
     parser.add_argument(
+        "--engine",
+        choices=("donor_native", "legacy_prototype"),
+        default="donor_native",
+        help="Generation engine. donor_native is the stock-symbol, physical-wire default; legacy_prototype remains only for historical regression work.",
+    )
+    parser.add_argument(
         "--routing-mode",
         choices=("wire", "terminal", "combination"),
         help="Optional LTspice routing override. Omit to honor routing.mode from the shared JSON.",
@@ -775,17 +782,30 @@ def main() -> None:
         if args.events == "ndjson":
             print(json.dumps(payload, sort_keys=True), flush=True)
 
-    summary = run_executable(
-        args.source,
-        output_root=args.outdir,
-        label=args.label,
-        routing_mode=args.routing_mode,
-        oracle_command=parse_oracle_command(args.oracle_command) if args.oracle_command else None,
-        oracle_timeout_seconds=args.oracle_timeout,
-        oracle_path_style=args.oracle_path_style,
-        event_callback=emit if args.events == "ndjson" else None,
-        animation_budget_seconds=args.animation_budget_seconds,
-    )
+    if args.engine == "donor_native":
+        if args.routing_mode not in {None, "wire"}:
+            parser.error("donor_native uses physical wires only; terminal and combination routing are legacy prototype modes.")
+        if args.oracle_command:
+            parser.error("The donor_native executable currently records deterministic ASC validation only; use the GUI/netlist verifier for LTspice execution evidence.")
+        summary = run_donor_native_executable(
+            args.source,
+            output_root=args.outdir,
+            label=args.label,
+            event_callback=emit if args.events == "ndjson" else None,
+            animation_budget_seconds=args.animation_budget_seconds,
+        )
+    else:
+        summary = run_executable(
+            args.source,
+            output_root=args.outdir,
+            label=args.label,
+            routing_mode=args.routing_mode,
+            oracle_command=parse_oracle_command(args.oracle_command) if args.oracle_command else None,
+            oracle_timeout_seconds=args.oracle_timeout,
+            oracle_path_style=args.oracle_path_style,
+            event_callback=emit if args.events == "ndjson" else None,
+            animation_budget_seconds=args.animation_budget_seconds,
+        )
     if args.events == "ndjson":
         emit({"event": "complete", "summary": summary})
     else:

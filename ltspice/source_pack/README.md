@@ -1,4 +1,11 @@
-# LTspice Source Pack Policy
+# LTspice Source Pack Policy — legacy prototype only
+
+> **Not the active donor-native path.** This document describes the earlier
+> project-local-symbol prototype. Its generated `.asy` assets and model files
+> are forbidden in the current stock-symbol/direct-WIRE generator. For the
+> active policy read [../README.md](../README.md),
+> [../ARCHITECTURE.md](../ARCHITECTURE.md), and
+> [../docs/SUPPORT_GAPS.md](../docs/SUPPORT_GAPS.md).
 
 LTspice is proprietary, so this backend does not vendor or modify the LTspice
 executable or its `lib/sym` directory.

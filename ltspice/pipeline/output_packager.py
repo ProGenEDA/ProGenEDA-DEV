@@ -82,12 +82,17 @@ def package_output(
             user_entries.append((f"project/{path.name}", path.read_bytes()))
     if not any(name.endswith(".asc") for name, _ in user_entries):
         raise ValueError("Cannot package an LTspice user archive without an .asc schematic.")
+    native_stock_only = not any(name.lower().endswith((".asy", ".lib")) for name, _ in user_entries)
     user_entries.append(
         (
             "project/README_OPEN_IN_LTSPICE.txt",
             (
-                "Open the .asc file in LTspice. This archive keeps the required project-local .asy symbols and .lib models "
-                "in the same folder as the schematic; do not separate them.\n"
+                "Open the .asc file in LTspice. "
+                + (
+                    "This donor-native schematic uses LTspice stock-library symbols only; no project-local .asy or .lib asset is required.\n"
+                    if native_stock_only
+                    else "This project contains required project-local .asy symbols and .lib models; keep them in the same folder as the schematic.\n"
+                )
             ).encode("ascii"),
         )
     )

@@ -1,5 +1,13 @@
 # Local LTspice 26 Oracle Validation
 
+> **Legacy prototype scope.** This is a historical validation record from
+> before the donor-native rebuild. Its project-local `progeneda_*` symbols,
+> generated model libraries, terminal-style fixtures, and behavioural-model
+> results must not be cited as stock-symbol/direct-wire donor-native support.
+> Current native authority is [ARCHITECTURE.md](../ARCHITECTURE.md), the
+> [main catalogue](../catalogues/ltspice_main_catalogue.json), and
+> [SUPPORT_GAPS.md](SUPPORT_GAPS.md).
+
 Date: 2026-07-14 (Asia/Karachi)
 
 The user-authorized local install is LTspice 26.0.2.1 under the isolated Wine

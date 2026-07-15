@@ -1,0 +1,41 @@
+{
+  "schema": "progen-ltspice-native-recipe/v1",
+  "circuit_id": "DONOR_NATIVE_RC_PULSE",
+  "sheet": {"number": 1, "width": 880, "height": 680},
+  "components": [
+    {
+      "type": "VOLTAGE_SOURCE",
+      "ref": "V1",
+      "at": [208, -16],
+      "orientation": "R0",
+      "properties": {
+        "window.123": "0 0 Left 0",
+        "window.39": "0 0 Left 0",
+        "value.pulse": "PULSE(0 5 0 1u 1u 0.5m 1m 0)"
+      }
+    },
+    {
+      "type": "RESISTOR",
+      "ref": "R1",
+      "at": [432, -16],
+      "orientation": "R90",
+      "properties": {"value": "1k"}
+    },
+    {
+      "type": "CAPACITOR",
+      "ref": "C1",
+      "at": [448, 0],
+      "orientation": "R0",
+      "properties": {"value": "1µ"}
+    }
+  ],
+  "wires": [
+    [336, 0, 208, 0],
+    [464, 0, 416, 0],
+    [464, 80, 464, 64],
+    [464, 80, 208, 80],
+    [208, 96, 208, 80]
+  ],
+  "ground_flags": [[208, 96]],
+  "directives": [{"at": [224, 128], "text": ".tran 0 10ms 0.1u 1"}]
+}

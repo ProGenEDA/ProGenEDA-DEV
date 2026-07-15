@@ -1,216 +1,225 @@
-# ProGenEDA LTspice Backend
+# ProGenEDA LTspice — donor-native rebuild
 
-This directory is a deterministic LTspice adapter for the existing canonical
-ProGenEDA circuit JSON. It does not add an LTspice-only user input format.
+This directory is being rebuilt to generate real LTspice ASC schematics: files
+that use the installed LTspice stock symbols and open as though they had been
+drawn in LTspice itself. The design authority is the donor corpus in
+/home/zaruka/Documents/Ltspice/Donor, not a generic SPICE abstraction.
 
-```text
-loose/canonical ProGenEDA JSON
-→ shared input validator/fixer
-→ LTspice profile + model selection
-→ canonical-pin → native-SpiceOrder translation
-→ grid placement
-→ wire/terminal plan
-→ ASC + project-local ASY/LIB writing
-→ independent ASC/ASY parse and exact-net validation
-→ optional external LTspice oracle
-→ user project ZIP + private evidence ZIP
-```
+The user-facing input remains the shared canonical progen-kicad-circuit-ir/v1
+circuit JSON used by KiCad. LTspice does not get a second user-authored input
+format. The native backend resolves that JSON to the donor-backed catalogue,
+places native symbols, edits only approved native attributes, routes every
+electrical net with physical wires, then emits the ASC file.
 
-## Shared JSON contract
+## Important status boundary
 
-The input is the same `progen-kicad-circuit-ir/v1` main JSON consumed by the
-KiCad flow. LTspice records its selected profile in private generation
-evidence (`ltspice_profile`) and retains the original logical `kind`, pins,
-nets, project metadata, blocks, layout intent, `at`/`rotation`, and routing
-request. It does not require callers to translate a circuit into an
-LTspice-only JSON schema.
+The older code in pipeline/ was a useful prototype, but it is **not** the
+donor-native generation path. In particular, it can write progeneda_*.asy,
+progeneda_v1_models.lib, project-local approximations, and named
+FLAG/terminal fallbacks. Those are not hand-made LTspice replica files and
+must not be presented as such or used as the basis for new native features.
 
-When both canonical `nets` and `expected_netlist` are explicit endpoint lists,
-they must agree exactly; the adapter rejects a contradiction rather than
-merging it into a different circuit. The command-line routing override is
-optional. Without it, `routing.mode` from the source JSON is honored; strict
-`wire` mode fails rather than quietly falling back to terminal labels.
+Until a fixture is emitted by the donor-native writer, opened in the installed
+LTspice GUI, screenshot-checked, and recorded in the catalogue, it is not a
+release-ready native result. The default python -m ltspice command now selects
+the donor-native engine. Use --engine legacy_prototype only for historical
+regression investigation; it must not be used to claim donor-native output.
 
-There is one deliberate boundary: legacy backend-specific Proteus/CircuitIR
-formats are not interchangeable with canonical v1 JSON. They need a
-deterministic migration into the shared contract first. Unsupported logical
-parts are rejected with their selection stage and reason; the backend never
-guesses a digital IC or vendor model.
+`donor_observed` is deliberately not the same thing as `supported`: it means
+that the donor parser has evidence for the native record, stock symbol, and
+pin geometry. A family becomes supported only after its generated count,
+property, mixed-wire, GUI, and (where applicable) netlist checks have been
+recorded. The present generator can emit bounded **candidate** ASC files for
+the donor-observed families; the required per-family acceptance matrix is
+tracked in [the support-gap register](docs/SUPPORT_GAPS.md).
 
-## Run it
+## Non-negotiable output rules
+
+- Use only donor-proven installed stock symbols such as `res`, `cap`, `ind`,
+  `voltage`, `current`, and `Misc\\signal`; add another symbol only after it has
+  donor and installed-library evidence.
+- Every non-ground electrical connection is a direct physical WIRE path.
+  No named-net labels, virtual anchors, synthetic terminals, or hidden
+  connectivity substitutes are permitted.
+- FLAG x y 0 is allowed only for a real ground anchor. It never replaces a
+  normal wire or an arbitrary terminal label.
+- A wire may intentionally join another wire on its own net, but it must not
+  touch a component body or a pin belonging to another net. LTspice 26
+  netlisting has verified that a horizontal and vertical WIRE may cross at
+  the strict interior of both segments without becoming a junction. A T,
+  endpoint touch, or collinear overlap across different nets remains a hard
+  error. Native LTspice permits straight diagonal WIRE records too; the
+  initial beautifier prefers orthogonal runs without rejecting donor-proven
+  diagonals.
+- Do not package custom .asy symbols or a generated model library merely to
+  make a file render. Do not turn an unproven property into a made-up
+  SpiceLine field.
+- Native ASC coordinates use the observed 16-unit grid and may be negative.
+  Native values requiring the micro symbol retain donor-compatible CP1252
+  output rather than being silently changed into a custom attribute.
+
+## The donor-first build order
+
+1. **Learn placement one family at a time.** Parse the donors, record stock
+   symbol syntax, exact pin offsets, body geometry, orientations, and observed
+   count patterns. Generate and GUI-check count fixtures for 1, 2, 3, 5, 10,
+   and 20 instances of each family.
+2. **Learn combinations progressively.** Once two families pass on their
+   own, generate physically wired mixes. Keep increasing supported families
+   while holding the complete canonical circuit to a maximum of **43 logical
+   components**. A logical `GND` counts toward that cap even though native ASC
+   writes it as `FLAG x y 0`, not a `SYMBOL`; the test matrix naturally gives
+   each family fewer instances as more families are included.
+3. **Learn native property editing.** For each placed family, vary only
+   donor-proven SYMATTR/WINDOW records and whitelisted SpiceLine keys. Record
+   their syntax, accepted value grammar, effect, evidence, and GUI result in
+   the catalogue. Unknown properties are rejected, not guessed.
+4. **Route wires only.** Adapt the KiCad Python planner, geometry validator,
+   live-routing-state, arrangement, and beautifier logic to LTspice stock pin
+   anchors. Every canonical net must become one physically connected wire
+   tree. A collision, unconnected pin, foreign-pin touch, or partial route is
+   a hard failure.
+5. **Beautify without changing topology.** Move/rotate components only to
+   improve readability, spacing, and wire length; then revalidate the exact
+   physical connectivity and all body clearances.
+6. **Verify in the actual application.** Open the generated ASC through the
+   installed LTspice desktop association, capture the LTspice schematic
+   window, inspect the screenshot for native symbols/wires/errors, and run
+   netlisting or batch analysis when the fixture has an analysis directive.
+
+The 43-component ceiling is a development and verification limit, not a claim
+that every arbitrary LTspice component is already supported.
+
+## Run the active generator
 
 From the repository root:
 
-```bash
-PYTHONPATH=. python -m ltspice path/to/circuit.json \
-  --outdir ltspice/examples --label first_run --events ndjson
-```
+    PYTHONPATH=. python -m ltspice kicad/examples/rc_lowpass.json --outdir ltspice/examples --label native_rc
 
-Only an accepted native validation produces:
+The default engine writes one stock-library ASC, an internal live-catalogue
+snapshot, and a user ZIP containing only the ASC and open-in-LTspice note.
+It rejects terminal/label routing modes, custom symbols, generated model
+libraries, unregistered components, unproved properties, foreign-pin contact,
+and incomplete physical nets.
 
-```text
-outputs/<circuit-id>/user_project/PROGEN_LTSPICE_PROJECT.zip
-```
+This command performs deterministic generation and static physical-wire
+validation. Opening the result in the LTspice desktop application and
+capturing/assessing its screenshot is the separate acceptance workflow below;
+it is not yet an automatic per-invocation release gate.
 
-The internal bundle contains the original input, canonical JSON, selection,
-placement, wire plan, model resolution, parser output, and all validation
-reports. It must not be served to users.
+## Generation progress and timing policy
 
-For a client that knows its animation duration, pass it explicitly instead of
-letting the backend guess:
+The native engine emits real started/completed/failed events for its eight
+deterministic stages: canonicalize input, resolve donor catalogue, place stock
+symbols, beautify layout, route physical wires, write ASC, validate ASC, and
+package artifacts. A client may opt into the animation watchdog by providing
+its own duration:
 
-```bash
-PYTHONPATH=. python -m ltspice path/to/circuit.json \
-  --animation-budget-seconds 20 --events ndjson
-```
+    PYTHONPATH=. python -m ltspice INPUT.json --animation-budget-seconds 20 --events ndjson
 
-This emits an overdue timing event at 20 seconds and, at 40 seconds, emits the
-required hard-failure event and suppresses the user archive. There is no
-default duration. The release gate is atomic: an archive is not announced
-until it, its internal manifest, and the timing check have all completed.
+There is no inferred default duration. With an explicit budget, the watchdog
+emits a `timing` event at **1×** with “Taking longer than expected—please hold
+on.” The download stays hidden while the generator continues. At **2×**, it
+emits the deterministic failure “Generation took longer than allowed time.
+Please try a simpler circuit.”, records timing evidence, and suppresses or
+retracts the user ZIP/output manifest. Artifact release is approved only after
+the package stage completes within the hard deadline, so the UI must never show
+an empty or premature download box.
 
-## Installed-LTspice oracle
+Use the historical prototype only when deliberately investigating its old
+artifacts:
 
-Static validation never requires LTspice. When an authorized local install is
-available, an external command can additionally netlist and batch-simulate the
-generated project:
+    PYTHONPATH=. python -m ltspice INPUT.json --engine legacy_prototype
 
-```bash
-PYTHONPATH=. python -m ltspice input.json \
-  --oracle-command 'ltspice.exe' \
-  --oracle-path-style native
-```
+## Authoritative records
 
-`wine_z` is available for a Wine oracle whose LTspice command expects a
-`Z:\...` Windows path. Oracle simulation is additional evidence; the parser's
-exact endpoint comparison remains mandatory.
+- [Donor-native architecture](ARCHITECTURE.md) defines evidence levels,
+  pipeline boundaries, routing invariants, and GUI acceptance criteria.
+- [Permanent native main catalogue](catalogues/ltspice_main_catalogue.json)
+  is the machine-readable authority for every observed component, exact stock
+  pin anchor, legal orientation, and editable native property.
+- [Catalogue schema](catalogues/ltspice_main_catalogue.schema.json) and its
+  [strict loader](catalogues/ltspice_main_catalogue_loader.py) prevent a
+  generic fallback from inventing a symbol or property.
+- [Support gaps and donor requests](docs/SUPPORT_GAPS.md) records what has
+  been observed, what still needs generated/GUI proof, and which donor files
+  would unblock each gap.
+- [Native GUI verification evidence](docs/NATIVE_GUI_VERIFICATION.md) records
+  the local all-family mixed smoke test separately from full support promotion.
+- [Historical donor coverage](docs/LTSPICE_DONOR_COVERAGE.md) and
+  [old oracle record](docs/LTSPICE_26_ORACLE_VALIDATION.md) retain useful
+  investigation evidence from the prototype. They do not upgrade a
+  project-local-symbol or terminal-based result to donor-native status.
 
-This workstation has LTspice 26.0.2.1 installed in the isolated user prefix
-`~/.local/share/progeneda-ltspice-wine`. Its tested command shape is:
+## Current native evidence baseline
 
-```bash
-PYTHONPATH=. python -m ltspice input.json \
-  --oracle-command "env WINEPREFIX=$HOME/.local/share/progeneda-ltspice-wine WINEDEBUG=-all nix shell --impure nixpkgs#wineWow64Packages.stable -c wine 'C:\\Program Files\\ADI\\LTspice\\LTspice.exe'" \
-  --oracle-path-style wine_z
-```
+The catalogue currently records donor observations for resistor, capacitor,
+inductor, voltage source, current source, `Misc\\signal`, and ground. This means
+their native records have evidence; it does **not** mean the new placer,
+property editor, wire router, and GUI fixture matrix have all passed yet.
 
-The oracle runs `-netlist` and, when an allowed analysis card exists, `-b`.
-An LTspice log that reports an unknown parameter/model parameter is a failed
-oracle result, not a warning that can be packaged as a pass.
-Likewise, a successful LTspice process exit does not override an explicit
-floating-node warning or an ignored invalid `PULSE` cycle count: both are
-reported as blocking oracle errors.
-The command is never evaluated by a shell; `$HOME`/other environment variables
-and `~` are expanded token-by-token before it is invoked.
-When an export is available, the backend also compares LTspice's actual
-instance node partition against the planned native endpoints. This catches a
-simulator-visible short, split net, or pin-order mismatch even when the static
-ASC parser agrees with the writer.
+Observed donor maxima are 11 resistors, 6 capacitors, 6 inductors, 2 voltage
+sources, 2 current sources, and 1 `Misc\\signal` in a single donor. The
+generator must extend these carefully through deterministic fixtures rather
+than treating the old project-local model catalogue as support evidence.
 
-## Safe editor contract
+One all-observed-family mixed source/R/C/L/current/`Misc\\signal` GUI smoke
+fixture has been opened and netlisted in LTspice 26.0.2. Its exact scope and
+local evidence paths are in [NATIVE_GUI_VERIFICATION.md](docs/NATIVE_GUI_VERIFICATION.md);
+it is deliberately not counted as the full per-family matrix.
 
-`value_editor.py` provides the normal-mode editor schema and deterministic
-edit application. It permits only profile-approved fields:
+To repeat the desktop evidence capture through the registered double-click
+association rather than improvising a shell command:
 
-- values and structured primitive parameters;
-- safe component-reference rename with every `REF.PIN` endpoint rewritten;
-- explicitly classified metadata such as tolerance or power rating.
+    PYTHONPATH=. python -m ltspice.pipeline.native_gui_verifier GENERATED.asc \
+      --screenshot /tmp/ltspice-check.png --evidence /tmp/ltspice-check.json
 
-It does not accept raw `SpiceLine` injection. Full raw JSON/ASC editing belongs
-to an admin/demo-only surface and must rerun the same parser, pin, model, value,
-and connectivity validators before an artifact can be released.
+The verifier performs the static native boundary check, opens the ASC with
+`xdg-open`, captures the active window, and writes a review checklist. It
+does not auto-promote a component: the screenshot still needs visual review.
 
-Normal source waveforms are numeric-only and arity checked (`PULSE`, `SINE`,
-`EXP`, `SFFM`, `PWL`). Conflicting DC/waveform fields are rejected rather than
-silently choosing one. Analysis cards are similarly narrow: `.ac`, `.dc`,
-`.tran`, `.op`, `.tf`, `.noise`, `.four`, and explicit `.save`; external
-includes and control cards are refused. Referenced sweep/current sources are
-checked against selected components before static packaging.
-When `PULSE` uses its optional eighth `Ncycles` argument, it must be a
-positive integer; omit it for continuous pulses. This prevents LTspice from
-silently ignoring an invalid cycle count.
+To reproduce the bounded placement progression itself:
 
-The normal-mode field schema also marks each property effect:
+    PYTHONPATH=. python -m ltspice.pipeline.donor_native_fixture_matrix /tmp/ltspice-native-matrix
+    PYTHONPATH=. python -m ltspice /tmp/ltspice-native-matrix --outdir ltspice/examples --label progression
 
-- `native_instance_or_subcircuit` is emitted on the primitive or project-local
-  subcircuit instance;
-- `native_model_card` is emitted into a deterministic per-instance `.model`
-  card (currently switch Ron/Roff/Vt/Vh and LED forward-voltage approximation);
-- `design_evidence_only` is safely retained for documentation but cannot be
-  mistaken for a simulation-changing field.
+That writes and generates the six 1/2/3/5/10/20 family progressions; it is
+an evidence generator, not a substitute for GUI review of each output.
 
-Presence-only LTspice attributes such as `off` and current-source `load` have
-native boolean semantics: true emits the bare attribute, while false removes
-it. They are never serialized as invalid text such as `off=False`.
+## Working with the canonical JSON
 
-The same schema also exposes deterministic numeric constraints to the UI:
-physical R/C/L/fuse values and positive model quantities must be greater than
-zero; parasitic areas/resistances and dropout quantities are nonnegative; a
-potentiometer wiper is in `[0, 1]`; the generic LED reference voltage is in
-`[0.2, 5] V`; and a switch must have `Roff > Ron`. This is intentionally a
-safe normal-mode contract rather than a claim that raw SPICE can never model
-an exotic ideal or negative-valued element.
+The canonical JSON keeps project, components, nets, expected_netlist, routing,
+and layout_intent. The shared canonicalizer and the active donor-native adapter
+both verify that `expected_netlist` matches the explicit `nets` endpoint
+partition; the adapter then uses those nets as physical routing authority and
+forces wire-only mode. Generic `at` layout intent is not treated as an ASC
+coordinate; native `ltspice_at` is the explicit coordinate override. A
+component not present in the native main catalogue, a property absent from its
+approved native property list, or a net that cannot be physically routed is
+rejected with a deterministic diagnostic.
 
-For example, a generic OPAMP exposes `a0`, `gain_bandwidth`, `slew_rate`, and
-`rout` through its parameterized, single-pole/slew-limited project-local model.
-The generic LED `forward_voltage` calibrates its labelled `Is` saturation
-current for the requested drop at 10 mA and 27 °C; LED colour remains design
-metadata. The model-resolution report records every approximation and model
-binding.
+Normal editing exposes only catalogue-approved and adapter-implemented fields,
+such as a native reference, value, donor-proven passive/source parameter, or
+donor-proven source display window. The root
+`normal_editor.adapter_implemented_properties` map is the exact normal-mode
+allow-list; any future donor-observed record remains unavailable until it is
+added there with deterministic validation. Advanced raw ASC or JSON editing
+belongs to the demo/admin surface and must pass the same catalogue, pin-anchor,
+physical-wire, geometry, ASC parse, and LTspice GUI checks before it can be
+released.
 
-## Supported initial slice
+## Evidence workflow for contributors
 
-Native primitive simulation: `R`, `C`, `C_ELEC`/`CP`, `L`, `VDC`, `VAC`,
-`VSIN`, `VPULSE`, `I`/`IDC`/`IPULSE`/`ISIN`, `VCVS`/`E`, `VCCS`/`G`, `FUSE` (a documented low-resistance
-approximation), and `GND`. Controlled sources use the native four-terminal
-order `OUT+`, `OUT-`, `CTRL+`, `CTRL-`; normal-mode VCVS gain is dimensionless
-and VCCS transconductance accepts a bare siemens scalar (or an `S` suffix).
+1. Add or identify a donor that was created/opened in LTspice.
+2. Parse it without normalizing away its native record ordering, CP1252 text,
+   negative coordinates, or diagonal wires.
+3. Update the main catalogue only with facts the donor and installed stock ASY
+   support.
+4. Add placement/property/mixed-wire fixtures within the 43-part cap.
+5. Open each generated ASC in LTspice, save a screenshot and structured
+   assessment, then mark the catalogue evidence as GUI-verified.
+6. If a fact cannot be proven, add it to docs/SUPPORT_GAPS.md instead of
+   encoding an approximation.
 
-Project-local model support: generic/named diode profiles, `LED`, `NPN`, `PNP`,
-`NMOS`, `PMOS`, `2N7000`, `BS170`, `SW`, `POT`, `OPAMP`, `LM741`, and an
-evidence-labelled behavioural `LM7805` approximation. `DC_BARREL_JACK`,
-`SCREW_TERMINAL_2`/`CONN_2`, `CONN_3`, `CONN_4`, `TESTPOINT`, and power-net
-symbols are supported as explicit interface-only canonical terminals: their
-nets become native LTspice labels, not fake simulated components.
-
-Named approximations are deliberately labelled as such in output reports; they
-are not claimed to be manufacturer-verified models. The portable archive owns
-its small ASY geometry and generated model text, not LTspice's installed symbol
-library.
-
-Canonical pin numbers are never assumed to equal LTspice pin order. Each
-profile has a deterministic canonical-pin mapping, recorded in internal
-evidence before routing. Three-pin BJT and monolithic-MOS profiles are emitted
-as project-local `X` subcircuits so their internal substrate/bulk connection is
-explicit (emitter/source respectively), avoiding an accidental hidden ground
-node. A future explicit-body MOS profile can be added without changing the
-shared circuit schema.
-
-The router writes a bounded, deterministic Manhattan tree for a safe
-three-or-more-pin non-ground net when it can prove every junction belongs to
-that same net and no foreign pin or existing wire is touched. It is not a
-general maze autorouter: crowded or ambiguous trees deliberately fall back to
-native LTspice terminal flags, which preserve connectivity without inventing a
-short.
-
-## Format evidence
-
-The writer emits ASCII `Version 4.1`, `SHEET`, `SYMBOL`, `SYMATTR`, `WIRE`,
-`FLAG`, and `TEXT` records. Its parser accepts mixed-case donor records,
-UTF-8, and legacy CP1252 input (including the donor micro byte), and preserves
-unknown ASC records for inspection. All generated symbols are project-local
-`.asy` files with explicit `PINATTR SpiceOrder`; electrical validation uses
-SpiceOrder rather than a display pin name or declaration order.
-
-The NDJSON stage events are the UI progress contract: they report actual
-started/completed/failed native stages, including validation and oracle status.
-The client must keep the download state hidden until `package_artifacts`
-completes. With an explicit animation budget it also receives real `timing`
-events: “Taking longer than expected—please hold on” at 1× and “Generation
-took longer than allowed time. Please try a simpler circuit.” at 2×. The
-oracle subprocesses are capped by the same remaining hard deadline.
-
-See [source_pack/README.md](source_pack/README.md) for provenance and the
-asset policy, [local LTspice 26 oracle evidence](docs/LTSPICE_26_ORACLE_VALIDATION.md),
-the [donor-coverage record](docs/LTSPICE_DONOR_COVERAGE.md), and [tests](tests/)
-for regression coverage.
+This makes the catalogue, tests, generated ASC files, and screenshots agree on
+what the backend can genuinely produce.

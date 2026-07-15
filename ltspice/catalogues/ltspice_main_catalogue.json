@@ -1,0 +1,278 @@
+{
+  "schema": "progen-ltspice-native-main-catalogue/v1",
+  "unit": "ltspice_asc_grid",
+  "grid": 16,
+  "max_components_per_circuit": 43,
+  "source_of_truth": "donor ASC files plus the installed LTspice 26 stock symbol library",
+  "native_output_policy": {
+    "stock_symbols_only": true,
+    "ordinary_connectivity": "direct physical WIRE records only",
+    "permitted_flag": "FLAG X Y 0 at a physical ground wire endpoint only",
+    "forbidden": [
+      "named-net labels",
+      "named FLAG terminals",
+      "virtual anchors",
+      "synthetic terminals",
+      "progeneda custom ASY symbols",
+      "generated model libraries"
+    ]
+  },
+  "status_semantics": {
+    "donor_observed": "Donor syntax, stock symbol/pin geometry, and listed attributes were observed; this is not a completed generated-fixture or GUI support claim.",
+    "gui_verified": "A generated fixture was opened and screenshot-assessed in the installed LTspice GUI.",
+    "supported": "The required count, property, mixed-wire, GUI, and applicable netlist evidence has been recorded."
+  },
+  "normal_editor": {
+    "status": "all_current_catalogue_properties_mapped",
+    "adapter_implemented_properties": {
+      "RESISTOR": ["reference", "value", "spice_line.tol", "spice_line.pwr"],
+      "CAPACITOR": ["reference", "value"],
+      "INDUCTOR": ["reference", "value", "spice_line.Ipk", "spice_line.Rser", "spice_line.Rpar", "spice_line.Cpar"],
+      "VOLTAGE_SOURCE": ["reference", "value.dc", "value.sine", "value.pulse", "value2.ac", "window.123", "window.39"],
+      "CURRENT_SOURCE": ["reference", "value.dc", "window.123", "window.39"],
+      "SIGNAL_SOURCE": ["reference", "value", "value2.ac", "window.123", "window.39"],
+      "GROUND": []
+    },
+    "donor_observed_but_not_normal_editor_mapped": {},
+    "advanced_raw_asc": {
+      "available": false,
+      "reason": "Raw edit mode needs a separately permission-gated deterministic validator before it can be released."
+    }
+  },
+  "generated_evidence": {
+    "all_observed_family_mix_2026_07_15": {
+      "status": "gui_smoke_verified_not_support_promotion",
+      "documentation": "docs/NATIVE_GUI_VERIFICATION.md",
+      "source_json": "examples/native_observed_family_mix.json",
+      "families": ["RESISTOR", "CAPACITOR", "INDUCTOR", "VOLTAGE_SOURCE", "CURRENT_SOURCE", "SIGNAL_SOURCE", "GROUND"],
+      "limitation": "One mixed GUI/netlist smoke fixture; it does not complete the 1/2/3/5/10/20 family matrix or promote any component status."
+    },
+    "placement_progression_matrix_2026_07_15": {
+      "status": "static_asc_and_count20_netlist_verified_not_support_promotion",
+      "documentation": "docs/NATIVE_GUI_VERIFICATION.md",
+      "source_json": "pipeline/donor_native_fixture_matrix.py",
+      "families": ["RESISTOR", "CAPACITOR", "INDUCTOR", "VOLTAGE_SOURCE", "CURRENT_SOURCE", "SIGNAL_SOURCE", "GROUND"],
+      "limitation": "All 36 1/2/3/5/10/20 sources generated stock-only ASC files; each six count-20 output was netlisted and one count-20 signal source case opened/screenshot-checked. Individual GUI review and the progressive mixed-family matrix remain incomplete."
+    }
+  },
+  "components": {
+    "RESISTOR": {
+      "aliases": ["R", "RES", "RESISTOR"],
+      "category": "passive",
+      "status": "donor_observed",
+      "native": {
+        "symbol": "res",
+        "stock_library_path": "lib/sym/res.asy",
+        "record": "SYMBOL res X Y ORIENTATION",
+        "prefix": "R",
+        "donor_evidence": ["resis.asc", "resis_13k_namechanged_manyresisnovalornamechange.asc", "resis15k_1%tolerance_120Wpowerrarting.asc"]
+      },
+      "body": {
+        "coordinate_system": "asc_symbol_anchor",
+        "local_bounds": {"left": 0, "right": 32, "top": 16, "bottom": 96},
+        "wire_clearance": 16
+      },
+      "legal_orientations": ["R0", "R90", "R180", "R270", "M270"],
+      "default_orientation": "R0",
+      "pin_model": {
+        "coordinate_system": "asc_symbol_anchor",
+        "pins": {
+          "1": {"number": "1", "name": "A", "local": [16, 16], "side": "top", "type": "passive", "roles": ["passive"]},
+          "2": {"number": "2", "name": "B", "local": [16, 96], "side": "bottom", "type": "passive", "roles": ["passive"]}
+        }
+      },
+      "properties": {
+        "reference": {"record": "SYMATTR InstName", "syntax": "native_text", "effect": "display_and_instance_identity", "support_state": "donor_proven", "evidence": ["resis_13k_namechanged.asc"]},
+        "value": {"record": "SYMATTR Value", "syntax": "spice_scalar", "effect": "resistance", "support_state": "donor_proven", "evidence": ["resis_13k.asc", "resis15k_1%tolerance.asc"]},
+        "spice_line.tol": {"record": "SYMATTR SpiceLine", "syntax": "tol=<percent>", "effect": "native_attribute", "support_state": "donor_proven", "evidence": ["resis15k_1%tolerance.asc"]},
+        "spice_line.pwr": {"record": "SYMATTR SpiceLine", "syntax": "pwr=<power>", "effect": "native_attribute", "support_state": "donor_proven", "evidence": ["resis15k_1%tolerance_120Wpowerrarting.asc"]}
+      },
+      "placement_evidence": {"observed_count": 85, "donor_max_count": 11, "target_progression": [1, 2, 3, 5, 10, 20], "target_status": "pending_gui_generation", "mixed_family_status": "donor_proven_RCLV"}
+    },
+    "CAPACITOR": {
+      "aliases": ["C", "CAP", "CAPACITOR"],
+      "category": "passive",
+      "status": "donor_observed",
+      "native": {
+        "symbol": "cap",
+        "stock_library_path": "lib/sym/cap.asy",
+        "record": "SYMBOL cap X Y ORIENTATION",
+        "prefix": "C",
+        "donor_evidence": ["cap.asc", "cap_12u_manycenovalue.asc", "Draft7 lab 4].asc"]
+      },
+      "body": {
+        "coordinate_system": "asc_symbol_anchor",
+        "local_bounds": {"left": 0, "right": 32, "top": 0, "bottom": 64},
+        "wire_clearance": 16
+      },
+      "legal_orientations": ["R0", "R90"],
+      "default_orientation": "R0",
+      "pin_model": {
+        "coordinate_system": "asc_symbol_anchor",
+        "pins": {
+          "1": {"number": "1", "name": "A", "local": [16, 0], "side": "top", "type": "passive", "roles": ["passive"]},
+          "2": {"number": "2", "name": "B", "local": [16, 64], "side": "bottom", "type": "passive", "roles": ["passive"]}
+        }
+      },
+      "properties": {
+        "reference": {"record": "SYMATTR InstName", "syntax": "native_text", "effect": "display_and_instance_identity", "support_state": "donor_proven", "evidence": ["cap_12u_namechange.asc"]},
+        "value": {"record": "SYMATTR Value", "syntax": "spice_scalar_with_native_micro_display", "effect": "capacitance", "support_state": "donor_proven", "evidence": ["cap_12u.asc", "cap_12u_manycenovalue.asc"]}
+      },
+      "placement_evidence": {"observed_count": 15, "donor_max_count": 6, "target_progression": [1, 2, 3, 5, 10, 20], "target_status": "pending_gui_generation", "mixed_family_status": "donor_proven_RCLV"}
+    },
+    "INDUCTOR": {
+      "aliases": ["L", "IND", "INDUCTOR"],
+      "category": "passive",
+      "status": "donor_observed",
+      "native": {
+        "symbol": "ind",
+        "stock_library_path": "lib/sym/ind.asy",
+        "record": "SYMBOL ind X Y ORIENTATION",
+        "prefix": "L",
+        "donor_evidence": ["inductor.asc", "inducto_12H_peakcurrent2A_seriesresistance43_parralresistance21parralcap12F_manysimpelind.asc"]
+      },
+      "body": {
+        "coordinate_system": "asc_symbol_anchor",
+        "local_bounds": {"left": 0, "right": 32, "top": 16, "bottom": 96},
+        "wire_clearance": 16
+      },
+      "legal_orientations": ["R0", "R90"],
+      "default_orientation": "R0",
+      "pin_model": {
+        "coordinate_system": "asc_symbol_anchor",
+        "pins": {
+          "1": {"number": "1", "name": "A", "local": [16, 16], "side": "top", "type": "passive", "roles": ["passive"]},
+          "2": {"number": "2", "name": "B", "local": [16, 96], "side": "bottom", "type": "passive", "roles": ["passive"]}
+        }
+      },
+      "properties": {
+        "reference": {"record": "SYMATTR InstName", "syntax": "native_text", "effect": "display_and_instance_identity", "support_state": "donor_proven", "evidence": ["inductor.asc"]},
+        "value": {"record": "SYMATTR Value", "syntax": "spice_scalar", "effect": "inductance", "support_state": "donor_proven", "evidence": ["inducto_12H.asc"]},
+        "spice_line.Ipk": {"record": "SYMATTR SpiceLine", "syntax": "Ipk=<current>", "effect": "native_attribute", "support_state": "donor_proven", "evidence": ["inducto_12H_peakcurrent2A.asc"]},
+        "spice_line.Rser": {"record": "SYMATTR SpiceLine", "syntax": "Rser=<resistance>", "effect": "native_attribute", "support_state": "donor_proven", "evidence": ["inducto_12H_peakcurrent2A_seriesresistance43.asc"]},
+        "spice_line.Rpar": {"record": "SYMATTR SpiceLine", "syntax": "Rpar=<resistance>", "effect": "native_attribute", "support_state": "donor_proven", "evidence": ["inducto_12H_peakcurrent2A_seriesresistance43_parralresistance21.asc"]},
+        "spice_line.Cpar": {"record": "SYMATTR SpiceLine", "syntax": "Cpar=<capacitance>", "effect": "native_attribute", "support_state": "donor_proven", "evidence": ["inducto_12H_peakcurrent2A_seriesresistance43_parralresistance21parralcap12F.asc"]}
+      },
+      "placement_evidence": {"observed_count": 14, "donor_max_count": 6, "target_progression": [1, 2, 3, 5, 10, 20], "target_status": "pending_gui_generation", "mixed_family_status": "donor_proven_RCLV"}
+    },
+    "VOLTAGE_SOURCE": {
+      "aliases": ["V", "VDC", "VOLTAGE", "VOLTAGE_SOURCE"],
+      "category": "source",
+      "status": "donor_observed",
+      "native": {
+        "symbol": "voltage",
+        "stock_library_path": "lib/sym/voltage.asy",
+        "record": "SYMBOL voltage X Y ORIENTATION",
+        "prefix": "V",
+        "donor_evidence": ["Voltagesource.asc", "Voltagesource_10v.asc", "Draft7 lab 4].asc"]
+      },
+      "body": {
+        "coordinate_system": "asc_symbol_anchor",
+        "local_bounds": {"left": -32, "right": 32, "top": 16, "bottom": 96},
+        "wire_clearance": 16
+      },
+      "legal_orientations": ["R0"],
+      "default_orientation": "R0",
+      "pin_model": {
+        "coordinate_system": "asc_symbol_anchor",
+        "pins": {
+          "1": {"number": "1", "name": "+", "local": [0, 16], "side": "top", "type": "source", "roles": ["positive", "source"]},
+          "2": {"number": "2", "name": "-", "local": [0, 96], "side": "bottom", "type": "return", "roles": ["negative", "return"]}
+        }
+      },
+      "properties": {
+        "reference": {"record": "SYMATTR InstName", "syntax": "native_text", "effect": "display_and_instance_identity", "support_state": "donor_proven", "evidence": ["Voltagesource.asc"]},
+        "value.dc": {"record": "SYMATTR Value", "syntax": "spice_scalar", "effect": "DC_source_definition", "support_state": "donor_proven", "evidence": ["Voltagesource_10v.asc"]},
+        "value.sine": {"record": "SYMATTR Value", "syntax": "SINE(<native arguments>)", "effect": "transient_source_definition", "support_state": "donor_proven", "evidence": ["Draft5.asc"]},
+        "value.pulse": {"record": "SYMATTR Value", "syntax": "PULSE(<native arguments>)", "effect": "transient_source_definition", "support_state": "donor_proven", "evidence": ["Draft7 lab 4].asc"]},
+        "value2.ac": {"record": "SYMATTR Value2", "syntax": "AC <magnitude>", "effect": "AC_source_definition", "support_state": "donor_proven", "evidence": ["Draft7.asc"]},
+        "window.123": {"record": "WINDOW 123", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["Draft7 lab 4].asc"]},
+        "window.39": {"record": "WINDOW 39", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["Draft7 lab 4].asc"]}
+      },
+      "placement_evidence": {"observed_count": 23, "donor_max_count": 2, "target_progression": [1, 2, 3, 5, 10, 20], "target_status": "pending_gui_generation", "mixed_family_status": "donor_proven_RCLV"}
+    },
+    "CURRENT_SOURCE": {
+      "aliases": ["I", "CURRENT", "CURRENT_SOURCE"],
+      "category": "source",
+      "status": "donor_observed",
+      "native": {
+        "symbol": "current",
+        "stock_library_path": "lib/sym/current.asy",
+        "record": "SYMBOL current X Y ORIENTATION",
+        "prefix": "I",
+        "donor_evidence": ["currentsource.asc", "currentsource_13A.asc", "Draft8.asc"]
+      },
+      "body": {
+        "coordinate_system": "asc_symbol_anchor",
+        "local_bounds": {"left": -32, "right": 32, "top": 0, "bottom": 80},
+        "wire_clearance": 16
+      },
+      "legal_orientations": ["R0", "R90"],
+      "default_orientation": "R0",
+      "pin_model": {
+        "coordinate_system": "asc_symbol_anchor",
+        "pins": {
+          "1": {"number": "1", "name": "+", "local": [0, 0], "side": "top", "type": "source", "roles": ["positive", "source"]},
+          "2": {"number": "2", "name": "-", "local": [0, 80], "side": "bottom", "type": "return", "roles": ["negative", "return"]}
+        }
+      },
+      "properties": {
+        "reference": {"record": "SYMATTR InstName", "syntax": "native_text", "effect": "display_and_instance_identity", "support_state": "donor_proven", "evidence": ["currentsource.asc"]},
+        "value.dc": {"record": "SYMATTR Value", "syntax": "spice_scalar", "effect": "DC_source_definition", "support_state": "donor_proven", "evidence": ["currentsource_13A.asc"]},
+        "window.123": {"record": "WINDOW 123", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["currentsource_13A.asc"]},
+        "window.39": {"record": "WINDOW 39", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["currentsource_13A.asc"]}
+      },
+      "placement_evidence": {"observed_count": 4, "donor_max_count": 2, "target_progression": [1, 2, 3, 5, 10, 20], "target_status": "pending_gui_generation", "mixed_family_status": "donor_proven_RVI"}
+    },
+    "SIGNAL_SOURCE": {
+      "aliases": ["MISC_SIGNAL", "SIGNAL"],
+      "category": "source",
+      "status": "donor_observed",
+      "native": {
+        "symbol": "Misc\\\\signal",
+        "stock_library_path": "lib/sym/Misc/signal.asy",
+        "record": "SYMBOL Misc\\\\signal X Y ORIENTATION",
+        "prefix": "V",
+        "donor_evidence": ["Draft8.asc"]
+      },
+      "body": {
+        "coordinate_system": "asc_symbol_anchor",
+        "local_bounds": {"left": -32, "right": 32, "top": 16, "bottom": 96},
+        "wire_clearance": 16
+      },
+      "legal_orientations": ["R0"],
+      "default_orientation": "R0",
+      "pin_model": {
+        "coordinate_system": "asc_symbol_anchor",
+        "pins": {
+          "1": {"number": "1", "name": "+", "local": [0, 16], "side": "top", "type": "source", "roles": ["positive", "source"]},
+          "2": {"number": "2", "name": "-", "local": [0, 96], "side": "bottom", "type": "return", "roles": ["negative", "return"]}
+        }
+      },
+      "properties": {
+        "reference": {"record": "SYMATTR InstName", "syntax": "native_text", "effect": "display_and_instance_identity", "support_state": "donor_proven", "evidence": ["Draft8.asc"]},
+        "value": {"record": "SYMATTR Value", "syntax": "donor_proven_spice_source_expression", "effect": "source_definition", "support_state": "donor_proven", "evidence": ["Draft8.asc"]},
+        "value2.ac": {"record": "SYMATTR Value2", "syntax": "AC <magnitude>", "effect": "AC_source_definition", "support_state": "donor_proven", "evidence": ["Draft8.asc"]},
+        "window.123": {"record": "WINDOW 123", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["Draft8.asc"]},
+        "window.39": {"record": "WINDOW 39", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["Draft8.asc"]}
+      },
+      "placement_evidence": {"observed_count": 1, "donor_max_count": 1, "target_progression": [1, 2, 3, 5, 10, 20], "target_status": "pending_gui_generation", "mixed_family_status": "donor_proven_RC"}
+    },
+    "GROUND": {
+      "aliases": ["GND", "GROUND", "0"],
+      "category": "ground",
+      "status": "donor_observed",
+      "native": {
+        "record": "FLAG X Y 0",
+        "stock_symbol": false,
+        "donor_evidence": ["Draft7 lab 4].asc", "Draft7.asc", "Draft8.asc"]
+      },
+      "body": {"coordinate_system": "physical_anchor", "local_bounds": {"left": 0, "right": 0, "top": 0, "bottom": 0}, "wire_clearance": 0},
+      "legal_orientations": ["R0"],
+      "default_orientation": "R0",
+      "pin_model": {"coordinate_system": "physical_anchor", "pins": {"1": {"number": "1", "name": "0", "local": [0, 0], "side": "top", "type": "ground", "roles": ["ground"]}}},
+      "properties": {},
+      "placement_evidence": {"observed_count": 10, "donor_max_count": 1, "target_progression": [1], "target_status": "pending_gui_generation", "mixed_family_status": "donor_proven_ground_anchor"}
+    }
+  }
+}

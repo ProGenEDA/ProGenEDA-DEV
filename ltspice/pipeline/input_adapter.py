@@ -62,6 +62,15 @@ def _raw_component_extensions(raw: dict[str, Any]) -> tuple[dict[str, dict[str, 
         profile_kind = normalize_kind(raw_kind) if raw_kind is not None else ""
         if profile_kind:
             extension["ltspice_profile"] = profile_kind
+        # ``Misc\\signal`` is an LTspice stock source spelling that the
+        # shared KiCad catalogue quite reasonably does not model.  Its donor
+        # form intentionally has a blank ``Value`` plus ``Value2 AC ...``.
+        # Preserve the raw value *including an omitted value* so a generic
+        # connector repair cannot turn that source into a misleading
+        # "Pin Header" native attribute downstream.
+        raw_kind_token = re.sub(r"[^A-Za-z0-9]+", "_", str(raw_kind or "").strip().upper()).strip("_")
+        if raw_kind_token in {"MISC_SIGNAL", "SIGNAL", "SIGNAL_SOURCE"}:
+            extension["ltspice_native_value"] = deepcopy(component.get("value"))
         for name in ("kind", "type"):
             if name in component:
                 extension[name] = deepcopy(component[name])
