@@ -4720,40 +4720,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 terminal_records_by_pin[pin_name]
                 for pin_name in terminal_record_order
             ]
-            wire_records_by_pin = {
-                str(pin_row["pin"]["name"]): wire_record
-                for pin_row, wire_record in zip(
-                    terminal_pins,
-                    appended_wire_records,
-                    strict=True,
-                )
-            }
-            raw_wire_record_order = geometry.get("donor_wire_record_order")
-            if raw_wire_record_order is None:
-                # Preserve the frozen established route when no donor has
-                # explicitly proved a WIRE order distinct from pin planning.
-                ordered_wire_records = list(appended_wire_records)
-            elif not isinstance(raw_wire_record_order, (list, tuple)):
-                raise ValueError(
-                    f"{family} {key} donor_wire_record_order must be a pin list."
-                )
-            else:
-                wire_record_order = [
-                    str(pin_name) for pin_name in raw_wire_record_order
-                ]
-                if (
-                    len(wire_record_order) != len(set(wire_record_order))
-                    or set(wire_record_order) != set(wire_records_by_pin)
-                ):
-                    raise ValueError(
-                        f"{family} {key} donor_wire_record_order "
-                        f"{wire_record_order} does not cover emitted pins "
-                        f"{sorted(wire_records_by_pin)}."
-                    )
-                ordered_wire_records = [
-                    wire_records_by_pin[pin_name]
-                    for pin_name in wire_record_order
-                ]
+            ordered_wire_records = list(appended_wire_records)
             wire_tail_policy = str(
                 geometry.get("last_appended_wire_tail_policy", "preserve")
             )
@@ -4858,12 +4825,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "object_stream_finalizer": object_stream_finalizer,
                 "donor_terminal_record_order": (
                     list(geometry.get("donor_terminal_record_order", ()))
-                    if mixed_attachment_order
-                    == "terminal_leading_component_then_wires"
-                    else None
-                ),
-                "donor_wire_record_order": (
-                    list(geometry.get("donor_wire_record_order", ()))
                     if mixed_attachment_order
                     == "terminal_leading_component_then_wires"
                     else None

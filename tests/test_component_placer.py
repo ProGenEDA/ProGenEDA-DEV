@@ -3036,6 +3036,106 @@ def test_mixed_family_interleave_changes_visual_schedule_not_component_stream(
     ]
 
 
+def test_mixed_family_interleave_can_front_a_visual_target_only(
+    tmp_path: Path,
+) -> None:
+    """A target family can be made visible first without moving DSN packets."""
+
+    output = tmp_path / "mixed_interleave_front_ne555.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                "RESISTOR": 1,
+                "CAP": 1,
+                "NE555": 1,
+                "74HC08": 1,
+            },
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "front_families": ["NE555"],
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        output,
+        full_cdb=True,
+    )
+
+    placements = sorted(
+        result.layout_plan["actual_binary_placements"],
+        key=lambda row: int(row["slot"]),
+    )
+    assert result.valid
+    assert placements[0]["family"] == "NE555"
+    assert placements[0]["front_family_requested"] is True
+    assert placements[0]["front_family_rank"] == 0
+    # The visual entries are a schedule over the immutable selected packet
+    # groups; every original group remains once in the ROOT.DSN stream.
+    assert {
+        (group.key, group.family) for group in result.selected_groups
+    } == {
+        (str(row["key"]), str(row["family"])) for row in placements
+    }
+
+
+def test_totalmix_ne555_uses_donor_proven_terminal_and_wire_orders(
+    tmp_path: Path,
+) -> None:
+    """NE555 adds only its donor-proven inline grammar to a mixed stream."""
+
+    base = tmp_path / "totalmix_ne555_base.pdsprj"
+    output = tmp_path / "totalmix_ne555_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {"RESISTOR": 1, "CAP": 1, "NE555": 1},
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "front_families": ["NE555"],
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=("RESISTOR", "CAP"),
+        catalogue_terminal_families=("NE555",),
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+    )
+
+    ne555 = next(
+        row
+        for row in report["family_reports"]
+        if row.get("component_family") == "NE555"
+    )
+    assert result.valid
+    assert report["valid"] is True
+    assert ne555["donor_terminal_record_order"] == [
+        "3", "7", "6", "1", "8", "4", "5", "2"
+    ]
+    assert ne555["donor_wire_record_order"] == [
+        "4", "7", "3", "1", "8", "2", "6", "5"
+    ]
+    assert all(
+        row["terminal_contact_grid_aligned"] and row["wire_is_nonzero"]
+        for row in report["wire_path_contact_checks"]
+    )
+
+
 def test_mixed_terminalizer_handles_donor_proven_tail_bjt_with_native_and_controls(
     tmp_path: Path,
 ) -> None:

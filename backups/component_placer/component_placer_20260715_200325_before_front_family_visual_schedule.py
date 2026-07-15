@@ -1460,39 +1460,6 @@ def _binary_layout_mixed_family_interleave(payload: Any) -> bool:
     )
 
 
-def _binary_layout_front_families(payload: Any) -> tuple[str, ...]:
-    """Return explicit visual-front families without changing stream order.
-
-    A cumulative mixed regression needs to make the family currently under
-    test easy to inspect.  This is deliberately a beautifier-only priority:
-    the original donor-derived component stream remains untouched, while the
-    requested family occupies the first visible slot(s) of the interleaved
-    shelf.  It is opt-in so established layouts stay byte-for-byte stable.
-    """
-
-    raw_families = _raw_layout_payload(payload).get("front_families")
-    if raw_families is None:
-        return ()
-    if isinstance(raw_families, (str, bytes)) or not isinstance(
-        raw_families,
-        (list, tuple),
-    ):
-        raise ValueError("layout.front_families must be a list of component families.")
-    normalized: list[str] = []
-    for raw_family in raw_families:
-        if not isinstance(raw_family, str) or not raw_family.strip():
-            raise ValueError(
-                "layout.front_families entries must be non-empty component names."
-            )
-        family = normalize_component(raw_family)
-        if family in normalized:
-            raise ValueError(
-                f"layout.front_families repeats component family {family!r}."
-            )
-        normalized.append(family)
-    return tuple(normalized)
-
-
 def _interleave_groups_by_requested_family(
     payload: Any,
     groups: tuple[RawComponentGroup, ...],
@@ -1532,22 +1499,6 @@ def _interleave_groups_by_requested_family(
             family_order.append(non_ic_families[index])
         if index < len(ic_families):
             family_order.append(ic_families[index])
-    front_families = _binary_layout_front_families(payload)
-    absent_front_families = [
-        family for family in front_families if family not in groups_by_family
-    ]
-    if absent_front_families:
-        raise ValueError(
-            "layout.front_families contains unplaced families: "
-            f"{absent_front_families}."
-        )
-    # Pull only explicitly requested visual targets forward.  The remaining
-    # round-robin ordering stays intact, and `groups` itself is never reordered
-    # for the ROOT.DSN component stream.
-    family_order = [
-        *front_families,
-        *(family for family in family_order if family not in front_families),
-    ]
     emitted: list[RawComponentGroup] = []
     family_index = {family: 0 for family in family_order}
     while True:
@@ -1586,7 +1537,6 @@ def _apply_binary_beautifier(
     shelf_width = _binary_layout_shelf_width(payload)
     compact_family_flow = _binary_layout_compact_family_flow(payload)
     mixed_family_interleave = _binary_layout_mixed_family_interleave(payload)
-    front_families = _binary_layout_front_families(payload)
     if mixed_family_interleave and not compact_family_flow:
         raise ValueError(
             "layout.mixed_family_interleave requires "
@@ -1753,12 +1703,6 @@ def _apply_binary_beautifier(
             entry["mixed_family_interleave"] = mixed_family_interleave
             entry["layout_shelf_width"] = shelf_width
             entry["terminal_grid_alignment"] = terminal_grid_alignment
-            entry["front_family_requested"] = group.family in front_families
-            entry["front_family_rank"] = (
-                front_families.index(group.family)
-                if group.family in front_families
-                else None
-            )
             if not known_refs_unchanged:
                 raise ValueError(
                     f"Beautifier changed references for {group.key}; "

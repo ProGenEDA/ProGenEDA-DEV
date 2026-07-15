@@ -15262,3 +15262,23 @@ then when 1x is done, test combination then 3x9x15xn more then combination of xc
 ### Agent response - 2026-07-15 19:46 +05:00
 
 Understood—I’ll discard the 49-mix route for now and grow the proven 38-family I18 baseline instead. I’ll add the seven missing-from-49 families first, one at a time, with a tighter test-only layout and the newly added family placed at the visible front; gates follow only after that sequence is stable.
+
+### Agent response - 2026-07-15 20:00 +05:00
+
+I’m continuing from the validated 38-family baseline, not the discarded 49-family route. I’ll add the previously missing families one at a time, starting with donor-backed analysis and a tighter test-only layout; the new family will be placed first for easier visual confirmation.
+
+### Agent response - 2026-07-15 20:01 +05:00
+
+The previous checkpoint is still exactly synchronized with `origin`. I’ve logged the new direction and am checkpointing the validated 38-family repair before extending it, so the known-good baseline remains recoverable.
+
+### Agent response - 2026-07-15 20:04 +05:00
+
+I’ve preserved the 38-family repair in Git and verified the pushed hash. I’m now auditing the seven missing families from their actual terminalized donors before changing the unified placer; this establishes which existing attachment grammar each one can safely reuse.
+
+### Agent response - 2026-07-15 20:07 +05:00
+
+The first missing family is now `NE555`. Its donor confirms a standard terminal-leading packet grammar, so I’ve added only its proven link trailer and terminal/WIRE ordering; the new visual priority is layout-only and leaves component-stream order untouched. I’m generating the 38+NE555 candidate with NE555 at the front of a narrower shelf now.
+
+### Agent update - 2026-07-15 20:11 +05:00
+
+The 38-family baseline plus NE555 was generated through the locked mega and the shared unified terminal placer. Static validation passed for 39 components, 186 active terminals/WIREs, grid contacts, and nonzero terminal-to-pin wires. NE555 terminal order `3,7,6,1,8,4,5,2` and WIRE order `4,7,3,1,8,2,6,5` exactly match its donor. A disposable copy normal-opened and cold-reopened in Proteus after delayed waits with no modal error or hash mutation; no Ctrl+S was used. The compact visual layout uses a 50,000,000-unit shelf and fronts NE555 at slot zero. Edited/created: `src/proteusgen/component_placer.py`, `src/proteusgen/component_terminal_placer.py`, `knowledge/component_catalog_v0.json`, `knowledge/totalmix_missing7_donor_preflight_2026_07_15.md`, `tests/test_component_placer.py`, two timestamped backups, and `experiments/totalmix_38_growth_missing7_v1_temp_2026_07_15/01_ne555_39f`.
