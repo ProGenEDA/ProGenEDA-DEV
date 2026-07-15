@@ -11909,3 +11909,29 @@ Visible assistant final response (verbatim):
 > Verification: 90 passed, 1 optional test skipped; actual LTspice 26.0.2 netlists passed.
 >
 > Current boundary: the native path supports only these donor-backed families. Arbitrary ICs, semiconductors, vendor macromodels, and full per-property/per-mix GUI coverage remain explicitly tracked gaps—not guessed support.
+
+## 2026-07-15T07:42:00+05:00 — Active donor-native component support
+
+User request (verbatim):
+
+> tell what components u support and what properties of those components
+
+Visible assistant final response (verbatim):
+
+> The active donor-native generator currently supports these seven component types. All are `donor_observed`: their native symbols, pin geometry, and listed fields came from real LTspice donor files. This is the live path, not the older `progeneda` prototype.
+>
+> | Component | Editable properties |
+> | --- | --- |
+> | Resistor (`res`) | Reference/name, resistance value, tolerance (`tol`), power rating (`pwr`) |
+> | Capacitor (`cap`) | Reference/name, capacitance value |
+> | Inductor (`ind`) | Reference/name, inductance value, peak current (`Ipk`), series resistance (`Rser`), parallel resistance (`Rpar`), parallel capacitance (`Cpar`) |
+> | Voltage source (`voltage`) | Reference/name, DC value, `SINE(...)`, `PULSE(...)`, AC magnitude, value/attribute display positions |
+> | Current source (`current`) | Reference/name, DC current, value/attribute display positions |
+> | Signal source (`Misc\\signal`) | Reference/name, validated native source expression, AC magnitude, value/attribute display positions |
+> | Ground (`FLAG ... 0`) | No editable electrical property; it is only the physical LTspice ground anchor |
+>
+> Values use validated LTspice/SPICE scalar syntax. The source `window_123` and `window_39` fields only control where attributes appear on the schematic; they do not change simulation behavior. Unsupported fields are rejected deterministically.
+>
+> The current limit is 43 placed components total, including ground anchors. Diodes, transistors, switches, op-amps, controlled sources, transformers, ICs, behavioral sources, and vendor models are **not** active donor-native support yet—even if older prototype code exists. The raw-ASC advanced editor is also not released yet.
+>
+> The exact source of truth is [ltspice_main_catalogue.json](/home/zaruka/Documents/kicad/ltspice/catalogues/ltspice_main_catalogue.json).
