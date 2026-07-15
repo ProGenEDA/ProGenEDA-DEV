@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 import json
 import tempfile
 import unittest
@@ -23,7 +24,7 @@ from ltspice.pipeline.native_canonical_adapter import (
 )
 from ltspice.pipeline.native_beautifier import beautify_native_placement
 from ltspice.pipeline.native_placer import native_live_state, place_native_components
-from ltspice.pipeline.native_wire_router import donor_native_recipe, route_native_wires
+from ltspice.pipeline.native_wire_router import donor_native_recipe, route_native_wires, validate_native_wire_routes
 from ltspice.pipeline.timing_contract import HARD_FAILURE_MESSAGE, OVERDUE_MESSAGE
 
 
@@ -183,6 +184,84 @@ class DonorNativePipelineTests(unittest.TestCase):
         self.assertIn("WINDOW 123 24 132 Left 2", text)
         self.assertIn("WINDOW 39 0 0 Left 0", text)
 
+    def test_officially_verified_voltage_and_current_value_modes_are_bounded_and_native(self) -> None:
+        """Both stock sources use Value/Value2/SpiceLine, never a custom model."""
+
+        voltage_modes = [
+            ("V1", {"dc": "0", "ac": "2", "ac_phase": "90", "rser": "2", "cpar": "3p"}),
+            ("V2", {"sine": "1 2 1k 1m 20 30 2.5"}),
+            ("V3", {"pulse": "0 5 1u 1n 2n 5u 10u 3"}),
+            ("V4", {"exp": "0 5 1u 2u 10u 3u"}),
+            ("V5", {"sffm": "0 1 10k 2 1k"}),
+            ("V6", {"pwl": "0 0 1m 1 2m 0"}),
+        ]
+        current_modes = [
+            ("I1", {"dc": "0", "ac": "3", "ac_phase": "45"}),
+            ("I2", {"sine": "0 2m 1k 1m 20 30 2.5"}),
+            ("I3", {"pulse": "0 5m 1u 1n 2n 5u 10u 3"}),
+            ("I4", {"exp": "0 5m 1u 2u 10u 3u"}),
+            ("I5", {"sffm": "0 1m 10k 2 1k"}),
+            ("I6", {"pwl": "0 0 1m 1m 2m 0", "load": "true"}),
+        ]
+        components = [{"ref": "G1", "kind": "GND", "value": "0", "pins": {"1": "GND"}}]
+        nets: dict[str, list[str]] = {"GND": ["G1.1"]}
+        for index, (ref, params) in enumerate([*voltage_modes, *current_modes], start=1):
+            node, load_ref = f"N{index}", f"R{index}"
+            kind = "VDC" if ref.startswith("V") else "IDC"
+            components.extend(
+                [
+                    {"ref": ref, "kind": kind, "parameters": params, "pins": {"1": node, "2": "GND"}},
+                    {"ref": load_ref, "kind": "R", "value": "1k", "pins": {"1": node, "2": "GND"}},
+                ]
+            )
+            nets[node] = [f"{ref}.1", f"{load_ref}.1"]
+            nets["GND"].extend((f"{ref}.2", f"{load_ref}.2"))
+        circuit = {
+            "schema_version": "progen-kicad-circuit-ir/v1",
+            "circuit_id": "OFFICIAL_SOURCE_VALUE_MODES",
+            "project": {"name": "official_source_value_modes", "analysis": [".op", ".ac dec 2 1 10", ".tran 10u 3m"]},
+            "components": components,
+            "nets": nets,
+        }
+        native, _report = adapt_canonical_native_circuit(circuit)
+        placement, _placement_report = place_native_components(native)
+        routes, routing_report = route_native_wires(native, placement)
+        self.assertTrue(routing_report["ok"], routing_report)
+        text = render_donor_native_asc(donor_native_recipe(native, placement, routes)).decode("cp1252")
+        self.assertIn("SYMATTR Value2 AC 2 90", text)
+        self.assertIn("SYMATTR Value2 AC 3 45", text)
+        self.assertIn("SYMATTR SpiceLine Rser=2 Cpar=3p", text)
+        self.assertIn("SYMATTR SpiceLine load", text)
+        for expression in (
+            "SINE(1 2 1k 1m 20 30 2.5)",
+            "PULSE(0 5 1u 1n 2n 5u 10u 3)",
+            "EXP(0 5 1u 2u 10u 3u)",
+            "SFFM(0 1 10k 2 1k)",
+            "PWL(0 0 1m 1 2m 0)",
+            "SINE(0 2m 1k 1m 20 30 2.5)",
+            "PULSE(0 5m 1u 1n 2n 5u 10u 3)",
+            "EXP(0 5m 1u 2u 10u 3u)",
+            "SFFM(0 1m 10k 2 1k)",
+            "PWL(0 0 1m 1m 2m 0)",
+        ):
+            self.assertIn(f"SYMATTR Value {expression}", text)
+        self.assertNotIn("progeneda", text.casefold())
+
+    def test_source_phase_and_inline_waveforms_reject_ambiguous_or_malformed_input(self) -> None:
+        circuit = _rc_circuit()
+        circuit["components"][0]["parameters"] = {"ac_phase": "90"}
+        with self.assertRaisesRegex(NativeCanonicalAdapterError, "ac_phase requires"):
+            adapt_canonical_native_circuit(circuit)
+        circuit["components"][0]["parameters"] = {"pwl": "0 0 1m"}
+        with self.assertRaisesRegex(NativeCanonicalAdapterError, "PWL"):
+            adapt_canonical_native_circuit(circuit)
+        circuit["components"][0]["parameters"] = {"sine": "0 1"}
+        with self.assertRaisesRegex(NativeCanonicalAdapterError, "SINE needs"):
+            adapt_canonical_native_circuit(circuit)
+        circuit["components"][0]["parameters"] = {"pulse": "0 1"}
+        with self.assertRaisesRegex(NativeCanonicalAdapterError, "PULSE needs 7 to 8"):
+            adapt_canonical_native_circuit(circuit)
+
     def test_shared_normalizer_cannot_turn_blank_misc_signal_into_a_connector_value(self) -> None:
         source = {
             "project_name": "blank_misc_signal",
@@ -202,6 +281,33 @@ class DonorNativePipelineTests(unittest.TestCase):
         self.assertEqual(source_component["type_id"], "SIGNAL_SOURCE")
         self.assertEqual(source_component["properties"]["value"], "")
         self.assertEqual(source_component["properties"]["value2.ac"], "AC 1")
+
+    def test_shared_normalizer_preserves_an_omitted_voltage_or_current_value_for_new_source_parameters(self) -> None:
+        """A KiCad display label must never override a native source mode."""
+
+        source = {
+            "project_name": "preserved_stock_source_value",
+            "components": [
+                {"ref": "V1", "kind": "VDC", "parameters": {"ac": "2", "ac_phase": "90"}, "pins": {"1": "NV", "2": "GND"}},
+                {"ref": "I1", "kind": "IDC", "parameters": {"pulse": "0 1m 1u 1n 1n 2u 5u"}, "pins": {"1": "NI", "2": "GND"}},
+                {"ref": "R1", "kind": "R", "value": "1k", "pins": {"1": "NV", "2": "GND"}},
+                {"ref": "R2", "kind": "R", "value": "1k", "pins": {"1": "NI", "2": "GND"}},
+                {"ref": "G1", "kind": "GND", "value": "0", "pins": {"1": "GND"}},
+            ],
+            "nets": {
+                "NV": ["V1.1", "R1.1"], "NI": ["I1.1", "R2.1"],
+                "GND": ["V1.2", "I1.2", "R1.2", "R2.2", "G1.1"],
+            },
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "preserved_stock_source_value.json"
+            path.write_text(json.dumps(source), encoding="utf-8")
+            canonical, _report, _original = canonicalize_source(path, routing_mode="wire")
+        native, _report = adapt_canonical_native_circuit(canonical)
+        values = {item["ref"]: item["properties"] for item in native["components"]}
+        self.assertEqual(values["V1"]["value.dc"], "0")
+        self.assertEqual(values["V1"]["value2.ac"], "AC 2 90")
+        self.assertEqual(values["I1"]["value.pulse"], "PULSE(0 1m 1u 1n 1n 2u 5u)")
 
     def test_all_donor_observed_families_have_the_required_bounded_placement_progression(self) -> None:
         matrix = build_progression_matrix()
@@ -228,6 +334,111 @@ class DonorNativePipelineTests(unittest.TestCase):
         self.assertGreater(placement["sheet"]["height"], 680)
         _routes, routing_report = route_native_wires(native, placement)
         self.assertTrue(routing_report["ok"], routing_report)
+
+    def test_wrapped_topology_layout_keeps_large_series_and_fanout_fixtures_compact(self) -> None:
+        """Large valid graphs must not regress to one very long strip."""
+
+        matrix = build_progression_matrix()
+        for circuit_id in (
+            "NATIVE_RESISTOR_20",
+            "NATIVE_CAPACITOR_20",
+            "NATIVE_INDUCTOR_20",
+            "NATIVE_SIGNAL_SOURCE_20",
+        ):
+            native, _report = adapt_canonical_native_circuit(matrix[circuit_id])
+            placement, placement_report = place_native_components(native)
+            self.assertTrue(placement_report["ok"], circuit_id)
+            # Before wrapping, the resistor/inductor chain was 4,112 ASC
+            # units wide and the capacitor fan-out 3,664 units high.  A
+            # bounded sheet keeps symbols legible at LTspice's fit zoom.
+            self.assertLess(max(placement["sheet"]["width"], placement["sheet"]["height"]), 2500, circuit_id)
+            _routes, routing_report = route_native_wires(native, placement)
+            self.assertTrue(routing_report["ok"], (circuit_id, routing_report))
+
+    def test_source_load_pairs_keep_a_clear_left_to_right_reading_order(self) -> None:
+        """Automatic source fixtures reserve actual display clearance, not just non-overlap."""
+
+        fixture = build_progression_matrix()["NATIVE_SIGNAL_SOURCE_20"]
+        native, _report = adapt_canonical_native_circuit(fixture)
+        placement, _placement_report = place_native_components(native)
+        grid = placement["grid"]
+        for index in range(1, 21):
+            source = placement["components"][f"V{index}"]
+            load = placement["components"][f"R{index}"]
+            self.assertLess(source["origin"][0], load["origin"][0])
+            self.assertEqual(source["origin"][1], load["origin"][1])
+            self.assertGreaterEqual(load["body"]["left"] - source["body"]["right"], grid * 5)
+
+    def test_ground_flag_is_a_clear_downward_return_drop_not_a_source_pin(self) -> None:
+        """FLAG 0 stays native, but no longer overlaps a source's return pin."""
+
+        native, _report = adapt_canonical_native_circuit(_rc_circuit())
+        placement, _placement_report = place_native_components(native)
+        routes, routing_report = route_native_wires(native, placement)
+        self.assertTrue(routing_report["ok"], routing_report)
+        self.assertEqual(len(routes["ground_flags"]), 1)
+        flag = routes["ground_flags"][0]
+        flag_point = tuple(flag["point"])
+        grid = placement["grid"]
+        pin_points = {
+            tuple(pin["point"])
+            for component in placement["components"].values()
+            for pin in component["pins"].values()
+        }
+        self.assertNotIn(flag_point, pin_points)
+        drops = [segment for segment in routes["wire_segments"] if segment["kind"] == "ground_drop"]
+        self.assertEqual(len(drops), 1)
+        self.assertEqual(tuple(drops[0]["end"]), flag_point)
+        self.assertEqual(drops[0]["start"][0], flag_point[0])
+        self.assertEqual(flag_point[1] - drops[0]["start"][1], grid * 5)
+        for component in placement["components"].values():
+            if component["type_id"] not in {"VOLTAGE_SOURCE", "CURRENT_SOURCE", "SIGNAL_SOURCE"}:
+                continue
+            body = component["body"]
+            # Sources also reserve a wider band for their native reference
+            # and value text.  The explicit drop is clear in both axes.
+            self.assertGreater(flag_point[1], body["bottom"] + grid * 5)
+            self.assertTrue(flag_point[0] < body["left"] - grid * 5 or flag_point[0] > body["right"] + grid * 5)
+
+    def test_return_rails_trim_to_their_outermost_physical_branches(self) -> None:
+        """No generated rail may continue past its last real return connection."""
+
+        fixtures = {
+            "rc": _rc_circuit(),
+            "twenty_sources": build_progression_matrix()["NATIVE_SIGNAL_SOURCE_20"],
+        }
+        for name, circuit in fixtures.items():
+            native, _report = adapt_canonical_native_circuit(circuit)
+            placement, _placement_report = place_native_components(native)
+            routes, routing_report = route_native_wires(native, placement)
+            self.assertTrue(routing_report["ok"], (name, routing_report))
+            rails = [segment for segment in routes["wire_segments"] if segment["kind"] == "ground_rail"]
+            self.assertTrue(rails, name)
+            for rail in rails:
+                self.assertEqual(rail["start"][1], rail["end"][1])
+                rail_y = rail["start"][1]
+                left, right = sorted((rail["start"][0], rail["end"][0]))
+                contacts = {
+                    point[0]
+                    for segment in routes["wire_segments"]
+                    if segment is not rail and segment["net"] == rail["net"]
+                    for point in (segment["start"], segment["end"])
+                    if point[1] == rail_y and left <= point[0] <= right
+                }
+                self.assertTrue(contacts, name)
+                self.assertEqual((left, right), (min(contacts), max(contacts)), name)
+
+        # The route validator treats a manually reintroduced rail overhang as
+        # invalid rather than allowing a future placement change to hide it.
+        native, _report = adapt_canonical_native_circuit(_rc_circuit())
+        placement, _placement_report = place_native_components(native)
+        routes, _routing_report = route_native_wires(native, placement)
+        malformed = deepcopy(routes)
+        rail = next(segment for segment in malformed["wire_segments"] if segment["kind"] == "ground_rail")
+        rail["start"][0] -= placement["grid"]
+        validation = validate_native_wire_routes(native, placement, malformed)
+        self.assertFalse(validation["ok"])
+        self.assertTrue(any("Ground rail endpoint" in error for error in validation["errors"]))
 
     def test_fixture_matrix_refuses_to_overwrite_existing_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

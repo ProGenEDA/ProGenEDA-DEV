@@ -1,9 +1,10 @@
 """Strict shared-JSON adapter for donor-native LTspice generation.
 
 This module accepts the existing repaired ProGenEDA circuit JSON. It resolves
-only permanent-catalogue components and donor-proven editable properties, then
-returns internal native facts for the placer/router/writer. It is not a second
-user-authored circuit format and has no custom-symbol or terminal fallback.
+only permanent-catalogue components and evidence-backed editable properties,
+then returns internal native facts for the placer/router/writer. It is not a
+second user-authored circuit format and has no custom-symbol or terminal
+fallback.
 """
 
 from __future__ import annotations
@@ -45,7 +46,21 @@ _TYPE_ALIASES = {
 _SAFE_REFERENCE = re.compile(r"^[A-Za-z][A-Za-z0-9_.$-]*$")
 _SAFE_SCALAR = re.compile(r"^[^\s\r\n\x00]+$")
 _SAFE_SOURCE = re.compile(r"^[^\r\n\x00]+$")
-_SAFE_WAVEFORM = re.compile(r"^(?:SINE|PULSE)\([^\r\n\x00]*\)$", re.IGNORECASE)
+_WAVEFORM = re.compile(r"^(SINE|SIN|PULSE|EXP|SFFM|PWL)\(([^\r\n\x00]*)\)$", re.IGNORECASE)
+_WAVEFORM_ARITY: dict[str, tuple[int, int | None]] = {
+    # LTspice 26's installed official help documents the same source grammar
+    # for voltage and current.  The optional trailing fields are allowed, but
+    # arbitrary free-form Value strings are deliberately not accepted.
+    "SINE": (3, 7),
+    # LTspice permits omitted trailing pulse parameters interactively, but the
+    # normal JSON editor intentionally requires the documented complete timing
+    # form (with only Ncycles optional). This prevents an edit from silently
+    # inheriting simulator defaults.
+    "PULSE": (7, 8),
+    "EXP": (6, 6),
+    "SFFM": (5, 5),
+    "PWL": (4, None),
+}
 
 
 def _mapping(value: object, context: str) -> Mapping[str, Any]:
@@ -156,6 +171,81 @@ def _source(value: str, context: str) -> str:
     return value
 
 
+def _waveform_tokens(arguments: str, context: str) -> list[str]:
+    """Split one inline source expression into safe scalar arguments.
+
+    Inline PWL accepts spaces or commas between time/value entries.  File,
+    repeat, trigger, and behavioural forms intentionally stay out of normal
+    mode until their own deterministic file/security contracts exist.
+    """
+
+    tokens = [item for item in re.split(r"[\s,]+", arguments.strip()) if item]
+    if not tokens or any(not _SAFE_SCALAR.fullmatch(item) for item in tokens):
+        raise NativeCanonicalAdapterError(f"{context} must contain only LTspice scalar waveform arguments.")
+    return tokens
+
+
+def _normalise_waveform(kind: str, value: str, context: str) -> tuple[str, str]:
+    """Return ``(catalogue_key_suffix, native Value expression)`` safely."""
+
+    requested = kind.upper()
+    if requested == "SIN":
+        requested = "SINE"
+    candidate = value.strip()
+    match = _WAVEFORM.fullmatch(candidate)
+    if match is not None:
+        actual = match.group(1).upper()
+        if actual == "SIN":
+            actual = "SINE"
+        if actual != requested:
+            raise NativeCanonicalAdapterError(
+                f"{context} declares {requested} but supplies a conflicting {actual} source expression."
+            )
+        arguments = match.group(2)
+    else:
+        actual = requested
+        arguments = candidate
+    minimum, maximum = _WAVEFORM_ARITY[actual]
+    tokens = _waveform_tokens(arguments, context)
+    if len(tokens) < minimum or (maximum is not None and len(tokens) > maximum):
+        expected = f"{minimum} to {maximum}" if maximum is not None else f"at least {minimum}"
+        raise NativeCanonicalAdapterError(
+            f"{context} {actual} needs {expected} scalar argument(s); got {len(tokens)}."
+        )
+    if actual == "PWL" and len(tokens) % 2:
+        raise NativeCanonicalAdapterError(f"{context} PWL requires time/value pairs.")
+    # Normalized spaces make generated ASC deterministic even when a user
+    # supplied comma-separated PWL points.
+    return actual.casefold(), f"{actual}({' '.join(tokens)})"
+
+
+def _waveform_from_value(value: str, context: str) -> tuple[str, str] | None:
+    match = _WAVEFORM.fullmatch(value.strip())
+    if match is None:
+        return None
+    return _normalise_waveform(match.group(1), value, context)
+
+
+def _source_ac_value(params: Mapping[str, str], context: str) -> str | None:
+    """Build LTspice's native ``Value2`` AC text with optional phase."""
+
+    if "ac_phase" in params and "ac" not in params:
+        raise NativeCanonicalAdapterError(f"{context}.parameters.ac_phase requires parameters.ac.")
+    if "ac" not in params:
+        return None
+    magnitude = _scalar(params["ac"], f"{context}.parameters.ac")
+    phase = params.get("ac_phase")
+    if phase is None:
+        return f"AC {magnitude}"
+    return f"AC {magnitude} {_scalar(phase, f'{context}.parameters.ac_phase')}"
+
+
+def _literal_enabled(value: str, context: str) -> str:
+    if value.casefold() not in {"1", "true", "yes", "on"}:
+        raise NativeCanonicalAdapterError(f"{context} must be true to enable this LTspice flag.")
+    return "true"
+
+
 def _properties(
     type_id: str, raw: Mapping[str, Any], definition: Mapping[str, Any], ref: str, context: str
 ) -> dict[str, str]:
@@ -163,6 +253,16 @@ def _properties(
 
     params = _parameters(raw, context)
     value = _optional_value(raw, context)
+    # The shared cross-backend normalizer may put a human display label in
+    # ``value`` when an LTspice source intentionally omitted it.  The input
+    # adapter preserves the original source field alongside the portable
+    # result; restore it before property selection for every stock source.
+    if type_id in {"VOLTAGE_SOURCE", "CURRENT_SOURCE", "SIGNAL_SOURCE"} and "ltspice_native_value" in raw:
+        native_value = raw.get("ltspice_native_value")
+        if native_value is None:
+            value = None
+        else:
+            value = _text(native_value, f"{context}.ltspice_native_value", allow_empty=True) or None
     if type_id == "GROUND":
         if params:
             raise NativeCanonicalAdapterError(f"{context}.parameters are invalid for GROUND.")
@@ -193,70 +293,66 @@ def _properties(
                 add(native_name, _scalar(params[source_name], f"{context}.parameters.{source_name}"), f"{context}.parameters.{source_name}")
         return result
 
-    if type_id == "VOLTAGE_SOURCE":
-        # The shared KiCad fixer historically preserves SPICE's short SIN(...)
-        # spelling. The donor-native LTspice record uses SINE(...), so make
-        # this one documented, lossless spelling normalization before strict
-        # property selection.
-        if value is not None and value.upper().startswith("SIN("):
-            value = "SINE(" + value[4:]
+    if type_id in {"VOLTAGE_SOURCE", "CURRENT_SOURCE"}:
+        # Native stock sources serialize their electrical expression through
+        # SYMATTR Value and their small-signal definition through Value2.  The
+        # 2026 installed LTspice help and an LTspice 26 oracle export verify
+        # this exact record mapping for both source families.
         window_fields = {"window_123": "window.123", "window_39": "window.39"}
-        unknown = sorted(set(params) - {"dc", "ac", "sine", "pulse", *window_fields})
+        waveform_names = ("sine", "pulse", "exp", "sffm", "pwl")
+        extra = {"rser", "cpar"} if type_id == "VOLTAGE_SOURCE" else {"load"}
+        allowed = {"dc", "ac", "ac_phase", *waveform_names, *window_fields, *extra}
+        unknown = sorted(set(params) - allowed)
+        family = "voltage" if type_id == "VOLTAGE_SOURCE" else "current"
         if unknown:
-            raise NativeCanonicalAdapterError(f"{context}.parameters has no donor-proven voltage field(s): {', '.join(unknown)}.")
-        waveforms = [name for name in ("sine", "pulse") if name in params]
-        if len(waveforms) > 1 or (waveforms and "dc" in params):
-            raise NativeCanonicalAdapterError(f"{context}.parameters must specify one donor-native voltage definition.")
-        if waveforms:
-            name = waveforms[0]
-            expression = params[name]
-            if not _SAFE_WAVEFORM.fullmatch(expression):
-                expression = f"{name.upper()}({expression})"
-            if value is not None and value.casefold() != expression.casefold():
-                raise NativeCanonicalAdapterError(f"{context}.value conflicts with parameters.{name}.")
-            add(f"value.{name}", _source(expression, f"{context}.parameters.{name}"), f"{context}.parameters.{name}")
+            raise NativeCanonicalAdapterError(
+                f"{context}.parameters has no evidence-backed {family} field(s): {', '.join(unknown)}."
+            )
+
+        requested_waveforms = [name for name in waveform_names if name in params]
+        if len(requested_waveforms) > 1 or (requested_waveforms and "dc" in params):
+            raise NativeCanonicalAdapterError(
+                f"{context}.parameters must specify exactly one {family} Value definition."
+            )
+        if requested_waveforms:
+            name = requested_waveforms[0]
+            suffix, expression = _normalise_waveform(name, params[name], f"{context}.parameters.{name}")
+            if value is not None:
+                from_value = _waveform_from_value(value, f"{context}.value")
+                if from_value is None or from_value[1].casefold() != expression.casefold():
+                    raise NativeCanonicalAdapterError(f"{context}.value conflicts with parameters.{name}.")
+            add(f"value.{suffix}", expression, f"{context}.parameters.{name}")
         elif "dc" in params:
             if value is not None and value != params["dc"]:
                 raise NativeCanonicalAdapterError(f"{context}.value conflicts with parameters.dc.")
             add("value.dc", _scalar(params["dc"], f"{context}.parameters.dc"), f"{context}.parameters.dc")
         elif value is not None:
-            if _SAFE_WAVEFORM.fullmatch(value):
-                add("value.sine" if value.upper().startswith("SINE(") else "value.pulse", _source(value, f"{context}.value"), f"{context}.value")
+            waveform = _waveform_from_value(value, f"{context}.value")
+            if waveform is not None:
+                suffix, expression = waveform
+                add(f"value.{suffix}", expression, f"{context}.value")
             else:
                 add("value.dc", _scalar(value, f"{context}.value"), f"{context}.value")
-        elif "ac" in params:
-            add("value.dc", "0", f"{context}.parameters.ac")
-        if "ac" in params:
-            magnitude = _scalar(params["ac"], f"{context}.parameters.ac")
-            add("value2.ac", f"AC {magnitude}", f"{context}.parameters.ac")
-        for source_name, native_name in window_fields.items():
-            if source_name in params:
-                add(native_name, _source(params[source_name], f"{context}.parameters.{source_name}"), f"{context}.parameters.{source_name}")
-        return result
 
-    if type_id == "CURRENT_SOURCE":
-        window_fields = {"window_123": "window.123", "window_39": "window.39"}
-        unknown = sorted(set(params) - {"dc", *window_fields})
-        if unknown:
-            raise NativeCanonicalAdapterError(f"{context}.parameters has no donor-proven current field(s): {', '.join(unknown)}.")
-        if "dc" in params:
-            if value is not None and value != params["dc"]:
-                raise NativeCanonicalAdapterError(f"{context}.value conflicts with parameters.dc.")
-            add("value.dc", _scalar(params["dc"], f"{context}.parameters.dc"), f"{context}.parameters.dc")
-        elif value is not None:
-            add("value.dc", _scalar(value, f"{context}.value"), f"{context}.value")
+        ac_value = _source_ac_value(params, context)
+        if not result.get("value.dc") and not any(name.startswith("value.") for name in result if name != "value2.ac") and ac_value is not None:
+            # LTspice's AC-only donor pattern explicitly uses a zero DC Value.
+            add("value.dc", "0", f"{context}.parameters.ac")
+        if ac_value is not None:
+            add("value2.ac", ac_value, f"{context}.parameters.ac")
+        if type_id == "VOLTAGE_SOURCE":
+            if "rser" in params:
+                add("spice_line.Rser", _scalar(params["rser"], f"{context}.parameters.rser"), f"{context}.parameters.rser")
+            if "cpar" in params:
+                add("spice_line.Cpar", _scalar(params["cpar"], f"{context}.parameters.cpar"), f"{context}.parameters.cpar")
+        elif "load" in params:
+            add("spice_line.load", _literal_enabled(params["load"], f"{context}.parameters.load"), f"{context}.parameters.load")
         for source_name, native_name in window_fields.items():
             if source_name in params:
                 add(native_name, _source(params[source_name], f"{context}.parameters.{source_name}"), f"{context}.parameters.{source_name}")
         return result
 
     if type_id == "SIGNAL_SOURCE":
-        if "ltspice_native_value" in raw:
-            native_value = raw.get("ltspice_native_value")
-            if native_value is None:
-                value = None
-            else:
-                value = _text(native_value, f"{context}.ltspice_native_value", allow_empty=True) or None
         window_fields = {"window_123": "window.123", "window_39": "window.39"}
         unknown = sorted(set(params) - {"ac", *window_fields})
         if unknown:
@@ -345,7 +441,7 @@ def _expected_netlist_agrees(source: Mapping[str, Any]) -> bool:
 
 
 def normal_editable_fields(type_id: object, *, catalogue: NativeCatalogue | None = None) -> dict[str, Any]:
-    """Expose only normal-mode, donor-proven fields for the deterministic lab."""
+    """Expose only normal-mode fields backed by donor or oracle evidence."""
 
     active = catalogue or load_native_catalogue()
     try:
@@ -359,7 +455,7 @@ def normal_editable_fields(type_id: object, *, catalogue: NativeCatalogue | None
             "evidence": deepcopy(item["evidence"]),
         }
         for name, item in definition["properties"].items()
-        if item.get("support_state") == "donor_proven"
+        if item.get("support_state") in {"donor_proven", "official_help_ltspice26_verified"}
     }
     return {
         "schema": "progen-ltspice-donor-native-normal-editor/v1",

@@ -108,7 +108,12 @@ def _validate_component(type_id: str, component: dict[str, Any]) -> None:
         _require_text(property_record.get("record"), f"{type_id}.properties.{name}.record")
         _require_text(property_record.get("syntax"), f"{type_id}.properties.{name}.syntax")
         _require_text(property_record.get("effect"), f"{type_id}.properties.{name}.effect")
-        if property_record.get("support_state") not in {"donor_proven", "inferred_from_donor", "pending_donor"}:
+        if property_record.get("support_state") not in {
+            "donor_proven",
+            "official_help_ltspice26_verified",
+            "inferred_from_donor",
+            "pending_donor",
+        }:
             raise NativeCatalogueError(f"{type_id}.properties.{name}.support_state is required.")
         property_evidence = property_record.get("evidence")
         if not isinstance(property_evidence, list) or not property_evidence:

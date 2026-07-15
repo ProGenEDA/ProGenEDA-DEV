@@ -24,6 +24,15 @@ class NativeWireRouterError(ValueError):
 _DIRECTIONS = ((1, 0), (-1, 0), (0, 1), (0, -1))
 _SIDE_VECTORS = {"top": (0, -1), "right": (1, 0), "bottom": (0, 1), "left": (-1, 0)}
 
+# ``FLAG X Y 0`` has a fixed stock LTspice ground glyph; it is not a rotatable
+# symbol.  Give its native connection pin a vertical lead from above, then
+# keep the glyph well below every stock body.  The conservative source band
+# also avoids the nearby reference/value text which LTspice renders around a
+# source body.
+_GROUND_DROP_GRIDS = 5
+_GROUND_COMPONENT_CLEARANCE_GRIDS = 3
+_GROUND_SOURCE_CLEARANCE_GRIDS = 5
+
 
 def _key(point: Iterable[int]) -> tuple[int, int]:
     values = list(point)
@@ -78,6 +87,89 @@ def _exit_point(pin: Mapping[str, Any], body: Mapping[str, Any], grid: int) -> t
         if _outside_body(point, body):
             return point
     raise NativeWireRouterError(f"Could not find a clear pin exit for {start}.")
+
+
+def _ground_drop_x_positions(
+    *,
+    rail_left: int,
+    rail_right: int,
+    wanted: int,
+    components: Mapping[str, Any],
+    grid: int,
+) -> list[int]:
+    """Choose clear rail positions for native ground drops.
+
+    The previous implementation put every ``FLAG 0`` on the first endpoint of
+    the ground net.  With the common source-first layout that was typically a
+    voltage source's negative pin, visually drawing the native ground triangle
+    into the source.  A FLAG is allowed only for ground, so put it on a real
+    wire endpoint below the return rail and prefer an x coordinate outside a
+    generous source body/text band.
+    """
+
+    if rail_left > rail_right:
+        raise NativeWireRouterError("Ground rail has invalid horizontal bounds.")
+    source_bands: list[tuple[int, int]] = []
+    for component in components.values():
+        if not isinstance(component, Mapping):
+            continue
+        if str(component.get("type_id") or "") not in {"VOLTAGE_SOURCE", "CURRENT_SOURCE", "SIGNAL_SOURCE"}:
+            continue
+        body = component.get("body")
+        if not isinstance(body, Mapping):
+            continue
+        clearance = grid * _GROUND_SOURCE_CLEARANCE_GRIDS
+        source_bands.append((int(body["left"]) - clearance, int(body["right"]) + clearance))
+
+    # Keep an end margin so a flag never hangs off the rail.  All generated
+    # rail coordinates are grid aligned, but round defensively for explicit
+    # donor-coordinate placements.
+    lower = int(math.ceil((rail_left + grid * 2) / grid)) * grid
+    upper = int(math.floor((rail_right - grid * 2) / grid)) * grid
+    if lower > upper:
+        lower, upper = rail_left, rail_right
+    candidates = list(range(lower, upper + grid, grid))
+    if not candidates:
+        candidates = [rail_left]
+
+    def source_clear(x: int) -> bool:
+        return all(not left <= x <= right for left, right in source_bands)
+
+    clear_candidates = [x for x in candidates if source_clear(x)]
+    pool = clear_candidates or candidates
+    chosen: list[int] = []
+    for index in range(max(1, wanted)):
+        # Even targets make multiple explicit ground components deterministic
+        # without stacking their glyphs.  Pick a clear location closest to the
+        # target and maintain at least four native grids between drops where
+        # the rail has sufficient room.
+        target = rail_left + (rail_right - rail_left) * (index + 1) / (max(1, wanted) + 1)
+        separated = [x for x in pool if all(abs(x - existing) >= grid * 4 for existing in chosen)]
+        ranked = separated or [x for x in pool if x not in chosen] or pool
+        point = min(ranked, key=lambda x: (abs(x - target), x))
+        chosen.append(point)
+    return chosen
+
+
+def _flag_is_visually_clear(
+    point: tuple[int, int], component: Mapping[str, Any], *, grid: int
+) -> bool:
+    """Check FLAG 0 against the stock glyph's conservative visual envelope."""
+
+    body = component.get("body")
+    if not isinstance(body, Mapping):
+        return True
+    type_id = str(component.get("type_id") or "")
+    clearance_grids = (
+        _GROUND_SOURCE_CLEARANCE_GRIDS
+        if type_id in {"VOLTAGE_SOURCE", "CURRENT_SOURCE", "SIGNAL_SOURCE"}
+        else _GROUND_COMPONENT_CLEARANCE_GRIDS
+    )
+    clearance = grid * clearance_grids
+    return not (
+        int(body["left"]) - clearance <= point[0] <= int(body["right"]) + clearance
+        and int(body["top"]) - clearance <= point[1] <= int(body["bottom"]) + clearance
+    )
 
 
 def _compress_path(points: list[tuple[int, int]], *, net: str, kind: str) -> list[dict[str, Any]]:
@@ -329,6 +421,25 @@ def validate_native_wire_routes(
                         f"{first.get('net')}, {second.get('net')}."
                     )
 
+    # A horizontal return rail is structural routing, not decoration.  Both
+    # ends must terminate at an actual same-net branch or a ground drop.  This
+    # prevents the otherwise harmless-but-ugly stubs that used to extend past
+    # the outermost return connection in generated screenshots.
+    for rail in wires:
+        if not isinstance(rail, Mapping) or str(rail.get("kind") or "") != "ground_rail":
+            continue
+        net = str(rail.get("net") or "")
+        for point in (_key(rail["start"]), _key(rail["end"])):
+            attached = any(
+                other is not rail
+                and isinstance(other, Mapping)
+                and str(other.get("net") or "") == net
+                and point in {_key(other["start"]), _key(other["end"])}
+                for other in wires
+            )
+            if not attached:
+                violations.append(f"Ground rail endpoint {point} has no physical same-net attachment.")
+
     for ref, component in components.items():
         if not isinstance(component, Mapping):
             continue
@@ -388,6 +499,13 @@ def validate_native_wire_routes(
             violations.append(f"Non-ground FLAG {flag.get('name')!r} is forbidden.")
         if not any(point in {_key(wire["start"]), _key(wire["end"])} for wire in wires if isinstance(wire, Mapping)):
             violations.append(f"Ground FLAG at {point} has no physical wire endpoint.")
+        if any(
+            isinstance(component, Mapping) and not _flag_is_visually_clear(point, component, grid=grid)
+            for component in components.values()
+        ):
+            violations.append(
+                f"Ground FLAG at {point} is too close to a stock component body or source attribute band."
+            )
     return {
         "schema": NATIVE_ROUTER_SCHEMA,
         "stage": "donor_native_wire_validator",
@@ -490,7 +608,11 @@ def route_native_wires(
         # stub needs, creating a hidden short at a component boundary.
         blocked_for_net = (blocked | (all_pin_points - own_pin_points) | (all_exit_points - own_exit_points)) - own_exit_points
         is_ground = bool(details.get("is_ground"))
+        rail_contacts: set[tuple[int, int]] = set()
         if is_ground:
+            # This initial span is only an A* target field.  Once all return
+            # branches have joined it, trim it to real connection points so
+            # the emitted ASC never contains visual rail overhangs.
             rail = {"net": str(net), "start": [rail_left, rail_y], "end": [rail_right, rail_y], "kind": "ground_rail"}
             segments.append(rail)
             tree_nodes = set(_segment_nodes(rail, grid))
@@ -513,18 +635,58 @@ def route_native_wires(
             )
             tree_nodes.update(path)
             segments.extend(_compress_path(path, net=str(net), kind="tree"))
+            if is_ground and path[-1][1] == rail_y:
+                rail_contacts.add(path[-1])
 
+        if bool(details.get("is_ground")):
+            # A native FLAG has no orientation record.  Its connection pin is
+            # therefore deliberately fed from above through a long enough
+            # physical return lead, instead of being stamped directly on a
+            # component pin (especially a source's negative pin).
+            ground_refs = list(details.get("ground_refs") or [])
+            wanted = max(1, len(ground_refs))
+            flag_y = rail_y + grid * _GROUND_DROP_GRIDS
+            for index, x in enumerate(
+                _ground_drop_x_positions(
+                    rail_left=rail_left,
+                    rail_right=rail_right,
+                    wanted=wanted,
+                    components=components,
+                    grid=grid,
+                )
+            ):
+                flag_point = (x, flag_y)
+                drop = {
+                    "net": str(net),
+                    "start": [x, rail_y],
+                    "end": list(flag_point),
+                    "kind": "ground_drop",
+                }
+                segments.append(drop)
+                tree_nodes.update(_segment_nodes(drop, grid))
+                rail_contacts.add((x, rail_y))
+                flag = {
+                    "point": list(flag_point),
+                    "name": "0",
+                    "source_ref": ground_refs[index % len(ground_refs)] if ground_refs else None,
+                    "attachment": "return_rail_downward_drop",
+                }
+                if flag["point"] not in [existing["point"] for existing in ground_flags]:
+                    ground_flags.append(flag)
+            if not rail_contacts:
+                raise NativeWireRouterError(f"Ground net {net} has no physical return-rail connection.")
+            rail_xs = sorted(point[0] for point in rail_contacts)
+            if rail_xs[0] == rail_xs[-1]:
+                # A single return branch and the ground drop meet at one
+                # physical junction, so a horizontal rail would be a zero
+                # length/dangling decorative record.  Omit it entirely.
+                segments.remove(rail)
+            else:
+                rail["start"] = [rail_xs[0], rail_y]
+                rail["end"] = [rail_xs[-1], rail_y]
         all_segments.extend(segments)
         for segment in segments:
             occupied[str(net)].update(_segment_nodes(segment, grid))
-        if bool(details.get("is_ground")):
-            anchors = [item[1] for item in endpoint_data]
-            wanted = max(1, len(details.get("ground_refs") or []))
-            for index in range(wanted):
-                point = anchors[index % len(anchors)]
-                flag = {"point": list(point), "name": "0", "source_ref": (details.get("ground_refs") or [None])[index % max(1, len(details.get("ground_refs") or [None]))]}
-                if flag["point"] not in [existing["point"] for existing in ground_flags]:
-                    ground_flags.append(flag)
         net_reports[str(net)] = {
             "members": members,
             "segment_count": len(segments),

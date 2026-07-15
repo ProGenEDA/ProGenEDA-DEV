@@ -19,6 +19,7 @@
   },
   "status_semantics": {
     "donor_observed": "Donor syntax, stock symbol/pin geometry, and listed attributes were observed; this is not a completed generated-fixture or GUI support claim.",
+    "official_help_ltspice26_verified": "The installed official LTspice 26 help documents the field and the stock-symbol ASC form was exported or batch-checked by installed LTspice 26.0.2; it is not falsely labelled donor-proven.",
     "gui_verified": "A generated fixture was opened and screenshot-assessed in the installed LTspice GUI.",
     "supported": "The required count, property, mixed-wire, GUI, and applicable netlist evidence has been recorded."
   },
@@ -28,8 +29,8 @@
       "RESISTOR": ["reference", "value", "spice_line.tol", "spice_line.pwr"],
       "CAPACITOR": ["reference", "value"],
       "INDUCTOR": ["reference", "value", "spice_line.Ipk", "spice_line.Rser", "spice_line.Rpar", "spice_line.Cpar"],
-      "VOLTAGE_SOURCE": ["reference", "value.dc", "value.sine", "value.pulse", "value2.ac", "window.123", "window.39"],
-      "CURRENT_SOURCE": ["reference", "value.dc", "window.123", "window.39"],
+      "VOLTAGE_SOURCE": ["reference", "value.dc", "value.sine", "value.pulse", "value.exp", "value.sffm", "value.pwl", "value2.ac", "spice_line.Rser", "spice_line.Cpar", "window.123", "window.39"],
+      "CURRENT_SOURCE": ["reference", "value.dc", "value.sine", "value.pulse", "value.exp", "value.sffm", "value.pwl", "value2.ac", "spice_line.load", "window.123", "window.39"],
       "SIGNAL_SOURCE": ["reference", "value", "value2.ac", "window.123", "window.39"],
       "GROUND": []
     },
@@ -185,7 +186,12 @@
         "value.dc": {"record": "SYMATTR Value", "syntax": "spice_scalar", "effect": "DC_source_definition", "support_state": "donor_proven", "evidence": ["Voltagesource_10v.asc"]},
         "value.sine": {"record": "SYMATTR Value", "syntax": "SINE(<native arguments>)", "effect": "transient_source_definition", "support_state": "donor_proven", "evidence": ["Draft5.asc"]},
         "value.pulse": {"record": "SYMATTR Value", "syntax": "PULSE(<native arguments>)", "effect": "transient_source_definition", "support_state": "donor_proven", "evidence": ["Draft7 lab 4].asc"]},
-        "value2.ac": {"record": "SYMATTR Value2", "syntax": "AC <magnitude>", "effect": "AC_source_definition", "support_state": "donor_proven", "evidence": ["Draft7.asc"]},
+        "value.exp": {"record": "SYMATTR Value", "syntax": "EXP(<V1> <V2> <Td1> <Tau1> <Td2> <Tau2>)", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/vvoltagesource.htm"]},
+        "value.sffm": {"record": "SYMATTR Value", "syntax": "SFFM(<Voff> <Vamp> <Fcar> <MDI> <Fsig>)", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/vvoltagesource.htm"]},
+        "value.pwl": {"record": "SYMATTR Value", "syntax": "PWL(<time> <value> ...)", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/vvoltagesource.htm"]},
+        "value2.ac": {"record": "SYMATTR Value2", "syntax": "AC <magnitude> [<phase_degrees>]", "effect": "AC_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["Draft7.asc", "docs/SOURCE_PROPERTY_RESEARCH.md"]},
+        "spice_line.Rser": {"record": "SYMATTR SpiceLine", "syntax": "Rser=<resistance>", "effect": "series_resistance", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/vvoltagesource.htm"]},
+        "spice_line.Cpar": {"record": "SYMATTR SpiceLine", "syntax": "Cpar=<capacitance>", "effect": "parallel_capacitance", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/vvoltagesource.htm"]},
         "window.123": {"record": "WINDOW 123", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["Draft7 lab 4].asc"]},
         "window.39": {"record": "WINDOW 39", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["Draft7 lab 4].asc"]}
       },
@@ -219,6 +225,13 @@
       "properties": {
         "reference": {"record": "SYMATTR InstName", "syntax": "native_text", "effect": "display_and_instance_identity", "support_state": "donor_proven", "evidence": ["currentsource.asc"]},
         "value.dc": {"record": "SYMATTR Value", "syntax": "spice_scalar", "effect": "DC_source_definition", "support_state": "donor_proven", "evidence": ["currentsource_13A.asc"]},
+        "value.sine": {"record": "SYMATTR Value", "syntax": "SINE(<Ioffset> <Iamp> <Freq> [<Td> <Theta> <Phi> <Ncycles>])", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/icurrentsource.htm"]},
+        "value.pulse": {"record": "SYMATTR Value", "syntax": "PULSE(<Ioff> <Ion> [<Tdelay> <Trise> <Tfall> <Ton> <Tperiod> <Ncycles>])", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/icurrentsource.htm"]},
+        "value.exp": {"record": "SYMATTR Value", "syntax": "EXP(<I1> <I2> <Td1> <Tau1> <Td2> <Tau2>)", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/icurrentsource.htm"]},
+        "value.sffm": {"record": "SYMATTR Value", "syntax": "SFFM(<Ioff> <Iamp> <Fcar> <MDI> <Fsig>)", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/icurrentsource.htm"]},
+        "value.pwl": {"record": "SYMATTR Value", "syntax": "PWL(<time> <value> ...)", "effect": "transient_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/icurrentsource.htm"]},
+        "value2.ac": {"record": "SYMATTR Value2", "syntax": "AC <magnitude> [<phase_degrees>]", "effect": "AC_source_definition", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/icurrentsource.htm"]},
+        "spice_line.load": {"record": "SYMATTR SpiceLine", "syntax": "literal_flag", "effect": "dissipative_current_load_mode", "support_state": "official_help_ltspice26_verified", "evidence": ["docs/SOURCE_PROPERTY_RESEARCH.md", "LTspiceHelp/icurrentsource.htm"]},
         "window.123": {"record": "WINDOW 123", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["currentsource_13A.asc"]},
         "window.39": {"record": "WINDOW 39", "syntax": "native_window_record", "effect": "display_layout", "support_state": "donor_proven", "evidence": ["currentsource_13A.asc"]}
       },

@@ -62,14 +62,18 @@ def _raw_component_extensions(raw: dict[str, Any]) -> tuple[dict[str, dict[str, 
         profile_kind = normalize_kind(raw_kind) if raw_kind is not None else ""
         if profile_kind:
             extension["ltspice_profile"] = profile_kind
-        # ``Misc\\signal`` is an LTspice stock source spelling that the
-        # shared KiCad catalogue quite reasonably does not model.  Its donor
-        # form intentionally has a blank ``Value`` plus ``Value2 AC ...``.
-        # Preserve the raw value *including an omitted value* so a generic
-        # connector repair cannot turn that source into a misleading
-        # "Pin Header" native attribute downstream.
+        # The shared KiCad catalogue may replace an omitted native source
+        # value with display prose such as "DC Voltage Source" or "Pin
+        # Header".  Preserve every LTspice stock source's raw Value,
+        # including an omitted one, so the native adapter can distinguish an
+        # intentional waveform/AC-only parameter set from that cosmetic
+        # fallback.  This covers both ordinary V/I sources and Misc\\signal.
         raw_kind_token = re.sub(r"[^A-Za-z0-9]+", "_", str(raw_kind or "").strip().upper()).strip("_")
-        if raw_kind_token in {"MISC_SIGNAL", "SIGNAL", "SIGNAL_SOURCE"}:
+        if raw_kind_token in {
+            "V", "VDC", "VAC", "VSIN", "VPULSE", "VOLTAGE", "VOLTAGE_SOURCE",
+            "I", "IDC", "CURRENT", "CURRENT_SOURCE",
+            "MISC_SIGNAL", "SIGNAL", "SIGNAL_SOURCE",
+        }:
             extension["ltspice_native_value"] = deepcopy(component.get("value"))
         for name in ("kind", "type"):
             if name in component:
@@ -300,6 +304,24 @@ def canonicalize_source(source: Path, *, routing_mode: str | None = None) -> tup
     if isinstance(raw.get("project"), dict) and isinstance(raw["project"].get("analysis"), list):
         raw_directives.extend(raw["project"]["analysis"])
     directives, directives_report = directive_report(raw_directives)
+    # The shared contract permits analysis cards in ``project.analysis`` while
+    # older callers also supply the equivalent LTspice convenience list at
+    # ``spice_directives``. Exact duplicate cards are redundant and make the
+    # generated schematic visibly contain the same .ac/.tran line twice. Keep
+    # the first validated spelling and record the deterministic repair rather
+    # than emitting duplicate simulator work.
+    unique_directives: list[str] = []
+    duplicate_directives: list[str] = []
+    seen_directives: set[str] = set()
+    for directive in directives:
+        if directive in seen_directives:
+            duplicate_directives.append(directive)
+            continue
+        seen_directives.add(directive)
+        unique_directives.append(directive)
+    directives = unique_directives
+    directives_report["directives"] = directives
+    directives_report["exact_duplicate_cards_removed"] = duplicate_directives
     if directives:
         fixed["spice_directives"] = directives
     report = {

@@ -11935,3 +11935,19 @@ Visible assistant final response (verbatim):
 > The current limit is 43 placed components total, including ground anchors. Diodes, transistors, switches, op-amps, controlled sources, transformers, ICs, behavioral sources, and vendor models are **not** active donor-native support yet—even if older prototype code exists. The raw-ASC advanced editor is also not released yet.
 >
 > The exact source of truth is [ltspice_main_catalogue.json](/home/zaruka/Documents/kicad/ltspice/catalogues/ltspice_main_catalogue.json).
+
+## 2026-07-15T09:30:00+05:00 — Source-property research, common circuits, and layout review
+
+User request (verbatim):
+
+> another much need visual improvment is the leading to no where wires handing out of end nodes, like in this and every other. those look v v out of place
+
+Visible assistant final response (verbatim):
+
+> Yes. I independently learned and tested the V/I source fields now exposed by the normal editor: voltage supports `dc`, `ac` with optional `ac_phase`, one of `sine`/`pulse`/`exp`/`sffm`/inline `pwl`, plus `rser` and `cpar`; current supports the same source definitions plus `load`. They are strict, bounded edits—not free-form source text. PWL support for both source types is also documented by [Analog Devices](https://www.analog.com/en/resources/technical-articles/ltspice-piecewise-linear-functions-for-voltage-current-sources.html). Details are in [SOURCE_PROPERTY_RESEARCH.md](/home/zaruka/Documents/kicad/ltspice/docs/SOURCE_PROPERTY_RESEARCH.md).
+>
+> I fixed the visual defects found in the screenshots: ground now uses a clear downward drop away from sources; return rails are trimmed to real branch endpoints and rejected if they leave a dangling overhang; exact duplicate analysis cards are removed before ASC emission.
+>
+> The final bundle is here: [LTSPICE_COMMON_CIRCUITS_100_2026_07_15_FINAL.zip](/home/zaruka/Documents/Ltspice/LTSPICE_COMMON_CIRCUITS_100_2026_07_15_FINAL.zip). It has 100 named folders, each with `circuit.json`, a normally generated stock-symbol `.asc`, and `accuracy_check.txt`. All 100 generated and netlisted successfully in installed LTspice 26.0.2; the top ten complex circuits were opened, screenshot-reviewed, and each exact LTspice window was closed afterward. See [GUI review evidence](/home/zaruka/Documents/Ltspice/common_circuit_gui_review_2026_07_15_final) and [review notes](/home/zaruka/Documents/kicad/ltspice/docs/COMMON_CIRCUIT_GUI_REVIEW.md).
+>
+> Verification: 106 tests passed, 1 optional test skipped. The 100 examples stay within the existing 43-component cap (largest is 14), so I did not raise it merely for a corpus count. Dense bridge/T layouts are the next styling target; I am not claiming full waveform-response proof or arbitrary unsupported LTspice components.

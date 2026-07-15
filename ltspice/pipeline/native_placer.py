@@ -35,6 +35,17 @@ _TRANSFORMS: dict[str, tuple[int, int, int, int]] = {
 _SIDE_VECTORS = {"top": (0, -1), "right": (1, 0), "bottom": (0, 1), "left": (-1, 0)}
 _SIDE_NAMES = {(0, -1): "top", (1, 0): "right", (0, 1): "bottom", (-1, 0): "left"}
 
+# These are deliberately expressed in ASC grid increments rather than screen
+# pixels.  They give stock source symbols and their display text a useful
+# breathing room while retaining a compact, readable sheet at LTspice's
+# fit-to-page zoom.  The old one-cell-per-graph-layer layout had no wrapping:
+# a 20-part series chain became a four-thousand-unit horizontal strip and a
+# 20-way shunt became a similarly tall vertical strip.
+_AUTOMATIC_X_PITCH_GRIDS = 14
+_AUTOMATIC_Y_PITCH_GRIDS = 13
+_MAX_FLOW_COLUMNS = 7
+_MAX_LAYER_ROWS = 4
+
 
 def _transform(point: tuple[int, int], orientation: str) -> tuple[int, int]:
     a, b, c, d = _TRANSFORMS[orientation]
@@ -102,13 +113,13 @@ def _automatic_origin(index: int, population: int, grid: int) -> list[int]:
     """Use a stable sparse grid, then let the later router tighten only safely."""
 
     columns = max(1, math.ceil(math.sqrt(max(1, population))))
-    x_pitch = grid * 12
-    y_pitch = grid * 11
+    x_pitch = grid * _AUTOMATIC_X_PITCH_GRIDS
+    y_pitch = grid * _AUTOMATIC_Y_PITCH_GRIDS
     return [grid * 10 + (index % columns) * x_pitch, grid * 8 + (index // columns) * y_pitch]
 
 
 def _topology_slots(native_circuit: Mapping[str, Any], physical: list[Mapping[str, Any]]) -> dict[str, tuple[int, int]]:
-    """Turn the shared non-ground graph into a compact breadth-first layout.
+    """Turn the shared non-ground graph into a compact, wrapped flow layout.
 
     This is the first LTspice beautifier pass adapted from the KiCad
     arrangement idea: related components get nearby graph layers before the
@@ -164,6 +175,12 @@ def _topology_slots(native_circuit: Mapping[str, Any], physical: list[Mapping[st
                     queue.append(neighbour)
         blocks.append(block)
 
+    # Each graph layer is a small rectangle: a one-member series layer stays
+    # one cell wide, while a large fan-out (for example twenty shunt
+    # capacitors) folds into at most four rows.  Layer rectangles then flow
+    # left-to-right and wrap.  This preserves the visual source-to-load
+    # direction for ordinary circuits without producing long strips for
+    # perfectly legal large donor fixtures.
     local_blocks: list[tuple[dict[str, tuple[int, int]], int, int]] = []
     for block in blocks:
         roots = [ref for ref in block if ref in source_refs]
@@ -186,10 +203,24 @@ def _topology_slots(native_circuit: Mapping[str, Any], physical: list[Mapping[st
         for ref in block:
             by_layer.setdefault(layer[ref], []).append(ref)
         local: dict[str, tuple[int, int]] = {}
-        for column, members in sorted(by_layer.items()):
+        flow_x = 0
+        flow_y = 0
+        current_band_height = 0
+        for _layer, members in sorted(by_layer.items()):
             ranked = sorted(members, key=lambda ref: (-len(adjacency[ref]), order[ref], ref))
-            for row, ref in enumerate(ranked):
-                local[ref] = (column, row)
+            layer_rows = min(_MAX_LAYER_ROWS, len(ranked))
+            layer_width = max(1, math.ceil(len(ranked) / layer_rows))
+            if flow_x and flow_x + layer_width > _MAX_FLOW_COLUMNS:
+                flow_x = 0
+                flow_y += current_band_height
+                current_band_height = 0
+            for member_index, ref in enumerate(ranked):
+                local[ref] = (
+                    flow_x + member_index // layer_rows,
+                    flow_y + member_index % layer_rows,
+                )
+            flow_x += layer_width
+            current_band_height = max(current_band_height, layer_rows)
         local_blocks.append(
             (
                 local,
@@ -198,15 +229,35 @@ def _topology_slots(native_circuit: Mapping[str, Any], physical: list[Mapping[st
             )
         )
 
+    # Blocks have different logical dimensions (a source/load pair is 2x1;
+    # a high fan-out can be 6x4).  Pack their real slot rectangles in a
+    # square-ish matrix instead of using one oversized global cell.  This
+    # removes the empty columns/rows visible in the prior source matrix.
     block_columns = max(1, math.ceil(math.sqrt(len(local_blocks))))
-    block_width = max(width for _slots, width, _height in local_blocks) + 1
-    block_height = max(height for _slots, _width, height in local_blocks) + 1
+    column_widths = [0] * block_columns
+    row_count = max(1, math.ceil(len(local_blocks) / block_columns))
+    row_heights = [0] * row_count
+    for index, (_slots, width, height) in enumerate(local_blocks):
+        block_x = index % block_columns
+        block_y = index // block_columns
+        column_widths[block_x] = max(column_widths[block_x], width)
+        row_heights[block_y] = max(row_heights[block_y], height)
+    column_offsets: list[int] = []
+    running_x = 0
+    for width in column_widths:
+        column_offsets.append(running_x)
+        running_x += width
+    row_offsets: list[int] = []
+    running_y = 0
+    for height in row_heights:
+        row_offsets.append(running_y)
+        running_y += height
     slots: dict[str, tuple[int, int]] = {}
     for index, (local, _width, _height) in enumerate(local_blocks):
         block_x = index % block_columns
         block_y = index // block_columns
         for ref, (column, row) in local.items():
-            slots[ref] = (block_x * block_width + column, block_y * block_height + row)
+            slots[ref] = (column_offsets[block_x] + column, row_offsets[block_y] + row)
     return slots
 
 
@@ -257,7 +308,10 @@ def place_native_components(
         else:
             if arrange:
                 column, row = topology_slots.get(ref, (index, 0))
-                candidate = [active.grid * 10 + column * active.grid * 12, active.grid * 8 + row * active.grid * 11]
+                candidate = [
+                    active.grid * 10 + column * active.grid * _AUTOMATIC_X_PITCH_GRIDS,
+                    active.grid * 8 + row * active.grid * _AUTOMATIC_Y_PITCH_GRIDS,
+                ]
             else:
                 candidate = _automatic_origin(index, len(physical), active.grid)
         attempts = 0
@@ -268,12 +322,15 @@ def place_native_components(
                 break
             if requested:
                 raise NativePlacementError(f"{ref}.ltspice_at overlaps existing stock-symbol keepout.")
-            candidate[0] += active.grid * 12
+            candidate[0] += active.grid * _AUTOMATIC_X_PITCH_GRIDS
             attempts += 1
             if attempts > active.max_components_per_circuit * 3:
                 raise NativePlacementError(f"Could not find a deterministic non-overlapping placement for {ref}.")
         if attempts:
-            warnings.append(f"Shifted {ref} right by {attempts * active.grid * 12} ASC units to avoid a body keepout.")
+            warnings.append(
+                f"Shifted {ref} right by {attempts * active.grid * _AUTOMATIC_X_PITCH_GRIDS} ASC units "
+                "to avoid a body keepout."
+            )
 
         pins: dict[str, dict[str, Any]] = {}
         for pin_name, raw_pin in definition["pin_model"]["pins"].items():

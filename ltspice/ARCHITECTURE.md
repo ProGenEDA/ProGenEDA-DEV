@@ -6,10 +6,15 @@ The LTspice backend must produce a schematic that opens as though it had been
 drawn by a person in the installed LTspice application.  The output is an
 LTspice `.asc` replica, not a generic SPICE netlist with a custom visual skin.
 
-The donor corpus in `Documents/Ltspice/Donor` is the primary evidence.  A
+The donor corpus in `Documents/Ltspice/Donor` is the primary evidence. A
 component, property, orientation, or record form is supported only after the
 donor learner has recorded evidence for it and a generated fixture has opened
-cleanly in installed LTspice.
+cleanly in installed LTspice. A narrowly bounded exception is recorded as
+`official_help_ltspice26_verified`: the installed official LTspice 26 help and
+the installed executable both prove its stock-symbol record form, but the
+catalogue must still say that it is not donor-proven. This currently covers a
+small V/I source-property subset documented in
+[SOURCE_PROPERTY_RESEARCH.md](docs/SOURCE_PROPERTY_RESEARCH.md).
 
 The current development cap is **43 logical canonical components per circuit**.
 The cap is deliberate: every supported family must first pass its own count and
@@ -51,11 +56,15 @@ representation is a `FLAG x y 0` record rather than a `SYMBOL` record.
    accepted.
 2. **Donor ASC record** — establishes exact native syntax, symbol name,
    native orientation, properties, and geometry examples.
-3. **Installed stock ASY** — establishes exact local pin anchors and
+3. **Installed LTspice help plus executable probe** — can establish a narrowly
+   bounded stock attribute grammar when no supplied donor contains that edit;
+   its catalogue state must remain `official_help_ltspice26_verified`, not
+   `donor_proven`.
+4. **Installed stock ASY** — establishes exact local pin anchors and
    `SpiceOrder`; it never authorizes a made-up component.
-4. **Deterministic generator regression** — proves the generator can
+5. **Deterministic generator regression** — proves the generator can
    reproduce and safely extend the observed pattern.
-5. **Documented bounded inference** — only for an extension between proven
+6. **Documented bounded inference** — only for an extension between proven
    donor counts/properties.  It must be recorded in the catalogue as
    `inferred_from_donor`, then upgraded to `gui_verified` after opening.
 
@@ -149,14 +158,15 @@ counts naturally shrink.  The registry records each tested composition.
 
 ### 3. Native property editor
 
-The editor follows the same family order. It changes only donor-proven native
-records — for example `SYMATTR InstName`, `SYMATTR Value`, and a whitelisted
-`SYMATTR SpiceLine` key such as resistor `tol` or `pwr`. Every field stores its
-exact native syntax, accepted value grammar, electrical/display effect, and
-donor path. A donor-observed record is not automatically a normal-mode editor
-control: the permanent catalogue also records which fields the shared-JSON
-adapter currently maps. Missing or unmapped fields stay in [the support-gap
-register](docs/SUPPORT_GAPS.md).
+The editor follows the same family order. It changes only catalogue-approved
+native records — normally donor-proven records such as `SYMATTR InstName`,
+`SYMATTR Value`, and a whitelisted `SYMATTR SpiceLine` key such as resistor
+`tol` or `pwr`, plus the explicitly labelled installed-help/executable source
+subset. Every field stores exact native syntax, accepted value grammar,
+electrical/display effect, and evidence path. A donor-observed record is not
+automatically a normal-mode editor control: the permanent catalogue also
+records which fields the shared-JSON adapter currently maps. Missing or
+unmapped fields stay in [the support-gap register](docs/SUPPORT_GAPS.md).
 
 ### 4. Strict wire-only router
 
@@ -239,10 +249,12 @@ substitute for geometry/connectivity validation.
 
 `native_gui_verifier.py` is the explicit desktop evidence command. It performs
 the stock-only static gate, launches the ASC through the registered `xdg-open`
-association, captures the active window with Spectacle, and writes a JSON
-review checklist. It deliberately leaves the result as
-`captured_requires_visual_review`; a screenshot must still be assessed before
-the permanent catalogue can change status.
+association, identifies the exact LTspice window by caption, `ltspice.exe`
+class, and KWin internal ID, focuses/captures that exact target, verifies the
+same target remained active, then closes only that target. It writes a JSON
+review checklist and deliberately leaves the result as
+`captured_target_validated_requires_visual_review`; a screenshot must still be
+assessed before the permanent catalogue can change status.
 
 The normal generator invocation does not yet automate this desktop capture for
 every run. It may return a statically validated candidate ASC, but catalogue

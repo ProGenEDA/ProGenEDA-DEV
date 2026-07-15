@@ -71,9 +71,11 @@ tracked in [the support-gap register](docs/SUPPORT_GAPS.md).
    writes it as `FLAG x y 0`, not a `SYMBOL`; the test matrix naturally gives
    each family fewer instances as more families are included.
 3. **Learn native property editing.** For each placed family, vary only
-   donor-proven SYMATTR/WINDOW records and whitelisted SpiceLine keys. Record
-   their syntax, accepted value grammar, effect, evidence, and GUI result in
-   the catalogue. Unknown properties are rejected, not guessed.
+   donor-proven SYMATTR/WINDOW records and whitelisted SpiceLine keys, plus a
+   separately labelled installed-help/executable source field where the
+   catalogue records that stronger-but-not-donor evidence. Record syntax,
+   accepted value grammar, effect, evidence, and GUI result in the catalogue.
+   Unknown properties are rejected, not guessed.
 4. **Route wires only.** Adapt the KiCad Python planner, geometry validator,
    live-routing-state, arrangement, and beautifier logic to LTspice stock pin
    anchors. Every canonical net must become one physically connected wire
@@ -144,6 +146,17 @@ artifacts:
 - [Support gaps and donor requests](docs/SUPPORT_GAPS.md) records what has
   been observed, what still needs generated/GUI proof, and which donor files
   would unblock each gap.
+- [Independent source-property research](docs/SOURCE_PROPERTY_RESEARCH.md)
+  records the bounded V/I source modes learned from the installed LTspice 26
+  help and checked by LTspice itself.  They are explicitly distinguished from
+  donor-proven fields.
+- [The 100-circuit corpus](docs/COMMON_CIRCUIT_CORPUS.md) and its
+  [ordinary-generator bundle workflow](docs/COMMON_CIRCUIT_BUNDLE.md) provide
+  named, canonical R/C/L/source examples without a second input format or
+  manually supplied LTspice coordinates.
+- [The bounded top-10 GUI review](docs/COMMON_CIRCUIT_GUI_REVIEW.md) records
+  the exact-window screenshots, the rail/ground repairs they drove, and the
+  remaining dense-topology styling boundary.
 - [Native GUI verification evidence](docs/NATIVE_GUI_VERIFICATION.md) records
   the local all-family mixed smoke test separately from full support promotion.
 - [Historical donor coverage](docs/LTSPICE_DONOR_COVERAGE.md) and
@@ -186,6 +199,19 @@ To reproduce the bounded placement progression itself:
 That writes and generates the six 1/2/3/5/10/20 family progressions; it is
 an evidence generator, not a substitute for GUI review of each output.
 
+To build the named 100-circuit user bundle through the same ordinary generator
+(not a separate ASC writer), choose a new directory **outside** this
+repository:
+
+    PYTHONPATH=. python -m ltspice.pipeline.common_circuit_bundle \
+      /tmp/ltspice-common-circuit-bundle \
+      --archive /tmp/ltspice-common-circuit-bundle.zip
+
+Each title-named folder contains the untouched canonical `circuit.json`, the
+ordinary-generator `.asc`, and `accuracy_check.txt`. The package refuses
+manual placement hints, produces all direct wires through the active router,
+and records the native static-validation facts and ASC hash for every circuit.
+
 ## Working with the canonical JSON
 
 The canonical JSON keeps project, components, nets, expected_netlist, routing,
@@ -199,8 +225,9 @@ approved native property list, or a net that cannot be physically routed is
 rejected with a deterministic diagnostic.
 
 Normal editing exposes only catalogue-approved and adapter-implemented fields,
-such as a native reference, value, donor-proven passive/source parameter, or
-donor-proven source display window. The root
+such as a native reference, value, donor-proven passive/source parameter,
+donor-proven source display window, or an explicitly labelled
+installed-help/executable-verified V/I source mode. The root
 `normal_editor.adapter_implemented_properties` map is the exact normal-mode
 allow-list; any future donor-observed record remains unavailable until it is
 added there with deterministic validation. Advanced raw ASC or JSON editing

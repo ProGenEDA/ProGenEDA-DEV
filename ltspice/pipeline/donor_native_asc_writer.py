@@ -198,9 +198,9 @@ def _parse_property_records(
                 f"{context}.properties.{name} is not a donor-supported property for this component."
             )
         property_definition = _as_mapping(approved[name], f"{context}.catalogue.properties.{name}")
-        if property_definition.get("support_state") != "donor_proven":
+        if property_definition.get("support_state") not in {"donor_proven", "official_help_ltspice26_verified"}:
             raise DonorNativeAscError(
-                f"{context}.properties.{name} is not donor-proven and cannot be emitted yet."
+                f"{context}.properties.{name} is not evidence-backed and cannot be emitted yet."
             )
         value = _check_plain_text(_as_text(raw_value, f"{context}.properties.{name}"), f"{context}.properties.{name}")
         supplied[name] = value
@@ -243,9 +243,14 @@ def _parse_property_records(
             parameter = name.rsplit(".", 1)[1]
             if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", parameter):
                 raise DonorNativeAscError(f"Catalogue SpiceLine parameter {parameter!r} is unsafe.")
-            if not value or any(character.isspace() for character in value):
-                raise DonorNativeAscError(f"{context}.properties.{name} must be one native scalar token.")
-            spice_line_parts.append(f"{parameter}={value}")
+            if definition.get("syntax") == "literal_flag":
+                if value != "true":
+                    raise DonorNativeAscError(f"{context}.properties.{name} must be the enabled literal flag.")
+                spice_line_parts.append(parameter)
+            else:
+                if not value or any(character.isspace() for character in value):
+                    raise DonorNativeAscError(f"{context}.properties.{name} must be one native scalar token.")
+                spice_line_parts.append(f"{parameter}={value}")
         elif record.startswith("SYMATTR "):
             attribute = record.split(maxsplit=1)[1]
             if attribute == "InstName":

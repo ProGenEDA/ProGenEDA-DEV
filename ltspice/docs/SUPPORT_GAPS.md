@@ -13,6 +13,13 @@ netlist workflow are complete. The active main catalogue also has a
 adapter maps from future donor observations that have not yet been made safe
 normal-mode controls.
 
+`official_help_ltspice26_verified` is a separate, narrower evidence state. It
+means the installed LTspice 26 help documented the stock source field and the
+installed LTspice 26.0.2 executable exported or ran it successfully. It is
+used only for the bounded V/I source edits recorded in
+[SOURCE_PROPERTY_RESEARCH.md](SOURCE_PROPERTY_RESEARCH.md); it must never be
+silently described as donor-proven or as complete GUI/matrix promotion.
+
 ## Evidence snapshot — 2026-07-15
 
 The available corpus contains **41** ASC donors. Their observed stock-symbol
@@ -87,8 +94,8 @@ prototype does not make it donor-native support.
 | Resistor | InstName, Value, SpiceLine tol, SpiceLine pwr | Other resistor parameters, display variants, and high-count property edits |
 | Capacitor | InstName, Value | ESR, leakage, initial condition, voltage rating/display, temperature, and any other SpiceLine syntax |
 | Inductor | InstName, Value, Ipk, Rser, Rpar, Cpar | Remaining inductor attributes, display variants, and high-count property edits |
-| Voltage source | InstName, DC Value, SINE, PULSE, Value2 AC, WINDOW 123/39 | AC phase, EXP, SFFM, PWL, arbitrary source-dialog modes, and interactions among source fields |
-| Current source | InstName, DC Value, WINDOW 123/39 | AC/transient waveform modes, source-dialog variants, and additional attributes |
+| Voltage source | InstName, DC Value, SINE, PULSE, Value2 AC, WINDOW 123/39 from donors; independently checked AC phase, EXP, SFFM, basic inline PWL, Rser, and Cpar | GUI/count-matrix proof, source-dialog modes outside the bounded map, PWL file/repeat/trigger forms, and interactions among source fields |
+| Current source | InstName, DC Value, WINDOW 123/39 from donors; independently checked AC phase, SINE, PULSE, EXP, SFFM, basic inline PWL, and `load` | GUI/count-matrix proof, PWL file/repeat/trigger forms, current `R=`, step-load/lookup modes, source-dialog variants, and additional attributes |
 | `Misc\\signal` | InstName, empty Value, Value2 AC, and WINDOW 123/39 from one donor | Additional placement, waveform, display, and property evidence |
 | Ground | Physical FLAG ... 0 only | No editable properties should be invented |
 
@@ -135,16 +142,20 @@ future parity target rather than evidence of an LTspice router.
 ## GUI evidence automation gap
 
 The donor-native executor creates a static candidate ASC, its physical-wire
-reports, and a package when static validation passes. It does not yet launch
-the LTspice desktop application, detect a modal load error, capture a window
-screenshot, or persist a structured visual assessment automatically on every
-run. Those steps have been exercised manually for native smoke fixtures, but
-they are not yet a machine-enforced per-run promotion gate. Add the launcher,
-window capture, screenshot inspection record, and optional netlist/batch
-result to the generated evidence bundle before treating `ok: true` as GUI
-acceptance. The current all-observed-family smoke evidence is recorded in
-[NATIVE_GUI_VERIFICATION.md](NATIVE_GUI_VERIFICATION.md); it does not complete
-the required count/property matrix.
+reports, and a package when static validation passes. The separate
+`native_gui_verifier.py` now launches through `xdg-open`, captures a
+caption/class/KWin-ID-verified LTspice target, and closes that exact target
+after capture; it avoids the earlier unsafe assumption that Spectacle's active
+window was necessarily LTspice. Screenshot inspection and the optional
+netlist/batch result are still not a machine-enforced per-run promotion gate.
+Persist a visual assessment with the generated evidence bundle before treating
+`ok: true` as GUI acceptance. The current all-observed-family smoke evidence
+is recorded in [NATIVE_GUI_VERIFICATION.md](NATIVE_GUI_VERIFICATION.md); it
+does not complete the required count/property matrix. A separate named-corpus
+review of the ten most complex passive/source fixtures is recorded in
+[COMMON_CIRCUIT_GUI_REVIEW.md](COMMON_CIRCUIT_GUI_REVIEW.md); it improves
+layout regression evidence but likewise does not complete the required
+per-family matrix.
 
 ## Unsupported component families
 
