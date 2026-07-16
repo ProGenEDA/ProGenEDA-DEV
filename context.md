@@ -16005,3 +16005,77 @@ Proven visible-value edits: `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`, 
 Verification passed: six focused tests, relevant component-placer/catalogue regressions, compilation, and normal-open plus cold-reopen checks in local Proteus 8 for the fresh generated matrix and two independent accepted-donor matrices. No Ctrl+S was needed because all three opened normally. The code/evidence commit is `b4a2b16a2a40000f82fcbd1df486dd38a4c9e132`, pushed and remote-verified.
 
 Files edited: `src/proteusgen/component_value_changer.py`, `src/proteusgen/component_catalog.py`, `knowledge/component_catalog_v0.json`, `tests/test_component_value_changer.py`, `docs/architecture.md`, `docs/progen_eda_canonical_pipeline.md`, `knowledge/value_and_properties_editor_preflight_2026_07_16.md`, `knowledge/test_results.jsonl`, and `context.md`. Files generated: `experiments/value_and_properties_editor_v1_temp_2026_07_16/`.
+
+### User message - 2026-07-16 20:20 +05:00
+
+make a executable for this for the whole generator
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+Iâ€™ll turn the whole generator into one Windows executable entry point rather than a separate editor-only tool. First Iâ€™m checking the existing packaging and pipeline interfaces so it uses the shared placer, terminal placer, and value/properties stage correctly.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The current commit and upstream match locally. Iâ€™m verifying the remote once more, then Iâ€™ll add a Proteus-only `ProgenProteus.exe` entry point that runs placement â†’ shared terminal placement â†’ post-terminal value/properties edits, with clear errors for unimplemented wiring.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The executable will be a portable, Proteus-only console app named `ProgenProteus.exe`. It will use the existing shared stages only, reject requests that need the still-unimplemented wire-maker, and refuse to silently emit partially terminalized designs.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The unified runtime and CLI are in place and their first five tests pass. Iâ€™m adding a ready-to-run JSON example and the build instructions next, then Iâ€™ll install the packager and produce the actual `.exe`.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+I caught an important safety issue during the first end-to-end smoke run: forcing component grid alignment can collapse a terminal-to-pin wire to zero length. Iâ€™m correcting the executable contract so it rejects that case instead of shipping a superficially valid project, and Iâ€™m retesting with the accepted nonzero-wire route.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The safe end-to-end route now passes with real, nonzero terminal wires, and the executable wrapper refuses the unsafe grid-collapse case. I need PyInstaller to produce the actual Windows binary; Iâ€™m installing that build-only dependency next.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The build dependency is still installing; once it finishes, Iâ€™ll compile the self-contained binary and run it against the same safe R/C terminalized value-edit example.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The package installation timed out without producing an error message. Iâ€™m checking whether it completed in the background; if not, Iâ€™ll retry with a longer build-only install window rather than changing the generator design.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+PyInstaller is not installed, so the timeout interrupted it before completion. Iâ€™m retrying the same build-only installation with enough time for the package download to finish.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+PyInstaller is installed. Iâ€™m building `release\\ProgenProteus.exe` now with only the locked Proteus donor, terminal fixtures, catalogue, and validator rules bundledâ€”no KiCad payload.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The build session was interrupted during the handoff, so Iâ€™m checking the artifact directly before deciding whether it needs a clean rebuild.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The binary built successfully at 7.9 MB. Iâ€™m now running the actual `.exe`â€”not the Python sourceâ€”against the safe terminalized R/C example and will then loader-test its output in Proteus.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The first executable run exposed a packaging-only defect: PyInstaller launched the packageâ€™s CLI file as a standalone script, so Python rejected its relative imports. Iâ€™m correcting the build to use a tiny package-aware launcher; the generator itself did not run or alter any circuit.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The packaged runtime found the locked mega donor but was missing the small alias/marker manifest that the shared placer reads before it selects that donor. Iâ€™m bundling that authoritative manifest too; this is packaging data, not a donor-route change.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+One more registry file is part of the shared placerâ€™s normalization tableâ€”even when the output stays locked to the mega donor. Iâ€™m including that metadata file as well, then rebuilding once more; the actual donor selection remains unchanged.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+The rebuilt executable now completes the full shared pipeline successfully: placement, native terminal attachment with nonzero grid-aligned wires, then post-terminal resistor/capacitor value edits. Iâ€™m doing the required real Proteus cold-open/cold-reopen gate on a disposable copy next.
+
+### Agent response - 2026-07-16 20:20 +05:00
+
+Proteus accepted the `.exe` output on both cold opens with no loader or library dialog. Iâ€™m doing the final source regression/build audit now, then Iâ€™ll package the binary and its documented example into a scoped commit.
+
+Files edited: `src/proteusgen/templates.py`, `src/proteusgen/proteus_app.py`, `src/proteusgen/proteus_cli.py`, `tools/build_progen_proteus_exe.py`, `tools/progen_proteus_entry.py`, `pyproject.toml`, `README.md`, `tests/test_proteus_app.py`, `examples/progen_proteus_r_c_value_edit.json`, `release/README.md`, `knowledge/progen_proteus_executable_preflight_2026_07_16.md`, `experiments/progen_proteus_executable_v1_temp_2026_07_16/README.md`, and `context.md`. Files generated: `release/ProgenProteus.exe` and the curated executable smoke output under `experiments/progen_proteus_executable_v1_temp_2026_07_16/03_executable_smoke/`.

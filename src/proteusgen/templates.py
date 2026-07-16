@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,11 @@ def repository_root() -> Path:
         if (root / "fixtures" / "manifest.json").exists():
             return root
         raise FileNotFoundError(f"`PROTEUSGEN_REPO_ROOT` does not contain fixtures/manifest.json: {root}")
+    bundled_root = getattr(sys, "_MEIPASS", None)
+    if bundled_root:
+        root = Path(str(bundled_root))
+        if (root / "fixtures" / "manifest.json").exists():
+            return root
     candidates = (Path.cwd(), *Path.cwd().parents, *Path(__file__).resolve().parents)
     for candidate in candidates:
         if (candidate / "fixtures" / "manifest.json").exists():

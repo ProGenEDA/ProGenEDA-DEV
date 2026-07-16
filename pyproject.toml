@@ -10,9 +10,11 @@ requires-python = ">=3.11"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]
+build-exe = ["pyinstaller>=6.0"]
 
 [project.scripts]
 proteusgen = "proteusgen.cli:main"
+progen-proteus = "proteusgen.proteus_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src", "."]

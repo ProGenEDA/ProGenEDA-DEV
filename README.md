@@ -242,6 +242,38 @@ When the package is installed outside this checkout, set
 `PROTEUSGEN_REPO_ROOT` to this repository so donors, fixtures, schemas, and
 knowledge files can be found.
 
+## Portable Proteus Executable
+
+Build the Proteus-only Windows executable (no KiCad code or data is bundled):
+
+```powershell
+python -m pip install -e .[build-exe]
+python tools\build_progen_proteus_exe.py
+```
+
+The output is `release\ProgenProteus.exe`. It bundles the locked placement
+donor, shared terminal fixtures, and component catalogue. Run the complete
+currently implemented pipeline with:
+
+```powershell
+release\ProgenProteus.exe generate examples\progen_proteus_r_c_value_edit.json --output out\r_c_terminalized.pdsprj
+```
+
+`generate` runs component placement, the shared terminal placer, and an
+optional `post_terminal_edits` object. `edit-values` applies that same shared
+value/properties stage to an existing terminalized project:
+
+```powershell
+release\ProgenProteus.exe edit-values existing_terminalized.pdsprj --edits edits.json --output edited.pdsprj
+```
+
+The executable refuses to pretend that unimplemented physical wiring has been
+made. It also rejects mixed terminal requests containing a family without a
+proven active terminal route unless `--allow-unterminalized` is explicitly
+provided for a deliberate control project. It also refuses a zero-length
+terminal-to-pin WIRE; a grid-aligned terminal contact must still have a real,
+donor-proven short wire to the exact component pin.
+
 ## Important Limits
 
 - The accepted resistor-heavy component-placer ceiling is `R91`.
