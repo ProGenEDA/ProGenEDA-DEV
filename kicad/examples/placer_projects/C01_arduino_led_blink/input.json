@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c01_arduino_led_blink",
+    "title": "Arduino LED Blink",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "ARDUINO_NANO",
+      "value": "Arduino Nano"
+    },
+    {
+      "id": "X2",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "X3",
+      "kind": "R_220",
+      "value": "220 ohm Resistor"
+    },
+    {
+      "id": "X4",
+      "kind": "PUSH_BUTTON",
+      "value": "Push Button"
+    },
+    {
+      "id": "X5",
+      "kind": "USB_C_CONNECTOR",
+      "value": "USB Type-C Connector"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Used to prove real KiCad symbol placement coverage before beautifier and routing stages are enabled."
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the canonical KiCad component placer.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "LM358",
+            "name": "LM358 Op-Amp",
+            "at": [
+              35.56,
+              44.45
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "opamp",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Amplifier_Operational:LM358"
+          },
+          "X2": {
+            "kind": "FEEDBACK_RESISTOR",
+            "name": "Feedback Resistor",
+            "at": [
+              85.09,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "X3": {
+            "kind": "INPUT_CAPACITOR",
+            "name": "Input Capacitor",
+            "at": [
+              125.73,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "X4": {
+            "kind": "POTENTIOMETER",
+            "name": "Potentiometer",
+            "at": [
+              167.64,
+              34.29
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "potentiometer",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R_Potentiometer"
+          },
+          "X5": {
+            "kind": "AUDIO_JACK",
+            "name": "Audio Jack",
+            "at": [
+              30.48,
+              104.14
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Audio:AudioJack3"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 24.56,
+            "top": 29.45,
+            "right": 46.56,
+            "bottom": 59.45
+          },
+          {
+            "owner": "X2",
+            "left": 81.59,
+            "top": 30.5,
+            "right": 88.59,
+            "bottom": 33.0
+          },
+          {
+            "owner": "X3",
+            "left": 123.73,
+            "top": 30.25,
+            "right": 127.73,
+            "bottom": 33.25
+          },
+          {
+            "owner": "X4",
+            "left": 163.14,
+            "top": 29.79,
+            "right": 172.14,
+            "bottom": 38.79
+          },
+          {
+            "owner": "X5",
+            "left": 24.98,
+            "top": 100.14,
+            "right": 35.98,
+            "bottom": 108.14
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,1827 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "mj076",
+    "title": "Main JSON Catalog 076: Proteus Alias Logic Display Board + Arduino LED/Button Demo",
+    "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "MJ076",
+  "circuit_name": "Main JSON Catalog 076: Proteus Alias Logic Display Board + Arduino LED/Button Demo",
+  "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "decision_source": "deterministic_catalog_policy_combination_default",
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 6,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "clustered_blocks_square_fill",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "components[].block and blocks[]",
+    "keep_related_blocks_close": true
+  },
+  "components": [
+    {
+      "id": "B1_G1",
+      "ref": "B1_G1",
+      "kind": "GROUND",
+      "type": "GROUND",
+      "value": "GND",
+      "role": "reference",
+      "block": "b1_logic",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "B1_V1",
+      "ref": "B1_V1",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "5V logic supply",
+      "role": "source",
+      "block": "b1_logic",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_J1",
+      "ref": "B1_J1",
+      "kind": "PROGRAMMING_HEADER",
+      "type": "PROGRAMMING_HEADER",
+      "value": "Control header",
+      "role": "connector",
+      "block": "b1_logic",
+      "pins": {
+        "1": "+5V",
+        "10": "B1_SHIFT_Q1",
+        "11": "B1_SHIFT_Q2",
+        "12": "B1_SHIFT_Q3",
+        "13": "B1_MUX_B_OUT",
+        "14": "B1_ADDER_SUM1",
+        "2": "GND",
+        "3": "B1_CLK",
+        "4": "B1_COUNTER_LOAD",
+        "5": "B1_RIPPLE_Q0",
+        "6": "B1_RIPPLE_Q1",
+        "7": "B1_RIPPLE_Q2",
+        "8": "B1_RIPPLE_Q3",
+        "9": "B1_SHIFT_Q0"
+      }
+    },
+    {
+      "id": "B1_J2",
+      "ref": "B1_J2",
+      "kind": "SPI_HEADER_FLASH",
+      "type": "SPI_HEADER_FLASH",
+      "value": "SPI/debug header",
+      "role": "connector",
+      "block": "b1_logic",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_SHIFT_LATCH",
+        "3": "B1_MUX_OUT",
+        "4": "B1_ADDER_SUM0",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "B1_DS1",
+      "ref": "B1_DS1",
+      "kind": "7SEGCOMA",
+      "type": "7SEGCOMA",
+      "value": "Common-anode display",
+      "role": "display",
+      "block": "b1_display",
+      "pins": {
+        "1": "B1_SEG_CA_A",
+        "10": "+5V",
+        "2": "B1_SEG_CA_B",
+        "3": "B1_SEG_CA_C",
+        "4": "B1_SEG_CA_D",
+        "5": "B1_SEG_CA_E",
+        "6": "B1_SEG_CA_F",
+        "7": "B1_SEG_CA_G"
+      }
+    },
+    {
+      "id": "B1_DS2",
+      "ref": "B1_DS2",
+      "kind": "7SEGCOMK",
+      "type": "7SEGCOMK",
+      "value": "Common-cathode display",
+      "role": "display",
+      "block": "b1_display",
+      "pins": {
+        "1": "B1_SEG_CK_A",
+        "10": "GND",
+        "2": "B1_SEG_CK_B",
+        "3": "B1_SEG_CK_C",
+        "4": "B1_SEG_CK_D",
+        "5": "B1_SEG_CK_E",
+        "6": "B1_SEG_CK_F",
+        "7": "B1_SEG_CK_G"
+      }
+    },
+    {
+      "id": "B1_U4027",
+      "ref": "B1_U4027",
+      "kind": "4027",
+      "type": "4027",
+      "value": "CD4027",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_JK_Q",
+        "16": "+5V",
+        "3": "B1_CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U4511",
+      "ref": "B1_U4511",
+      "kind": "4511",
+      "type": "4511",
+      "value": "CD4511",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_BCD_B",
+        "10": "B1_SEG_CK_D",
+        "11": "B1_SEG_CK_C",
+        "12": "B1_SEG_CK_B",
+        "13": "B1_SEG_CK_A",
+        "14": "B1_SEG_CK_G",
+        "15": "B1_SEG_CK_F",
+        "16": "+5V",
+        "2": "B1_BCD_C",
+        "6": "B1_BCD_D",
+        "7": "B1_BCD_A",
+        "8": "GND",
+        "9": "B1_SEG_CK_E"
+      }
+    },
+    {
+      "id": "B1_U7447",
+      "ref": "B1_U7447",
+      "kind": "7447",
+      "type": "7447",
+      "value": "7447",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_BCD_B",
+        "10": "B1_SEG_CA_D",
+        "11": "B1_SEG_CA_C",
+        "12": "B1_SEG_CA_B",
+        "13": "B1_SEG_CA_A",
+        "14": "B1_SEG_CA_G",
+        "15": "B1_SEG_CA_F",
+        "2": "B1_BCD_C",
+        "6": "B1_BCD_D",
+        "7": "B1_BCD_A",
+        "9": "B1_SEG_CA_E"
+      }
+    },
+    {
+      "id": "B1_U7490",
+      "ref": "B1_U7490",
+      "kind": "7490",
+      "type": "7490",
+      "value": "7490",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "11": "B1_RIPPLE_Q3",
+        "12": "B1_RIPPLE_Q0",
+        "14": "B1_CLK",
+        "8": "B1_RIPPLE_Q2",
+        "9": "B1_RIPPLE_Q1"
+      }
+    },
+    {
+      "id": "B1_U00",
+      "ref": "B1_U00",
+      "kind": "74HC00",
+      "type": "74HC00",
+      "value": "74HC00",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_DATA_A",
+        "14": "+5V",
+        "2": "B1_DATA_B",
+        "3": "B1_NAND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U02",
+      "ref": "B1_U02",
+      "kind": "74HC02",
+      "type": "74HC02",
+      "value": "74HC02",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_DATA_A",
+        "14": "+5V",
+        "2": "B1_DATA_B",
+        "3": "B1_NOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U04",
+      "ref": "B1_U04",
+      "kind": "74HC04",
+      "type": "74HC04",
+      "value": "74HC04",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_DATA_A",
+        "14": "+5V",
+        "2": "B1_INV_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U08",
+      "ref": "B1_U08",
+      "kind": "74HC08",
+      "type": "74HC08",
+      "value": "74HC08",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_DATA_A",
+        "14": "+5V",
+        "2": "B1_DATA_B",
+        "3": "B1_AND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U32",
+      "ref": "B1_U32",
+      "kind": "74HC32",
+      "type": "74HC32",
+      "value": "74HC32",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_DATA_A",
+        "14": "+5V",
+        "2": "B1_DATA_B",
+        "3": "B1_OR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U74",
+      "ref": "B1_U74",
+      "kind": "74HC74",
+      "type": "74HC74",
+      "value": "74HC74",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "14": "+5V",
+        "2": "B1_NAND_OUT",
+        "3": "B1_CLK",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U76",
+      "ref": "B1_U76",
+      "kind": "74HC76",
+      "type": "74HC76",
+      "value": "74HC76",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_CLK",
+        "13": "GND",
+        "2": "B1_NOR_OUT",
+        "5": "+5V"
+      }
+    },
+    {
+      "id": "B1_U85",
+      "ref": "B1_U85",
+      "kind": "74HC85",
+      "type": "74HC85",
+      "value": "74HC85",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "10": "B1_INV_OUT",
+        "16": "+5V",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U86",
+      "ref": "B1_U86",
+      "kind": "74HC86",
+      "type": "74HC86",
+      "value": "74HC86",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_DATA_A",
+        "14": "+5V",
+        "2": "B1_DATA_B",
+        "3": "B1_XOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U151",
+      "ref": "B1_U151",
+      "kind": "74HC151",
+      "type": "74HC151",
+      "value": "74HC151",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "16": "+5V",
+        "3": "B1_DATA_B",
+        "4": "B1_DATA_A",
+        "6": "B1_MUX_OUT",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U157",
+      "ref": "B1_U157",
+      "kind": "74HC157",
+      "type": "74HC157",
+      "value": "74HC157",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "16": "+5V",
+        "2": "B1_DATA_A",
+        "3": "B1_DATA_B",
+        "7": "B1_MUX_B_OUT",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U160",
+      "ref": "B1_U160",
+      "kind": "74HC160",
+      "type": "74HC160",
+      "value": "74HC160",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "11": "B1_BCD_D",
+        "12": "B1_BCD_C",
+        "13": "B1_BCD_B",
+        "14": "B1_BCD_A",
+        "16": "+5V",
+        "2": "B1_CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U174",
+      "ref": "B1_U174",
+      "kind": "74HC174",
+      "type": "74HC174",
+      "value": "74HC174",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "16": "+5V",
+        "2": "B1_RGB_R",
+        "3": "B1_XOR_OUT",
+        "5": "B1_RGB_G",
+        "6": "B1_RGB_B",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U192",
+      "ref": "B1_U192",
+      "kind": "74HC192",
+      "type": "74HC192",
+      "value": "74HC192",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "11": "B1_COUNTER_LOAD",
+        "16": "+5V",
+        "4": "B1_CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U266",
+      "ref": "B1_U266",
+      "kind": "74HC266",
+      "type": "74HC266",
+      "value": "74HC266",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "1": "B1_DATA_A",
+        "14": "+5V",
+        "2": "B1_DATA_B",
+        "3": "B1_XNOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B1_U283",
+      "ref": "B1_U283",
+      "kind": "74HC283",
+      "type": "74HC283",
+      "value": "74HC283",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "10": "B1_ADDER_SUM0",
+        "11": "B1_ADDER_SUM1",
+        "16": "+5V",
+        "3": "B1_DATA_B",
+        "5": "B1_DATA_A",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B1_U595",
+      "ref": "B1_U595",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595",
+      "role": "logic_ic",
+      "block": "b1_logic",
+      "pins": {
+        "16": "+5V",
+        "8": "GND",
+        "MR": "+5V",
+        "OE": "GND",
+        "Q0": "B1_SHIFT_Q0",
+        "Q1": "B1_SHIFT_Q1",
+        "Q2": "B1_SHIFT_Q2",
+        "Q3": "B1_SHIFT_Q3",
+        "Q7": "B1_LED_LOGIC_A",
+        "SER": "B1_JK_Q",
+        "SHCP": "B1_CLK",
+        "STCP": "B1_SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "B1_SW1",
+      "ref": "B1_SW1",
+      "kind": "DIP_SWITCH",
+      "type": "DIP_SWITCH",
+      "value": "DIP switch",
+      "role": "input",
+      "block": "b1_logic",
+      "pins": {
+        "1": "GND",
+        "2": "B1_DATA_A",
+        "3": "B1_DATA_B"
+      }
+    },
+    {
+      "id": "B1_RN1",
+      "ref": "B1_RN1",
+      "kind": "RESISTOR_NETWORK",
+      "type": "RESISTOR_NETWORK",
+      "value": "Resistor network",
+      "role": "resistor",
+      "block": "b1_logic",
+      "pins": {
+        "2": "B1_NAND_OUT",
+        "3": "B1_NOR_OUT",
+        "4": "B1_INV_OUT",
+        "5": "B1_AND_OUT",
+        "6": "B1_OR_OUT",
+        "7": "B1_XOR_OUT",
+        "8": "B1_XNOR_OUT",
+        "COM": "+5V"
+      }
+    },
+    {
+      "id": "B1_DARR1",
+      "ref": "B1_DARR1",
+      "kind": "LED_ARRAY",
+      "type": "LED_ARRAY",
+      "value": "RGB LED array",
+      "role": "indicator",
+      "block": "b1_display",
+      "pins": {
+        "1": "B1_RGB_R",
+        "2": "B1_RGB_G",
+        "3": "B1_RGB_B",
+        "4": "GND"
+      }
+    },
+    {
+      "id": "B1_LED1",
+      "ref": "B1_LED1",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "Logic LED",
+      "role": "indicator",
+      "block": "b1_display",
+      "pins": {
+        "A": "B1_LED_LOGIC_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_R1",
+      "ref": "B1_R1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "b1_display",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_LED_LOGIC_A"
+      }
+    },
+    {
+      "id": "B2_U1",
+      "ref": "B2_U1",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "controller",
+      "block": "b2",
+      "pins": {
+        "5V": "+5V",
+        "D10": "B2_IO_D10",
+        "D11": "B2_IO_D11",
+        "D12": "B2_IO_D12",
+        "D13": "B2_IO_D13",
+        "D2": "B2_LED1_NET",
+        "D3": "B2_LED2_NET",
+        "D4": "B2_LED3_NET",
+        "D5": "B2_BTN1_NET",
+        "D6": "B2_BTN2_NET",
+        "D7": "B2_IO_D7",
+        "D8": "B2_IO_D8",
+        "D9": "B2_IO_D9",
+        "GND": "GND"
+      }
+    },
+    {
+      "id": "B2_D1",
+      "ref": "B2_D1",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b2",
+      "pins": {
+        "A": "B2_LED1_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B2_D2",
+      "ref": "B2_D2",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b2",
+      "pins": {
+        "A": "B2_LED2_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B2_D3",
+      "ref": "B2_D3",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b2",
+      "pins": {
+        "A": "B2_LED3_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B2_R1",
+      "ref": "B2_R1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b2",
+      "pins": {
+        "1": "B2_LED1_NET",
+        "2": "B2_LED1_A"
+      }
+    },
+    {
+      "id": "B2_R2",
+      "ref": "B2_R2",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b2",
+      "pins": {
+        "1": "B2_LED2_NET",
+        "2": "B2_LED2_A"
+      }
+    },
+    {
+      "id": "B2_R3",
+      "ref": "B2_R3",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b2",
+      "pins": {
+        "1": "B2_LED3_NET",
+        "2": "B2_LED3_A"
+      }
+    },
+    {
+      "id": "B2_SW1",
+      "ref": "B2_SW1",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "b2",
+      "pins": {
+        "1": "+5V",
+        "2": "B2_BTN1_NET"
+      }
+    },
+    {
+      "id": "B2_SW2",
+      "ref": "B2_SW2",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "b2",
+      "pins": {
+        "1": "+5V",
+        "2": "B2_BTN2_NET"
+      }
+    },
+    {
+      "id": "B2_R4",
+      "ref": "B2_R4",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b2",
+      "pins": {
+        "1": "B2_BTN1_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_R5",
+      "ref": "B2_R5",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b2",
+      "pins": {
+        "1": "B2_BTN2_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_J1",
+      "ref": "B2_J1",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Power/IO Header 1x6",
+      "role": "connector",
+      "block": "b2",
+      "pins": {
+        "1": "+5V",
+        "2": "GND",
+        "3": "B2_BTN1_NET",
+        "4": "B2_BTN2_NET",
+        "5": "B2_IO_D7",
+        "6": "B2_IO_D8"
+      }
+    },
+    {
+      "id": "B2_J2",
+      "ref": "B2_J2",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Extra IO Header 1x6",
+      "role": "connector",
+      "block": "b2",
+      "pins": {
+        "1": "B2_IO_D9",
+        "2": "B2_IO_D10",
+        "3": "B2_IO_D11",
+        "4": "B2_IO_D12",
+        "5": "B2_IO_D13",
+        "6": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "B1_V1.1",
+      "B1_J1.1",
+      "B1_J2.1",
+      "B1_DS1.10",
+      "B1_U4027.16",
+      "B1_U4511.16",
+      "B1_U00.14",
+      "B1_U02.14",
+      "B1_U04.14",
+      "B1_U08.14",
+      "B1_U32.14",
+      "B1_U74.14",
+      "B1_U76.5",
+      "B1_U85.16",
+      "B1_U86.14",
+      "B1_U151.16",
+      "B1_U157.16",
+      "B1_U160.16",
+      "B1_U174.16",
+      "B1_U192.16",
+      "B1_U266.14",
+      "B1_U283.16",
+      "B1_U595.16",
+      "B1_U595.MR",
+      "B1_RN1.COM",
+      "B1_R1.1",
+      "B2_U1.5V",
+      "B2_J1.1",
+      "B2_SW1.1",
+      "B2_SW2.1"
+    ],
+    "GND": [
+      "B1_G1.1",
+      "B1_V1.2",
+      "B1_J1.2",
+      "B1_J2.6",
+      "B1_DS2.10",
+      "B1_U4027.8",
+      "B1_U4511.8",
+      "B1_U00.7",
+      "B1_U02.7",
+      "B1_U04.7",
+      "B1_U08.7",
+      "B1_U32.7",
+      "B1_U74.7",
+      "B1_U76.13",
+      "B1_U85.8",
+      "B1_U86.7",
+      "B1_U151.8",
+      "B1_U157.8",
+      "B1_U160.8",
+      "B1_U174.8",
+      "B1_U192.8",
+      "B1_U266.7",
+      "B1_U283.8",
+      "B1_U595.8",
+      "B1_U595.OE",
+      "B1_SW1.1",
+      "B1_DARR1.4",
+      "B1_LED1.K",
+      "B2_U1.GND",
+      "B2_J1.2",
+      "B2_J2.6",
+      "B2_D1.K",
+      "B2_D2.K",
+      "B2_D3.K",
+      "B2_R4.2",
+      "B2_R5.2"
+    ],
+    "B1_CLK": [
+      "B1_J1.3",
+      "B1_U4027.3",
+      "B1_U7490.14",
+      "B1_U160.2",
+      "B1_U192.4",
+      "B1_U74.3",
+      "B1_U76.1",
+      "B1_U595.SHCP"
+    ],
+    "B1_DATA_A": [
+      "B1_SW1.2",
+      "B1_U00.1",
+      "B1_U02.1",
+      "B1_U04.1",
+      "B1_U08.1",
+      "B1_U32.1",
+      "B1_U86.1",
+      "B1_U266.1",
+      "B1_U151.4",
+      "B1_U157.2",
+      "B1_U283.5"
+    ],
+    "B1_DATA_B": [
+      "B1_SW1.3",
+      "B1_U00.2",
+      "B1_U02.2",
+      "B1_U08.2",
+      "B1_U32.2",
+      "B1_U86.2",
+      "B1_U266.2",
+      "B1_U151.3",
+      "B1_U157.3",
+      "B1_U283.3"
+    ],
+    "B1_NAND_OUT": [
+      "B1_U00.3",
+      "B1_U74.2",
+      "B1_RN1.2"
+    ],
+    "B1_NOR_OUT": [
+      "B1_U02.3",
+      "B1_U76.2",
+      "B1_RN1.3"
+    ],
+    "B1_INV_OUT": [
+      "B1_U04.2",
+      "B1_U85.10",
+      "B1_RN1.4"
+    ],
+    "B1_AND_OUT": [
+      "B1_U08.3",
+      "B1_RN1.5"
+    ],
+    "B1_OR_OUT": [
+      "B1_U32.3",
+      "B1_RN1.6"
+    ],
+    "B1_XOR_OUT": [
+      "B1_U86.3",
+      "B1_U174.3",
+      "B1_RN1.7"
+    ],
+    "B1_XNOR_OUT": [
+      "B1_U266.3",
+      "B1_RN1.8"
+    ],
+    "B1_JK_Q": [
+      "B1_U4027.1",
+      "B1_U595.SER"
+    ],
+    "B1_SHIFT_LATCH": [
+      "B1_J2.2",
+      "B1_U595.STCP"
+    ],
+    "B1_BCD_A": [
+      "B1_U160.14",
+      "B1_U4511.7",
+      "B1_U7447.7"
+    ],
+    "B1_BCD_B": [
+      "B1_U160.13",
+      "B1_U4511.1",
+      "B1_U7447.1"
+    ],
+    "B1_BCD_C": [
+      "B1_U160.12",
+      "B1_U4511.2",
+      "B1_U7447.2"
+    ],
+    "B1_BCD_D": [
+      "B1_U160.11",
+      "B1_U4511.6",
+      "B1_U7447.6"
+    ],
+    "B1_RIPPLE_Q0": [
+      "B1_U7490.12",
+      "B1_J1.5"
+    ],
+    "B1_RIPPLE_Q1": [
+      "B1_U7490.9",
+      "B1_J1.6"
+    ],
+    "B1_RIPPLE_Q2": [
+      "B1_U7490.8",
+      "B1_J1.7"
+    ],
+    "B1_RIPPLE_Q3": [
+      "B1_U7490.11",
+      "B1_J1.8"
+    ],
+    "B1_SHIFT_Q0": [
+      "B1_U595.Q0",
+      "B1_J1.9"
+    ],
+    "B1_SHIFT_Q1": [
+      "B1_U595.Q1",
+      "B1_J1.10"
+    ],
+    "B1_SHIFT_Q2": [
+      "B1_U595.Q2",
+      "B1_J1.11"
+    ],
+    "B1_SHIFT_Q3": [
+      "B1_U595.Q3",
+      "B1_J1.12"
+    ],
+    "B1_SEG_CA_A": [
+      "B1_U7447.13",
+      "B1_DS1.1"
+    ],
+    "B1_SEG_CA_B": [
+      "B1_U7447.12",
+      "B1_DS1.2"
+    ],
+    "B1_SEG_CA_C": [
+      "B1_U7447.11",
+      "B1_DS1.3"
+    ],
+    "B1_SEG_CA_D": [
+      "B1_U7447.10",
+      "B1_DS1.4"
+    ],
+    "B1_SEG_CA_E": [
+      "B1_U7447.9",
+      "B1_DS1.5"
+    ],
+    "B1_SEG_CA_F": [
+      "B1_U7447.15",
+      "B1_DS1.6"
+    ],
+    "B1_SEG_CA_G": [
+      "B1_U7447.14",
+      "B1_DS1.7"
+    ],
+    "B1_SEG_CK_A": [
+      "B1_U4511.13",
+      "B1_DS2.1"
+    ],
+    "B1_SEG_CK_B": [
+      "B1_U4511.12",
+      "B1_DS2.2"
+    ],
+    "B1_SEG_CK_C": [
+      "B1_U4511.11",
+      "B1_DS2.3"
+    ],
+    "B1_SEG_CK_D": [
+      "B1_U4511.10",
+      "B1_DS2.4"
+    ],
+    "B1_SEG_CK_E": [
+      "B1_U4511.9",
+      "B1_DS2.5"
+    ],
+    "B1_SEG_CK_F": [
+      "B1_U4511.15",
+      "B1_DS2.6"
+    ],
+    "B1_SEG_CK_G": [
+      "B1_U4511.14",
+      "B1_DS2.7"
+    ],
+    "B1_LED_LOGIC_A": [
+      "B1_R1.2",
+      "B1_LED1.A",
+      "B1_U595.Q7"
+    ],
+    "B1_RGB_R": [
+      "B1_U174.2",
+      "B1_DARR1.1"
+    ],
+    "B1_RGB_G": [
+      "B1_U174.5",
+      "B1_DARR1.2"
+    ],
+    "B1_RGB_B": [
+      "B1_U174.6",
+      "B1_DARR1.3"
+    ],
+    "B1_MUX_OUT": [
+      "B1_U151.6",
+      "B1_J2.3"
+    ],
+    "B1_MUX_B_OUT": [
+      "B1_U157.7",
+      "B1_J1.13"
+    ],
+    "B1_COUNTER_LOAD": [
+      "B1_U192.11",
+      "B1_J1.4"
+    ],
+    "B1_ADDER_SUM0": [
+      "B1_U283.10",
+      "B1_J2.4"
+    ],
+    "B1_ADDER_SUM1": [
+      "B1_U283.11",
+      "B1_J1.14"
+    ],
+    "B2_LED1_NET": [
+      "B2_U1.D2",
+      "B2_R1.1"
+    ],
+    "B2_LED1_A": [
+      "B2_R1.2",
+      "B2_D1.A"
+    ],
+    "B2_LED2_NET": [
+      "B2_U1.D3",
+      "B2_R2.1"
+    ],
+    "B2_LED2_A": [
+      "B2_R2.2",
+      "B2_D2.A"
+    ],
+    "B2_LED3_NET": [
+      "B2_U1.D4",
+      "B2_R3.1"
+    ],
+    "B2_LED3_A": [
+      "B2_R3.2",
+      "B2_D3.A"
+    ],
+    "B2_BTN1_NET": [
+      "B2_U1.D5",
+      "B2_SW1.2",
+      "B2_R4.1",
+      "B2_J1.3"
+    ],
+    "B2_BTN2_NET": [
+      "B2_U1.D6",
+      "B2_SW2.2",
+      "B2_R5.1",
+      "B2_J1.4"
+    ],
+    "B2_IO_D7": [
+      "B2_U1.D7",
+      "B2_J1.5"
+    ],
+    "B2_IO_D8": [
+      "B2_U1.D8",
+      "B2_J1.6"
+    ],
+    "B2_IO_D9": [
+      "B2_U1.D9",
+      "B2_J2.1"
+    ],
+    "B2_IO_D10": [
+      "B2_U1.D10",
+      "B2_J2.2"
+    ],
+    "B2_IO_D11": [
+      "B2_U1.D11",
+      "B2_J2.3"
+    ],
+    "B2_IO_D12": [
+      "B2_U1.D12",
+      "B2_J2.4"
+    ],
+    "B2_IO_D13": [
+      "B2_U1.D13",
+      "B2_J2.5"
+    ]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {
+        "name": "+5V",
+        "members": [
+          "B1_V1.1",
+          "B1_J1.1",
+          "B1_J2.1",
+          "B1_DS1.10",
+          "B1_U4027.16",
+          "B1_U4511.16",
+          "B1_U00.14",
+          "B1_U02.14",
+          "B1_U04.14",
+          "B1_U08.14",
+          "B1_U32.14",
+          "B1_U74.14",
+          "B1_U76.5",
+          "B1_U85.16",
+          "B1_U86.14",
+          "B1_U151.16",
+          "B1_U157.16",
+          "B1_U160.16",
+          "B1_U174.16",
+          "B1_U192.16",
+          "B1_U266.14",
+          "B1_U283.16",
+          "B1_U595.16",
+          "B1_U595.MR",
+          "B1_RN1.COM",
+          "B1_R1.1",
+          "B2_U1.5V",
+          "B2_J1.1",
+          "B2_SW1.1",
+          "B2_SW2.1"
+        ],
+        "member_count": 30
+      },
+      {
+        "name": "GND",
+        "members": [
+          "B1_G1.1",
+          "B1_V1.2",
+          "B1_J1.2",
+          "B1_J2.6",
+          "B1_DS2.10",
+          "B1_U4027.8",
+          "B1_U4511.8",
+          "B1_U00.7",
+          "B1_U02.7",
+          "B1_U04.7",
+          "B1_U08.7",
+          "B1_U32.7",
+          "B1_U74.7",
+          "B1_U76.13",
+          "B1_U85.8",
+          "B1_U86.7",
+          "B1_U151.8",
+          "B1_U157.8",
+          "B1_U160.8",
+          "B1_U174.8",
+          "B1_U192.8",
+          "B1_U266.7",
+          "B1_U283.8",
+          "B1_U595.8",
+          "B1_U595.OE",
+          "B1_SW1.1",
+          "B1_DARR1.4",
+          "B1_LED1.K",
+          "B2_U1.GND",
+          "B2_J1.2",
+          "B2_J2.6",
+          "B2_D1.K",
+          "B2_D2.K",
+          "B2_D3.K",
+          "B2_R4.2",
+          "B2_R5.2"
+        ],
+        "member_count": 36
+      },
+      {
+        "name": "B1_CLK",
+        "members": [
+          "B1_J1.3",
+          "B1_U4027.3",
+          "B1_U7490.14",
+          "B1_U160.2",
+          "B1_U192.4",
+          "B1_U74.3",
+          "B1_U76.1",
+          "B1_U595.SHCP"
+        ],
+        "member_count": 8
+      },
+      {
+        "name": "B1_DATA_A",
+        "members": [
+          "B1_SW1.2",
+          "B1_U00.1",
+          "B1_U02.1",
+          "B1_U04.1",
+          "B1_U08.1",
+          "B1_U32.1",
+          "B1_U86.1",
+          "B1_U266.1",
+          "B1_U151.4",
+          "B1_U157.2",
+          "B1_U283.5"
+        ],
+        "member_count": 11
+      },
+      {
+        "name": "B1_DATA_B",
+        "members": [
+          "B1_SW1.3",
+          "B1_U00.2",
+          "B1_U02.2",
+          "B1_U08.2",
+          "B1_U32.2",
+          "B1_U86.2",
+          "B1_U266.2",
+          "B1_U151.3",
+          "B1_U157.3",
+          "B1_U283.3"
+        ],
+        "member_count": 10
+      },
+      {
+        "name": "B1_NAND_OUT",
+        "members": [
+          "B1_U00.3",
+          "B1_U74.2",
+          "B1_RN1.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_NOR_OUT",
+        "members": [
+          "B1_U02.3",
+          "B1_U76.2",
+          "B1_RN1.3"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_INV_OUT",
+        "members": [
+          "B1_U04.2",
+          "B1_U85.10",
+          "B1_RN1.4"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_AND_OUT",
+        "members": [
+          "B1_U08.3",
+          "B1_RN1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_OR_OUT",
+        "members": [
+          "B1_U32.3",
+          "B1_RN1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_XOR_OUT",
+        "members": [
+          "B1_U86.3",
+          "B1_U174.3",
+          "B1_RN1.7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_XNOR_OUT",
+        "members": [
+          "B1_U266.3",
+          "B1_RN1.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_JK_Q",
+        "members": [
+          "B1_U4027.1",
+          "B1_U595.SER"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SHIFT_LATCH",
+        "members": [
+          "B1_J2.2",
+          "B1_U595.STCP"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_BCD_A",
+        "members": [
+          "B1_U160.14",
+          "B1_U4511.7",
+          "B1_U7447.7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BCD_B",
+        "members": [
+          "B1_U160.13",
+          "B1_U4511.1",
+          "B1_U7447.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BCD_C",
+        "members": [
+          "B1_U160.12",
+          "B1_U4511.2",
+          "B1_U7447.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BCD_D",
+        "members": [
+          "B1_U160.11",
+          "B1_U4511.6",
+          "B1_U7447.6"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RIPPLE_Q0",
+        "members": [
+          "B1_U7490.12",
+          "B1_J1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RIPPLE_Q1",
+        "members": [
+          "B1_U7490.9",
+          "B1_J1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RIPPLE_Q2",
+        "members": [
+          "B1_U7490.8",
+          "B1_J1.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RIPPLE_Q3",
+        "members": [
+          "B1_U7490.11",
+          "B1_J1.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SHIFT_Q0",
+        "members": [
+          "B1_U595.Q0",
+          "B1_J1.9"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SHIFT_Q1",
+        "members": [
+          "B1_U595.Q1",
+          "B1_J1.10"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SHIFT_Q2",
+        "members": [
+          "B1_U595.Q2",
+          "B1_J1.11"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SHIFT_Q3",
+        "members": [
+          "B1_U595.Q3",
+          "B1_J1.12"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CA_A",
+        "members": [
+          "B1_U7447.13",
+          "B1_DS1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CA_B",
+        "members": [
+          "B1_U7447.12",
+          "B1_DS1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CA_C",
+        "members": [
+          "B1_U7447.11",
+          "B1_DS1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CA_D",
+        "members": [
+          "B1_U7447.10",
+          "B1_DS1.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CA_E",
+        "members": [
+          "B1_U7447.9",
+          "B1_DS1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CA_F",
+        "members": [
+          "B1_U7447.15",
+          "B1_DS1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CA_G",
+        "members": [
+          "B1_U7447.14",
+          "B1_DS1.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CK_A",
+        "members": [
+          "B1_U4511.13",
+          "B1_DS2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CK_B",
+        "members": [
+          "B1_U4511.12",
+          "B1_DS2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CK_C",
+        "members": [
+          "B1_U4511.11",
+          "B1_DS2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CK_D",
+        "members": [
+          "B1_U4511.10",
+          "B1_DS2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CK_E",
+        "members": [
+          "B1_U4511.9",
+          "B1_DS2.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CK_F",
+        "members": [
+          "B1_U4511.15",
+          "B1_DS2.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SEG_CK_G",
+        "members": [
+          "B1_U4511.14",
+          "B1_DS2.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED_LOGIC_A",
+        "members": [
+          "B1_R1.2",
+          "B1_LED1.A",
+          "B1_U595.Q7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RGB_R",
+        "members": [
+          "B1_U174.2",
+          "B1_DARR1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RGB_G",
+        "members": [
+          "B1_U174.5",
+          "B1_DARR1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RGB_B",
+        "members": [
+          "B1_U174.6",
+          "B1_DARR1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MUX_OUT",
+        "members": [
+          "B1_U151.6",
+          "B1_J2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MUX_B_OUT",
+        "members": [
+          "B1_U157.7",
+          "B1_J1.13"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_COUNTER_LOAD",
+        "members": [
+          "B1_U192.11",
+          "B1_J1.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ADDER_SUM0",
+        "members": [
+          "B1_U283.10",
+          "B1_J2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ADDER_SUM1",
+        "members": [
+          "B1_U283.11",
+          "B1_J1.14"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_LED1_NET",
+        "members": [
+          "B2_U1.D2",
+          "B2_R1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_LED1_A",
+        "members": [
+          "B2_R1.2",
+          "B2_D1.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_LED2_NET",
+        "members": [
+          "B2_U1.D3",
+          "B2_R2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_LED2_A",
+        "members": [
+          "B2_R2.2",
+          "B2_D2.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_LED3_NET",
+        "members": [
+          "B2_U1.D4",
+          "B2_R3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_LED3_A",
+        "members": [
+          "B2_R3.2",
+          "B2_D3.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_BTN1_NET",
+        "members": [
+          "B2_U1.D5",
+          "B2_SW1.2",
+          "B2_R4.1",
+          "B2_J1.3"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B2_BTN2_NET",
+        "members": [
+          "B2_U1.D6",
+          "B2_SW2.2",
+          "B2_R5.1",
+          "B2_J1.4"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B2_IO_D7",
+        "members": [
+          "B2_U1.D7",
+          "B2_J1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_IO_D8",
+        "members": [
+          "B2_U1.D8",
+          "B2_J1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_IO_D9",
+        "members": [
+          "B2_U1.D9",
+          "B2_J2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_IO_D10",
+        "members": [
+          "B2_U1.D10",
+          "B2_J2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_IO_D11",
+        "members": [
+          "B2_U1.D11",
+          "B2_J2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_IO_D12",
+        "members": [
+          "B2_U1.D12",
+          "B2_J2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_IO_D13",
+        "members": [
+          "B2_U1.D13",
+          "B2_J2.5"
+        ],
+        "member_count": 2
+      }
+    ],
+    "important_nets": [
+      "+5V",
+      "GND"
+    ]
+  },
+  "stage_contracts": {
+    "component_placer": {
+      "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+      "output": "placed-design contract with component bounds and resolved pin descriptors"
+    },
+    "arrangement_decider": {
+      "input": "components, blocks, nets, layout_intent",
+      "output": "coordinate edit JSON; may rotate components"
+    },
+    "beautifier": {
+      "input": "placed-design contract plus coordinate edits",
+      "output": "same components with revised coordinates/rotations"
+    },
+    "wire_planner": {
+      "input": "placed-design contract plus expected_netlist",
+      "output": "wire route plan and terminal fallback plan"
+    },
+    "terminal_placer": {
+      "input": "placed-design contract plus terminal nets",
+      "output": "terminal/local-label endpoint plan"
+    },
+    "validators": {
+      "input": "generated schematic plus expected_netlist",
+      "output": "validation_report.json"
+    }
+  },
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "Proteus Alias Logic Display Board",
+      "source_circuit_id": "M02",
+      "component_count": 32,
+      "net_count": 49
+    },
+    {
+      "id": "B2",
+      "name": "Arduino LED/Button Demo",
+      "source_circuit_id": "T01",
+      "component_count": 13,
+      "net_count": 17
+    }
+  ],
+  "generation_notes": {
+    "source": "deterministic_main_json_catalog_100",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "composed_supported_raw_specs",
+    "source_line_count": null
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 45,
+    "net_count": 64,
+    "endpoint_count": 226,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

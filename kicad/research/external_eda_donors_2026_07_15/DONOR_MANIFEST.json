@@ -1,0 +1,53 @@
+{
+  "schema": "progeneda-external-eda-donor-manifest/v1",
+  "purpose": "Pinned, read-only native donor fixtures for small PSpice and Altium feasibility experiments.",
+  "donors": [
+    {
+      "backend": "pspice_orcad_capture",
+      "status": "research_only",
+      "file": "pspice_rc_mit/RC_CIRCUIT.DSN",
+      "format": "OrCAD Capture DSN / Microsoft Compound File Binary",
+      "bytes": 20480,
+      "sha256": "6ec5af10b38bdbe88d6fa966ad9776e1f3b075047f148ecb3e0efa62241d2562",
+      "source": {
+        "repository": "https://github.com/YudiXiao/Parametric-sweeping-in-Simulink-PSpice-co-simulation",
+        "commit": "f44d5d6104f102ff6371fac850dcdeae9882abc5",
+        "path": "RC_CIRCUIT.DSN",
+        "license": "MIT",
+        "license_file": "pspice_rc_mit/LICENSE",
+        "license_sha256": "50e4c0f152ae6ac3eae3700429a51b30798104ebc137d4602e428b7073477c9c"
+      },
+      "observed_native_content": {
+        "physical_components": ["VPULSE", "R_series", "C_load"],
+        "component_count": 3,
+        "purpose": "RC circuit excited by a square-wave source"
+      },
+      "allowed_next_stage": "read-only compound-file intake plus PSpice V/R/C text-netlist prototype",
+      "blocked_next_stage": "native DSN emission until accepted by PSpice or OrCAD Capture"
+    },
+    {
+      "backend": "altium_designer",
+      "status": "research_only",
+      "file": "altium_rc_mit/Charging_and_Discharging_Capacitors.SchDoc",
+      "format": "Altium Schematic Document / Microsoft Compound File Binary",
+      "bytes": 34304,
+      "sha256": "35b836eb0a7de4ea813e513c031d1459e24b5fe4641a147aa39af69487361941",
+      "source": {
+        "repository": "https://github.com/a3ng7n/Altium-Schematic-Parser",
+        "commit": "4446e927ee7cd09b359e03c3329419acfaaebc95",
+        "path": "tests/altium_crap/Charging and Discharging Capacitors.schdoc",
+        "license": "MIT",
+        "license_file": "altium_rc_mit/LICENSE",
+        "license_sha256": "965f0bd019cd4ea1902a8b55f50cb594edc77f421cc907f6682a9da90de0cdae"
+      },
+      "observed_native_content": {
+        "physical_components": ["V1", "R1", "R2", "C1", "C2"],
+        "simulation_directives": ["IC1", "IC2"],
+        "component_count": 5,
+        "purpose": "charging and discharging capacitor demonstration"
+      },
+      "allowed_next_stage": "read-only SchDoc record extraction and placed-design contract prototype",
+      "blocked_next_stage": "native SchDoc emission until accepted by Altium Designer or CircuitMaker"
+    }
+  ]
+}

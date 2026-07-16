@@ -1,0 +1,149 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "ARDUINO_NANO",
+            "name": "Arduino Nano",
+            "at": [
+              47.5,
+              39.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "microcontroller_module",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X2": {
+            "kind": "LED_INDICATOR",
+            "name": "LED",
+            "at": [
+              84.5,
+              32.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "indicator",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X3": {
+            "kind": "R_220",
+            "name": "220 ohm Resistor",
+            "at": [
+              102.5,
+              31.25
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X4": {
+            "kind": "PUSH_BUTTON",
+            "name": "Push Button",
+            "at": [
+              121.0,
+              33.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X5": {
+            "kind": "USB_C_CONNECTOR",
+            "name": "USB Type-C Connector",
+            "at": [
+              140.5,
+              33.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.0,
+            "top": 30.0,
+            "right": 70.0,
+            "bottom": 48.0
+          },
+          {
+            "owner": "X2",
+            "left": 82.0,
+            "top": 30.0,
+            "right": 87.0,
+            "bottom": 35.0
+          },
+          {
+            "owner": "X3",
+            "left": 99.0,
+            "top": 30.0,
+            "right": 106.0,
+            "bottom": 32.5
+          },
+          {
+            "owner": "X4",
+            "left": 118.0,
+            "top": 30.0,
+            "right": 124.0,
+            "bottom": 36.0
+          },
+          {
+            "owner": "X5",
+            "left": 136.0,
+            "top": 30.0,
+            "right": 145.0,
+            "bottom": 37.0
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

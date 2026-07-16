@@ -1,0 +1,629 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "m03",
+    "title": "Mixed Embedded Controller With Proteus Aliases",
+    "purpose": "existing embedded components combined with new Proteus-style source, logic, protection, and analog aliases",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "M03",
+  "circuit_name": "Mixed Embedded Controller With Proteus Aliases",
+  "purpose": "existing embedded components combined with new Proteus-style source, logic, protection, and analog aliases",
+  "components": [
+    {
+      "id": "G1",
+      "ref": "G1",
+      "kind": "GROUND",
+      "type": "GROUND",
+      "value": "Ground",
+      "role": "reference",
+      "block": "mixed",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "V1",
+      "ref": "V1",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "5V source",
+      "role": "source",
+      "block": "power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "MCU",
+      "ref": "MCU",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "controller",
+      "block": "control",
+      "pins": {
+        "5V": "+5V",
+        "D10": "SPI_CS_FLASH",
+        "D2": "RS485_RO",
+        "D3": "RS485_DI",
+        "GND": "GND",
+        "MISO": "SPI_MISO",
+        "MOSI": "SPI_MOSI",
+        "SCK": "SPI_SCK",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA"
+      }
+    },
+    {
+      "id": "ESP",
+      "ref": "ESP",
+      "kind": "ESP32_WROOM",
+      "type": "ESP32_WROOM",
+      "value": "ESP32-WROOM",
+      "role": "wireless_controller",
+      "block": "control",
+      "pins": {
+        "3V3": "+3V3",
+        "GND": "GND",
+        "IO21": "I2C_SDA",
+        "IO22": "I2C_SCL",
+        "IO23": "RS485_DE_RE",
+        "IO4": "CAN_INT",
+        "IO5": "SPI_CS_CAN"
+      }
+    },
+    {
+      "id": "BME",
+      "ref": "BME",
+      "kind": "BME280",
+      "type": "BME280",
+      "value": "BME280",
+      "role": "sensor",
+      "block": "i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "OLED",
+      "ref": "OLED",
+      "kind": "SSD1306_OLED",
+      "type": "SSD1306_OLED",
+      "value": "SSD1306 OLED",
+      "role": "display",
+      "block": "i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "RTC",
+      "ref": "RTC",
+      "kind": "DS3231",
+      "type": "DS3231",
+      "value": "DS3231",
+      "role": "rtc",
+      "block": "i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "I2C_SCL",
+        "SDA": "I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "FLASH",
+      "ref": "FLASH",
+      "kind": "W25Q64",
+      "type": "W25Q64",
+      "value": "W25Q64",
+      "role": "memory",
+      "block": "spi",
+      "pins": {
+        "CLK": "SPI_SCK",
+        "CS": "SPI_CS_FLASH",
+        "DI": "SPI_MOSI",
+        "DO": "SPI_MISO",
+        "GND": "GND",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "CAN",
+      "ref": "CAN",
+      "kind": "MCP2515",
+      "type": "MCP2515",
+      "value": "MCP2515",
+      "role": "can_controller",
+      "block": "comm",
+      "pins": {
+        "CS": "SPI_CS_CAN",
+        "INT": "CAN_INT",
+        "RXCAN": "CAN_RXD",
+        "SCK": "SPI_SCK",
+        "SI": "SPI_MOSI",
+        "SO": "SPI_MISO",
+        "TXCAN": "CAN_TXD",
+        "VDD": "+3V3",
+        "VSS": "GND"
+      }
+    },
+    {
+      "id": "CANPHY",
+      "ref": "CANPHY",
+      "kind": "TJA1050",
+      "type": "TJA1050",
+      "value": "TJA1050",
+      "role": "can_transceiver",
+      "block": "comm",
+      "pins": {
+        "CANH": "CANH",
+        "CANL": "CANL",
+        "GND": "GND",
+        "RXD": "CAN_RXD",
+        "TXD": "CAN_TXD",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "RS485",
+      "ref": "RS485",
+      "kind": "MAX485",
+      "type": "MAX485",
+      "value": "MAX485",
+      "role": "rs485_transceiver",
+      "block": "comm",
+      "pins": {
+        "A": "RS485_A",
+        "B": "RS485_B",
+        "DE": "RS485_DE_RE",
+        "DI": "RS485_DI",
+        "GND": "GND",
+        "RE": "RS485_DE_RE",
+        "RO": "RS485_RO",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "AMP",
+      "ref": "AMP",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358",
+      "role": "opamp",
+      "block": "analog",
+      "pins": {
+        "GND": "GND",
+        "IN_MINUS": "AMP_FEEDBACK",
+        "IN_PLUS": "BUFFER_FEEDBACK",
+        "OUT": "AMP_FEEDBACK",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "TIMER",
+      "ref": "TIMER",
+      "kind": "NE555",
+      "type": "NE555",
+      "value": "NE555",
+      "role": "timer",
+      "block": "control",
+      "pins": {
+        "1": "GND",
+        "2": "TIMER_TRIGGER",
+        "3": "TIMER_OUTPUT",
+        "4": "+5V",
+        "6": "TIMER_TRIGGER",
+        "8": "+5V"
+      }
+    },
+    {
+      "id": "BUF",
+      "ref": "BUF",
+      "kind": "LM741",
+      "type": "LM741",
+      "value": "LM741",
+      "role": "opamp",
+      "block": "analog",
+      "pins": {
+        "2": "BUFFER_FEEDBACK",
+        "3": "DIODE_TO_BUFFER",
+        "4": "GND",
+        "6": "BUFFER_FEEDBACK",
+        "7": "+5V"
+      }
+    },
+    {
+      "id": "Q1",
+      "ref": "Q1",
+      "kind": "2N7000",
+      "type": "2N7000",
+      "value": "2N7000",
+      "role": "mosfet",
+      "block": "driver",
+      "pins": {
+        "1": "TIMER_OUTPUT",
+        "2": "LOAD_LOW",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "Q2",
+      "ref": "Q2",
+      "kind": "BS170",
+      "type": "BS170",
+      "value": "BS170",
+      "role": "mosfet",
+      "block": "driver",
+      "pins": {
+        "1": "AMP_FEEDBACK",
+        "2": "LOAD_LOW",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "1N4148",
+      "type": "1N4148",
+      "value": "1N4148",
+      "role": "diode",
+      "block": "signal",
+      "pins": {
+        "1": "TIMER_OUTPUT",
+        "2": "DIODE_TO_BUFFER"
+      }
+    },
+    {
+      "id": "DZ1",
+      "ref": "DZ1",
+      "kind": "BZX55C5",
+      "type": "BZX55C5",
+      "value": "5.1V zener",
+      "role": "zener",
+      "block": "protection",
+      "pins": {
+        "1": "TIMER_PULLUP",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "CAP-ELEC",
+      "type": "CAP-ELEC",
+      "value": "47uF",
+      "role": "capacitor",
+      "block": "power",
+      "pins": {
+        "1": "TIMER_TRIGGER",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "L1",
+      "ref": "L1",
+      "kind": "REALIND",
+      "type": "REALIND",
+      "value": "10uH",
+      "role": "inductor",
+      "block": "driver",
+      "pins": {
+        "1": "LOAD_LOW",
+        "2": "LOAD_OUT"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "control",
+      "pins": {
+        "1": "TIMER_PULLUP",
+        "2": "TIMER_TRIGGER"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "120 ohm",
+      "role": "resistor",
+      "block": "comm",
+      "pins": {
+        "1": "CANH",
+        "2": "CANL"
+      }
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "SWITCH",
+      "type": "SWITCH",
+      "value": "Mode switch",
+      "role": "switch",
+      "block": "control",
+      "pins": {
+        "1": "+5V",
+        "2": "TIMER_TRIGGER"
+      }
+    },
+    {
+      "id": "J_CAN",
+      "ref": "J_CAN",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "CAN terminal",
+      "role": "connector",
+      "block": "comm",
+      "pins": {
+        "1": "CANH",
+        "2": "CANL"
+      }
+    },
+    {
+      "id": "J_RS485",
+      "ref": "J_RS485",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "RS485 terminal",
+      "role": "connector",
+      "block": "comm",
+      "pins": {
+        "1": "RS485_A",
+        "2": "RS485_B"
+      }
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Expansion header",
+      "role": "connector",
+      "block": "control",
+      "pins": {
+        "1": "+5V",
+        "2": "+3V3",
+        "3": "GND",
+        "4": "LOAD_OUT"
+      }
+    },
+    {
+      "id": "TP1",
+      "ref": "TP1",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Debug test point",
+      "role": "testpoint",
+      "block": "control",
+      "pins": {
+        "1": "CAN_INT"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "V1.1",
+      "MCU.5V",
+      "RS485.VCC",
+      "CANPHY.VCC",
+      "AMP.VCC",
+      "TIMER.8",
+      "TIMER.4",
+      "BUF.7",
+      "SW1.1",
+      "J2.1"
+    ],
+    "+3V3": [
+      "ESP.3V3",
+      "BME.VCC",
+      "OLED.VCC",
+      "RTC.VCC",
+      "FLASH.VCC",
+      "CAN.VDD",
+      "C2.1",
+      "J2.2"
+    ],
+    "GND": [
+      "G1.1",
+      "V1.2",
+      "MCU.GND",
+      "ESP.GND",
+      "BME.GND",
+      "OLED.GND",
+      "RTC.GND",
+      "FLASH.GND",
+      "CAN.VSS",
+      "CANPHY.GND",
+      "RS485.GND",
+      "AMP.GND",
+      "TIMER.1",
+      "BUF.4",
+      "C1.2",
+      "C2.2",
+      "Q1.3",
+      "Q2.3",
+      "DZ1.2",
+      "J2.3"
+    ],
+    "I2C_SDA": [
+      "MCU.SDA",
+      "ESP.IO21",
+      "BME.SDA",
+      "OLED.SDA",
+      "RTC.SDA"
+    ],
+    "I2C_SCL": [
+      "MCU.SCL",
+      "ESP.IO22",
+      "BME.SCL",
+      "OLED.SCL",
+      "RTC.SCL"
+    ],
+    "SPI_MOSI": [
+      "MCU.MOSI",
+      "FLASH.DI",
+      "CAN.SI"
+    ],
+    "SPI_MISO": [
+      "MCU.MISO",
+      "FLASH.DO",
+      "CAN.SO"
+    ],
+    "SPI_SCK": [
+      "MCU.SCK",
+      "FLASH.CLK",
+      "CAN.SCK"
+    ],
+    "SPI_CS_FLASH": [
+      "MCU.D10",
+      "FLASH.CS"
+    ],
+    "SPI_CS_CAN": [
+      "ESP.IO5",
+      "CAN.CS"
+    ],
+    "CAN_INT": [
+      "ESP.IO4",
+      "CAN.INT",
+      "TP1.1"
+    ],
+    "CAN_TXD": [
+      "CAN.TXCAN",
+      "CANPHY.TXD"
+    ],
+    "CAN_RXD": [
+      "CAN.RXCAN",
+      "CANPHY.RXD"
+    ],
+    "CANH": [
+      "CANPHY.CANH",
+      "J_CAN.1",
+      "R2.1"
+    ],
+    "CANL": [
+      "CANPHY.CANL",
+      "J_CAN.2",
+      "R2.2"
+    ],
+    "RS485_RO": [
+      "RS485.RO",
+      "MCU.D2"
+    ],
+    "RS485_DI": [
+      "RS485.DI",
+      "MCU.D3"
+    ],
+    "RS485_DE_RE": [
+      "RS485.DE",
+      "RS485.RE",
+      "ESP.IO23"
+    ],
+    "RS485_A": [
+      "RS485.A",
+      "J_RS485.1"
+    ],
+    "RS485_B": [
+      "RS485.B",
+      "J_RS485.2"
+    ],
+    "TIMER_TRIGGER": [
+      "SW1.2",
+      "TIMER.2",
+      "TIMER.6",
+      "R1.2",
+      "C1.1"
+    ],
+    "TIMER_PULLUP": [
+      "R1.1",
+      "DZ1.1"
+    ],
+    "TIMER_OUTPUT": [
+      "TIMER.3",
+      "Q1.1",
+      "D1.1"
+    ],
+    "DIODE_TO_BUFFER": [
+      "D1.2",
+      "BUF.3"
+    ],
+    "BUFFER_FEEDBACK": [
+      "BUF.2",
+      "BUF.6",
+      "AMP.IN_PLUS"
+    ],
+    "AMP_FEEDBACK": [
+      "AMP.OUT",
+      "AMP.IN_MINUS",
+      "Q2.1"
+    ],
+    "LOAD_LOW": [
+      "Q1.2",
+      "Q2.2",
+      "L1.1"
+    ],
+    "LOAD_OUT": [
+      "L1.2",
+      "J2.4"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 28,
+    "net_count": 28,
+    "endpoint_count": 108,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

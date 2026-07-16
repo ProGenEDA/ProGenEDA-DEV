@@ -1,0 +1,1521 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 420.0,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "ADJ": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            166.37
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            170.18,
+            167.64
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "ADJ",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              66.04,
+              166.37
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "1",
+            "point": [
+              99.06,
+              143.51
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin1"
+          },
+          "path": [
+            [
+              66.04,
+              171.45
+            ],
+            [
+              92.71,
+              171.45
+            ],
+            [
+              92.71,
+              138.43
+            ],
+            [
+              99.06,
+              138.43
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                66.04,
+                171.45
+              ],
+              "end": [
+                92.71,
+                171.45
+              ],
+              "direction": "right",
+              "length": 26.67
+            },
+            {
+              "start": [
+                92.71,
+                171.45
+              ],
+              "end": [
+                92.71,
+                138.43
+              ],
+              "direction": "up",
+              "length": 33.02
+            },
+            {
+              "start": [
+                92.71,
+                138.43
+              ],
+              "end": [
+                99.06,
+                138.43
+              ],
+              "direction": "right",
+              "length": 6.35
+            }
+          ]
+        },
+        {
+          "net": "ADJ",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              66.04,
+              166.37
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "1",
+            "point": [
+              170.18,
+              167.64
+            ],
+            "exact": true,
+            "source": "Regulator_Linear:LM317_TO-220:unit1:pin1"
+          },
+          "path": [
+            [
+              66.04,
+              171.45
+            ],
+            [
+              66.04,
+              175.26
+            ],
+            [
+              170.18,
+              175.26
+            ],
+            [
+              170.18,
+              172.72
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                66.04,
+                171.45
+              ],
+              "end": [
+                66.04,
+                175.26
+              ],
+              "direction": "down",
+              "length": 3.81
+            },
+            {
+              "start": [
+                66.04,
+                175.26
+              ],
+              "end": [
+                170.18,
+                175.26
+              ],
+              "direction": "right",
+              "length": 104.14
+            },
+            {
+              "start": [
+                170.18,
+                175.26
+              ],
+              "end": [
+                170.18,
+                172.72
+              ],
+              "direction": "up",
+              "length": 2.54
+            }
+          ]
+        }
+      ]
+    },
+    "ADJ_RETURN": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "D2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            34.29,
+            177.8
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            99.06,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "DRIVE_GATE": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "Q1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            172.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin1"
+        },
+        {
+          "ref": "Q2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            205.74,
+            134.62
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "LC_OUT": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "D2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            26.67,
+            177.8
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "L1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            134.62,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "LED_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            123.19
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "LED1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            199.39,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED_A",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              30.48,
+              123.19
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "LED1",
+            "pin": "1",
+            "point": [
+              199.39,
+              160.02
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin1"
+          },
+          "path": [
+            [
+              30.48,
+              128.27
+            ],
+            [
+              36.83,
+              128.27
+            ],
+            [
+              36.83,
+              151.13
+            ],
+            [
+              38.1,
+              151.13
+            ],
+            [
+              38.1,
+              163.83
+            ],
+            [
+              36.83,
+              163.83
+            ],
+            [
+              36.83,
+              179.07
+            ],
+            [
+              194.31,
+              179.07
+            ],
+            [
+              194.31,
+              160.02
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                128.27
+              ],
+              "end": [
+                36.83,
+                128.27
+              ],
+              "direction": "right",
+              "length": 6.35
+            },
+            {
+              "start": [
+                36.83,
+                128.27
+              ],
+              "end": [
+                36.83,
+                151.13
+              ],
+              "direction": "down",
+              "length": 22.86
+            },
+            {
+              "start": [
+                36.83,
+                151.13
+              ],
+              "end": [
+                38.1,
+                151.13
+              ],
+              "direction": "right",
+              "length": 1.27
+            },
+            {
+              "start": [
+                38.1,
+                151.13
+              ],
+              "end": [
+                38.1,
+                163.83
+              ],
+              "direction": "down",
+              "length": 12.7
+            },
+            {
+              "start": [
+                38.1,
+                163.83
+              ],
+              "end": [
+                36.83,
+                163.83
+              ],
+              "direction": "left",
+              "length": 1.27
+            },
+            {
+              "start": [
+                36.83,
+                163.83
+              ],
+              "end": [
+                36.83,
+                179.07
+              ],
+              "direction": "down",
+              "length": 15.24
+            },
+            {
+              "start": [
+                36.83,
+                179.07
+              ],
+              "end": [
+                194.31,
+                179.07
+              ],
+              "direction": "right",
+              "length": 157.48
+            },
+            {
+              "start": [
+                194.31,
+                179.07
+              ],
+              "end": [
+                194.31,
+                160.02
+              ],
+              "direction": "up",
+              "length": 19.05
+            }
+          ]
+        }
+      ]
+    },
+    "LED_K": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "Q1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            165.1,
+            137.16
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin2"
+        },
+        {
+          "ref": "LED1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            207.01,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED_K",
+          "from": {
+            "ref": "Q1",
+            "pin": "2",
+            "point": [
+              165.1,
+              137.16
+            ],
+            "exact": true,
+            "source": "Transistor_FET:2N7000:unit1:pin2"
+          },
+          "to": {
+            "ref": "LED1",
+            "pin": "2",
+            "point": [
+              207.01,
+              160.02
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              160.02,
+              137.16
+            ],
+            [
+              160.02,
+              153.67
+            ],
+            [
+              212.09,
+              153.67
+            ],
+            [
+              212.09,
+              160.02
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                160.02,
+                137.16
+              ],
+              "end": [
+                160.02,
+                153.67
+              ],
+              "direction": "down",
+              "length": 16.51
+            },
+            {
+              "start": [
+                160.02,
+                153.67
+              ],
+              "end": [
+                212.09,
+                153.67
+              ],
+              "direction": "right",
+              "length": 52.07
+            },
+            {
+              "start": [
+                212.09,
+                153.67
+              ],
+              "end": [
+                212.09,
+                160.02
+              ],
+              "direction": "down",
+              "length": 6.35
+            }
+          ]
+        }
+      ]
+    },
+    "LOAD_OUT": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            157.48
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        },
+        {
+          "ref": "Q2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            198.12,
+            139.7
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LOAD_OUT",
+          "from": {
+            "ref": "J1",
+            "pin": "1",
+            "point": [
+              25.4,
+              157.48
+            ],
+            "exact": true,
+            "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+          },
+          "to": {
+            "ref": "Q2",
+            "pin": "2",
+            "point": [
+              198.12,
+              139.7
+            ],
+            "exact": true,
+            "source": "Transistor_FET:BS170:unit1:pin2"
+          },
+          "path": [
+            [
+              20.32,
+              157.48
+            ],
+            [
+              17.78,
+              157.48
+            ],
+            [
+              17.78,
+              114.3
+            ],
+            [
+              193.04,
+              114.3
+            ],
+            [
+              193.04,
+              139.7
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                20.32,
+                157.48
+              ],
+              "end": [
+                17.78,
+                157.48
+              ],
+              "direction": "left",
+              "length": 2.54
+            },
+            {
+              "start": [
+                17.78,
+                157.48
+              ],
+              "end": [
+                17.78,
+                114.3
+              ],
+              "direction": "up",
+              "length": 43.18
+            },
+            {
+              "start": [
+                17.78,
+                114.3
+              ],
+              "end": [
+                193.04,
+                114.3
+              ],
+              "direction": "right",
+              "length": 175.26
+            },
+            {
+              "start": [
+                193.04,
+                114.3
+              ],
+              "end": [
+                193.04,
+                139.7
+              ],
+              "direction": "down",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "REG_IN": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "D1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            34.29,
+            137.16
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            134.62,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            162.56,
+            160.02
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "REG_OUT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            115.57
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "L1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            134.62,
+            125.73
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            177.8,
+            160.02
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: REG_OUT exceeded 50000 explored grid states."
+      ]
+    },
+    "VIN_FUSED": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "F1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            99.06,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin2"
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            129.54,
+            170.18
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "VIN_SWITCHED": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            26.67,
+            137.16
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin1"
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            139.7,
+            170.18
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for VIN_SWITCHED."
+      ]
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "G1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            233.68,
+            276.86
+          ],
+          "exact": true,
+          "source": "power:GND:unit1:pin1"
+        },
+        {
+          "ref": "V1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            144.78
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            99.06,
+            171.45
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            134.62,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "Q1",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            172.72,
+            132.08
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin3"
+        },
+        {
+          "ref": "Q2",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            205.74,
+            144.78
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin3"
+        },
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            25.4,
+            160.02
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "VIN": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "V1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            134.62
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "F1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            99.06,
+            125.73
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin1"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "ADJ",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          66.04,
+          166.37
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "1",
+        "point": [
+          99.06,
+          143.51
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin1"
+      },
+      "path": [
+        [
+          66.04,
+          171.45
+        ],
+        [
+          92.71,
+          171.45
+        ],
+        [
+          92.71,
+          138.43
+        ],
+        [
+          99.06,
+          138.43
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            66.04,
+            171.45
+          ],
+          "end": [
+            92.71,
+            171.45
+          ],
+          "direction": "right",
+          "length": 26.67
+        },
+        {
+          "start": [
+            92.71,
+            171.45
+          ],
+          "end": [
+            92.71,
+            138.43
+          ],
+          "direction": "up",
+          "length": 33.02
+        },
+        {
+          "start": [
+            92.71,
+            138.43
+          ],
+          "end": [
+            99.06,
+            138.43
+          ],
+          "direction": "right",
+          "length": 6.35
+        }
+      ]
+    },
+    {
+      "net": "ADJ",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          66.04,
+          166.37
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "1",
+        "point": [
+          170.18,
+          167.64
+        ],
+        "exact": true,
+        "source": "Regulator_Linear:LM317_TO-220:unit1:pin1"
+      },
+      "path": [
+        [
+          66.04,
+          171.45
+        ],
+        [
+          66.04,
+          175.26
+        ],
+        [
+          170.18,
+          175.26
+        ],
+        [
+          170.18,
+          172.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            66.04,
+            171.45
+          ],
+          "end": [
+            66.04,
+            175.26
+          ],
+          "direction": "down",
+          "length": 3.81
+        },
+        {
+          "start": [
+            66.04,
+            175.26
+          ],
+          "end": [
+            170.18,
+            175.26
+          ],
+          "direction": "right",
+          "length": 104.14
+        },
+        {
+          "start": [
+            170.18,
+            175.26
+          ],
+          "end": [
+            170.18,
+            172.72
+          ],
+          "direction": "up",
+          "length": 2.54
+        }
+      ]
+    },
+    {
+      "net": "LED_A",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          30.48,
+          123.19
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "LED1",
+        "pin": "1",
+        "point": [
+          199.39,
+          160.02
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin1"
+      },
+      "path": [
+        [
+          30.48,
+          128.27
+        ],
+        [
+          36.83,
+          128.27
+        ],
+        [
+          36.83,
+          151.13
+        ],
+        [
+          38.1,
+          151.13
+        ],
+        [
+          38.1,
+          163.83
+        ],
+        [
+          36.83,
+          163.83
+        ],
+        [
+          36.83,
+          179.07
+        ],
+        [
+          194.31,
+          179.07
+        ],
+        [
+          194.31,
+          160.02
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            128.27
+          ],
+          "end": [
+            36.83,
+            128.27
+          ],
+          "direction": "right",
+          "length": 6.35
+        },
+        {
+          "start": [
+            36.83,
+            128.27
+          ],
+          "end": [
+            36.83,
+            151.13
+          ],
+          "direction": "down",
+          "length": 22.86
+        },
+        {
+          "start": [
+            36.83,
+            151.13
+          ],
+          "end": [
+            38.1,
+            151.13
+          ],
+          "direction": "right",
+          "length": 1.27
+        },
+        {
+          "start": [
+            38.1,
+            151.13
+          ],
+          "end": [
+            38.1,
+            163.83
+          ],
+          "direction": "down",
+          "length": 12.7
+        },
+        {
+          "start": [
+            38.1,
+            163.83
+          ],
+          "end": [
+            36.83,
+            163.83
+          ],
+          "direction": "left",
+          "length": 1.27
+        },
+        {
+          "start": [
+            36.83,
+            163.83
+          ],
+          "end": [
+            36.83,
+            179.07
+          ],
+          "direction": "down",
+          "length": 15.24
+        },
+        {
+          "start": [
+            36.83,
+            179.07
+          ],
+          "end": [
+            194.31,
+            179.07
+          ],
+          "direction": "right",
+          "length": 157.48
+        },
+        {
+          "start": [
+            194.31,
+            179.07
+          ],
+          "end": [
+            194.31,
+            160.02
+          ],
+          "direction": "up",
+          "length": 19.05
+        }
+      ]
+    },
+    {
+      "net": "LED_K",
+      "from": {
+        "ref": "Q1",
+        "pin": "2",
+        "point": [
+          165.1,
+          137.16
+        ],
+        "exact": true,
+        "source": "Transistor_FET:2N7000:unit1:pin2"
+      },
+      "to": {
+        "ref": "LED1",
+        "pin": "2",
+        "point": [
+          207.01,
+          160.02
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          160.02,
+          137.16
+        ],
+        [
+          160.02,
+          153.67
+        ],
+        [
+          212.09,
+          153.67
+        ],
+        [
+          212.09,
+          160.02
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            160.02,
+            137.16
+          ],
+          "end": [
+            160.02,
+            153.67
+          ],
+          "direction": "down",
+          "length": 16.51
+        },
+        {
+          "start": [
+            160.02,
+            153.67
+          ],
+          "end": [
+            212.09,
+            153.67
+          ],
+          "direction": "right",
+          "length": 52.07
+        },
+        {
+          "start": [
+            212.09,
+            153.67
+          ],
+          "end": [
+            212.09,
+            160.02
+          ],
+          "direction": "down",
+          "length": 6.35
+        }
+      ]
+    },
+    {
+      "net": "LOAD_OUT",
+      "from": {
+        "ref": "J1",
+        "pin": "1",
+        "point": [
+          25.4,
+          157.48
+        ],
+        "exact": true,
+        "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+      },
+      "to": {
+        "ref": "Q2",
+        "pin": "2",
+        "point": [
+          198.12,
+          139.7
+        ],
+        "exact": true,
+        "source": "Transistor_FET:BS170:unit1:pin2"
+      },
+      "path": [
+        [
+          20.32,
+          157.48
+        ],
+        [
+          17.78,
+          157.48
+        ],
+        [
+          17.78,
+          114.3
+        ],
+        [
+          193.04,
+          114.3
+        ],
+        [
+          193.04,
+          139.7
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            20.32,
+            157.48
+          ],
+          "end": [
+            17.78,
+            157.48
+          ],
+          "direction": "left",
+          "length": 2.54
+        },
+        {
+          "start": [
+            17.78,
+            157.48
+          ],
+          "end": [
+            17.78,
+            114.3
+          ],
+          "direction": "up",
+          "length": 43.18
+        },
+        {
+          "start": [
+            17.78,
+            114.3
+          ],
+          "end": [
+            193.04,
+            114.3
+          ],
+          "direction": "right",
+          "length": 175.26
+        },
+        {
+          "start": [
+            193.04,
+            114.3
+          ],
+          "end": [
+            193.04,
+            139.7
+          ],
+          "direction": "down",
+          "length": 25.4
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 13,
+    "wired_route_count": 5,
+    "segment_count": 21,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_expansion_limit: REG_OUT exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: REG_OUT converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for VIN_SWITCHED.",
+    "wire_net_label_fallback: VIN_SWITCHED converted to local labels after router failure.",
+    "geometry_repair_fallback: converted nets to local labels: ADJ_RETURN, DRIVE_GATE, LC_OUT, REG_IN, VIN_FUSED"
+  ]
+}

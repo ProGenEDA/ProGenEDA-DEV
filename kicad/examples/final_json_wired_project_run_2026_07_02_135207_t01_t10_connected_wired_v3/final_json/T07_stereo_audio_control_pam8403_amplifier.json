@@ -1,0 +1,590 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "t07",
+    "title": "Stereo Audio Control PAM8403 Amplifier",
+    "purpose": "analog-style placement with passives around ICs",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "T07",
+  "circuit_name": "Stereo Audio Control PAM8403 Amplifier",
+  "purpose": "analog-style placement with passives around ICs",
+  "components": [
+    {
+      "id": "U1A",
+      "ref": "U1A",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358 channel A",
+      "role": "opamp",
+      "block": "",
+      "pins": {
+        "BIAS": "AUDIO_L_BIAS",
+        "GND": "GND",
+        "IN_MINUS": "LM358_L_FEEDBACK",
+        "IN_PLUS": "LM358_L_IN",
+        "OUT": "LM358_L_FEEDBACK",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "U1B",
+      "ref": "U1B",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358 channel B",
+      "role": "opamp",
+      "block": "",
+      "pins": {
+        "BIAS": "AUDIO_R_BIAS",
+        "GND": "GND",
+        "IN_MINUS": "LM358_R_FEEDBACK",
+        "IN_PLUS": "LM358_R_IN",
+        "OUT": "LM358_R_FEEDBACK",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "U3",
+      "ref": "U3",
+      "kind": "PAM8403",
+      "type": "PAM8403",
+      "value": "PAM8403",
+      "role": "amplifier",
+      "block": "",
+      "pins": {
+        "GND": "GND",
+        "LIN": "PAM_L_IN",
+        "LOUT_MINUS": "SPK_L_MINUS",
+        "LOUT_PLUS": "SPK_L_PLUS",
+        "RIN": "PAM_R_IN",
+        "ROUT_MINUS": "SPK_R_MINUS",
+        "ROUT_PLUS": "SPK_R_PLUS",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "AUDIO_INPUT_JACK",
+      "type": "AUDIO_INPUT_JACK",
+      "value": "Stereo input jack",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "GND": "GND",
+        "LEFT": "AUDIO_L_IN_RAW",
+        "RIGHT": "AUDIO_R_IN_RAW"
+      }
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "AUDIO_JACK",
+      "type": "AUDIO_JACK",
+      "value": "Aux/test audio jack",
+      "role": "connector",
+      "block": "",
+      "pins": {
+        "GND": "GND",
+        "LEFT": "MASTER_CTRL",
+        "RIGHT": "MASTER_CTRL"
+      }
+    },
+    {
+      "id": "SPK1",
+      "ref": "SPK1",
+      "kind": "SPEAKER",
+      "type": "SPEAKER",
+      "value": "Left speaker",
+      "role": "load",
+      "block": "",
+      "pins": {
+        "1": "SPK_L_PLUS",
+        "2": "SPK_L_MINUS"
+      }
+    },
+    {
+      "id": "SPK2",
+      "ref": "SPK2",
+      "kind": "SPEAKER",
+      "type": "SPEAKER",
+      "value": "Right speaker",
+      "role": "load",
+      "block": "",
+      "pins": {
+        "1": "SPK_R_PLUS",
+        "2": "SPK_R_MINUS"
+      }
+    },
+    {
+      "id": "RV1",
+      "ref": "RV1",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "control",
+      "block": "",
+      "pins": {
+        "1": "GND",
+        "2": "AUDIO_L_VOL",
+        "3": "AUDIO_L_AC"
+      }
+    },
+    {
+      "id": "RV2",
+      "ref": "RV2",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "control",
+      "block": "",
+      "pins": {
+        "1": "GND",
+        "2": "AUDIO_R_VOL",
+        "3": "AUDIO_R_AC"
+      }
+    },
+    {
+      "id": "RV3",
+      "ref": "RV3",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "control",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "MASTER_CTRL",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "INPUT_CAPACITOR",
+      "type": "INPUT_CAPACITOR",
+      "value": "Input capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "AUDIO_L_IN_RAW",
+        "2": "AUDIO_L_AC"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "INPUT_CAPACITOR",
+      "type": "INPUT_CAPACITOR",
+      "value": "Input capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "AUDIO_R_IN_RAW",
+        "2": "AUDIO_R_AC"
+      }
+    },
+    {
+      "id": "C3",
+      "ref": "C3",
+      "kind": "INPUT_CAPACITOR",
+      "type": "INPUT_CAPACITOR",
+      "value": "Input capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "LM358_L_FEEDBACK",
+        "2": "PAM_L_IN"
+      }
+    },
+    {
+      "id": "C4",
+      "ref": "C4",
+      "kind": "INPUT_CAPACITOR",
+      "type": "INPUT_CAPACITOR",
+      "value": "Input capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "LM358_R_FEEDBACK",
+        "2": "PAM_R_IN"
+      }
+    },
+    {
+      "id": "C5",
+      "ref": "C5",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "type": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C6",
+      "ref": "C6",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "type": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C7",
+      "ref": "C7",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "type": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "PAM_L_IN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C8",
+      "ref": "C8",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "type": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor",
+      "role": "capacitor",
+      "block": "",
+      "pins": {
+        "1": "PAM_R_IN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "AUDIO_L_VOL",
+        "2": "LM358_L_IN"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "LM358_L_FEEDBACK"
+      }
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "AUDIO_R_VOL",
+        "2": "LM358_R_IN"
+      }
+    },
+    {
+      "id": "R4",
+      "ref": "R4",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "LM358_R_FEEDBACK"
+      }
+    },
+    {
+      "id": "R5",
+      "ref": "R5",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "AUDIO_L_BIAS"
+      }
+    },
+    {
+      "id": "R6",
+      "ref": "R6",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "AUDIO_L_BIAS",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R7",
+      "ref": "R7",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "+5V",
+        "2": "AUDIO_R_BIAS"
+      }
+    },
+    {
+      "id": "R8",
+      "ref": "R8",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "Audio resistor",
+      "role": "resistor",
+      "block": "",
+      "pins": {
+        "1": "AUDIO_R_BIAS",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "Status LED",
+      "role": "indicator",
+      "block": "",
+      "pins": {
+        "A": "+5V",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "Status LED",
+      "role": "indicator",
+      "block": "",
+      "pins": {
+        "A": "+5V",
+        "K": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "U1A.VCC",
+      "U1B.VCC",
+      "U3.VCC",
+      "RV3.1",
+      "C5.1",
+      "C6.1",
+      "D1.A",
+      "D2.A",
+      "R5.1",
+      "R7.1"
+    ],
+    "GND": [
+      "U1A.GND",
+      "U1B.GND",
+      "U3.GND",
+      "J1.GND",
+      "J2.GND",
+      "RV1.1",
+      "RV2.1",
+      "RV3.3",
+      "C5.2",
+      "C6.2",
+      "C7.2",
+      "C8.2",
+      "D1.K",
+      "D2.K",
+      "R6.2",
+      "R8.2"
+    ],
+    "AUDIO_L_IN_RAW": [
+      "J1.LEFT",
+      "C1.1"
+    ],
+    "AUDIO_R_IN_RAW": [
+      "J1.RIGHT",
+      "C2.1"
+    ],
+    "AUDIO_L_AC": [
+      "C1.2",
+      "RV1.3"
+    ],
+    "AUDIO_R_AC": [
+      "C2.2",
+      "RV2.3"
+    ],
+    "AUDIO_L_VOL": [
+      "RV1.2",
+      "R1.1"
+    ],
+    "AUDIO_R_VOL": [
+      "RV2.2",
+      "R3.1"
+    ],
+    "LM358_L_IN": [
+      "R1.2",
+      "U1A.IN_PLUS"
+    ],
+    "LM358_R_IN": [
+      "R3.2",
+      "U1B.IN_PLUS"
+    ],
+    "LM358_L_FEEDBACK": [
+      "U1A.OUT",
+      "U1A.IN_MINUS",
+      "R2.1",
+      "C3.1"
+    ],
+    "LM358_R_FEEDBACK": [
+      "U1B.OUT",
+      "U1B.IN_MINUS",
+      "R4.1",
+      "C4.1"
+    ],
+    "PAM_L_IN": [
+      "C3.2",
+      "U3.LIN",
+      "C7.1"
+    ],
+    "PAM_R_IN": [
+      "C4.2",
+      "U3.RIN",
+      "C8.1"
+    ],
+    "MASTER_CTRL": [
+      "RV3.2",
+      "J2.LEFT",
+      "J2.RIGHT"
+    ],
+    "SPK_L_PLUS": [
+      "U3.LOUT_PLUS",
+      "SPK1.1"
+    ],
+    "SPK_L_MINUS": [
+      "U3.LOUT_MINUS",
+      "SPK1.2"
+    ],
+    "SPK_R_PLUS": [
+      "U3.ROUT_PLUS",
+      "SPK2.1"
+    ],
+    "SPK_R_MINUS": [
+      "U3.ROUT_MINUS",
+      "SPK2.2"
+    ],
+    "AUDIO_L_BIAS": [
+      "R5.2",
+      "R6.1",
+      "U1A.BIAS"
+    ],
+    "AUDIO_R_BIAS": [
+      "R7.2",
+      "R8.1",
+      "U1B.BIAS"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [
+      {
+        "kind": "net_alias_merged",
+        "from": "AUDIO_L_BIAS_TOP",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "AUDIO_L_BIAS_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "AUDIO_R_BIAS_TOP",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "AUDIO_R_BIAS_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "AMP_L_IN_COUPLED",
+        "to": "LM358_L_FEEDBACK",
+        "endpoint": "U1A.OUT"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "AMP_R_IN_COUPLED",
+        "to": "LM358_R_FEEDBACK",
+        "endpoint": "U1B.OUT"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "AMP_BYPASS_L",
+        "to": "PAM_L_IN",
+        "endpoint": "U3.LIN"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "AMP_BYPASS_R",
+        "to": "PAM_R_IN",
+        "endpoint": "U3.RIN"
+      }
+    ],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 28,
+    "net_count": 21,
+    "endpoint_count": 73,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

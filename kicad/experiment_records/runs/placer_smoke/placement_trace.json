@@ -1,0 +1,102 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 3,
+        "errors": [],
+        "warnings": [],
+        "source": "kicad.generator.kicad_json_to_project.KIND_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 3,
+        "components": {
+          "G1": {
+            "kind": "GND",
+            "at": [
+              45.72,
+              71.12
+            ],
+            "rotation": 0.0,
+            "manual": false
+          },
+          "R1": {
+            "kind": "R",
+            "at": [
+              72.39,
+              45.72
+            ],
+            "rotation": 90.0,
+            "manual": false
+          },
+          "V1": {
+            "kind": "VDC",
+            "at": [
+              20.32,
+              45.72
+            ],
+            "rotation": 0.0,
+            "manual": false
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "G1",
+            "left": 41.91,
+            "top": 68.58,
+            "right": 49.53,
+            "bottom": 73.66
+          },
+          {
+            "owner": "R1",
+            "left": 68.58,
+            "top": 43.18,
+            "right": 76.2,
+            "bottom": 48.26
+          },
+          {
+            "owner": "V1",
+            "left": 16.51,
+            "top": 41.91,
+            "right": 24.13,
+            "bottom": 49.53
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

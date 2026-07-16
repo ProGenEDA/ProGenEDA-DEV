@@ -1,0 +1,930 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n02",
+    "title": "ARDUINO_NANO CAN BUS MOTOR + RELAY + CURRENT SENSOR CONTROLLER",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N02",
+  "circuit_name": "ARDUINO_NANO CAN BUS MOTOR + RELAY + CURRENT SENSOR CONTROLLER",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "DC_BARREL_JACK",
+      "ref": "DC_BARREL_JACK",
+      "kind": "DC_BARREL_JACK",
+      "value": "DC Barrel Jack"
+    },
+    {
+      "id": "FUSE",
+      "ref": "FUSE",
+      "kind": "FUSE",
+      "value": "Fuse"
+    },
+    {
+      "id": "D_1N4007_PROTECTION",
+      "ref": "D_1N4007_PROTECTION",
+      "kind": "D_1N4007",
+      "value": "1N4007 Diode"
+    },
+    {
+      "id": "INPUT_CAPACITOR",
+      "ref": "INPUT_CAPACITOR",
+      "kind": "INPUT_CAPACITOR",
+      "value": "Input Capacitor"
+    },
+    {
+      "id": "LM7805",
+      "ref": "LM7805",
+      "kind": "LM7805",
+      "value": "LM7805 Voltage Regulator"
+    },
+    {
+      "id": "CAP_7805_IN",
+      "ref": "CAP_7805_IN",
+      "kind": "C_100NF_CERAMIC",
+      "value": "Capacitor"
+    },
+    {
+      "id": "CAP_7805_OUT",
+      "ref": "CAP_7805_OUT",
+      "kind": "C_100NF_CERAMIC",
+      "value": "Capacitor"
+    },
+    {
+      "id": "C_100NF_CERAMIC_7805",
+      "ref": "C_100NF_CERAMIC_7805",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "ARDUINO_NANO",
+      "ref": "ARDUINO_NANO",
+      "kind": "ARDUINO_NANO",
+      "value": "Arduino Nano"
+    },
+    {
+      "id": "R_10K_PULLUP_NANO_RST",
+      "ref": "R_10K_PULLUP_NANO_RST",
+      "kind": "R_10K_PULLUP",
+      "value": "10k"
+    },
+    {
+      "id": "PUSH_BUTTON_RESET",
+      "ref": "PUSH_BUTTON_RESET",
+      "kind": "PUSH_BUTTON",
+      "value": "Push Button"
+    },
+    {
+      "id": "RESET_CAPACITOR",
+      "ref": "RESET_CAPACITOR",
+      "kind": "RESET_CAPACITOR",
+      "value": "100nF"
+    },
+    {
+      "id": "MCP2515",
+      "ref": "MCP2515",
+      "kind": "MCP2515",
+      "value": "MCP2515 CAN Controller"
+    },
+    {
+      "id": "R_10K_PULLUP_MCP_RESET",
+      "ref": "R_10K_PULLUP_MCP_RESET",
+      "kind": "R_10K_PULLUP",
+      "value": "10k"
+    },
+    {
+      "id": "TJA1050",
+      "ref": "TJA1050",
+      "kind": "TJA1050",
+      "value": "TJA1050 CAN Transceiver"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_MCP",
+      "ref": "DECOUPLING_CAPACITOR_MCP",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "R_CAN_SLOPE",
+      "ref": "R_CAN_SLOPE",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "R_120_CAN",
+      "ref": "R_120_CAN",
+      "kind": "R_120_CAN",
+      "value": "120 ohm"
+    },
+    {
+      "id": "CAN_TERMINAL",
+      "ref": "CAN_TERMINAL",
+      "kind": "CAN_TERMINAL",
+      "value": "CAN Terminal"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_CAN",
+      "ref": "DECOUPLING_CAPACITOR_CAN",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "ACS712",
+      "ref": "ACS712",
+      "kind": "ACS712",
+      "value": "ACS712 Current Sensor"
+    },
+    {
+      "id": "DC_MOTOR",
+      "ref": "DC_MOTOR",
+      "kind": "DC_MOTOR",
+      "value": "DC Motor"
+    },
+    {
+      "id": "IRLZ44N",
+      "ref": "IRLZ44N",
+      "kind": "IRLZ44N",
+      "value": "IRLZ44N MOSFET"
+    },
+    {
+      "id": "R_GATE_MOTOR",
+      "ref": "R_GATE_MOTOR",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "R_MOTOR_GATE_PULLDOWN",
+      "ref": "R_MOTOR_GATE_PULLDOWN",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "FLYBACK_DIODE_MOTOR",
+      "ref": "FLYBACK_DIODE_MOTOR",
+      "kind": "FLYBACK_DIODE",
+      "value": "Flyback Diode"
+    },
+    {
+      "id": "RELAY_5V",
+      "ref": "RELAY_5V",
+      "kind": "RELAY_5V",
+      "value": "5V Relay"
+    },
+    {
+      "id": "BC547_RELAY",
+      "ref": "BC547_RELAY",
+      "kind": "BC547",
+      "value": "BC547 NPN Transistor"
+    },
+    {
+      "id": "R_RELAY_BASE",
+      "ref": "R_RELAY_BASE",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "RELAY_FLYBACK_DIODE",
+      "ref": "RELAY_FLYBACK_DIODE",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode"
+    },
+    {
+      "id": "SCREW_TERMINAL_RELAY_IN",
+      "ref": "SCREW_TERMINAL_RELAY_IN",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw Terminal 2-pin"
+    },
+    {
+      "id": "SCREW_TERMINAL_RELAY_OUT",
+      "ref": "SCREW_TERMINAL_RELAY_OUT",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw Terminal 2-pin"
+    },
+    {
+      "id": "SCREW_TERMINAL_RELAY_NC",
+      "ref": "SCREW_TERMINAL_RELAY_NC",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw Terminal 2-pin"
+    },
+    {
+      "id": "R_220_CAN_LED",
+      "ref": "R_220_CAN_LED",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_CAN",
+      "ref": "LED_INDICATOR_CAN",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "R_220_RELAY_LED",
+      "ref": "R_220_RELAY_LED",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "RELAY_INDICATOR_LED",
+      "ref": "RELAY_INDICATOR_LED",
+      "kind": "RELAY_INDICATOR_LED",
+      "value": "Indicator LED"
+    },
+    {
+      "id": "RX_HEADER",
+      "ref": "RX_HEADER",
+      "kind": "RX_HEADER",
+      "value": "RX Header"
+    },
+    {
+      "id": "TX_HEADER",
+      "ref": "TX_HEADER",
+      "kind": "TX_HEADER",
+      "value": "TX Header"
+    },
+    {
+      "id": "UART_HEADER",
+      "ref": "UART_HEADER",
+      "kind": "UART_HEADER",
+      "value": "UART Header"
+    },
+    {
+      "id": "PWM_HEADER",
+      "ref": "PWM_HEADER",
+      "kind": "PWM_HEADER",
+      "value": "PWM Header"
+    },
+    {
+      "id": "I2C_HEADER",
+      "ref": "I2C_HEADER",
+      "kind": "I2C_HEADER",
+      "value": "I2C Header"
+    },
+    {
+      "id": "R_4K7_PULLUP_I2C_SDA",
+      "ref": "R_4K7_PULLUP_I2C_SDA",
+      "kind": "R_4K7_PULLUP",
+      "value": "4.7k"
+    },
+    {
+      "id": "R_4K7_PULLUP_I2C_SCL",
+      "ref": "R_4K7_PULLUP_I2C_SCL",
+      "kind": "R_4K7_PULLUP",
+      "value": "4.7k"
+    },
+    {
+      "id": "TEST_POINT_A1",
+      "ref": "TEST_POINT_A1",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_A2",
+      "ref": "TEST_POINT_A2",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_A3",
+      "ref": "TEST_POINT_A3",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_A6",
+      "ref": "TEST_POINT_A6",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_A7",
+      "ref": "TEST_POINT_A7",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TERMINAL_BLOCK_12V",
+      "ref": "TERMINAL_BLOCK_12V",
+      "kind": "TERMINAL_BLOCK",
+      "value": "Terminal Block"
+    },
+    {
+      "id": "POWER_LED",
+      "ref": "POWER_LED",
+      "kind": "POWER_LED",
+      "value": "Power LED"
+    },
+    {
+      "id": "R_220_PWR",
+      "ref": "R_220_PWR",
+      "kind": "R_220",
+      "value": "220 ohm"
+    }
+  ],
+  "nets": {
+    "NET_DC_BARREL_JACK_CENTER": [
+      "DC_BARREL_JACK.CENTER",
+      "FUSE.1"
+    ],
+    "NET_12V_RAW": [
+      "FUSE.2",
+      "D_1N4007_PROTECTION.ANODE"
+    ],
+    "GND": [
+      "DC_BARREL_JACK.SLEEVE",
+      "INPUT_CAPACITOR.2",
+      "LM7805.GND",
+      "CAP_7805_IN.2",
+      "CAP_7805_OUT.2",
+      "C_100NF_CERAMIC_7805.2",
+      "ARDUINO_NANO.GND",
+      "PUSH_BUTTON_RESET.2",
+      "RESET_CAPACITOR.2",
+      "MCP2515.GND",
+      "DECOUPLING_CAPACITOR_MCP.2",
+      "TJA1050.GND",
+      "R_CAN_SLOPE.2",
+      "CAN_TERMINAL.GND",
+      "CAN_TERMINAL.SHIELD",
+      "DECOUPLING_CAPACITOR_CAN.2",
+      "ACS712.GND",
+      "IRLZ44N.SOURCE",
+      "R_MOTOR_GATE_PULLDOWN.2",
+      "BC547_RELAY.EMITTER",
+      "SCREW_TERMINAL_RELAY_IN.2",
+      "SCREW_TERMINAL_RELAY_OUT.2",
+      "SCREW_TERMINAL_RELAY_NC.2",
+      "LED_INDICATOR_CAN.CATHODE",
+      "RELAY_INDICATOR_LED.CATHODE",
+      "UART_HEADER.GND",
+      "PWM_HEADER.GND",
+      "I2C_HEADER.GND",
+      "TERMINAL_BLOCK_12V.-",
+      "POWER_LED.CATHODE"
+    ],
+    "NET_12V_PROTECTED": [
+      "D_1N4007_PROTECTION.CATHODE",
+      "INPUT_CAPACITOR.1",
+      "LM7805.IN",
+      "CAP_7805_IN.1",
+      "ACS712.IP+",
+      "TERMINAL_BLOCK_12V.+"
+    ],
+    "+5V": [
+      "LM7805.OUT",
+      "CAP_7805_OUT.1",
+      "C_100NF_CERAMIC_7805.1",
+      "ARDUINO_NANO.5V",
+      "R_10K_PULLUP_NANO_RST.2",
+      "R_10K_PULLUP_MCP_RESET.2",
+      "MCP2515.VCC",
+      "DECOUPLING_CAPACITOR_MCP.1",
+      "TJA1050.VCC",
+      "DECOUPLING_CAPACITOR_CAN.1",
+      "ACS712.VCC",
+      "RELAY_5V.COIL+",
+      "RELAY_FLYBACK_DIODE.CATHODE",
+      "UART_HEADER.VCC",
+      "PWM_HEADER.VCC",
+      "I2C_HEADER.VCC",
+      "R_4K7_PULLUP_I2C_SDA.2",
+      "R_4K7_PULLUP_I2C_SCL.2",
+      "R_220_PWR.2"
+    ],
+    "NET_ARDUINO_NANO_RST": [
+      "ARDUINO_NANO.RST",
+      "R_10K_PULLUP_NANO_RST.1",
+      "PUSH_BUTTON_RESET.1",
+      "RESET_CAPACITOR.1"
+    ],
+    "NET_ARDUINO_NANO_D13_SCK": [
+      "ARDUINO_NANO.D13_SCK",
+      "MCP2515.SCK"
+    ],
+    "NET_ARDUINO_NANO_D11_MOSI": [
+      "ARDUINO_NANO.D11_MOSI",
+      "MCP2515.SI"
+    ],
+    "NET_ARDUINO_NANO_D12_MISO": [
+      "ARDUINO_NANO.D12_MISO",
+      "MCP2515.SO"
+    ],
+    "NET_ARDUINO_NANO_D10_CS": [
+      "ARDUINO_NANO.D10_CS",
+      "MCP2515.CS"
+    ],
+    "NET_ARDUINO_NANO_D2": [
+      "ARDUINO_NANO.D2",
+      "MCP2515.INT"
+    ],
+    "NET_ARDUINO_NANO_D4": [
+      "ARDUINO_NANO.D4",
+      "MCP2515.RESET",
+      "R_10K_PULLUP_MCP_RESET.1"
+    ],
+    "NET_MCP2515_TXCAN": [
+      "MCP2515.TXCAN",
+      "TJA1050.TXD"
+    ],
+    "NET_MCP2515_RXCAN": [
+      "MCP2515.RXCAN",
+      "TJA1050.RXD"
+    ],
+    "NET_CANH": [
+      "TJA1050.CANH",
+      "R_120_CAN.1",
+      "CAN_TERMINAL.CANH"
+    ],
+    "NET_CANL": [
+      "TJA1050.CANL",
+      "R_120_CAN.2",
+      "CAN_TERMINAL.CANL"
+    ],
+    "NET_TJA1050_RS": [
+      "TJA1050.RS",
+      "R_CAN_SLOPE.1"
+    ],
+    "NET_ACS712_OUT": [
+      "ACS712.OUT",
+      "ARDUINO_NANO.A0"
+    ],
+    "NET_MOTOR_PLUS": [
+      "ACS712.IP-",
+      "DC_MOTOR.POSITIVE",
+      "FLYBACK_DIODE_MOTOR.CATHODE"
+    ],
+    "NET_MOTOR_LOW": [
+      "DC_MOTOR.NEGATIVE",
+      "IRLZ44N.DRAIN",
+      "FLYBACK_DIODE_MOTOR.ANODE"
+    ],
+    "NET_IRLZ44N_GATE": [
+      "IRLZ44N.GATE",
+      "R_GATE_MOTOR.1",
+      "R_MOTOR_GATE_PULLDOWN.1"
+    ],
+    "NET_R_GATE_MOTOR_2": [
+      "R_GATE_MOTOR.2",
+      "ARDUINO_NANO.D5_PWM"
+    ],
+    "NET_RELAY_LOW": [
+      "RELAY_5V.COIL-",
+      "BC547_RELAY.COLLECTOR",
+      "RELAY_FLYBACK_DIODE.ANODE"
+    ],
+    "NET_BC547_RELAY_BASE": [
+      "BC547_RELAY.BASE",
+      "R_RELAY_BASE.1"
+    ],
+    "NET_R_RELAY_BASE_2": [
+      "R_RELAY_BASE.2",
+      "ARDUINO_NANO.D6"
+    ],
+    "NET_RELAY_5V_COM": [
+      "RELAY_5V.COM",
+      "SCREW_TERMINAL_RELAY_IN.1"
+    ],
+    "NET_RELAY_5V_NO": [
+      "RELAY_5V.NO",
+      "SCREW_TERMINAL_RELAY_OUT.1"
+    ],
+    "NET_RELAY_5V_NC": [
+      "RELAY_5V.NC",
+      "SCREW_TERMINAL_RELAY_NC.1"
+    ],
+    "NET_ARDUINO_NANO_D7": [
+      "ARDUINO_NANO.D7",
+      "R_220_CAN_LED.1"
+    ],
+    "NET_R_220_CAN_LED_2": [
+      "R_220_CAN_LED.2",
+      "LED_INDICATOR_CAN.ANODE"
+    ],
+    "NET_ARDUINO_NANO_D8": [
+      "ARDUINO_NANO.D8",
+      "R_220_RELAY_LED.1"
+    ],
+    "NET_R_220_RELAY_LED_2": [
+      "R_220_RELAY_LED.2",
+      "RELAY_INDICATOR_LED.ANODE"
+    ],
+    "NET_ARDUINO_NANO_D0_RX": [
+      "ARDUINO_NANO.D0_RX",
+      "RX_HEADER.RX",
+      "UART_HEADER.RX"
+    ],
+    "NET_ARDUINO_NANO_D1_TX": [
+      "ARDUINO_NANO.D1_TX",
+      "TX_HEADER.TX",
+      "UART_HEADER.TX"
+    ],
+    "NET_PWM_HEADER_PWM1": [
+      "PWM_HEADER.PWM1",
+      "ARDUINO_NANO.D3_PWM"
+    ],
+    "NET_PWM_HEADER_PWM2": [
+      "PWM_HEADER.PWM2",
+      "ARDUINO_NANO.D9_PWM"
+    ],
+    "NET_I2C_HEADER_SDA": [
+      "I2C_HEADER.SDA",
+      "ARDUINO_NANO.A4_SDA",
+      "R_4K7_PULLUP_I2C_SDA.1"
+    ],
+    "NET_I2C_HEADER_SCL": [
+      "I2C_HEADER.SCL",
+      "ARDUINO_NANO.A5_SCL",
+      "R_4K7_PULLUP_I2C_SCL.1"
+    ],
+    "NET_TEST_POINT_A1_TP": [
+      "TEST_POINT_A1.TP",
+      "ARDUINO_NANO.A1"
+    ],
+    "NET_TEST_POINT_A2_TP": [
+      "TEST_POINT_A2.TP",
+      "ARDUINO_NANO.A2"
+    ],
+    "NET_TEST_POINT_A3_TP": [
+      "TEST_POINT_A3.TP",
+      "ARDUINO_NANO.A3"
+    ],
+    "NET_TEST_POINT_A6_TP": [
+      "TEST_POINT_A6.TP",
+      "ARDUINO_NANO.A6"
+    ],
+    "NET_TEST_POINT_A7_TP": [
+      "TEST_POINT_A7.TP",
+      "ARDUINO_NANO.A7"
+    ],
+    "NET_POWER_LED_ANODE": [
+      "POWER_LED.ANODE",
+      "R_220_PWR.1"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "DC_BARREL_JACK",
+          "kind": "DC_BARREL_JACK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "FUSE",
+          "kind": "FUSE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "D_1N4007_PROTECTION",
+          "kind": "D_1N4007",
+          "reason": "diode_1n4007_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "INPUT_CAPACITOR",
+          "kind": "INPUT_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "LM7805",
+          "kind": "LM7805",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "CAP_7805_IN",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "CAP_7805_OUT",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "C_100NF_CERAMIC_7805",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "kind": "ARDUINO_NANO",
+          "reason": "exact_catalog_kind",
+          "pin_count": 25
+        },
+        {
+          "ref": "R_10K_PULLUP_NANO_RST",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "PUSH_BUTTON_RESET",
+          "kind": "PUSH_BUTTON",
+          "reason": "push_button_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RESET_CAPACITOR",
+          "kind": "RESET_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "MCP2515",
+          "kind": "MCP2515",
+          "reason": "exact_catalog_kind",
+          "pin_count": 10
+        },
+        {
+          "ref": "R_10K_PULLUP_MCP_RESET",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "TJA1050",
+          "kind": "TJA1050",
+          "reason": "exact_catalog_kind",
+          "pin_count": 7
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_MCP",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_CAN_SLOPE",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_120_CAN",
+          "kind": "R_120_CAN",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "CAN_TERMINAL",
+          "kind": "CAN_TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_CAN",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "ACS712",
+          "kind": "ACS712",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "DC_MOTOR",
+          "kind": "DC_MOTOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "IRLZ44N",
+          "kind": "IRLZ44N",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "R_GATE_MOTOR",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_MOTOR_GATE_PULLDOWN",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "FLYBACK_DIODE_MOTOR",
+          "kind": "FLYBACK_DIODE",
+          "reason": "flyback_diode_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RELAY_5V",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "BC547_RELAY",
+          "kind": "BC547",
+          "reason": "bjt_family",
+          "pin_count": 3
+        },
+        {
+          "ref": "R_RELAY_BASE",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RELAY_FLYBACK_DIODE",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCREW_TERMINAL_RELAY_IN",
+          "kind": "SCREW_TERMINAL_2",
+          "reason": "screw_terminal_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCREW_TERMINAL_RELAY_OUT",
+          "kind": "SCREW_TERMINAL_2",
+          "reason": "screw_terminal_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCREW_TERMINAL_RELAY_NC",
+          "kind": "SCREW_TERMINAL_2",
+          "reason": "screw_terminal_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_CAN_LED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_CAN",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_RELAY_LED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "RELAY_INDICATOR_LED",
+          "kind": "RELAY_INDICATOR_LED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "RX_HEADER",
+          "kind": "RX_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "TX_HEADER",
+          "kind": "TX_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "UART_HEADER",
+          "kind": "UART_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "PWM_HEADER",
+          "kind": "PWM_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "I2C_HEADER",
+          "kind": "I2C_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "R_4K7_PULLUP_I2C_SDA",
+          "kind": "R_4K7_PULLUP",
+          "reason": "resistor_value_4k7",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_4K7_PULLUP_I2C_SCL",
+          "kind": "R_4K7_PULLUP",
+          "reason": "resistor_value_4k7",
+          "pin_count": 2
+        },
+        {
+          "ref": "TEST_POINT_A1",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_A2",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_A3",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_A6",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_A7",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TERMINAL_BLOCK_12V",
+          "kind": "TERMINAL_BLOCK",
+          "reason": "terminal_block_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "POWER_LED",
+          "kind": "POWER_LED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_PWR",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 117
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 52,
+    "net_count": 44,
+    "endpoint_count": 150,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

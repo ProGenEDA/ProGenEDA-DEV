@@ -1,0 +1,2776 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n107",
+    "title": "ARDUINO DUAL 74HC595 EIGHT RELAY OUTPUT BOARD VARIANT 06",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N107",
+  "circuit_name": "ARDUINO DUAL 74HC595 EIGHT RELAY OUTPUT BOARD VARIANT 06",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "decision_source": "main_json_validator_fixer",
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 6,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "clustered_blocks_square_fill",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "components[].block and blocks[]",
+    "keep_related_blocks_close": true
+  },
+  "components": [
+    {
+      "id": "C107_PWR_5V",
+      "ref": "C107_PWR_5V",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "DC Voltage Source",
+      "role": "source",
+      "block": "107",
+      "pins": {
+        "+": "NET_C107_5V",
+        "-": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_POWER_LED",
+      "ref": "C107_POWER_LED",
+      "kind": "POWER_LED",
+      "type": "POWER_LED",
+      "value": "Power LED",
+      "role": "indicator",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_PWR_LED_A",
+        "CATHODE": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_R_220_PWR",
+      "ref": "C107_R_220_PWR",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_5V",
+        "2": "NET_C107_PWR_LED_A"
+      }
+    },
+    {
+      "id": "C107_DECOUPLING_CAPACITOR_MAIN",
+      "ref": "C107_DECOUPLING_CAPACITOR_MAIN",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_5V",
+        "2": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_ARDUINO_NANO",
+      "ref": "C107_ARDUINO_NANO",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "microcontroller_module",
+      "block": "107",
+      "pins": {
+        "5V": "NET_C107_5V",
+        "D10_CS": "NET_C107_SR_LATCH",
+        "D11_MOSI": "NET_C107_SR_DATA",
+        "D13_SCK": "NET_C107_SR_CLOCK",
+        "D8": "NET_C107_SR_RESET",
+        "D9_PWM": "NET_C107_SR_OE",
+        "GND1": "NET_C107_GND",
+        "GND2": "NET_C107_GND",
+        "RST": "NET_C107_NANO_RST"
+      }
+    },
+    {
+      "id": "C107_R_10K_PULLUP_RST",
+      "ref": "C107_R_10K_PULLUP_RST",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_NANO_RST",
+        "2": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_PUSH_BUTTON_RESET",
+      "ref": "C107_PUSH_BUTTON_RESET",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_NANO_RST",
+        "2": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RESET_CAPACITOR",
+      "ref": "C107_RESET_CAPACITOR",
+      "kind": "RESET_CAPACITOR",
+      "type": "RESET_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_NANO_RST",
+        "2": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_DECOUPLING_CAPACITOR_NANO",
+      "ref": "C107_DECOUPLING_CAPACITOR_NANO",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_5V",
+        "2": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_74HC595_SHIFT_REGISTER_1",
+      "ref": "C107_74HC595_SHIFT_REGISTER_1",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595 Shift Register",
+      "role": "logic_ic",
+      "block": "107",
+      "pins": {
+        "/MR": "NET_C107_SR_RESET",
+        "/OE": "NET_C107_SR_OE",
+        "DS": "NET_C107_SR_DATA",
+        "GND": "NET_C107_GND",
+        "Q0": "NET_C107_LED1_CTRL",
+        "Q1": "NET_C107_LED2_CTRL",
+        "Q2": "NET_C107_LED3_CTRL",
+        "Q3": "NET_C107_LED4_CTRL",
+        "Q4": "NET_C107_LED5_CTRL",
+        "Q5": "NET_C107_LED6_CTRL",
+        "Q6": "NET_C107_LED7_CTRL",
+        "Q7": "NET_C107_LED8_CTRL",
+        "Q7S": "NET_C107_SR_CHAIN",
+        "SH_CP": "NET_C107_SR_CLOCK",
+        "ST_CP": "NET_C107_SR_LATCH",
+        "VCC": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_74HC595_SHIFT_REGISTER_2",
+      "ref": "C107_74HC595_SHIFT_REGISTER_2",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595 Shift Register",
+      "role": "logic_ic",
+      "block": "107",
+      "pins": {
+        "/MR": "NET_C107_SR_RESET",
+        "/OE": "NET_C107_SR_OE",
+        "DS": "NET_C107_SR_CHAIN",
+        "GND": "NET_C107_GND",
+        "Q0": "NET_C107_RLY1_CTRL",
+        "Q1": "NET_C107_RLY2_CTRL",
+        "Q2": "NET_C107_RLY3_CTRL",
+        "Q3": "NET_C107_RLY4_CTRL",
+        "Q4": "NET_C107_RLY5_CTRL",
+        "Q5": "NET_C107_RLY6_CTRL",
+        "Q6": "NET_C107_RLY7_CTRL",
+        "Q7": "NET_C107_RLY8_CTRL",
+        "Q7S": "NET_C107_SR_CHAIN_OUT",
+        "SH_CP": "NET_C107_SR_CLOCK",
+        "ST_CP": "NET_C107_SR_LATCH",
+        "VCC": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_R_10K_PULLDOWN_OE",
+      "ref": "C107_R_10K_PULLDOWN_OE",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_SR_OE",
+        "2": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_R_10K_PULLUP_MR",
+      "ref": "C107_R_10K_PULLUP_MR",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_SR_RESET",
+        "2": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_R_220_LED1",
+      "ref": "C107_R_220_LED1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED1_CTRL",
+        "2": "NET_C107_LED1_A"
+      }
+    },
+    {
+      "id": "C107_LED_ARRAY",
+      "ref": "C107_LED_ARRAY",
+      "kind": "LED_ARRAY",
+      "type": "LED_ARRAY",
+      "value": "LED Array",
+      "role": "indicator",
+      "block": "107",
+      "pins": {
+        "LED1_ANODE": "NET_C107_LED1_A",
+        "LED1_CATHODE": "NET_C107_GND",
+        "LED2_ANODE": "NET_C107_LED2_A",
+        "LED2_CATHODE": "NET_C107_GND",
+        "LED3_ANODE": "NET_C107_LED3_A",
+        "LED3_CATHODE": "NET_C107_GND",
+        "LED4_ANODE": "NET_C107_LED4_A",
+        "LED4_CATHODE": "NET_C107_GND",
+        "LED5_ANODE": "NET_C107_LED5_A",
+        "LED5_CATHODE": "NET_C107_GND",
+        "LED6_ANODE": "NET_C107_LED6_A",
+        "LED6_CATHODE": "NET_C107_GND",
+        "LED7_ANODE": "NET_C107_LED7_A",
+        "LED7_CATHODE": "NET_C107_GND",
+        "LED8_ANODE": "NET_C107_LED8_A",
+        "LED8_CATHODE": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_R_220_LED2",
+      "ref": "C107_R_220_LED2",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED2_CTRL",
+        "2": "NET_C107_LED2_A"
+      }
+    },
+    {
+      "id": "C107_R_220_LED3",
+      "ref": "C107_R_220_LED3",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED3_CTRL",
+        "2": "NET_C107_LED3_A"
+      }
+    },
+    {
+      "id": "C107_R_220_LED4",
+      "ref": "C107_R_220_LED4",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED4_CTRL",
+        "2": "NET_C107_LED4_A"
+      }
+    },
+    {
+      "id": "C107_R_220_LED5",
+      "ref": "C107_R_220_LED5",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED5_CTRL",
+        "2": "NET_C107_LED5_A"
+      }
+    },
+    {
+      "id": "C107_R_220_LED6",
+      "ref": "C107_R_220_LED6",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED6_CTRL",
+        "2": "NET_C107_LED6_A"
+      }
+    },
+    {
+      "id": "C107_R_220_LED7",
+      "ref": "C107_R_220_LED7",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED7_CTRL",
+        "2": "NET_C107_LED7_A"
+      }
+    },
+    {
+      "id": "C107_R_220_LED8",
+      "ref": "C107_R_220_LED8",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_LED8_CTRL",
+        "2": "NET_C107_LED8_A"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY1",
+      "ref": "C107_R_BASE_RLY1",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY1_CTRL",
+        "2": "NET_C107_RLY1_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY1",
+      "ref": "C107_BC547_RLY1",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY1_BASE",
+        "COLLECTOR": "NET_C107_RLY1_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY1",
+      "ref": "C107_RELAY_5V_RLY1",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY1_LOW",
+        "COM": "NET_C107_RLY1_COM",
+        "NC": "NET_C107_RLY1_NC",
+        "NO": "NET_C107_RLY1_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY1",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY1",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY1_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY1_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY1_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY1_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY1_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY1_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY1_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY1_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY1_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY1_NC"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY2",
+      "ref": "C107_R_BASE_RLY2",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY2_CTRL",
+        "2": "NET_C107_RLY2_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY2",
+      "ref": "C107_BC547_RLY2",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY2_BASE",
+        "COLLECTOR": "NET_C107_RLY2_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY2",
+      "ref": "C107_RELAY_5V_RLY2",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY2_LOW",
+        "COM": "NET_C107_RLY2_COM",
+        "NC": "NET_C107_RLY2_NC",
+        "NO": "NET_C107_RLY2_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY2",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY2",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY2_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY2_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY2_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY2_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY2_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY2_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY2_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY2_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY2_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY2_NC"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY3",
+      "ref": "C107_R_BASE_RLY3",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY3_CTRL",
+        "2": "NET_C107_RLY3_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY3",
+      "ref": "C107_BC547_RLY3",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY3_BASE",
+        "COLLECTOR": "NET_C107_RLY3_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY3",
+      "ref": "C107_RELAY_5V_RLY3",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY3_LOW",
+        "COM": "NET_C107_RLY3_COM",
+        "NC": "NET_C107_RLY3_NC",
+        "NO": "NET_C107_RLY3_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY3",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY3",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY3_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY3_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY3_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY3_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY3_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY3_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY3_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY3_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY3_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY3_NC"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY4",
+      "ref": "C107_R_BASE_RLY4",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY4_CTRL",
+        "2": "NET_C107_RLY4_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY4",
+      "ref": "C107_BC547_RLY4",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY4_BASE",
+        "COLLECTOR": "NET_C107_RLY4_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY4",
+      "ref": "C107_RELAY_5V_RLY4",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY4_LOW",
+        "COM": "NET_C107_RLY4_COM",
+        "NC": "NET_C107_RLY4_NC",
+        "NO": "NET_C107_RLY4_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY4",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY4",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY4_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY4_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY4_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY4_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY4_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY4_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY4_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY4_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY4_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY4_NC"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY5",
+      "ref": "C107_R_BASE_RLY5",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY5_CTRL",
+        "2": "NET_C107_RLY5_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY5",
+      "ref": "C107_BC547_RLY5",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY5_BASE",
+        "COLLECTOR": "NET_C107_RLY5_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY5",
+      "ref": "C107_RELAY_5V_RLY5",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY5_LOW",
+        "COM": "NET_C107_RLY5_COM",
+        "NC": "NET_C107_RLY5_NC",
+        "NO": "NET_C107_RLY5_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY5",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY5",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY5_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY5_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY5_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY5_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY5_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY5_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY5_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY5_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY5_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY5_NC"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY6",
+      "ref": "C107_R_BASE_RLY6",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY6_CTRL",
+        "2": "NET_C107_RLY6_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY6",
+      "ref": "C107_BC547_RLY6",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY6_BASE",
+        "COLLECTOR": "NET_C107_RLY6_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY6",
+      "ref": "C107_RELAY_5V_RLY6",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY6_LOW",
+        "COM": "NET_C107_RLY6_COM",
+        "NC": "NET_C107_RLY6_NC",
+        "NO": "NET_C107_RLY6_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY6",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY6",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY6_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY6_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY6_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY6_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY6_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY6_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY6_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY6_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY6_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY6_NC"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY7",
+      "ref": "C107_R_BASE_RLY7",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY7_CTRL",
+        "2": "NET_C107_RLY7_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY7",
+      "ref": "C107_BC547_RLY7",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY7_BASE",
+        "COLLECTOR": "NET_C107_RLY7_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY7",
+      "ref": "C107_RELAY_5V_RLY7",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY7_LOW",
+        "COM": "NET_C107_RLY7_COM",
+        "NC": "NET_C107_RLY7_NC",
+        "NO": "NET_C107_RLY7_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY7",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY7",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY7_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY7_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY7_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY7_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY7_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY7_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY7_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY7_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY7_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY7_NC"
+      }
+    },
+    {
+      "id": "C107_R_BASE_RLY8",
+      "ref": "C107_R_BASE_RLY8",
+      "kind": "R",
+      "type": "R",
+      "value": "resistor",
+      "role": "generator_kind",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY8_CTRL",
+        "2": "NET_C107_RLY8_BASE"
+      }
+    },
+    {
+      "id": "C107_BC547_RLY8",
+      "ref": "C107_BC547_RLY8",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547 NPN Transistor",
+      "role": "bjt",
+      "block": "107",
+      "pins": {
+        "BASE": "NET_C107_RLY8_BASE",
+        "COLLECTOR": "NET_C107_RLY8_LOW",
+        "EMITTER": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_RELAY_5V_RLY8",
+      "ref": "C107_RELAY_5V_RLY8",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V Relay",
+      "role": "relay",
+      "block": "107",
+      "pins": {
+        "COIL+": "NET_C107_5V",
+        "COIL-": "NET_C107_RLY8_LOW",
+        "COM": "NET_C107_RLY8_COM",
+        "NC": "NET_C107_RLY8_NC",
+        "NO": "NET_C107_RLY8_NO"
+      }
+    },
+    {
+      "id": "C107_RELAY_FLYBACK_DIODE_RLY8",
+      "ref": "C107_RELAY_FLYBACK_DIODE_RLY8",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode",
+      "role": "diode",
+      "block": "107",
+      "pins": {
+        "ANODE": "NET_C107_RLY8_LOW",
+        "CATHODE": "NET_C107_5V"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY8_COM",
+      "ref": "C107_SCREW_TERMINAL_RLY8_COM",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY8_COM"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY8_NO",
+      "ref": "C107_SCREW_TERMINAL_RLY8_NO",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY8_NO"
+      }
+    },
+    {
+      "id": "C107_SCREW_TERMINAL_RLY8_NC",
+      "ref": "C107_SCREW_TERMINAL_RLY8_NC",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Terminal",
+      "role": "terminal",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_RLY8_NC"
+      }
+    },
+    {
+      "id": "C107_TEST_POINT_CHAIN",
+      "ref": "C107_TEST_POINT_CHAIN",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "107",
+      "pins": {
+        "TP": "NET_C107_SR_CHAIN_OUT"
+      }
+    },
+    {
+      "id": "C107_DECOUPLING_CAPACITOR_SR1",
+      "ref": "C107_DECOUPLING_CAPACITOR_SR1",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_5V",
+        "2": "NET_C107_GND"
+      }
+    },
+    {
+      "id": "C107_DECOUPLING_CAPACITOR_SR2",
+      "ref": "C107_DECOUPLING_CAPACITOR_SR2",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "107",
+      "pins": {
+        "1": "NET_C107_5V",
+        "2": "NET_C107_GND"
+      }
+    }
+  ],
+  "nets": {
+    "NET_C107_5V": [
+      "C107_PWR_5V.+",
+      "C107_R_220_PWR.1",
+      "C107_DECOUPLING_CAPACITOR_MAIN.1",
+      "C107_ARDUINO_NANO.5V",
+      "C107_R_10K_PULLUP_RST.2",
+      "C107_DECOUPLING_CAPACITOR_NANO.1",
+      "C107_74HC595_SHIFT_REGISTER_1.VCC",
+      "C107_74HC595_SHIFT_REGISTER_2.VCC",
+      "C107_R_10K_PULLUP_MR.2",
+      "C107_RELAY_5V_RLY1.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY1.CATHODE",
+      "C107_RELAY_5V_RLY2.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY2.CATHODE",
+      "C107_RELAY_5V_RLY3.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY3.CATHODE",
+      "C107_RELAY_5V_RLY4.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY4.CATHODE",
+      "C107_RELAY_5V_RLY5.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY5.CATHODE",
+      "C107_RELAY_5V_RLY6.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY6.CATHODE",
+      "C107_RELAY_5V_RLY7.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY7.CATHODE",
+      "C107_RELAY_5V_RLY8.COIL+",
+      "C107_RELAY_FLYBACK_DIODE_RLY8.CATHODE",
+      "C107_DECOUPLING_CAPACITOR_SR1.1",
+      "C107_DECOUPLING_CAPACITOR_SR2.1"
+    ],
+    "NET_C107_GND": [
+      "C107_PWR_5V.-",
+      "C107_POWER_LED.CATHODE",
+      "C107_DECOUPLING_CAPACITOR_MAIN.2",
+      "C107_ARDUINO_NANO.GND1",
+      "C107_ARDUINO_NANO.GND2",
+      "C107_PUSH_BUTTON_RESET.2",
+      "C107_RESET_CAPACITOR.2",
+      "C107_DECOUPLING_CAPACITOR_NANO.2",
+      "C107_74HC595_SHIFT_REGISTER_1.GND",
+      "C107_74HC595_SHIFT_REGISTER_2.GND",
+      "C107_R_10K_PULLDOWN_OE.2",
+      "C107_LED_ARRAY.LED1_CATHODE",
+      "C107_LED_ARRAY.LED2_CATHODE",
+      "C107_LED_ARRAY.LED3_CATHODE",
+      "C107_LED_ARRAY.LED4_CATHODE",
+      "C107_LED_ARRAY.LED5_CATHODE",
+      "C107_LED_ARRAY.LED6_CATHODE",
+      "C107_LED_ARRAY.LED7_CATHODE",
+      "C107_LED_ARRAY.LED8_CATHODE",
+      "C107_BC547_RLY1.EMITTER",
+      "C107_BC547_RLY2.EMITTER",
+      "C107_BC547_RLY3.EMITTER",
+      "C107_BC547_RLY4.EMITTER",
+      "C107_BC547_RLY5.EMITTER",
+      "C107_BC547_RLY6.EMITTER",
+      "C107_BC547_RLY7.EMITTER",
+      "C107_BC547_RLY8.EMITTER",
+      "C107_DECOUPLING_CAPACITOR_SR1.2",
+      "C107_DECOUPLING_CAPACITOR_SR2.2"
+    ],
+    "NET_C107_PWR_LED_A": [
+      "C107_POWER_LED.ANODE",
+      "C107_R_220_PWR.2"
+    ],
+    "NET_C107_NANO_RST": [
+      "C107_ARDUINO_NANO.RST",
+      "C107_R_10K_PULLUP_RST.1",
+      "C107_PUSH_BUTTON_RESET.1",
+      "C107_RESET_CAPACITOR.1"
+    ],
+    "NET_C107_SR_DATA": [
+      "C107_ARDUINO_NANO.D11_MOSI",
+      "C107_74HC595_SHIFT_REGISTER_1.DS"
+    ],
+    "NET_C107_SR_CLOCK": [
+      "C107_ARDUINO_NANO.D13_SCK",
+      "C107_74HC595_SHIFT_REGISTER_1.SH_CP",
+      "C107_74HC595_SHIFT_REGISTER_2.SH_CP"
+    ],
+    "NET_C107_SR_LATCH": [
+      "C107_ARDUINO_NANO.D10_CS",
+      "C107_74HC595_SHIFT_REGISTER_1.ST_CP",
+      "C107_74HC595_SHIFT_REGISTER_2.ST_CP"
+    ],
+    "NET_C107_SR_OE": [
+      "C107_ARDUINO_NANO.D9_PWM",
+      "C107_74HC595_SHIFT_REGISTER_1./OE",
+      "C107_74HC595_SHIFT_REGISTER_2./OE",
+      "C107_R_10K_PULLDOWN_OE.1"
+    ],
+    "NET_C107_SR_RESET": [
+      "C107_ARDUINO_NANO.D8",
+      "C107_74HC595_SHIFT_REGISTER_1./MR",
+      "C107_74HC595_SHIFT_REGISTER_2./MR",
+      "C107_R_10K_PULLUP_MR.1"
+    ],
+    "NET_C107_SR_CHAIN": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q7S",
+      "C107_74HC595_SHIFT_REGISTER_2.DS"
+    ],
+    "NET_C107_SR_CHAIN_OUT": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q7S",
+      "C107_TEST_POINT_CHAIN.TP"
+    ],
+    "NET_C107_LED1_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q0",
+      "C107_R_220_LED1.1"
+    ],
+    "NET_C107_LED1_A": [
+      "C107_R_220_LED1.2",
+      "C107_LED_ARRAY.LED1_ANODE"
+    ],
+    "NET_C107_LED2_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q1",
+      "C107_R_220_LED2.1"
+    ],
+    "NET_C107_LED2_A": [
+      "C107_R_220_LED2.2",
+      "C107_LED_ARRAY.LED2_ANODE"
+    ],
+    "NET_C107_LED3_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q2",
+      "C107_R_220_LED3.1"
+    ],
+    "NET_C107_LED3_A": [
+      "C107_R_220_LED3.2",
+      "C107_LED_ARRAY.LED3_ANODE"
+    ],
+    "NET_C107_LED4_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q3",
+      "C107_R_220_LED4.1"
+    ],
+    "NET_C107_LED4_A": [
+      "C107_R_220_LED4.2",
+      "C107_LED_ARRAY.LED4_ANODE"
+    ],
+    "NET_C107_LED5_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q4",
+      "C107_R_220_LED5.1"
+    ],
+    "NET_C107_LED5_A": [
+      "C107_R_220_LED5.2",
+      "C107_LED_ARRAY.LED5_ANODE"
+    ],
+    "NET_C107_LED6_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q5",
+      "C107_R_220_LED6.1"
+    ],
+    "NET_C107_LED6_A": [
+      "C107_R_220_LED6.2",
+      "C107_LED_ARRAY.LED6_ANODE"
+    ],
+    "NET_C107_LED7_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q6",
+      "C107_R_220_LED7.1"
+    ],
+    "NET_C107_LED7_A": [
+      "C107_R_220_LED7.2",
+      "C107_LED_ARRAY.LED7_ANODE"
+    ],
+    "NET_C107_LED8_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_1.Q7",
+      "C107_R_220_LED8.1"
+    ],
+    "NET_C107_LED8_A": [
+      "C107_R_220_LED8.2",
+      "C107_LED_ARRAY.LED8_ANODE"
+    ],
+    "NET_C107_RLY1_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q0",
+      "C107_R_BASE_RLY1.1"
+    ],
+    "NET_C107_RLY1_BASE": [
+      "C107_R_BASE_RLY1.2",
+      "C107_BC547_RLY1.BASE"
+    ],
+    "NET_C107_RLY1_LOW": [
+      "C107_BC547_RLY1.COLLECTOR",
+      "C107_RELAY_5V_RLY1.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY1.ANODE"
+    ],
+    "NET_C107_RLY1_COM": [
+      "C107_RELAY_5V_RLY1.COM",
+      "C107_SCREW_TERMINAL_RLY1_COM.1"
+    ],
+    "NET_C107_RLY1_NO": [
+      "C107_RELAY_5V_RLY1.NO",
+      "C107_SCREW_TERMINAL_RLY1_NO.1"
+    ],
+    "NET_C107_RLY1_NC": [
+      "C107_RELAY_5V_RLY1.NC",
+      "C107_SCREW_TERMINAL_RLY1_NC.1"
+    ],
+    "NET_C107_RLY2_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q1",
+      "C107_R_BASE_RLY2.1"
+    ],
+    "NET_C107_RLY2_BASE": [
+      "C107_R_BASE_RLY2.2",
+      "C107_BC547_RLY2.BASE"
+    ],
+    "NET_C107_RLY2_LOW": [
+      "C107_BC547_RLY2.COLLECTOR",
+      "C107_RELAY_5V_RLY2.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY2.ANODE"
+    ],
+    "NET_C107_RLY2_COM": [
+      "C107_RELAY_5V_RLY2.COM",
+      "C107_SCREW_TERMINAL_RLY2_COM.1"
+    ],
+    "NET_C107_RLY2_NO": [
+      "C107_RELAY_5V_RLY2.NO",
+      "C107_SCREW_TERMINAL_RLY2_NO.1"
+    ],
+    "NET_C107_RLY2_NC": [
+      "C107_RELAY_5V_RLY2.NC",
+      "C107_SCREW_TERMINAL_RLY2_NC.1"
+    ],
+    "NET_C107_RLY3_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q2",
+      "C107_R_BASE_RLY3.1"
+    ],
+    "NET_C107_RLY3_BASE": [
+      "C107_R_BASE_RLY3.2",
+      "C107_BC547_RLY3.BASE"
+    ],
+    "NET_C107_RLY3_LOW": [
+      "C107_BC547_RLY3.COLLECTOR",
+      "C107_RELAY_5V_RLY3.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY3.ANODE"
+    ],
+    "NET_C107_RLY3_COM": [
+      "C107_RELAY_5V_RLY3.COM",
+      "C107_SCREW_TERMINAL_RLY3_COM.1"
+    ],
+    "NET_C107_RLY3_NO": [
+      "C107_RELAY_5V_RLY3.NO",
+      "C107_SCREW_TERMINAL_RLY3_NO.1"
+    ],
+    "NET_C107_RLY3_NC": [
+      "C107_RELAY_5V_RLY3.NC",
+      "C107_SCREW_TERMINAL_RLY3_NC.1"
+    ],
+    "NET_C107_RLY4_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q3",
+      "C107_R_BASE_RLY4.1"
+    ],
+    "NET_C107_RLY4_BASE": [
+      "C107_R_BASE_RLY4.2",
+      "C107_BC547_RLY4.BASE"
+    ],
+    "NET_C107_RLY4_LOW": [
+      "C107_BC547_RLY4.COLLECTOR",
+      "C107_RELAY_5V_RLY4.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY4.ANODE"
+    ],
+    "NET_C107_RLY4_COM": [
+      "C107_RELAY_5V_RLY4.COM",
+      "C107_SCREW_TERMINAL_RLY4_COM.1"
+    ],
+    "NET_C107_RLY4_NO": [
+      "C107_RELAY_5V_RLY4.NO",
+      "C107_SCREW_TERMINAL_RLY4_NO.1"
+    ],
+    "NET_C107_RLY4_NC": [
+      "C107_RELAY_5V_RLY4.NC",
+      "C107_SCREW_TERMINAL_RLY4_NC.1"
+    ],
+    "NET_C107_RLY5_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q4",
+      "C107_R_BASE_RLY5.1"
+    ],
+    "NET_C107_RLY5_BASE": [
+      "C107_R_BASE_RLY5.2",
+      "C107_BC547_RLY5.BASE"
+    ],
+    "NET_C107_RLY5_LOW": [
+      "C107_BC547_RLY5.COLLECTOR",
+      "C107_RELAY_5V_RLY5.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY5.ANODE"
+    ],
+    "NET_C107_RLY5_COM": [
+      "C107_RELAY_5V_RLY5.COM",
+      "C107_SCREW_TERMINAL_RLY5_COM.1"
+    ],
+    "NET_C107_RLY5_NO": [
+      "C107_RELAY_5V_RLY5.NO",
+      "C107_SCREW_TERMINAL_RLY5_NO.1"
+    ],
+    "NET_C107_RLY5_NC": [
+      "C107_RELAY_5V_RLY5.NC",
+      "C107_SCREW_TERMINAL_RLY5_NC.1"
+    ],
+    "NET_C107_RLY6_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q5",
+      "C107_R_BASE_RLY6.1"
+    ],
+    "NET_C107_RLY6_BASE": [
+      "C107_R_BASE_RLY6.2",
+      "C107_BC547_RLY6.BASE"
+    ],
+    "NET_C107_RLY6_LOW": [
+      "C107_BC547_RLY6.COLLECTOR",
+      "C107_RELAY_5V_RLY6.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY6.ANODE"
+    ],
+    "NET_C107_RLY6_COM": [
+      "C107_RELAY_5V_RLY6.COM",
+      "C107_SCREW_TERMINAL_RLY6_COM.1"
+    ],
+    "NET_C107_RLY6_NO": [
+      "C107_RELAY_5V_RLY6.NO",
+      "C107_SCREW_TERMINAL_RLY6_NO.1"
+    ],
+    "NET_C107_RLY6_NC": [
+      "C107_RELAY_5V_RLY6.NC",
+      "C107_SCREW_TERMINAL_RLY6_NC.1"
+    ],
+    "NET_C107_RLY7_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q6",
+      "C107_R_BASE_RLY7.1"
+    ],
+    "NET_C107_RLY7_BASE": [
+      "C107_R_BASE_RLY7.2",
+      "C107_BC547_RLY7.BASE"
+    ],
+    "NET_C107_RLY7_LOW": [
+      "C107_BC547_RLY7.COLLECTOR",
+      "C107_RELAY_5V_RLY7.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY7.ANODE"
+    ],
+    "NET_C107_RLY7_COM": [
+      "C107_RELAY_5V_RLY7.COM",
+      "C107_SCREW_TERMINAL_RLY7_COM.1"
+    ],
+    "NET_C107_RLY7_NO": [
+      "C107_RELAY_5V_RLY7.NO",
+      "C107_SCREW_TERMINAL_RLY7_NO.1"
+    ],
+    "NET_C107_RLY7_NC": [
+      "C107_RELAY_5V_RLY7.NC",
+      "C107_SCREW_TERMINAL_RLY7_NC.1"
+    ],
+    "NET_C107_RLY8_CTRL": [
+      "C107_74HC595_SHIFT_REGISTER_2.Q7",
+      "C107_R_BASE_RLY8.1"
+    ],
+    "NET_C107_RLY8_BASE": [
+      "C107_R_BASE_RLY8.2",
+      "C107_BC547_RLY8.BASE"
+    ],
+    "NET_C107_RLY8_LOW": [
+      "C107_BC547_RLY8.COLLECTOR",
+      "C107_RELAY_5V_RLY8.COIL-",
+      "C107_RELAY_FLYBACK_DIODE_RLY8.ANODE"
+    ],
+    "NET_C107_RLY8_COM": [
+      "C107_RELAY_5V_RLY8.COM",
+      "C107_SCREW_TERMINAL_RLY8_COM.1"
+    ],
+    "NET_C107_RLY8_NO": [
+      "C107_RELAY_5V_RLY8.NO",
+      "C107_SCREW_TERMINAL_RLY8_NO.1"
+    ],
+    "NET_C107_RLY8_NC": [
+      "C107_RELAY_5V_RLY8.NC",
+      "C107_SCREW_TERMINAL_RLY8_NC.1"
+    ]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {
+        "name": "NET_C107_5V",
+        "members": [
+          "C107_PWR_5V.+",
+          "C107_R_220_PWR.1",
+          "C107_DECOUPLING_CAPACITOR_MAIN.1",
+          "C107_ARDUINO_NANO.5V",
+          "C107_R_10K_PULLUP_RST.2",
+          "C107_DECOUPLING_CAPACITOR_NANO.1",
+          "C107_74HC595_SHIFT_REGISTER_1.VCC",
+          "C107_74HC595_SHIFT_REGISTER_2.VCC",
+          "C107_R_10K_PULLUP_MR.2",
+          "C107_RELAY_5V_RLY1.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY1.CATHODE",
+          "C107_RELAY_5V_RLY2.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY2.CATHODE",
+          "C107_RELAY_5V_RLY3.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY3.CATHODE",
+          "C107_RELAY_5V_RLY4.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY4.CATHODE",
+          "C107_RELAY_5V_RLY5.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY5.CATHODE",
+          "C107_RELAY_5V_RLY6.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY6.CATHODE",
+          "C107_RELAY_5V_RLY7.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY7.CATHODE",
+          "C107_RELAY_5V_RLY8.COIL+",
+          "C107_RELAY_FLYBACK_DIODE_RLY8.CATHODE",
+          "C107_DECOUPLING_CAPACITOR_SR1.1",
+          "C107_DECOUPLING_CAPACITOR_SR2.1"
+        ],
+        "member_count": 27
+      },
+      {
+        "name": "NET_C107_GND",
+        "members": [
+          "C107_PWR_5V.-",
+          "C107_POWER_LED.CATHODE",
+          "C107_DECOUPLING_CAPACITOR_MAIN.2",
+          "C107_ARDUINO_NANO.GND1",
+          "C107_ARDUINO_NANO.GND2",
+          "C107_PUSH_BUTTON_RESET.2",
+          "C107_RESET_CAPACITOR.2",
+          "C107_DECOUPLING_CAPACITOR_NANO.2",
+          "C107_74HC595_SHIFT_REGISTER_1.GND",
+          "C107_74HC595_SHIFT_REGISTER_2.GND",
+          "C107_R_10K_PULLDOWN_OE.2",
+          "C107_LED_ARRAY.LED1_CATHODE",
+          "C107_LED_ARRAY.LED2_CATHODE",
+          "C107_LED_ARRAY.LED3_CATHODE",
+          "C107_LED_ARRAY.LED4_CATHODE",
+          "C107_LED_ARRAY.LED5_CATHODE",
+          "C107_LED_ARRAY.LED6_CATHODE",
+          "C107_LED_ARRAY.LED7_CATHODE",
+          "C107_LED_ARRAY.LED8_CATHODE",
+          "C107_BC547_RLY1.EMITTER",
+          "C107_BC547_RLY2.EMITTER",
+          "C107_BC547_RLY3.EMITTER",
+          "C107_BC547_RLY4.EMITTER",
+          "C107_BC547_RLY5.EMITTER",
+          "C107_BC547_RLY6.EMITTER",
+          "C107_BC547_RLY7.EMITTER",
+          "C107_BC547_RLY8.EMITTER",
+          "C107_DECOUPLING_CAPACITOR_SR1.2",
+          "C107_DECOUPLING_CAPACITOR_SR2.2"
+        ],
+        "member_count": 29
+      },
+      {
+        "name": "NET_C107_PWR_LED_A",
+        "members": [
+          "C107_POWER_LED.ANODE",
+          "C107_R_220_PWR.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_NANO_RST",
+        "members": [
+          "C107_ARDUINO_NANO.RST",
+          "C107_R_10K_PULLUP_RST.1",
+          "C107_PUSH_BUTTON_RESET.1",
+          "C107_RESET_CAPACITOR.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "NET_C107_SR_DATA",
+        "members": [
+          "C107_ARDUINO_NANO.D11_MOSI",
+          "C107_74HC595_SHIFT_REGISTER_1.DS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_SR_CLOCK",
+        "members": [
+          "C107_ARDUINO_NANO.D13_SCK",
+          "C107_74HC595_SHIFT_REGISTER_1.SH_CP",
+          "C107_74HC595_SHIFT_REGISTER_2.SH_CP"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_SR_LATCH",
+        "members": [
+          "C107_ARDUINO_NANO.D10_CS",
+          "C107_74HC595_SHIFT_REGISTER_1.ST_CP",
+          "C107_74HC595_SHIFT_REGISTER_2.ST_CP"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_SR_OE",
+        "members": [
+          "C107_ARDUINO_NANO.D9_PWM",
+          "C107_74HC595_SHIFT_REGISTER_1./OE",
+          "C107_74HC595_SHIFT_REGISTER_2./OE",
+          "C107_R_10K_PULLDOWN_OE.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "NET_C107_SR_RESET",
+        "members": [
+          "C107_ARDUINO_NANO.D8",
+          "C107_74HC595_SHIFT_REGISTER_1./MR",
+          "C107_74HC595_SHIFT_REGISTER_2./MR",
+          "C107_R_10K_PULLUP_MR.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "NET_C107_SR_CHAIN",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q7S",
+          "C107_74HC595_SHIFT_REGISTER_2.DS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_SR_CHAIN_OUT",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q7S",
+          "C107_TEST_POINT_CHAIN.TP"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED1_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q0",
+          "C107_R_220_LED1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED1_A",
+        "members": [
+          "C107_R_220_LED1.2",
+          "C107_LED_ARRAY.LED1_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED2_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q1",
+          "C107_R_220_LED2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED2_A",
+        "members": [
+          "C107_R_220_LED2.2",
+          "C107_LED_ARRAY.LED2_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED3_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q2",
+          "C107_R_220_LED3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED3_A",
+        "members": [
+          "C107_R_220_LED3.2",
+          "C107_LED_ARRAY.LED3_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED4_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q3",
+          "C107_R_220_LED4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED4_A",
+        "members": [
+          "C107_R_220_LED4.2",
+          "C107_LED_ARRAY.LED4_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED5_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q4",
+          "C107_R_220_LED5.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED5_A",
+        "members": [
+          "C107_R_220_LED5.2",
+          "C107_LED_ARRAY.LED5_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED6_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q5",
+          "C107_R_220_LED6.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED6_A",
+        "members": [
+          "C107_R_220_LED6.2",
+          "C107_LED_ARRAY.LED6_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED7_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q6",
+          "C107_R_220_LED7.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED7_A",
+        "members": [
+          "C107_R_220_LED7.2",
+          "C107_LED_ARRAY.LED7_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED8_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_1.Q7",
+          "C107_R_220_LED8.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_LED8_A",
+        "members": [
+          "C107_R_220_LED8.2",
+          "C107_LED_ARRAY.LED8_ANODE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY1_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q0",
+          "C107_R_BASE_RLY1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY1_BASE",
+        "members": [
+          "C107_R_BASE_RLY1.2",
+          "C107_BC547_RLY1.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY1_LOW",
+        "members": [
+          "C107_BC547_RLY1.COLLECTOR",
+          "C107_RELAY_5V_RLY1.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY1.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY1_COM",
+        "members": [
+          "C107_RELAY_5V_RLY1.COM",
+          "C107_SCREW_TERMINAL_RLY1_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY1_NO",
+        "members": [
+          "C107_RELAY_5V_RLY1.NO",
+          "C107_SCREW_TERMINAL_RLY1_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY1_NC",
+        "members": [
+          "C107_RELAY_5V_RLY1.NC",
+          "C107_SCREW_TERMINAL_RLY1_NC.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY2_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q1",
+          "C107_R_BASE_RLY2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY2_BASE",
+        "members": [
+          "C107_R_BASE_RLY2.2",
+          "C107_BC547_RLY2.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY2_LOW",
+        "members": [
+          "C107_BC547_RLY2.COLLECTOR",
+          "C107_RELAY_5V_RLY2.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY2.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY2_COM",
+        "members": [
+          "C107_RELAY_5V_RLY2.COM",
+          "C107_SCREW_TERMINAL_RLY2_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY2_NO",
+        "members": [
+          "C107_RELAY_5V_RLY2.NO",
+          "C107_SCREW_TERMINAL_RLY2_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY2_NC",
+        "members": [
+          "C107_RELAY_5V_RLY2.NC",
+          "C107_SCREW_TERMINAL_RLY2_NC.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY3_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q2",
+          "C107_R_BASE_RLY3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY3_BASE",
+        "members": [
+          "C107_R_BASE_RLY3.2",
+          "C107_BC547_RLY3.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY3_LOW",
+        "members": [
+          "C107_BC547_RLY3.COLLECTOR",
+          "C107_RELAY_5V_RLY3.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY3.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY3_COM",
+        "members": [
+          "C107_RELAY_5V_RLY3.COM",
+          "C107_SCREW_TERMINAL_RLY3_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY3_NO",
+        "members": [
+          "C107_RELAY_5V_RLY3.NO",
+          "C107_SCREW_TERMINAL_RLY3_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY3_NC",
+        "members": [
+          "C107_RELAY_5V_RLY3.NC",
+          "C107_SCREW_TERMINAL_RLY3_NC.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY4_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q3",
+          "C107_R_BASE_RLY4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY4_BASE",
+        "members": [
+          "C107_R_BASE_RLY4.2",
+          "C107_BC547_RLY4.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY4_LOW",
+        "members": [
+          "C107_BC547_RLY4.COLLECTOR",
+          "C107_RELAY_5V_RLY4.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY4.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY4_COM",
+        "members": [
+          "C107_RELAY_5V_RLY4.COM",
+          "C107_SCREW_TERMINAL_RLY4_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY4_NO",
+        "members": [
+          "C107_RELAY_5V_RLY4.NO",
+          "C107_SCREW_TERMINAL_RLY4_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY4_NC",
+        "members": [
+          "C107_RELAY_5V_RLY4.NC",
+          "C107_SCREW_TERMINAL_RLY4_NC.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY5_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q4",
+          "C107_R_BASE_RLY5.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY5_BASE",
+        "members": [
+          "C107_R_BASE_RLY5.2",
+          "C107_BC547_RLY5.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY5_LOW",
+        "members": [
+          "C107_BC547_RLY5.COLLECTOR",
+          "C107_RELAY_5V_RLY5.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY5.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY5_COM",
+        "members": [
+          "C107_RELAY_5V_RLY5.COM",
+          "C107_SCREW_TERMINAL_RLY5_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY5_NO",
+        "members": [
+          "C107_RELAY_5V_RLY5.NO",
+          "C107_SCREW_TERMINAL_RLY5_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY5_NC",
+        "members": [
+          "C107_RELAY_5V_RLY5.NC",
+          "C107_SCREW_TERMINAL_RLY5_NC.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY6_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q5",
+          "C107_R_BASE_RLY6.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY6_BASE",
+        "members": [
+          "C107_R_BASE_RLY6.2",
+          "C107_BC547_RLY6.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY6_LOW",
+        "members": [
+          "C107_BC547_RLY6.COLLECTOR",
+          "C107_RELAY_5V_RLY6.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY6.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY6_COM",
+        "members": [
+          "C107_RELAY_5V_RLY6.COM",
+          "C107_SCREW_TERMINAL_RLY6_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY6_NO",
+        "members": [
+          "C107_RELAY_5V_RLY6.NO",
+          "C107_SCREW_TERMINAL_RLY6_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY6_NC",
+        "members": [
+          "C107_RELAY_5V_RLY6.NC",
+          "C107_SCREW_TERMINAL_RLY6_NC.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY7_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q6",
+          "C107_R_BASE_RLY7.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY7_BASE",
+        "members": [
+          "C107_R_BASE_RLY7.2",
+          "C107_BC547_RLY7.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY7_LOW",
+        "members": [
+          "C107_BC547_RLY7.COLLECTOR",
+          "C107_RELAY_5V_RLY7.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY7.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY7_COM",
+        "members": [
+          "C107_RELAY_5V_RLY7.COM",
+          "C107_SCREW_TERMINAL_RLY7_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY7_NO",
+        "members": [
+          "C107_RELAY_5V_RLY7.NO",
+          "C107_SCREW_TERMINAL_RLY7_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY7_NC",
+        "members": [
+          "C107_RELAY_5V_RLY7.NC",
+          "C107_SCREW_TERMINAL_RLY7_NC.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY8_CTRL",
+        "members": [
+          "C107_74HC595_SHIFT_REGISTER_2.Q7",
+          "C107_R_BASE_RLY8.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY8_BASE",
+        "members": [
+          "C107_R_BASE_RLY8.2",
+          "C107_BC547_RLY8.BASE"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY8_LOW",
+        "members": [
+          "C107_BC547_RLY8.COLLECTOR",
+          "C107_RELAY_5V_RLY8.COIL-",
+          "C107_RELAY_FLYBACK_DIODE_RLY8.ANODE"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "NET_C107_RLY8_COM",
+        "members": [
+          "C107_RELAY_5V_RLY8.COM",
+          "C107_SCREW_TERMINAL_RLY8_COM.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY8_NO",
+        "members": [
+          "C107_RELAY_5V_RLY8.NO",
+          "C107_SCREW_TERMINAL_RLY8_NO.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "NET_C107_RLY8_NC",
+        "members": [
+          "C107_RELAY_5V_RLY8.NC",
+          "C107_SCREW_TERMINAL_RLY8_NC.1"
+        ],
+        "member_count": 2
+      }
+    ],
+    "important_nets": []
+  },
+  "stage_contracts": {
+    "component_placer": {
+      "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+      "output": "placed-design contract with component bounds and resolved pin descriptors"
+    },
+    "arrangement_decider": {
+      "input": "components, blocks, nets, layout_intent",
+      "output": "coordinate edit JSON; may rotate components"
+    },
+    "beautifier": {
+      "input": "placed-design contract plus coordinate edits",
+      "output": "same components with revised coordinates/rotations"
+    },
+    "wire_planner": {
+      "input": "placed-design contract plus expected_netlist",
+      "output": "wire route plan and terminal fallback plan"
+    },
+    "terminal_placer": {
+      "input": "placed-design contract plus terminal nets",
+      "output": "terminal/local-label endpoint plan"
+    },
+    "validators": {
+      "input": "generated schematic plus expected_netlist",
+      "output": "validation_report.json"
+    }
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "C107_PWR_5V",
+          "kind": "VDC",
+          "reason": "two_pin_power_block_as_voltage_source",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_POWER_LED",
+          "kind": "POWER_LED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_PWR",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_DECOUPLING_CAPACITOR_MAIN",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_ARDUINO_NANO",
+          "kind": "ARDUINO_NANO",
+          "reason": "exact_catalog_kind",
+          "pin_count": 9
+        },
+        {
+          "ref": "C107_R_10K_PULLUP_RST",
+          "kind": "R_10K_PULLUP",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_PUSH_BUTTON_RESET",
+          "kind": "PUSH_BUTTON",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_RESET_CAPACITOR",
+          "kind": "RESET_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_DECOUPLING_CAPACITOR_NANO",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_74HC595_SHIFT_REGISTER_1",
+          "kind": "74HC595_SHIFT_REGISTER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "C107_74HC595_SHIFT_REGISTER_2",
+          "kind": "74HC595_SHIFT_REGISTER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "C107_R_10K_PULLDOWN_OE",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_10K_PULLUP_MR",
+          "kind": "R_10K_PULLUP",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_LED1",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_LED_ARRAY",
+          "kind": "LED_ARRAY",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "C107_R_220_LED2",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_LED3",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_LED4",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_LED5",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_LED6",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_LED7",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_220_LED8",
+          "kind": "R_220",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_R_BASE_RLY1",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY1",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY1",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY1",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY1_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY1_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY1_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_R_BASE_RLY2",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY2",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY2",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY2",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY2_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY2_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY2_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_R_BASE_RLY3",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY3",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY3",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY3",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY3_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY3_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY3_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_R_BASE_RLY4",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY4",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY4",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY4",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY4_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY4_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY4_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_R_BASE_RLY5",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY5",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY5",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY5",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY5_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY5_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY5_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_R_BASE_RLY6",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY6",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY6",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY6",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY6_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY6_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY6_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_R_BASE_RLY7",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY7",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY7",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY7",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY7_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY7_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY7_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_R_BASE_RLY8",
+          "kind": "R",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_BC547_RLY8",
+          "kind": "BC547",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "C107_RELAY_5V_RLY8",
+          "kind": "RELAY_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "C107_RELAY_FLYBACK_DIODE_RLY8",
+          "kind": "RELAY_FLYBACK_DIODE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY8_COM",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY8_NO",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_SCREW_TERMINAL_RLY8_NC",
+          "kind": "TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_TEST_POINT_CHAIN",
+          "kind": "TEST_POINT",
+          "reason": "exact_catalog_kind",
+          "pin_count": 1
+        },
+        {
+          "ref": "C107_DECOUPLING_CAPACITOR_SR1",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C107_DECOUPLING_CAPACITOR_SR2",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "kicad/examples/final_json_run_2026_07_06_020659_main_json_catalog_600_combination_v2/final_json/N107_arduino_dual_74hc595_eight_relay_output_board_variant_06.json",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "loose_or_canonical_main_json",
+    "source_line_count": null,
+    "input_validator_fixer": {
+      "schema": "progeneda-main-json-validator-fixer/v0.1",
+      "source": "kicad/examples/final_json_run_2026_07_06_020659_main_json_catalog_600_combination_v2/final_json/N107_arduino_dual_74hc595_eight_relay_output_board_variant_06.json",
+      "repair_count": 1,
+      "repairs": [
+        {
+          "kind": "guessed_terminal_net_dropped_single_endpoint",
+          "net": "GUESS_TERMINAL_VIN",
+          "endpoints": [
+            "C107_ARDUINO_NANO.VIN"
+          ]
+        }
+      ],
+      "guessed_terminal_nets": []
+    }
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 81,
+    "net_count": 75,
+    "endpoint_count": 218,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

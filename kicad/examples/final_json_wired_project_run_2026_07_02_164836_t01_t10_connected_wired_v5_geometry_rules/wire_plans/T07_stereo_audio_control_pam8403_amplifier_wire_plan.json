@@ -1,0 +1,4850 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "different-net existing wires receive high cost plus adjacency penalty"
+  },
+  "sheet": {
+    "width": 612.1,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "LM358_L_FEEDBACK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            35.56,
+            162.56
+          ]
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            76.2,
+            132.08
+          ]
+        },
+        {
+          "ref": "U1A",
+          "pin": "IN_MINUS",
+          "side": "left",
+          "point": [
+            416.56,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1A",
+          "pin": "OUT",
+          "side": "left",
+          "point": [
+            416.56,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LM358_L_FEEDBACK",
+          "from": {
+            "ref": "C3",
+            "pin": "1",
+            "point": [
+              35.56,
+              162.56
+            ]
+          },
+          "to": {
+            "ref": "R2",
+            "pin": "1",
+            "point": [
+              76.2,
+              132.08
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              162.56
+            ],
+            [
+              50.8,
+              162.56
+            ],
+            [
+              50.8,
+              132.08
+            ],
+            [
+              76.2,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                162.56
+              ],
+              "end": [
+                50.8,
+                162.56
+              ],
+              "direction": "right",
+              "length": 15.24
+            },
+            {
+              "start": [
+                50.8,
+                162.56
+              ],
+              "end": [
+                50.8,
+                132.08
+              ],
+              "direction": "up",
+              "length": 30.48
+            },
+            {
+              "start": [
+                50.8,
+                132.08
+              ],
+              "end": [
+                76.2,
+                132.08
+              ],
+              "direction": "right",
+              "length": 25.4
+            }
+          ]
+        },
+        {
+          "net": "LM358_L_FEEDBACK",
+          "from": {
+            "ref": "C3",
+            "pin": "1",
+            "point": [
+              35.56,
+              162.56
+            ]
+          },
+          "to": {
+            "ref": "U1A",
+            "pin": "IN_MINUS",
+            "point": [
+              416.56,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              162.56
+            ],
+            [
+              35.56,
+              167.64
+            ],
+            [
+              416.56,
+              167.64
+            ],
+            [
+              416.56,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                162.56
+              ],
+              "end": [
+                35.56,
+                167.64
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                35.56,
+                167.64
+              ],
+              "end": [
+                416.56,
+                167.64
+              ],
+              "direction": "right",
+              "length": 381.0
+            },
+            {
+              "start": [
+                416.56,
+                167.64
+              ],
+              "end": [
+                416.56,
+                142.24
+              ],
+              "direction": "up",
+              "length": 25.4
+            }
+          ]
+        },
+        {
+          "net": "LM358_L_FEEDBACK",
+          "from": {
+            "ref": "C3",
+            "pin": "1",
+            "point": [
+              35.56,
+              162.56
+            ]
+          },
+          "to": {
+            "ref": "U1A",
+            "pin": "OUT",
+            "point": [
+              416.56,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              162.56
+            ],
+            [
+              35.56,
+              167.64
+            ],
+            [
+              416.56,
+              167.64
+            ],
+            [
+              416.56,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                162.56
+              ],
+              "end": [
+                35.56,
+                167.64
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                35.56,
+                167.64
+              ],
+              "end": [
+                416.56,
+                167.64
+              ],
+              "direction": "right",
+              "length": 381.0
+            },
+            {
+              "start": [
+                416.56,
+                167.64
+              ],
+              "end": [
+                416.56,
+                147.32
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "LM358_R_FEEDBACK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            35.56,
+            172.72
+          ]
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            76.2,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1B",
+          "pin": "IN_MINUS",
+          "side": "left",
+          "point": [
+            462.28,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1B",
+          "pin": "OUT",
+          "side": "left",
+          "point": [
+            462.28,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LM358_R_FEEDBACK",
+          "from": {
+            "ref": "C4",
+            "pin": "1",
+            "point": [
+              35.56,
+              172.72
+            ]
+          },
+          "to": {
+            "ref": "R4",
+            "pin": "1",
+            "point": [
+              76.2,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              172.72
+            ],
+            [
+              15.24,
+              172.72
+            ],
+            [
+              15.24,
+              111.76
+            ],
+            [
+              81.28,
+              111.76
+            ],
+            [
+              81.28,
+              142.24
+            ],
+            [
+              76.2,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                172.72
+              ],
+              "end": [
+                15.24,
+                172.72
+              ],
+              "direction": "left",
+              "length": 20.32
+            },
+            {
+              "start": [
+                15.24,
+                172.72
+              ],
+              "end": [
+                15.24,
+                111.76
+              ],
+              "direction": "up",
+              "length": 60.96
+            },
+            {
+              "start": [
+                15.24,
+                111.76
+              ],
+              "end": [
+                81.28,
+                111.76
+              ],
+              "direction": "right",
+              "length": 66.04
+            },
+            {
+              "start": [
+                81.28,
+                111.76
+              ],
+              "end": [
+                81.28,
+                142.24
+              ],
+              "direction": "down",
+              "length": 30.48
+            },
+            {
+              "start": [
+                81.28,
+                142.24
+              ],
+              "end": [
+                76.2,
+                142.24
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "LM358_R_FEEDBACK",
+          "from": {
+            "ref": "C4",
+            "pin": "1",
+            "point": [
+              35.56,
+              172.72
+            ]
+          },
+          "to": {
+            "ref": "U1B",
+            "pin": "IN_MINUS",
+            "point": [
+              462.28,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              172.72
+            ],
+            [
+              35.56,
+              177.8
+            ],
+            [
+              462.28,
+              177.8
+            ],
+            [
+              462.28,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                172.72
+              ],
+              "end": [
+                35.56,
+                177.8
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                35.56,
+                177.8
+              ],
+              "end": [
+                462.28,
+                177.8
+              ],
+              "direction": "right",
+              "length": 426.72
+            },
+            {
+              "start": [
+                462.28,
+                177.8
+              ],
+              "end": [
+                462.28,
+                142.24
+              ],
+              "direction": "up",
+              "length": 35.56
+            }
+          ]
+        },
+        {
+          "net": "LM358_R_FEEDBACK",
+          "from": {
+            "ref": "C4",
+            "pin": "1",
+            "point": [
+              35.56,
+              172.72
+            ]
+          },
+          "to": {
+            "ref": "U1B",
+            "pin": "OUT",
+            "point": [
+              462.28,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              172.72
+            ],
+            [
+              35.56,
+              177.8
+            ],
+            [
+              462.28,
+              177.8
+            ],
+            [
+              462.28,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                172.72
+              ],
+              "end": [
+                35.56,
+                177.8
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                35.56,
+                177.8
+              ],
+              "end": [
+                462.28,
+                177.8
+              ],
+              "direction": "right",
+              "length": 426.72
+            },
+            {
+              "start": [
+                462.28,
+                177.8
+              ],
+              "end": [
+                462.28,
+                147.32
+              ],
+              "direction": "up",
+              "length": 30.48
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_AC": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            106.68,
+            142.24
+          ]
+        },
+        {
+          "ref": "RV1",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            381.0,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_L_AC",
+          "from": {
+            "ref": "C1",
+            "pin": "2",
+            "point": [
+              106.68,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "RV1",
+            "pin": "3",
+            "point": [
+              381.0,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              106.68,
+              142.24
+            ],
+            [
+              106.68,
+              132.08
+            ],
+            [
+              381.0,
+              132.08
+            ],
+            [
+              381.0,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                106.68,
+                142.24
+              ],
+              "end": [
+                106.68,
+                132.08
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                106.68,
+                132.08
+              ],
+              "end": [
+                381.0,
+                132.08
+              ],
+              "direction": "right",
+              "length": 274.32
+            },
+            {
+              "start": [
+                381.0,
+                132.08
+              ],
+              "end": [
+                381.0,
+                142.24
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_BIAS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            304.8,
+            147.32
+          ]
+        },
+        {
+          "ref": "R6",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            365.76,
+            147.32
+          ]
+        },
+        {
+          "ref": "U1A",
+          "pin": "BIAS",
+          "side": "left",
+          "point": [
+            416.56,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_L_BIAS",
+          "from": {
+            "ref": "R5",
+            "pin": "2",
+            "point": [
+              304.8,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "R6",
+            "pin": "1",
+            "point": [
+              365.76,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              304.8,
+              147.32
+            ],
+            [
+              304.8,
+              157.48
+            ],
+            [
+              365.76,
+              157.48
+            ],
+            [
+              365.76,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                304.8,
+                147.32
+              ],
+              "end": [
+                304.8,
+                157.48
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                304.8,
+                157.48
+              ],
+              "end": [
+                365.76,
+                157.48
+              ],
+              "direction": "right",
+              "length": 60.96
+            },
+            {
+              "start": [
+                365.76,
+                157.48
+              ],
+              "end": [
+                365.76,
+                147.32
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        },
+        {
+          "net": "AUDIO_L_BIAS",
+          "from": {
+            "ref": "R5",
+            "pin": "2",
+            "point": [
+              304.8,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U1A",
+            "pin": "BIAS",
+            "point": [
+              416.56,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              304.8,
+              147.32
+            ],
+            [
+              304.8,
+              157.48
+            ],
+            [
+              406.4,
+              157.48
+            ],
+            [
+              406.4,
+              137.16
+            ],
+            [
+              416.56,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                304.8,
+                147.32
+              ],
+              "end": [
+                304.8,
+                157.48
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                304.8,
+                157.48
+              ],
+              "end": [
+                406.4,
+                157.48
+              ],
+              "direction": "right",
+              "length": 101.6
+            },
+            {
+              "start": [
+                406.4,
+                157.48
+              ],
+              "end": [
+                406.4,
+                137.16
+              ],
+              "direction": "up",
+              "length": 20.32
+            },
+            {
+              "start": [
+                406.4,
+                137.16
+              ],
+              "end": [
+                416.56,
+                137.16
+              ],
+              "direction": "right",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_IN_RAW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "LEFT",
+          "side": "right",
+          "point": [
+            76.2,
+            152.4
+          ]
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            96.52,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_L_IN_RAW",
+          "from": {
+            "ref": "J1",
+            "pin": "LEFT",
+            "point": [
+              76.2,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "C1",
+            "pin": "1",
+            "point": [
+              96.52,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              152.4
+            ],
+            [
+              91.44,
+              152.4
+            ],
+            [
+              91.44,
+              142.24
+            ],
+            [
+              96.52,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                152.4
+              ],
+              "end": [
+                91.44,
+                152.4
+              ],
+              "direction": "right",
+              "length": 15.24
+            },
+            {
+              "start": [
+                91.44,
+                152.4
+              ],
+              "end": [
+                91.44,
+                142.24
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                91.44,
+                142.24
+              ],
+              "end": [
+                96.52,
+                142.24
+              ],
+              "direction": "right",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_L_VOL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            40.64,
+            132.08
+          ]
+        },
+        {
+          "ref": "RV1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            381.0,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_L_VOL",
+          "from": {
+            "ref": "R1",
+            "pin": "1",
+            "point": [
+              40.64,
+              132.08
+            ]
+          },
+          "to": {
+            "ref": "RV1",
+            "pin": "2",
+            "point": [
+              381.0,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              132.08
+            ],
+            [
+              45.72,
+              132.08
+            ],
+            [
+              45.72,
+              121.92
+            ],
+            [
+              391.16,
+              121.92
+            ],
+            [
+              391.16,
+              147.32
+            ],
+            [
+              381.0,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                132.08
+              ],
+              "end": [
+                45.72,
+                132.08
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                45.72,
+                132.08
+              ],
+              "end": [
+                45.72,
+                121.92
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                45.72,
+                121.92
+              ],
+              "end": [
+                391.16,
+                121.92
+              ],
+              "direction": "right",
+              "length": 345.44
+            },
+            {
+              "start": [
+                391.16,
+                121.92
+              ],
+              "end": [
+                391.16,
+                147.32
+              ],
+              "direction": "down",
+              "length": 25.4
+            },
+            {
+              "start": [
+                391.16,
+                147.32
+              ],
+              "end": [
+                381.0,
+                147.32
+              ],
+              "direction": "left",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_R_AC": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "RV2",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            142.24,
+            147.32
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            157.48,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_R_AC",
+          "from": {
+            "ref": "RV2",
+            "pin": "3",
+            "point": [
+              142.24,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "C2",
+            "pin": "2",
+            "point": [
+              157.48,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              142.24,
+              147.32
+            ],
+            [
+              157.48,
+              147.32
+            ],
+            [
+              157.48,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                142.24,
+                147.32
+              ],
+              "end": [
+                157.48,
+                147.32
+              ],
+              "direction": "right",
+              "length": 15.24
+            },
+            {
+              "start": [
+                157.48,
+                147.32
+              ],
+              "end": [
+                157.48,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_R_BIAS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R7",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            152.4
+          ]
+        },
+        {
+          "ref": "R8",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            208.28,
+            147.32
+          ]
+        },
+        {
+          "ref": "U1B",
+          "pin": "BIAS",
+          "side": "left",
+          "point": [
+            462.28,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_R_BIAS",
+          "from": {
+            "ref": "R7",
+            "pin": "2",
+            "point": [
+              40.64,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "R8",
+            "pin": "1",
+            "point": [
+              208.28,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              152.4
+            ],
+            [
+              208.28,
+              152.4
+            ],
+            [
+              208.28,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                152.4
+              ],
+              "end": [
+                208.28,
+                152.4
+              ],
+              "direction": "right",
+              "length": 167.64
+            },
+            {
+              "start": [
+                208.28,
+                152.4
+              ],
+              "end": [
+                208.28,
+                147.32
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "AUDIO_R_BIAS",
+          "from": {
+            "ref": "R7",
+            "pin": "2",
+            "point": [
+              40.64,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "U1B",
+            "pin": "BIAS",
+            "point": [
+              462.28,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              152.4
+            ],
+            [
+              5.08,
+              152.4
+            ],
+            [
+              5.08,
+              101.6
+            ],
+            [
+              462.28,
+              101.6
+            ],
+            [
+              462.28,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                152.4
+              ],
+              "end": [
+                5.08,
+                152.4
+              ],
+              "direction": "left",
+              "length": 35.56
+            },
+            {
+              "start": [
+                5.08,
+                152.4
+              ],
+              "end": [
+                5.08,
+                101.6
+              ],
+              "direction": "up",
+              "length": 50.8
+            },
+            {
+              "start": [
+                5.08,
+                101.6
+              ],
+              "end": [
+                462.28,
+                101.6
+              ],
+              "direction": "right",
+              "length": 457.2
+            },
+            {
+              "start": [
+                462.28,
+                101.6
+              ],
+              "end": [
+                462.28,
+                137.16
+              ],
+              "direction": "down",
+              "length": 35.56
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_R_IN_RAW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "RIGHT",
+          "side": "right",
+          "point": [
+            76.2,
+            157.48
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            157.48,
+            157.48
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_R_IN_RAW",
+          "from": {
+            "ref": "J1",
+            "pin": "RIGHT",
+            "point": [
+              76.2,
+              157.48
+            ]
+          },
+          "to": {
+            "ref": "C2",
+            "pin": "1",
+            "point": [
+              157.48,
+              157.48
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              157.48
+            ],
+            [
+              76.2,
+              162.56
+            ],
+            [
+              111.76,
+              162.56
+            ],
+            [
+              111.76,
+              157.48
+            ],
+            [
+              157.48,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                157.48
+              ],
+              "end": [
+                76.2,
+                162.56
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                76.2,
+                162.56
+              ],
+              "end": [
+                111.76,
+                162.56
+              ],
+              "direction": "right",
+              "length": 35.56
+            },
+            {
+              "start": [
+                111.76,
+                162.56
+              ],
+              "end": [
+                111.76,
+                157.48
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                111.76,
+                157.48
+              ],
+              "end": [
+                157.48,
+                157.48
+              ],
+              "direction": "right",
+              "length": 45.72
+            }
+          ]
+        }
+      ]
+    },
+    "AUDIO_R_VOL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            40.64,
+            142.24
+          ]
+        },
+        {
+          "ref": "RV2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            121.92,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "AUDIO_R_VOL",
+          "from": {
+            "ref": "R3",
+            "pin": "1",
+            "point": [
+              40.64,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "RV2",
+            "pin": "2",
+            "point": [
+              121.92,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              142.24
+            ],
+            [
+              121.92,
+              142.24
+            ],
+            [
+              121.92,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                142.24
+              ],
+              "end": [
+                121.92,
+                142.24
+              ],
+              "direction": "right",
+              "length": 81.28
+            },
+            {
+              "start": [
+                121.92,
+                142.24
+              ],
+              "end": [
+                121.92,
+                147.32
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "LM358_L_IN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            137.16
+          ]
+        },
+        {
+          "ref": "U1A",
+          "pin": "IN_PLUS",
+          "side": "left",
+          "point": [
+            416.56,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LM358_L_IN",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              40.64,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "U1A",
+            "pin": "IN_PLUS",
+            "point": [
+              416.56,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              137.16
+            ],
+            [
+              416.56,
+              137.16
+            ],
+            [
+              416.56,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                137.16
+              ],
+              "end": [
+                416.56,
+                137.16
+              ],
+              "direction": "right",
+              "length": 375.92
+            },
+            {
+              "start": [
+                416.56,
+                137.16
+              ],
+              "end": [
+                416.56,
+                152.4
+              ],
+              "direction": "down",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "LM358_R_IN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            147.32
+          ]
+        },
+        {
+          "ref": "U1B",
+          "pin": "IN_PLUS",
+          "side": "left",
+          "point": [
+            462.28,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LM358_R_IN",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              40.64,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U1B",
+            "pin": "IN_PLUS",
+            "point": [
+              462.28,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              147.32
+            ],
+            [
+              462.28,
+              147.32
+            ],
+            [
+              462.28,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                147.32
+              ],
+              "end": [
+                462.28,
+                147.32
+              ],
+              "direction": "right",
+              "length": 421.64
+            },
+            {
+              "start": [
+                462.28,
+                147.32
+              ],
+              "end": [
+                462.28,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "MASTER_CTRL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "LEFT",
+          "side": "right",
+          "point": [
+            40.64,
+            121.92
+          ]
+        },
+        {
+          "ref": "J2",
+          "pin": "RIGHT",
+          "side": "right",
+          "point": [
+            40.64,
+            121.92
+          ]
+        },
+        {
+          "ref": "RV3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            223.52,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "MASTER_CTRL",
+          "from": {
+            "ref": "J2",
+            "pin": "LEFT",
+            "point": [
+              40.64,
+              121.92
+            ]
+          },
+          "to": {
+            "ref": "J2",
+            "pin": "RIGHT",
+            "point": [
+              40.64,
+              121.92
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              121.92
+            ]
+          ],
+          "segments": []
+        },
+        {
+          "net": "MASTER_CTRL",
+          "from": {
+            "ref": "J2",
+            "pin": "LEFT",
+            "point": [
+              40.64,
+              121.92
+            ]
+          },
+          "to": {
+            "ref": "RV3",
+            "pin": "2",
+            "point": [
+              223.52,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              121.92
+            ],
+            [
+              223.52,
+              121.92
+            ],
+            [
+              223.52,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                121.92
+              ],
+              "end": [
+                223.52,
+                121.92
+              ],
+              "direction": "right",
+              "length": 182.88
+            },
+            {
+              "start": [
+                223.52,
+                121.92
+              ],
+              "end": [
+                223.52,
+                147.32
+              ],
+              "direction": "down",
+              "length": 25.4
+            }
+          ]
+        }
+      ]
+    },
+    "PAM_L_IN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            35.56,
+            167.64
+          ]
+        },
+        {
+          "ref": "C7",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            106.68,
+            152.4
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "LIN",
+          "side": "left",
+          "point": [
+            513.08,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "PAM_L_IN",
+          "from": {
+            "ref": "C3",
+            "pin": "2",
+            "point": [
+              35.56,
+              167.64
+            ]
+          },
+          "to": {
+            "ref": "C7",
+            "pin": "1",
+            "point": [
+              106.68,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              167.64
+            ],
+            [
+              106.68,
+              167.64
+            ],
+            [
+              106.68,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                167.64
+              ],
+              "end": [
+                106.68,
+                167.64
+              ],
+              "direction": "right",
+              "length": 71.12
+            },
+            {
+              "start": [
+                106.68,
+                167.64
+              ],
+              "end": [
+                106.68,
+                152.4
+              ],
+              "direction": "up",
+              "length": 15.24
+            }
+          ]
+        },
+        {
+          "net": "PAM_L_IN",
+          "from": {
+            "ref": "C3",
+            "pin": "2",
+            "point": [
+              35.56,
+              167.64
+            ]
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "LIN",
+            "point": [
+              513.08,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              167.64
+            ],
+            [
+              20.32,
+              167.64
+            ],
+            [
+              20.32,
+              187.96
+            ],
+            [
+              513.08,
+              187.96
+            ],
+            [
+              513.08,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                167.64
+              ],
+              "end": [
+                20.32,
+                167.64
+              ],
+              "direction": "left",
+              "length": 15.24
+            },
+            {
+              "start": [
+                20.32,
+                167.64
+              ],
+              "end": [
+                20.32,
+                187.96
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                20.32,
+                187.96
+              ],
+              "end": [
+                513.08,
+                187.96
+              ],
+              "direction": "right",
+              "length": 492.76
+            },
+            {
+              "start": [
+                513.08,
+                187.96
+              ],
+              "end": [
+                513.08,
+                142.24
+              ],
+              "direction": "up",
+              "length": 45.72
+            }
+          ]
+        }
+      ]
+    },
+    "PAM_R_IN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            35.56,
+            182.88
+          ]
+        },
+        {
+          "ref": "C8",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            172.72,
+            142.24
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "RIN",
+          "side": "left",
+          "point": [
+            513.08,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "PAM_R_IN",
+          "from": {
+            "ref": "C4",
+            "pin": "2",
+            "point": [
+              35.56,
+              182.88
+            ]
+          },
+          "to": {
+            "ref": "C8",
+            "pin": "1",
+            "point": [
+              172.72,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              182.88
+            ],
+            [
+              172.72,
+              182.88
+            ],
+            [
+              172.72,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                182.88
+              ],
+              "end": [
+                172.72,
+                182.88
+              ],
+              "direction": "right",
+              "length": 137.16
+            },
+            {
+              "start": [
+                172.72,
+                182.88
+              ],
+              "end": [
+                172.72,
+                142.24
+              ],
+              "direction": "up",
+              "length": 40.64
+            }
+          ]
+        },
+        {
+          "net": "PAM_R_IN",
+          "from": {
+            "ref": "C4",
+            "pin": "2",
+            "point": [
+              35.56,
+              182.88
+            ]
+          },
+          "to": {
+            "ref": "U3",
+            "pin": "RIN",
+            "point": [
+              513.08,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              35.56,
+              182.88
+            ],
+            [
+              513.08,
+              182.88
+            ],
+            [
+              513.08,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                35.56,
+                182.88
+              ],
+              "end": [
+                513.08,
+                182.88
+              ],
+              "direction": "right",
+              "length": 477.52
+            },
+            {
+              "start": [
+                513.08,
+                182.88
+              ],
+              "end": [
+                513.08,
+                147.32
+              ],
+              "direction": "up",
+              "length": 35.56
+            }
+          ]
+        }
+      ]
+    },
+    "SPK_L_MINUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "LOUT_MINUS",
+          "side": "right",
+          "point": [
+            528.32,
+            137.16
+          ]
+        },
+        {
+          "ref": "SPK1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            543.56,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPK_L_MINUS",
+          "from": {
+            "ref": "U3",
+            "pin": "LOUT_MINUS",
+            "point": [
+              528.32,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "SPK1",
+            "pin": "2",
+            "point": [
+              543.56,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              528.32,
+              137.16
+            ],
+            [
+              543.56,
+              137.16
+            ],
+            [
+              543.56,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                528.32,
+                137.16
+              ],
+              "end": [
+                543.56,
+                137.16
+              ],
+              "direction": "right",
+              "length": 15.24
+            },
+            {
+              "start": [
+                543.56,
+                137.16
+              ],
+              "end": [
+                543.56,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "SPK_L_PLUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "LOUT_PLUS",
+          "side": "right",
+          "point": [
+            528.32,
+            142.24
+          ]
+        },
+        {
+          "ref": "SPK1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            543.56,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPK_L_PLUS",
+          "from": {
+            "ref": "U3",
+            "pin": "LOUT_PLUS",
+            "point": [
+              528.32,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "SPK1",
+            "pin": "1",
+            "point": [
+              543.56,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              528.32,
+              142.24
+            ],
+            [
+              543.56,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                528.32,
+                142.24
+              ],
+              "end": [
+                543.56,
+                142.24
+              ],
+              "direction": "right",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "SPK_R_MINUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "ROUT_MINUS",
+          "side": "right",
+          "point": [
+            528.32,
+            147.32
+          ]
+        },
+        {
+          "ref": "SPK2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            543.56,
+            162.56
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPK_R_MINUS",
+          "from": {
+            "ref": "U3",
+            "pin": "ROUT_MINUS",
+            "point": [
+              528.32,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "SPK2",
+            "pin": "2",
+            "point": [
+              543.56,
+              162.56
+            ]
+          },
+          "path": [
+            [
+              528.32,
+              147.32
+            ],
+            [
+              528.32,
+              162.56
+            ],
+            [
+              543.56,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                528.32,
+                147.32
+              ],
+              "end": [
+                528.32,
+                162.56
+              ],
+              "direction": "down",
+              "length": 15.24
+            },
+            {
+              "start": [
+                528.32,
+                162.56
+              ],
+              "end": [
+                543.56,
+                162.56
+              ],
+              "direction": "right",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "SPK_R_PLUS": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U3",
+          "pin": "ROUT_PLUS",
+          "side": "right",
+          "point": [
+            528.32,
+            152.4
+          ]
+        },
+        {
+          "ref": "SPK2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            543.56,
+            167.64
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPK_R_PLUS",
+          "from": {
+            "ref": "U3",
+            "pin": "ROUT_PLUS",
+            "point": [
+              528.32,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "SPK2",
+            "pin": "1",
+            "point": [
+              543.56,
+              167.64
+            ]
+          },
+          "path": [
+            [
+              528.32,
+              152.4
+            ],
+            [
+              543.56,
+              152.4
+            ],
+            [
+              543.56,
+              157.48
+            ],
+            [
+              548.64,
+              157.48
+            ],
+            [
+              548.64,
+              167.64
+            ],
+            [
+              543.56,
+              167.64
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                528.32,
+                152.4
+              ],
+              "end": [
+                543.56,
+                152.4
+              ],
+              "direction": "right",
+              "length": 15.24
+            },
+            {
+              "start": [
+                543.56,
+                152.4
+              ],
+              "end": [
+                543.56,
+                157.48
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                543.56,
+                157.48
+              ],
+              "end": [
+                548.64,
+                157.48
+              ],
+              "direction": "right",
+              "length": 5.08
+            },
+            {
+              "start": [
+                548.64,
+                157.48
+              ],
+              "end": [
+                548.64,
+                167.64
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                548.64,
+                167.64
+              ],
+              "end": [
+                543.56,
+                167.64
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1A",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            431.8,
+            127.0
+          ]
+        },
+        {
+          "ref": "U1B",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            477.52,
+            127.0
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            523.24,
+            137.16
+          ]
+        },
+        {
+          "ref": "RV3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            233.68,
+            137.16
+          ]
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            264.16,
+            142.24
+          ]
+        },
+        {
+          "ref": "C6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            325.12,
+            142.24
+          ]
+        },
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            294.64,
+            142.24
+          ]
+        },
+        {
+          "ref": "R7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            147.32
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "top",
+          "point": [
+            558.8,
+            116.84
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "top",
+          "point": [
+            594.36,
+            142.24
+          ]
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1A",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            431.8,
+            167.64
+          ]
+        },
+        {
+          "ref": "U1B",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            477.52,
+            167.64
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            523.24,
+            157.48
+          ]
+        },
+        {
+          "ref": "J1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            66.04,
+            167.64
+          ]
+        },
+        {
+          "ref": "J2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            30.48,
+            132.08
+          ]
+        },
+        {
+          "ref": "RV1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            391.16,
+            157.48
+          ]
+        },
+        {
+          "ref": "RV2",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            132.08,
+            157.48
+          ]
+        },
+        {
+          "ref": "RV3",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            233.68,
+            157.48
+          ]
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            264.16,
+            152.4
+          ]
+        },
+        {
+          "ref": "C6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            325.12,
+            152.4
+          ]
+        },
+        {
+          "ref": "C7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            162.56
+          ]
+        },
+        {
+          "ref": "C8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            162.56,
+            147.32
+          ]
+        },
+        {
+          "ref": "R6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            355.6,
+            152.4
+          ]
+        },
+        {
+          "ref": "R8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            198.12,
+            152.4
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            558.8,
+            127.0
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            594.36,
+            152.4
+          ]
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "LM358_L_FEEDBACK",
+      "from": {
+        "ref": "C3",
+        "pin": "1",
+        "point": [
+          35.56,
+          162.56
+        ]
+      },
+      "to": {
+        "ref": "R2",
+        "pin": "1",
+        "point": [
+          76.2,
+          132.08
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          162.56
+        ],
+        [
+          50.8,
+          162.56
+        ],
+        [
+          50.8,
+          132.08
+        ],
+        [
+          76.2,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            162.56
+          ],
+          "end": [
+            50.8,
+            162.56
+          ],
+          "direction": "right",
+          "length": 15.24
+        },
+        {
+          "start": [
+            50.8,
+            162.56
+          ],
+          "end": [
+            50.8,
+            132.08
+          ],
+          "direction": "up",
+          "length": 30.48
+        },
+        {
+          "start": [
+            50.8,
+            132.08
+          ],
+          "end": [
+            76.2,
+            132.08
+          ],
+          "direction": "right",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "LM358_L_FEEDBACK",
+      "from": {
+        "ref": "C3",
+        "pin": "1",
+        "point": [
+          35.56,
+          162.56
+        ]
+      },
+      "to": {
+        "ref": "U1A",
+        "pin": "IN_MINUS",
+        "point": [
+          416.56,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          162.56
+        ],
+        [
+          35.56,
+          167.64
+        ],
+        [
+          416.56,
+          167.64
+        ],
+        [
+          416.56,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            162.56
+          ],
+          "end": [
+            35.56,
+            167.64
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            35.56,
+            167.64
+          ],
+          "end": [
+            416.56,
+            167.64
+          ],
+          "direction": "right",
+          "length": 381.0
+        },
+        {
+          "start": [
+            416.56,
+            167.64
+          ],
+          "end": [
+            416.56,
+            142.24
+          ],
+          "direction": "up",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "LM358_L_FEEDBACK",
+      "from": {
+        "ref": "C3",
+        "pin": "1",
+        "point": [
+          35.56,
+          162.56
+        ]
+      },
+      "to": {
+        "ref": "U1A",
+        "pin": "OUT",
+        "point": [
+          416.56,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          162.56
+        ],
+        [
+          35.56,
+          167.64
+        ],
+        [
+          416.56,
+          167.64
+        ],
+        [
+          416.56,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            162.56
+          ],
+          "end": [
+            35.56,
+            167.64
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            35.56,
+            167.64
+          ],
+          "end": [
+            416.56,
+            167.64
+          ],
+          "direction": "right",
+          "length": 381.0
+        },
+        {
+          "start": [
+            416.56,
+            167.64
+          ],
+          "end": [
+            416.56,
+            147.32
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "LM358_R_FEEDBACK",
+      "from": {
+        "ref": "C4",
+        "pin": "1",
+        "point": [
+          35.56,
+          172.72
+        ]
+      },
+      "to": {
+        "ref": "R4",
+        "pin": "1",
+        "point": [
+          76.2,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          172.72
+        ],
+        [
+          15.24,
+          172.72
+        ],
+        [
+          15.24,
+          111.76
+        ],
+        [
+          81.28,
+          111.76
+        ],
+        [
+          81.28,
+          142.24
+        ],
+        [
+          76.2,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            172.72
+          ],
+          "end": [
+            15.24,
+            172.72
+          ],
+          "direction": "left",
+          "length": 20.32
+        },
+        {
+          "start": [
+            15.24,
+            172.72
+          ],
+          "end": [
+            15.24,
+            111.76
+          ],
+          "direction": "up",
+          "length": 60.96
+        },
+        {
+          "start": [
+            15.24,
+            111.76
+          ],
+          "end": [
+            81.28,
+            111.76
+          ],
+          "direction": "right",
+          "length": 66.04
+        },
+        {
+          "start": [
+            81.28,
+            111.76
+          ],
+          "end": [
+            81.28,
+            142.24
+          ],
+          "direction": "down",
+          "length": 30.48
+        },
+        {
+          "start": [
+            81.28,
+            142.24
+          ],
+          "end": [
+            76.2,
+            142.24
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "LM358_R_FEEDBACK",
+      "from": {
+        "ref": "C4",
+        "pin": "1",
+        "point": [
+          35.56,
+          172.72
+        ]
+      },
+      "to": {
+        "ref": "U1B",
+        "pin": "IN_MINUS",
+        "point": [
+          462.28,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          172.72
+        ],
+        [
+          35.56,
+          177.8
+        ],
+        [
+          462.28,
+          177.8
+        ],
+        [
+          462.28,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            172.72
+          ],
+          "end": [
+            35.56,
+            177.8
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            35.56,
+            177.8
+          ],
+          "end": [
+            462.28,
+            177.8
+          ],
+          "direction": "right",
+          "length": 426.72
+        },
+        {
+          "start": [
+            462.28,
+            177.8
+          ],
+          "end": [
+            462.28,
+            142.24
+          ],
+          "direction": "up",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "LM358_R_FEEDBACK",
+      "from": {
+        "ref": "C4",
+        "pin": "1",
+        "point": [
+          35.56,
+          172.72
+        ]
+      },
+      "to": {
+        "ref": "U1B",
+        "pin": "OUT",
+        "point": [
+          462.28,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          172.72
+        ],
+        [
+          35.56,
+          177.8
+        ],
+        [
+          462.28,
+          177.8
+        ],
+        [
+          462.28,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            172.72
+          ],
+          "end": [
+            35.56,
+            177.8
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            35.56,
+            177.8
+          ],
+          "end": [
+            462.28,
+            177.8
+          ],
+          "direction": "right",
+          "length": 426.72
+        },
+        {
+          "start": [
+            462.28,
+            177.8
+          ],
+          "end": [
+            462.28,
+            147.32
+          ],
+          "direction": "up",
+          "length": 30.48
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_AC",
+      "from": {
+        "ref": "C1",
+        "pin": "2",
+        "point": [
+          106.68,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "RV1",
+        "pin": "3",
+        "point": [
+          381.0,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          106.68,
+          142.24
+        ],
+        [
+          106.68,
+          132.08
+        ],
+        [
+          381.0,
+          132.08
+        ],
+        [
+          381.0,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            106.68,
+            142.24
+          ],
+          "end": [
+            106.68,
+            132.08
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            106.68,
+            132.08
+          ],
+          "end": [
+            381.0,
+            132.08
+          ],
+          "direction": "right",
+          "length": 274.32
+        },
+        {
+          "start": [
+            381.0,
+            132.08
+          ],
+          "end": [
+            381.0,
+            142.24
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_BIAS",
+      "from": {
+        "ref": "R5",
+        "pin": "2",
+        "point": [
+          304.8,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "R6",
+        "pin": "1",
+        "point": [
+          365.76,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          304.8,
+          147.32
+        ],
+        [
+          304.8,
+          157.48
+        ],
+        [
+          365.76,
+          157.48
+        ],
+        [
+          365.76,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            304.8,
+            147.32
+          ],
+          "end": [
+            304.8,
+            157.48
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            304.8,
+            157.48
+          ],
+          "end": [
+            365.76,
+            157.48
+          ],
+          "direction": "right",
+          "length": 60.96
+        },
+        {
+          "start": [
+            365.76,
+            157.48
+          ],
+          "end": [
+            365.76,
+            147.32
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_BIAS",
+      "from": {
+        "ref": "R5",
+        "pin": "2",
+        "point": [
+          304.8,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U1A",
+        "pin": "BIAS",
+        "point": [
+          416.56,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          304.8,
+          147.32
+        ],
+        [
+          304.8,
+          157.48
+        ],
+        [
+          406.4,
+          157.48
+        ],
+        [
+          406.4,
+          137.16
+        ],
+        [
+          416.56,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            304.8,
+            147.32
+          ],
+          "end": [
+            304.8,
+            157.48
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            304.8,
+            157.48
+          ],
+          "end": [
+            406.4,
+            157.48
+          ],
+          "direction": "right",
+          "length": 101.6
+        },
+        {
+          "start": [
+            406.4,
+            157.48
+          ],
+          "end": [
+            406.4,
+            137.16
+          ],
+          "direction": "up",
+          "length": 20.32
+        },
+        {
+          "start": [
+            406.4,
+            137.16
+          ],
+          "end": [
+            416.56,
+            137.16
+          ],
+          "direction": "right",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_IN_RAW",
+      "from": {
+        "ref": "J1",
+        "pin": "LEFT",
+        "point": [
+          76.2,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "C1",
+        "pin": "1",
+        "point": [
+          96.52,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          152.4
+        ],
+        [
+          91.44,
+          152.4
+        ],
+        [
+          91.44,
+          142.24
+        ],
+        [
+          96.52,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            152.4
+          ],
+          "end": [
+            91.44,
+            152.4
+          ],
+          "direction": "right",
+          "length": 15.24
+        },
+        {
+          "start": [
+            91.44,
+            152.4
+          ],
+          "end": [
+            91.44,
+            142.24
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            91.44,
+            142.24
+          ],
+          "end": [
+            96.52,
+            142.24
+          ],
+          "direction": "right",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_L_VOL",
+      "from": {
+        "ref": "R1",
+        "pin": "1",
+        "point": [
+          40.64,
+          132.08
+        ]
+      },
+      "to": {
+        "ref": "RV1",
+        "pin": "2",
+        "point": [
+          381.0,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          132.08
+        ],
+        [
+          45.72,
+          132.08
+        ],
+        [
+          45.72,
+          121.92
+        ],
+        [
+          391.16,
+          121.92
+        ],
+        [
+          391.16,
+          147.32
+        ],
+        [
+          381.0,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            132.08
+          ],
+          "end": [
+            45.72,
+            132.08
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            45.72,
+            132.08
+          ],
+          "end": [
+            45.72,
+            121.92
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            45.72,
+            121.92
+          ],
+          "end": [
+            391.16,
+            121.92
+          ],
+          "direction": "right",
+          "length": 345.44
+        },
+        {
+          "start": [
+            391.16,
+            121.92
+          ],
+          "end": [
+            391.16,
+            147.32
+          ],
+          "direction": "down",
+          "length": 25.4
+        },
+        {
+          "start": [
+            391.16,
+            147.32
+          ],
+          "end": [
+            381.0,
+            147.32
+          ],
+          "direction": "left",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_R_AC",
+      "from": {
+        "ref": "RV2",
+        "pin": "3",
+        "point": [
+          142.24,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "C2",
+        "pin": "2",
+        "point": [
+          157.48,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          142.24,
+          147.32
+        ],
+        [
+          157.48,
+          147.32
+        ],
+        [
+          157.48,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            142.24,
+            147.32
+          ],
+          "end": [
+            157.48,
+            147.32
+          ],
+          "direction": "right",
+          "length": 15.24
+        },
+        {
+          "start": [
+            157.48,
+            147.32
+          ],
+          "end": [
+            157.48,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_R_BIAS",
+      "from": {
+        "ref": "R7",
+        "pin": "2",
+        "point": [
+          40.64,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "R8",
+        "pin": "1",
+        "point": [
+          208.28,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          152.4
+        ],
+        [
+          208.28,
+          152.4
+        ],
+        [
+          208.28,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            152.4
+          ],
+          "end": [
+            208.28,
+            152.4
+          ],
+          "direction": "right",
+          "length": 167.64
+        },
+        {
+          "start": [
+            208.28,
+            152.4
+          ],
+          "end": [
+            208.28,
+            147.32
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_R_BIAS",
+      "from": {
+        "ref": "R7",
+        "pin": "2",
+        "point": [
+          40.64,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "U1B",
+        "pin": "BIAS",
+        "point": [
+          462.28,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          152.4
+        ],
+        [
+          5.08,
+          152.4
+        ],
+        [
+          5.08,
+          101.6
+        ],
+        [
+          462.28,
+          101.6
+        ],
+        [
+          462.28,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            152.4
+          ],
+          "end": [
+            5.08,
+            152.4
+          ],
+          "direction": "left",
+          "length": 35.56
+        },
+        {
+          "start": [
+            5.08,
+            152.4
+          ],
+          "end": [
+            5.08,
+            101.6
+          ],
+          "direction": "up",
+          "length": 50.8
+        },
+        {
+          "start": [
+            5.08,
+            101.6
+          ],
+          "end": [
+            462.28,
+            101.6
+          ],
+          "direction": "right",
+          "length": 457.2
+        },
+        {
+          "start": [
+            462.28,
+            101.6
+          ],
+          "end": [
+            462.28,
+            137.16
+          ],
+          "direction": "down",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_R_IN_RAW",
+      "from": {
+        "ref": "J1",
+        "pin": "RIGHT",
+        "point": [
+          76.2,
+          157.48
+        ]
+      },
+      "to": {
+        "ref": "C2",
+        "pin": "1",
+        "point": [
+          157.48,
+          157.48
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          157.48
+        ],
+        [
+          76.2,
+          162.56
+        ],
+        [
+          111.76,
+          162.56
+        ],
+        [
+          111.76,
+          157.48
+        ],
+        [
+          157.48,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            157.48
+          ],
+          "end": [
+            76.2,
+            162.56
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            76.2,
+            162.56
+          ],
+          "end": [
+            111.76,
+            162.56
+          ],
+          "direction": "right",
+          "length": 35.56
+        },
+        {
+          "start": [
+            111.76,
+            162.56
+          ],
+          "end": [
+            111.76,
+            157.48
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            111.76,
+            157.48
+          ],
+          "end": [
+            157.48,
+            157.48
+          ],
+          "direction": "right",
+          "length": 45.72
+        }
+      ]
+    },
+    {
+      "net": "AUDIO_R_VOL",
+      "from": {
+        "ref": "R3",
+        "pin": "1",
+        "point": [
+          40.64,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "RV2",
+        "pin": "2",
+        "point": [
+          121.92,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          142.24
+        ],
+        [
+          121.92,
+          142.24
+        ],
+        [
+          121.92,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            142.24
+          ],
+          "end": [
+            121.92,
+            142.24
+          ],
+          "direction": "right",
+          "length": 81.28
+        },
+        {
+          "start": [
+            121.92,
+            142.24
+          ],
+          "end": [
+            121.92,
+            147.32
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "LM358_L_IN",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          40.64,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "U1A",
+        "pin": "IN_PLUS",
+        "point": [
+          416.56,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          137.16
+        ],
+        [
+          416.56,
+          137.16
+        ],
+        [
+          416.56,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            137.16
+          ],
+          "end": [
+            416.56,
+            137.16
+          ],
+          "direction": "right",
+          "length": 375.92
+        },
+        {
+          "start": [
+            416.56,
+            137.16
+          ],
+          "end": [
+            416.56,
+            152.4
+          ],
+          "direction": "down",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "LM358_R_IN",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          40.64,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U1B",
+        "pin": "IN_PLUS",
+        "point": [
+          462.28,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          147.32
+        ],
+        [
+          462.28,
+          147.32
+        ],
+        [
+          462.28,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            147.32
+          ],
+          "end": [
+            462.28,
+            147.32
+          ],
+          "direction": "right",
+          "length": 421.64
+        },
+        {
+          "start": [
+            462.28,
+            147.32
+          ],
+          "end": [
+            462.28,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "MASTER_CTRL",
+      "from": {
+        "ref": "J2",
+        "pin": "LEFT",
+        "point": [
+          40.64,
+          121.92
+        ]
+      },
+      "to": {
+        "ref": "J2",
+        "pin": "RIGHT",
+        "point": [
+          40.64,
+          121.92
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          121.92
+        ]
+      ],
+      "segments": []
+    },
+    {
+      "net": "MASTER_CTRL",
+      "from": {
+        "ref": "J2",
+        "pin": "LEFT",
+        "point": [
+          40.64,
+          121.92
+        ]
+      },
+      "to": {
+        "ref": "RV3",
+        "pin": "2",
+        "point": [
+          223.52,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          121.92
+        ],
+        [
+          223.52,
+          121.92
+        ],
+        [
+          223.52,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            121.92
+          ],
+          "end": [
+            223.52,
+            121.92
+          ],
+          "direction": "right",
+          "length": 182.88
+        },
+        {
+          "start": [
+            223.52,
+            121.92
+          ],
+          "end": [
+            223.52,
+            147.32
+          ],
+          "direction": "down",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "PAM_L_IN",
+      "from": {
+        "ref": "C3",
+        "pin": "2",
+        "point": [
+          35.56,
+          167.64
+        ]
+      },
+      "to": {
+        "ref": "C7",
+        "pin": "1",
+        "point": [
+          106.68,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          167.64
+        ],
+        [
+          106.68,
+          167.64
+        ],
+        [
+          106.68,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            167.64
+          ],
+          "end": [
+            106.68,
+            167.64
+          ],
+          "direction": "right",
+          "length": 71.12
+        },
+        {
+          "start": [
+            106.68,
+            167.64
+          ],
+          "end": [
+            106.68,
+            152.4
+          ],
+          "direction": "up",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "PAM_L_IN",
+      "from": {
+        "ref": "C3",
+        "pin": "2",
+        "point": [
+          35.56,
+          167.64
+        ]
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "LIN",
+        "point": [
+          513.08,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          167.64
+        ],
+        [
+          20.32,
+          167.64
+        ],
+        [
+          20.32,
+          187.96
+        ],
+        [
+          513.08,
+          187.96
+        ],
+        [
+          513.08,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            167.64
+          ],
+          "end": [
+            20.32,
+            167.64
+          ],
+          "direction": "left",
+          "length": 15.24
+        },
+        {
+          "start": [
+            20.32,
+            167.64
+          ],
+          "end": [
+            20.32,
+            187.96
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            20.32,
+            187.96
+          ],
+          "end": [
+            513.08,
+            187.96
+          ],
+          "direction": "right",
+          "length": 492.76
+        },
+        {
+          "start": [
+            513.08,
+            187.96
+          ],
+          "end": [
+            513.08,
+            142.24
+          ],
+          "direction": "up",
+          "length": 45.72
+        }
+      ]
+    },
+    {
+      "net": "PAM_R_IN",
+      "from": {
+        "ref": "C4",
+        "pin": "2",
+        "point": [
+          35.56,
+          182.88
+        ]
+      },
+      "to": {
+        "ref": "C8",
+        "pin": "1",
+        "point": [
+          172.72,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          182.88
+        ],
+        [
+          172.72,
+          182.88
+        ],
+        [
+          172.72,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            182.88
+          ],
+          "end": [
+            172.72,
+            182.88
+          ],
+          "direction": "right",
+          "length": 137.16
+        },
+        {
+          "start": [
+            172.72,
+            182.88
+          ],
+          "end": [
+            172.72,
+            142.24
+          ],
+          "direction": "up",
+          "length": 40.64
+        }
+      ]
+    },
+    {
+      "net": "PAM_R_IN",
+      "from": {
+        "ref": "C4",
+        "pin": "2",
+        "point": [
+          35.56,
+          182.88
+        ]
+      },
+      "to": {
+        "ref": "U3",
+        "pin": "RIN",
+        "point": [
+          513.08,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          35.56,
+          182.88
+        ],
+        [
+          513.08,
+          182.88
+        ],
+        [
+          513.08,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            35.56,
+            182.88
+          ],
+          "end": [
+            513.08,
+            182.88
+          ],
+          "direction": "right",
+          "length": 477.52
+        },
+        {
+          "start": [
+            513.08,
+            182.88
+          ],
+          "end": [
+            513.08,
+            147.32
+          ],
+          "direction": "up",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "SPK_L_MINUS",
+      "from": {
+        "ref": "U3",
+        "pin": "LOUT_MINUS",
+        "point": [
+          528.32,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "SPK1",
+        "pin": "2",
+        "point": [
+          543.56,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          528.32,
+          137.16
+        ],
+        [
+          543.56,
+          137.16
+        ],
+        [
+          543.56,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            528.32,
+            137.16
+          ],
+          "end": [
+            543.56,
+            137.16
+          ],
+          "direction": "right",
+          "length": 15.24
+        },
+        {
+          "start": [
+            543.56,
+            137.16
+          ],
+          "end": [
+            543.56,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "SPK_L_PLUS",
+      "from": {
+        "ref": "U3",
+        "pin": "LOUT_PLUS",
+        "point": [
+          528.32,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "SPK1",
+        "pin": "1",
+        "point": [
+          543.56,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          528.32,
+          142.24
+        ],
+        [
+          543.56,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            528.32,
+            142.24
+          ],
+          "end": [
+            543.56,
+            142.24
+          ],
+          "direction": "right",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "SPK_R_MINUS",
+      "from": {
+        "ref": "U3",
+        "pin": "ROUT_MINUS",
+        "point": [
+          528.32,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "SPK2",
+        "pin": "2",
+        "point": [
+          543.56,
+          162.56
+        ]
+      },
+      "path": [
+        [
+          528.32,
+          147.32
+        ],
+        [
+          528.32,
+          162.56
+        ],
+        [
+          543.56,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            528.32,
+            147.32
+          ],
+          "end": [
+            528.32,
+            162.56
+          ],
+          "direction": "down",
+          "length": 15.24
+        },
+        {
+          "start": [
+            528.32,
+            162.56
+          ],
+          "end": [
+            543.56,
+            162.56
+          ],
+          "direction": "right",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "SPK_R_PLUS",
+      "from": {
+        "ref": "U3",
+        "pin": "ROUT_PLUS",
+        "point": [
+          528.32,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "SPK2",
+        "pin": "1",
+        "point": [
+          543.56,
+          167.64
+        ]
+      },
+      "path": [
+        [
+          528.32,
+          152.4
+        ],
+        [
+          543.56,
+          152.4
+        ],
+        [
+          543.56,
+          157.48
+        ],
+        [
+          548.64,
+          157.48
+        ],
+        [
+          548.64,
+          167.64
+        ],
+        [
+          543.56,
+          167.64
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            528.32,
+            152.4
+          ],
+          "end": [
+            543.56,
+            152.4
+          ],
+          "direction": "right",
+          "length": 15.24
+        },
+        {
+          "start": [
+            543.56,
+            152.4
+          ],
+          "end": [
+            543.56,
+            157.48
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            543.56,
+            157.48
+          ],
+          "end": [
+            548.64,
+            157.48
+          ],
+          "direction": "right",
+          "length": 5.08
+        },
+        {
+          "start": [
+            548.64,
+            157.48
+          ],
+          "end": [
+            548.64,
+            167.64
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            548.64,
+            167.64
+          ],
+          "end": [
+            543.56,
+            167.64
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 21,
+    "wired_route_count": 28,
+    "segment_count": 78,
+    "different_net_crossing_count": 25
+  },
+  "warnings": [
+    "astar_fallback_expansion_limit: AUDIO_R_BIAS exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: AUDIO_R_VOL exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: LM358_L_IN exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: LM358_R_IN exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MASTER_CTRL exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: PAM_L_IN exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: PAM_R_IN exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: PAM_R_IN exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPK_L_PLUS exceeded 1500 explored grid states.",
+    "different_net_crossings_detected: 25"
+  ]
+}

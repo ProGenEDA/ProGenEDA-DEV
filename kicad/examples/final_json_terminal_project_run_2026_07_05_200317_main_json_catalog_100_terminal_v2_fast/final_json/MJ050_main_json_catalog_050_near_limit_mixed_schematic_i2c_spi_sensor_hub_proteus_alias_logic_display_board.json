@@ -1,0 +1,7291 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "mj050",
+    "title": "Main JSON Catalog 050: Near-Limit Mixed Schematic + I2C SPI Sensor Hub + Proteus Alias Logic Display Board",
+    "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "MJ050",
+  "circuit_name": "Main JSON Catalog 050: Near-Limit Mixed Schematic + I2C SPI Sensor Hub + Proteus Alias Logic Display Board",
+  "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "decision_source": "deterministic_catalog_policy_combination_default",
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 5,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "clustered_blocks_square_fill",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "components[].block and blocks[]",
+    "keep_related_blocks_close": true
+  },
+  "components": [
+    {
+      "id": "B1_MCU",
+      "ref": "B1_MCU",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "controller",
+      "block": "b1_controller",
+      "pins": {
+        "5V": "+5V",
+        "ADC1": "B1_ANALOG1_BUFFER",
+        "ADC2": "B1_ANALOG2_BUFFER",
+        "ADC3": "B1_ANALOG3_BUFFER",
+        "ADC4": "B1_ANALOG4_BUFFER",
+        "GND": "GND",
+        "GPIO_BTN_1": "B1_BUTTON1_NET",
+        "GPIO_BTN_2": "B1_BUTTON2_NET",
+        "GPIO_BTN_3": "B1_BUTTON3_NET",
+        "GPIO_BTN_4": "B1_BUTTON4_NET",
+        "GPIO_BTN_5": "B1_BUTTON5_NET",
+        "GPIO_BTN_6": "B1_BUTTON6_NET",
+        "GPIO_CAN_INT": "B1_CAN_INT",
+        "GPIO_CS1": "B1_CS_FLASH1",
+        "GPIO_CS2": "B1_CS_FLASH2",
+        "GPIO_CS_CAN": "B1_CS_CAN",
+        "GPIO_EXT_1": "B1_GPIO_EXT_1_MCU",
+        "GPIO_EXT_2": "B1_GPIO_EXT_2_MCU",
+        "GPIO_EXT_3": "B1_GPIO_EXT_3_MCU",
+        "GPIO_EXT_4": "B1_GPIO_EXT_4_MCU",
+        "GPIO_EXT_5": "B1_GPIO_EXT_5_MCU",
+        "GPIO_EXT_6": "B1_GPIO_EXT_6_MCU",
+        "GPIO_EXT_7": "B1_GPIO_EXT_7_MCU",
+        "GPIO_EXT_8": "B1_GPIO_EXT_8_MCU",
+        "GPIO_LATCH": "B1_SHIFT_LATCH",
+        "GPIO_MODE_1": "B1_MODE1_NET",
+        "GPIO_MODE_2": "B1_MODE2_NET",
+        "GPIO_MODE_3": "B1_MODE3_NET",
+        "GPIO_MODE_4": "B1_MODE4_NET",
+        "GPIO_MODE_5": "B1_MODE5_NET",
+        "GPIO_MODE_6": "B1_MODE6_NET",
+        "GPIO_PWM_1": "B1_MOSFET1_CTRL",
+        "GPIO_PWM_2": "B1_MOSFET2_CTRL",
+        "GPIO_PWM_3": "B1_MOSFET3_CTRL",
+        "GPIO_PWM_4": "B1_MOSFET4_CTRL",
+        "GPIO_RELAY_1": "B1_RELAY1_CTRL",
+        "GPIO_RELAY_2": "B1_RELAY2_CTRL",
+        "GPIO_RELAY_3": "B1_RELAY3_CTRL",
+        "GPIO_RELAY_4": "B1_RELAY4_CTRL",
+        "GPIO_RS485_DE": "B1_RS485_DE_RE",
+        "GPIO_RS485_RX": "B1_RS485_RO",
+        "GPIO_RS485_TX": "B1_RS485_DI",
+        "MISO": "B1_SPI_MISO",
+        "MOSI": "B1_SPI_MOSI",
+        "RX0": "B1_ARDUINO_UART_RX",
+        "SCK": "B1_SPI_SCK",
+        "SCL": "B1_I2C_SCL",
+        "SDA": "B1_I2C_SDA",
+        "TX0": "B1_ARDUINO_UART_TX"
+      }
+    },
+    {
+      "id": "B1_ESP32",
+      "ref": "B1_ESP32",
+      "kind": "ESP32_WROOM",
+      "type": "ESP32_WROOM",
+      "value": "ESP32-WROOM",
+      "role": "wireless_coprocessor",
+      "block": "b1_controller",
+      "pins": {
+        "3V3": "+3V3",
+        "GND": "GND",
+        "U0RXD": "B1_ESP_UART_RX",
+        "U0TXD": "B1_ESP_UART_TX"
+      }
+    },
+    {
+      "id": "B1_USB_UART1",
+      "ref": "B1_USB_UART1",
+      "kind": "CP2102",
+      "type": "CP2102",
+      "value": "CP2102",
+      "role": "usb_uart",
+      "block": "b1_usb",
+      "pins": {
+        "D+": "B1_USB1_D_PLUS",
+        "D-": "B1_USB1_D_MINUS",
+        "GND": "GND",
+        "RXD": "B1_ESP_UART_TX",
+        "TXD": "B1_ESP_UART_RX",
+        "VBUS": "+5V"
+      }
+    },
+    {
+      "id": "B1_USB_UART2",
+      "ref": "B1_USB_UART2",
+      "kind": "CH340",
+      "type": "CH340",
+      "value": "CH340",
+      "role": "usb_uart",
+      "block": "b1_usb",
+      "pins": {
+        "D+": "B1_USB2_D_PLUS",
+        "D-": "B1_USB2_D_MINUS",
+        "GND": "GND",
+        "RXD": "B1_ARDUINO_UART_TX",
+        "TXD": "B1_ARDUINO_UART_RX",
+        "VBUS": "+5V"
+      }
+    },
+    {
+      "id": "B1_USB1",
+      "ref": "B1_USB1",
+      "kind": "USB_C_CONNECTOR",
+      "type": "USB_C_CONNECTOR",
+      "value": "USB-C",
+      "role": "usb_connector",
+      "block": "b1_usb",
+      "pins": {
+        "D+": "B1_USB1_D_PLUS",
+        "D-": "B1_USB1_D_MINUS",
+        "GND": "GND"
+      }
+    },
+    {
+      "id": "B1_USB2",
+      "ref": "B1_USB2",
+      "kind": "USB_CONNECTOR",
+      "type": "USB_CONNECTOR",
+      "value": "USB",
+      "role": "usb_connector",
+      "block": "b1_usb",
+      "pins": {
+        "D+": "B1_USB2_D_PLUS",
+        "D-": "B1_USB2_D_MINUS",
+        "GND": "GND"
+      }
+    },
+    {
+      "id": "B1_BME280",
+      "ref": "B1_BME280",
+      "kind": "BME280",
+      "type": "BME280",
+      "value": "BME280",
+      "role": "sensor",
+      "block": "b1_i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "B1_I2C_SCL",
+        "SDA": "B1_I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B1_SSD1306",
+      "ref": "B1_SSD1306",
+      "kind": "SSD1306_OLED",
+      "type": "SSD1306_OLED",
+      "value": "SSD1306 OLED",
+      "role": "display",
+      "block": "b1_i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "B1_I2C_SCL",
+        "SDA": "B1_I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B1_DS3231",
+      "ref": "B1_DS3231",
+      "kind": "DS3231",
+      "type": "DS3231",
+      "value": "DS3231 RTC",
+      "role": "rtc",
+      "block": "b1_i2c",
+      "pins": {
+        "GND": "GND",
+        "SCL": "B1_I2C_SCL",
+        "SDA": "B1_I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B1_W25Q64_1",
+      "ref": "B1_W25Q64_1",
+      "kind": "W25Q64",
+      "type": "W25Q64",
+      "value": "W25Q64",
+      "role": "memory",
+      "block": "b1_spi",
+      "pins": {
+        "CLK": "B1_SPI_SCK",
+        "CS": "B1_CS_FLASH1",
+        "DI": "B1_SPI_MOSI",
+        "DO": "B1_SPI_MISO",
+        "GND": "GND",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B1_W25Q64_2",
+      "ref": "B1_W25Q64_2",
+      "kind": "W25Q64",
+      "type": "W25Q64",
+      "value": "W25Q64",
+      "role": "memory",
+      "block": "b1_spi",
+      "pins": {
+        "CLK": "B1_SPI_SCK",
+        "CS": "B1_CS_FLASH2",
+        "DI": "B1_SPI_MOSI",
+        "DO": "B1_SPI_MISO",
+        "GND": "GND",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B1_U595_1",
+      "ref": "B1_U595_1",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595",
+      "role": "logic",
+      "block": "b1_shift_registers",
+      "pins": {
+        "MR": "+5V",
+        "OE": "GND",
+        "Q0": "B1_LED1_DRIVE",
+        "Q1": "B1_LED2_DRIVE",
+        "Q2": "B1_LED3_DRIVE",
+        "Q3": "B1_LED4_DRIVE",
+        "Q4": "B1_LED5_DRIVE",
+        "Q5": "B1_LED6_DRIVE",
+        "Q6": "B1_LED7_DRIVE",
+        "Q7": "B1_LED8_DRIVE",
+        "Q7S": "B1_SHIFT_CHAIN_1",
+        "SER": "B1_SPI_MOSI",
+        "SHCP": "B1_SPI_SCK",
+        "STCP": "B1_SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "B1_U595_2",
+      "ref": "B1_U595_2",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595",
+      "role": "logic",
+      "block": "b1_shift_registers",
+      "pins": {
+        "MR": "+5V",
+        "OE": "GND",
+        "Q0": "B1_LED9_DRIVE",
+        "Q1": "B1_LED10_DRIVE",
+        "Q2": "B1_LED11_DRIVE",
+        "Q3": "B1_LED12_DRIVE",
+        "Q4": "B1_LED13_DRIVE",
+        "Q5": "B1_LED14_DRIVE",
+        "Q6": "B1_LED15_DRIVE",
+        "Q7": "B1_LED16_DRIVE",
+        "Q7S": "B1_SHIFT_CHAIN_2",
+        "SER": "B1_SHIFT_CHAIN_1",
+        "SHCP": "B1_SPI_SCK",
+        "STCP": "B1_SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "B1_U595_3",
+      "ref": "B1_U595_3",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595",
+      "role": "logic",
+      "block": "b1_shift_registers",
+      "pins": {
+        "MR": "+5V",
+        "OE": "GND",
+        "Q0": "B1_EXP1_Q0",
+        "Q1": "B1_EXP1_Q1",
+        "Q2": "B1_EXP1_Q2",
+        "Q3": "B1_EXP1_Q3",
+        "Q4": "B1_EXP1_Q4",
+        "Q5": "B1_EXP1_Q5",
+        "Q6": "B1_EXP1_Q6",
+        "Q7": "B1_EXP1_Q7",
+        "Q7S": "B1_SHIFT_CHAIN_3",
+        "SER": "B1_SHIFT_CHAIN_2",
+        "SHCP": "B1_SPI_SCK",
+        "STCP": "B1_SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "B1_U595_4",
+      "ref": "B1_U595_4",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595",
+      "role": "logic",
+      "block": "b1_shift_registers",
+      "pins": {
+        "MR": "+5V",
+        "OE": "GND",
+        "Q0": "B1_EXP2_Q0",
+        "Q1": "B1_EXP2_Q1",
+        "Q2": "B1_EXP2_Q2",
+        "Q3": "B1_EXP2_Q3",
+        "Q4": "B1_EXP2_Q4",
+        "Q5": "B1_EXP2_Q5",
+        "Q6": "B1_EXP2_Q6",
+        "Q7": "B1_EXP2_Q7",
+        "SER": "B1_SHIFT_CHAIN_3",
+        "SHCP": "B1_SPI_SCK",
+        "STCP": "B1_SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "B1_MCP2515",
+      "ref": "B1_MCP2515",
+      "kind": "MCP2515",
+      "type": "MCP2515",
+      "value": "MCP2515",
+      "role": "can_controller",
+      "block": "b1_communication",
+      "pins": {
+        "CS": "B1_CS_CAN",
+        "INT": "B1_CAN_INT",
+        "RXCAN": "B1_CAN_RXD",
+        "SCK": "B1_SPI_SCK",
+        "SI": "B1_SPI_MOSI",
+        "SO": "B1_SPI_MISO",
+        "TXCAN": "B1_CAN_TXD",
+        "VDD": "+3V3",
+        "VSS": "GND"
+      }
+    },
+    {
+      "id": "B1_TJA1050",
+      "ref": "B1_TJA1050",
+      "kind": "TJA1050",
+      "type": "TJA1050",
+      "value": "TJA1050",
+      "role": "can_transceiver",
+      "block": "b1_communication",
+      "pins": {
+        "CANH": "B1_CANH",
+        "CANL": "B1_CANL",
+        "GND": "GND",
+        "RXD": "B1_CAN_RXD",
+        "TXD": "B1_CAN_TXD",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "B1_MAX485",
+      "ref": "B1_MAX485",
+      "kind": "MAX485",
+      "type": "MAX485",
+      "value": "MAX485",
+      "role": "rs485_transceiver",
+      "block": "b1_communication",
+      "pins": {
+        "A": "B1_RS485_A",
+        "B": "B1_RS485_B",
+        "DE": "B1_RS485_DE_RE",
+        "DI": "B1_RS485_DI",
+        "GND": "GND",
+        "RE": "B1_RS485_DE_RE",
+        "RO": "B1_RS485_RO",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "B1_Q_MOSFET_1",
+      "ref": "B1_Q_MOSFET_1",
+      "kind": "IRLZ44N",
+      "type": "IRLZ44N",
+      "value": "IRLZ44N",
+      "role": "mosfet",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "D": "B1_MOSFET1_LOW",
+        "G": "B1_MOSFET1_GATE",
+        "S": "GND"
+      }
+    },
+    {
+      "id": "B1_Q_MOSFET_2",
+      "ref": "B1_Q_MOSFET_2",
+      "kind": "IRLZ44N",
+      "type": "IRLZ44N",
+      "value": "IRLZ44N",
+      "role": "mosfet",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "D": "B1_MOSFET2_LOW",
+        "G": "B1_MOSFET2_GATE",
+        "S": "GND"
+      }
+    },
+    {
+      "id": "B1_Q_MOSFET_3",
+      "ref": "B1_Q_MOSFET_3",
+      "kind": "IRLZ44N",
+      "type": "IRLZ44N",
+      "value": "IRLZ44N",
+      "role": "mosfet",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "D": "B1_MOSFET3_LOW",
+        "G": "B1_MOSFET3_GATE",
+        "S": "GND"
+      }
+    },
+    {
+      "id": "B1_Q_MOSFET_4",
+      "ref": "B1_Q_MOSFET_4",
+      "kind": "IRLZ44N",
+      "type": "IRLZ44N",
+      "value": "IRLZ44N",
+      "role": "mosfet",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "D": "B1_MOSFET4_LOW",
+        "G": "B1_MOSFET4_GATE",
+        "S": "GND"
+      }
+    },
+    {
+      "id": "B1_Q_NPN_1",
+      "ref": "B1_Q_NPN_1",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547",
+      "role": "bjt",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "B": "B1_RELAY1_BASE",
+        "C": "B1_RELAY1_COIL_LOW",
+        "E": "GND"
+      }
+    },
+    {
+      "id": "B1_Q_NPN_2",
+      "ref": "B1_Q_NPN_2",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547",
+      "role": "bjt",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "B": "B1_RELAY2_BASE",
+        "C": "B1_RELAY2_COIL_LOW",
+        "E": "GND"
+      }
+    },
+    {
+      "id": "B1_Q_NPN_3",
+      "ref": "B1_Q_NPN_3",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547",
+      "role": "bjt",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "B": "B1_RELAY3_BASE",
+        "C": "B1_RELAY3_COIL_LOW",
+        "E": "GND"
+      }
+    },
+    {
+      "id": "B1_Q_NPN_4",
+      "ref": "B1_Q_NPN_4",
+      "kind": "BC547",
+      "type": "BC547",
+      "value": "BC547",
+      "role": "bjt",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "B": "B1_RELAY4_BASE",
+        "C": "B1_RELAY4_COIL_LOW",
+        "E": "GND"
+      }
+    },
+    {
+      "id": "B1_K_RELAY_1",
+      "ref": "B1_K_RELAY_1",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V relay",
+      "role": "relay",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "COIL_MINUS": "B1_RELAY1_COIL_LOW",
+        "COIL_PLUS": "+5V",
+        "COM": "B1_RELAY1_COM",
+        "NO": "B1_RELAY1_NO"
+      }
+    },
+    {
+      "id": "B1_K_RELAY_2",
+      "ref": "B1_K_RELAY_2",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V relay",
+      "role": "relay",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "COIL_MINUS": "B1_RELAY2_COIL_LOW",
+        "COIL_PLUS": "+5V",
+        "COM": "B1_RELAY2_COM",
+        "NO": "B1_RELAY2_NO"
+      }
+    },
+    {
+      "id": "B1_K_RELAY_3",
+      "ref": "B1_K_RELAY_3",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V relay",
+      "role": "relay",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "COIL_MINUS": "B1_RELAY3_COIL_LOW",
+        "COIL_PLUS": "+5V",
+        "COM": "B1_RELAY3_COM",
+        "NO": "B1_RELAY3_NO"
+      }
+    },
+    {
+      "id": "B1_K_RELAY_4",
+      "ref": "B1_K_RELAY_4",
+      "kind": "RELAY_5V",
+      "type": "RELAY_5V",
+      "value": "5V relay",
+      "role": "relay",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "COIL_MINUS": "B1_RELAY4_COIL_LOW",
+        "COIL_PLUS": "+5V",
+        "COM": "B1_RELAY4_COM",
+        "NO": "B1_RELAY4_NO"
+      }
+    },
+    {
+      "id": "B1_D_FLYBACK_1",
+      "ref": "B1_D_FLYBACK_1",
+      "kind": "FLYBACK_DIODE",
+      "type": "FLYBACK_DIODE",
+      "value": "Flyback diode",
+      "role": "diode",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "A": "B1_MOSFET1_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_D_FLYBACK_2",
+      "ref": "B1_D_FLYBACK_2",
+      "kind": "FLYBACK_DIODE",
+      "type": "FLYBACK_DIODE",
+      "value": "Flyback diode",
+      "role": "diode",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "A": "B1_MOSFET2_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_D_FLYBACK_3",
+      "ref": "B1_D_FLYBACK_3",
+      "kind": "FLYBACK_DIODE",
+      "type": "FLYBACK_DIODE",
+      "value": "Flyback diode",
+      "role": "diode",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "A": "B1_MOSFET3_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_D_FLYBACK_4",
+      "ref": "B1_D_FLYBACK_4",
+      "kind": "FLYBACK_DIODE",
+      "type": "FLYBACK_DIODE",
+      "value": "Flyback diode",
+      "role": "diode",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "A": "B1_MOSFET4_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_D_RELAY_1",
+      "ref": "B1_D_RELAY_1",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay flyback diode",
+      "role": "diode",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "A": "B1_RELAY1_COIL_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_D_RELAY_2",
+      "ref": "B1_D_RELAY_2",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay flyback diode",
+      "role": "diode",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "A": "B1_RELAY2_COIL_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_D_RELAY_3",
+      "ref": "B1_D_RELAY_3",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay flyback diode",
+      "role": "diode",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "A": "B1_RELAY3_COIL_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_D_RELAY_4",
+      "ref": "B1_D_RELAY_4",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "type": "RELAY_FLYBACK_DIODE",
+      "value": "Relay flyback diode",
+      "role": "diode",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "A": "B1_RELAY4_COIL_LOW",
+        "K": "+5V"
+      }
+    },
+    {
+      "id": "B1_LED1",
+      "ref": "B1_LED1",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED1_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED2",
+      "ref": "B1_LED2",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED2_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED3",
+      "ref": "B1_LED3",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED3_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED4",
+      "ref": "B1_LED4",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED4_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED5",
+      "ref": "B1_LED5",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED5_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED6",
+      "ref": "B1_LED6",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED6_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED7",
+      "ref": "B1_LED7",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED7_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED8",
+      "ref": "B1_LED8",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED8_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED9",
+      "ref": "B1_LED9",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED9_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED10",
+      "ref": "B1_LED10",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED10_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED11",
+      "ref": "B1_LED11",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED11_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED12",
+      "ref": "B1_LED12",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED12_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED13",
+      "ref": "B1_LED13",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED13_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED14",
+      "ref": "B1_LED14",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED14_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED15",
+      "ref": "B1_LED15",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED15_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_LED16",
+      "ref": "B1_LED16",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1_led_outputs",
+      "pins": {
+        "A": "B1_LED16_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_SW_BTN_1",
+      "ref": "B1_SW_BTN_1",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "button",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON1_NET",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "B1_SW_BTN_2",
+      "ref": "B1_SW_BTN_2",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "button",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON2_NET",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "B1_SW_BTN_3",
+      "ref": "B1_SW_BTN_3",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "button",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON3_NET",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "B1_SW_BTN_4",
+      "ref": "B1_SW_BTN_4",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "button",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON4_NET",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "B1_SW_BTN_5",
+      "ref": "B1_SW_BTN_5",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "button",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON5_NET",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "B1_SW_BTN_6",
+      "ref": "B1_SW_BTN_6",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "button",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON6_NET",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "B1_RV1",
+      "ref": "B1_RV1",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "analog_control",
+      "block": "b1_analog",
+      "pins": {
+        "1": "GND",
+        "2": "B1_ANALOG1_WIPER",
+        "3": "B1_ANALOG1_INPUT"
+      }
+    },
+    {
+      "id": "B1_RV2",
+      "ref": "B1_RV2",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "analog_control",
+      "block": "b1_analog",
+      "pins": {
+        "1": "GND",
+        "2": "B1_ANALOG2_WIPER",
+        "3": "B1_ANALOG2_INPUT"
+      }
+    },
+    {
+      "id": "B1_RV3",
+      "ref": "B1_RV3",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "analog_control",
+      "block": "b1_analog",
+      "pins": {
+        "1": "GND",
+        "2": "B1_ANALOG3_WIPER",
+        "3": "B1_ANALOG3_INPUT"
+      }
+    },
+    {
+      "id": "B1_RV4",
+      "ref": "B1_RV4",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "analog_control",
+      "block": "b1_analog",
+      "pins": {
+        "1": "GND",
+        "2": "B1_ANALOG4_WIPER",
+        "3": "B1_ANALOG4_INPUT"
+      }
+    },
+    {
+      "id": "B1_U_LM358_CHANNEL_1",
+      "ref": "B1_U_LM358_CHANNEL_1",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358 channel",
+      "role": "opamp",
+      "block": "b1_analog",
+      "pins": {
+        "IN_MINUS": "B1_ANALOG1_BUFFER",
+        "IN_PLUS": "B1_ANALOG1_WIPER",
+        "OUT": "B1_ANALOG1_BUFFER"
+      }
+    },
+    {
+      "id": "B1_U_LM358_CHANNEL_2",
+      "ref": "B1_U_LM358_CHANNEL_2",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358 channel",
+      "role": "opamp",
+      "block": "b1_analog",
+      "pins": {
+        "IN_MINUS": "B1_ANALOG2_BUFFER",
+        "IN_PLUS": "B1_ANALOG2_WIPER",
+        "OUT": "B1_ANALOG2_BUFFER"
+      }
+    },
+    {
+      "id": "B1_U_LM358_CHANNEL_3",
+      "ref": "B1_U_LM358_CHANNEL_3",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358 channel",
+      "role": "opamp",
+      "block": "b1_analog",
+      "pins": {
+        "IN_MINUS": "B1_ANALOG3_BUFFER",
+        "IN_PLUS": "B1_ANALOG3_WIPER",
+        "OUT": "B1_ANALOG3_BUFFER"
+      }
+    },
+    {
+      "id": "B1_U_LM358_CHANNEL_4",
+      "ref": "B1_U_LM358_CHANNEL_4",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358 channel",
+      "role": "opamp",
+      "block": "b1_analog",
+      "pins": {
+        "IN_MINUS": "B1_ANALOG4_BUFFER",
+        "IN_PLUS": "B1_ANALOG4_WIPER",
+        "OUT": "B1_ANALOG4_BUFFER"
+      }
+    },
+    {
+      "id": "B1_R_GATE_1",
+      "ref": "B1_R_GATE_1",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "220 ohm gate resistor",
+      "role": "resistor",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET1_CTRL",
+        "2": "B1_MOSFET1_GATE"
+      }
+    },
+    {
+      "id": "B1_R_GATE_2",
+      "ref": "B1_R_GATE_2",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "220 ohm gate resistor",
+      "role": "resistor",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET2_CTRL",
+        "2": "B1_MOSFET2_GATE"
+      }
+    },
+    {
+      "id": "B1_R_GATE_3",
+      "ref": "B1_R_GATE_3",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "220 ohm gate resistor",
+      "role": "resistor",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET3_CTRL",
+        "2": "B1_MOSFET3_GATE"
+      }
+    },
+    {
+      "id": "B1_R_GATE_4",
+      "ref": "B1_R_GATE_4",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "220 ohm gate resistor",
+      "role": "resistor",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET4_CTRL",
+        "2": "B1_MOSFET4_GATE"
+      }
+    },
+    {
+      "id": "B1_R_PULLDOWN_1",
+      "ref": "B1_R_PULLDOWN_1",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET1_GATE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_PULLDOWN_2",
+      "ref": "B1_R_PULLDOWN_2",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET2_GATE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_PULLDOWN_3",
+      "ref": "B1_R_PULLDOWN_3",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET3_GATE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_PULLDOWN_4",
+      "ref": "B1_R_PULLDOWN_4",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "B1_MOSFET4_GATE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_BASE_1",
+      "ref": "B1_R_BASE_1",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "2.2k base resistor",
+      "role": "resistor",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY1_CTRL",
+        "2": "B1_RELAY1_BASE"
+      }
+    },
+    {
+      "id": "B1_R_BASE_2",
+      "ref": "B1_R_BASE_2",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "2.2k base resistor",
+      "role": "resistor",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY2_CTRL",
+        "2": "B1_RELAY2_BASE"
+      }
+    },
+    {
+      "id": "B1_R_BASE_3",
+      "ref": "B1_R_BASE_3",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "2.2k base resistor",
+      "role": "resistor",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY3_CTRL",
+        "2": "B1_RELAY3_BASE"
+      }
+    },
+    {
+      "id": "B1_R_BASE_4",
+      "ref": "B1_R_BASE_4",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "2.2k base resistor",
+      "role": "resistor",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY4_CTRL",
+        "2": "B1_RELAY4_BASE"
+      }
+    },
+    {
+      "id": "B1_R_BTN_PD_1",
+      "ref": "B1_R_BTN_PD_1",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON1_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_BTN_PD_2",
+      "ref": "B1_R_BTN_PD_2",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON2_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_BTN_PD_3",
+      "ref": "B1_R_BTN_PD_3",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON3_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_BTN_PD_4",
+      "ref": "B1_R_BTN_PD_4",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON4_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_BTN_PD_5",
+      "ref": "B1_R_BTN_PD_5",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON5_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_BTN_PD_6",
+      "ref": "B1_R_BTN_PD_6",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1_buttons",
+      "pins": {
+        "1": "B1_BUTTON6_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_LED_1",
+      "ref": "B1_R_LED_1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED1_DRIVE",
+        "2": "B1_LED1_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_2",
+      "ref": "B1_R_LED_2",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED2_DRIVE",
+        "2": "B1_LED2_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_3",
+      "ref": "B1_R_LED_3",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED3_DRIVE",
+        "2": "B1_LED3_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_4",
+      "ref": "B1_R_LED_4",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED4_DRIVE",
+        "2": "B1_LED4_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_5",
+      "ref": "B1_R_LED_5",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED5_DRIVE",
+        "2": "B1_LED5_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_6",
+      "ref": "B1_R_LED_6",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED6_DRIVE",
+        "2": "B1_LED6_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_7",
+      "ref": "B1_R_LED_7",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED7_DRIVE",
+        "2": "B1_LED7_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_8",
+      "ref": "B1_R_LED_8",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED8_DRIVE",
+        "2": "B1_LED8_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_9",
+      "ref": "B1_R_LED_9",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED9_DRIVE",
+        "2": "B1_LED9_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_10",
+      "ref": "B1_R_LED_10",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED10_DRIVE",
+        "2": "B1_LED10_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_11",
+      "ref": "B1_R_LED_11",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED11_DRIVE",
+        "2": "B1_LED11_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_12",
+      "ref": "B1_R_LED_12",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED12_DRIVE",
+        "2": "B1_LED12_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_13",
+      "ref": "B1_R_LED_13",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED13_DRIVE",
+        "2": "B1_LED13_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_14",
+      "ref": "B1_R_LED_14",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED14_DRIVE",
+        "2": "B1_LED14_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_15",
+      "ref": "B1_R_LED_15",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED15_DRIVE",
+        "2": "B1_LED15_A"
+      }
+    },
+    {
+      "id": "B1_R_LED_16",
+      "ref": "B1_R_LED_16",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1_led_outputs",
+      "pins": {
+        "1": "B1_LED16_DRIVE",
+        "2": "B1_LED16_A"
+      }
+    },
+    {
+      "id": "B1_R_I2C_SDA",
+      "ref": "B1_R_I2C_SDA",
+      "kind": "R_4K7_PULLUP",
+      "type": "R_4K7_PULLUP",
+      "value": "4.7k pullup",
+      "role": "pullup",
+      "block": "b1_i2c",
+      "pins": {
+        "1": "+3V3",
+        "2": "B1_I2C_SDA"
+      }
+    },
+    {
+      "id": "B1_R_I2C_SCL",
+      "ref": "B1_R_I2C_SCL",
+      "kind": "R_4K7_PULLUP",
+      "type": "R_4K7_PULLUP",
+      "value": "4.7k pullup",
+      "role": "pullup",
+      "block": "b1_i2c",
+      "pins": {
+        "1": "+3V3",
+        "2": "B1_I2C_SCL"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_1",
+      "ref": "B1_C_DECOUPLE_1",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_2",
+      "ref": "B1_C_DECOUPLE_2",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_3",
+      "ref": "B1_C_DECOUPLE_3",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_4",
+      "ref": "B1_C_DECOUPLE_4",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_5",
+      "ref": "B1_C_DECOUPLE_5",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_6",
+      "ref": "B1_C_DECOUPLE_6",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_7",
+      "ref": "B1_C_DECOUPLE_7",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_8",
+      "ref": "B1_C_DECOUPLE_8",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_9",
+      "ref": "B1_C_DECOUPLE_9",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_10",
+      "ref": "B1_C_DECOUPLE_10",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_11",
+      "ref": "B1_C_DECOUPLE_11",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_12",
+      "ref": "B1_C_DECOUPLE_12",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_13",
+      "ref": "B1_C_DECOUPLE_13",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_14",
+      "ref": "B1_C_DECOUPLE_14",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_15",
+      "ref": "B1_C_DECOUPLE_15",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_16",
+      "ref": "B1_C_DECOUPLE_16",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_17",
+      "ref": "B1_C_DECOUPLE_17",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_18",
+      "ref": "B1_C_DECOUPLE_18",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_19",
+      "ref": "B1_C_DECOUPLE_19",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_20",
+      "ref": "B1_C_DECOUPLE_20",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_21",
+      "ref": "B1_C_DECOUPLE_21",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_22",
+      "ref": "B1_C_DECOUPLE_22",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_23",
+      "ref": "B1_C_DECOUPLE_23",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_C_DECOUPLE_24",
+      "ref": "B1_C_DECOUPLE_24",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b1_power",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R_PROT_1",
+      "ref": "B1_R_PROT_1",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_1_MCU",
+        "2": "B1_GPIO_EXT_1_HEADER"
+      }
+    },
+    {
+      "id": "B1_R_PROT_2",
+      "ref": "B1_R_PROT_2",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_2_MCU",
+        "2": "B1_GPIO_EXT_2_HEADER"
+      }
+    },
+    {
+      "id": "B1_R_PROT_3",
+      "ref": "B1_R_PROT_3",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_3_MCU",
+        "2": "B1_GPIO_EXT_3_HEADER"
+      }
+    },
+    {
+      "id": "B1_R_PROT_4",
+      "ref": "B1_R_PROT_4",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_4_MCU",
+        "2": "B1_GPIO_EXT_4_HEADER"
+      }
+    },
+    {
+      "id": "B1_R_PROT_5",
+      "ref": "B1_R_PROT_5",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_5_MCU",
+        "2": "B1_GPIO_EXT_5_HEADER"
+      }
+    },
+    {
+      "id": "B1_R_PROT_6",
+      "ref": "B1_R_PROT_6",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_6_MCU",
+        "2": "B1_GPIO_EXT_6_HEADER"
+      }
+    },
+    {
+      "id": "B1_R_PROT_7",
+      "ref": "B1_R_PROT_7",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_7_MCU",
+        "2": "B1_GPIO_EXT_7_HEADER"
+      }
+    },
+    {
+      "id": "B1_R_PROT_8",
+      "ref": "B1_R_PROT_8",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "GPIO protection resistor",
+      "role": "resistor",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_8_MCU",
+        "2": "B1_GPIO_EXT_8_HEADER"
+      }
+    },
+    {
+      "id": "B1_J_LOAD_1",
+      "ref": "B1_J_LOAD_1",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Load terminal",
+      "role": "connector",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_MOSFET1_LOW"
+      }
+    },
+    {
+      "id": "B1_J_LOAD_2",
+      "ref": "B1_J_LOAD_2",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Load terminal",
+      "role": "connector",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_MOSFET2_LOW"
+      }
+    },
+    {
+      "id": "B1_J_LOAD_3",
+      "ref": "B1_J_LOAD_3",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Load terminal",
+      "role": "connector",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_MOSFET3_LOW"
+      }
+    },
+    {
+      "id": "B1_J_LOAD_4",
+      "ref": "B1_J_LOAD_4",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Load terminal",
+      "role": "connector",
+      "block": "b1_mosfet_outputs",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_MOSFET4_LOW"
+      }
+    },
+    {
+      "id": "B1_J_RELAY_1",
+      "ref": "B1_J_RELAY_1",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Relay terminal",
+      "role": "connector",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY1_COM",
+        "2": "B1_RELAY1_NO"
+      }
+    },
+    {
+      "id": "B1_J_RELAY_2",
+      "ref": "B1_J_RELAY_2",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Relay terminal",
+      "role": "connector",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY2_COM",
+        "2": "B1_RELAY2_NO"
+      }
+    },
+    {
+      "id": "B1_J_RELAY_3",
+      "ref": "B1_J_RELAY_3",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Relay terminal",
+      "role": "connector",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY3_COM",
+        "2": "B1_RELAY3_NO"
+      }
+    },
+    {
+      "id": "B1_J_RELAY_4",
+      "ref": "B1_J_RELAY_4",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "Relay terminal",
+      "role": "connector",
+      "block": "b1_relay_outputs",
+      "pins": {
+        "1": "B1_RELAY4_COM",
+        "2": "B1_RELAY4_NO"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_1",
+      "ref": "B1_J_HEADER_1",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_1_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_2",
+      "ref": "B1_J_HEADER_2",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_2_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_3",
+      "ref": "B1_J_HEADER_3",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_3_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_4",
+      "ref": "B1_J_HEADER_4",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_4_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_5",
+      "ref": "B1_J_HEADER_5",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_5_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_6",
+      "ref": "B1_J_HEADER_6",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_6_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_7",
+      "ref": "B1_J_HEADER_7",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_7_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_HEADER_8",
+      "ref": "B1_J_HEADER_8",
+      "kind": "HEADER_CONNECTOR",
+      "type": "HEADER_CONNECTOR",
+      "value": "GPIO expansion header",
+      "role": "connector",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_GPIO_EXT_8_HEADER",
+        "2": "+5V",
+        "3": "GND",
+        "4": "+3V3"
+      }
+    },
+    {
+      "id": "B1_J_EXP1",
+      "ref": "B1_J_EXP1",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Expansion header 1",
+      "role": "connector",
+      "block": "b1_shift_registers",
+      "pins": {
+        "1": "B1_EXP1_Q0",
+        "2": "B1_EXP1_Q1",
+        "3": "B1_EXP1_Q2",
+        "4": "B1_EXP1_Q3",
+        "5": "B1_EXP1_Q4",
+        "6": "B1_EXP1_Q5",
+        "7": "B1_EXP1_Q6",
+        "8": "B1_EXP1_Q7"
+      }
+    },
+    {
+      "id": "B1_J_EXP2",
+      "ref": "B1_J_EXP2",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Expansion header 2",
+      "role": "connector",
+      "block": "b1_shift_registers",
+      "pins": {
+        "1": "B1_EXP2_Q0",
+        "2": "B1_EXP2_Q1",
+        "3": "B1_EXP2_Q2",
+        "4": "B1_EXP2_Q3",
+        "5": "B1_EXP2_Q4",
+        "6": "B1_EXP2_Q5",
+        "7": "B1_EXP2_Q6",
+        "8": "B1_EXP2_Q7"
+      }
+    },
+    {
+      "id": "B1_J_ANALOG",
+      "ref": "B1_J_ANALOG",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Analog header",
+      "role": "connector",
+      "block": "b1_analog",
+      "pins": {
+        "1": "B1_ANALOG1_INPUT",
+        "2": "B1_ANALOG2_INPUT",
+        "3": "B1_ANALOG3_INPUT",
+        "4": "B1_ANALOG4_INPUT"
+      }
+    },
+    {
+      "id": "B1_J_I2C",
+      "ref": "B1_J_I2C",
+      "kind": "I2C_HEADER",
+      "type": "I2C_HEADER",
+      "value": "I2C header",
+      "role": "connector",
+      "block": "b1_i2c",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_I2C_SDA",
+        "3": "B1_I2C_SCL",
+        "4": "GND"
+      }
+    },
+    {
+      "id": "B1_J_SPI",
+      "ref": "B1_J_SPI",
+      "kind": "SPI_HEADER_FLASH",
+      "type": "SPI_HEADER_FLASH",
+      "value": "SPI header",
+      "role": "connector",
+      "block": "b1_spi",
+      "pins": {
+        "1": "+5V",
+        "3": "B1_SPI_SCK",
+        "4": "B1_SPI_MOSI",
+        "5": "B1_SPI_MISO",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "B1_J_POWER",
+      "ref": "B1_J_POWER",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Power header",
+      "role": "connector",
+      "block": "b1_power",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_J_CAN",
+      "ref": "B1_J_CAN",
+      "kind": "CAN_TERMINAL",
+      "type": "CAN_TERMINAL",
+      "value": "CAN terminal",
+      "role": "connector",
+      "block": "b1_communication",
+      "pins": {
+        "1": "B1_CANH",
+        "2": "B1_CANL",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "B1_J_RS485",
+      "ref": "B1_J_RS485",
+      "kind": "RS485_TERMINAL",
+      "type": "RS485_TERMINAL",
+      "value": "RS485 terminal",
+      "role": "connector",
+      "block": "b1_communication",
+      "pins": {
+        "1": "B1_RS485_A",
+        "2": "B1_RS485_B",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "B1_JP_MODE_1",
+      "ref": "B1_JP_MODE_1",
+      "kind": "CHIP_SELECT_JUMPER",
+      "type": "CHIP_SELECT_JUMPER",
+      "value": "Mode jumper",
+      "role": "jumper",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_MODE1_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_JP_MODE_2",
+      "ref": "B1_JP_MODE_2",
+      "kind": "CHIP_SELECT_JUMPER",
+      "type": "CHIP_SELECT_JUMPER",
+      "value": "Mode jumper",
+      "role": "jumper",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_MODE2_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_JP_MODE_3",
+      "ref": "B1_JP_MODE_3",
+      "kind": "CHIP_SELECT_JUMPER",
+      "type": "CHIP_SELECT_JUMPER",
+      "value": "Mode jumper",
+      "role": "jumper",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_MODE3_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_JP_MODE_4",
+      "ref": "B1_JP_MODE_4",
+      "kind": "CHIP_SELECT_JUMPER",
+      "type": "CHIP_SELECT_JUMPER",
+      "value": "Mode jumper",
+      "role": "jumper",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_MODE4_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_JP_MODE_5",
+      "ref": "B1_JP_MODE_5",
+      "kind": "CHIP_SELECT_JUMPER",
+      "type": "CHIP_SELECT_JUMPER",
+      "value": "Mode jumper",
+      "role": "jumper",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_MODE5_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_JP_MODE_6",
+      "ref": "B1_JP_MODE_6",
+      "kind": "CHIP_SELECT_JUMPER",
+      "type": "CHIP_SELECT_JUMPER",
+      "value": "Mode jumper",
+      "role": "jumper",
+      "block": "b1_expansion",
+      "pins": {
+        "1": "B1_MODE6_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_TP1",
+      "ref": "B1_TP1",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_I2C_SDA"
+      }
+    },
+    {
+      "id": "B1_TP2",
+      "ref": "B1_TP2",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_I2C_SCL"
+      }
+    },
+    {
+      "id": "B1_TP3",
+      "ref": "B1_TP3",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_SPI_MOSI"
+      }
+    },
+    {
+      "id": "B1_TP4",
+      "ref": "B1_TP4",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_SPI_MISO"
+      }
+    },
+    {
+      "id": "B1_TP5",
+      "ref": "B1_TP5",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_SPI_SCK"
+      }
+    },
+    {
+      "id": "B1_TP6",
+      "ref": "B1_TP6",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_CAN_INT"
+      }
+    },
+    {
+      "id": "B1_TP7",
+      "ref": "B1_TP7",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_RS485_DE_RE"
+      }
+    },
+    {
+      "id": "B1_TP8",
+      "ref": "B1_TP8",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_CANH"
+      }
+    },
+    {
+      "id": "B1_TP9",
+      "ref": "B1_TP9",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_CANL"
+      }
+    },
+    {
+      "id": "B1_TP10",
+      "ref": "B1_TP10",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_RS485_A"
+      }
+    },
+    {
+      "id": "B1_TP11",
+      "ref": "B1_TP11",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_RS485_B"
+      }
+    },
+    {
+      "id": "B1_TP12",
+      "ref": "B1_TP12",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "B1_TP13",
+      "ref": "B1_TP13",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "B1_TP14",
+      "ref": "B1_TP14",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "+5V"
+      }
+    },
+    {
+      "id": "B1_TP15",
+      "ref": "B1_TP15",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "+3V3"
+      }
+    },
+    {
+      "id": "B1_TP16",
+      "ref": "B1_TP16",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "B1_TP17",
+      "ref": "B1_TP17",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_1_HEADER"
+      }
+    },
+    {
+      "id": "B1_TP18",
+      "ref": "B1_TP18",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_2_HEADER"
+      }
+    },
+    {
+      "id": "B1_TP19",
+      "ref": "B1_TP19",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_3_HEADER"
+      }
+    },
+    {
+      "id": "B1_TP20",
+      "ref": "B1_TP20",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_4_HEADER"
+      }
+    },
+    {
+      "id": "B1_TP21",
+      "ref": "B1_TP21",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_5_HEADER"
+      }
+    },
+    {
+      "id": "B1_TP22",
+      "ref": "B1_TP22",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_6_HEADER"
+      }
+    },
+    {
+      "id": "B1_TP23",
+      "ref": "B1_TP23",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_7_HEADER"
+      }
+    },
+    {
+      "id": "B1_TP24",
+      "ref": "B1_TP24",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b1_testpoints",
+      "pins": {
+        "1": "B1_GPIO_EXT_8_HEADER"
+      }
+    },
+    {
+      "id": "B2_U1",
+      "ref": "B2_U1",
+      "kind": "BME280",
+      "type": "BME280",
+      "value": "BME280",
+      "role": "sensor",
+      "block": "b2",
+      "pins": {
+        "CSB": "+3V3",
+        "GND": "GND",
+        "SCL": "B2_I2C_SCL",
+        "SDA": "B2_I2C_SDA",
+        "SDO": "GND",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B2_U2",
+      "ref": "B2_U2",
+      "kind": "SSD1306_OLED",
+      "type": "SSD1306_OLED",
+      "value": "SSD1306 OLED",
+      "role": "display",
+      "block": "b2",
+      "pins": {
+        "GND": "GND",
+        "SCL": "B2_I2C_SCL",
+        "SDA": "B2_I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B2_U3",
+      "ref": "B2_U3",
+      "kind": "DS3231",
+      "type": "DS3231",
+      "value": "DS3231 RTC",
+      "role": "rtc",
+      "block": "b2",
+      "pins": {
+        "GND": "GND",
+        "SCL": "B2_I2C_SCL",
+        "SDA": "B2_I2C_SDA",
+        "VBAT": "B2_RTC_VBAT",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "B2_U4",
+      "ref": "B2_U4",
+      "kind": "W25Q64",
+      "type": "W25Q64",
+      "value": "W25Q64",
+      "role": "memory",
+      "block": "b2",
+      "pins": {
+        "CLK": "B2_SPI_SCK",
+        "CS": "B2_SPI_CS_FLASH",
+        "DI": "B2_SPI_MOSI",
+        "DO": "B2_SPI_MISO",
+        "GND": "GND",
+        "HOLD": "B2_FLASH_WP_HOLD",
+        "VCC": "+3V3",
+        "WP": "B2_FLASH_WP_HOLD"
+      }
+    },
+    {
+      "id": "B2_R1",
+      "ref": "B2_R1",
+      "kind": "R_4K7_PULLUP",
+      "type": "R_4K7_PULLUP",
+      "value": "4.7k pullup",
+      "role": "pullup",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "B2_I2C_SDA"
+      }
+    },
+    {
+      "id": "B2_R2",
+      "ref": "B2_R2",
+      "kind": "R_4K7_PULLUP",
+      "type": "R_4K7_PULLUP",
+      "value": "4.7k pullup",
+      "role": "pullup",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "B2_I2C_SCL"
+      }
+    },
+    {
+      "id": "B2_R3",
+      "ref": "B2_R3",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "SPI pullup",
+      "role": "pullup",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "B2_SPI_CS_FLASH"
+      }
+    },
+    {
+      "id": "B2_R4",
+      "ref": "B2_R4",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "SPI pullup",
+      "role": "pullup",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "B2_FLASH_WP_HOLD"
+      }
+    },
+    {
+      "id": "B2_C1",
+      "ref": "B2_C1",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_C2",
+      "ref": "B2_C2",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_C3",
+      "ref": "B2_C3",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_C4",
+      "ref": "B2_C4",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_C5",
+      "ref": "B2_C5",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_C6",
+      "ref": "B2_C6",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "decoupling",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_J1",
+      "ref": "B2_J1",
+      "kind": "JST_CONNECTOR",
+      "type": "JST_CONNECTOR",
+      "value": "JST connector",
+      "role": "connector",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND",
+        "3": "B2_I2C_SDA",
+        "4": "B2_I2C_SCL"
+      }
+    },
+    {
+      "id": "B2_J2",
+      "ref": "B2_J2",
+      "kind": "JST_CONNECTOR",
+      "type": "JST_CONNECTOR",
+      "value": "JST connector",
+      "role": "connector",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND",
+        "3": "B2_I2C_SDA",
+        "4": "B2_I2C_SCL"
+      }
+    },
+    {
+      "id": "B2_J3",
+      "ref": "B2_J3",
+      "kind": "I2C_HEADER",
+      "type": "I2C_HEADER",
+      "value": "I2C header",
+      "role": "connector",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "B2_I2C_SDA",
+        "3": "B2_I2C_SCL",
+        "4": "GND"
+      }
+    },
+    {
+      "id": "B2_J4",
+      "ref": "B2_J4",
+      "kind": "I2C_HEADER",
+      "type": "I2C_HEADER",
+      "value": "I2C header",
+      "role": "connector",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "B2_I2C_SDA",
+        "3": "B2_I2C_SCL",
+        "4": "GND"
+      }
+    },
+    {
+      "id": "B2_J5",
+      "ref": "B2_J5",
+      "kind": "SPI_HEADER_FLASH",
+      "type": "SPI_HEADER_FLASH",
+      "value": "SPI header",
+      "role": "connector",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3",
+        "2": "B2_SPI_CS_FLASH",
+        "3": "B2_SPI_SCK",
+        "4": "B2_SPI_MOSI",
+        "5": "B2_SPI_MISO",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "B2_BT1",
+      "ref": "B2_BT1",
+      "kind": "COIN_CELL_HOLDER",
+      "type": "COIN_CELL_HOLDER",
+      "value": "CR2032 holder",
+      "role": "battery",
+      "block": "b2",
+      "pins": {
+        "NEG": "GND",
+        "POS": "B2_RTC_VBAT"
+      }
+    },
+    {
+      "id": "B2_TP1",
+      "ref": "B2_TP1",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b2",
+      "pins": {
+        "1": "+3V3"
+      }
+    },
+    {
+      "id": "B2_TP2",
+      "ref": "B2_TP2",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b2",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "B2_TP3",
+      "ref": "B2_TP3",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b2",
+      "pins": {
+        "1": "B2_I2C_SDA"
+      }
+    },
+    {
+      "id": "B2_TP4",
+      "ref": "B2_TP4",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b2",
+      "pins": {
+        "1": "B2_I2C_SCL"
+      }
+    },
+    {
+      "id": "B2_TP5",
+      "ref": "B2_TP5",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b2",
+      "pins": {
+        "1": "B2_SPI_CS_FLASH"
+      }
+    },
+    {
+      "id": "B2_TP6",
+      "ref": "B2_TP6",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test point",
+      "role": "testpoint",
+      "block": "b2",
+      "pins": {
+        "1": "B2_SPI_SCK"
+      }
+    },
+    {
+      "id": "B3_G1",
+      "ref": "B3_G1",
+      "kind": "GROUND",
+      "type": "GROUND",
+      "value": "GND",
+      "role": "reference",
+      "block": "b3_logic",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "B3_V1",
+      "ref": "B3_V1",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "5V logic supply",
+      "role": "source",
+      "block": "b3_logic",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B3_J1",
+      "ref": "B3_J1",
+      "kind": "PROGRAMMING_HEADER",
+      "type": "PROGRAMMING_HEADER",
+      "value": "Control header",
+      "role": "connector",
+      "block": "b3_logic",
+      "pins": {
+        "1": "+5V",
+        "10": "B3_SHIFT_Q1",
+        "11": "B3_SHIFT_Q2",
+        "12": "B3_SHIFT_Q3",
+        "13": "B3_MUX_B_OUT",
+        "14": "B3_ADDER_SUM1",
+        "2": "GND",
+        "3": "B3_CLK",
+        "4": "B3_COUNTER_LOAD",
+        "5": "B3_RIPPLE_Q0",
+        "6": "B3_RIPPLE_Q1",
+        "7": "B3_RIPPLE_Q2",
+        "8": "B3_RIPPLE_Q3",
+        "9": "B3_SHIFT_Q0"
+      }
+    },
+    {
+      "id": "B3_J2",
+      "ref": "B3_J2",
+      "kind": "SPI_HEADER_FLASH",
+      "type": "SPI_HEADER_FLASH",
+      "value": "SPI/debug header",
+      "role": "connector",
+      "block": "b3_logic",
+      "pins": {
+        "1": "+5V",
+        "2": "B3_SHIFT_LATCH",
+        "3": "B3_MUX_OUT",
+        "4": "B3_ADDER_SUM0",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "B3_DS1",
+      "ref": "B3_DS1",
+      "kind": "7SEGCOMA",
+      "type": "7SEGCOMA",
+      "value": "Common-anode display",
+      "role": "display",
+      "block": "b3_display",
+      "pins": {
+        "1": "B3_SEG_CA_A",
+        "10": "+5V",
+        "2": "B3_SEG_CA_B",
+        "3": "B3_SEG_CA_C",
+        "4": "B3_SEG_CA_D",
+        "5": "B3_SEG_CA_E",
+        "6": "B3_SEG_CA_F",
+        "7": "B3_SEG_CA_G"
+      }
+    },
+    {
+      "id": "B3_DS2",
+      "ref": "B3_DS2",
+      "kind": "7SEGCOMK",
+      "type": "7SEGCOMK",
+      "value": "Common-cathode display",
+      "role": "display",
+      "block": "b3_display",
+      "pins": {
+        "1": "B3_SEG_CK_A",
+        "10": "GND",
+        "2": "B3_SEG_CK_B",
+        "3": "B3_SEG_CK_C",
+        "4": "B3_SEG_CK_D",
+        "5": "B3_SEG_CK_E",
+        "6": "B3_SEG_CK_F",
+        "7": "B3_SEG_CK_G"
+      }
+    },
+    {
+      "id": "B3_U4027",
+      "ref": "B3_U4027",
+      "kind": "4027",
+      "type": "4027",
+      "value": "CD4027",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_JK_Q",
+        "16": "+5V",
+        "3": "B3_CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U4511",
+      "ref": "B3_U4511",
+      "kind": "4511",
+      "type": "4511",
+      "value": "CD4511",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_BCD_B",
+        "10": "B3_SEG_CK_D",
+        "11": "B3_SEG_CK_C",
+        "12": "B3_SEG_CK_B",
+        "13": "B3_SEG_CK_A",
+        "14": "B3_SEG_CK_G",
+        "15": "B3_SEG_CK_F",
+        "16": "+5V",
+        "2": "B3_BCD_C",
+        "6": "B3_BCD_D",
+        "7": "B3_BCD_A",
+        "8": "GND",
+        "9": "B3_SEG_CK_E"
+      }
+    },
+    {
+      "id": "B3_U7447",
+      "ref": "B3_U7447",
+      "kind": "7447",
+      "type": "7447",
+      "value": "7447",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_BCD_B",
+        "10": "B3_SEG_CA_D",
+        "11": "B3_SEG_CA_C",
+        "12": "B3_SEG_CA_B",
+        "13": "B3_SEG_CA_A",
+        "14": "B3_SEG_CA_G",
+        "15": "B3_SEG_CA_F",
+        "2": "B3_BCD_C",
+        "6": "B3_BCD_D",
+        "7": "B3_BCD_A",
+        "9": "B3_SEG_CA_E"
+      }
+    },
+    {
+      "id": "B3_U7490",
+      "ref": "B3_U7490",
+      "kind": "7490",
+      "type": "7490",
+      "value": "7490",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "11": "B3_RIPPLE_Q3",
+        "12": "B3_RIPPLE_Q0",
+        "14": "B3_CLK",
+        "8": "B3_RIPPLE_Q2",
+        "9": "B3_RIPPLE_Q1"
+      }
+    },
+    {
+      "id": "B3_U00",
+      "ref": "B3_U00",
+      "kind": "74HC00",
+      "type": "74HC00",
+      "value": "74HC00",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_DATA_A",
+        "14": "+5V",
+        "2": "B3_DATA_B",
+        "3": "B3_NAND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U02",
+      "ref": "B3_U02",
+      "kind": "74HC02",
+      "type": "74HC02",
+      "value": "74HC02",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_DATA_A",
+        "14": "+5V",
+        "2": "B3_DATA_B",
+        "3": "B3_NOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U04",
+      "ref": "B3_U04",
+      "kind": "74HC04",
+      "type": "74HC04",
+      "value": "74HC04",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_DATA_A",
+        "14": "+5V",
+        "2": "B3_INV_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U08",
+      "ref": "B3_U08",
+      "kind": "74HC08",
+      "type": "74HC08",
+      "value": "74HC08",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_DATA_A",
+        "14": "+5V",
+        "2": "B3_DATA_B",
+        "3": "B3_AND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U32",
+      "ref": "B3_U32",
+      "kind": "74HC32",
+      "type": "74HC32",
+      "value": "74HC32",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_DATA_A",
+        "14": "+5V",
+        "2": "B3_DATA_B",
+        "3": "B3_OR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U74",
+      "ref": "B3_U74",
+      "kind": "74HC74",
+      "type": "74HC74",
+      "value": "74HC74",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "14": "+5V",
+        "2": "B3_NAND_OUT",
+        "3": "B3_CLK",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U76",
+      "ref": "B3_U76",
+      "kind": "74HC76",
+      "type": "74HC76",
+      "value": "74HC76",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_CLK",
+        "13": "GND",
+        "2": "B3_NOR_OUT",
+        "5": "+5V"
+      }
+    },
+    {
+      "id": "B3_U85",
+      "ref": "B3_U85",
+      "kind": "74HC85",
+      "type": "74HC85",
+      "value": "74HC85",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "10": "B3_INV_OUT",
+        "16": "+5V",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U86",
+      "ref": "B3_U86",
+      "kind": "74HC86",
+      "type": "74HC86",
+      "value": "74HC86",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_DATA_A",
+        "14": "+5V",
+        "2": "B3_DATA_B",
+        "3": "B3_XOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U151",
+      "ref": "B3_U151",
+      "kind": "74HC151",
+      "type": "74HC151",
+      "value": "74HC151",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "16": "+5V",
+        "3": "B3_DATA_B",
+        "4": "B3_DATA_A",
+        "6": "B3_MUX_OUT",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U157",
+      "ref": "B3_U157",
+      "kind": "74HC157",
+      "type": "74HC157",
+      "value": "74HC157",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "16": "+5V",
+        "2": "B3_DATA_A",
+        "3": "B3_DATA_B",
+        "7": "B3_MUX_B_OUT",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U160",
+      "ref": "B3_U160",
+      "kind": "74HC160",
+      "type": "74HC160",
+      "value": "74HC160",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "11": "B3_BCD_D",
+        "12": "B3_BCD_C",
+        "13": "B3_BCD_B",
+        "14": "B3_BCD_A",
+        "16": "+5V",
+        "2": "B3_CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U174",
+      "ref": "B3_U174",
+      "kind": "74HC174",
+      "type": "74HC174",
+      "value": "74HC174",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "16": "+5V",
+        "2": "B3_RGB_R",
+        "3": "B3_XOR_OUT",
+        "5": "B3_RGB_G",
+        "6": "B3_RGB_B",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U192",
+      "ref": "B3_U192",
+      "kind": "74HC192",
+      "type": "74HC192",
+      "value": "74HC192",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "11": "B3_COUNTER_LOAD",
+        "16": "+5V",
+        "4": "B3_CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U266",
+      "ref": "B3_U266",
+      "kind": "74HC266",
+      "type": "74HC266",
+      "value": "74HC266",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "1": "B3_DATA_A",
+        "14": "+5V",
+        "2": "B3_DATA_B",
+        "3": "B3_XNOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "B3_U283",
+      "ref": "B3_U283",
+      "kind": "74HC283",
+      "type": "74HC283",
+      "value": "74HC283",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "10": "B3_ADDER_SUM0",
+        "11": "B3_ADDER_SUM1",
+        "16": "+5V",
+        "3": "B3_DATA_B",
+        "5": "B3_DATA_A",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "B3_U595",
+      "ref": "B3_U595",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595",
+      "role": "logic_ic",
+      "block": "b3_logic",
+      "pins": {
+        "16": "+5V",
+        "8": "GND",
+        "MR": "+5V",
+        "OE": "GND",
+        "Q0": "B3_SHIFT_Q0",
+        "Q1": "B3_SHIFT_Q1",
+        "Q2": "B3_SHIFT_Q2",
+        "Q3": "B3_SHIFT_Q3",
+        "Q7": "B3_LED_LOGIC_A",
+        "SER": "B3_JK_Q",
+        "SHCP": "B3_CLK",
+        "STCP": "B3_SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "B3_SW1",
+      "ref": "B3_SW1",
+      "kind": "DIP_SWITCH",
+      "type": "DIP_SWITCH",
+      "value": "DIP switch",
+      "role": "input",
+      "block": "b3_logic",
+      "pins": {
+        "1": "GND",
+        "2": "B3_DATA_A",
+        "3": "B3_DATA_B"
+      }
+    },
+    {
+      "id": "B3_RN1",
+      "ref": "B3_RN1",
+      "kind": "RESISTOR_NETWORK",
+      "type": "RESISTOR_NETWORK",
+      "value": "Resistor network",
+      "role": "resistor",
+      "block": "b3_logic",
+      "pins": {
+        "2": "B3_NAND_OUT",
+        "3": "B3_NOR_OUT",
+        "4": "B3_INV_OUT",
+        "5": "B3_AND_OUT",
+        "6": "B3_OR_OUT",
+        "7": "B3_XOR_OUT",
+        "8": "B3_XNOR_OUT",
+        "COM": "+5V"
+      }
+    },
+    {
+      "id": "B3_DARR1",
+      "ref": "B3_DARR1",
+      "kind": "LED_ARRAY",
+      "type": "LED_ARRAY",
+      "value": "RGB LED array",
+      "role": "indicator",
+      "block": "b3_display",
+      "pins": {
+        "1": "B3_RGB_R",
+        "2": "B3_RGB_G",
+        "3": "B3_RGB_B",
+        "4": "GND"
+      }
+    },
+    {
+      "id": "B3_LED1",
+      "ref": "B3_LED1",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "Logic LED",
+      "role": "indicator",
+      "block": "b3_display",
+      "pins": {
+        "A": "B3_LED_LOGIC_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B3_R1",
+      "ref": "B3_R1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "b3_display",
+      "pins": {
+        "1": "+5V",
+        "2": "B3_LED_LOGIC_A"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "B1_MCU.5V",
+      "B1_USB_UART1.VBUS",
+      "B1_USB_UART2.VBUS",
+      "B1_TJA1050.VCC",
+      "B1_MAX485.VCC",
+      "B1_J_POWER.1",
+      "B1_J_I2C.1",
+      "B1_J_SPI.1",
+      "B1_TP14.1",
+      "B1_C_DECOUPLE_1.1",
+      "B1_C_DECOUPLE_3.1",
+      "B1_C_DECOUPLE_5.1",
+      "B1_C_DECOUPLE_7.1",
+      "B1_C_DECOUPLE_9.1",
+      "B1_C_DECOUPLE_11.1",
+      "B1_C_DECOUPLE_13.1",
+      "B1_C_DECOUPLE_15.1",
+      "B1_C_DECOUPLE_17.1",
+      "B1_C_DECOUPLE_19.1",
+      "B1_C_DECOUPLE_21.1",
+      "B1_C_DECOUPLE_23.1",
+      "B1_J_HEADER_1.2",
+      "B1_J_HEADER_2.2",
+      "B1_J_HEADER_3.2",
+      "B1_J_HEADER_4.2",
+      "B1_J_HEADER_5.2",
+      "B1_J_HEADER_6.2",
+      "B1_J_HEADER_7.2",
+      "B1_J_HEADER_8.2",
+      "B3_V1.1",
+      "B3_J1.1",
+      "B3_J2.1",
+      "B3_DS1.10",
+      "B3_U4027.16",
+      "B3_U4511.16",
+      "B3_U00.14",
+      "B3_U02.14",
+      "B3_U04.14",
+      "B3_U08.14",
+      "B3_U32.14",
+      "B3_U74.14",
+      "B3_U76.5",
+      "B3_U85.16",
+      "B3_U86.14",
+      "B3_U151.16",
+      "B3_U157.16",
+      "B3_U160.16",
+      "B3_U174.16",
+      "B3_U192.16",
+      "B3_U266.14",
+      "B3_U283.16",
+      "B3_U595.16",
+      "B3_U595.MR",
+      "B3_RN1.COM",
+      "B3_R1.1",
+      "B1_U595_1.MR",
+      "B1_U595_2.MR",
+      "B1_U595_3.MR",
+      "B1_U595_4.MR",
+      "B1_J_LOAD_1.1",
+      "B1_D_FLYBACK_1.K",
+      "B1_K_RELAY_1.COIL_PLUS",
+      "B1_D_RELAY_1.K",
+      "B1_J_LOAD_2.1",
+      "B1_D_FLYBACK_2.K",
+      "B1_K_RELAY_2.COIL_PLUS",
+      "B1_D_RELAY_2.K",
+      "B1_J_LOAD_3.1",
+      "B1_D_FLYBACK_3.K",
+      "B1_K_RELAY_3.COIL_PLUS",
+      "B1_D_RELAY_3.K",
+      "B1_J_LOAD_4.1",
+      "B1_D_FLYBACK_4.K",
+      "B1_K_RELAY_4.COIL_PLUS",
+      "B1_D_RELAY_4.K",
+      "B1_SW_BTN_1.2",
+      "B1_SW_BTN_2.2",
+      "B1_SW_BTN_3.2",
+      "B1_SW_BTN_4.2",
+      "B1_SW_BTN_5.2",
+      "B1_SW_BTN_6.2"
+    ],
+    "+3V3": [
+      "B1_ESP32.3V3",
+      "B1_BME280.VCC",
+      "B1_SSD1306.VCC",
+      "B1_DS3231.VCC",
+      "B1_W25Q64_1.VCC",
+      "B1_W25Q64_2.VCC",
+      "B1_MCP2515.VDD",
+      "B1_R_I2C_SDA.1",
+      "B1_R_I2C_SCL.1",
+      "B1_TP15.1",
+      "B1_C_DECOUPLE_2.1",
+      "B1_C_DECOUPLE_4.1",
+      "B1_C_DECOUPLE_6.1",
+      "B1_C_DECOUPLE_8.1",
+      "B1_C_DECOUPLE_10.1",
+      "B1_C_DECOUPLE_12.1",
+      "B1_C_DECOUPLE_14.1",
+      "B1_C_DECOUPLE_16.1",
+      "B1_C_DECOUPLE_18.1",
+      "B1_C_DECOUPLE_20.1",
+      "B1_C_DECOUPLE_22.1",
+      "B1_C_DECOUPLE_24.1",
+      "B1_J_HEADER_1.4",
+      "B1_J_HEADER_2.4",
+      "B1_J_HEADER_3.4",
+      "B1_J_HEADER_4.4",
+      "B1_J_HEADER_5.4",
+      "B1_J_HEADER_6.4",
+      "B1_J_HEADER_7.4",
+      "B1_J_HEADER_8.4",
+      "B2_U1.VCC",
+      "B2_U2.VCC",
+      "B2_U3.VCC",
+      "B2_U4.VCC",
+      "B2_R1.1",
+      "B2_R2.1",
+      "B2_R3.1",
+      "B2_R4.1",
+      "B2_C1.1",
+      "B2_C2.1",
+      "B2_C3.1",
+      "B2_C4.1",
+      "B2_C5.1",
+      "B2_C6.1",
+      "B2_J1.1",
+      "B2_J2.1",
+      "B2_J3.1",
+      "B2_J4.1",
+      "B2_J5.1",
+      "B2_TP1.1",
+      "B2_U1.CSB"
+    ],
+    "GND": [
+      "B1_MCU.GND",
+      "B1_ESP32.GND",
+      "B1_USB_UART1.GND",
+      "B1_USB_UART2.GND",
+      "B1_USB1.GND",
+      "B1_USB2.GND",
+      "B1_BME280.GND",
+      "B1_SSD1306.GND",
+      "B1_DS3231.GND",
+      "B1_W25Q64_1.GND",
+      "B1_W25Q64_2.GND",
+      "B1_MCP2515.VSS",
+      "B1_TJA1050.GND",
+      "B1_MAX485.GND",
+      "B1_J_POWER.2",
+      "B1_J_I2C.4",
+      "B1_J_SPI.6",
+      "B1_J_CAN.3",
+      "B1_J_RS485.3",
+      "B1_TP16.1",
+      "B1_C_DECOUPLE_1.2",
+      "B1_C_DECOUPLE_2.2",
+      "B1_C_DECOUPLE_3.2",
+      "B1_C_DECOUPLE_4.2",
+      "B1_C_DECOUPLE_5.2",
+      "B1_C_DECOUPLE_6.2",
+      "B1_C_DECOUPLE_7.2",
+      "B1_C_DECOUPLE_8.2",
+      "B1_C_DECOUPLE_9.2",
+      "B1_C_DECOUPLE_10.2",
+      "B1_C_DECOUPLE_11.2",
+      "B1_C_DECOUPLE_12.2",
+      "B1_C_DECOUPLE_13.2",
+      "B1_C_DECOUPLE_14.2",
+      "B1_C_DECOUPLE_15.2",
+      "B1_C_DECOUPLE_16.2",
+      "B1_C_DECOUPLE_17.2",
+      "B1_C_DECOUPLE_18.2",
+      "B1_C_DECOUPLE_19.2",
+      "B1_C_DECOUPLE_20.2",
+      "B1_C_DECOUPLE_21.2",
+      "B1_C_DECOUPLE_22.2",
+      "B1_C_DECOUPLE_23.2",
+      "B1_C_DECOUPLE_24.2",
+      "B1_J_HEADER_1.3",
+      "B1_J_HEADER_2.3",
+      "B1_J_HEADER_3.3",
+      "B1_J_HEADER_4.3",
+      "B1_J_HEADER_5.3",
+      "B1_J_HEADER_6.3",
+      "B1_J_HEADER_7.3",
+      "B1_J_HEADER_8.3",
+      "B2_U1.GND",
+      "B2_U2.GND",
+      "B2_U3.GND",
+      "B2_U4.GND",
+      "B2_C1.2",
+      "B2_C2.2",
+      "B2_C3.2",
+      "B2_C4.2",
+      "B2_C5.2",
+      "B2_C6.2",
+      "B2_J1.2",
+      "B2_J2.2",
+      "B2_J3.4",
+      "B2_J4.4",
+      "B2_J5.6",
+      "B2_BT1.NEG",
+      "B2_TP2.1",
+      "B3_G1.1",
+      "B3_V1.2",
+      "B3_J1.2",
+      "B3_J2.6",
+      "B3_DS2.10",
+      "B3_U4027.8",
+      "B3_U4511.8",
+      "B3_U00.7",
+      "B3_U02.7",
+      "B3_U04.7",
+      "B3_U08.7",
+      "B3_U32.7",
+      "B3_U74.7",
+      "B3_U76.13",
+      "B3_U85.8",
+      "B3_U86.7",
+      "B3_U151.8",
+      "B3_U157.8",
+      "B3_U160.8",
+      "B3_U174.8",
+      "B3_U192.8",
+      "B3_U266.7",
+      "B3_U283.8",
+      "B3_U595.8",
+      "B3_U595.OE",
+      "B3_SW1.1",
+      "B3_DARR1.4",
+      "B3_LED1.K",
+      "B1_U595_1.OE",
+      "B1_U595_2.OE",
+      "B1_U595_3.OE",
+      "B1_U595_4.OE",
+      "B1_TP13.1",
+      "B1_R_PULLDOWN_1.2",
+      "B1_Q_MOSFET_1.S",
+      "B1_Q_NPN_1.E",
+      "B1_R_PULLDOWN_2.2",
+      "B1_Q_MOSFET_2.S",
+      "B1_Q_NPN_2.E",
+      "B1_R_PULLDOWN_3.2",
+      "B1_Q_MOSFET_3.S",
+      "B1_Q_NPN_3.E",
+      "B1_R_PULLDOWN_4.2",
+      "B1_Q_MOSFET_4.S",
+      "B1_Q_NPN_4.E",
+      "B1_LED1.K",
+      "B1_LED2.K",
+      "B1_LED3.K",
+      "B1_LED4.K",
+      "B1_LED5.K",
+      "B1_LED6.K",
+      "B1_LED7.K",
+      "B1_LED8.K",
+      "B1_LED9.K",
+      "B1_LED10.K",
+      "B1_LED11.K",
+      "B1_LED12.K",
+      "B1_LED13.K",
+      "B1_LED14.K",
+      "B1_LED15.K",
+      "B1_LED16.K",
+      "B1_R_BTN_PD_1.2",
+      "B1_R_BTN_PD_2.2",
+      "B1_R_BTN_PD_3.2",
+      "B1_R_BTN_PD_4.2",
+      "B1_R_BTN_PD_5.2",
+      "B1_R_BTN_PD_6.2",
+      "B1_RV1.1",
+      "B1_RV2.1",
+      "B1_RV3.1",
+      "B1_RV4.1",
+      "B1_JP_MODE_1.2",
+      "B1_JP_MODE_2.2",
+      "B1_JP_MODE_3.2",
+      "B1_JP_MODE_4.2",
+      "B1_JP_MODE_5.2",
+      "B1_JP_MODE_6.2",
+      "B2_U1.SDO"
+    ],
+    "B1_USB1_D_PLUS": [
+      "B1_USB1.D+",
+      "B1_USB_UART1.D+"
+    ],
+    "B1_USB1_D_MINUS": [
+      "B1_USB1.D-",
+      "B1_USB_UART1.D-"
+    ],
+    "B1_USB2_D_PLUS": [
+      "B1_USB2.D+",
+      "B1_USB_UART2.D+"
+    ],
+    "B1_USB2_D_MINUS": [
+      "B1_USB2.D-",
+      "B1_USB_UART2.D-"
+    ],
+    "B1_ESP_UART_RX": [
+      "B1_USB_UART1.TXD",
+      "B1_ESP32.U0RXD"
+    ],
+    "B1_ESP_UART_TX": [
+      "B1_USB_UART1.RXD",
+      "B1_ESP32.U0TXD"
+    ],
+    "B1_ARDUINO_UART_RX": [
+      "B1_USB_UART2.TXD",
+      "B1_MCU.RX0"
+    ],
+    "B1_ARDUINO_UART_TX": [
+      "B1_USB_UART2.RXD",
+      "B1_MCU.TX0"
+    ],
+    "B1_I2C_SDA": [
+      "B1_MCU.SDA",
+      "B1_BME280.SDA",
+      "B1_SSD1306.SDA",
+      "B1_DS3231.SDA",
+      "B1_R_I2C_SDA.2",
+      "B1_J_I2C.2",
+      "B1_TP1.1"
+    ],
+    "B1_I2C_SCL": [
+      "B1_MCU.SCL",
+      "B1_BME280.SCL",
+      "B1_SSD1306.SCL",
+      "B1_DS3231.SCL",
+      "B1_R_I2C_SCL.2",
+      "B1_J_I2C.3",
+      "B1_TP2.1"
+    ],
+    "B1_SPI_MOSI": [
+      "B1_MCU.MOSI",
+      "B1_W25Q64_1.DI",
+      "B1_W25Q64_2.DI",
+      "B1_MCP2515.SI",
+      "B1_J_SPI.4",
+      "B1_TP3.1",
+      "B1_U595_1.SER"
+    ],
+    "B1_SPI_MISO": [
+      "B1_MCU.MISO",
+      "B1_W25Q64_1.DO",
+      "B1_W25Q64_2.DO",
+      "B1_MCP2515.SO",
+      "B1_J_SPI.5",
+      "B1_TP4.1"
+    ],
+    "B1_SPI_SCK": [
+      "B1_MCU.SCK",
+      "B1_W25Q64_1.CLK",
+      "B1_W25Q64_2.CLK",
+      "B1_MCP2515.SCK",
+      "B1_J_SPI.3",
+      "B1_TP5.1",
+      "B1_U595_1.SHCP",
+      "B1_U595_2.SHCP",
+      "B1_U595_3.SHCP",
+      "B1_U595_4.SHCP"
+    ],
+    "B1_CS_FLASH1": [
+      "B1_MCU.GPIO_CS1",
+      "B1_W25Q64_1.CS"
+    ],
+    "B1_CS_FLASH2": [
+      "B1_MCU.GPIO_CS2",
+      "B1_W25Q64_2.CS"
+    ],
+    "B1_CS_CAN": [
+      "B1_MCU.GPIO_CS_CAN",
+      "B1_MCP2515.CS"
+    ],
+    "B1_CAN_INT": [
+      "B1_MCU.GPIO_CAN_INT",
+      "B1_MCP2515.INT",
+      "B1_TP6.1"
+    ],
+    "B1_CAN_TXD": [
+      "B1_MCP2515.TXCAN",
+      "B1_TJA1050.TXD"
+    ],
+    "B1_CAN_RXD": [
+      "B1_MCP2515.RXCAN",
+      "B1_TJA1050.RXD"
+    ],
+    "B1_CANH": [
+      "B1_TJA1050.CANH",
+      "B1_J_CAN.1",
+      "B1_TP8.1"
+    ],
+    "B1_CANL": [
+      "B1_TJA1050.CANL",
+      "B1_J_CAN.2",
+      "B1_TP9.1"
+    ],
+    "B1_RS485_RO": [
+      "B1_MAX485.RO",
+      "B1_MCU.GPIO_RS485_RX"
+    ],
+    "B1_RS485_DI": [
+      "B1_MAX485.DI",
+      "B1_MCU.GPIO_RS485_TX"
+    ],
+    "B1_RS485_DE_RE": [
+      "B1_MAX485.DE",
+      "B1_MAX485.RE",
+      "B1_MCU.GPIO_RS485_DE",
+      "B1_TP7.1"
+    ],
+    "B1_RS485_A": [
+      "B1_MAX485.A",
+      "B1_J_RS485.1",
+      "B1_TP10.1"
+    ],
+    "B1_RS485_B": [
+      "B1_MAX485.B",
+      "B1_J_RS485.2",
+      "B1_TP11.1"
+    ],
+    "B1_SHIFT_LATCH": [
+      "B1_MCU.GPIO_LATCH",
+      "B1_U595_1.STCP",
+      "B1_U595_2.STCP",
+      "B1_U595_3.STCP",
+      "B1_U595_4.STCP",
+      "B1_TP12.1"
+    ],
+    "B1_SHIFT_CHAIN_1": [
+      "B1_U595_1.Q7S",
+      "B1_U595_2.SER"
+    ],
+    "B1_SHIFT_CHAIN_2": [
+      "B1_U595_2.Q7S",
+      "B1_U595_3.SER"
+    ],
+    "B1_SHIFT_CHAIN_3": [
+      "B1_U595_3.Q7S",
+      "B1_U595_4.SER"
+    ],
+    "B1_MOSFET1_CTRL": [
+      "B1_MCU.GPIO_PWM_1",
+      "B1_R_GATE_1.1"
+    ],
+    "B1_MOSFET1_GATE": [
+      "B1_R_GATE_1.2",
+      "B1_Q_MOSFET_1.G",
+      "B1_R_PULLDOWN_1.1"
+    ],
+    "B1_MOSFET1_LOW": [
+      "B1_Q_MOSFET_1.D",
+      "B1_J_LOAD_1.2",
+      "B1_D_FLYBACK_1.A"
+    ],
+    "B1_RELAY1_CTRL": [
+      "B1_MCU.GPIO_RELAY_1",
+      "B1_R_BASE_1.1"
+    ],
+    "B1_RELAY1_BASE": [
+      "B1_R_BASE_1.2",
+      "B1_Q_NPN_1.B"
+    ],
+    "B1_RELAY1_COIL_LOW": [
+      "B1_Q_NPN_1.C",
+      "B1_K_RELAY_1.COIL_MINUS",
+      "B1_D_RELAY_1.A"
+    ],
+    "B1_RELAY1_COM": [
+      "B1_K_RELAY_1.COM",
+      "B1_J_RELAY_1.1"
+    ],
+    "B1_RELAY1_NO": [
+      "B1_K_RELAY_1.NO",
+      "B1_J_RELAY_1.2"
+    ],
+    "B1_MOSFET2_CTRL": [
+      "B1_MCU.GPIO_PWM_2",
+      "B1_R_GATE_2.1"
+    ],
+    "B1_MOSFET2_GATE": [
+      "B1_R_GATE_2.2",
+      "B1_Q_MOSFET_2.G",
+      "B1_R_PULLDOWN_2.1"
+    ],
+    "B1_MOSFET2_LOW": [
+      "B1_Q_MOSFET_2.D",
+      "B1_J_LOAD_2.2",
+      "B1_D_FLYBACK_2.A"
+    ],
+    "B1_RELAY2_CTRL": [
+      "B1_MCU.GPIO_RELAY_2",
+      "B1_R_BASE_2.1"
+    ],
+    "B1_RELAY2_BASE": [
+      "B1_R_BASE_2.2",
+      "B1_Q_NPN_2.B"
+    ],
+    "B1_RELAY2_COIL_LOW": [
+      "B1_Q_NPN_2.C",
+      "B1_K_RELAY_2.COIL_MINUS",
+      "B1_D_RELAY_2.A"
+    ],
+    "B1_RELAY2_COM": [
+      "B1_K_RELAY_2.COM",
+      "B1_J_RELAY_2.1"
+    ],
+    "B1_RELAY2_NO": [
+      "B1_K_RELAY_2.NO",
+      "B1_J_RELAY_2.2"
+    ],
+    "B1_MOSFET3_CTRL": [
+      "B1_MCU.GPIO_PWM_3",
+      "B1_R_GATE_3.1"
+    ],
+    "B1_MOSFET3_GATE": [
+      "B1_R_GATE_3.2",
+      "B1_Q_MOSFET_3.G",
+      "B1_R_PULLDOWN_3.1"
+    ],
+    "B1_MOSFET3_LOW": [
+      "B1_Q_MOSFET_3.D",
+      "B1_J_LOAD_3.2",
+      "B1_D_FLYBACK_3.A"
+    ],
+    "B1_RELAY3_CTRL": [
+      "B1_MCU.GPIO_RELAY_3",
+      "B1_R_BASE_3.1"
+    ],
+    "B1_RELAY3_BASE": [
+      "B1_R_BASE_3.2",
+      "B1_Q_NPN_3.B"
+    ],
+    "B1_RELAY3_COIL_LOW": [
+      "B1_Q_NPN_3.C",
+      "B1_K_RELAY_3.COIL_MINUS",
+      "B1_D_RELAY_3.A"
+    ],
+    "B1_RELAY3_COM": [
+      "B1_K_RELAY_3.COM",
+      "B1_J_RELAY_3.1"
+    ],
+    "B1_RELAY3_NO": [
+      "B1_K_RELAY_3.NO",
+      "B1_J_RELAY_3.2"
+    ],
+    "B1_MOSFET4_CTRL": [
+      "B1_MCU.GPIO_PWM_4",
+      "B1_R_GATE_4.1"
+    ],
+    "B1_MOSFET4_GATE": [
+      "B1_R_GATE_4.2",
+      "B1_Q_MOSFET_4.G",
+      "B1_R_PULLDOWN_4.1"
+    ],
+    "B1_MOSFET4_LOW": [
+      "B1_Q_MOSFET_4.D",
+      "B1_J_LOAD_4.2",
+      "B1_D_FLYBACK_4.A"
+    ],
+    "B1_RELAY4_CTRL": [
+      "B1_MCU.GPIO_RELAY_4",
+      "B1_R_BASE_4.1"
+    ],
+    "B1_RELAY4_BASE": [
+      "B1_R_BASE_4.2",
+      "B1_Q_NPN_4.B"
+    ],
+    "B1_RELAY4_COIL_LOW": [
+      "B1_Q_NPN_4.C",
+      "B1_K_RELAY_4.COIL_MINUS",
+      "B1_D_RELAY_4.A"
+    ],
+    "B1_RELAY4_COM": [
+      "B1_K_RELAY_4.COM",
+      "B1_J_RELAY_4.1"
+    ],
+    "B1_RELAY4_NO": [
+      "B1_K_RELAY_4.NO",
+      "B1_J_RELAY_4.2"
+    ],
+    "B1_LED1_DRIVE": [
+      "B1_U595_1.Q0",
+      "B1_R_LED_1.1"
+    ],
+    "B1_LED1_A": [
+      "B1_R_LED_1.2",
+      "B1_LED1.A"
+    ],
+    "B1_LED2_DRIVE": [
+      "B1_U595_1.Q1",
+      "B1_R_LED_2.1"
+    ],
+    "B1_LED2_A": [
+      "B1_R_LED_2.2",
+      "B1_LED2.A"
+    ],
+    "B1_LED3_DRIVE": [
+      "B1_U595_1.Q2",
+      "B1_R_LED_3.1"
+    ],
+    "B1_LED3_A": [
+      "B1_R_LED_3.2",
+      "B1_LED3.A"
+    ],
+    "B1_LED4_DRIVE": [
+      "B1_U595_1.Q3",
+      "B1_R_LED_4.1"
+    ],
+    "B1_LED4_A": [
+      "B1_R_LED_4.2",
+      "B1_LED4.A"
+    ],
+    "B1_LED5_DRIVE": [
+      "B1_U595_1.Q4",
+      "B1_R_LED_5.1"
+    ],
+    "B1_LED5_A": [
+      "B1_R_LED_5.2",
+      "B1_LED5.A"
+    ],
+    "B1_LED6_DRIVE": [
+      "B1_U595_1.Q5",
+      "B1_R_LED_6.1"
+    ],
+    "B1_LED6_A": [
+      "B1_R_LED_6.2",
+      "B1_LED6.A"
+    ],
+    "B1_LED7_DRIVE": [
+      "B1_U595_1.Q6",
+      "B1_R_LED_7.1"
+    ],
+    "B1_LED7_A": [
+      "B1_R_LED_7.2",
+      "B1_LED7.A"
+    ],
+    "B1_LED8_DRIVE": [
+      "B1_U595_1.Q7",
+      "B1_R_LED_8.1"
+    ],
+    "B1_LED8_A": [
+      "B1_R_LED_8.2",
+      "B1_LED8.A"
+    ],
+    "B1_LED9_DRIVE": [
+      "B1_U595_2.Q0",
+      "B1_R_LED_9.1"
+    ],
+    "B1_LED9_A": [
+      "B1_R_LED_9.2",
+      "B1_LED9.A"
+    ],
+    "B1_LED10_DRIVE": [
+      "B1_U595_2.Q1",
+      "B1_R_LED_10.1"
+    ],
+    "B1_LED10_A": [
+      "B1_R_LED_10.2",
+      "B1_LED10.A"
+    ],
+    "B1_LED11_DRIVE": [
+      "B1_U595_2.Q2",
+      "B1_R_LED_11.1"
+    ],
+    "B1_LED11_A": [
+      "B1_R_LED_11.2",
+      "B1_LED11.A"
+    ],
+    "B1_LED12_DRIVE": [
+      "B1_U595_2.Q3",
+      "B1_R_LED_12.1"
+    ],
+    "B1_LED12_A": [
+      "B1_R_LED_12.2",
+      "B1_LED12.A"
+    ],
+    "B1_LED13_DRIVE": [
+      "B1_U595_2.Q4",
+      "B1_R_LED_13.1"
+    ],
+    "B1_LED13_A": [
+      "B1_R_LED_13.2",
+      "B1_LED13.A"
+    ],
+    "B1_LED14_DRIVE": [
+      "B1_U595_2.Q5",
+      "B1_R_LED_14.1"
+    ],
+    "B1_LED14_A": [
+      "B1_R_LED_14.2",
+      "B1_LED14.A"
+    ],
+    "B1_LED15_DRIVE": [
+      "B1_U595_2.Q6",
+      "B1_R_LED_15.1"
+    ],
+    "B1_LED15_A": [
+      "B1_R_LED_15.2",
+      "B1_LED15.A"
+    ],
+    "B1_LED16_DRIVE": [
+      "B1_U595_2.Q7",
+      "B1_R_LED_16.1"
+    ],
+    "B1_LED16_A": [
+      "B1_R_LED_16.2",
+      "B1_LED16.A"
+    ],
+    "B1_EXP1_Q0": [
+      "B1_U595_3.Q0",
+      "B1_J_EXP1.1"
+    ],
+    "B1_EXP2_Q0": [
+      "B1_U595_4.Q0",
+      "B1_J_EXP2.1"
+    ],
+    "B1_EXP1_Q1": [
+      "B1_U595_3.Q1",
+      "B1_J_EXP1.2"
+    ],
+    "B1_EXP2_Q1": [
+      "B1_U595_4.Q1",
+      "B1_J_EXP2.2"
+    ],
+    "B1_EXP1_Q2": [
+      "B1_U595_3.Q2",
+      "B1_J_EXP1.3"
+    ],
+    "B1_EXP2_Q2": [
+      "B1_U595_4.Q2",
+      "B1_J_EXP2.3"
+    ],
+    "B1_EXP1_Q3": [
+      "B1_U595_3.Q3",
+      "B1_J_EXP1.4"
+    ],
+    "B1_EXP2_Q3": [
+      "B1_U595_4.Q3",
+      "B1_J_EXP2.4"
+    ],
+    "B1_EXP1_Q4": [
+      "B1_U595_3.Q4",
+      "B1_J_EXP1.5"
+    ],
+    "B1_EXP2_Q4": [
+      "B1_U595_4.Q4",
+      "B1_J_EXP2.5"
+    ],
+    "B1_EXP1_Q5": [
+      "B1_U595_3.Q5",
+      "B1_J_EXP1.6"
+    ],
+    "B1_EXP2_Q5": [
+      "B1_U595_4.Q5",
+      "B1_J_EXP2.6"
+    ],
+    "B1_EXP1_Q6": [
+      "B1_U595_3.Q6",
+      "B1_J_EXP1.7"
+    ],
+    "B1_EXP2_Q6": [
+      "B1_U595_4.Q6",
+      "B1_J_EXP2.7"
+    ],
+    "B1_EXP1_Q7": [
+      "B1_U595_3.Q7",
+      "B1_J_EXP1.8"
+    ],
+    "B1_EXP2_Q7": [
+      "B1_U595_4.Q7",
+      "B1_J_EXP2.8"
+    ],
+    "B1_BUTTON1_NET": [
+      "B1_MCU.GPIO_BTN_1",
+      "B1_SW_BTN_1.1",
+      "B1_R_BTN_PD_1.1"
+    ],
+    "B1_BUTTON2_NET": [
+      "B1_MCU.GPIO_BTN_2",
+      "B1_SW_BTN_2.1",
+      "B1_R_BTN_PD_2.1"
+    ],
+    "B1_BUTTON3_NET": [
+      "B1_MCU.GPIO_BTN_3",
+      "B1_SW_BTN_3.1",
+      "B1_R_BTN_PD_3.1"
+    ],
+    "B1_BUTTON4_NET": [
+      "B1_MCU.GPIO_BTN_4",
+      "B1_SW_BTN_4.1",
+      "B1_R_BTN_PD_4.1"
+    ],
+    "B1_BUTTON5_NET": [
+      "B1_MCU.GPIO_BTN_5",
+      "B1_SW_BTN_5.1",
+      "B1_R_BTN_PD_5.1"
+    ],
+    "B1_BUTTON6_NET": [
+      "B1_MCU.GPIO_BTN_6",
+      "B1_SW_BTN_6.1",
+      "B1_R_BTN_PD_6.1"
+    ],
+    "B1_ANALOG1_INPUT": [
+      "B1_J_ANALOG.1",
+      "B1_RV1.3"
+    ],
+    "B1_ANALOG1_WIPER": [
+      "B1_RV1.2",
+      "B1_U_LM358_CHANNEL_1.IN_PLUS"
+    ],
+    "B1_ANALOG1_BUFFER": [
+      "B1_U_LM358_CHANNEL_1.OUT",
+      "B1_U_LM358_CHANNEL_1.IN_MINUS",
+      "B1_MCU.ADC1"
+    ],
+    "B1_ANALOG2_INPUT": [
+      "B1_J_ANALOG.2",
+      "B1_RV2.3"
+    ],
+    "B1_ANALOG2_WIPER": [
+      "B1_RV2.2",
+      "B1_U_LM358_CHANNEL_2.IN_PLUS"
+    ],
+    "B1_ANALOG2_BUFFER": [
+      "B1_U_LM358_CHANNEL_2.OUT",
+      "B1_U_LM358_CHANNEL_2.IN_MINUS",
+      "B1_MCU.ADC2"
+    ],
+    "B1_ANALOG3_INPUT": [
+      "B1_J_ANALOG.3",
+      "B1_RV3.3"
+    ],
+    "B1_ANALOG3_WIPER": [
+      "B1_RV3.2",
+      "B1_U_LM358_CHANNEL_3.IN_PLUS"
+    ],
+    "B1_ANALOG3_BUFFER": [
+      "B1_U_LM358_CHANNEL_3.OUT",
+      "B1_U_LM358_CHANNEL_3.IN_MINUS",
+      "B1_MCU.ADC3"
+    ],
+    "B1_ANALOG4_INPUT": [
+      "B1_J_ANALOG.4",
+      "B1_RV4.3"
+    ],
+    "B1_ANALOG4_WIPER": [
+      "B1_RV4.2",
+      "B1_U_LM358_CHANNEL_4.IN_PLUS"
+    ],
+    "B1_ANALOG4_BUFFER": [
+      "B1_U_LM358_CHANNEL_4.OUT",
+      "B1_U_LM358_CHANNEL_4.IN_MINUS",
+      "B1_MCU.ADC4"
+    ],
+    "B1_GPIO_EXT_1_MCU": [
+      "B1_MCU.GPIO_EXT_1",
+      "B1_R_PROT_1.1"
+    ],
+    "B1_GPIO_EXT_1_HEADER": [
+      "B1_R_PROT_1.2",
+      "B1_J_HEADER_1.1",
+      "B1_TP17.1"
+    ],
+    "B1_GPIO_EXT_2_MCU": [
+      "B1_MCU.GPIO_EXT_2",
+      "B1_R_PROT_2.1"
+    ],
+    "B1_GPIO_EXT_2_HEADER": [
+      "B1_R_PROT_2.2",
+      "B1_J_HEADER_2.1",
+      "B1_TP18.1"
+    ],
+    "B1_GPIO_EXT_3_MCU": [
+      "B1_MCU.GPIO_EXT_3",
+      "B1_R_PROT_3.1"
+    ],
+    "B1_GPIO_EXT_3_HEADER": [
+      "B1_R_PROT_3.2",
+      "B1_J_HEADER_3.1",
+      "B1_TP19.1"
+    ],
+    "B1_GPIO_EXT_4_MCU": [
+      "B1_MCU.GPIO_EXT_4",
+      "B1_R_PROT_4.1"
+    ],
+    "B1_GPIO_EXT_4_HEADER": [
+      "B1_R_PROT_4.2",
+      "B1_J_HEADER_4.1",
+      "B1_TP20.1"
+    ],
+    "B1_GPIO_EXT_5_MCU": [
+      "B1_MCU.GPIO_EXT_5",
+      "B1_R_PROT_5.1"
+    ],
+    "B1_GPIO_EXT_5_HEADER": [
+      "B1_R_PROT_5.2",
+      "B1_J_HEADER_5.1",
+      "B1_TP21.1"
+    ],
+    "B1_GPIO_EXT_6_MCU": [
+      "B1_MCU.GPIO_EXT_6",
+      "B1_R_PROT_6.1"
+    ],
+    "B1_GPIO_EXT_6_HEADER": [
+      "B1_R_PROT_6.2",
+      "B1_J_HEADER_6.1",
+      "B1_TP22.1"
+    ],
+    "B1_GPIO_EXT_7_MCU": [
+      "B1_MCU.GPIO_EXT_7",
+      "B1_R_PROT_7.1"
+    ],
+    "B1_GPIO_EXT_7_HEADER": [
+      "B1_R_PROT_7.2",
+      "B1_J_HEADER_7.1",
+      "B1_TP23.1"
+    ],
+    "B1_GPIO_EXT_8_MCU": [
+      "B1_MCU.GPIO_EXT_8",
+      "B1_R_PROT_8.1"
+    ],
+    "B1_GPIO_EXT_8_HEADER": [
+      "B1_R_PROT_8.2",
+      "B1_J_HEADER_8.1",
+      "B1_TP24.1"
+    ],
+    "B1_MODE1_NET": [
+      "B1_MCU.GPIO_MODE_1",
+      "B1_JP_MODE_1.1"
+    ],
+    "B1_MODE2_NET": [
+      "B1_MCU.GPIO_MODE_2",
+      "B1_JP_MODE_2.1"
+    ],
+    "B1_MODE3_NET": [
+      "B1_MCU.GPIO_MODE_3",
+      "B1_JP_MODE_3.1"
+    ],
+    "B1_MODE4_NET": [
+      "B1_MCU.GPIO_MODE_4",
+      "B1_JP_MODE_4.1"
+    ],
+    "B1_MODE5_NET": [
+      "B1_MCU.GPIO_MODE_5",
+      "B1_JP_MODE_5.1"
+    ],
+    "B1_MODE6_NET": [
+      "B1_MCU.GPIO_MODE_6",
+      "B1_JP_MODE_6.1"
+    ],
+    "B2_I2C_SDA": [
+      "B2_U1.SDA",
+      "B2_U2.SDA",
+      "B2_U3.SDA",
+      "B2_R1.2",
+      "B2_J1.3",
+      "B2_J2.3",
+      "B2_J3.2",
+      "B2_J4.2",
+      "B2_TP3.1"
+    ],
+    "B2_I2C_SCL": [
+      "B2_U1.SCL",
+      "B2_U2.SCL",
+      "B2_U3.SCL",
+      "B2_R2.2",
+      "B2_J1.4",
+      "B2_J2.4",
+      "B2_J3.3",
+      "B2_J4.3",
+      "B2_TP4.1"
+    ],
+    "B2_RTC_VBAT": [
+      "B2_U3.VBAT",
+      "B2_BT1.POS"
+    ],
+    "B2_SPI_MOSI": [
+      "B2_U4.DI",
+      "B2_J5.4"
+    ],
+    "B2_SPI_MISO": [
+      "B2_U4.DO",
+      "B2_J5.5"
+    ],
+    "B2_SPI_SCK": [
+      "B2_U4.CLK",
+      "B2_J5.3",
+      "B2_TP6.1"
+    ],
+    "B2_SPI_CS_FLASH": [
+      "B2_U4.CS",
+      "B2_R3.2",
+      "B2_J5.2",
+      "B2_TP5.1"
+    ],
+    "B2_FLASH_WP_HOLD": [
+      "B2_U4.WP",
+      "B2_U4.HOLD",
+      "B2_R4.2"
+    ],
+    "B3_CLK": [
+      "B3_J1.3",
+      "B3_U4027.3",
+      "B3_U7490.14",
+      "B3_U160.2",
+      "B3_U192.4",
+      "B3_U74.3",
+      "B3_U76.1",
+      "B3_U595.SHCP"
+    ],
+    "B3_DATA_A": [
+      "B3_SW1.2",
+      "B3_U00.1",
+      "B3_U02.1",
+      "B3_U04.1",
+      "B3_U08.1",
+      "B3_U32.1",
+      "B3_U86.1",
+      "B3_U266.1",
+      "B3_U151.4",
+      "B3_U157.2",
+      "B3_U283.5"
+    ],
+    "B3_DATA_B": [
+      "B3_SW1.3",
+      "B3_U00.2",
+      "B3_U02.2",
+      "B3_U08.2",
+      "B3_U32.2",
+      "B3_U86.2",
+      "B3_U266.2",
+      "B3_U151.3",
+      "B3_U157.3",
+      "B3_U283.3"
+    ],
+    "B3_NAND_OUT": [
+      "B3_U00.3",
+      "B3_U74.2",
+      "B3_RN1.2"
+    ],
+    "B3_NOR_OUT": [
+      "B3_U02.3",
+      "B3_U76.2",
+      "B3_RN1.3"
+    ],
+    "B3_INV_OUT": [
+      "B3_U04.2",
+      "B3_U85.10",
+      "B3_RN1.4"
+    ],
+    "B3_AND_OUT": [
+      "B3_U08.3",
+      "B3_RN1.5"
+    ],
+    "B3_OR_OUT": [
+      "B3_U32.3",
+      "B3_RN1.6"
+    ],
+    "B3_XOR_OUT": [
+      "B3_U86.3",
+      "B3_U174.3",
+      "B3_RN1.7"
+    ],
+    "B3_XNOR_OUT": [
+      "B3_U266.3",
+      "B3_RN1.8"
+    ],
+    "B3_JK_Q": [
+      "B3_U4027.1",
+      "B3_U595.SER"
+    ],
+    "B3_SHIFT_LATCH": [
+      "B3_J2.2",
+      "B3_U595.STCP"
+    ],
+    "B3_BCD_A": [
+      "B3_U160.14",
+      "B3_U4511.7",
+      "B3_U7447.7"
+    ],
+    "B3_BCD_B": [
+      "B3_U160.13",
+      "B3_U4511.1",
+      "B3_U7447.1"
+    ],
+    "B3_BCD_C": [
+      "B3_U160.12",
+      "B3_U4511.2",
+      "B3_U7447.2"
+    ],
+    "B3_BCD_D": [
+      "B3_U160.11",
+      "B3_U4511.6",
+      "B3_U7447.6"
+    ],
+    "B3_RIPPLE_Q0": [
+      "B3_U7490.12",
+      "B3_J1.5"
+    ],
+    "B3_RIPPLE_Q1": [
+      "B3_U7490.9",
+      "B3_J1.6"
+    ],
+    "B3_RIPPLE_Q2": [
+      "B3_U7490.8",
+      "B3_J1.7"
+    ],
+    "B3_RIPPLE_Q3": [
+      "B3_U7490.11",
+      "B3_J1.8"
+    ],
+    "B3_SHIFT_Q0": [
+      "B3_U595.Q0",
+      "B3_J1.9"
+    ],
+    "B3_SHIFT_Q1": [
+      "B3_U595.Q1",
+      "B3_J1.10"
+    ],
+    "B3_SHIFT_Q2": [
+      "B3_U595.Q2",
+      "B3_J1.11"
+    ],
+    "B3_SHIFT_Q3": [
+      "B3_U595.Q3",
+      "B3_J1.12"
+    ],
+    "B3_SEG_CA_A": [
+      "B3_U7447.13",
+      "B3_DS1.1"
+    ],
+    "B3_SEG_CA_B": [
+      "B3_U7447.12",
+      "B3_DS1.2"
+    ],
+    "B3_SEG_CA_C": [
+      "B3_U7447.11",
+      "B3_DS1.3"
+    ],
+    "B3_SEG_CA_D": [
+      "B3_U7447.10",
+      "B3_DS1.4"
+    ],
+    "B3_SEG_CA_E": [
+      "B3_U7447.9",
+      "B3_DS1.5"
+    ],
+    "B3_SEG_CA_F": [
+      "B3_U7447.15",
+      "B3_DS1.6"
+    ],
+    "B3_SEG_CA_G": [
+      "B3_U7447.14",
+      "B3_DS1.7"
+    ],
+    "B3_SEG_CK_A": [
+      "B3_U4511.13",
+      "B3_DS2.1"
+    ],
+    "B3_SEG_CK_B": [
+      "B3_U4511.12",
+      "B3_DS2.2"
+    ],
+    "B3_SEG_CK_C": [
+      "B3_U4511.11",
+      "B3_DS2.3"
+    ],
+    "B3_SEG_CK_D": [
+      "B3_U4511.10",
+      "B3_DS2.4"
+    ],
+    "B3_SEG_CK_E": [
+      "B3_U4511.9",
+      "B3_DS2.5"
+    ],
+    "B3_SEG_CK_F": [
+      "B3_U4511.15",
+      "B3_DS2.6"
+    ],
+    "B3_SEG_CK_G": [
+      "B3_U4511.14",
+      "B3_DS2.7"
+    ],
+    "B3_LED_LOGIC_A": [
+      "B3_R1.2",
+      "B3_LED1.A",
+      "B3_U595.Q7"
+    ],
+    "B3_RGB_R": [
+      "B3_U174.2",
+      "B3_DARR1.1"
+    ],
+    "B3_RGB_G": [
+      "B3_U174.5",
+      "B3_DARR1.2"
+    ],
+    "B3_RGB_B": [
+      "B3_U174.6",
+      "B3_DARR1.3"
+    ],
+    "B3_MUX_OUT": [
+      "B3_U151.6",
+      "B3_J2.3"
+    ],
+    "B3_MUX_B_OUT": [
+      "B3_U157.7",
+      "B3_J1.13"
+    ],
+    "B3_COUNTER_LOAD": [
+      "B3_U192.11",
+      "B3_J1.4"
+    ],
+    "B3_ADDER_SUM0": [
+      "B3_U283.10",
+      "B3_J2.4"
+    ],
+    "B3_ADDER_SUM1": [
+      "B3_U283.11",
+      "B3_J1.14"
+    ]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {
+        "name": "+5V",
+        "members": [
+          "B1_MCU.5V",
+          "B1_USB_UART1.VBUS",
+          "B1_USB_UART2.VBUS",
+          "B1_TJA1050.VCC",
+          "B1_MAX485.VCC",
+          "B1_J_POWER.1",
+          "B1_J_I2C.1",
+          "B1_J_SPI.1",
+          "B1_TP14.1",
+          "B1_C_DECOUPLE_1.1",
+          "B1_C_DECOUPLE_3.1",
+          "B1_C_DECOUPLE_5.1",
+          "B1_C_DECOUPLE_7.1",
+          "B1_C_DECOUPLE_9.1",
+          "B1_C_DECOUPLE_11.1",
+          "B1_C_DECOUPLE_13.1",
+          "B1_C_DECOUPLE_15.1",
+          "B1_C_DECOUPLE_17.1",
+          "B1_C_DECOUPLE_19.1",
+          "B1_C_DECOUPLE_21.1",
+          "B1_C_DECOUPLE_23.1",
+          "B1_J_HEADER_1.2",
+          "B1_J_HEADER_2.2",
+          "B1_J_HEADER_3.2",
+          "B1_J_HEADER_4.2",
+          "B1_J_HEADER_5.2",
+          "B1_J_HEADER_6.2",
+          "B1_J_HEADER_7.2",
+          "B1_J_HEADER_8.2",
+          "B3_V1.1",
+          "B3_J1.1",
+          "B3_J2.1",
+          "B3_DS1.10",
+          "B3_U4027.16",
+          "B3_U4511.16",
+          "B3_U00.14",
+          "B3_U02.14",
+          "B3_U04.14",
+          "B3_U08.14",
+          "B3_U32.14",
+          "B3_U74.14",
+          "B3_U76.5",
+          "B3_U85.16",
+          "B3_U86.14",
+          "B3_U151.16",
+          "B3_U157.16",
+          "B3_U160.16",
+          "B3_U174.16",
+          "B3_U192.16",
+          "B3_U266.14",
+          "B3_U283.16",
+          "B3_U595.16",
+          "B3_U595.MR",
+          "B3_RN1.COM",
+          "B3_R1.1",
+          "B1_U595_1.MR",
+          "B1_U595_2.MR",
+          "B1_U595_3.MR",
+          "B1_U595_4.MR",
+          "B1_J_LOAD_1.1",
+          "B1_D_FLYBACK_1.K",
+          "B1_K_RELAY_1.COIL_PLUS",
+          "B1_D_RELAY_1.K",
+          "B1_J_LOAD_2.1",
+          "B1_D_FLYBACK_2.K",
+          "B1_K_RELAY_2.COIL_PLUS",
+          "B1_D_RELAY_2.K",
+          "B1_J_LOAD_3.1",
+          "B1_D_FLYBACK_3.K",
+          "B1_K_RELAY_3.COIL_PLUS",
+          "B1_D_RELAY_3.K",
+          "B1_J_LOAD_4.1",
+          "B1_D_FLYBACK_4.K",
+          "B1_K_RELAY_4.COIL_PLUS",
+          "B1_D_RELAY_4.K",
+          "B1_SW_BTN_1.2",
+          "B1_SW_BTN_2.2",
+          "B1_SW_BTN_3.2",
+          "B1_SW_BTN_4.2",
+          "B1_SW_BTN_5.2",
+          "B1_SW_BTN_6.2"
+        ],
+        "member_count": 81
+      },
+      {
+        "name": "+3V3",
+        "members": [
+          "B1_ESP32.3V3",
+          "B1_BME280.VCC",
+          "B1_SSD1306.VCC",
+          "B1_DS3231.VCC",
+          "B1_W25Q64_1.VCC",
+          "B1_W25Q64_2.VCC",
+          "B1_MCP2515.VDD",
+          "B1_R_I2C_SDA.1",
+          "B1_R_I2C_SCL.1",
+          "B1_TP15.1",
+          "B1_C_DECOUPLE_2.1",
+          "B1_C_DECOUPLE_4.1",
+          "B1_C_DECOUPLE_6.1",
+          "B1_C_DECOUPLE_8.1",
+          "B1_C_DECOUPLE_10.1",
+          "B1_C_DECOUPLE_12.1",
+          "B1_C_DECOUPLE_14.1",
+          "B1_C_DECOUPLE_16.1",
+          "B1_C_DECOUPLE_18.1",
+          "B1_C_DECOUPLE_20.1",
+          "B1_C_DECOUPLE_22.1",
+          "B1_C_DECOUPLE_24.1",
+          "B1_J_HEADER_1.4",
+          "B1_J_HEADER_2.4",
+          "B1_J_HEADER_3.4",
+          "B1_J_HEADER_4.4",
+          "B1_J_HEADER_5.4",
+          "B1_J_HEADER_6.4",
+          "B1_J_HEADER_7.4",
+          "B1_J_HEADER_8.4",
+          "B2_U1.VCC",
+          "B2_U2.VCC",
+          "B2_U3.VCC",
+          "B2_U4.VCC",
+          "B2_R1.1",
+          "B2_R2.1",
+          "B2_R3.1",
+          "B2_R4.1",
+          "B2_C1.1",
+          "B2_C2.1",
+          "B2_C3.1",
+          "B2_C4.1",
+          "B2_C5.1",
+          "B2_C6.1",
+          "B2_J1.1",
+          "B2_J2.1",
+          "B2_J3.1",
+          "B2_J4.1",
+          "B2_J5.1",
+          "B2_TP1.1",
+          "B2_U1.CSB"
+        ],
+        "member_count": 51
+      },
+      {
+        "name": "GND",
+        "members": [
+          "B1_MCU.GND",
+          "B1_ESP32.GND",
+          "B1_USB_UART1.GND",
+          "B1_USB_UART2.GND",
+          "B1_USB1.GND",
+          "B1_USB2.GND",
+          "B1_BME280.GND",
+          "B1_SSD1306.GND",
+          "B1_DS3231.GND",
+          "B1_W25Q64_1.GND",
+          "B1_W25Q64_2.GND",
+          "B1_MCP2515.VSS",
+          "B1_TJA1050.GND",
+          "B1_MAX485.GND",
+          "B1_J_POWER.2",
+          "B1_J_I2C.4",
+          "B1_J_SPI.6",
+          "B1_J_CAN.3",
+          "B1_J_RS485.3",
+          "B1_TP16.1",
+          "B1_C_DECOUPLE_1.2",
+          "B1_C_DECOUPLE_2.2",
+          "B1_C_DECOUPLE_3.2",
+          "B1_C_DECOUPLE_4.2",
+          "B1_C_DECOUPLE_5.2",
+          "B1_C_DECOUPLE_6.2",
+          "B1_C_DECOUPLE_7.2",
+          "B1_C_DECOUPLE_8.2",
+          "B1_C_DECOUPLE_9.2",
+          "B1_C_DECOUPLE_10.2",
+          "B1_C_DECOUPLE_11.2",
+          "B1_C_DECOUPLE_12.2",
+          "B1_C_DECOUPLE_13.2",
+          "B1_C_DECOUPLE_14.2",
+          "B1_C_DECOUPLE_15.2",
+          "B1_C_DECOUPLE_16.2",
+          "B1_C_DECOUPLE_17.2",
+          "B1_C_DECOUPLE_18.2",
+          "B1_C_DECOUPLE_19.2",
+          "B1_C_DECOUPLE_20.2",
+          "B1_C_DECOUPLE_21.2",
+          "B1_C_DECOUPLE_22.2",
+          "B1_C_DECOUPLE_23.2",
+          "B1_C_DECOUPLE_24.2",
+          "B1_J_HEADER_1.3",
+          "B1_J_HEADER_2.3",
+          "B1_J_HEADER_3.3",
+          "B1_J_HEADER_4.3",
+          "B1_J_HEADER_5.3",
+          "B1_J_HEADER_6.3",
+          "B1_J_HEADER_7.3",
+          "B1_J_HEADER_8.3",
+          "B2_U1.GND",
+          "B2_U2.GND",
+          "B2_U3.GND",
+          "B2_U4.GND",
+          "B2_C1.2",
+          "B2_C2.2",
+          "B2_C3.2",
+          "B2_C4.2",
+          "B2_C5.2",
+          "B2_C6.2",
+          "B2_J1.2",
+          "B2_J2.2",
+          "B2_J3.4",
+          "B2_J4.4",
+          "B2_J5.6",
+          "B2_BT1.NEG",
+          "B2_TP2.1",
+          "B3_G1.1",
+          "B3_V1.2",
+          "B3_J1.2",
+          "B3_J2.6",
+          "B3_DS2.10",
+          "B3_U4027.8",
+          "B3_U4511.8",
+          "B3_U00.7",
+          "B3_U02.7",
+          "B3_U04.7",
+          "B3_U08.7",
+          "B3_U32.7",
+          "B3_U74.7",
+          "B3_U76.13",
+          "B3_U85.8",
+          "B3_U86.7",
+          "B3_U151.8",
+          "B3_U157.8",
+          "B3_U160.8",
+          "B3_U174.8",
+          "B3_U192.8",
+          "B3_U266.7",
+          "B3_U283.8",
+          "B3_U595.8",
+          "B3_U595.OE",
+          "B3_SW1.1",
+          "B3_DARR1.4",
+          "B3_LED1.K",
+          "B1_U595_1.OE",
+          "B1_U595_2.OE",
+          "B1_U595_3.OE",
+          "B1_U595_4.OE",
+          "B1_TP13.1",
+          "B1_R_PULLDOWN_1.2",
+          "B1_Q_MOSFET_1.S",
+          "B1_Q_NPN_1.E",
+          "B1_R_PULLDOWN_2.2",
+          "B1_Q_MOSFET_2.S",
+          "B1_Q_NPN_2.E",
+          "B1_R_PULLDOWN_3.2",
+          "B1_Q_MOSFET_3.S",
+          "B1_Q_NPN_3.E",
+          "B1_R_PULLDOWN_4.2",
+          "B1_Q_MOSFET_4.S",
+          "B1_Q_NPN_4.E",
+          "B1_LED1.K",
+          "B1_LED2.K",
+          "B1_LED3.K",
+          "B1_LED4.K",
+          "B1_LED5.K",
+          "B1_LED6.K",
+          "B1_LED7.K",
+          "B1_LED8.K",
+          "B1_LED9.K",
+          "B1_LED10.K",
+          "B1_LED11.K",
+          "B1_LED12.K",
+          "B1_LED13.K",
+          "B1_LED14.K",
+          "B1_LED15.K",
+          "B1_LED16.K",
+          "B1_R_BTN_PD_1.2",
+          "B1_R_BTN_PD_2.2",
+          "B1_R_BTN_PD_3.2",
+          "B1_R_BTN_PD_4.2",
+          "B1_R_BTN_PD_5.2",
+          "B1_R_BTN_PD_6.2",
+          "B1_RV1.1",
+          "B1_RV2.1",
+          "B1_RV3.1",
+          "B1_RV4.1",
+          "B1_JP_MODE_1.2",
+          "B1_JP_MODE_2.2",
+          "B1_JP_MODE_3.2",
+          "B1_JP_MODE_4.2",
+          "B1_JP_MODE_5.2",
+          "B1_JP_MODE_6.2",
+          "B2_U1.SDO"
+        ],
+        "member_count": 147
+      },
+      {
+        "name": "B1_USB1_D_PLUS",
+        "members": [
+          "B1_USB1.D+",
+          "B1_USB_UART1.D+"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_USB1_D_MINUS",
+        "members": [
+          "B1_USB1.D-",
+          "B1_USB_UART1.D-"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_USB2_D_PLUS",
+        "members": [
+          "B1_USB2.D+",
+          "B1_USB_UART2.D+"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_USB2_D_MINUS",
+        "members": [
+          "B1_USB2.D-",
+          "B1_USB_UART2.D-"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ESP_UART_RX",
+        "members": [
+          "B1_USB_UART1.TXD",
+          "B1_ESP32.U0RXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ESP_UART_TX",
+        "members": [
+          "B1_USB_UART1.RXD",
+          "B1_ESP32.U0TXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ARDUINO_UART_RX",
+        "members": [
+          "B1_USB_UART2.TXD",
+          "B1_MCU.RX0"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ARDUINO_UART_TX",
+        "members": [
+          "B1_USB_UART2.RXD",
+          "B1_MCU.TX0"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_I2C_SDA",
+        "members": [
+          "B1_MCU.SDA",
+          "B1_BME280.SDA",
+          "B1_SSD1306.SDA",
+          "B1_DS3231.SDA",
+          "B1_R_I2C_SDA.2",
+          "B1_J_I2C.2",
+          "B1_TP1.1"
+        ],
+        "member_count": 7
+      },
+      {
+        "name": "B1_I2C_SCL",
+        "members": [
+          "B1_MCU.SCL",
+          "B1_BME280.SCL",
+          "B1_SSD1306.SCL",
+          "B1_DS3231.SCL",
+          "B1_R_I2C_SCL.2",
+          "B1_J_I2C.3",
+          "B1_TP2.1"
+        ],
+        "member_count": 7
+      },
+      {
+        "name": "B1_SPI_MOSI",
+        "members": [
+          "B1_MCU.MOSI",
+          "B1_W25Q64_1.DI",
+          "B1_W25Q64_2.DI",
+          "B1_MCP2515.SI",
+          "B1_J_SPI.4",
+          "B1_TP3.1",
+          "B1_U595_1.SER"
+        ],
+        "member_count": 7
+      },
+      {
+        "name": "B1_SPI_MISO",
+        "members": [
+          "B1_MCU.MISO",
+          "B1_W25Q64_1.DO",
+          "B1_W25Q64_2.DO",
+          "B1_MCP2515.SO",
+          "B1_J_SPI.5",
+          "B1_TP4.1"
+        ],
+        "member_count": 6
+      },
+      {
+        "name": "B1_SPI_SCK",
+        "members": [
+          "B1_MCU.SCK",
+          "B1_W25Q64_1.CLK",
+          "B1_W25Q64_2.CLK",
+          "B1_MCP2515.SCK",
+          "B1_J_SPI.3",
+          "B1_TP5.1",
+          "B1_U595_1.SHCP",
+          "B1_U595_2.SHCP",
+          "B1_U595_3.SHCP",
+          "B1_U595_4.SHCP"
+        ],
+        "member_count": 10
+      },
+      {
+        "name": "B1_CS_FLASH1",
+        "members": [
+          "B1_MCU.GPIO_CS1",
+          "B1_W25Q64_1.CS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CS_FLASH2",
+        "members": [
+          "B1_MCU.GPIO_CS2",
+          "B1_W25Q64_2.CS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CS_CAN",
+        "members": [
+          "B1_MCU.GPIO_CS_CAN",
+          "B1_MCP2515.CS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CAN_INT",
+        "members": [
+          "B1_MCU.GPIO_CAN_INT",
+          "B1_MCP2515.INT",
+          "B1_TP6.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_CAN_TXD",
+        "members": [
+          "B1_MCP2515.TXCAN",
+          "B1_TJA1050.TXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CAN_RXD",
+        "members": [
+          "B1_MCP2515.RXCAN",
+          "B1_TJA1050.RXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_CANH",
+        "members": [
+          "B1_TJA1050.CANH",
+          "B1_J_CAN.1",
+          "B1_TP8.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_CANL",
+        "members": [
+          "B1_TJA1050.CANL",
+          "B1_J_CAN.2",
+          "B1_TP9.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RS485_RO",
+        "members": [
+          "B1_MAX485.RO",
+          "B1_MCU.GPIO_RS485_RX"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RS485_DI",
+        "members": [
+          "B1_MAX485.DI",
+          "B1_MCU.GPIO_RS485_TX"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RS485_DE_RE",
+        "members": [
+          "B1_MAX485.DE",
+          "B1_MAX485.RE",
+          "B1_MCU.GPIO_RS485_DE",
+          "B1_TP7.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B1_RS485_A",
+        "members": [
+          "B1_MAX485.A",
+          "B1_J_RS485.1",
+          "B1_TP10.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RS485_B",
+        "members": [
+          "B1_MAX485.B",
+          "B1_J_RS485.2",
+          "B1_TP11.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_SHIFT_LATCH",
+        "members": [
+          "B1_MCU.GPIO_LATCH",
+          "B1_U595_1.STCP",
+          "B1_U595_2.STCP",
+          "B1_U595_3.STCP",
+          "B1_U595_4.STCP",
+          "B1_TP12.1"
+        ],
+        "member_count": 6
+      },
+      {
+        "name": "B1_SHIFT_CHAIN_1",
+        "members": [
+          "B1_U595_1.Q7S",
+          "B1_U595_2.SER"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SHIFT_CHAIN_2",
+        "members": [
+          "B1_U595_2.Q7S",
+          "B1_U595_3.SER"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SHIFT_CHAIN_3",
+        "members": [
+          "B1_U595_3.Q7S",
+          "B1_U595_4.SER"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET1_CTRL",
+        "members": [
+          "B1_MCU.GPIO_PWM_1",
+          "B1_R_GATE_1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET1_GATE",
+        "members": [
+          "B1_R_GATE_1.2",
+          "B1_Q_MOSFET_1.G",
+          "B1_R_PULLDOWN_1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_MOSFET1_LOW",
+        "members": [
+          "B1_Q_MOSFET_1.D",
+          "B1_J_LOAD_1.2",
+          "B1_D_FLYBACK_1.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY1_CTRL",
+        "members": [
+          "B1_MCU.GPIO_RELAY_1",
+          "B1_R_BASE_1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY1_BASE",
+        "members": [
+          "B1_R_BASE_1.2",
+          "B1_Q_NPN_1.B"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY1_COIL_LOW",
+        "members": [
+          "B1_Q_NPN_1.C",
+          "B1_K_RELAY_1.COIL_MINUS",
+          "B1_D_RELAY_1.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY1_COM",
+        "members": [
+          "B1_K_RELAY_1.COM",
+          "B1_J_RELAY_1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY1_NO",
+        "members": [
+          "B1_K_RELAY_1.NO",
+          "B1_J_RELAY_1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET2_CTRL",
+        "members": [
+          "B1_MCU.GPIO_PWM_2",
+          "B1_R_GATE_2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET2_GATE",
+        "members": [
+          "B1_R_GATE_2.2",
+          "B1_Q_MOSFET_2.G",
+          "B1_R_PULLDOWN_2.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_MOSFET2_LOW",
+        "members": [
+          "B1_Q_MOSFET_2.D",
+          "B1_J_LOAD_2.2",
+          "B1_D_FLYBACK_2.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY2_CTRL",
+        "members": [
+          "B1_MCU.GPIO_RELAY_2",
+          "B1_R_BASE_2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY2_BASE",
+        "members": [
+          "B1_R_BASE_2.2",
+          "B1_Q_NPN_2.B"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY2_COIL_LOW",
+        "members": [
+          "B1_Q_NPN_2.C",
+          "B1_K_RELAY_2.COIL_MINUS",
+          "B1_D_RELAY_2.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY2_COM",
+        "members": [
+          "B1_K_RELAY_2.COM",
+          "B1_J_RELAY_2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY2_NO",
+        "members": [
+          "B1_K_RELAY_2.NO",
+          "B1_J_RELAY_2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET3_CTRL",
+        "members": [
+          "B1_MCU.GPIO_PWM_3",
+          "B1_R_GATE_3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET3_GATE",
+        "members": [
+          "B1_R_GATE_3.2",
+          "B1_Q_MOSFET_3.G",
+          "B1_R_PULLDOWN_3.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_MOSFET3_LOW",
+        "members": [
+          "B1_Q_MOSFET_3.D",
+          "B1_J_LOAD_3.2",
+          "B1_D_FLYBACK_3.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY3_CTRL",
+        "members": [
+          "B1_MCU.GPIO_RELAY_3",
+          "B1_R_BASE_3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY3_BASE",
+        "members": [
+          "B1_R_BASE_3.2",
+          "B1_Q_NPN_3.B"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY3_COIL_LOW",
+        "members": [
+          "B1_Q_NPN_3.C",
+          "B1_K_RELAY_3.COIL_MINUS",
+          "B1_D_RELAY_3.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY3_COM",
+        "members": [
+          "B1_K_RELAY_3.COM",
+          "B1_J_RELAY_3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY3_NO",
+        "members": [
+          "B1_K_RELAY_3.NO",
+          "B1_J_RELAY_3.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET4_CTRL",
+        "members": [
+          "B1_MCU.GPIO_PWM_4",
+          "B1_R_GATE_4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MOSFET4_GATE",
+        "members": [
+          "B1_R_GATE_4.2",
+          "B1_Q_MOSFET_4.G",
+          "B1_R_PULLDOWN_4.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_MOSFET4_LOW",
+        "members": [
+          "B1_Q_MOSFET_4.D",
+          "B1_J_LOAD_4.2",
+          "B1_D_FLYBACK_4.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY4_CTRL",
+        "members": [
+          "B1_MCU.GPIO_RELAY_4",
+          "B1_R_BASE_4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY4_BASE",
+        "members": [
+          "B1_R_BASE_4.2",
+          "B1_Q_NPN_4.B"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY4_COIL_LOW",
+        "members": [
+          "B1_Q_NPN_4.C",
+          "B1_K_RELAY_4.COIL_MINUS",
+          "B1_D_RELAY_4.A"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_RELAY4_COM",
+        "members": [
+          "B1_K_RELAY_4.COM",
+          "B1_J_RELAY_4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_RELAY4_NO",
+        "members": [
+          "B1_K_RELAY_4.NO",
+          "B1_J_RELAY_4.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED1_DRIVE",
+        "members": [
+          "B1_U595_1.Q0",
+          "B1_R_LED_1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED1_A",
+        "members": [
+          "B1_R_LED_1.2",
+          "B1_LED1.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED2_DRIVE",
+        "members": [
+          "B1_U595_1.Q1",
+          "B1_R_LED_2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED2_A",
+        "members": [
+          "B1_R_LED_2.2",
+          "B1_LED2.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED3_DRIVE",
+        "members": [
+          "B1_U595_1.Q2",
+          "B1_R_LED_3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED3_A",
+        "members": [
+          "B1_R_LED_3.2",
+          "B1_LED3.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED4_DRIVE",
+        "members": [
+          "B1_U595_1.Q3",
+          "B1_R_LED_4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED4_A",
+        "members": [
+          "B1_R_LED_4.2",
+          "B1_LED4.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED5_DRIVE",
+        "members": [
+          "B1_U595_1.Q4",
+          "B1_R_LED_5.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED5_A",
+        "members": [
+          "B1_R_LED_5.2",
+          "B1_LED5.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED6_DRIVE",
+        "members": [
+          "B1_U595_1.Q5",
+          "B1_R_LED_6.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED6_A",
+        "members": [
+          "B1_R_LED_6.2",
+          "B1_LED6.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED7_DRIVE",
+        "members": [
+          "B1_U595_1.Q6",
+          "B1_R_LED_7.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED7_A",
+        "members": [
+          "B1_R_LED_7.2",
+          "B1_LED7.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED8_DRIVE",
+        "members": [
+          "B1_U595_1.Q7",
+          "B1_R_LED_8.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED8_A",
+        "members": [
+          "B1_R_LED_8.2",
+          "B1_LED8.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED9_DRIVE",
+        "members": [
+          "B1_U595_2.Q0",
+          "B1_R_LED_9.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED9_A",
+        "members": [
+          "B1_R_LED_9.2",
+          "B1_LED9.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED10_DRIVE",
+        "members": [
+          "B1_U595_2.Q1",
+          "B1_R_LED_10.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED10_A",
+        "members": [
+          "B1_R_LED_10.2",
+          "B1_LED10.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED11_DRIVE",
+        "members": [
+          "B1_U595_2.Q2",
+          "B1_R_LED_11.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED11_A",
+        "members": [
+          "B1_R_LED_11.2",
+          "B1_LED11.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED12_DRIVE",
+        "members": [
+          "B1_U595_2.Q3",
+          "B1_R_LED_12.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED12_A",
+        "members": [
+          "B1_R_LED_12.2",
+          "B1_LED12.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED13_DRIVE",
+        "members": [
+          "B1_U595_2.Q4",
+          "B1_R_LED_13.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED13_A",
+        "members": [
+          "B1_R_LED_13.2",
+          "B1_LED13.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED14_DRIVE",
+        "members": [
+          "B1_U595_2.Q5",
+          "B1_R_LED_14.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED14_A",
+        "members": [
+          "B1_R_LED_14.2",
+          "B1_LED14.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED15_DRIVE",
+        "members": [
+          "B1_U595_2.Q6",
+          "B1_R_LED_15.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED15_A",
+        "members": [
+          "B1_R_LED_15.2",
+          "B1_LED15.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED16_DRIVE",
+        "members": [
+          "B1_U595_2.Q7",
+          "B1_R_LED_16.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED16_A",
+        "members": [
+          "B1_R_LED_16.2",
+          "B1_LED16.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q0",
+        "members": [
+          "B1_U595_3.Q0",
+          "B1_J_EXP1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q0",
+        "members": [
+          "B1_U595_4.Q0",
+          "B1_J_EXP2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q1",
+        "members": [
+          "B1_U595_3.Q1",
+          "B1_J_EXP1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q1",
+        "members": [
+          "B1_U595_4.Q1",
+          "B1_J_EXP2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q2",
+        "members": [
+          "B1_U595_3.Q2",
+          "B1_J_EXP1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q2",
+        "members": [
+          "B1_U595_4.Q2",
+          "B1_J_EXP2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q3",
+        "members": [
+          "B1_U595_3.Q3",
+          "B1_J_EXP1.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q3",
+        "members": [
+          "B1_U595_4.Q3",
+          "B1_J_EXP2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q4",
+        "members": [
+          "B1_U595_3.Q4",
+          "B1_J_EXP1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q4",
+        "members": [
+          "B1_U595_4.Q4",
+          "B1_J_EXP2.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q5",
+        "members": [
+          "B1_U595_3.Q5",
+          "B1_J_EXP1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q5",
+        "members": [
+          "B1_U595_4.Q5",
+          "B1_J_EXP2.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q6",
+        "members": [
+          "B1_U595_3.Q6",
+          "B1_J_EXP1.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q6",
+        "members": [
+          "B1_U595_4.Q6",
+          "B1_J_EXP2.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP1_Q7",
+        "members": [
+          "B1_U595_3.Q7",
+          "B1_J_EXP1.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_EXP2_Q7",
+        "members": [
+          "B1_U595_4.Q7",
+          "B1_J_EXP2.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_BUTTON1_NET",
+        "members": [
+          "B1_MCU.GPIO_BTN_1",
+          "B1_SW_BTN_1.1",
+          "B1_R_BTN_PD_1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BUTTON2_NET",
+        "members": [
+          "B1_MCU.GPIO_BTN_2",
+          "B1_SW_BTN_2.1",
+          "B1_R_BTN_PD_2.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BUTTON3_NET",
+        "members": [
+          "B1_MCU.GPIO_BTN_3",
+          "B1_SW_BTN_3.1",
+          "B1_R_BTN_PD_3.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BUTTON4_NET",
+        "members": [
+          "B1_MCU.GPIO_BTN_4",
+          "B1_SW_BTN_4.1",
+          "B1_R_BTN_PD_4.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BUTTON5_NET",
+        "members": [
+          "B1_MCU.GPIO_BTN_5",
+          "B1_SW_BTN_5.1",
+          "B1_R_BTN_PD_5.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_BUTTON6_NET",
+        "members": [
+          "B1_MCU.GPIO_BTN_6",
+          "B1_SW_BTN_6.1",
+          "B1_R_BTN_PD_6.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_ANALOG1_INPUT",
+        "members": [
+          "B1_J_ANALOG.1",
+          "B1_RV1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG1_WIPER",
+        "members": [
+          "B1_RV1.2",
+          "B1_U_LM358_CHANNEL_1.IN_PLUS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG1_BUFFER",
+        "members": [
+          "B1_U_LM358_CHANNEL_1.OUT",
+          "B1_U_LM358_CHANNEL_1.IN_MINUS",
+          "B1_MCU.ADC1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_ANALOG2_INPUT",
+        "members": [
+          "B1_J_ANALOG.2",
+          "B1_RV2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG2_WIPER",
+        "members": [
+          "B1_RV2.2",
+          "B1_U_LM358_CHANNEL_2.IN_PLUS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG2_BUFFER",
+        "members": [
+          "B1_U_LM358_CHANNEL_2.OUT",
+          "B1_U_LM358_CHANNEL_2.IN_MINUS",
+          "B1_MCU.ADC2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_ANALOG3_INPUT",
+        "members": [
+          "B1_J_ANALOG.3",
+          "B1_RV3.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG3_WIPER",
+        "members": [
+          "B1_RV3.2",
+          "B1_U_LM358_CHANNEL_3.IN_PLUS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG3_BUFFER",
+        "members": [
+          "B1_U_LM358_CHANNEL_3.OUT",
+          "B1_U_LM358_CHANNEL_3.IN_MINUS",
+          "B1_MCU.ADC3"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_ANALOG4_INPUT",
+        "members": [
+          "B1_J_ANALOG.4",
+          "B1_RV4.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG4_WIPER",
+        "members": [
+          "B1_RV4.2",
+          "B1_U_LM358_CHANNEL_4.IN_PLUS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_ANALOG4_BUFFER",
+        "members": [
+          "B1_U_LM358_CHANNEL_4.OUT",
+          "B1_U_LM358_CHANNEL_4.IN_MINUS",
+          "B1_MCU.ADC4"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_1_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_1",
+          "B1_R_PROT_1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_1_HEADER",
+        "members": [
+          "B1_R_PROT_1.2",
+          "B1_J_HEADER_1.1",
+          "B1_TP17.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_2_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_2",
+          "B1_R_PROT_2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_2_HEADER",
+        "members": [
+          "B1_R_PROT_2.2",
+          "B1_J_HEADER_2.1",
+          "B1_TP18.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_3_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_3",
+          "B1_R_PROT_3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_3_HEADER",
+        "members": [
+          "B1_R_PROT_3.2",
+          "B1_J_HEADER_3.1",
+          "B1_TP19.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_4_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_4",
+          "B1_R_PROT_4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_4_HEADER",
+        "members": [
+          "B1_R_PROT_4.2",
+          "B1_J_HEADER_4.1",
+          "B1_TP20.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_5_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_5",
+          "B1_R_PROT_5.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_5_HEADER",
+        "members": [
+          "B1_R_PROT_5.2",
+          "B1_J_HEADER_5.1",
+          "B1_TP21.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_6_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_6",
+          "B1_R_PROT_6.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_6_HEADER",
+        "members": [
+          "B1_R_PROT_6.2",
+          "B1_J_HEADER_6.1",
+          "B1_TP22.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_7_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_7",
+          "B1_R_PROT_7.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_7_HEADER",
+        "members": [
+          "B1_R_PROT_7.2",
+          "B1_J_HEADER_7.1",
+          "B1_TP23.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_GPIO_EXT_8_MCU",
+        "members": [
+          "B1_MCU.GPIO_EXT_8",
+          "B1_R_PROT_8.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_GPIO_EXT_8_HEADER",
+        "members": [
+          "B1_R_PROT_8.2",
+          "B1_J_HEADER_8.1",
+          "B1_TP24.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_MODE1_NET",
+        "members": [
+          "B1_MCU.GPIO_MODE_1",
+          "B1_JP_MODE_1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MODE2_NET",
+        "members": [
+          "B1_MCU.GPIO_MODE_2",
+          "B1_JP_MODE_2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MODE3_NET",
+        "members": [
+          "B1_MCU.GPIO_MODE_3",
+          "B1_JP_MODE_3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MODE4_NET",
+        "members": [
+          "B1_MCU.GPIO_MODE_4",
+          "B1_JP_MODE_4.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MODE5_NET",
+        "members": [
+          "B1_MCU.GPIO_MODE_5",
+          "B1_JP_MODE_5.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_MODE6_NET",
+        "members": [
+          "B1_MCU.GPIO_MODE_6",
+          "B1_JP_MODE_6.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_I2C_SDA",
+        "members": [
+          "B2_U1.SDA",
+          "B2_U2.SDA",
+          "B2_U3.SDA",
+          "B2_R1.2",
+          "B2_J1.3",
+          "B2_J2.3",
+          "B2_J3.2",
+          "B2_J4.2",
+          "B2_TP3.1"
+        ],
+        "member_count": 9
+      },
+      {
+        "name": "B2_I2C_SCL",
+        "members": [
+          "B2_U1.SCL",
+          "B2_U2.SCL",
+          "B2_U3.SCL",
+          "B2_R2.2",
+          "B2_J1.4",
+          "B2_J2.4",
+          "B2_J3.3",
+          "B2_J4.3",
+          "B2_TP4.1"
+        ],
+        "member_count": 9
+      },
+      {
+        "name": "B2_RTC_VBAT",
+        "members": [
+          "B2_U3.VBAT",
+          "B2_BT1.POS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SPI_MOSI",
+        "members": [
+          "B2_U4.DI",
+          "B2_J5.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SPI_MISO",
+        "members": [
+          "B2_U4.DO",
+          "B2_J5.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SPI_SCK",
+        "members": [
+          "B2_U4.CLK",
+          "B2_J5.3",
+          "B2_TP6.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_SPI_CS_FLASH",
+        "members": [
+          "B2_U4.CS",
+          "B2_R3.2",
+          "B2_J5.2",
+          "B2_TP5.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B2_FLASH_WP_HOLD",
+        "members": [
+          "B2_U4.WP",
+          "B2_U4.HOLD",
+          "B2_R4.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_CLK",
+        "members": [
+          "B3_J1.3",
+          "B3_U4027.3",
+          "B3_U7490.14",
+          "B3_U160.2",
+          "B3_U192.4",
+          "B3_U74.3",
+          "B3_U76.1",
+          "B3_U595.SHCP"
+        ],
+        "member_count": 8
+      },
+      {
+        "name": "B3_DATA_A",
+        "members": [
+          "B3_SW1.2",
+          "B3_U00.1",
+          "B3_U02.1",
+          "B3_U04.1",
+          "B3_U08.1",
+          "B3_U32.1",
+          "B3_U86.1",
+          "B3_U266.1",
+          "B3_U151.4",
+          "B3_U157.2",
+          "B3_U283.5"
+        ],
+        "member_count": 11
+      },
+      {
+        "name": "B3_DATA_B",
+        "members": [
+          "B3_SW1.3",
+          "B3_U00.2",
+          "B3_U02.2",
+          "B3_U08.2",
+          "B3_U32.2",
+          "B3_U86.2",
+          "B3_U266.2",
+          "B3_U151.3",
+          "B3_U157.3",
+          "B3_U283.3"
+        ],
+        "member_count": 10
+      },
+      {
+        "name": "B3_NAND_OUT",
+        "members": [
+          "B3_U00.3",
+          "B3_U74.2",
+          "B3_RN1.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_NOR_OUT",
+        "members": [
+          "B3_U02.3",
+          "B3_U76.2",
+          "B3_RN1.3"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_INV_OUT",
+        "members": [
+          "B3_U04.2",
+          "B3_U85.10",
+          "B3_RN1.4"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_AND_OUT",
+        "members": [
+          "B3_U08.3",
+          "B3_RN1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_OR_OUT",
+        "members": [
+          "B3_U32.3",
+          "B3_RN1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_XOR_OUT",
+        "members": [
+          "B3_U86.3",
+          "B3_U174.3",
+          "B3_RN1.7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_XNOR_OUT",
+        "members": [
+          "B3_U266.3",
+          "B3_RN1.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_JK_Q",
+        "members": [
+          "B3_U4027.1",
+          "B3_U595.SER"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SHIFT_LATCH",
+        "members": [
+          "B3_J2.2",
+          "B3_U595.STCP"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_BCD_A",
+        "members": [
+          "B3_U160.14",
+          "B3_U4511.7",
+          "B3_U7447.7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_BCD_B",
+        "members": [
+          "B3_U160.13",
+          "B3_U4511.1",
+          "B3_U7447.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_BCD_C",
+        "members": [
+          "B3_U160.12",
+          "B3_U4511.2",
+          "B3_U7447.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_BCD_D",
+        "members": [
+          "B3_U160.11",
+          "B3_U4511.6",
+          "B3_U7447.6"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_RIPPLE_Q0",
+        "members": [
+          "B3_U7490.12",
+          "B3_J1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RIPPLE_Q1",
+        "members": [
+          "B3_U7490.9",
+          "B3_J1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RIPPLE_Q2",
+        "members": [
+          "B3_U7490.8",
+          "B3_J1.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RIPPLE_Q3",
+        "members": [
+          "B3_U7490.11",
+          "B3_J1.8"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SHIFT_Q0",
+        "members": [
+          "B3_U595.Q0",
+          "B3_J1.9"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SHIFT_Q1",
+        "members": [
+          "B3_U595.Q1",
+          "B3_J1.10"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SHIFT_Q2",
+        "members": [
+          "B3_U595.Q2",
+          "B3_J1.11"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SHIFT_Q3",
+        "members": [
+          "B3_U595.Q3",
+          "B3_J1.12"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CA_A",
+        "members": [
+          "B3_U7447.13",
+          "B3_DS1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CA_B",
+        "members": [
+          "B3_U7447.12",
+          "B3_DS1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CA_C",
+        "members": [
+          "B3_U7447.11",
+          "B3_DS1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CA_D",
+        "members": [
+          "B3_U7447.10",
+          "B3_DS1.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CA_E",
+        "members": [
+          "B3_U7447.9",
+          "B3_DS1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CA_F",
+        "members": [
+          "B3_U7447.15",
+          "B3_DS1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CA_G",
+        "members": [
+          "B3_U7447.14",
+          "B3_DS1.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CK_A",
+        "members": [
+          "B3_U4511.13",
+          "B3_DS2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CK_B",
+        "members": [
+          "B3_U4511.12",
+          "B3_DS2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CK_C",
+        "members": [
+          "B3_U4511.11",
+          "B3_DS2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CK_D",
+        "members": [
+          "B3_U4511.10",
+          "B3_DS2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CK_E",
+        "members": [
+          "B3_U4511.9",
+          "B3_DS2.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CK_F",
+        "members": [
+          "B3_U4511.15",
+          "B3_DS2.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_SEG_CK_G",
+        "members": [
+          "B3_U4511.14",
+          "B3_DS2.7"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_LED_LOGIC_A",
+        "members": [
+          "B3_R1.2",
+          "B3_LED1.A",
+          "B3_U595.Q7"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B3_RGB_R",
+        "members": [
+          "B3_U174.2",
+          "B3_DARR1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RGB_G",
+        "members": [
+          "B3_U174.5",
+          "B3_DARR1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_RGB_B",
+        "members": [
+          "B3_U174.6",
+          "B3_DARR1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_MUX_OUT",
+        "members": [
+          "B3_U151.6",
+          "B3_J2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_MUX_B_OUT",
+        "members": [
+          "B3_U157.7",
+          "B3_J1.13"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_COUNTER_LOAD",
+        "members": [
+          "B3_U192.11",
+          "B3_J1.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_ADDER_SUM0",
+        "members": [
+          "B3_U283.10",
+          "B3_J2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B3_ADDER_SUM1",
+        "members": [
+          "B3_U283.11",
+          "B3_J1.14"
+        ],
+        "member_count": 2
+      }
+    ],
+    "important_nets": [
+      "+3V3",
+      "+5V",
+      "GND"
+    ]
+  },
+  "stage_contracts": {
+    "component_placer": {
+      "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+      "output": "placed-design contract with component bounds and resolved pin descriptors"
+    },
+    "arrangement_decider": {
+      "input": "components, blocks, nets, layout_intent",
+      "output": "coordinate edit JSON; may rotate components"
+    },
+    "beautifier": {
+      "input": "placed-design contract plus coordinate edits",
+      "output": "same components with revised coordinates/rotations"
+    },
+    "wire_planner": {
+      "input": "placed-design contract plus expected_netlist",
+      "output": "wire route plan and terminal fallback plan"
+    },
+    "terminal_placer": {
+      "input": "placed-design contract plus terminal nets",
+      "output": "terminal/local-label endpoint plan"
+    },
+    "validators": {
+      "input": "generated schematic plus expected_netlist",
+      "output": "validation_report.json"
+    }
+  },
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "Near-Limit Mixed Schematic",
+      "source_circuit_id": "T10",
+      "component_count": 190,
+      "net_count": 215
+    },
+    {
+      "id": "B2",
+      "name": "I2C SPI Sensor Hub",
+      "source_circuit_id": "T05",
+      "component_count": 26,
+      "net_count": 13
+    },
+    {
+      "id": "B3",
+      "name": "Proteus Alias Logic Display Board",
+      "source_circuit_id": "M02",
+      "component_count": 32,
+      "net_count": 49
+    }
+  ],
+  "generation_notes": {
+    "source": "deterministic_main_json_catalog_100",
+    "compiler_repairs": [
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_SHIFT_ENABLE",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_SHIFT_RESET",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET1_PULLDOWN",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET1_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET1_SOURCE",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY1_EMITTER",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY1_COIL_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET2_PULLDOWN",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET2_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET2_SOURCE",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY2_EMITTER",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY2_COIL_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET3_PULLDOWN",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET3_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET3_SOURCE",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY3_EMITTER",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY3_COIL_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET4_PULLDOWN",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET4_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MOSFET4_SOURCE",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY4_EMITTER",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_RELAY4_COIL_HIGH",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED1_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED2_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED3_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED4_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED5_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED6_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED7_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED8_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED9_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED10_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED11_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED12_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED13_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED14_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED15_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_LED16_K",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON1_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON1_5V",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON2_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON2_5V",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON3_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON3_5V",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON4_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON4_5V",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON5_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON5_5V",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON6_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_BUTTON6_5V",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_ANALOG1_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_ANALOG2_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_ANALOG3_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_ANALOG4_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MODE1_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MODE2_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MODE3_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MODE4_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MODE5_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_MODE6_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B2_BME280_CSB",
+        "to": "+3V3"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B2_BME280_SDO",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B2_SPI_TEST",
+        "to": "B2_SPI_SCK"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "B1_SHIFT_MOSI",
+        "to": "B1_SPI_MOSI",
+        "endpoint": "B1_MCU.MOSI"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "B1_SHIFT_CLK",
+        "to": "B1_SPI_SCK",
+        "endpoint": "B1_MCU.SCK"
+      }
+    ],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "composed_supported_raw_specs",
+    "source_line_count": null
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 248,
+    "net_count": 208,
+    "endpoint_count": 807,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

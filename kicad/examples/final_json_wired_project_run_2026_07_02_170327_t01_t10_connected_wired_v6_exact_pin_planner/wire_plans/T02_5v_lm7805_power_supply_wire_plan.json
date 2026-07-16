@@ -1,0 +1,1235 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 420.0,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "PWR_LED_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            223.52,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            325.12,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "PWR_LED_A",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              223.52,
+              152.4
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "A",
+            "point": [
+              325.12,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              223.52,
+              152.4
+            ],
+            [
+              223.52,
+              157.48
+            ],
+            [
+              330.2,
+              157.48
+            ],
+            [
+              330.2,
+              147.32
+            ],
+            [
+              325.12,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                223.52,
+                152.4
+              ],
+              "end": [
+                223.52,
+                157.48
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                223.52,
+                157.48
+              ],
+              "end": [
+                330.2,
+                157.48
+              ],
+              "direction": "right",
+              "length": 106.68
+            },
+            {
+              "start": [
+                330.2,
+                157.48
+              ],
+              "end": [
+                330.2,
+                147.32
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                330.2,
+                147.32
+              ],
+              "end": [
+                325.12,
+                147.32
+              ],
+              "direction": "left",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "VIN_FUSED": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "F1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            71.12,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            198.12,
+            142.24
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "VIN_FUSED",
+          "from": {
+            "ref": "F1",
+            "pin": "2",
+            "point": [
+              71.12,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:Fuse:unit1:pin2"
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "A",
+            "point": [
+              198.12,
+              142.24
+            ],
+            "exact": true,
+            "source": "Diode:1N4007:unit1:pin2"
+          },
+          "path": [
+            [
+              71.12,
+              142.24
+            ],
+            [
+              198.12,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                71.12,
+                142.24
+              ],
+              "end": [
+                198.12,
+                142.24
+              ],
+              "direction": "right",
+              "length": 127.0
+            }
+          ]
+        }
+      ]
+    },
+    "VIN_PROTECTED": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            101.6,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "C1",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            132.08,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            162.56,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            193.04,
+            142.24
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "IN",
+          "side": "left",
+          "point": [
+            284.48,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              101.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "C1",
+            "pin": "POS",
+            "point": [
+              132.08,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C_Polarized:unit1:pin1"
+          },
+          "path": [
+            [
+              101.6,
+              142.24
+            ],
+            [
+              101.6,
+              137.16
+            ],
+            [
+              132.08,
+              137.16
+            ],
+            [
+              132.08,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                101.6,
+                142.24
+              ],
+              "end": [
+                101.6,
+                137.16
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                101.6,
+                137.16
+              ],
+              "end": [
+                132.08,
+                137.16
+              ],
+              "direction": "right",
+              "length": 30.48
+            },
+            {
+              "start": [
+                132.08,
+                137.16
+              ],
+              "end": [
+                132.08,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              101.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "C2",
+            "pin": "1",
+            "point": [
+              162.56,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "path": [
+            [
+              101.6,
+              142.24
+            ],
+            [
+              162.56,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                101.6,
+                142.24
+              ],
+              "end": [
+                162.56,
+                142.24
+              ],
+              "direction": "right",
+              "length": 60.96
+            }
+          ]
+        },
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              101.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "K",
+            "point": [
+              193.04,
+              142.24
+            ],
+            "exact": true,
+            "source": "Diode:1N4007:unit1:pin1"
+          },
+          "path": [
+            [
+              101.6,
+              142.24
+            ],
+            [
+              193.04,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                101.6,
+                142.24
+              ],
+              "end": [
+                193.04,
+                142.24
+              ],
+              "direction": "right",
+              "length": 91.44
+            }
+          ]
+        },
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              101.6,
+              142.24
+            ],
+            "exact": true,
+            "source": "Device:C:unit1:pin1"
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IN",
+            "point": [
+              284.48,
+              147.32
+            ],
+            "exact": true,
+            "source": "Regulator_Linear:LM7805_TO220:unit1:pin1"
+          },
+          "path": [
+            [
+              101.6,
+              142.24
+            ],
+            [
+              284.48,
+              142.24
+            ],
+            [
+              284.48,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                101.6,
+                142.24
+              ],
+              "end": [
+                284.48,
+                142.24
+              ],
+              "direction": "right",
+              "length": 182.88
+            },
+            {
+              "start": [
+                284.48,
+                142.24
+              ],
+              "end": [
+                284.48,
+                147.32
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "VIN_RAW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            40.64,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector:Barrel_Jack:unit1:pin1"
+        },
+        {
+          "ref": "F1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            71.12,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin1"
+        }
+      ],
+      "routes": [
+        {
+          "net": "VIN_RAW",
+          "from": {
+            "ref": "J1",
+            "pin": "POS",
+            "point": [
+              40.64,
+              142.24
+            ],
+            "exact": true,
+            "source": "Connector:Barrel_Jack:unit1:pin1"
+          },
+          "to": {
+            "ref": "F1",
+            "pin": "1",
+            "point": [
+              71.12,
+              137.16
+            ],
+            "exact": true,
+            "source": "Device:Fuse:unit1:pin1"
+          },
+          "path": [
+            [
+              40.64,
+              142.24
+            ],
+            [
+              71.12,
+              142.24
+            ],
+            [
+              71.12,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                142.24
+              ],
+              "end": [
+                71.12,
+                142.24
+              ],
+              "direction": "right",
+              "length": 30.48
+            },
+            {
+              "start": [
+                71.12,
+                142.24
+              ],
+              "end": [
+                71.12,
+                137.16
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "OUT",
+          "side": "top",
+          "point": [
+            294.64,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin3"
+        },
+        {
+          "ref": "C3",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            193.04,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            259.08,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            223.52,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            60.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            40.64,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector:Barrel_Jack:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            289.56,
+            152.4
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin2"
+        },
+        {
+          "ref": "C1",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            132.08,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            162.56,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C3",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            193.04,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            259.08,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            320.04,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            60.96,
+            157.48
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "PWR_LED_A",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          223.52,
+          152.4
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "A",
+        "point": [
+          325.12,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          223.52,
+          152.4
+        ],
+        [
+          223.52,
+          157.48
+        ],
+        [
+          330.2,
+          157.48
+        ],
+        [
+          330.2,
+          147.32
+        ],
+        [
+          325.12,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            223.52,
+            152.4
+          ],
+          "end": [
+            223.52,
+            157.48
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            223.52,
+            157.48
+          ],
+          "end": [
+            330.2,
+            157.48
+          ],
+          "direction": "right",
+          "length": 106.68
+        },
+        {
+          "start": [
+            330.2,
+            157.48
+          ],
+          "end": [
+            330.2,
+            147.32
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            330.2,
+            147.32
+          ],
+          "end": [
+            325.12,
+            147.32
+          ],
+          "direction": "left",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "VIN_FUSED",
+      "from": {
+        "ref": "F1",
+        "pin": "2",
+        "point": [
+          71.12,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:Fuse:unit1:pin2"
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "A",
+        "point": [
+          198.12,
+          142.24
+        ],
+        "exact": true,
+        "source": "Diode:1N4007:unit1:pin2"
+      },
+      "path": [
+        [
+          71.12,
+          142.24
+        ],
+        [
+          198.12,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            71.12,
+            142.24
+          ],
+          "end": [
+            198.12,
+            142.24
+          ],
+          "direction": "right",
+          "length": 127.0
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          101.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "C1",
+        "pin": "POS",
+        "point": [
+          132.08,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C_Polarized:unit1:pin1"
+      },
+      "path": [
+        [
+          101.6,
+          142.24
+        ],
+        [
+          101.6,
+          137.16
+        ],
+        [
+          132.08,
+          137.16
+        ],
+        [
+          132.08,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            101.6,
+            142.24
+          ],
+          "end": [
+            101.6,
+            137.16
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            101.6,
+            137.16
+          ],
+          "end": [
+            132.08,
+            137.16
+          ],
+          "direction": "right",
+          "length": 30.48
+        },
+        {
+          "start": [
+            132.08,
+            137.16
+          ],
+          "end": [
+            132.08,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          101.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "C2",
+        "pin": "1",
+        "point": [
+          162.56,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "path": [
+        [
+          101.6,
+          142.24
+        ],
+        [
+          162.56,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            101.6,
+            142.24
+          ],
+          "end": [
+            162.56,
+            142.24
+          ],
+          "direction": "right",
+          "length": 60.96
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          101.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "K",
+        "point": [
+          193.04,
+          142.24
+        ],
+        "exact": true,
+        "source": "Diode:1N4007:unit1:pin1"
+      },
+      "path": [
+        [
+          101.6,
+          142.24
+        ],
+        [
+          193.04,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            101.6,
+            142.24
+          ],
+          "end": [
+            193.04,
+            142.24
+          ],
+          "direction": "right",
+          "length": 91.44
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          101.6,
+          142.24
+        ],
+        "exact": true,
+        "source": "Device:C:unit1:pin1"
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IN",
+        "point": [
+          284.48,
+          147.32
+        ],
+        "exact": true,
+        "source": "Regulator_Linear:LM7805_TO220:unit1:pin1"
+      },
+      "path": [
+        [
+          101.6,
+          142.24
+        ],
+        [
+          284.48,
+          142.24
+        ],
+        [
+          284.48,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            101.6,
+            142.24
+          ],
+          "end": [
+            284.48,
+            142.24
+          ],
+          "direction": "right",
+          "length": 182.88
+        },
+        {
+          "start": [
+            284.48,
+            142.24
+          ],
+          "end": [
+            284.48,
+            147.32
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "VIN_RAW",
+      "from": {
+        "ref": "J1",
+        "pin": "POS",
+        "point": [
+          40.64,
+          142.24
+        ],
+        "exact": true,
+        "source": "Connector:Barrel_Jack:unit1:pin1"
+      },
+      "to": {
+        "ref": "F1",
+        "pin": "1",
+        "point": [
+          71.12,
+          137.16
+        ],
+        "exact": true,
+        "source": "Device:Fuse:unit1:pin1"
+      },
+      "path": [
+        [
+          40.64,
+          142.24
+        ],
+        [
+          71.12,
+          142.24
+        ],
+        [
+          71.12,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            142.24
+          ],
+          "end": [
+            71.12,
+            142.24
+          ],
+          "direction": "right",
+          "length": 30.48
+        },
+        {
+          "start": [
+            71.12,
+            142.24
+          ],
+          "end": [
+            71.12,
+            137.16
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 6,
+    "wired_route_count": 7,
+    "segment_count": 14,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_fallback_manhattan: no clear route found for VIN_FUSED.",
+    "astar_fallback_manhattan: no clear route found for VIN_PROTECTED.",
+    "astar_fallback_manhattan: no clear route found for VIN_PROTECTED.",
+    "astar_fallback_manhattan: no clear route found for VIN_PROTECTED.",
+    "astar_fallback_expansion_limit: VIN_RAW exceeded 1500 explored grid states."
+  ]
+}

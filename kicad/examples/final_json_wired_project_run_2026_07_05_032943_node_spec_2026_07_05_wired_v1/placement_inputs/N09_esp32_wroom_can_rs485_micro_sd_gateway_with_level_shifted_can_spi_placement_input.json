@@ -1,0 +1,725 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n09",
+    "title": "ESP32_WROOM CAN + RS485 + MICRO_SD GATEWAY WITH LEVEL SHIFTED CAN SPI",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N09",
+  "circuit_name": "ESP32_WROOM CAN + RS485 + MICRO_SD GATEWAY WITH LEVEL SHIFTED CAN SPI",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "PWR_5V",
+      "ref": "PWR_5V",
+      "kind": "PWR_5V",
+      "value": "+5V Power Symbol"
+    },
+    {
+      "id": "PWR_3V3",
+      "ref": "PWR_3V3",
+      "kind": "PWR_3V3",
+      "value": "+3V3 Power Symbol"
+    },
+    {
+      "id": "ESP32_WROOM",
+      "ref": "ESP32_WROOM",
+      "kind": "ESP32_WROOM",
+      "value": "ESP32-WROOM Module"
+    },
+    {
+      "id": "R_10K_PULLUP_EN",
+      "ref": "R_10K_PULLUP_EN",
+      "kind": "R_10K_PULLUP",
+      "value": "10k"
+    },
+    {
+      "id": "EN_PUSH_BUTTON",
+      "ref": "EN_PUSH_BUTTON",
+      "kind": "EN_PUSH_BUTTON",
+      "value": "EN Push Button"
+    },
+    {
+      "id": "R_10K_PULLUP_BOOT",
+      "ref": "R_10K_PULLUP_BOOT",
+      "kind": "R_10K_PULLUP",
+      "value": "10k"
+    },
+    {
+      "id": "BOOT_PUSH_BUTTON",
+      "ref": "BOOT_PUSH_BUTTON",
+      "kind": "BOOT_PUSH_BUTTON",
+      "value": "BOOT Push Button"
+    },
+    {
+      "id": "LEVEL_SHIFTER_SPI1",
+      "ref": "LEVEL_SHIFTER_SPI1",
+      "kind": "LEVEL_SHIFTER",
+      "value": "Level Shifter"
+    },
+    {
+      "id": "MCP2515",
+      "ref": "MCP2515",
+      "kind": "MCP2515",
+      "value": "MCP2515 CAN Controller"
+    },
+    {
+      "id": "LEVEL_SHIFTER_SPI2",
+      "ref": "LEVEL_SHIFTER_SPI2",
+      "kind": "LEVEL_SHIFTER",
+      "value": "Level Shifter"
+    },
+    {
+      "id": "R_10K_PULLUP_MCP_RESET",
+      "ref": "R_10K_PULLUP_MCP_RESET",
+      "kind": "R_10K_PULLUP",
+      "value": "10k"
+    },
+    {
+      "id": "TJA1050",
+      "ref": "TJA1050",
+      "kind": "TJA1050",
+      "value": "TJA1050 CAN Transceiver"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_MCP",
+      "ref": "DECOUPLING_CAPACITOR_MCP",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "R_CAN_RS",
+      "ref": "R_CAN_RS",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "R_120_CAN",
+      "ref": "R_120_CAN",
+      "kind": "R_120_CAN",
+      "value": "120 ohm"
+    },
+    {
+      "id": "CAN_TERMINAL",
+      "ref": "CAN_TERMINAL",
+      "kind": "CAN_TERMINAL",
+      "value": "CAN Terminal"
+    },
+    {
+      "id": "MAX485",
+      "ref": "MAX485",
+      "kind": "MAX485",
+      "value": "MAX485 Transceiver"
+    },
+    {
+      "id": "R_RS485_DIR_PD",
+      "ref": "R_RS485_DIR_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_120_RS485",
+      "ref": "R_120_RS485",
+      "kind": "R_120_RS485",
+      "value": "120 ohm"
+    },
+    {
+      "id": "TVS_DIODE_RS485",
+      "ref": "TVS_DIODE_RS485",
+      "kind": "TVS_DIODE_RS485",
+      "value": "TVS Protection Diode"
+    },
+    {
+      "id": "RS485_TERMINAL",
+      "ref": "RS485_TERMINAL",
+      "kind": "RS485_TERMINAL",
+      "value": "RS485 Terminal"
+    },
+    {
+      "id": "MICRO_SD_SOCKET",
+      "ref": "MICRO_SD_SOCKET",
+      "kind": "MICRO_SD_SOCKET",
+      "value": "Micro SD Socket"
+    },
+    {
+      "id": "R_10K_PULLUP_SD_CD",
+      "ref": "R_10K_PULLUP_SD_CD",
+      "kind": "R_10K_PULLUP",
+      "value": "10k"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_SD",
+      "ref": "DECOUPLING_CAPACITOR_SD",
+      "kind": "DECOUPLING_CAPACITOR_SD",
+      "value": "Decoupling Capacitor"
+    },
+    {
+      "id": "SSD1306_OLED",
+      "ref": "SSD1306_OLED",
+      "kind": "SSD1306_OLED",
+      "value": "SSD1306 OLED"
+    },
+    {
+      "id": "SDA_PULLUP",
+      "ref": "SDA_PULLUP",
+      "kind": "SDA_PULLUP",
+      "value": "SDA Pull-up"
+    },
+    {
+      "id": "SCL_PULLUP",
+      "ref": "SCL_PULLUP",
+      "kind": "SCL_PULLUP",
+      "value": "SCL Pull-up"
+    },
+    {
+      "id": "R_220_STATUS",
+      "ref": "R_220_STATUS",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_STATUS",
+      "ref": "LED_INDICATOR_STATUS",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "R_220_CAN_STATUS",
+      "ref": "R_220_CAN_STATUS",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_CAN",
+      "ref": "LED_INDICATOR_CAN",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "R_220_RS485_STATUS",
+      "ref": "R_220_RS485_STATUS",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_RS485",
+      "ref": "LED_INDICATOR_RS485",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "UART_HEADER",
+      "ref": "UART_HEADER",
+      "kind": "UART_HEADER",
+      "value": "UART Header"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_CAN",
+      "ref": "DECOUPLING_CAPACITOR_CAN",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_ESP",
+      "ref": "DECOUPLING_CAPACITOR_ESP",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "PWR_5V.+",
+      "LEVEL_SHIFTER_SPI1.HV",
+      "LEVEL_SHIFTER_SPI2.HV",
+      "R_10K_PULLUP_MCP_RESET.2",
+      "MCP2515.VCC",
+      "DECOUPLING_CAPACITOR_MCP.1",
+      "TJA1050.VCC",
+      "DECOUPLING_CAPACITOR_CAN.1"
+    ],
+    "GND": [
+      "PWR_5V.-",
+      "PWR_3V3.-",
+      "ESP32_WROOM.GND",
+      "EN_PUSH_BUTTON.2",
+      "BOOT_PUSH_BUTTON.2",
+      "LEVEL_SHIFTER_SPI1.GND",
+      "LEVEL_SHIFTER_SPI2.GND",
+      "MCP2515.GND",
+      "DECOUPLING_CAPACITOR_MCP.2",
+      "TJA1050.GND",
+      "R_CAN_RS.2",
+      "CAN_TERMINAL.GND",
+      "CAN_TERMINAL.SHIELD",
+      "MAX485.GND",
+      "R_RS485_DIR_PD.2",
+      "RS485_TERMINAL.GND",
+      "RS485_TERMINAL.SHIELD",
+      "MICRO_SD_SOCKET.GND",
+      "DECOUPLING_CAPACITOR_SD.2",
+      "SSD1306_OLED.GND",
+      "LED_INDICATOR_STATUS.CATHODE",
+      "LED_INDICATOR_CAN.CATHODE",
+      "LED_INDICATOR_RS485.CATHODE",
+      "UART_HEADER.GND",
+      "DECOUPLING_CAPACITOR_CAN.2",
+      "DECOUPLING_CAPACITOR_ESP.2"
+    ],
+    "+3V3": [
+      "PWR_3V3.+",
+      "ESP32_WROOM.3V3",
+      "R_10K_PULLUP_EN.2",
+      "R_10K_PULLUP_BOOT.2",
+      "LEVEL_SHIFTER_SPI1.LV",
+      "LEVEL_SHIFTER_SPI2.LV",
+      "MAX485.VCC",
+      "MICRO_SD_SOCKET.VCC",
+      "R_10K_PULLUP_SD_CD.2",
+      "DECOUPLING_CAPACITOR_SD.1",
+      "SSD1306_OLED.VCC",
+      "SDA_PULLUP.2",
+      "SCL_PULLUP.2",
+      "UART_HEADER.VCC",
+      "DECOUPLING_CAPACITOR_ESP.1"
+    ],
+    "NET_EN": [
+      "ESP32_WROOM.EN",
+      "R_10K_PULLUP_EN.1",
+      "EN_PUSH_BUTTON.1"
+    ],
+    "NET_BOOT": [
+      "ESP32_WROOM.GPIO0_BOOT",
+      "R_10K_PULLUP_BOOT.1",
+      "BOOT_PUSH_BUTTON.1"
+    ],
+    "NET_ESP32_WROOM_GPIO18": [
+      "ESP32_WROOM.GPIO18",
+      "LEVEL_SHIFTER_SPI1.L1"
+    ],
+    "NET_LEVEL_SHIFTER_SPI1_H1": [
+      "LEVEL_SHIFTER_SPI1.H1",
+      "MCP2515.SCK"
+    ],
+    "NET_ESP32_WROOM_GPIO23": [
+      "ESP32_WROOM.GPIO23",
+      "LEVEL_SHIFTER_SPI1.L2"
+    ],
+    "NET_LEVEL_SHIFTER_SPI1_H2": [
+      "LEVEL_SHIFTER_SPI1.H2",
+      "MCP2515.SI"
+    ],
+    "NET_MCP2515_SO": [
+      "MCP2515.SO",
+      "LEVEL_SHIFTER_SPI1.H3"
+    ],
+    "NET_LEVEL_SHIFTER_SPI1_L3": [
+      "LEVEL_SHIFTER_SPI1.L3",
+      "ESP32_WROOM.GPIO19"
+    ],
+    "NET_ESP32_WROOM_GPIO5": [
+      "ESP32_WROOM.GPIO5",
+      "LEVEL_SHIFTER_SPI1.L4"
+    ],
+    "NET_LEVEL_SHIFTER_SPI1_H4": [
+      "LEVEL_SHIFTER_SPI1.H4",
+      "MCP2515.CS"
+    ],
+    "NET_MCP2515_INT": [
+      "MCP2515.INT",
+      "LEVEL_SHIFTER_SPI2.H1"
+    ],
+    "NET_LEVEL_SHIFTER_SPI2_L1": [
+      "LEVEL_SHIFTER_SPI2.L1",
+      "ESP32_WROOM.GPIO27"
+    ],
+    "NET_ESP32_WROOM_GPIO26": [
+      "ESP32_WROOM.GPIO26",
+      "LEVEL_SHIFTER_SPI2.L2"
+    ],
+    "NET_LEVEL_SHIFTER_SPI2_H2": [
+      "LEVEL_SHIFTER_SPI2.H2",
+      "MCP2515.RESET",
+      "R_10K_PULLUP_MCP_RESET.1"
+    ],
+    "NET_MCP2515_TXCAN": [
+      "MCP2515.TXCAN",
+      "TJA1050.TXD"
+    ],
+    "NET_MCP2515_RXCAN": [
+      "MCP2515.RXCAN",
+      "TJA1050.RXD"
+    ],
+    "NET_CANH": [
+      "TJA1050.CANH",
+      "R_120_CAN.1",
+      "CAN_TERMINAL.CANH"
+    ],
+    "NET_CANL": [
+      "TJA1050.CANL",
+      "R_120_CAN.2",
+      "CAN_TERMINAL.CANL"
+    ],
+    "NET_TJA1050_RS": [
+      "TJA1050.RS",
+      "R_CAN_RS.1"
+    ],
+    "NET_MAX485_RO": [
+      "MAX485.RO",
+      "ESP32_WROOM.GPIO16"
+    ],
+    "NET_MAX485_DI": [
+      "MAX485.DI",
+      "ESP32_WROOM.GPIO17"
+    ],
+    "NET_RS485_DIR": [
+      "MAX485.DE",
+      "MAX485./RE",
+      "ESP32_WROOM.GPIO4",
+      "R_RS485_DIR_PD.1"
+    ],
+    "NET_RS485_A": [
+      "MAX485.A",
+      "R_120_RS485.1",
+      "TVS_DIODE_RS485.1",
+      "RS485_TERMINAL.A"
+    ],
+    "NET_RS485_B": [
+      "MAX485.B",
+      "R_120_RS485.2",
+      "TVS_DIODE_RS485.2",
+      "RS485_TERMINAL.B"
+    ],
+    "NET_MICRO_SD_SOCKET_SCK": [
+      "MICRO_SD_SOCKET.SCK",
+      "ESP32_WROOM.GPIO14"
+    ],
+    "NET_MICRO_SD_SOCKET_MOSI": [
+      "MICRO_SD_SOCKET.MOSI",
+      "ESP32_WROOM.GPIO13"
+    ],
+    "NET_MICRO_SD_SOCKET_MISO": [
+      "MICRO_SD_SOCKET.MISO",
+      "ESP32_WROOM.GPIO12"
+    ],
+    "NET_MICRO_SD_SOCKET_CS": [
+      "MICRO_SD_SOCKET.CS",
+      "ESP32_WROOM.GPIO15"
+    ],
+    "NET_MICRO_SD_SOCKET_CD": [
+      "MICRO_SD_SOCKET.CD",
+      "ESP32_WROOM.GPIO34",
+      "R_10K_PULLUP_SD_CD.1"
+    ],
+    "NET_SSD1306_OLED_SDA": [
+      "SSD1306_OLED.SDA",
+      "ESP32_WROOM.GPIO21",
+      "SDA_PULLUP.1"
+    ],
+    "NET_SSD1306_OLED_SCL": [
+      "SSD1306_OLED.SCL",
+      "ESP32_WROOM.GPIO22",
+      "SCL_PULLUP.1"
+    ],
+    "NET_ESP32_WROOM_GPIO2": [
+      "ESP32_WROOM.GPIO2",
+      "R_220_STATUS.1"
+    ],
+    "NET_R_220_STATUS_2": [
+      "R_220_STATUS.2",
+      "LED_INDICATOR_STATUS.ANODE"
+    ],
+    "NET_ESP32_WROOM_GPIO25": [
+      "ESP32_WROOM.GPIO25",
+      "R_220_CAN_STATUS.1"
+    ],
+    "NET_R_220_CAN_STATUS_2": [
+      "R_220_CAN_STATUS.2",
+      "LED_INDICATOR_CAN.ANODE"
+    ],
+    "NET_ESP32_WROOM_GPIO33": [
+      "ESP32_WROOM.GPIO33",
+      "R_220_RS485_STATUS.1"
+    ],
+    "NET_R_220_RS485_STATUS_2": [
+      "R_220_RS485_STATUS.2",
+      "LED_INDICATOR_RS485.ANODE"
+    ],
+    "NET_UART_HEADER_RX": [
+      "UART_HEADER.RX",
+      "ESP32_WROOM.GPIO3_RX0"
+    ],
+    "NET_UART_HEADER_TX": [
+      "UART_HEADER.TX",
+      "ESP32_WROOM.GPIO1_TX0"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "PWR_5V",
+          "kind": "PWR_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "PWR_3V3",
+          "kind": "PWR_3V3",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "ESP32_WROOM",
+          "kind": "ESP32_WROOM",
+          "reason": "exact_catalog_kind",
+          "pin_count": 25
+        },
+        {
+          "ref": "R_10K_PULLUP_EN",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "EN_PUSH_BUTTON",
+          "kind": "EN_PUSH_BUTTON",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_BOOT",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "BOOT_PUSH_BUTTON",
+          "kind": "BOOT_PUSH_BUTTON",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "LEVEL_SHIFTER_SPI1",
+          "kind": "LEVEL_SHIFTER",
+          "reason": "level_shifter_family",
+          "pin_count": 11
+        },
+        {
+          "ref": "MCP2515",
+          "kind": "MCP2515",
+          "reason": "exact_catalog_kind",
+          "pin_count": 10
+        },
+        {
+          "ref": "LEVEL_SHIFTER_SPI2",
+          "kind": "LEVEL_SHIFTER",
+          "reason": "level_shifter_family",
+          "pin_count": 7
+        },
+        {
+          "ref": "R_10K_PULLUP_MCP_RESET",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "TJA1050",
+          "kind": "TJA1050",
+          "reason": "exact_catalog_kind",
+          "pin_count": 7
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_MCP",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_CAN_RS",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_120_CAN",
+          "kind": "R_120_CAN",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "CAN_TERMINAL",
+          "kind": "CAN_TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "MAX485",
+          "kind": "MAX485",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "R_RS485_DIR_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_120_RS485",
+          "kind": "R_120_RS485",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "TVS_DIODE_RS485",
+          "kind": "TVS_DIODE_RS485",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "RS485_TERMINAL",
+          "kind": "RS485_TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "MICRO_SD_SOCKET",
+          "kind": "MICRO_SD_SOCKET",
+          "reason": "exact_catalog_kind",
+          "pin_count": 7
+        },
+        {
+          "ref": "R_10K_PULLUP_SD_CD",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_SD",
+          "kind": "DECOUPLING_CAPACITOR_SD",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "SSD1306_OLED",
+          "kind": "SSD1306_OLED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "SDA_PULLUP",
+          "kind": "SDA_PULLUP",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCL_PULLUP",
+          "kind": "SCL_PULLUP",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_STATUS",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_STATUS",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_CAN_STATUS",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_CAN",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_RS485_STATUS",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_RS485",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "UART_HEADER",
+          "kind": "UART_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_CAN",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_ESP",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 109
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 36,
+    "net_count": 42,
+    "endpoint_count": 141,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

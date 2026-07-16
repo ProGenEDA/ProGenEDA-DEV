@@ -1,0 +1,1344 @@
+{
+  "schema": "progen-kicad-terminal-plan/v0.1",
+  "stage": "terminal_placer",
+  "version": "progen-kicad-terminal-placer/v0.1",
+  "routing_mode": "terminal",
+  "terminal_backend": "kicad_local_labels",
+  "contract": {
+    "owns_local_labels": true,
+    "wire_mode_must_not_use_this_as_fallback": true
+  },
+  "nets": {
+    "NET_BUCK_5V": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "POWER_INDUCTOR",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            340.36,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin2"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_BUCK",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            274.32,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_TOP",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            27.94,
+            134.62
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_BUCK",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            311.15,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BUCK_FB": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "LM2596",
+          "pin": "FB",
+          "side": "right",
+          "point": [
+            713.74,
+            144.78
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin4"
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_TOP",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            27.94,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_BOTTOM",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            175.26,
+            132.08
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BUCK_SW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "LM2596",
+          "pin": "SW",
+          "side": "right",
+          "point": [
+            713.74,
+            149.86
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin2"
+        },
+        {
+          "ref": "POWER_INDUCTOR",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            340.36,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_DIODE_BUCK",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            534.67,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_DC_BARREL_JACK_CENTER": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "DC_BARREL_JACK",
+          "pin": "CENTER",
+          "side": "right",
+          "point": [
+            40.64,
+            116.84
+          ],
+          "exact": true,
+          "source": "Connector:Barrel_Jack:unit1:pin1"
+        },
+        {
+          "ref": "FUSE",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            71.12,
+            77.47
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_3V3_SYS": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "LM317",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            579.12,
+            139.7
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin2"
+        },
+        {
+          "ref": "RES_LM317_TOP",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            213.36,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_LM317",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            505.46,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "PWR_3V3",
+          "pin": "+",
+          "side": "top",
+          "point": [
+            71.12,
+            99.06
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_3V3",
+          "pin": "+",
+          "side": "left",
+          "point": [
+            139.7,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "TEST_POINT_3V3",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            538.48,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_7805_5V": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "LM7805",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            772.16,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin3"
+        },
+        {
+          "ref": "CAP_7805_OUT",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            307.34,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_7805",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            440.69,
+            139.7
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_BAT_PLUS": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "TP4056",
+          "pin": "B+",
+          "side": "right",
+          "point": [
+            647.7,
+            134.62
+          ],
+          "exact": true,
+          "source": "Battery_Management:TP4056-42-ESOP8:unit1:pin5"
+        },
+        {
+          "ref": "LI_ION_BATTERY_CONNECTOR",
+          "pin": "+",
+          "side": "left",
+          "point": [
+            101.6,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_CHARGING_LED_CATHODE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "CHARGING_LED",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            664.21,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "R_CHG_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            33.02,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_DC_IN": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "FUSE",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            71.12,
+            85.09
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin2"
+        },
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "AC1",
+          "side": "top",
+          "point": [
+            472.44,
+            139.7
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin3"
+        }
+      ],
+      "routes": []
+    },
+    "NET_DC_RETURN": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "DC_BARREL_JACK",
+          "pin": "SLEEVE",
+          "side": "right",
+          "point": [
+            40.64,
+            121.92
+          ],
+          "exact": true,
+          "source": "Connector:Barrel_Jack:unit1:pin2"
+        },
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "AC2",
+          "side": "bottom",
+          "point": [
+            472.44,
+            154.94
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin4"
+        }
+      ],
+      "routes": []
+    },
+    "NET_LM317_ADJ": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "LM317",
+          "pin": "ADJ",
+          "side": "bottom",
+          "point": [
+            571.5,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin1"
+        },
+        {
+          "ref": "RES_LM317_TOP",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            213.36,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_LM317_BOTTOM",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            375.92,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_POWER_LED_CATHODE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "POWER_LED",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            633.73,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "R_PWR_LED",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            340.36,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_R_CHG_LED_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "TP4056",
+          "pin": "CHRG",
+          "side": "left",
+          "point": [
+            627.38,
+            139.7
+          ],
+          "exact": true,
+          "source": "Battery_Management:TP4056-42-ESOP8:unit1:pin7"
+        },
+        {
+          "ref": "R_CHG_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            33.02,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_USB_5V": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "POLYFUSE",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            71.12,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:Polyfuse:unit1:pin2"
+        },
+        {
+          "ref": "SCHOTTKY_OR_USB",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            184.15,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "IN+",
+          "side": "top",
+          "point": [
+            637.54,
+            127.0
+          ],
+          "exact": true,
+          "source": "Battery_Management:TP4056-42-ESOP8:unit1:pin4"
+        },
+        {
+          "ref": "CHARGING_LED",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            671.83,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "NET_USB_C_CONNECTOR_CC1": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "CC1",
+          "side": "right",
+          "point": [
+            48.26,
+            170.18
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA5"
+        },
+        {
+          "ref": "RES_USB_CC1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            436.88,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_USB_C_CONNECTOR_CC2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "CC2",
+          "side": "right",
+          "point": [
+            48.26,
+            172.72
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+        },
+        {
+          "ref": "RES_USB_CC2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            571.5,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_USB_C_CONNECTOR_D": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "D+",
+          "side": "right",
+          "point": [
+            48.26,
+            182.88
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA6"
+        },
+        {
+          "ref": "TEST_POINT_USB_DP",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            71.12,
+            215.9
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_USB_C_CONNECTOR_D_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "D-",
+          "side": "right",
+          "point": [
+            48.26,
+            177.8
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA7"
+        },
+        {
+          "ref": "TEST_POINT_USB_DM",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            71.12,
+            198.12
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_USB_C_CONNECTOR_VBUS": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "VBUS",
+          "side": "right",
+          "point": [
+            48.26,
+            165.1
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+        },
+        {
+          "ref": "POLYFUSE",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            71.12,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:Polyfuse:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "-",
+          "side": "left",
+          "point": [
+            464.82,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin2"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_BUCK",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            604.52,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "C_100NF_BUCK_IN",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            213.36,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            701.04,
+            154.94
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin3"
+        },
+        {
+          "ref": "SCHOTTKY_DIODE_BUCK",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            542.29,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin2"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_BUCK",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            274.32,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_BOTTOM",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            175.26,
+            134.62
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "LM7805",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            764.54,
+            154.94
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin2"
+        },
+        {
+          "ref": "CAP_7805_IN",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            243.84,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "CAP_7805_OUT",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            307.34,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "USB_C_CONNECTOR",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            33.02,
+            203.2
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA1"
+        },
+        {
+          "ref": "RES_USB_CC1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            436.88,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_USB_CC2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            571.5,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "RES_LM317_BOTTOM",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            375.92,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_LM317",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            406.4,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_LM317",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            505.46,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "B-",
+          "side": "bottom",
+          "point": [
+            637.54,
+            152.4
+          ],
+          "exact": true,
+          "source": "Battery_Management:TP4056-42-ESOP8:unit1:pin3"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "IN-",
+          "side": "bottom",
+          "point": [
+            637.54,
+            152.4
+          ],
+          "exact": true,
+          "source": "Battery_Management:TP4056-42-ESOP8:unit1:pin3"
+        },
+        {
+          "ref": "TP4056",
+          "pin": "OUT-",
+          "side": "bottom",
+          "point": [
+            637.54,
+            152.4
+          ],
+          "exact": true,
+          "source": "Battery_Management:TP4056-42-ESOP8:unit1:pin3"
+        },
+        {
+          "ref": "LI_ION_BATTERY_CONNECTOR",
+          "pin": "-",
+          "side": "left",
+          "point": [
+            101.6,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        },
+        {
+          "ref": "R_PWR_LED",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            340.36,
+            140.97
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "PWR_5V",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            71.12,
+            137.16
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "PWR_3V3",
+          "pin": "-",
+          "side": "bottom",
+          "point": [
+            71.12,
+            109.22
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_5V",
+          "pin": "-",
+          "side": "left",
+          "point": [
+            66.04,
+            180.34
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_3V3",
+          "pin": "-",
+          "side": "left",
+          "point": [
+            139.7,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        },
+        {
+          "ref": "TEST_POINT_GND",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            668.02,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_5V_SYS": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "SCHOTTKY_OR_BUCK",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            303.53,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_7805",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            433.07,
+            139.7
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        },
+        {
+          "ref": "SCHOTTKY_OR_USB",
+          "pin": "CATHODE",
+          "side": "left",
+          "point": [
+            176.53,
+            157.48
+          ],
+          "exact": true,
+          "source": "Device:D_Schottky:unit1:pin1"
+        },
+        {
+          "ref": "LM317",
+          "pin": "IN",
+          "side": "left",
+          "point": [
+            563.88,
+            139.7
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin3"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_LM317",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            406.4,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "POWER_LED",
+          "pin": "ANODE",
+          "side": "right",
+          "point": [
+            641.35,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "PWR_5V",
+          "pin": "+",
+          "side": "top",
+          "point": [
+            71.12,
+            127.0
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "TERMINAL_BLOCK_5V",
+          "pin": "+",
+          "side": "left",
+          "point": [
+            66.04,
+            177.8
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "TEST_POINT_5V",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            604.52,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "NET_RAW_DC": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "pin": "+",
+          "side": "right",
+          "point": [
+            480.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:D_Bridge_+-AA:unit1:pin1"
+        },
+        {
+          "ref": "INPUT_CAPACITOR_BUCK",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            604.52,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "C_100NF_BUCK_IN",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            213.36,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "EN",
+          "side": "left",
+          "point": [
+            688.34,
+            149.86
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin5"
+        },
+        {
+          "ref": "LM2596",
+          "pin": "VIN",
+          "side": "left",
+          "point": [
+            688.34,
+            144.78
+          ],
+          "exact": true,
+          "source": "Regulator_Switching:LM2596S-ADJ:unit1:pin1"
+        },
+        {
+          "ref": "LM7805",
+          "pin": "IN",
+          "side": "left",
+          "point": [
+            756.92,
+            147.32
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM7805_TO220:unit1:pin1"
+        },
+        {
+          "ref": "CAP_7805_IN",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            243.84,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "TEST_POINT_RAW",
+          "pin": "TP",
+          "side": "bottom",
+          "point": [
+            734.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "metrics": {
+    "net_count": 22,
+    "wired_route_count": 0,
+    "lane_route_count": 0,
+    "astar_route_count": 0,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 0,
+    "crossing_risk_route_count": 0,
+    "dense_design_mode": false,
+    "segment_count": 0,
+    "different_net_crossing_count": 0,
+    "mst_total_length": 0,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 0,
+    "crossing_density_max_tile_crossings": 0,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 0,
+    "label_strategy_count": 22,
+    "wire_mode_terminal_net_count": 0,
+    "wire_mode_terminal_endpoint_count": 0,
+    "partial_wire_net_count": 0,
+    "unroutable_net_count": 0
+  },
+  "warnings": [],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": false,
+    "reason": "only strict wire mode uses partial-route component motion repair",
+    "pass_count": 0,
+    "passes": []
+  },
+  "arrangement_selection": {
+    "schema": "progen-kicad-routeable-arrangement-selection/v0.1",
+    "stage": "routeable_arrangement_selector",
+    "strategy": "parallel_variant_routeability_score",
+    "variant_count": 3,
+    "worker_count": 3,
+    "parallel_error": "",
+    "scoring_wire_config": {
+      "max_astar_expansions": 600.0,
+      "max_lane_candidates": 32.0,
+      "max_failed_endpoints_per_net": 1.0
+    },
+    "selected_variant": "base",
+    "selected_score": {
+      "score": 282471.59,
+      "square_fill": {
+        "width": 743.52,
+        "height": 137.37,
+        "aspect_ratio": 5.413,
+        "aspect_penalty": 606.15,
+        "fill_waste_area": 98117.717,
+        "score": 2684.066
+      },
+      "component_body_overlap_count": 0,
+      "estimated_blocked_endpoint_count": 0,
+      "estimated_partial_pressure": 0,
+      "estimated_body_hit_count": 0,
+      "estimated_routable_branch_count": 71,
+      "estimated_turn_count": 81,
+      "estimated_route_length": 13254.99
+    },
+    "final_score": {
+      "score": 0.0,
+      "complete_wire_net_count": 0,
+      "unroutable_net_count": 0,
+      "partial_wire_net_count": 0,
+      "label_strategy_count": 0,
+      "route_body_hit_count": 0,
+      "route_forbidden_contact_count": 0,
+      "component_shadow_count": 0,
+      "route_turn_count": 0,
+      "route_length": 0,
+      "different_net_crossing_count": 0
+    },
+    "variants": [
+      {
+        "name": "base",
+        "ok": true,
+        "score": {
+          "score": 282471.59,
+          "square_fill": {
+            "width": 743.52,
+            "height": 137.37,
+            "aspect_ratio": 5.413,
+            "aspect_penalty": 606.15,
+            "fill_waste_area": 98117.717,
+            "score": 2684.066
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 71,
+          "estimated_turn_count": 81,
+          "estimated_route_length": 13254.99
+        },
+        "elapsed_seconds": 1.973,
+        "coordinate_edit_count": 42,
+        "error": null
+      },
+      {
+        "name": "square_fill_compact",
+        "ok": true,
+        "score": {
+          "score": 327647.99,
+          "square_fill": {
+            "width": 827.34,
+            "height": 147.53,
+            "aspect_ratio": 5.608,
+            "aspect_penalty": 679.81,
+            "fill_waste_area": 118037.845,
+            "score": 3130.188
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 71,
+          "estimated_turn_count": 79,
+          "estimated_route_length": 13839.19
+        },
+        "elapsed_seconds": 2.318,
+        "coordinate_edit_count": 42,
+        "error": null
+      },
+      {
+        "name": "square_fill_balanced",
+        "ok": true,
+        "score": {
+          "score": 381879.75,
+          "square_fill": {
+            "width": 911.16,
+            "height": 162.77,
+            "aspect_ratio": 5.598,
+            "aspect_penalty": 748.39,
+            "fill_waste_area": 144289.888,
+            "score": 3661.128
+          },
+          "component_body_overlap_count": 0,
+          "estimated_blocked_endpoint_count": 0,
+          "estimated_partial_pressure": 0,
+          "estimated_body_hit_count": 0,
+          "estimated_routable_branch_count": 71,
+          "estimated_turn_count": 80,
+          "estimated_route_length": 14966.95
+        },
+        "elapsed_seconds": 2.431,
+        "coordinate_edit_count": 42,
+        "error": null
+      }
+    ]
+  }
+}

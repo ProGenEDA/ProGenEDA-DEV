@@ -1,0 +1,4878 @@
+{
+  "project_name": "OPEN_THIS_PROJECT__mj030__TERMINAL",
+  "open_this": "OPEN_THIS_PROJECT__mj030__TERMINAL.kicad_pro",
+  "schematic_file": "OPEN_THIS_PROJECT__mj030__TERMINAL.kicad_sch",
+  "component_count": 220,
+  "symbol_instance_count": 228,
+  "kinds": [
+    "1N4148",
+    "74HC595_SHIFT_REGISTER",
+    "ARDUINO_NANO",
+    "BC547",
+    "BME280",
+    "BZX55C5",
+    "CAN_TERMINAL",
+    "CAP",
+    "CH340",
+    "CHIP_SELECT_JUMPER",
+    "CP2102",
+    "C_100NF_CERAMIC",
+    "DS3231",
+    "ESP32_WROOM",
+    "FLYBACK_DIODE",
+    "GROUND",
+    "HEADER_CONNECTOR",
+    "I2C_HEADER",
+    "IRLZ44N",
+    "LED_INDICATOR",
+    "LM358",
+    "MAX485",
+    "MCP2515",
+    "PIN_HEADER",
+    "POTENTIOMETER",
+    "PUSH_BUTTON",
+    "RELAY_5V",
+    "RELAY_FLYBACK_DIODE",
+    "RES",
+    "RESISTOR",
+    "RS485_TERMINAL",
+    "R_10K_PULLUP",
+    "R_220",
+    "R_4K7_PULLUP",
+    "SCREW_TERMINAL_2",
+    "SPI_HEADER_FLASH",
+    "SSD1306_OLED",
+    "SWITCH",
+    "TEST_POINT",
+    "TJA1050",
+    "USB_CONNECTOR",
+    "USB_C_CONNECTOR",
+    "VDC",
+    "W25Q64"
+  ],
+  "lib_ids": [
+    "74xx:74HC595",
+    "Amplifier_Operational:LM358",
+    "Connector:Screw_Terminal_01x02",
+    "Connector:Screw_Terminal_01x03",
+    "Connector:TestPoint",
+    "Connector:USB_B_Micro",
+    "Connector:USB_C_Receptacle_USB2.0_16P",
+    "Connector_Generic:Conn_01x04",
+    "Connector_Generic:Conn_01x08",
+    "Device:C",
+    "Device:D",
+    "Device:D_Zener",
+    "Device:LED",
+    "Device:R",
+    "Device:R_Potentiometer",
+    "Diode:1N4148",
+    "Display_Graphic:OLED-128O064D",
+    "Interface_CAN_LIN:MCP2515-xSO",
+    "Interface_CAN_LIN:SN65HVD1050D",
+    "Interface_UART:MAX485E",
+    "Interface_USB:CH340G",
+    "Interface_USB:CP2102N-Axx-xQFN28",
+    "Jumper:Jumper_2_Open",
+    "MCU_Module:Arduino_Nano_v3.x",
+    "Memory_Flash:W25Q32JVSS",
+    "RF_Module:ESP32-WROOM-32",
+    "Relay:Relay_SPDT",
+    "Sensor:BME280",
+    "Simulation_SPICE:VDC",
+    "Switch:SW_Push",
+    "Switch:SW_SPST",
+    "Timer_RTC:DS3231M",
+    "Transistor_BJT:BC547",
+    "Transistor_FET:IRLZ44N",
+    "power:GND"
+  ],
+  "symbol_sources": {
+    "MCU_Module:Arduino_Nano_v3.x": ".local/AppDir/share/kicad/symbols/MCU_Module.kicad_symdir/Arduino_Nano_v3.x.kicad_sym; flattened_from=.local/AppDir/share/kicad/symbols/MCU_Module.kicad_symdir/Arduino_Nano_v2.x.kicad_sym",
+    "RF_Module:ESP32-WROOM-32": ".local/AppDir/share/kicad/symbols/RF_Module.kicad_symdir/ESP32-WROOM-32.kicad_sym",
+    "Interface_USB:CP2102N-Axx-xQFN28": ".local/AppDir/share/kicad/symbols/Interface_USB.kicad_symdir/CP2102N-Axx-xQFN28.kicad_sym",
+    "Interface_USB:CH340G": ".local/AppDir/share/kicad/symbols/Interface_USB.kicad_symdir/CH340G.kicad_sym",
+    "Connector:USB_C_Receptacle_USB2.0_16P": ".local/AppDir/share/kicad/symbols/Connector.kicad_symdir/USB_C_Receptacle_USB2.0_16P.kicad_sym",
+    "Connector:USB_B_Micro": ".local/AppDir/share/kicad/symbols/Connector.kicad_symdir/USB_B_Micro.kicad_sym",
+    "Sensor:BME280": ".local/AppDir/share/kicad/symbols/Sensor.kicad_symdir/BME280.kicad_sym",
+    "Display_Graphic:OLED-128O064D": ".local/AppDir/share/kicad/symbols/Display_Graphic.kicad_symdir/OLED-128O064D.kicad_sym",
+    "Timer_RTC:DS3231M": ".local/AppDir/share/kicad/symbols/Timer_RTC.kicad_symdir/DS3231M.kicad_sym",
+    "Memory_Flash:W25Q32JVSS": ".local/AppDir/share/kicad/symbols/Memory_Flash.kicad_symdir/W25Q32JVSS.kicad_sym",
+    "74xx:74HC595": ".local/AppDir/share/kicad/symbols/74xx.kicad_symdir/74HC595.kicad_sym",
+    "Interface_CAN_LIN:MCP2515-xSO": ".local/AppDir/share/kicad/symbols/Interface_CAN_LIN.kicad_symdir/MCP2515-xSO.kicad_sym",
+    "Interface_CAN_LIN:SN65HVD1050D": ".local/AppDir/share/kicad/symbols/Interface_CAN_LIN.kicad_symdir/SN65HVD1050D.kicad_sym",
+    "Interface_UART:MAX485E": ".local/AppDir/share/kicad/symbols/Interface_UART.kicad_symdir/MAX485E.kicad_sym; flattened_from=.local/AppDir/share/kicad/symbols/Interface_UART.kicad_symdir/MAX481E.kicad_sym; flattened_from=.local/AppDir/share/kicad/symbols/Interface_UART.kicad_symdir/LTC2850xS8.kicad_sym",
+    "Transistor_FET:IRLZ44N": ".local/AppDir/share/kicad/symbols/Transistor_FET.kicad_symdir/IRLZ44N.kicad_sym; flattened_from=.local/AppDir/share/kicad/symbols/Transistor_FET.kicad_symdir/BUZ11.kicad_sym",
+    "Transistor_BJT:BC547": ".local/AppDir/share/kicad/symbols/Transistor_BJT.kicad_symdir/BC547.kicad_sym; flattened_from=.local/AppDir/share/kicad/symbols/Transistor_BJT.kicad_symdir/Q_NPN_CBE.kicad_sym",
+    "Relay:Relay_SPDT": ".local/AppDir/share/kicad/symbols/Relay.kicad_symdir/Relay_SPDT.kicad_sym",
+    "Device:D": ".local/AppDir/share/kicad/symbols/Device.kicad_symdir/D.kicad_sym",
+    "Device:LED": ".local/AppDir/share/kicad/symbols/Device.kicad_symdir/LED.kicad_sym",
+    "Switch:SW_Push": ".local/AppDir/share/kicad/symbols/Switch.kicad_symdir/SW_Push.kicad_sym",
+    "Device:R_Potentiometer": ".local/AppDir/share/kicad/symbols/Device.kicad_symdir/R_Potentiometer.kicad_sym",
+    "Amplifier_Operational:LM358": ".local/AppDir/share/kicad/symbols/Amplifier_Operational.kicad_symdir/LM358.kicad_sym; flattened_from=.local/AppDir/share/kicad/symbols/Amplifier_Operational.kicad_symdir/LM2904.kicad_sym",
+    "Device:R": ".local/AppDir/share/kicad/symbols/Device.kicad_symdir/R.kicad_sym",
+    "Device:C": ".local/AppDir/share/kicad/symbols/Device.kicad_symdir/C.kicad_sym",
+    "Connector:Screw_Terminal_01x02": ".local/AppDir/share/kicad/symbols/Connector.kicad_symdir/Screw_Terminal_01x02.kicad_sym",
+    "Connector_Generic:Conn_01x04": ".local/AppDir/share/kicad/symbols/Connector_Generic.kicad_symdir/Conn_01x04.kicad_sym",
+    "Connector_Generic:Conn_01x08": ".local/AppDir/share/kicad/symbols/Connector_Generic.kicad_symdir/Conn_01x08.kicad_sym",
+    "Connector:Screw_Terminal_01x03": ".local/AppDir/share/kicad/symbols/Connector.kicad_symdir/Screw_Terminal_01x03.kicad_sym",
+    "Jumper:Jumper_2_Open": ".local/AppDir/share/kicad/symbols/Jumper.kicad_symdir/Jumper_2_Open.kicad_sym",
+    "Connector:TestPoint": ".local/AppDir/share/kicad/symbols/Connector.kicad_symdir/TestPoint.kicad_sym",
+    "power:GND": ".local/AppDir/share/kicad/symbols/power.kicad_symdir/GND.kicad_sym",
+    "Simulation_SPICE:VDC": ".local/AppDir/share/kicad/symbols/Simulation_SPICE.kicad_symdir/VDC.kicad_sym",
+    "Switch:SW_SPST": ".local/AppDir/share/kicad/symbols/Switch.kicad_symdir/SW_SPST.kicad_sym",
+    "Diode:1N4148": ".local/AppDir/share/kicad/symbols/Diode.kicad_symdir/1N4148.kicad_sym; flattened_from=.local/AppDir/share/kicad/symbols/Diode.kicad_symdir/1N4001.kicad_sym",
+    "Device:D_Zener": ".local/AppDir/share/kicad/symbols/Device.kicad_symdir/D_Zener.kicad_sym"
+  },
+  "source_reference": {
+    "zip_path": "/home/zaruka/Documents/kicad/kicad/source_pack/downloaded_zip/KiCad_Source_Files_Needed_20260612_030305.zip",
+    "zip_sha256": "946c2d4693ffedbcd1bf79503de10e6547aaad82f7711d802d98140ac9b260f4",
+    "files": [
+      {
+        "logical_name": "common/project.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/common/project.cpp",
+        "bytes": 14417,
+        "sha256": "3336e8136fa390c445433fa0d9987386888fd1d22480e6c9ee6947fae1e41f81"
+      },
+      {
+        "logical_name": "common/project/project_file.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/common/project/project_file.cpp",
+        "bytes": 31211,
+        "sha256": "f0bf1b61b0ffb8c791f7dd3c786bc08c70e207de894aa8254feb3c08558d4d21"
+      },
+      {
+        "logical_name": "eeschema/lib_symbol.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/lib_symbol.cpp",
+        "bytes": 77828,
+        "sha256": "ae93884b9250a9b2b518aefac9a87b5c96979ab1b676cf82b2dca910a8ff6f82"
+      },
+      {
+        "logical_name": "eeschema/netlist_exporters/netlist_exporter_spice.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/netlist_exporters/netlist_exporter_spice.cpp",
+        "bytes": 29556,
+        "sha256": "c4647ea92b1e222487bb9c7061929fac2aa4c3aad391d93cbad01efdb8d20c2c"
+      },
+      {
+        "logical_name": "eeschema/netlist_exporters/netlist_exporter_spice_model.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/netlist_exporters/netlist_exporter_spice_model.cpp",
+        "bytes": 3778,
+        "sha256": "efca27542a7137cd4edab2c92320656fa93e48d39242c9c55158f44371e9a734"
+      },
+      {
+        "logical_name": "eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr.cpp",
+        "bytes": 76869,
+        "sha256": "cf102c03817151fd8c23a17885dee395cf6944b5dc3e3ff98e6501eef3791931"
+      },
+      {
+        "logical_name": "eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_common.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_common.cpp",
+        "bytes": 14903,
+        "sha256": "c524b7e374e171eb927deabc372a30917a58e86755353300703ac52a169c9107"
+      },
+      {
+        "logical_name": "eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_lib_cache.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_lib_cache.cpp",
+        "bytes": 33311,
+        "sha256": "af9b7cfffecad1a1f59622a8e19108b76aaaac9d779297cd60c950c08a78fc8e"
+      },
+      {
+        "logical_name": "eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_parser.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_parser.cpp",
+        "bytes": 170556,
+        "sha256": "1b91ccf77881eea11669099dd9c93bfe17dfae174be146ab45ee345c176c441d"
+      },
+      {
+        "logical_name": "eeschema/sch_line.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_line.cpp",
+        "bytes": 41082,
+        "sha256": "6360a51f2353b71e4a6a128a3bd4eabe7891b067100ccdc7dcb684bdecaf5180"
+      },
+      {
+        "logical_name": "eeschema/sch_pin.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_pin.cpp",
+        "bytes": 71282,
+        "sha256": "d4de1459a290e4258a02647a010182c5236cd4c74d4948fafe0ff2cac07895a7"
+      },
+      {
+        "logical_name": "eeschema/sch_symbol.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_symbol.cpp",
+        "bytes": 135903,
+        "sha256": "19834cb200dccc2fc052b102753b4800b3bb727f2d78c1e9822d854e270424b4"
+      },
+      {
+        "logical_name": "eeschema/sch_text.cpp",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/eeschema/sch_text.cpp",
+        "bytes": 24428,
+        "sha256": "db483ecce0d8e76d473b90a4e53ed373eb050137da4c68e008371db5e143ba0c"
+      },
+      {
+        "logical_name": "include/project.h",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/include/project.h",
+        "bytes": 12531,
+        "sha256": "7269cbaafbe6d8c671d56ad5c55277a39ffa63c060845d211cc626f72c1f187b"
+      },
+      {
+        "logical_name": "include/project/project_file.h",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/include/project/project_file.h",
+        "bytes": 8463,
+        "sha256": "572d8490487b897ba1eaf6ae9d529e79167be8c188656f73a1a86168036fb2a5"
+      },
+      {
+        "logical_name": "qa/data/eeschema/spice_netlists/directives/directives.kicad_sch",
+        "archive_name": "source_files/KiCad__kicad-source-mirror/qa/data/eeschema/spice_netlists/directives/directives.kicad_sch",
+        "bytes": 24023,
+        "sha256": "a771f215b90d5761e1cb5bc0b77a5ae1ea574df8689f6658a83a6c57276f212b"
+      }
+    ],
+    "writer_order": [
+      "kicad_sch header",
+      "uuid",
+      "paper",
+      "lib_symbols",
+      "junction",
+      "wire",
+      "label",
+      "text",
+      "symbol",
+      "sheet_instances"
+    ],
+    "parser_tokens": [
+      "lib_symbols",
+      "junction",
+      "wire",
+      "label",
+      "global_label",
+      "text",
+      "symbol",
+      "sheet_instances",
+      "symbol_instances",
+      "pts",
+      "xy",
+      "uuid"
+    ],
+    "conclusions": [
+      "Source pack is bundled and read at generation time.",
+      "Python writer mirrors KiCad S-expression project/schematic structure; it does not execute KiCad C++.",
+      "Every generated wire is emitted as a separate two-point object.",
+      "Symbols are embedded into the schematic so global library lookup is not required for V1 core output.",
+      "All required V1 source reference files are present."
+    ]
+  },
+  "placement": {
+    "components": {
+      "B1_MCU": {
+        "kind": "ARDUINO_NANO",
+        "name": "Arduino Nano",
+        "at": [
+          797.56,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "microcontroller_module",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "MCU_Module:Arduino_Nano_v3.x"
+      },
+      "B1_ESP32": {
+        "kind": "ESP32_WROOM",
+        "name": "ESP32-WROOM",
+        "at": [
+          797.56,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "wireless_module",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "RF_Module:ESP32-WROOM-32"
+      },
+      "B1_USB_UART1": {
+        "kind": "CP2102",
+        "name": "CP2102",
+        "at": [
+          398.78,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "interface_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Interface_USB:CP2102N-Axx-xQFN28"
+      },
+      "B1_USB_UART2": {
+        "kind": "CH340",
+        "name": "CH340",
+        "at": [
+          645.16,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "interface_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Interface_USB:CH340G"
+      },
+      "B1_USB1": {
+        "kind": "USB_C_CONNECTOR",
+        "name": "USB-C",
+        "at": [
+          744.22,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "connector",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:USB_C_Receptacle_USB2.0_16P"
+      },
+      "B1_USB2": {
+        "kind": "USB_CONNECTOR",
+        "name": "USB",
+        "at": [
+          31.75,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "connector",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:USB_B_Micro"
+      },
+      "B1_BME280": {
+        "kind": "BME280",
+        "name": "BME280",
+        "at": [
+          541.02,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "sensor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Sensor:BME280"
+      },
+      "B1_SSD1306": {
+        "kind": "SSD1306_OLED",
+        "name": "SSD1306 OLED",
+        "at": [
+          161.29,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "display",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Display_Graphic:OLED-128O064D"
+      },
+      "B1_DS3231": {
+        "kind": "DS3231",
+        "name": "DS3231 RTC",
+        "at": [
+          594.36,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "rtc_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Timer_RTC:DS3231M"
+      },
+      "B1_W25Q64_1": {
+        "kind": "W25Q64",
+        "name": "W25Q64",
+        "at": [
+          347.98,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "memory_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Memory_Flash:W25Q32JVSS"
+      },
+      "B1_W25Q64_2": {
+        "kind": "W25Q64",
+        "name": "W25Q64",
+        "at": [
+          114.3,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "memory_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Memory_Flash:W25Q32JVSS"
+      },
+      "B1_U595_1": {
+        "kind": "74HC595_SHIFT_REGISTER",
+        "name": "74HC595",
+        "at": [
+          541.02,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "logic_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "74xx:74HC595"
+      },
+      "B1_U595_2": {
+        "kind": "74HC595_SHIFT_REGISTER",
+        "name": "74HC595",
+        "at": [
+          645.16,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "logic_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "74xx:74HC595"
+      },
+      "B1_U595_3": {
+        "kind": "74HC595_SHIFT_REGISTER",
+        "name": "74HC595",
+        "at": [
+          398.78,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "logic_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "74xx:74HC595"
+      },
+      "B1_U595_4": {
+        "kind": "74HC595_SHIFT_REGISTER",
+        "name": "74HC595",
+        "at": [
+          347.98,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "logic_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "74xx:74HC595"
+      },
+      "B1_MCP2515": {
+        "kind": "MCP2515",
+        "name": "MCP2515",
+        "at": [
+          594.36,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "interface_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Interface_CAN_LIN:MCP2515-xSO"
+      },
+      "B1_TJA1050": {
+        "kind": "TJA1050",
+        "name": "TJA1050",
+        "at": [
+          347.98,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "interface_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Interface_CAN_LIN:SN65HVD1050D"
+      },
+      "B1_MAX485": {
+        "kind": "MAX485",
+        "name": "MAX485",
+        "at": [
+          161.29,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "interface_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Interface_UART:MAX485E"
+      },
+      "B1_Q_MOSFET_1": {
+        "kind": "IRLZ44N",
+        "name": "IRLZ44N",
+        "at": [
+          161.29,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "mosfet",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_FET:IRLZ44N"
+      },
+      "B1_Q_MOSFET_2": {
+        "kind": "IRLZ44N",
+        "name": "IRLZ44N",
+        "at": [
+          299.72,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "mosfet",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_FET:IRLZ44N"
+      },
+      "B1_Q_MOSFET_3": {
+        "kind": "IRLZ44N",
+        "name": "IRLZ44N",
+        "at": [
+          71.12,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "mosfet",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_FET:IRLZ44N"
+      },
+      "B1_Q_MOSFET_4": {
+        "kind": "IRLZ44N",
+        "name": "IRLZ44N",
+        "at": [
+          645.16,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "mosfet",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_FET:IRLZ44N"
+      },
+      "B1_Q_NPN_1": {
+        "kind": "BC547",
+        "name": "BC547",
+        "at": [
+          398.78,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "bjt",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_BJT:BC547"
+      },
+      "B1_Q_NPN_2": {
+        "kind": "BC547",
+        "name": "BC547",
+        "at": [
+          594.36,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "bjt",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_BJT:BC547"
+      },
+      "B1_Q_NPN_3": {
+        "kind": "BC547",
+        "name": "BC547",
+        "at": [
+          744.22,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "bjt",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_BJT:BC547"
+      },
+      "B1_Q_NPN_4": {
+        "kind": "BC547",
+        "name": "BC547",
+        "at": [
+          594.36,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "bjt",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Transistor_BJT:BC547"
+      },
+      "B1_K_RELAY_1": {
+        "kind": "RELAY_5V",
+        "name": "5V relay",
+        "at": [
+          541.02,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "relay",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Relay:Relay_SPDT"
+      },
+      "B1_K_RELAY_2": {
+        "kind": "RELAY_5V",
+        "name": "5V relay",
+        "at": [
+          114.3,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "relay",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Relay:Relay_SPDT"
+      },
+      "B1_K_RELAY_3": {
+        "kind": "RELAY_5V",
+        "name": "5V relay",
+        "at": [
+          299.72,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "relay",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Relay:Relay_SPDT"
+      },
+      "B1_K_RELAY_4": {
+        "kind": "RELAY_5V",
+        "name": "5V relay",
+        "at": [
+          114.3,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "relay",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Relay:Relay_SPDT"
+      },
+      "B1_D_FLYBACK_1": {
+        "kind": "FLYBACK_DIODE",
+        "name": "Flyback diode",
+        "at": [
+          744.22,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_D_FLYBACK_2": {
+        "kind": "FLYBACK_DIODE",
+        "name": "Flyback diode",
+        "at": [
+          203.2,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_D_FLYBACK_3": {
+        "kind": "FLYBACK_DIODE",
+        "name": "Flyback diode",
+        "at": [
+          797.56,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_D_FLYBACK_4": {
+        "kind": "FLYBACK_DIODE",
+        "name": "Flyback diode",
+        "at": [
+          347.98,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_D_RELAY_1": {
+        "kind": "RELAY_FLYBACK_DIODE",
+        "name": "Relay flyback diode",
+        "at": [
+          744.22,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_D_RELAY_2": {
+        "kind": "RELAY_FLYBACK_DIODE",
+        "name": "Relay flyback diode",
+        "at": [
+          645.16,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_D_RELAY_3": {
+        "kind": "RELAY_FLYBACK_DIODE",
+        "name": "Relay flyback diode",
+        "at": [
+          31.75,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_D_RELAY_4": {
+        "kind": "RELAY_FLYBACK_DIODE",
+        "name": "Relay flyback diode",
+        "at": [
+          645.16,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D"
+      },
+      "B1_LED1": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          71.12,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED2": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          299.72,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED3": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          31.75,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED4": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          693.42,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED5": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          161.29,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED6": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          541.02,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED7": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          114.3,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED8": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          797.56,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED9": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          299.72,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED10": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          645.16,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED11": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          203.2,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED12": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          71.12,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED13": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          398.78,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED14": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          693.42,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED15": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          299.72,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_LED16": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          114.3,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B1_SW_BTN_1": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          203.2,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B1_SW_BTN_2": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          203.2,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B1_SW_BTN_3": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          797.56,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B1_SW_BTN_4": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          31.75,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B1_SW_BTN_5": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          347.98,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B1_SW_BTN_6": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          161.29,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B1_RV1": {
+        "kind": "POTENTIOMETER",
+        "name": "Potentiometer",
+        "at": [
+          161.29,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "potentiometer",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R_Potentiometer"
+      },
+      "B1_RV2": {
+        "kind": "POTENTIOMETER",
+        "name": "Potentiometer",
+        "at": [
+          248.92,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "potentiometer",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R_Potentiometer"
+      },
+      "B1_RV3": {
+        "kind": "POTENTIOMETER",
+        "name": "Potentiometer",
+        "at": [
+          299.72,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "potentiometer",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R_Potentiometer"
+      },
+      "B1_RV4": {
+        "kind": "POTENTIOMETER",
+        "name": "Potentiometer",
+        "at": [
+          347.98,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "potentiometer",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R_Potentiometer"
+      },
+      "B1_U_LM358_CHANNEL_1": {
+        "kind": "LM358",
+        "name": "LM358 channel",
+        "at": [
+          444.5,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "opamp",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Amplifier_Operational:LM358"
+      },
+      "B1_U_LM358_CHANNEL_2": {
+        "kind": "LM358",
+        "name": "LM358 channel",
+        "at": [
+          248.92,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "opamp",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Amplifier_Operational:LM358"
+      },
+      "B1_U_LM358_CHANNEL_3": {
+        "kind": "LM358",
+        "name": "LM358 channel",
+        "at": [
+          71.12,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "opamp",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Amplifier_Operational:LM358"
+      },
+      "B1_U_LM358_CHANNEL_4": {
+        "kind": "LM358",
+        "name": "LM358 channel",
+        "at": [
+          490.22,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "opamp",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Amplifier_Operational:LM358"
+      },
+      "B1_R_GATE_1": {
+        "kind": "RESISTOR",
+        "name": "220 ohm gate resistor",
+        "at": [
+          31.75,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_GATE_2": {
+        "kind": "RESISTOR",
+        "name": "220 ohm gate resistor",
+        "at": [
+          398.78,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_GATE_3": {
+        "kind": "RESISTOR",
+        "name": "220 ohm gate resistor",
+        "at": [
+          71.12,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_GATE_4": {
+        "kind": "RESISTOR",
+        "name": "220 ohm gate resistor",
+        "at": [
+          114.3,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PULLDOWN_1": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          398.78,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PULLDOWN_2": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          444.5,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PULLDOWN_3": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          114.3,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PULLDOWN_4": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          444.5,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BASE_1": {
+        "kind": "RESISTOR",
+        "name": "2.2k base resistor",
+        "at": [
+          444.5,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BASE_2": {
+        "kind": "RESISTOR",
+        "name": "2.2k base resistor",
+        "at": [
+          490.22,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BASE_3": {
+        "kind": "RESISTOR",
+        "name": "2.2k base resistor",
+        "at": [
+          161.29,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BASE_4": {
+        "kind": "RESISTOR",
+        "name": "2.2k base resistor",
+        "at": [
+          541.02,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BTN_PD_1": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          444.5,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BTN_PD_2": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          490.22,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BTN_PD_3": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          203.2,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BTN_PD_4": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          490.22,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BTN_PD_5": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          490.22,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_BTN_PD_6": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          541.02,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_1": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          161.29,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_2": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          398.78,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_3": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          71.12,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_4": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          744.22,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_5": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          248.92,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_6": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          594.36,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_7": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          161.29,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_8": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          31.75,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_9": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          490.22,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_10": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          744.22,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_11": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          248.92,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_12": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          161.29,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_13": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          645.16,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_14": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          31.75,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_15": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          347.98,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_LED_16": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          248.92,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_I2C_SDA": {
+        "kind": "R_4K7_PULLUP",
+        "name": "4.7k pullup",
+        "at": [
+          797.56,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_I2C_SCL": {
+        "kind": "R_4K7_PULLUP",
+        "name": "4.7k pullup",
+        "at": [
+          203.2,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_C_DECOUPLE_1": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          398.78,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_2": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          248.92,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_3": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          693.42,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_4": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          248.92,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_5": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          490.22,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_6": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          299.72,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_7": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          744.22,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_8": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          299.72,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_9": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          541.02,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_10": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          398.78,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_11": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          797.56,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_12": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          347.98,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_13": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          594.36,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_14": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          444.5,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_15": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          31.75,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_16": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          398.78,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_17": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          645.16,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_18": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          490.22,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_19": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          71.12,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_20": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          444.5,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_21": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          693.42,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_22": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          541.02,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_23": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          114.3,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_C_DECOUPLE_24": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          490.22,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B1_R_PROT_1": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          594.36,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PROT_2": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          645.16,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PROT_3": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          693.42,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PROT_4": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          744.22,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PROT_5": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          797.56,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PROT_6": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          31.75,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PROT_7": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          71.12,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_R_PROT_8": {
+        "kind": "RESISTOR",
+        "name": "GPIO protection resistor",
+        "at": [
+          114.3,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B1_J_LOAD_1": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Load terminal",
+        "at": [
+          114.3,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_LOAD_2": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Load terminal",
+        "at": [
+          693.42,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_LOAD_3": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Load terminal",
+        "at": [
+          31.75,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_LOAD_4": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Load terminal",
+        "at": [
+          693.42,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_RELAY_1": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Relay terminal",
+        "at": [
+          203.2,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_RELAY_2": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Relay terminal",
+        "at": [
+          594.36,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_RELAY_3": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Relay terminal",
+        "at": [
+          398.78,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_RELAY_4": {
+        "kind": "SCREW_TERMINAL_2",
+        "name": "Relay terminal",
+        "at": [
+          203.2,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x02"
+      },
+      "B1_J_HEADER_1": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          161.29,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_HEADER_2": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          744.22,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_HEADER_3": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          444.5,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_HEADER_4": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          744.22,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_HEADER_5": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          203.2,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_HEADER_6": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          797.56,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_HEADER_7": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          490.22,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_HEADER_8": {
+        "kind": "HEADER_CONNECTOR",
+        "name": "GPIO expansion header",
+        "at": [
+          797.56,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_EXP1": {
+        "kind": "PIN_HEADER",
+        "name": "Expansion header 1",
+        "at": [
+          31.75,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x08"
+      },
+      "B1_J_EXP2": {
+        "kind": "PIN_HEADER",
+        "name": "Expansion header 2",
+        "at": [
+          645.16,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x08"
+      },
+      "B1_J_ANALOG": {
+        "kind": "PIN_HEADER",
+        "name": "Analog header",
+        "at": [
+          444.5,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x08"
+      },
+      "B1_J_I2C": {
+        "kind": "I2C_HEADER",
+        "name": "I2C header",
+        "at": [
+          31.75,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x04"
+      },
+      "B1_J_SPI": {
+        "kind": "SPI_HEADER_FLASH",
+        "name": "SPI header",
+        "at": [
+          248.92,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x08"
+      },
+      "B1_J_POWER": {
+        "kind": "PIN_HEADER",
+        "name": "Power header",
+        "at": [
+          71.12,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x08"
+      },
+      "B1_J_CAN": {
+        "kind": "CAN_TERMINAL",
+        "name": "CAN terminal",
+        "at": [
+          594.36,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x03"
+      },
+      "B1_J_RS485": {
+        "kind": "RS485_TERMINAL",
+        "name": "RS485 terminal",
+        "at": [
+          71.12,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x03"
+      },
+      "B1_JP_MODE_1": {
+        "kind": "CHIP_SELECT_JUMPER",
+        "name": "Mode jumper",
+        "at": [
+          541.02,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "jumper",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Jumper:Jumper_2_Open"
+      },
+      "B1_JP_MODE_2": {
+        "kind": "CHIP_SELECT_JUMPER",
+        "name": "Mode jumper",
+        "at": [
+          203.2,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "jumper",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Jumper:Jumper_2_Open"
+      },
+      "B1_JP_MODE_3": {
+        "kind": "CHIP_SELECT_JUMPER",
+        "name": "Mode jumper",
+        "at": [
+          594.36,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "jumper",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Jumper:Jumper_2_Open"
+      },
+      "B1_JP_MODE_4": {
+        "kind": "CHIP_SELECT_JUMPER",
+        "name": "Mode jumper",
+        "at": [
+          797.56,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "jumper",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Jumper:Jumper_2_Open"
+      },
+      "B1_JP_MODE_5": {
+        "kind": "CHIP_SELECT_JUMPER",
+        "name": "Mode jumper",
+        "at": [
+          594.36,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "jumper",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Jumper:Jumper_2_Open"
+      },
+      "B1_JP_MODE_6": {
+        "kind": "CHIP_SELECT_JUMPER",
+        "name": "Mode jumper",
+        "at": [
+          299.72,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "jumper",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Jumper:Jumper_2_Open"
+      },
+      "B1_TP1": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          114.3,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP2": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          645.16,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP3": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          71.12,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP4": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          71.12,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP5": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          444.5,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP6": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          71.12,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP7": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          693.42,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP8": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          490.22,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP9": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          541.02,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP10": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          299.72,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP11": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          744.22,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP12": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          693.42,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP13": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          645.16,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP14": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          114.3,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP15": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          114.3,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP16": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          161.29,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP17": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          161.29,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP18": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          797.56,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP19": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          248.92,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP20": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          299.72,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP21": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          347.98,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP22": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          398.78,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP23": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          444.5,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B1_TP24": {
+        "kind": "TEST_POINT",
+        "name": "Test point",
+        "at": [
+          490.22,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      },
+      "B2_U1": {
+        "kind": "ARDUINO_NANO",
+        "name": "Arduino Nano",
+        "at": [
+          693.42,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "microcontroller_module",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "MCU_Module:Arduino_Nano_v3.x"
+      },
+      "B2_D1": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          347.98,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B2_D2": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          645.16,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B2_D3": {
+        "kind": "LED_INDICATOR",
+        "name": "LED",
+        "at": [
+          347.98,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "indicator",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:LED"
+      },
+      "B2_R1": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          203.2,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B2_R2": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          31.75,
+          632.46
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B2_R3": {
+        "kind": "R_220",
+        "name": "220 ohm",
+        "at": [
+          248.92,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B2_SW1": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          203.2,
+          325.12
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B2_SW2": {
+        "kind": "PUSH_BUTTON",
+        "name": "Push Button",
+        "at": [
+          444.5,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_Push"
+      },
+      "B2_R4": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          248.92,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B2_R5": {
+        "kind": "R_10K_PULLUP",
+        "name": "10k pulldown",
+        "at": [
+          693.42,
+          172.72
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B2_J1": {
+        "kind": "PIN_HEADER",
+        "name": "Power/IO Header 1x6",
+        "at": [
+          594.36,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x08"
+      },
+      "B2_J2": {
+        "kind": "PIN_HEADER",
+        "name": "Extra IO Header 1x6",
+        "at": [
+          299.72,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "header",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector_Generic:Conn_01x08"
+      },
+      "B3_G1": {
+        "kind": "GROUND",
+        "name": "GND",
+        "at": [
+          744.22,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "power_symbol",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "power:GND"
+      },
+      "B3_V1": {
+        "kind": "VDC",
+        "name": "5V source",
+        "at": [
+          541.02,
+          76.2
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "source",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Simulation_SPICE:VDC"
+      },
+      "B3_MCU": {
+        "kind": "ARDUINO_NANO",
+        "name": "Arduino Nano",
+        "at": [
+          490.22,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "microcontroller_module",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "MCU_Module:Arduino_Nano_v3.x"
+      },
+      "B3_ESP": {
+        "kind": "ESP32_WROOM",
+        "name": "ESP32-WROOM",
+        "at": [
+          248.92,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "wireless_module",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "RF_Module:ESP32-WROOM-32"
+      },
+      "B3_BME": {
+        "kind": "BME280",
+        "name": "BME280",
+        "at": [
+          693.42,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "sensor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Sensor:BME280"
+      },
+      "B3_OLED": {
+        "kind": "SSD1306_OLED",
+        "name": "SSD1306 OLED",
+        "at": [
+          744.22,
+          256.54
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "display",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Display_Graphic:OLED-128O064D"
+      },
+      "B3_FLASH": {
+        "kind": "W25Q64",
+        "name": "W25Q64",
+        "at": [
+          541.02,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "memory_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Memory_Flash:W25Q32JVSS"
+      },
+      "B3_RS485": {
+        "kind": "MAX485",
+        "name": "MAX485",
+        "at": [
+          541.02,
+          694.69
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "interface_ic",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Interface_UART:MAX485E"
+      },
+      "B3_J1": {
+        "kind": "RS485_TERMINAL",
+        "name": "RS485 terminal",
+        "at": [
+          444.5,
+          789.94
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "terminal",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:Screw_Terminal_01x03"
+      },
+      "B3_SW1": {
+        "kind": "SWITCH",
+        "name": "Input switch",
+        "at": [
+          203.2,
+          116.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "switch",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Switch:SW_SPST"
+      },
+      "B3_D1": {
+        "kind": "1N4148",
+        "name": "1N4148",
+        "at": [
+          347.98,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Diode:1N4148"
+      },
+      "B3_DZ1": {
+        "kind": "BZX55C5",
+        "name": "5.1V zener",
+        "at": [
+          248.92,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "zener_diode",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:D_Zener"
+      },
+      "B3_R1": {
+        "kind": "RES",
+        "name": "10k",
+        "at": [
+          594.36,
+          433.07
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B3_R2": {
+        "kind": "RESISTOR",
+        "name": "120 ohm",
+        "at": [
+          299.72,
+          35.56
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "resistor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:R"
+      },
+      "B3_C1": {
+        "kind": "CAP",
+        "name": "100nF",
+        "at": [
+          398.78,
+          365.76
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B3_C2": {
+        "kind": "C_100NF_CERAMIC",
+        "name": "100nF",
+        "at": [
+          693.42,
+          497.84
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "capacitor",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Device:C"
+      },
+      "B3_TP1": {
+        "kind": "TEST_POINT",
+        "name": "Debug point",
+        "at": [
+          347.98,
+          566.42
+        ],
+        "rotation": 0.0,
+        "manual": false,
+        "category": "testpoint",
+        "catalog_source": "embedded_placement_catalog",
+        "lib_id": "Connector:TestPoint"
+      }
+    },
+    "obstacles": [
+      {
+        "owner": "B1_MCU",
+        "left": 770.06,
+        "top": 226.54,
+        "right": 825.06,
+        "bottom": 286.54
+      },
+      {
+        "owner": "B1_ESP32",
+        "left": 775.06,
+        "top": 538.92,
+        "right": 820.06,
+        "bottom": 593.92
+      },
+      {
+        "owner": "B1_USB_UART1",
+        "left": 395.28,
+        "top": 786.44,
+        "right": 402.28,
+        "bottom": 793.44
+      },
+      {
+        "owner": "B1_USB_UART2",
+        "left": 641.66,
+        "top": 786.44,
+        "right": 648.66,
+        "bottom": 793.44
+      },
+      {
+        "owner": "B1_USB1",
+        "left": 739.72,
+        "top": 169.22,
+        "right": 748.72,
+        "bottom": 176.22
+      },
+      {
+        "owner": "B1_USB2",
+        "left": 24.75,
+        "top": 428.07,
+        "right": 38.75,
+        "bottom": 438.07
+      },
+      {
+        "owner": "B1_BME280",
+        "left": 537.02,
+        "top": 562.42,
+        "right": 545.02,
+        "bottom": 570.42
+      },
+      {
+        "owner": "B1_SSD1306",
+        "left": 147.79,
+        "top": 776.44,
+        "right": 174.79,
+        "bottom": 803.44
+      },
+      {
+        "owner": "B1_DS3231",
+        "left": 582.36,
+        "top": 239.54,
+        "right": 606.36,
+        "bottom": 273.54
+      },
+      {
+        "owner": "B1_W25Q64_1",
+        "left": 336.98,
+        "top": 419.07,
+        "right": 358.98,
+        "bottom": 447.07
+      },
+      {
+        "owner": "B1_W25Q64_2",
+        "left": 103.3,
+        "top": 680.69,
+        "right": 125.3,
+        "bottom": 708.69
+      },
+      {
+        "owner": "B1_U595_1",
+        "left": 529.02,
+        "top": 772.94,
+        "right": 553.02,
+        "bottom": 806.94
+      },
+      {
+        "owner": "B1_U595_2",
+        "left": 633.16,
+        "top": 239.54,
+        "right": 657.16,
+        "bottom": 273.54
+      },
+      {
+        "owner": "B1_U595_3",
+        "left": 386.78,
+        "top": 416.07,
+        "right": 410.78,
+        "bottom": 450.07
+      },
+      {
+        "owner": "B1_U595_4",
+        "left": 335.98,
+        "top": 677.69,
+        "right": 359.98,
+        "bottom": 711.69
+      },
+      {
+        "owner": "B1_MCP2515",
+        "left": 582.36,
+        "top": 772.94,
+        "right": 606.36,
+        "bottom": 806.94
+      },
+      {
+        "owner": "B1_TJA1050",
+        "left": 336.98,
+        "top": 241.54,
+        "right": 358.98,
+        "bottom": 271.54
+      },
+      {
+        "owner": "B1_MAX485",
+        "left": 150.29,
+        "top": 418.07,
+        "right": 172.29,
+        "bottom": 448.07
+      },
+      {
+        "owner": "B1_Q_MOSFET_1",
+        "left": 156.29,
+        "top": 628.46,
+        "right": 166.29,
+        "bottom": 636.46
+      },
+      {
+        "owner": "B1_Q_MOSFET_2",
+        "left": 294.72,
+        "top": 785.94,
+        "right": 304.72,
+        "bottom": 793.94
+      },
+      {
+        "owner": "B1_Q_MOSFET_3",
+        "left": 66.12,
+        "top": 252.54,
+        "right": 76.12,
+        "bottom": 260.54
+      },
+      {
+        "owner": "B1_Q_MOSFET_4",
+        "left": 640.16,
+        "top": 361.76,
+        "right": 650.16,
+        "bottom": 369.76
+      },
+      {
+        "owner": "B1_Q_NPN_1",
+        "left": 396.28,
+        "top": 564.42,
+        "right": 401.28,
+        "bottom": 568.42
+      },
+      {
+        "owner": "B1_Q_NPN_2",
+        "left": 591.86,
+        "top": 692.69,
+        "right": 596.86,
+        "bottom": 696.69
+      },
+      {
+        "owner": "B1_Q_NPN_3",
+        "left": 741.72,
+        "top": 114.84,
+        "right": 746.72,
+        "bottom": 118.84
+      },
+      {
+        "owner": "B1_Q_NPN_4",
+        "left": 591.86,
+        "top": 323.12,
+        "right": 596.86,
+        "bottom": 327.12
+      },
+      {
+        "owner": "B1_K_RELAY_1",
+        "left": 531.52,
+        "top": 490.34,
+        "right": 550.52,
+        "bottom": 505.34
+      },
+      {
+        "owner": "B1_K_RELAY_2",
+        "left": 104.8,
+        "top": 782.44,
+        "right": 123.8,
+        "bottom": 797.44
+      },
+      {
+        "owner": "B1_K_RELAY_3",
+        "left": 290.22,
+        "top": 249.04,
+        "right": 309.22,
+        "bottom": 264.04
+      },
+      {
+        "owner": "B1_K_RELAY_4",
+        "left": 104.8,
+        "top": 425.57,
+        "right": 123.8,
+        "bottom": 440.57
+      },
+      {
+        "owner": "B1_D_FLYBACK_1",
+        "left": 740.22,
+        "top": 564.92,
+        "right": 748.22,
+        "bottom": 567.92
+      },
+      {
+        "owner": "B1_D_FLYBACK_2",
+        "left": 199.2,
+        "top": 788.44,
+        "right": 207.2,
+        "bottom": 791.44
+      },
+      {
+        "owner": "B1_D_FLYBACK_3",
+        "left": 793.56,
+        "top": 171.22,
+        "right": 801.56,
+        "bottom": 174.22
+      },
+      {
+        "owner": "B1_D_FLYBACK_4",
+        "left": 343.98,
+        "top": 323.62,
+        "right": 351.98,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_D_RELAY_1",
+        "left": 740.22,
+        "top": 496.34,
+        "right": 748.22,
+        "bottom": 499.34
+      },
+      {
+        "owner": "B1_D_RELAY_2",
+        "left": 641.16,
+        "top": 693.19,
+        "right": 649.16,
+        "bottom": 696.19
+      },
+      {
+        "owner": "B1_D_RELAY_3",
+        "left": 27.75,
+        "top": 255.04,
+        "right": 35.75,
+        "bottom": 258.04
+      },
+      {
+        "owner": "B1_D_RELAY_4",
+        "left": 641.16,
+        "top": 323.62,
+        "right": 649.16,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_LED1",
+        "left": 68.62,
+        "top": 563.92,
+        "right": 73.62,
+        "bottom": 568.92
+      },
+      {
+        "owner": "B1_LED2",
+        "left": 297.22,
+        "top": 692.19,
+        "right": 302.22,
+        "bottom": 697.19
+      },
+      {
+        "owner": "B1_LED3",
+        "left": 29.25,
+        "top": 170.22,
+        "right": 34.25,
+        "bottom": 175.22
+      },
+      {
+        "owner": "B1_LED4",
+        "left": 690.92,
+        "top": 322.62,
+        "right": 695.92,
+        "bottom": 327.62
+      },
+      {
+        "owner": "B1_LED5",
+        "left": 158.79,
+        "top": 495.34,
+        "right": 163.79,
+        "bottom": 500.34
+      },
+      {
+        "owner": "B1_LED6",
+        "left": 538.52,
+        "top": 629.96,
+        "right": 543.52,
+        "bottom": 634.96
+      },
+      {
+        "owner": "B1_LED7",
+        "left": 111.8,
+        "top": 170.22,
+        "right": 116.8,
+        "bottom": 175.22
+      },
+      {
+        "owner": "B1_LED8",
+        "left": 795.06,
+        "top": 322.62,
+        "right": 800.06,
+        "bottom": 327.62
+      },
+      {
+        "owner": "B1_LED9",
+        "left": 297.22,
+        "top": 495.34,
+        "right": 302.22,
+        "bottom": 500.34
+      },
+      {
+        "owner": "B1_LED10",
+        "left": 642.66,
+        "top": 629.96,
+        "right": 647.66,
+        "bottom": 634.96
+      },
+      {
+        "owner": "B1_LED11",
+        "left": 200.7,
+        "top": 170.22,
+        "right": 205.7,
+        "bottom": 175.22
+      },
+      {
+        "owner": "B1_LED12",
+        "left": 68.62,
+        "top": 363.26,
+        "right": 73.62,
+        "bottom": 368.26
+      },
+      {
+        "owner": "B1_LED13",
+        "left": 396.28,
+        "top": 495.34,
+        "right": 401.28,
+        "bottom": 500.34
+      },
+      {
+        "owner": "B1_LED14",
+        "left": 690.92,
+        "top": 629.96,
+        "right": 695.92,
+        "bottom": 634.96
+      },
+      {
+        "owner": "B1_LED15",
+        "left": 297.22,
+        "top": 170.22,
+        "right": 302.22,
+        "bottom": 175.22
+      },
+      {
+        "owner": "B1_LED16",
+        "left": 111.8,
+        "top": 363.26,
+        "right": 116.8,
+        "bottom": 368.26
+      },
+      {
+        "owner": "B1_SW_BTN_1",
+        "left": 200.2,
+        "top": 494.84,
+        "right": 206.2,
+        "bottom": 500.84
+      },
+      {
+        "owner": "B1_SW_BTN_2",
+        "left": 200.2,
+        "top": 629.46,
+        "right": 206.2,
+        "bottom": 635.46
+      },
+      {
+        "owner": "B1_SW_BTN_3",
+        "left": 794.56,
+        "top": 113.84,
+        "right": 800.56,
+        "bottom": 119.84
+      },
+      {
+        "owner": "B1_SW_BTN_4",
+        "left": 28.75,
+        "top": 322.12,
+        "right": 34.75,
+        "bottom": 328.12
+      },
+      {
+        "owner": "B1_SW_BTN_5",
+        "left": 344.98,
+        "top": 494.84,
+        "right": 350.98,
+        "bottom": 500.84
+      },
+      {
+        "owner": "B1_SW_BTN_6",
+        "left": 158.29,
+        "top": 691.69,
+        "right": 164.29,
+        "bottom": 697.69
+      },
+      {
+        "owner": "B1_RV1",
+        "left": 156.79,
+        "top": 112.34,
+        "right": 165.79,
+        "bottom": 121.34
+      },
+      {
+        "owner": "B1_RV2",
+        "left": 244.42,
+        "top": 112.34,
+        "right": 253.42,
+        "bottom": 121.34
+      },
+      {
+        "owner": "B1_RV3",
+        "left": 295.22,
+        "top": 112.34,
+        "right": 304.22,
+        "bottom": 121.34
+      },
+      {
+        "owner": "B1_RV4",
+        "left": 343.48,
+        "top": 112.34,
+        "right": 352.48,
+        "bottom": 121.34
+      },
+      {
+        "owner": "B1_U_LM358_CHANNEL_1",
+        "left": 433.5,
+        "top": 241.54,
+        "right": 455.5,
+        "bottom": 271.54
+      },
+      {
+        "owner": "B1_U_LM358_CHANNEL_2",
+        "left": 237.92,
+        "top": 418.07,
+        "right": 259.92,
+        "bottom": 448.07
+      },
+      {
+        "owner": "B1_U_LM358_CHANNEL_3",
+        "left": 60.12,
+        "top": 679.69,
+        "right": 82.12,
+        "bottom": 709.69
+      },
+      {
+        "owner": "B1_U_LM358_CHANNEL_4",
+        "left": 479.22,
+        "top": 774.94,
+        "right": 501.22,
+        "bottom": 804.94
+      },
+      {
+        "owner": "B1_R_GATE_1",
+        "left": 28.25,
+        "top": 74.95,
+        "right": 35.25,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_GATE_2",
+        "left": 395.28,
+        "top": 34.31,
+        "right": 402.28,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_R_GATE_3",
+        "left": 67.62,
+        "top": 74.95,
+        "right": 74.62,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_GATE_4",
+        "left": 110.8,
+        "top": 74.95,
+        "right": 117.8,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_PULLDOWN_1",
+        "left": 395.28,
+        "top": 171.47,
+        "right": 402.28,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B1_R_PULLDOWN_2",
+        "left": 441.0,
+        "top": 364.51,
+        "right": 448.0,
+        "bottom": 367.01
+      },
+      {
+        "owner": "B1_R_PULLDOWN_3",
+        "left": 110.8,
+        "top": 565.17,
+        "right": 117.8,
+        "bottom": 567.67
+      },
+      {
+        "owner": "B1_R_PULLDOWN_4",
+        "left": 441.0,
+        "top": 693.44,
+        "right": 448.0,
+        "bottom": 695.94
+      },
+      {
+        "owner": "B1_R_BASE_1",
+        "left": 441.0,
+        "top": 34.31,
+        "right": 448.0,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_R_BASE_2",
+        "left": 486.72,
+        "top": 34.31,
+        "right": 493.72,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_R_BASE_3",
+        "left": 157.79,
+        "top": 74.95,
+        "right": 164.79,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_BASE_4",
+        "left": 537.52,
+        "top": 34.31,
+        "right": 544.52,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_R_BTN_PD_1",
+        "left": 441.0,
+        "top": 171.47,
+        "right": 448.0,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B1_R_BTN_PD_2",
+        "left": 486.72,
+        "top": 364.51,
+        "right": 493.72,
+        "bottom": 367.01
+      },
+      {
+        "owner": "B1_R_BTN_PD_3",
+        "left": 199.7,
+        "top": 565.17,
+        "right": 206.7,
+        "bottom": 567.67
+      },
+      {
+        "owner": "B1_R_BTN_PD_4",
+        "left": 486.72,
+        "top": 693.44,
+        "right": 493.72,
+        "bottom": 695.94
+      },
+      {
+        "owner": "B1_R_BTN_PD_5",
+        "left": 486.72,
+        "top": 171.47,
+        "right": 493.72,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B1_R_BTN_PD_6",
+        "left": 537.52,
+        "top": 364.51,
+        "right": 544.52,
+        "bottom": 367.01
+      },
+      {
+        "owner": "B1_R_LED_1",
+        "left": 157.79,
+        "top": 565.17,
+        "right": 164.79,
+        "bottom": 567.67
+      },
+      {
+        "owner": "B1_R_LED_2",
+        "left": 395.28,
+        "top": 693.44,
+        "right": 402.28,
+        "bottom": 695.94
+      },
+      {
+        "owner": "B1_R_LED_3",
+        "left": 67.62,
+        "top": 171.47,
+        "right": 74.62,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B1_R_LED_4",
+        "left": 740.72,
+        "top": 323.87,
+        "right": 747.72,
+        "bottom": 326.37
+      },
+      {
+        "owner": "B1_R_LED_5",
+        "left": 245.42,
+        "top": 496.59,
+        "right": 252.42,
+        "bottom": 499.09
+      },
+      {
+        "owner": "B1_R_LED_6",
+        "left": 590.86,
+        "top": 631.21,
+        "right": 597.86,
+        "bottom": 633.71
+      },
+      {
+        "owner": "B1_R_LED_7",
+        "left": 157.79,
+        "top": 171.47,
+        "right": 164.79,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B1_R_LED_8",
+        "left": 28.25,
+        "top": 364.51,
+        "right": 35.25,
+        "bottom": 367.01
+      },
+      {
+        "owner": "B1_R_LED_9",
+        "left": 486.72,
+        "top": 496.59,
+        "right": 493.72,
+        "bottom": 499.09
+      },
+      {
+        "owner": "B1_R_LED_10",
+        "left": 740.72,
+        "top": 631.21,
+        "right": 747.72,
+        "bottom": 633.71
+      },
+      {
+        "owner": "B1_R_LED_11",
+        "left": 245.42,
+        "top": 171.47,
+        "right": 252.42,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B1_R_LED_12",
+        "left": 157.79,
+        "top": 364.51,
+        "right": 164.79,
+        "bottom": 367.01
+      },
+      {
+        "owner": "B1_R_LED_13",
+        "left": 641.66,
+        "top": 496.59,
+        "right": 648.66,
+        "bottom": 499.09
+      },
+      {
+        "owner": "B1_R_LED_14",
+        "left": 28.25,
+        "top": 693.44,
+        "right": 35.25,
+        "bottom": 695.94
+      },
+      {
+        "owner": "B1_R_LED_15",
+        "left": 344.48,
+        "top": 171.47,
+        "right": 351.48,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B1_R_LED_16",
+        "left": 245.42,
+        "top": 364.51,
+        "right": 252.42,
+        "bottom": 367.01
+      },
+      {
+        "owner": "B1_R_I2C_SDA",
+        "left": 794.06,
+        "top": 496.59,
+        "right": 801.06,
+        "bottom": 499.09
+      },
+      {
+        "owner": "B1_R_I2C_SCL",
+        "left": 199.7,
+        "top": 693.44,
+        "right": 206.7,
+        "bottom": 695.94
+      },
+      {
+        "owner": "B1_C_DECOUPLE_1",
+        "left": 396.78,
+        "top": 115.34,
+        "right": 400.78,
+        "bottom": 118.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_2",
+        "left": 246.92,
+        "top": 323.62,
+        "right": 250.92,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_C_DECOUPLE_3",
+        "left": 691.42,
+        "top": 431.57,
+        "right": 695.42,
+        "bottom": 434.57
+      },
+      {
+        "owner": "B1_C_DECOUPLE_4",
+        "left": 246.92,
+        "top": 630.96,
+        "right": 250.92,
+        "bottom": 633.96
+      },
+      {
+        "owner": "B1_C_DECOUPLE_5",
+        "left": 488.22,
+        "top": 115.34,
+        "right": 492.22,
+        "bottom": 118.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_6",
+        "left": 297.72,
+        "top": 323.62,
+        "right": 301.72,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_C_DECOUPLE_7",
+        "left": 742.22,
+        "top": 431.57,
+        "right": 746.22,
+        "bottom": 434.57
+      },
+      {
+        "owner": "B1_C_DECOUPLE_8",
+        "left": 297.72,
+        "top": 630.96,
+        "right": 301.72,
+        "bottom": 633.96
+      },
+      {
+        "owner": "B1_C_DECOUPLE_9",
+        "left": 539.02,
+        "top": 115.34,
+        "right": 543.02,
+        "bottom": 118.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_10",
+        "left": 396.78,
+        "top": 323.62,
+        "right": 400.78,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_C_DECOUPLE_11",
+        "left": 795.56,
+        "top": 431.57,
+        "right": 799.56,
+        "bottom": 434.57
+      },
+      {
+        "owner": "B1_C_DECOUPLE_12",
+        "left": 345.98,
+        "top": 630.96,
+        "right": 349.98,
+        "bottom": 633.96
+      },
+      {
+        "owner": "B1_C_DECOUPLE_13",
+        "left": 592.36,
+        "top": 115.34,
+        "right": 596.36,
+        "bottom": 118.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_14",
+        "left": 442.5,
+        "top": 323.62,
+        "right": 446.5,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_C_DECOUPLE_15",
+        "left": 29.75,
+        "top": 496.34,
+        "right": 33.75,
+        "bottom": 499.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_16",
+        "left": 396.78,
+        "top": 630.96,
+        "right": 400.78,
+        "bottom": 633.96
+      },
+      {
+        "owner": "B1_C_DECOUPLE_17",
+        "left": 643.16,
+        "top": 115.34,
+        "right": 647.16,
+        "bottom": 118.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_18",
+        "left": 488.22,
+        "top": 323.62,
+        "right": 492.22,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_C_DECOUPLE_19",
+        "left": 69.12,
+        "top": 496.34,
+        "right": 73.12,
+        "bottom": 499.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_20",
+        "left": 442.5,
+        "top": 630.96,
+        "right": 446.5,
+        "bottom": 633.96
+      },
+      {
+        "owner": "B1_C_DECOUPLE_21",
+        "left": 691.42,
+        "top": 115.34,
+        "right": 695.42,
+        "bottom": 118.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_22",
+        "left": 539.02,
+        "top": 323.62,
+        "right": 543.02,
+        "bottom": 326.62
+      },
+      {
+        "owner": "B1_C_DECOUPLE_23",
+        "left": 112.3,
+        "top": 496.34,
+        "right": 116.3,
+        "bottom": 499.34
+      },
+      {
+        "owner": "B1_C_DECOUPLE_24",
+        "left": 488.22,
+        "top": 630.96,
+        "right": 492.22,
+        "bottom": 633.96
+      },
+      {
+        "owner": "B1_R_PROT_1",
+        "left": 590.86,
+        "top": 74.95,
+        "right": 597.86,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_PROT_2",
+        "left": 641.66,
+        "top": 74.95,
+        "right": 648.66,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_PROT_3",
+        "left": 689.92,
+        "top": 74.95,
+        "right": 696.92,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_PROT_4",
+        "left": 740.72,
+        "top": 74.95,
+        "right": 747.72,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_PROT_5",
+        "left": 794.06,
+        "top": 74.95,
+        "right": 801.06,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_R_PROT_6",
+        "left": 28.25,
+        "top": 115.59,
+        "right": 35.25,
+        "bottom": 118.09
+      },
+      {
+        "owner": "B1_R_PROT_7",
+        "left": 67.62,
+        "top": 115.59,
+        "right": 74.62,
+        "bottom": 118.09
+      },
+      {
+        "owner": "B1_R_PROT_8",
+        "left": 110.8,
+        "top": 115.59,
+        "right": 117.8,
+        "bottom": 118.09
+      },
+      {
+        "owner": "B1_J_LOAD_1",
+        "left": 109.3,
+        "top": 252.54,
+        "right": 119.3,
+        "bottom": 260.54
+      },
+      {
+        "owner": "B1_J_LOAD_2",
+        "left": 688.42,
+        "top": 361.76,
+        "right": 698.42,
+        "bottom": 369.76
+      },
+      {
+        "owner": "B1_J_LOAD_3",
+        "left": 26.75,
+        "top": 562.42,
+        "right": 36.75,
+        "bottom": 570.42
+      },
+      {
+        "owner": "B1_J_LOAD_4",
+        "left": 688.42,
+        "top": 690.69,
+        "right": 698.42,
+        "bottom": 698.69
+      },
+      {
+        "owner": "B1_J_RELAY_1",
+        "left": 198.2,
+        "top": 72.2,
+        "right": 208.2,
+        "bottom": 80.2
+      },
+      {
+        "owner": "B1_J_RELAY_2",
+        "left": 589.36,
+        "top": 31.56,
+        "right": 599.36,
+        "bottom": 39.56
+      },
+      {
+        "owner": "B1_J_RELAY_3",
+        "left": 393.78,
+        "top": 252.54,
+        "right": 403.78,
+        "bottom": 260.54
+      },
+      {
+        "owner": "B1_J_RELAY_4",
+        "left": 198.2,
+        "top": 429.07,
+        "right": 208.2,
+        "bottom": 437.07
+      },
+      {
+        "owner": "B1_J_HEADER_1",
+        "left": 156.29,
+        "top": 255.04,
+        "right": 166.29,
+        "bottom": 258.04
+      },
+      {
+        "owner": "B1_J_HEADER_2",
+        "left": 739.22,
+        "top": 364.26,
+        "right": 749.22,
+        "bottom": 367.26
+      },
+      {
+        "owner": "B1_J_HEADER_3",
+        "left": 439.5,
+        "top": 564.92,
+        "right": 449.5,
+        "bottom": 567.92
+      },
+      {
+        "owner": "B1_J_HEADER_4",
+        "left": 739.22,
+        "top": 693.19,
+        "right": 749.22,
+        "bottom": 696.19
+      },
+      {
+        "owner": "B1_J_HEADER_5",
+        "left": 198.2,
+        "top": 255.04,
+        "right": 208.2,
+        "bottom": 258.04
+      },
+      {
+        "owner": "B1_J_HEADER_6",
+        "left": 792.56,
+        "top": 364.26,
+        "right": 802.56,
+        "bottom": 367.26
+      },
+      {
+        "owner": "B1_J_HEADER_7",
+        "left": 485.22,
+        "top": 564.92,
+        "right": 495.22,
+        "bottom": 567.92
+      },
+      {
+        "owner": "B1_J_HEADER_8",
+        "left": 792.56,
+        "top": 693.19,
+        "right": 802.56,
+        "bottom": 696.19
+      },
+      {
+        "owner": "B1_J_EXP1",
+        "left": 26.75,
+        "top": 34.06,
+        "right": 36.75,
+        "bottom": 37.06
+      },
+      {
+        "owner": "B1_J_EXP2",
+        "left": 640.16,
+        "top": 34.06,
+        "right": 650.16,
+        "bottom": 37.06
+      },
+      {
+        "owner": "B1_J_ANALOG",
+        "left": 439.5,
+        "top": 115.34,
+        "right": 449.5,
+        "bottom": 118.34
+      },
+      {
+        "owner": "B1_J_I2C",
+        "left": 26.75,
+        "top": 788.44,
+        "right": 36.75,
+        "bottom": 791.44
+      },
+      {
+        "owner": "B1_J_SPI",
+        "left": 242.92,
+        "top": 255.04,
+        "right": 254.92,
+        "bottom": 258.04
+      },
+      {
+        "owner": "B1_J_POWER",
+        "left": 66.12,
+        "top": 431.57,
+        "right": 76.12,
+        "bottom": 434.57
+      },
+      {
+        "owner": "B1_J_CAN",
+        "left": 589.36,
+        "top": 562.42,
+        "right": 599.36,
+        "bottom": 570.42
+      },
+      {
+        "owner": "B1_J_RS485",
+        "left": 66.12,
+        "top": 785.94,
+        "right": 76.12,
+        "bottom": 793.94
+      },
+      {
+        "owner": "B1_JP_MODE_1",
+        "left": 538.52,
+        "top": 171.22,
+        "right": 543.52,
+        "bottom": 174.22
+      },
+      {
+        "owner": "B1_JP_MODE_2",
+        "left": 200.7,
+        "top": 364.26,
+        "right": 205.7,
+        "bottom": 367.26
+      },
+      {
+        "owner": "B1_JP_MODE_3",
+        "left": 591.86,
+        "top": 496.34,
+        "right": 596.86,
+        "bottom": 499.34
+      },
+      {
+        "owner": "B1_JP_MODE_4",
+        "left": 795.06,
+        "top": 630.96,
+        "right": 800.06,
+        "bottom": 633.96
+      },
+      {
+        "owner": "B1_JP_MODE_5",
+        "left": 591.86,
+        "top": 171.22,
+        "right": 596.86,
+        "bottom": 174.22
+      },
+      {
+        "owner": "B1_JP_MODE_6",
+        "left": 297.22,
+        "top": 364.26,
+        "right": 302.22,
+        "bottom": 367.26
+      },
+      {
+        "owner": "B1_TP1",
+        "left": 113.05,
+        "top": 323.87,
+        "right": 115.55,
+        "bottom": 326.37
+      },
+      {
+        "owner": "B1_TP2",
+        "left": 643.91,
+        "top": 565.17,
+        "right": 646.41,
+        "bottom": 567.67
+      },
+      {
+        "owner": "B1_TP3",
+        "left": 69.87,
+        "top": 34.31,
+        "right": 72.37,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_TP4",
+        "left": 69.87,
+        "top": 323.87,
+        "right": 72.37,
+        "bottom": 326.37
+      },
+      {
+        "owner": "B1_TP5",
+        "left": 443.25,
+        "top": 431.82,
+        "right": 445.75,
+        "bottom": 434.32
+      },
+      {
+        "owner": "B1_TP6",
+        "left": 69.87,
+        "top": 631.21,
+        "right": 72.37,
+        "bottom": 633.71
+      },
+      {
+        "owner": "B1_TP7",
+        "left": 692.17,
+        "top": 34.31,
+        "right": 694.67,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_TP8",
+        "left": 488.97,
+        "top": 255.29,
+        "right": 491.47,
+        "bottom": 257.79
+      },
+      {
+        "owner": "B1_TP9",
+        "left": 539.77,
+        "top": 255.29,
+        "right": 542.27,
+        "bottom": 257.79
+      },
+      {
+        "owner": "B1_TP10",
+        "left": 298.47,
+        "top": 431.82,
+        "right": 300.97,
+        "bottom": 434.32
+      },
+      {
+        "owner": "B1_TP11",
+        "left": 742.97,
+        "top": 34.31,
+        "right": 745.47,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_TP12",
+        "left": 692.17,
+        "top": 255.29,
+        "right": 694.67,
+        "bottom": 257.79
+      },
+      {
+        "owner": "B1_TP13",
+        "left": 643.91,
+        "top": 431.82,
+        "right": 646.41,
+        "bottom": 434.32
+      },
+      {
+        "owner": "B1_TP14",
+        "left": 113.05,
+        "top": 631.21,
+        "right": 115.55,
+        "bottom": 633.71
+      },
+      {
+        "owner": "B1_TP15",
+        "left": 113.05,
+        "top": 34.31,
+        "right": 115.55,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_TP16",
+        "left": 160.04,
+        "top": 323.87,
+        "right": 162.54,
+        "bottom": 326.37
+      },
+      {
+        "owner": "B1_TP17",
+        "left": 160.04,
+        "top": 34.31,
+        "right": 162.54,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_TP18",
+        "left": 796.31,
+        "top": 34.31,
+        "right": 798.81,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B1_TP19",
+        "left": 247.67,
+        "top": 74.95,
+        "right": 250.17,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_TP20",
+        "left": 298.47,
+        "top": 74.95,
+        "right": 300.97,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_TP21",
+        "left": 346.73,
+        "top": 74.95,
+        "right": 349.23,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_TP22",
+        "left": 397.53,
+        "top": 74.95,
+        "right": 400.03,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_TP23",
+        "left": 443.25,
+        "top": 74.95,
+        "right": 445.75,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B1_TP24",
+        "left": 488.97,
+        "top": 74.95,
+        "right": 491.47,
+        "bottom": 77.45
+      },
+      {
+        "owner": "B2_U1",
+        "left": 665.92,
+        "top": 536.42,
+        "right": 720.92,
+        "bottom": 596.42
+      },
+      {
+        "owner": "B2_D1",
+        "left": 345.48,
+        "top": 787.44,
+        "right": 350.48,
+        "bottom": 792.44
+      },
+      {
+        "owner": "B2_D2",
+        "left": 642.66,
+        "top": 170.22,
+        "right": 647.66,
+        "bottom": 175.22
+      },
+      {
+        "owner": "B2_D3",
+        "left": 345.48,
+        "top": 363.26,
+        "right": 350.48,
+        "bottom": 368.26
+      },
+      {
+        "owner": "B2_R1",
+        "left": 199.7,
+        "top": 34.31,
+        "right": 206.7,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B2_R2",
+        "left": 28.25,
+        "top": 631.21,
+        "right": 35.25,
+        "bottom": 633.71
+      },
+      {
+        "owner": "B2_R3",
+        "left": 245.42,
+        "top": 34.31,
+        "right": 252.42,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B2_SW1",
+        "left": 200.2,
+        "top": 322.12,
+        "right": 206.2,
+        "bottom": 328.12
+      },
+      {
+        "owner": "B2_SW2",
+        "left": 441.5,
+        "top": 494.84,
+        "right": 447.5,
+        "bottom": 500.84
+      },
+      {
+        "owner": "B2_R4",
+        "left": 245.42,
+        "top": 693.44,
+        "right": 252.42,
+        "bottom": 695.94
+      },
+      {
+        "owner": "B2_R5",
+        "left": 689.92,
+        "top": 171.47,
+        "right": 696.92,
+        "bottom": 173.97
+      },
+      {
+        "owner": "B2_J1",
+        "left": 589.36,
+        "top": 364.26,
+        "right": 599.36,
+        "bottom": 367.26
+      },
+      {
+        "owner": "B2_J2",
+        "left": 294.72,
+        "top": 564.92,
+        "right": 304.72,
+        "bottom": 567.92
+      },
+      {
+        "owner": "B3_G1",
+        "left": 741.72,
+        "top": 787.94,
+        "right": 746.72,
+        "bottom": 791.94
+      },
+      {
+        "owner": "B3_V1",
+        "left": 536.02,
+        "top": 70.2,
+        "right": 546.02,
+        "bottom": 82.2
+      },
+      {
+        "owner": "B3_MCU",
+        "left": 462.72,
+        "top": 403.07,
+        "right": 517.72,
+        "bottom": 463.07
+      },
+      {
+        "owner": "B3_ESP",
+        "left": 226.42,
+        "top": 762.44,
+        "right": 271.42,
+        "bottom": 817.44
+      },
+      {
+        "owner": "B3_BME",
+        "left": 689.42,
+        "top": 785.94,
+        "right": 697.42,
+        "bottom": 793.94
+      },
+      {
+        "owner": "B3_OLED",
+        "left": 730.72,
+        "top": 243.04,
+        "right": 757.72,
+        "bottom": 270.04
+      },
+      {
+        "owner": "B3_FLASH",
+        "left": 530.02,
+        "top": 419.07,
+        "right": 552.02,
+        "bottom": 447.07
+      },
+      {
+        "owner": "B3_RS485",
+        "left": 530.02,
+        "top": 679.69,
+        "right": 552.02,
+        "bottom": 709.69
+      },
+      {
+        "owner": "B3_J1",
+        "left": 439.5,
+        "top": 785.94,
+        "right": 449.5,
+        "bottom": 793.94
+      },
+      {
+        "owner": "B3_SW1",
+        "left": 200.2,
+        "top": 114.84,
+        "right": 206.2,
+        "bottom": 118.84
+      },
+      {
+        "owner": "B3_D1",
+        "left": 343.98,
+        "top": 34.06,
+        "right": 351.98,
+        "bottom": 37.06
+      },
+      {
+        "owner": "B3_DZ1",
+        "left": 244.92,
+        "top": 564.92,
+        "right": 252.92,
+        "bottom": 567.92
+      },
+      {
+        "owner": "B3_R1",
+        "left": 590.86,
+        "top": 431.82,
+        "right": 597.86,
+        "bottom": 434.32
+      },
+      {
+        "owner": "B3_R2",
+        "left": 296.22,
+        "top": 34.31,
+        "right": 303.22,
+        "bottom": 36.81
+      },
+      {
+        "owner": "B3_C1",
+        "left": 396.78,
+        "top": 364.26,
+        "right": 400.78,
+        "bottom": 367.26
+      },
+      {
+        "owner": "B3_C2",
+        "left": 691.42,
+        "top": 496.34,
+        "right": 695.42,
+        "bottom": 499.34
+      },
+      {
+        "owner": "B3_TP1",
+        "left": 346.73,
+        "top": 565.17,
+        "right": 349.23,
+        "bottom": 567.67
+      }
+    ]
+  },
+  "static_checks": {
+    "ok": true,
+    "depth": 0,
+    "in_string": false,
+    "wire_count": 898,
+    "label_count": 670,
+    "no_connect_count": 0,
+    "bad_wire_objects": 0,
+    "diagonal_wire_objects": 0,
+    "symbol_instances": 228,
+    "wire_maker": true
+  },
+  "mode": "terminal_by_kicad_terminal_placer",
+  "note": "This KiCad schematic was generated from final JSON with real embedded symbols plus terminal/local-label stubs produced through terminal_placer. Local labels are the intended terminal backend for this run.",
+  "wire_maker": {
+    "schema": "progen-kicad-wire-maker-report/v0.1",
+    "stage": "kicad_wire_maker",
+    "version": "progen-kicad-wire-maker/v0.1",
+    "routing_mode": "terminal",
+    "terminal_label_pin_offset_mm": 10.16,
+    "terminal_label_font_mm": 0.8,
+    "wire_object_count": 898,
+    "raw_wire_segment_count": 898,
+    "merged_wire_segment_count": 0,
+    "trimmed_wire_tail_count": 0,
+    "label_count": 670,
+    "junction_count": 1,
+    "routed_connection_count": 0,
+    "pin_resolved_count": 670,
+    "unresolved_pin_count": 0,
+    "unresolved_pins": [],
+    "unresolved_pin_report_truncated": false,
+    "fallback_route_count": 0,
+    "exact_path_repair_count": 0,
+    "invalid_actual_route_count": 0,
+    "invalid_actual_routes": [],
+    "invalid_actual_routes_truncated": false,
+    "forbidden_label_strategy_count": 0,
+    "forbidden_label_strategy_nets": [],
+    "forbidden_label_strategy_report_truncated": false,
+    "wire_mode_terminal_policy": {},
+    "wire_mode_terminal_label_count": 0,
+    "label_collision_avoidance_count": 165,
+    "label_visual_layout": {
+      "ok": true,
+      "overlap_count": 0,
+      "overlaps": [],
+      "overlaps_truncated": false
+    },
+    "deferred_net_count": 0,
+    "deferred_nets": [],
+    "unrouted_net_count": 0,
+    "unrouted_nets": [],
+    "partial_wire_net_count": 0,
+    "geometry_ok": true,
+    "geometry_violation_count": 0,
+    "wire_geometry_validator": {
+      "schema": "progen-kicad-wire-geometry-validation/v0.2",
+      "stage": "wire_geometry_validator",
+      "rule_set": {
+        "different_net_90_degree_crossings_allowed": true,
+        "wire_wire_crossings_allowed": true,
+        "wire_must_not_touch_component_except_intended_pin": true,
+        "different_net_collinear_overlap_forbidden": true,
+        "different_net_t_touch_forbidden": true,
+        "different_net_endpoint_touch_forbidden": true,
+        "different_net_crossing_on_pin_forbidden": true
+      },
+      "ok": true,
+      "segment_count": 898,
+      "component_body_count": 224,
+      "violation_count": 0,
+      "metrics": {
+        "different_net_90_degree_crossing_count": 174,
+        "same_net_contact_count": 229,
+        "forbidden_contact_count": 0
+      },
+      "violations_by_rule": {},
+      "violations": [],
+      "violations_truncated": false
+    },
+    "strict_wire_ok": true,
+    "strict_wire_violation_count": 0,
+    "strict_wire_validator": {
+      "schema": "progen-kicad-strict-wire-connectivity-validation/v0.1",
+      "stage": "strict_wire_connectivity_validator",
+      "routing_mode": "terminal",
+      "ok": true,
+      "checked_net_count": 0,
+      "connected_net_count": 0,
+      "label_strategy_count": 183,
+      "unrouted_net_count": 0,
+      "partial_wire_net_count": 0,
+      "violation_count": 0,
+      "violations": [],
+      "violations_truncated": false
+    },
+    "partial_route_motion_repair": {
+      "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+      "stage": "partial_route_motion_repair",
+      "enabled": false,
+      "reason": "only strict wire mode uses partial-route component motion repair",
+      "pass_count": 0,
+      "passes": []
+    },
+    "wire_planner_metrics": {
+      "net_count": 183,
+      "wired_route_count": 0,
+      "lane_route_count": 0,
+      "astar_route_count": 0,
+      "salvage_astar_route_count": 0,
+      "salvage_astar_attempt_count": 0,
+      "crossing_risk_route_count": 0,
+      "dense_design_mode": true,
+      "segment_count": 0,
+      "different_net_crossing_count": 0,
+      "mst_total_length": 0,
+      "crossing_density_tile_size": 25.4,
+      "crossing_density_tile_count": 0,
+      "crossing_density_max_tile_crossings": 0,
+      "crossing_density_overflow": 0,
+      "near_endpoint_crossing_count": 0,
+      "label_strategy_count": 183,
+      "wire_mode_terminal_net_count": 0,
+      "wire_mode_terminal_endpoint_count": 0,
+      "partial_wire_net_count": 0,
+      "unroutable_net_count": 0
+    },
+    "wire_planner_warning_count": 0,
+    "geometry_repair_pass_count": 0,
+    "geometry_repair_passes": [],
+    "geometry_repair_fallback_nets": []
+  },
+  "value_editor": {
+    "schema": "progen-kicad-value-editor/v0.1",
+    "ok": true,
+    "report": "value_edit_report.json",
+    "changed": false,
+    "edited_component_count": 0,
+    "missing_ref_count": 0
+  },
+  "value_validator": {
+    "schema": "progen-kicad-value-validator/v0.1",
+    "ok": true,
+    "report": "value_validation_report.json",
+    "missing_ref_count": 0,
+    "value_mismatch_count": 0,
+    "duplicate_actual_value_count": 0
+  },
+  "local_netlist_validation": {
+    "schema": "progen-kicad-local-netlist-comparison/v0.1",
+    "ok": true,
+    "report": "local_netlist_validation_report.json",
+    "kicad_cli_required": false,
+    "blocking_failure_count": 0,
+    "physical_pin_conflict_count": 0,
+    "failed_net_count": 0,
+    "merged_net_count": 0,
+    "power_ground_short_count": 0,
+    "floating_expected_pin_count": 0
+  },
+  "component_body_overlap_report": {
+    "ok": true,
+    "report": "component_body_overlap_report.json",
+    "pass_count": 1,
+    "overlap_count": 0,
+    "pin_coordinate_overlap_count": 0
+  },
+  "final_validator": {
+    "schema": "progen-kicad-final-validator/v0.1",
+    "ok": true,
+    "ready_for_output": true,
+    "report": "final_validation_report.json",
+    "blocking_failure_count": 0
+  },
+  "pcb_pipeline": {
+    "schema": "progen-kicad-pcb-pipeline/v0.1",
+    "generated": false,
+    "ready_for_output": false,
+    "reason": "pcb_disabled_for_schematic_run"
+  },
+  "output_artifacts": {
+    "serial": "KC-A-0+301804A03B04D01G01H01R0P+1+002304601708801B04F0JH04K02U06+2+20440160H80290CC0JD02G08O01T03+S+X01+T+G0PL01+U+D04K06+V+P01+W+Q04Q01+X+A08F01T01W01+Y+O02V01Y01Z02+-Y6EC",
+    "user_project": {
+      "artifact_type": "export_project_file",
+      "storage_visibility": "user_downloadable",
+      "path": "outputs/mj030/user_project/PROGEN_KICAD_PROJECT.zip",
+      "file_name": "PROGEN_KICAD_PROJECT.zip",
+      "main_project_file": "project/OPEN_THIS_PROJECT__mj030__TERMINAL.kicad_pro",
+      "mime_type": "application/zip",
+      "size_bytes": 114609,
+      "sha256": "8598382ad0dd47e3820c42ab06e6d328b0802fb879a0d45460785aeba50ab5c8"
+    },
+    "user_pcb": null,
+    "internal_bundle": {
+      "artifact_type": "internal_generation_bundle",
+      "storage_visibility": "internal_only",
+      "path": "outputs/mj030/internal/internal_bundle.zip",
+      "file_name": "internal_bundle.zip",
+      "mime_type": "application/zip",
+      "version": 1,
+      "size_bytes": 346169,
+      "sha256": "f4840fb0ffb228a4a279ae40dd14a37e8791222deef929acdf4b770cd0b0182a"
+    },
+    "retained_variants": {
+      "accepted_variant": "terminal_fast_arrangement",
+      "variant_count": 1,
+      "bundle_path": "internal/arrangement-variants.json"
+    }
+  }
+}

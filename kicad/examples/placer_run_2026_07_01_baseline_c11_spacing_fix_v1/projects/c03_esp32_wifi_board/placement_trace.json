@@ -1,0 +1,154 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the canonical KiCad component placer.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "ESP32_WROOM",
+            "name": "ESP32-WROOM Module",
+            "at": [
+              38.1,
+              39.37
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "wireless_module",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "RF_Module:ESP32-WROOM-32"
+          },
+          "X2": {
+            "kind": "EN_PUSH_BUTTON",
+            "name": "EN Push Button",
+            "at": [
+              71.12,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Switch:SW_Push"
+          },
+          "X3": {
+            "kind": "BOOT_PUSH_BUTTON",
+            "name": "BOOT Push Button",
+            "at": [
+              95.25,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Switch:SW_Push"
+          },
+          "X4": {
+            "kind": "R_10K_PULLUP",
+            "name": "10k Pull-up Resistor",
+            "at": [
+              119.38,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "X5": {
+            "kind": "CP2102",
+            "name": "CP2102 USB-UART IC",
+            "at": [
+              144.78,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "interface_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Interface_USB:CP2102N-Axx-xQFN28"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.35,
+            "top": 30.37,
+            "right": 50.85,
+            "bottom": 48.37
+          },
+          {
+            "owner": "X2",
+            "left": 68.12,
+            "top": 30.02,
+            "right": 74.12,
+            "bottom": 36.02
+          },
+          {
+            "owner": "X3",
+            "left": 92.25,
+            "top": 30.02,
+            "right": 98.25,
+            "bottom": 36.02
+          },
+          {
+            "owner": "X4",
+            "left": 115.88,
+            "top": 30.5,
+            "right": 122.88,
+            "bottom": 33.0
+          },
+          {
+            "owner": "X5",
+            "left": 141.28,
+            "top": 29.52,
+            "right": 148.28,
+            "bottom": 36.52
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c08_crystal_oscillator",
+    "title": "Crystal Oscillator",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "CRYSTAL_16MHZ",
+      "value": "16MHz Crystal"
+    },
+    {
+      "id": "X2",
+      "kind": "C_22PF_X1",
+      "value": "22pF Capacitor x1"
+    },
+    {
+      "id": "X3",
+      "kind": "C_22PF_X2",
+      "value": "22pF Capacitor x2"
+    },
+    {
+      "id": "X4",
+      "kind": "GND_SYMBOL",
+      "value": "Ground Symbol"
+    },
+    {
+      "id": "X5",
+      "kind": "VCC_SYMBOL",
+      "value": "VCC Power Symbol"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Used to prove real KiCad symbol placement coverage before beautifier and routing stages are enabled."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c14_sd_card_interface",
+    "title": "SD Card Interface",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "MICRO_SD_SOCKET",
+      "value": "Micro SD Socket"
+    },
+    {
+      "id": "X2",
+      "kind": "LEVEL_SHIFTER",
+      "value": "Level Shifter"
+    },
+    {
+      "id": "X3",
+      "kind": "SPI_HEADER_SD",
+      "value": "SPI Header"
+    },
+    {
+      "id": "X4",
+      "kind": "DECOUPLING_CAPACITOR_SD",
+      "value": "Decoupling Capacitor"
+    },
+    {
+      "id": "X5",
+      "kind": "CARD_DETECT_SWITCH",
+      "value": "Card Detect Switch"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Purpose: 100-component accepted baseline."
+  ]
+}

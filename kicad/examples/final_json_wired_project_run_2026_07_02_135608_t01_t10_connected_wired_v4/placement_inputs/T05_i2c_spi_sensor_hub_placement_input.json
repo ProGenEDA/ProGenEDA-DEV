@@ -1,0 +1,315 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "t05",
+    "title": "I2C SPI Sensor Hub",
+    "purpose": "bus-style layout with labels and repeated pullups/caps",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "T05",
+  "circuit_name": "I2C SPI Sensor Hub",
+  "purpose": "bus-style layout with labels and repeated pullups/caps",
+  "components": [
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "BME280",
+      "value": "BME280"
+    },
+    {
+      "id": "U2",
+      "ref": "U2",
+      "kind": "SSD1306_OLED",
+      "value": "SSD1306 OLED"
+    },
+    {
+      "id": "U3",
+      "ref": "U3",
+      "kind": "DS3231",
+      "value": "DS3231 RTC"
+    },
+    {
+      "id": "U4",
+      "ref": "U4",
+      "kind": "W25Q64",
+      "value": "W25Q64"
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R_4K7_PULLUP",
+      "value": "4.7k pullup"
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "R_4K7_PULLUP",
+      "value": "4.7k pullup"
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "RESISTOR",
+      "value": "SPI pullup"
+    },
+    {
+      "id": "R4",
+      "ref": "R4",
+      "kind": "RESISTOR",
+      "value": "SPI pullup"
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C3",
+      "ref": "C3",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C4",
+      "ref": "C4",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C5",
+      "ref": "C5",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C6",
+      "ref": "C6",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "JST_CONNECTOR",
+      "value": "JST connector"
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "JST_CONNECTOR",
+      "value": "JST connector"
+    },
+    {
+      "id": "J3",
+      "ref": "J3",
+      "kind": "I2C_HEADER",
+      "value": "I2C header"
+    },
+    {
+      "id": "J4",
+      "ref": "J4",
+      "kind": "I2C_HEADER",
+      "value": "I2C header"
+    },
+    {
+      "id": "J5",
+      "ref": "J5",
+      "kind": "SPI_HEADER_FLASH",
+      "value": "SPI header"
+    },
+    {
+      "id": "BT1",
+      "ref": "BT1",
+      "kind": "COIN_CELL_HOLDER",
+      "value": "CR2032 holder"
+    },
+    {
+      "id": "TP1",
+      "ref": "TP1",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "TP2",
+      "ref": "TP2",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "TP3",
+      "ref": "TP3",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "TP4",
+      "ref": "TP4",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "TP5",
+      "ref": "TP5",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    },
+    {
+      "id": "TP6",
+      "ref": "TP6",
+      "kind": "TEST_POINT",
+      "value": "Test point"
+    }
+  ],
+  "nets": {
+    "+3V3": [
+      "U1.VCC",
+      "U2.VCC",
+      "U3.VCC",
+      "U4.VCC",
+      "R1.1",
+      "R2.1",
+      "R3.1",
+      "R4.1",
+      "C1.1",
+      "C2.1",
+      "C3.1",
+      "C4.1",
+      "C5.1",
+      "C6.1",
+      "J1.1",
+      "J2.1",
+      "J3.1",
+      "J4.1",
+      "J5.1",
+      "TP1.1",
+      "U1.CSB"
+    ],
+    "GND": [
+      "U1.GND",
+      "U2.GND",
+      "U3.GND",
+      "U4.GND",
+      "C1.2",
+      "C2.2",
+      "C3.2",
+      "C4.2",
+      "C5.2",
+      "C6.2",
+      "J1.2",
+      "J2.2",
+      "J3.4",
+      "J4.4",
+      "J5.6",
+      "BT1.NEG",
+      "TP2.1",
+      "U1.SDO"
+    ],
+    "I2C_SDA": [
+      "U1.SDA",
+      "U2.SDA",
+      "U3.SDA",
+      "R1.2",
+      "J1.3",
+      "J2.3",
+      "J3.2",
+      "J4.2",
+      "TP3.1"
+    ],
+    "I2C_SCL": [
+      "U1.SCL",
+      "U2.SCL",
+      "U3.SCL",
+      "R2.2",
+      "J1.4",
+      "J2.4",
+      "J3.3",
+      "J4.3",
+      "TP4.1"
+    ],
+    "RTC_VBAT": [
+      "U3.VBAT",
+      "BT1.POS"
+    ],
+    "SPI_MOSI": [
+      "U4.DI",
+      "J5.4"
+    ],
+    "SPI_MISO": [
+      "U4.DO",
+      "J5.5"
+    ],
+    "SPI_SCK": [
+      "U4.CLK",
+      "J5.3",
+      "TP6.1"
+    ],
+    "SPI_CS_FLASH": [
+      "U4.CS",
+      "R3.2",
+      "J5.2",
+      "TP5.1"
+    ],
+    "FLASH_WP_HOLD": [
+      "U4.WP",
+      "U4.HOLD",
+      "R4.2"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [
+      {
+        "kind": "net_alias_merged",
+        "from": "BME280_CSB",
+        "to": "+3V3"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "BME280_SDO",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "SPI_TEST",
+        "to": "SPI_SCK"
+      }
+    ],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 26,
+    "net_count": 10,
+    "endpoint_count": 73,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

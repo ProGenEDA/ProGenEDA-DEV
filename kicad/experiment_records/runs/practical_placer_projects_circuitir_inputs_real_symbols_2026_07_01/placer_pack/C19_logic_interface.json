@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c19_logic_interface",
+    "title": "Logic Interface",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595 Shift Register"
+    },
+    {
+      "id": "X2",
+      "kind": "DIP_SWITCH",
+      "value": "DIP Switch"
+    },
+    {
+      "id": "X3",
+      "kind": "LED_ARRAY",
+      "value": "LED Array"
+    },
+    {
+      "id": "X4",
+      "kind": "RESISTOR_NETWORK",
+      "value": "Resistor Network"
+    },
+    {
+      "id": "X5",
+      "kind": "PROGRAMMING_HEADER",
+      "value": "Programming Header"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Used to prove real KiCad symbol placement coverage before beautifier and routing stages are enabled."
+  ]
+}

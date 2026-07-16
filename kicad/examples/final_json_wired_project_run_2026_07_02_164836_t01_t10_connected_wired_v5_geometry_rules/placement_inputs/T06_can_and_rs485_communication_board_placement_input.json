@@ -1,0 +1,297 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "t06",
+    "title": "CAN And RS485 Communication Board",
+    "purpose": "IC clusters with termination and protection",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "T06",
+  "circuit_name": "CAN And RS485 Communication Board",
+  "purpose": "IC clusters with termination and protection",
+  "components": [
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "MCP2515",
+      "value": "MCP2515"
+    },
+    {
+      "id": "U2",
+      "ref": "U2",
+      "kind": "TJA1050",
+      "value": "TJA1050"
+    },
+    {
+      "id": "U3",
+      "ref": "U3",
+      "kind": "MAX485",
+      "value": "MAX485"
+    },
+    {
+      "id": "Y1",
+      "ref": "Y1",
+      "kind": "CRYSTAL_16MHZ",
+      "value": "16MHz crystal"
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "C_22PF_X1",
+      "value": "22pF"
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C_22PF_X2",
+      "value": "22pF"
+    },
+    {
+      "id": "C3",
+      "ref": "C3",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C4",
+      "ref": "C4",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C5",
+      "ref": "C5",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C6",
+      "ref": "C6",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C7",
+      "ref": "C7",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R_120_CAN",
+      "value": "120 ohm CAN termination"
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "R_120_RS485",
+      "value": "120 ohm RS485 termination"
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "TVS_DIODE_RS485",
+      "value": "TVS diode"
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "TVS_DIODE_RS485",
+      "value": "TVS diode"
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "CAN_TERMINAL",
+      "value": "CAN terminal"
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "RS485_TERMINAL",
+      "value": "RS485 terminal"
+    },
+    {
+      "id": "J3",
+      "ref": "J3",
+      "kind": "SPI_HEADER_FLASH",
+      "value": "SPI header"
+    },
+    {
+      "id": "J4",
+      "ref": "J4",
+      "kind": "UART_HEADER",
+      "value": "UART/control header"
+    },
+    {
+      "id": "J5",
+      "ref": "J5",
+      "kind": "PIN_HEADER",
+      "value": "Power header"
+    },
+    {
+      "id": "JP1",
+      "ref": "JP1",
+      "kind": "CHIP_SELECT_JUMPER",
+      "value": "Jumper"
+    },
+    {
+      "id": "JP2",
+      "ref": "JP2",
+      "kind": "CHIP_SELECT_JUMPER",
+      "value": "Jumper"
+    },
+    {
+      "id": "JP3",
+      "ref": "JP3",
+      "kind": "CHIP_SELECT_JUMPER",
+      "value": "Jumper"
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "U2.VCC",
+      "U3.VCC",
+      "C4.1",
+      "C5.1",
+      "C6.1",
+      "C7.1",
+      "J5.1"
+    ],
+    "+3V3": [
+      "U1.VDD",
+      "C3.1",
+      "J3.1"
+    ],
+    "GND": [
+      "U1.VSS",
+      "U2.GND",
+      "U3.GND",
+      "C1.2",
+      "C2.2",
+      "C3.2",
+      "C4.2",
+      "C5.2",
+      "C6.2",
+      "C7.2",
+      "D1.2",
+      "D2.2",
+      "J3.6",
+      "J4.5",
+      "J5.2"
+    ],
+    "CAN_SPI_MOSI": [
+      "U1.SI",
+      "J3.4"
+    ],
+    "CAN_SPI_MISO": [
+      "U1.SO",
+      "J3.5"
+    ],
+    "CAN_SPI_SCK": [
+      "U1.SCK",
+      "J3.3"
+    ],
+    "CAN_SPI_CS": [
+      "U1.CS",
+      "J3.2"
+    ],
+    "CAN_INT": [
+      "U1.INT",
+      "J3.7"
+    ],
+    "MCP_OSC1": [
+      "U1.OSC1",
+      "Y1.1",
+      "C1.1"
+    ],
+    "MCP_OSC2": [
+      "U1.OSC2",
+      "Y1.2",
+      "C2.1"
+    ],
+    "CAN_TXD": [
+      "U1.TXCAN",
+      "U2.TXD"
+    ],
+    "CAN_RXD": [
+      "U1.RXCAN",
+      "U2.RXD"
+    ],
+    "CANH": [
+      "U2.CANH",
+      "J1.1",
+      "R1.1",
+      "D1.1",
+      "JP1.1"
+    ],
+    "CANL": [
+      "U2.CANL",
+      "J1.2",
+      "R1.2",
+      "D2.1",
+      "JP1.2"
+    ],
+    "RS485_RO": [
+      "U3.RO",
+      "J4.1"
+    ],
+    "RS485_DI": [
+      "U3.DI",
+      "J4.2"
+    ],
+    "RS485_DE_RE": [
+      "U3.DE",
+      "U3.RE",
+      "J4.3",
+      "JP3.1"
+    ],
+    "RS485_A": [
+      "U3.A",
+      "J2.1",
+      "R2.1",
+      "JP2.1"
+    ],
+    "RS485_B": [
+      "U3.B",
+      "J2.2",
+      "R2.2",
+      "JP2.2"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 23,
+    "net_count": 19,
+    "endpoint_count": 71,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

@@ -1,0 +1,154 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the canonical KiCad component placer.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "MICRO_SD_SOCKET",
+            "name": "Micro SD Socket",
+            "at": [
+              33.02,
+              36.83
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector:Micro_SD_Card_Det1"
+          },
+          "X2": {
+            "kind": "LEVEL_SHIFTER",
+            "name": "Level Shifter",
+            "at": [
+              63.5,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "interface_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Logic_LevelTranslator:TXS0108EPW"
+          },
+          "X3": {
+            "kind": "SPI_HEADER_SD",
+            "name": "SPI Header",
+            "at": [
+              91.44,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Generic:Conn_02x03_Odd_Even"
+          },
+          "X4": {
+            "kind": "DECOUPLING_CAPACITOR_SD",
+            "name": "Decoupling Capacitor",
+            "at": [
+              118.11,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "X5": {
+            "kind": "CARD_DETECT_SWITCH",
+            "name": "Card Detect Switch",
+            "at": [
+              140.97,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Switch:SW_SPST"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.52,
+            "top": 29.83,
+            "right": 40.52,
+            "bottom": 43.83
+          },
+          {
+            "owner": "X2",
+            "left": 58.5,
+            "top": 29.52,
+            "right": 68.5,
+            "bottom": 36.52
+          },
+          {
+            "owner": "X3",
+            "left": 85.44,
+            "top": 30.25,
+            "right": 97.44,
+            "bottom": 33.25
+          },
+          {
+            "owner": "X4",
+            "left": 116.11,
+            "top": 30.25,
+            "right": 120.11,
+            "bottom": 33.25
+          },
+          {
+            "owner": "X5",
+            "left": 137.97,
+            "top": 29.75,
+            "right": 143.97,
+            "bottom": 33.75
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

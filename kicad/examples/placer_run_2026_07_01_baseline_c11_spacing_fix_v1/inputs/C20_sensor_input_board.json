@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c20_sensor_input_board",
+    "title": "Sensor Input Board",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "ACS712",
+      "value": "ACS712 Current Sensor"
+    },
+    {
+      "id": "X2",
+      "kind": "LM393_COMPARATOR",
+      "value": "LM393 Comparator"
+    },
+    {
+      "id": "X3",
+      "kind": "TRIMMER_POTENTIOMETER",
+      "value": "Trimmer Potentiometer"
+    },
+    {
+      "id": "X4",
+      "kind": "FUSE",
+      "value": "Fuse"
+    },
+    {
+      "id": "X5",
+      "kind": "POLYFUSE",
+      "value": "Polyfuse Resettable Fuse"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Purpose: 100-component accepted baseline."
+  ]
+}

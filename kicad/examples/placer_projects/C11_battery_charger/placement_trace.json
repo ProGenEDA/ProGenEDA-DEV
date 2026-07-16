@@ -1,0 +1,154 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "TP4056",
+            "name": "TP4056 Charger IC",
+            "at": [
+              27.94,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "charger_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Battery_Management:TP4056-42-ESOP8"
+          },
+          "X2": {
+            "kind": "LI_ION_BATTERY_CONNECTOR",
+            "name": "Li-Ion Battery Connector",
+            "at": [
+              49.53,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Generic:Conn_01x02"
+          },
+          "X3": {
+            "kind": "CHARGING_LED",
+            "name": "Charging LED",
+            "at": [
+              68.58,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "indicator",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:LED"
+          },
+          "X4": {
+            "kind": "MICRO_USB_CONNECTOR",
+            "name": "Micro USB Connector",
+            "at": [
+              87.63,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector:USB_B_Micro"
+          },
+          "X5": {
+            "kind": "PROTECTION_IC",
+            "name": "Protection IC",
+            "at": [
+              105.41,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "protection_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Battery_Management:DW01A"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 24.44,
+            "top": 29.52,
+            "right": 31.44,
+            "bottom": 36.52
+          },
+          {
+            "owner": "X2",
+            "left": 44.53,
+            "top": 30.02,
+            "right": 54.53,
+            "bottom": 36.02
+          },
+          {
+            "owner": "X3",
+            "left": 66.08,
+            "top": 30.52,
+            "right": 71.08,
+            "bottom": 35.52
+          },
+          {
+            "owner": "X4",
+            "left": 83.63,
+            "top": 30.02,
+            "right": 91.63,
+            "bottom": 36.02
+          },
+          {
+            "owner": "X5",
+            "left": 102.41,
+            "top": 30.52,
+            "right": 108.41,
+            "bottom": 35.52
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

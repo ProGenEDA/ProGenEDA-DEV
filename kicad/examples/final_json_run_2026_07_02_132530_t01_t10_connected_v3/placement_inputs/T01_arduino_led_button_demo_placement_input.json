@@ -1,0 +1,208 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "t01",
+    "title": "Arduino LED/Button Demo",
+    "purpose": "small clean connected placement test",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "T01",
+  "circuit_name": "Arduino LED/Button Demo",
+  "purpose": "small clean connected placement test",
+  "components": [
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "ARDUINO_NANO",
+      "value": "Arduino Nano"
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "D3",
+      "ref": "D3",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "PUSH_BUTTON",
+      "value": "Push Button"
+    },
+    {
+      "id": "SW2",
+      "ref": "SW2",
+      "kind": "PUSH_BUTTON",
+      "value": "Push Button"
+    },
+    {
+      "id": "R4",
+      "ref": "R4",
+      "kind": "R_10K_PULLUP",
+      "value": "10k pulldown"
+    },
+    {
+      "id": "R5",
+      "ref": "R5",
+      "kind": "R_10K_PULLUP",
+      "value": "10k pulldown"
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "PIN_HEADER",
+      "value": "Power/IO Header 1x6"
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "PIN_HEADER",
+      "value": "Extra IO Header 1x6"
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "U1.5V",
+      "J1.1",
+      "SW1.1",
+      "SW2.1"
+    ],
+    "GND": [
+      "U1.GND",
+      "J1.2",
+      "J2.6",
+      "D1.K",
+      "D2.K",
+      "D3.K",
+      "R4.2",
+      "R5.2"
+    ],
+    "LED1_NET": [
+      "U1.D2",
+      "R1.1"
+    ],
+    "LED1_A": [
+      "R1.2",
+      "D1.A"
+    ],
+    "LED2_NET": [
+      "U1.D3",
+      "R2.1"
+    ],
+    "LED2_A": [
+      "R2.2",
+      "D2.A"
+    ],
+    "LED3_NET": [
+      "U1.D4",
+      "R3.1"
+    ],
+    "LED3_A": [
+      "R3.2",
+      "D3.A"
+    ],
+    "BTN1_NET": [
+      "U1.D5",
+      "SW1.2",
+      "R4.1",
+      "J1.3"
+    ],
+    "BTN2_NET": [
+      "U1.D6",
+      "SW2.2",
+      "R5.1",
+      "J1.4"
+    ],
+    "IO_D7": [
+      "U1.D7",
+      "J1.5"
+    ],
+    "IO_D8": [
+      "U1.D8",
+      "J1.6"
+    ],
+    "IO_D9": [
+      "U1.D9",
+      "J2.1"
+    ],
+    "IO_D10": [
+      "U1.D10",
+      "J2.2"
+    ],
+    "IO_D11": [
+      "U1.D11",
+      "J2.3"
+    ],
+    "IO_D12": [
+      "U1.D12",
+      "J2.4"
+    ],
+    "IO_D13": [
+      "U1.D13",
+      "J2.5"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 13,
+    "net_count": 17,
+    "endpoint_count": 46,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

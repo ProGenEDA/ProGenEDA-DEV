@@ -1,0 +1,340 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-07-11T17:34:19",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        },
+        {
+            "description": "Footprint doesn't match copy in library",
+            "key": "lib_footprint_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning"
+    ],
+    "kicad_version": "10.0.4",
+    "schematic_parity": [],
+    "source": "OPEN_THIS_PROJECT__n09__COMBINATION.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Items shorting two nets (nets NET_C009_I2C_SDA and )",
+            "items": [
+                {
+                    "description": "Track [NET_C009_I2C_SDA] on B.Cu, length 53.3400 mm",
+                    "pos": {
+                        "x": 52.07,
+                        "y": 69.85
+                    },
+                    "uuid": "60e9ca72-03b2-56ee-9655-442268ea0023"
+                },
+                {
+                    "description": "PTH pad 39 [<no net>] of C009_ESP32_WROOM",
+                    "pos": {
+                        "x": 62.0575,
+                        "y": 70.21
+                    },
+                    "uuid": "ea725275-cf20-4dee-a105-714131954236"
+                }
+            ],
+            "severity": "error",
+            "type": "shorting_items"
+        },
+        {
+            "description": "Items shorting two nets (nets  and NET_C009_3V3)",
+            "items": [
+                {
+                    "description": "PTH pad 39 [<no net>] of C009_ESP32_WROOM",
+                    "pos": {
+                        "x": 61.295,
+                        "y": 70.9725
+                    },
+                    "uuid": "339af272-b753-45be-a8f1-5e3de643d818"
+                },
+                {
+                    "description": "Track [NET_C009_3V3] on B.Cu, length 53.3400 mm",
+                    "pos": {
+                        "x": 53.34,
+                        "y": 71.12
+                    },
+                    "uuid": "d4c69eac-70eb-5b75-8a81-69c68462fb71"
+                }
+            ],
+            "severity": "error",
+            "type": "shorting_items"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_CAN_TERMINAL",
+                    "pos": {
+                        "x": 142.24,
+                        "y": 10.32
+                    },
+                    "uuid": "973d19cf-3048-58b5-a00e-dc583e5109dd"
+                },
+                {
+                    "description": "Reference field of C009_I2C_HEADER",
+                    "pos": {
+                        "x": 129.54,
+                        "y": 10.32
+                    },
+                    "uuid": "bb102e3c-b4c2-5a34-8e84-fb7037c1f76d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_CAN_TERMINAL",
+                    "pos": {
+                        "x": 142.24,
+                        "y": 10.32
+                    },
+                    "uuid": "973d19cf-3048-58b5-a00e-dc583e5109dd"
+                },
+                {
+                    "description": "Reference field of C009_RS485_TERMINAL",
+                    "pos": {
+                        "x": 154.94,
+                        "y": 10.32
+                    },
+                    "uuid": "a8510b6f-c7e6-50a1-8f68-30edd230b34e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_RS485_TERMINAL",
+                    "pos": {
+                        "x": 154.94,
+                        "y": 10.32
+                    },
+                    "uuid": "a8510b6f-c7e6-50a1-8f68-30edd230b34e"
+                },
+                {
+                    "description": "Reference field of C009_LED_INDICATOR_CAN_LED",
+                    "pos": {
+                        "x": 168.91,
+                        "y": 10.01
+                    },
+                    "uuid": "cecc4c30-ff8b-5e20-aff7-ba61077e08cb"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_DECOUPLING_CAPACITOR_MAIN",
+                    "pos": {
+                        "x": 126.98,
+                        "y": 120.69
+                    },
+                    "uuid": "5effde5d-dc97-5754-820a-5e6daab849ed"
+                },
+                {
+                    "description": "Reference field of C009_DECOUPLING_CAPACITOR_ESP",
+                    "pos": {
+                        "x": 113.01,
+                        "y": 120.69
+                    },
+                    "uuid": "be00a8c3-d167-5401-aa69-f9d700e67ef0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_LED_INDICATOR_STATUS_LED",
+                    "pos": {
+                        "x": 29.21,
+                        "y": 120.5
+                    },
+                    "uuid": "823a218c-5e94-533e-aa9a-e8e009a020c9"
+                },
+                {
+                    "description": "Reference field of C009_LED_INDICATOR_RS485_LED",
+                    "pos": {
+                        "x": 13.97,
+                        "y": 120.5
+                    },
+                    "uuid": "fba68c4e-287c-514e-886b-9e8398747412"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_POWER_LED",
+                    "pos": {
+                        "x": 44.45,
+                        "y": 120.5
+                    },
+                    "uuid": "7a45bcba-33a6-5eca-853d-682d413d8f37"
+                },
+                {
+                    "description": "Reference field of C009_LED_INDICATOR_STATUS_LED",
+                    "pos": {
+                        "x": 29.21,
+                        "y": 120.5
+                    },
+                    "uuid": "823a218c-5e94-533e-aa9a-e8e009a020c9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_TVS_DIODE_RS485",
+                    "pos": {
+                        "x": 93.98,
+                        "y": 120.72
+                    },
+                    "uuid": "0d429189-cf4b-5928-9be1-d63ae7373e05"
+                },
+                {
+                    "description": "Footprint text of C009_TVS_DIODE_RS485 (K)",
+                    "pos": {
+                        "x": 88.9,
+                        "y": 121.09
+                    },
+                    "uuid": "3c8d6ac9-2e32-5dc9-a2f6-48f5661191d0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_TVS_DIODE_RS485",
+                    "pos": {
+                        "x": 93.98,
+                        "y": 120.72
+                    },
+                    "uuid": "0d429189-cf4b-5928-9be1-d63ae7373e05"
+                },
+                {
+                    "description": "Reference field of C009_DECOUPLING_CAPACITOR_ESP",
+                    "pos": {
+                        "x": 113.01,
+                        "y": 120.69
+                    },
+                    "uuid": "be00a8c3-d167-5401-aa69-f9d700e67ef0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_DECOUPLING_CAPACITOR_MAIN",
+                    "pos": {
+                        "x": 126.98,
+                        "y": 120.69
+                    },
+                    "uuid": "5effde5d-dc97-5754-820a-5e6daab849ed"
+                },
+                {
+                    "description": "Reference field of C009_RESET_CAPACITOR",
+                    "pos": {
+                        "x": 140.95,
+                        "y": 120.69
+                    },
+                    "uuid": "be499eb4-a74c-5083-a708-3c2bd9a6cd5a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_R_10K_PULLUP_BOOT",
+                    "pos": {
+                        "x": 156.21,
+                        "y": 120.82
+                    },
+                    "uuid": "87a29773-9e89-5962-876a-3341ccebcba2"
+                },
+                {
+                    "description": "Reference field of C009_RESET_CAPACITOR",
+                    "pos": {
+                        "x": 140.95,
+                        "y": 120.69
+                    },
+                    "uuid": "be499eb4-a74c-5083-a708-3c2bd9a6cd5a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of C009_R_10K_PULLUP_SD_CD",
+                    "pos": {
+                        "x": 34.29,
+                        "y": 150.03
+                    },
+                    "uuid": "08e28333-c92a-5f25-9381-9f116fc287a7"
+                },
+                {
+                    "description": "Reference field of C009_R_10K_PULLUP_EN",
+                    "pos": {
+                        "x": 15.24,
+                        "y": 150.03
+                    },
+                    "uuid": "41fc0fda-47b4-53f5-a1ea-941927772357"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        }
+    ]
+}

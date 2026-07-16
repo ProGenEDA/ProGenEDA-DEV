@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c11_battery_charger",
+    "title": "Battery Charger",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "TP4056",
+      "value": "TP4056 Charger IC"
+    },
+    {
+      "id": "X2",
+      "kind": "LI_ION_BATTERY_CONNECTOR",
+      "value": "Li-Ion Battery Connector"
+    },
+    {
+      "id": "X3",
+      "kind": "CHARGING_LED",
+      "value": "Charging LED"
+    },
+    {
+      "id": "X4",
+      "kind": "MICRO_USB_CONNECTOR",
+      "value": "Micro USB Connector"
+    },
+    {
+      "id": "X5",
+      "kind": "PROTECTION_IC",
+      "value": "Protection IC"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Purpose: 100-component accepted baseline."
+  ]
+}

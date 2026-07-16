@@ -1,0 +1,1188 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "different-net existing wires receive high cost plus adjacency penalty"
+  },
+  "sheet": {
+    "width": 420.0,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "PWR_LED_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            233.68,
+            147.32
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            314.96,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "PWR_LED_A",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              233.68,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "A",
+            "point": [
+              314.96,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              233.68,
+              147.32
+            ],
+            [
+              233.68,
+              137.16
+            ],
+            [
+              314.96,
+              137.16
+            ],
+            [
+              314.96,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                233.68,
+                147.32
+              ],
+              "end": [
+                233.68,
+                137.16
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                233.68,
+                137.16
+              ],
+              "end": [
+                314.96,
+                137.16
+              ],
+              "direction": "right",
+              "length": 81.28
+            },
+            {
+              "start": [
+                314.96,
+                137.16
+              ],
+              "end": [
+                314.96,
+                147.32
+              ],
+              "direction": "down",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "VIN_FUSED": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "F1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            76.2,
+            137.16
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            187.96,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "VIN_FUSED",
+          "from": {
+            "ref": "F1",
+            "pin": "2",
+            "point": [
+              76.2,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "A",
+            "point": [
+              187.96,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              137.16
+            ],
+            [
+              187.96,
+              137.16
+            ],
+            [
+              187.96,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                137.16
+              ],
+              "end": [
+                187.96,
+                137.16
+              ],
+              "direction": "right",
+              "length": 111.76
+            },
+            {
+              "start": [
+                187.96,
+                137.16
+              ],
+              "end": [
+                187.96,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "VIN_PROTECTED": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            106.68,
+            147.32
+          ]
+        },
+        {
+          "ref": "C1",
+          "pin": "POS",
+          "side": "right",
+          "point": [
+            142.24,
+            147.32
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            167.64,
+            147.32
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            187.96,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "IN",
+          "side": "left",
+          "point": [
+            279.4,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              106.68,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "C1",
+            "pin": "POS",
+            "point": [
+              142.24,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              106.68,
+              147.32
+            ],
+            [
+              142.24,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                106.68,
+                147.32
+              ],
+              "end": [
+                142.24,
+                147.32
+              ],
+              "direction": "right",
+              "length": 35.56
+            }
+          ]
+        },
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              106.68,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "C2",
+            "pin": "1",
+            "point": [
+              167.64,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              106.68,
+              147.32
+            ],
+            [
+              106.68,
+              157.48
+            ],
+            [
+              167.64,
+              157.48
+            ],
+            [
+              167.64,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                106.68,
+                147.32
+              ],
+              "end": [
+                106.68,
+                157.48
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                106.68,
+                157.48
+              ],
+              "end": [
+                167.64,
+                157.48
+              ],
+              "direction": "right",
+              "length": 60.96
+            },
+            {
+              "start": [
+                167.64,
+                157.48
+              ],
+              "end": [
+                167.64,
+                147.32
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        },
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              106.68,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "K",
+            "point": [
+              187.96,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              106.68,
+              147.32
+            ],
+            [
+              187.96,
+              147.32
+            ],
+            [
+              187.96,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                106.68,
+                147.32
+              ],
+              "end": [
+                187.96,
+                147.32
+              ],
+              "direction": "right",
+              "length": 81.28
+            },
+            {
+              "start": [
+                187.96,
+                147.32
+              ],
+              "end": [
+                187.96,
+                142.24
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "VIN_PROTECTED",
+          "from": {
+            "ref": "C5",
+            "pin": "1",
+            "point": [
+              106.68,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "IN",
+            "point": [
+              279.4,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              106.68,
+              147.32
+            ],
+            [
+              106.68,
+              167.64
+            ],
+            [
+              279.4,
+              167.64
+            ],
+            [
+              279.4,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                106.68,
+                147.32
+              ],
+              "end": [
+                106.68,
+                167.64
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                106.68,
+                167.64
+              ],
+              "end": [
+                279.4,
+                167.64
+              ],
+              "direction": "right",
+              "length": 172.72
+            },
+            {
+              "start": [
+                279.4,
+                167.64
+              ],
+              "end": [
+                279.4,
+                147.32
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "VIN_RAW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "POS",
+          "side": "right",
+          "point": [
+            45.72,
+            147.32
+          ]
+        },
+        {
+          "ref": "F1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            60.96,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "VIN_RAW",
+          "from": {
+            "ref": "J1",
+            "pin": "POS",
+            "point": [
+              45.72,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "F1",
+            "pin": "1",
+            "point": [
+              60.96,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              45.72,
+              147.32
+            ],
+            [
+              45.72,
+              137.16
+            ],
+            [
+              60.96,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                45.72,
+                147.32
+              ],
+              "end": [
+                45.72,
+                137.16
+              ],
+              "direction": "up",
+              "length": 10.16
+            },
+            {
+              "start": [
+                45.72,
+                137.16
+              ],
+              "end": [
+                60.96,
+                137.16
+              ],
+              "direction": "right",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "OUT",
+          "side": "top",
+          "point": [
+            289.56,
+            137.16
+          ]
+        },
+        {
+          "ref": "C3",
+          "pin": "POS",
+          "side": "top",
+          "point": [
+            193.04,
+            147.32
+          ]
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            259.08,
+            142.24
+          ]
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            223.52,
+            142.24
+          ]
+        },
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            71.12,
+            147.32
+          ]
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            35.56,
+            157.48
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            289.56,
+            157.48
+          ]
+        },
+        {
+          "ref": "C1",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            132.08,
+            157.48
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            162.56,
+            152.4
+          ]
+        },
+        {
+          "ref": "C3",
+          "pin": "NEG",
+          "side": "bottom",
+          "point": [
+            193.04,
+            162.56
+          ]
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            259.08,
+            152.4
+          ]
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            152.4
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            320.04,
+            152.4
+          ]
+        },
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            71.12,
+            162.56
+          ]
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "PWR_LED_A",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          233.68,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "A",
+        "point": [
+          314.96,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          233.68,
+          147.32
+        ],
+        [
+          233.68,
+          137.16
+        ],
+        [
+          314.96,
+          137.16
+        ],
+        [
+          314.96,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            233.68,
+            147.32
+          ],
+          "end": [
+            233.68,
+            137.16
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            233.68,
+            137.16
+          ],
+          "end": [
+            314.96,
+            137.16
+          ],
+          "direction": "right",
+          "length": 81.28
+        },
+        {
+          "start": [
+            314.96,
+            137.16
+          ],
+          "end": [
+            314.96,
+            147.32
+          ],
+          "direction": "down",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "VIN_FUSED",
+      "from": {
+        "ref": "F1",
+        "pin": "2",
+        "point": [
+          76.2,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "A",
+        "point": [
+          187.96,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          137.16
+        ],
+        [
+          187.96,
+          137.16
+        ],
+        [
+          187.96,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            137.16
+          ],
+          "end": [
+            187.96,
+            137.16
+          ],
+          "direction": "right",
+          "length": 111.76
+        },
+        {
+          "start": [
+            187.96,
+            137.16
+          ],
+          "end": [
+            187.96,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          106.68,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "C1",
+        "pin": "POS",
+        "point": [
+          142.24,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          106.68,
+          147.32
+        ],
+        [
+          142.24,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            106.68,
+            147.32
+          ],
+          "end": [
+            142.24,
+            147.32
+          ],
+          "direction": "right",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          106.68,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "C2",
+        "pin": "1",
+        "point": [
+          167.64,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          106.68,
+          147.32
+        ],
+        [
+          106.68,
+          157.48
+        ],
+        [
+          167.64,
+          157.48
+        ],
+        [
+          167.64,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            106.68,
+            147.32
+          ],
+          "end": [
+            106.68,
+            157.48
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            106.68,
+            157.48
+          ],
+          "end": [
+            167.64,
+            157.48
+          ],
+          "direction": "right",
+          "length": 60.96
+        },
+        {
+          "start": [
+            167.64,
+            157.48
+          ],
+          "end": [
+            167.64,
+            147.32
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          106.68,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "K",
+        "point": [
+          187.96,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          106.68,
+          147.32
+        ],
+        [
+          187.96,
+          147.32
+        ],
+        [
+          187.96,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            106.68,
+            147.32
+          ],
+          "end": [
+            187.96,
+            147.32
+          ],
+          "direction": "right",
+          "length": 81.28
+        },
+        {
+          "start": [
+            187.96,
+            147.32
+          ],
+          "end": [
+            187.96,
+            142.24
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "VIN_PROTECTED",
+      "from": {
+        "ref": "C5",
+        "pin": "1",
+        "point": [
+          106.68,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "IN",
+        "point": [
+          279.4,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          106.68,
+          147.32
+        ],
+        [
+          106.68,
+          167.64
+        ],
+        [
+          279.4,
+          167.64
+        ],
+        [
+          279.4,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            106.68,
+            147.32
+          ],
+          "end": [
+            106.68,
+            167.64
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            106.68,
+            167.64
+          ],
+          "end": [
+            279.4,
+            167.64
+          ],
+          "direction": "right",
+          "length": 172.72
+        },
+        {
+          "start": [
+            279.4,
+            167.64
+          ],
+          "end": [
+            279.4,
+            147.32
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "VIN_RAW",
+      "from": {
+        "ref": "J1",
+        "pin": "POS",
+        "point": [
+          45.72,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "F1",
+        "pin": "1",
+        "point": [
+          60.96,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          45.72,
+          147.32
+        ],
+        [
+          45.72,
+          137.16
+        ],
+        [
+          60.96,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            45.72,
+            147.32
+          ],
+          "end": [
+            45.72,
+            137.16
+          ],
+          "direction": "up",
+          "length": 10.16
+        },
+        {
+          "start": [
+            45.72,
+            137.16
+          ],
+          "end": [
+            60.96,
+            137.16
+          ],
+          "direction": "right",
+          "length": 15.24
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 6,
+    "wired_route_count": 7,
+    "segment_count": 16,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_fallback_expansion_limit: VIN_PROTECTED exceeded 1500 explored grid states."
+  ]
+}

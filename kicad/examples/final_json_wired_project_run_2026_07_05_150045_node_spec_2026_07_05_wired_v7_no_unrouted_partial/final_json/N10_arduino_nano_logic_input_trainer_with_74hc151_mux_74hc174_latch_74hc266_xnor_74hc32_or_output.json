@@ -1,0 +1,1042 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n10",
+    "title": "ARDUINO_NANO LOGIC INPUT TRAINER WITH 74HC151 MUX + 74HC174 LATCH + 74HC266 XNOR + 74HC32 OR OUTPUT",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N10",
+  "circuit_name": "ARDUINO_NANO LOGIC INPUT TRAINER WITH 74HC151 MUX + 74HC174 LATCH + 74HC266 XNOR + 74HC32 OR OUTPUT",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "PWR_5V",
+      "ref": "PWR_5V",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "DC Voltage Source",
+      "role": "source",
+      "block": "10",
+      "pins": {
+        "+": "+5V",
+        "-": "GND"
+      }
+    },
+    {
+      "id": "ARDUINO_NANO",
+      "ref": "ARDUINO_NANO",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "microcontroller_module",
+      "block": "10",
+      "pins": {
+        "5V": "+5V",
+        "D2": "NET_SEL_A",
+        "D3": "NET_SEL_B",
+        "D4": "NET_SEL_C",
+        "D5": "NET_LATCH_CLK",
+        "D6": "NET_LATCH_CLR",
+        "D7": "NET_MUX_ENABLE",
+        "GND": "GND"
+      }
+    },
+    {
+      "id": "DIP_SWITCH",
+      "ref": "DIP_SWITCH",
+      "kind": "DIP_SWITCH",
+      "type": "DIP_SWITCH",
+      "value": "DIP Switch",
+      "role": "switch",
+      "block": "10",
+      "pins": {
+        "S1A": "+5V",
+        "S1B": "NET_D0",
+        "S2A": "+5V",
+        "S2B": "NET_D1",
+        "S3A": "+5V",
+        "S3B": "NET_D2",
+        "S4A": "+5V",
+        "S4B": "NET_D3",
+        "S5A": "+5V",
+        "S5B": "NET_D4",
+        "S6A": "+5V",
+        "S6B": "NET_D5",
+        "S7A": "+5V",
+        "S7B": "NET_D6",
+        "S8A": "+5V",
+        "S8B": "NET_D7"
+      }
+    },
+    {
+      "id": "R_D0_PD",
+      "ref": "R_D0_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D0",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_D1_PD",
+      "ref": "R_D1_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D1",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_D2_PD",
+      "ref": "R_D2_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D2",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_D3_PD",
+      "ref": "R_D3_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_D4_PD",
+      "ref": "R_D4_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D4",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_D5_PD",
+      "ref": "R_D5_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D5",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_D6_PD",
+      "ref": "R_D6_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D6",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_D7_PD",
+      "ref": "R_D7_PD",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_D7",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "74HC151",
+      "ref": "74HC151",
+      "kind": "74HC151",
+      "type": "74HC151",
+      "value": "74HC151 8-Input Multiplexer",
+      "role": "logic_ic",
+      "block": "10",
+      "pins": {
+        "/E": "NET_MUX_ENABLE",
+        "/Y": "NET_MUX_Y_INV",
+        "A": "NET_SEL_A",
+        "B": "NET_SEL_B",
+        "C": "NET_SEL_C",
+        "D0": "NET_D0",
+        "D1": "NET_D1",
+        "D2": "NET_D2",
+        "D3": "NET_D3",
+        "D4": "NET_D4",
+        "D5": "NET_D5",
+        "D6": "NET_D6",
+        "D7": "NET_D7",
+        "GND": "GND",
+        "VCC": "+5V",
+        "Y": "NET_MUX_Y"
+      }
+    },
+    {
+      "id": "R_10K_PULLDOWN_MUX_ENABLE",
+      "ref": "R_10K_PULLDOWN_MUX_ENABLE",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_MUX_ENABLE",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "74HC174",
+      "ref": "74HC174",
+      "kind": "74HC174",
+      "type": "74HC174",
+      "value": "74HC174 Hex D Flip-Flop",
+      "role": "logic_ic",
+      "block": "10",
+      "pins": {
+        "/CLR": "NET_LATCH_CLR",
+        "CLK": "NET_LATCH_CLK",
+        "D1": "NET_MUX_Y",
+        "D2": "NET_D1",
+        "D3": "NET_D2",
+        "D4": "NET_D3",
+        "D5": "NET_D4",
+        "D6": "NET_D5",
+        "GND": "GND",
+        "Q1": "NET_Q1",
+        "Q2": "NET_Q2",
+        "Q3": "NET_Q3",
+        "Q4": "NET_Q4",
+        "Q5": "NET_Q5",
+        "Q6": "NET_Q6",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_LATCH_CLR",
+      "ref": "R_10K_PULLUP_LATCH_CLR",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_LATCH_CLR",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "74HC266",
+      "ref": "74HC266",
+      "kind": "74HC266",
+      "type": "74HC266",
+      "value": "74HC266 Quad XNOR Gate",
+      "role": "logic_ic",
+      "block": "10",
+      "pins": {
+        "1A": "NET_Q1",
+        "1B": "NET_Q2",
+        "1Y": "NET_XNOR12",
+        "2A": "NET_Q3",
+        "2B": "NET_Q4",
+        "2Y": "NET_XNOR34",
+        "3A": "NET_Q5",
+        "3B": "NET_Q6",
+        "3Y": "NET_XNOR56",
+        "4A": "NET_MUX_Y",
+        "4B": "NET_MUX_Y_INV",
+        "4Y": "NET_XNOR_MUX",
+        "GND": "GND",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "PULLUP_XNOR12",
+      "ref": "PULLUP_XNOR12",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_XNOR12",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "PULLUP_XNOR34",
+      "ref": "PULLUP_XNOR34",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_XNOR34",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "PULLUP_XNOR56",
+      "ref": "PULLUP_XNOR56",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_XNOR56",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "PULLUP_XNOR_MUX",
+      "ref": "PULLUP_XNOR_MUX",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_XNOR_MUX",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "74HC32",
+      "ref": "74HC32",
+      "kind": "74HC32",
+      "type": "74HC32",
+      "value": "74HC32 Quad OR Gate",
+      "role": "logic_ic",
+      "block": "10",
+      "pins": {
+        "1A": "NET_XNOR12",
+        "1B": "NET_XNOR34",
+        "1Y": "NET_OR_A",
+        "2A": "NET_XNOR56",
+        "2B": "NET_XNOR_MUX",
+        "2Y": "NET_OR_B",
+        "3A": "NET_OR_A",
+        "3B": "NET_OR_B",
+        "3Y": "NET_ALARM",
+        "4A": "GND",
+        "4B": "GND",
+        "4Y": "NET_74HC32_4Y",
+        "GND": "GND",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "TEST_POINT_OR_UNUSED",
+      "ref": "TEST_POINT_OR_UNUSED",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "10",
+      "pins": {
+        "TP": "NET_74HC32_4Y"
+      }
+    },
+    {
+      "id": "R_220_Q1",
+      "ref": "R_220_Q1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_Q1",
+        "2": "NET_R_220_Q1_2"
+      }
+    },
+    {
+      "id": "LED_ARRAY",
+      "ref": "LED_ARRAY",
+      "kind": "LED_ARRAY",
+      "type": "LED_ARRAY",
+      "value": "LED Array",
+      "role": "indicator",
+      "block": "10",
+      "pins": {
+        "LED1_ANODE": "NET_R_220_Q1_2",
+        "LED1_CATHODE": "GND",
+        "LED2_ANODE": "NET_R_220_Q2_2",
+        "LED2_CATHODE": "GND",
+        "LED3_ANODE": "NET_R_220_Q3_2",
+        "LED3_CATHODE": "GND",
+        "LED4_ANODE": "NET_R_220_Q4_2",
+        "LED4_CATHODE": "GND",
+        "LED5_ANODE": "NET_R_220_Q5_2",
+        "LED5_CATHODE": "GND",
+        "LED6_ANODE": "NET_R_220_Q6_2",
+        "LED6_CATHODE": "GND"
+      }
+    },
+    {
+      "id": "R_220_Q2",
+      "ref": "R_220_Q2",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_Q2",
+        "2": "NET_R_220_Q2_2"
+      }
+    },
+    {
+      "id": "R_220_Q3",
+      "ref": "R_220_Q3",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_Q3",
+        "2": "NET_R_220_Q3_2"
+      }
+    },
+    {
+      "id": "R_220_Q4",
+      "ref": "R_220_Q4",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_Q4",
+        "2": "NET_R_220_Q4_2"
+      }
+    },
+    {
+      "id": "R_220_Q5",
+      "ref": "R_220_Q5",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_Q5",
+        "2": "NET_R_220_Q5_2"
+      }
+    },
+    {
+      "id": "R_220_Q6",
+      "ref": "R_220_Q6",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_Q6",
+        "2": "NET_R_220_Q6_2"
+      }
+    },
+    {
+      "id": "R_220_ALARM",
+      "ref": "R_220_ALARM",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "10",
+      "pins": {
+        "1": "NET_ALARM",
+        "2": "NET_R_220_ALARM_2"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_ALARM",
+      "ref": "LED_INDICATOR_ALARM",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "10",
+      "pins": {
+        "ANODE": "NET_R_220_ALARM_2",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_151",
+      "ref": "DECOUPLING_CAPACITOR_151",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "10",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_174",
+      "ref": "DECOUPLING_CAPACITOR_174",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "10",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_266",
+      "ref": "DECOUPLING_CAPACITOR_266",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "10",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_32",
+      "ref": "DECOUPLING_CAPACITOR_32",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "10",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "PWR_5V.+",
+      "ARDUINO_NANO.5V",
+      "DIP_SWITCH.S1A",
+      "DIP_SWITCH.S2A",
+      "DIP_SWITCH.S3A",
+      "DIP_SWITCH.S4A",
+      "DIP_SWITCH.S5A",
+      "DIP_SWITCH.S6A",
+      "DIP_SWITCH.S7A",
+      "DIP_SWITCH.S8A",
+      "74HC151.VCC",
+      "74HC174.VCC",
+      "R_10K_PULLUP_LATCH_CLR.2",
+      "74HC266.VCC",
+      "PULLUP_XNOR12.2",
+      "PULLUP_XNOR34.2",
+      "PULLUP_XNOR56.2",
+      "PULLUP_XNOR_MUX.2",
+      "74HC32.VCC",
+      "DECOUPLING_CAPACITOR_151.1",
+      "DECOUPLING_CAPACITOR_174.1",
+      "DECOUPLING_CAPACITOR_266.1",
+      "DECOUPLING_CAPACITOR_32.1"
+    ],
+    "GND": [
+      "PWR_5V.-",
+      "ARDUINO_NANO.GND",
+      "R_D0_PD.2",
+      "R_D1_PD.2",
+      "R_D2_PD.2",
+      "R_D3_PD.2",
+      "R_D4_PD.2",
+      "R_D5_PD.2",
+      "R_D6_PD.2",
+      "R_D7_PD.2",
+      "74HC151.GND",
+      "R_10K_PULLDOWN_MUX_ENABLE.2",
+      "74HC174.GND",
+      "74HC266.GND",
+      "74HC32.GND",
+      "74HC32.4A",
+      "74HC32.4B",
+      "LED_ARRAY.LED1_CATHODE",
+      "LED_ARRAY.LED2_CATHODE",
+      "LED_ARRAY.LED3_CATHODE",
+      "LED_ARRAY.LED4_CATHODE",
+      "LED_ARRAY.LED5_CATHODE",
+      "LED_ARRAY.LED6_CATHODE",
+      "LED_INDICATOR_ALARM.CATHODE",
+      "DECOUPLING_CAPACITOR_151.2",
+      "DECOUPLING_CAPACITOR_174.2",
+      "DECOUPLING_CAPACITOR_266.2",
+      "DECOUPLING_CAPACITOR_32.2"
+    ],
+    "NET_SEL_A": [
+      "ARDUINO_NANO.D2",
+      "74HC151.A"
+    ],
+    "NET_SEL_B": [
+      "ARDUINO_NANO.D3",
+      "74HC151.B"
+    ],
+    "NET_SEL_C": [
+      "ARDUINO_NANO.D4",
+      "74HC151.C"
+    ],
+    "NET_LATCH_CLK": [
+      "ARDUINO_NANO.D5",
+      "74HC174.CLK"
+    ],
+    "NET_LATCH_CLR": [
+      "ARDUINO_NANO.D6",
+      "74HC174./CLR",
+      "R_10K_PULLUP_LATCH_CLR.1"
+    ],
+    "NET_MUX_ENABLE": [
+      "ARDUINO_NANO.D7",
+      "74HC151./E",
+      "R_10K_PULLDOWN_MUX_ENABLE.1"
+    ],
+    "NET_D0": [
+      "DIP_SWITCH.S1B",
+      "R_D0_PD.1",
+      "74HC151.D0"
+    ],
+    "NET_D1": [
+      "DIP_SWITCH.S2B",
+      "R_D1_PD.1",
+      "74HC151.D1",
+      "74HC174.D2"
+    ],
+    "NET_D2": [
+      "DIP_SWITCH.S3B",
+      "R_D2_PD.1",
+      "74HC151.D2",
+      "74HC174.D3"
+    ],
+    "NET_D3": [
+      "DIP_SWITCH.S4B",
+      "R_D3_PD.1",
+      "74HC151.D3",
+      "74HC174.D4"
+    ],
+    "NET_D4": [
+      "DIP_SWITCH.S5B",
+      "R_D4_PD.1",
+      "74HC151.D4",
+      "74HC174.D5"
+    ],
+    "NET_D5": [
+      "DIP_SWITCH.S6B",
+      "R_D5_PD.1",
+      "74HC151.D5",
+      "74HC174.D6"
+    ],
+    "NET_D6": [
+      "DIP_SWITCH.S7B",
+      "R_D6_PD.1",
+      "74HC151.D6"
+    ],
+    "NET_D7": [
+      "DIP_SWITCH.S8B",
+      "R_D7_PD.1",
+      "74HC151.D7"
+    ],
+    "NET_MUX_Y": [
+      "74HC151.Y",
+      "74HC174.D1",
+      "74HC266.4A"
+    ],
+    "NET_MUX_Y_INV": [
+      "74HC151./Y",
+      "74HC266.4B"
+    ],
+    "NET_Q1": [
+      "74HC174.Q1",
+      "74HC266.1A",
+      "R_220_Q1.1"
+    ],
+    "NET_Q2": [
+      "74HC174.Q2",
+      "74HC266.1B",
+      "R_220_Q2.1"
+    ],
+    "NET_Q3": [
+      "74HC174.Q3",
+      "74HC266.2A",
+      "R_220_Q3.1"
+    ],
+    "NET_Q4": [
+      "74HC174.Q4",
+      "74HC266.2B",
+      "R_220_Q4.1"
+    ],
+    "NET_Q5": [
+      "74HC174.Q5",
+      "74HC266.3A",
+      "R_220_Q5.1"
+    ],
+    "NET_Q6": [
+      "74HC174.Q6",
+      "74HC266.3B",
+      "R_220_Q6.1"
+    ],
+    "NET_XNOR12": [
+      "74HC266.1Y",
+      "PULLUP_XNOR12.1",
+      "74HC32.1A"
+    ],
+    "NET_XNOR34": [
+      "74HC266.2Y",
+      "PULLUP_XNOR34.1",
+      "74HC32.1B"
+    ],
+    "NET_XNOR56": [
+      "74HC266.3Y",
+      "PULLUP_XNOR56.1",
+      "74HC32.2A"
+    ],
+    "NET_XNOR_MUX": [
+      "74HC266.4Y",
+      "PULLUP_XNOR_MUX.1",
+      "74HC32.2B"
+    ],
+    "NET_OR_A": [
+      "74HC32.1Y",
+      "74HC32.3A"
+    ],
+    "NET_OR_B": [
+      "74HC32.2Y",
+      "74HC32.3B"
+    ],
+    "NET_ALARM": [
+      "74HC32.3Y",
+      "R_220_ALARM.1"
+    ],
+    "NET_74HC32_4Y": [
+      "74HC32.4Y",
+      "TEST_POINT_OR_UNUSED.TP"
+    ],
+    "NET_R_220_Q1_2": [
+      "R_220_Q1.2",
+      "LED_ARRAY.LED1_ANODE"
+    ],
+    "NET_R_220_Q2_2": [
+      "R_220_Q2.2",
+      "LED_ARRAY.LED2_ANODE"
+    ],
+    "NET_R_220_Q3_2": [
+      "R_220_Q3.2",
+      "LED_ARRAY.LED3_ANODE"
+    ],
+    "NET_R_220_Q4_2": [
+      "R_220_Q4.2",
+      "LED_ARRAY.LED4_ANODE"
+    ],
+    "NET_R_220_Q5_2": [
+      "R_220_Q5.2",
+      "LED_ARRAY.LED5_ANODE"
+    ],
+    "NET_R_220_Q6_2": [
+      "R_220_Q6.2",
+      "LED_ARRAY.LED6_ANODE"
+    ],
+    "NET_R_220_ALARM_2": [
+      "R_220_ALARM.2",
+      "LED_INDICATOR_ALARM.ANODE"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "PWR_5V",
+          "kind": "VDC",
+          "reason": "two_pin_power_block_as_voltage_source",
+          "pin_count": 2
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "kind": "ARDUINO_NANO",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "DIP_SWITCH",
+          "kind": "DIP_SWITCH",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "R_D0_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_D1_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_D2_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_D3_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_D4_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_D5_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_D6_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_D7_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "74HC151",
+          "kind": "74HC151",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "R_10K_PULLDOWN_MUX_ENABLE",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "74HC174",
+          "kind": "74HC174",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "R_10K_PULLUP_LATCH_CLR",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "74HC266",
+          "kind": "74HC266",
+          "reason": "exact_catalog_kind",
+          "pin_count": 14
+        },
+        {
+          "ref": "PULLUP_XNOR12",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "PULLUP_XNOR34",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "PULLUP_XNOR56",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "PULLUP_XNOR_MUX",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "74HC32",
+          "kind": "74HC32",
+          "reason": "exact_catalog_kind",
+          "pin_count": 14
+        },
+        {
+          "ref": "TEST_POINT_OR_UNUSED",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "R_220_Q1",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_ARRAY",
+          "kind": "LED_ARRAY",
+          "reason": "exact_catalog_kind",
+          "pin_count": 12
+        },
+        {
+          "ref": "R_220_Q2",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_Q3",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_Q4",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_Q5",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_Q6",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_ALARM",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_ALARM",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_151",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_174",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_266",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_32",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 143
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 35,
+    "net_count": 39,
+    "endpoint_count": 151,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

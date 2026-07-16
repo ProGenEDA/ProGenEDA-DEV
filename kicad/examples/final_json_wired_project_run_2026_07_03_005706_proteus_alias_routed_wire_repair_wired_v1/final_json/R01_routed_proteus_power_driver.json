@@ -1,0 +1,334 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "r01",
+    "title": "Routed Proteus Power Driver",
+    "purpose": "wire-heavy old/new alias demo with short power-driver nets",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "R01",
+  "circuit_name": "Routed Proteus Power Driver",
+  "purpose": "wire-heavy old/new alias demo with short power-driver nets",
+  "components": [
+    {
+      "id": "G1",
+      "ref": "G1",
+      "kind": "GROUND",
+      "type": "GROUND",
+      "value": "GND",
+      "role": "reference",
+      "block": "power",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "V1",
+      "ref": "V1",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "12V DC source",
+      "role": "source",
+      "block": "power",
+      "pins": {
+        "1": "VIN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "F1",
+      "ref": "F1",
+      "kind": "FUSE",
+      "type": "FUSE",
+      "value": "Fuse",
+      "role": "protection",
+      "block": "power",
+      "pins": {
+        "1": "VIN",
+        "2": "VIN_FUSED"
+      }
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "SWITCH",
+      "type": "SWITCH",
+      "value": "Power switch",
+      "role": "switch",
+      "block": "power",
+      "pins": {
+        "1": "VIN_FUSED",
+        "2": "VIN_SWITCHED"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "1N4007",
+      "type": "1N4007",
+      "value": "1N4007",
+      "role": "diode",
+      "block": "power",
+      "pins": {
+        "1": "VIN_SWITCHED",
+        "2": "REG_IN"
+      }
+    },
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "LM317",
+      "type": "LM317",
+      "value": "LM317",
+      "role": "regulator",
+      "block": "power",
+      "pins": {
+        "1": "ADJ",
+        "2": "REG_OUT",
+        "3": "REG_IN"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RES",
+      "type": "RES",
+      "value": "240 ohm",
+      "role": "resistor",
+      "block": "power",
+      "pins": {
+        "1": "REG_OUT",
+        "2": "ADJ"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "RES",
+      "type": "RES",
+      "value": "1.2k",
+      "role": "resistor",
+      "block": "power",
+      "pins": {
+        "1": "ADJ",
+        "2": "ADJ_RETURN"
+      }
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "indicator",
+      "pins": {
+        "1": "REG_OUT",
+        "2": "LED_A"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "power",
+      "pins": {
+        "1": "LC_OUT",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "CAP-ELEC",
+      "type": "CAP-ELEC",
+      "value": "100uF",
+      "role": "capacitor",
+      "block": "power",
+      "pins": {
+        "1": "REG_IN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "L1",
+      "ref": "L1",
+      "kind": "REALIND",
+      "type": "REALIND",
+      "value": "47uH",
+      "role": "inductor",
+      "block": "power",
+      "pins": {
+        "1": "REG_OUT",
+        "2": "LC_OUT"
+      }
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "DIODE",
+      "type": "DIODE",
+      "value": "Clamp diode",
+      "role": "diode",
+      "block": "protection",
+      "pins": {
+        "1": "LC_OUT",
+        "2": "ADJ_RETURN"
+      }
+    },
+    {
+      "id": "LED1",
+      "ref": "LED1",
+      "kind": "LED",
+      "type": "LED",
+      "value": "Power LED",
+      "role": "indicator",
+      "block": "power",
+      "pins": {
+        "1": "LED_A",
+        "2": "LED_K"
+      }
+    },
+    {
+      "id": "Q1",
+      "ref": "Q1",
+      "kind": "2N7000",
+      "type": "2N7000",
+      "value": "2N7000",
+      "role": "mosfet",
+      "block": "driver",
+      "pins": {
+        "1": "DRIVE_GATE",
+        "2": "LED_K",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "Q2",
+      "ref": "Q2",
+      "kind": "BS170",
+      "type": "BS170",
+      "value": "BS170",
+      "role": "mosfet",
+      "block": "driver",
+      "pins": {
+        "1": "DRIVE_GATE",
+        "2": "LOAD_OUT",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "TERMINAL",
+      "type": "TERMINAL",
+      "value": "Load terminal",
+      "role": "connector",
+      "block": "power",
+      "pins": {
+        "1": "LOAD_OUT",
+        "2": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "GND": [
+      "G1.1",
+      "V1.2",
+      "C1.2",
+      "C2.2",
+      "Q1.3",
+      "Q2.3",
+      "J1.2"
+    ],
+    "VIN": [
+      "V1.1",
+      "F1.1"
+    ],
+    "VIN_FUSED": [
+      "F1.2",
+      "SW1.1"
+    ],
+    "VIN_SWITCHED": [
+      "SW1.2",
+      "D1.1"
+    ],
+    "REG_IN": [
+      "D1.2",
+      "U1.3",
+      "C2.1"
+    ],
+    "REG_OUT": [
+      "U1.2",
+      "L1.1",
+      "R1.1",
+      "R3.1"
+    ],
+    "LC_OUT": [
+      "L1.2",
+      "C1.1",
+      "D2.1"
+    ],
+    "ADJ": [
+      "U1.1",
+      "R1.2",
+      "R2.1"
+    ],
+    "ADJ_RETURN": [
+      "R2.2",
+      "D2.2"
+    ],
+    "LED_A": [
+      "R3.2",
+      "LED1.1"
+    ],
+    "LED_K": [
+      "LED1.2",
+      "Q1.2"
+    ],
+    "DRIVE_GATE": [
+      "Q1.1",
+      "Q2.1"
+    ],
+    "LOAD_OUT": [
+      "Q2.2",
+      "J1.1"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 17,
+    "net_count": 13,
+    "endpoint_count": 36,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

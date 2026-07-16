@@ -266,3 +266,32 @@ ten-second stability period is still met. This is the user-requested half-time
 replacement for the former 24-second interval. The full open/save/cold-reopen
 gate remains mandatory unless the user explicitly accepts a solo pack and
 directs work onward.
+
+## EasyEDA Pro Backend
+
+`Easyeda/` is an independent donor-native backend. It may consume the shared
+canonical circuit JSON, but it must not import from or modify `kicad/` at
+runtime. The locked implementation target is 40 source-backed component
+families and at most 80 input component instances.
+
+Never invent, redraw, approximate, or substitute an EasyEDA symbol, device,
+footprint, pad, power symbol, or net port. Resolve exact records from the
+authorized EasyEDA source package at generation time, copy only the records
+needed by the generated project, and retain source payload hashes in the
+internal manifest. The desktop application, compiled modules, and complete
+standard library must not be embedded in generated outputs or the portable
+generator.
+
+The primary user artifact is one native `.eprj`. Schematic wiring supports
+`wire`, `terminal`, and `combination`, with combination as the default. Failed
+wire routes may become native net ports only in combination mode. Strict wire
+mode must fail rather than silently terminalize. Basic PCB output belongs in
+the same `.eprj` only when every used source pin maps to a source footprint pad
+and the complete board passes the bounded physical validator.
+
+Every accepted generation uses a new run directory and preserves normalized
+input, placement, routing, donor provenance, PCB decision, and validation
+reports in its internal archive. Do not overwrite prior generated projects.
+Static SQLite/net/geometry validation is necessary but not EasyEDA acceptance:
+before claiming a release candidate works, open the exact generated `.eprj`
+through the installed EasyEDA Pro file association and record visual results.

@@ -1,0 +1,1263 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "mj055",
+    "title": "Main JSON Catalog 055: Stereo Audio Control PAM8403 Amplifier + Mixed Embedded Controller With Proteus Aliases",
+    "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "MJ055",
+  "circuit_name": "Main JSON Catalog 055: Stereo Audio Control PAM8403 Amplifier + Mixed Embedded Controller With Proteus Aliases",
+  "purpose": "locked deterministic main-JSON catalogue circuit for component, placement, terminal, combination, and validator testing",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "decision_source": "deterministic_catalog_policy_combination_default",
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 5,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "clustered_blocks_square_fill",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "components[].block and blocks[]",
+    "keep_related_blocks_close": true
+  },
+  "components": [
+    {
+      "id": "B1_U1A",
+      "ref": "B1_U1A",
+      "kind": "LM358",
+      "value": "LM358 channel A"
+    },
+    {
+      "id": "B1_U1B",
+      "ref": "B1_U1B",
+      "kind": "LM358",
+      "value": "LM358 channel B"
+    },
+    {
+      "id": "B1_U3",
+      "ref": "B1_U3",
+      "kind": "PAM8403",
+      "value": "PAM8403"
+    },
+    {
+      "id": "B1_J1",
+      "ref": "B1_J1",
+      "kind": "AUDIO_INPUT_JACK",
+      "value": "Stereo input jack"
+    },
+    {
+      "id": "B1_J2",
+      "ref": "B1_J2",
+      "kind": "AUDIO_JACK",
+      "value": "Aux/test audio jack"
+    },
+    {
+      "id": "B1_SPK1",
+      "ref": "B1_SPK1",
+      "kind": "SPEAKER",
+      "value": "Left speaker"
+    },
+    {
+      "id": "B1_SPK2",
+      "ref": "B1_SPK2",
+      "kind": "SPEAKER",
+      "value": "Right speaker"
+    },
+    {
+      "id": "B1_RV1",
+      "ref": "B1_RV1",
+      "kind": "POTENTIOMETER",
+      "value": "Potentiometer"
+    },
+    {
+      "id": "B1_RV2",
+      "ref": "B1_RV2",
+      "kind": "POTENTIOMETER",
+      "value": "Potentiometer"
+    },
+    {
+      "id": "B1_RV3",
+      "ref": "B1_RV3",
+      "kind": "POTENTIOMETER",
+      "value": "Potentiometer"
+    },
+    {
+      "id": "B1_C1",
+      "ref": "B1_C1",
+      "kind": "INPUT_CAPACITOR",
+      "value": "Input capacitor"
+    },
+    {
+      "id": "B1_C2",
+      "ref": "B1_C2",
+      "kind": "INPUT_CAPACITOR",
+      "value": "Input capacitor"
+    },
+    {
+      "id": "B1_C3",
+      "ref": "B1_C3",
+      "kind": "INPUT_CAPACITOR",
+      "value": "Input capacitor"
+    },
+    {
+      "id": "B1_C4",
+      "ref": "B1_C4",
+      "kind": "INPUT_CAPACITOR",
+      "value": "Input capacitor"
+    },
+    {
+      "id": "B1_C5",
+      "ref": "B1_C5",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor"
+    },
+    {
+      "id": "B1_C6",
+      "ref": "B1_C6",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor"
+    },
+    {
+      "id": "B1_C7",
+      "ref": "B1_C7",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor"
+    },
+    {
+      "id": "B1_C8",
+      "ref": "B1_C8",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output/filter capacitor"
+    },
+    {
+      "id": "B1_R1",
+      "ref": "B1_R1",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_R2",
+      "ref": "B1_R2",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_R3",
+      "ref": "B1_R3",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_R4",
+      "ref": "B1_R4",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_R5",
+      "ref": "B1_R5",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_R6",
+      "ref": "B1_R6",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_R7",
+      "ref": "B1_R7",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_R8",
+      "ref": "B1_R8",
+      "kind": "RESISTOR",
+      "value": "Audio resistor"
+    },
+    {
+      "id": "B1_D1",
+      "ref": "B1_D1",
+      "kind": "LED_INDICATOR",
+      "value": "Status LED"
+    },
+    {
+      "id": "B1_D2",
+      "ref": "B1_D2",
+      "kind": "LED_INDICATOR",
+      "value": "Status LED"
+    },
+    {
+      "id": "B2_G1",
+      "ref": "B2_G1",
+      "kind": "GROUND",
+      "value": "GND"
+    },
+    {
+      "id": "B2_V1",
+      "ref": "B2_V1",
+      "kind": "VDC",
+      "value": "5V source"
+    },
+    {
+      "id": "B2_MCU",
+      "ref": "B2_MCU",
+      "kind": "ARDUINO_NANO",
+      "value": "Arduino Nano"
+    },
+    {
+      "id": "B2_ESP",
+      "ref": "B2_ESP",
+      "kind": "ESP32_WROOM",
+      "value": "ESP32-WROOM"
+    },
+    {
+      "id": "B2_BME",
+      "ref": "B2_BME",
+      "kind": "BME280",
+      "value": "BME280"
+    },
+    {
+      "id": "B2_OLED",
+      "ref": "B2_OLED",
+      "kind": "SSD1306_OLED",
+      "value": "SSD1306 OLED"
+    },
+    {
+      "id": "B2_RTC",
+      "ref": "B2_RTC",
+      "kind": "DS3231",
+      "value": "DS3231"
+    },
+    {
+      "id": "B2_FLASH",
+      "ref": "B2_FLASH",
+      "kind": "W25Q64",
+      "value": "W25Q64"
+    },
+    {
+      "id": "B2_CAN",
+      "ref": "B2_CAN",
+      "kind": "MCP2515",
+      "value": "MCP2515"
+    },
+    {
+      "id": "B2_CANPHY",
+      "ref": "B2_CANPHY",
+      "kind": "TJA1050",
+      "value": "TJA1050"
+    },
+    {
+      "id": "B2_RS485",
+      "ref": "B2_RS485",
+      "kind": "MAX485",
+      "value": "MAX485"
+    },
+    {
+      "id": "B2_AMP",
+      "ref": "B2_AMP",
+      "kind": "LM358",
+      "value": "LM358"
+    },
+    {
+      "id": "B2_TIMER",
+      "ref": "B2_TIMER",
+      "kind": "NE555",
+      "value": "NE555"
+    },
+    {
+      "id": "B2_BUF",
+      "ref": "B2_BUF",
+      "kind": "LM741",
+      "value": "LM741"
+    },
+    {
+      "id": "B2_Q1",
+      "ref": "B2_Q1",
+      "kind": "2N7000",
+      "value": "2N7000"
+    },
+    {
+      "id": "B2_Q2",
+      "ref": "B2_Q2",
+      "kind": "BS170",
+      "value": "BS170"
+    },
+    {
+      "id": "B2_D1",
+      "ref": "B2_D1",
+      "kind": "1N4148",
+      "value": "1N4148"
+    },
+    {
+      "id": "B2_DZ1",
+      "ref": "B2_DZ1",
+      "kind": "BZX55C5",
+      "value": "5.1V zener"
+    },
+    {
+      "id": "B2_C1",
+      "ref": "B2_C1",
+      "kind": "CAP-ELEC",
+      "value": "47uF"
+    },
+    {
+      "id": "B2_C2",
+      "ref": "B2_C2",
+      "kind": "CAP",
+      "value": "100nF"
+    },
+    {
+      "id": "B2_L1",
+      "ref": "B2_L1",
+      "kind": "REALIND",
+      "value": "10uH"
+    },
+    {
+      "id": "B2_R1",
+      "ref": "B2_R1",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "B2_R2",
+      "ref": "B2_R2",
+      "kind": "RESISTOR",
+      "value": "120 ohm"
+    },
+    {
+      "id": "B2_SW1",
+      "ref": "B2_SW1",
+      "kind": "SWITCH",
+      "value": "Mode switch"
+    },
+    {
+      "id": "B2_J_CAN",
+      "ref": "B2_J_CAN",
+      "kind": "TERMINAL",
+      "value": "CAN terminal"
+    },
+    {
+      "id": "B2_J_RS485",
+      "ref": "B2_J_RS485",
+      "kind": "TERMINAL",
+      "value": "RS485 terminal"
+    },
+    {
+      "id": "B2_J2",
+      "ref": "B2_J2",
+      "kind": "PIN_HEADER",
+      "value": "Expansion header"
+    },
+    {
+      "id": "B2_TP1",
+      "ref": "B2_TP1",
+      "kind": "TEST_POINT",
+      "value": "Debug test point"
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "B1_U1A.VCC",
+      "B1_U1B.VCC",
+      "B1_U3.VCC",
+      "B1_RV3.1",
+      "B1_C5.1",
+      "B1_C6.1",
+      "B1_D1.A",
+      "B1_D2.A",
+      "B2_V1.1",
+      "B2_MCU.5V",
+      "B2_RS485.VCC",
+      "B2_CANPHY.VCC",
+      "B2_AMP.VCC",
+      "B2_TIMER.8",
+      "B2_TIMER.4",
+      "B2_BUF.7",
+      "B2_SW1.1",
+      "B2_J2.1",
+      "B1_R5.1",
+      "B1_R7.1"
+    ],
+    "GND": [
+      "B1_U1A.GND",
+      "B1_U1B.GND",
+      "B1_U3.GND",
+      "B1_J1.GND",
+      "B1_J2.GND",
+      "B1_RV1.1",
+      "B1_RV2.1",
+      "B1_RV3.3",
+      "B1_C5.2",
+      "B1_C6.2",
+      "B1_C7.2",
+      "B1_C8.2",
+      "B1_D1.K",
+      "B1_D2.K",
+      "B2_G1.1",
+      "B2_V1.2",
+      "B2_MCU.GND",
+      "B2_ESP.GND",
+      "B2_BME.GND",
+      "B2_OLED.GND",
+      "B2_RTC.GND",
+      "B2_FLASH.GND",
+      "B2_CAN.VSS",
+      "B2_CANPHY.GND",
+      "B2_RS485.GND",
+      "B2_AMP.GND",
+      "B2_TIMER.1",
+      "B2_BUF.4",
+      "B2_C1.2",
+      "B2_C2.2",
+      "B2_Q1.3",
+      "B2_Q2.3",
+      "B2_DZ1.2",
+      "B2_J2.3",
+      "B1_R6.2",
+      "B1_R8.2"
+    ],
+    "B1_AUDIO_L_IN_RAW": [
+      "B1_J1.LEFT",
+      "B1_C1.1"
+    ],
+    "B1_AUDIO_R_IN_RAW": [
+      "B1_J1.RIGHT",
+      "B1_C2.1"
+    ],
+    "B1_AUDIO_L_AC": [
+      "B1_C1.2",
+      "B1_RV1.3"
+    ],
+    "B1_AUDIO_R_AC": [
+      "B1_C2.2",
+      "B1_RV2.3"
+    ],
+    "B1_AUDIO_L_VOL": [
+      "B1_RV1.2",
+      "B1_R1.1"
+    ],
+    "B1_AUDIO_R_VOL": [
+      "B1_RV2.2",
+      "B1_R3.1"
+    ],
+    "B1_LM358_L_IN": [
+      "B1_R1.2",
+      "B1_U1A.IN_PLUS"
+    ],
+    "B1_LM358_R_IN": [
+      "B1_R3.2",
+      "B1_U1B.IN_PLUS"
+    ],
+    "B1_LM358_L_FEEDBACK": [
+      "B1_U1A.OUT",
+      "B1_U1A.IN_MINUS",
+      "B1_R2.1",
+      "B1_C3.1"
+    ],
+    "B1_LM358_R_FEEDBACK": [
+      "B1_U1B.OUT",
+      "B1_U1B.IN_MINUS",
+      "B1_R4.1",
+      "B1_C4.1"
+    ],
+    "B1_PAM_L_IN": [
+      "B1_C3.2",
+      "B1_U3.LIN",
+      "B1_C7.1"
+    ],
+    "B1_PAM_R_IN": [
+      "B1_C4.2",
+      "B1_U3.RIN",
+      "B1_C8.1"
+    ],
+    "B1_MASTER_CTRL": [
+      "B1_RV3.2",
+      "B1_J2.LEFT",
+      "B1_J2.RIGHT"
+    ],
+    "B1_SPK_L_PLUS": [
+      "B1_U3.LOUT_PLUS",
+      "B1_SPK1.1"
+    ],
+    "B1_SPK_L_MINUS": [
+      "B1_U3.LOUT_MINUS",
+      "B1_SPK1.2"
+    ],
+    "B1_SPK_R_PLUS": [
+      "B1_U3.ROUT_PLUS",
+      "B1_SPK2.1"
+    ],
+    "B1_SPK_R_MINUS": [
+      "B1_U3.ROUT_MINUS",
+      "B1_SPK2.2"
+    ],
+    "B1_AUDIO_L_BIAS": [
+      "B1_R5.2",
+      "B1_R6.1",
+      "B1_U1A.BIAS"
+    ],
+    "B1_AUDIO_R_BIAS": [
+      "B1_R7.2",
+      "B1_R8.1",
+      "B1_U1B.BIAS"
+    ],
+    "+3V3": [
+      "B2_ESP.3V3",
+      "B2_BME.VCC",
+      "B2_OLED.VCC",
+      "B2_RTC.VCC",
+      "B2_FLASH.VCC",
+      "B2_CAN.VDD",
+      "B2_C2.1",
+      "B2_J2.2"
+    ],
+    "B2_I2C_SDA": [
+      "B2_MCU.SDA",
+      "B2_ESP.IO21",
+      "B2_BME.SDA",
+      "B2_OLED.SDA",
+      "B2_RTC.SDA"
+    ],
+    "B2_I2C_SCL": [
+      "B2_MCU.SCL",
+      "B2_ESP.IO22",
+      "B2_BME.SCL",
+      "B2_OLED.SCL",
+      "B2_RTC.SCL"
+    ],
+    "B2_SPI_MOSI": [
+      "B2_MCU.MOSI",
+      "B2_FLASH.DI",
+      "B2_CAN.SI"
+    ],
+    "B2_SPI_MISO": [
+      "B2_MCU.MISO",
+      "B2_FLASH.DO",
+      "B2_CAN.SO"
+    ],
+    "B2_SPI_SCK": [
+      "B2_MCU.SCK",
+      "B2_FLASH.CLK",
+      "B2_CAN.SCK"
+    ],
+    "B2_SPI_CS_FLASH": [
+      "B2_MCU.D10",
+      "B2_FLASH.CS"
+    ],
+    "B2_SPI_CS_CAN": [
+      "B2_ESP.IO5",
+      "B2_CAN.CS"
+    ],
+    "B2_CAN_INT": [
+      "B2_ESP.IO4",
+      "B2_CAN.INT",
+      "B2_TP1.1"
+    ],
+    "B2_CAN_TXD": [
+      "B2_CAN.TXCAN",
+      "B2_CANPHY.TXD"
+    ],
+    "B2_CAN_RXD": [
+      "B2_CAN.RXCAN",
+      "B2_CANPHY.RXD"
+    ],
+    "B2_CANH": [
+      "B2_CANPHY.CANH",
+      "B2_J_CAN.1",
+      "B2_R2.1"
+    ],
+    "B2_CANL": [
+      "B2_CANPHY.CANL",
+      "B2_J_CAN.2",
+      "B2_R2.2"
+    ],
+    "B2_RS485_RO": [
+      "B2_RS485.RO",
+      "B2_MCU.D2"
+    ],
+    "B2_RS485_DI": [
+      "B2_RS485.DI",
+      "B2_MCU.D3"
+    ],
+    "B2_RS485_DE_RE": [
+      "B2_RS485.DE",
+      "B2_RS485.RE",
+      "B2_ESP.IO23"
+    ],
+    "B2_RS485_A": [
+      "B2_RS485.A",
+      "B2_J_RS485.1"
+    ],
+    "B2_RS485_B": [
+      "B2_RS485.B",
+      "B2_J_RS485.2"
+    ],
+    "B2_TIMER_TRIGGER": [
+      "B2_SW1.2",
+      "B2_TIMER.2",
+      "B2_TIMER.6",
+      "B2_R1.2",
+      "B2_C1.1"
+    ],
+    "B2_TIMER_PULLUP": [
+      "B2_R1.1",
+      "B2_DZ1.1"
+    ],
+    "B2_TIMER_OUTPUT": [
+      "B2_TIMER.3",
+      "B2_Q1.1",
+      "B2_D1.1"
+    ],
+    "B2_DIODE_TO_BUFFER": [
+      "B2_D1.2",
+      "B2_BUF.3"
+    ],
+    "B2_BUFFER_FEEDBACK": [
+      "B2_BUF.2",
+      "B2_BUF.6",
+      "B2_AMP.IN_PLUS"
+    ],
+    "B2_AMP_FEEDBACK": [
+      "B2_AMP.OUT",
+      "B2_AMP.IN_MINUS",
+      "B2_Q2.1"
+    ],
+    "B2_LOAD_LOW": [
+      "B2_Q1.2",
+      "B2_Q2.2",
+      "B2_L1.1"
+    ],
+    "B2_LOAD_OUT": [
+      "B2_L1.2",
+      "B2_J2.4"
+    ]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {
+        "name": "+5V",
+        "members": [
+          "B1_U1A.VCC",
+          "B1_U1B.VCC",
+          "B1_U3.VCC",
+          "B1_RV3.1",
+          "B1_C5.1",
+          "B1_C6.1",
+          "B1_D1.A",
+          "B1_D2.A",
+          "B2_V1.1",
+          "B2_MCU.5V",
+          "B2_RS485.VCC",
+          "B2_CANPHY.VCC",
+          "B2_AMP.VCC",
+          "B2_TIMER.8",
+          "B2_TIMER.4",
+          "B2_BUF.7",
+          "B2_SW1.1",
+          "B2_J2.1",
+          "B1_R5.1",
+          "B1_R7.1"
+        ],
+        "member_count": 20
+      },
+      {
+        "name": "GND",
+        "members": [
+          "B1_U1A.GND",
+          "B1_U1B.GND",
+          "B1_U3.GND",
+          "B1_J1.GND",
+          "B1_J2.GND",
+          "B1_RV1.1",
+          "B1_RV2.1",
+          "B1_RV3.3",
+          "B1_C5.2",
+          "B1_C6.2",
+          "B1_C7.2",
+          "B1_C8.2",
+          "B1_D1.K",
+          "B1_D2.K",
+          "B2_G1.1",
+          "B2_V1.2",
+          "B2_MCU.GND",
+          "B2_ESP.GND",
+          "B2_BME.GND",
+          "B2_OLED.GND",
+          "B2_RTC.GND",
+          "B2_FLASH.GND",
+          "B2_CAN.VSS",
+          "B2_CANPHY.GND",
+          "B2_RS485.GND",
+          "B2_AMP.GND",
+          "B2_TIMER.1",
+          "B2_BUF.4",
+          "B2_C1.2",
+          "B2_C2.2",
+          "B2_Q1.3",
+          "B2_Q2.3",
+          "B2_DZ1.2",
+          "B2_J2.3",
+          "B1_R6.2",
+          "B1_R8.2"
+        ],
+        "member_count": 36
+      },
+      {
+        "name": "B1_AUDIO_L_IN_RAW",
+        "members": [
+          "B1_J1.LEFT",
+          "B1_C1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_AUDIO_R_IN_RAW",
+        "members": [
+          "B1_J1.RIGHT",
+          "B1_C2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_AUDIO_L_AC",
+        "members": [
+          "B1_C1.2",
+          "B1_RV1.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_AUDIO_R_AC",
+        "members": [
+          "B1_C2.2",
+          "B1_RV2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_AUDIO_L_VOL",
+        "members": [
+          "B1_RV1.2",
+          "B1_R1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_AUDIO_R_VOL",
+        "members": [
+          "B1_RV2.2",
+          "B1_R3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LM358_L_IN",
+        "members": [
+          "B1_R1.2",
+          "B1_U1A.IN_PLUS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LM358_R_IN",
+        "members": [
+          "B1_R3.2",
+          "B1_U1B.IN_PLUS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LM358_L_FEEDBACK",
+        "members": [
+          "B1_U1A.OUT",
+          "B1_U1A.IN_MINUS",
+          "B1_R2.1",
+          "B1_C3.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B1_LM358_R_FEEDBACK",
+        "members": [
+          "B1_U1B.OUT",
+          "B1_U1B.IN_MINUS",
+          "B1_R4.1",
+          "B1_C4.1"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B1_PAM_L_IN",
+        "members": [
+          "B1_C3.2",
+          "B1_U3.LIN",
+          "B1_C7.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_PAM_R_IN",
+        "members": [
+          "B1_C4.2",
+          "B1_U3.RIN",
+          "B1_C8.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_MASTER_CTRL",
+        "members": [
+          "B1_RV3.2",
+          "B1_J2.LEFT",
+          "B1_J2.RIGHT"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_SPK_L_PLUS",
+        "members": [
+          "B1_U3.LOUT_PLUS",
+          "B1_SPK1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SPK_L_MINUS",
+        "members": [
+          "B1_U3.LOUT_MINUS",
+          "B1_SPK1.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SPK_R_PLUS",
+        "members": [
+          "B1_U3.ROUT_PLUS",
+          "B1_SPK2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_SPK_R_MINUS",
+        "members": [
+          "B1_U3.ROUT_MINUS",
+          "B1_SPK2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_AUDIO_L_BIAS",
+        "members": [
+          "B1_R5.2",
+          "B1_R6.1",
+          "B1_U1A.BIAS"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B1_AUDIO_R_BIAS",
+        "members": [
+          "B1_R7.2",
+          "B1_R8.1",
+          "B1_U1B.BIAS"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "+3V3",
+        "members": [
+          "B2_ESP.3V3",
+          "B2_BME.VCC",
+          "B2_OLED.VCC",
+          "B2_RTC.VCC",
+          "B2_FLASH.VCC",
+          "B2_CAN.VDD",
+          "B2_C2.1",
+          "B2_J2.2"
+        ],
+        "member_count": 8
+      },
+      {
+        "name": "B2_I2C_SDA",
+        "members": [
+          "B2_MCU.SDA",
+          "B2_ESP.IO21",
+          "B2_BME.SDA",
+          "B2_OLED.SDA",
+          "B2_RTC.SDA"
+        ],
+        "member_count": 5
+      },
+      {
+        "name": "B2_I2C_SCL",
+        "members": [
+          "B2_MCU.SCL",
+          "B2_ESP.IO22",
+          "B2_BME.SCL",
+          "B2_OLED.SCL",
+          "B2_RTC.SCL"
+        ],
+        "member_count": 5
+      },
+      {
+        "name": "B2_SPI_MOSI",
+        "members": [
+          "B2_MCU.MOSI",
+          "B2_FLASH.DI",
+          "B2_CAN.SI"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_SPI_MISO",
+        "members": [
+          "B2_MCU.MISO",
+          "B2_FLASH.DO",
+          "B2_CAN.SO"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_SPI_SCK",
+        "members": [
+          "B2_MCU.SCK",
+          "B2_FLASH.CLK",
+          "B2_CAN.SCK"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_SPI_CS_FLASH",
+        "members": [
+          "B2_MCU.D10",
+          "B2_FLASH.CS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_SPI_CS_CAN",
+        "members": [
+          "B2_ESP.IO5",
+          "B2_CAN.CS"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_CAN_INT",
+        "members": [
+          "B2_ESP.IO4",
+          "B2_CAN.INT",
+          "B2_TP1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_CAN_TXD",
+        "members": [
+          "B2_CAN.TXCAN",
+          "B2_CANPHY.TXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_CAN_RXD",
+        "members": [
+          "B2_CAN.RXCAN",
+          "B2_CANPHY.RXD"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_CANH",
+        "members": [
+          "B2_CANPHY.CANH",
+          "B2_J_CAN.1",
+          "B2_R2.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_CANL",
+        "members": [
+          "B2_CANPHY.CANL",
+          "B2_J_CAN.2",
+          "B2_R2.2"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_RS485_RO",
+        "members": [
+          "B2_RS485.RO",
+          "B2_MCU.D2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RS485_DI",
+        "members": [
+          "B2_RS485.DI",
+          "B2_MCU.D3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RS485_DE_RE",
+        "members": [
+          "B2_RS485.DE",
+          "B2_RS485.RE",
+          "B2_ESP.IO23"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_RS485_A",
+        "members": [
+          "B2_RS485.A",
+          "B2_J_RS485.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_RS485_B",
+        "members": [
+          "B2_RS485.B",
+          "B2_J_RS485.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_TIMER_TRIGGER",
+        "members": [
+          "B2_SW1.2",
+          "B2_TIMER.2",
+          "B2_TIMER.6",
+          "B2_R1.2",
+          "B2_C1.1"
+        ],
+        "member_count": 5
+      },
+      {
+        "name": "B2_TIMER_PULLUP",
+        "members": [
+          "B2_R1.1",
+          "B2_DZ1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_TIMER_OUTPUT",
+        "members": [
+          "B2_TIMER.3",
+          "B2_Q1.1",
+          "B2_D1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_DIODE_TO_BUFFER",
+        "members": [
+          "B2_D1.2",
+          "B2_BUF.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_BUFFER_FEEDBACK",
+        "members": [
+          "B2_BUF.2",
+          "B2_BUF.6",
+          "B2_AMP.IN_PLUS"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_AMP_FEEDBACK",
+        "members": [
+          "B2_AMP.OUT",
+          "B2_AMP.IN_MINUS",
+          "B2_Q2.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_LOAD_LOW",
+        "members": [
+          "B2_Q1.2",
+          "B2_Q2.2",
+          "B2_L1.1"
+        ],
+        "member_count": 3
+      },
+      {
+        "name": "B2_LOAD_OUT",
+        "members": [
+          "B2_L1.2",
+          "B2_J2.4"
+        ],
+        "member_count": 2
+      }
+    ],
+    "important_nets": [
+      "+3V3",
+      "+5V",
+      "GND"
+    ]
+  },
+  "stage_contracts": {
+    "component_placer": {
+      "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+      "output": "placed-design contract with component bounds and resolved pin descriptors"
+    },
+    "arrangement_decider": {
+      "input": "components, blocks, nets, layout_intent",
+      "output": "coordinate edit JSON; may rotate components"
+    },
+    "beautifier": {
+      "input": "placed-design contract plus coordinate edits",
+      "output": "same components with revised coordinates/rotations"
+    },
+    "wire_planner": {
+      "input": "placed-design contract plus expected_netlist",
+      "output": "wire route plan and terminal fallback plan"
+    },
+    "terminal_placer": {
+      "input": "placed-design contract plus terminal nets",
+      "output": "terminal/local-label endpoint plan"
+    },
+    "validators": {
+      "input": "generated schematic plus expected_netlist",
+      "output": "validation_report.json"
+    }
+  },
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "Stereo Audio Control PAM8403 Amplifier",
+      "source_circuit_id": "T07",
+      "component_count": 28,
+      "net_count": 29
+    },
+    {
+      "id": "B2",
+      "name": "Mixed Embedded Controller With Proteus Aliases",
+      "source_circuit_id": "M03",
+      "component_count": 28,
+      "net_count": 28
+    }
+  ],
+  "generation_notes": {
+    "source": "deterministic_main_json_catalog_100",
+    "compiler_repairs": [
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_AUDIO_L_BIAS_TOP",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_AUDIO_L_BIAS_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_AUDIO_R_BIAS_TOP",
+        "to": "+5V"
+      },
+      {
+        "kind": "net_alias_merged",
+        "from": "B1_AUDIO_R_BIAS_GND",
+        "to": "GND"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "B1_AMP_L_IN_COUPLED",
+        "to": "B1_LM358_L_FEEDBACK",
+        "endpoint": "B1_U1A.OUT"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "B1_AMP_R_IN_COUPLED",
+        "to": "B1_LM358_R_FEEDBACK",
+        "endpoint": "B1_U1B.OUT"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "B1_AMP_BYPASS_L",
+        "to": "B1_PAM_L_IN",
+        "endpoint": "B1_U3.LIN"
+      },
+      {
+        "kind": "shared_endpoint_net_merge",
+        "from": "B1_AMP_BYPASS_R",
+        "to": "B1_PAM_R_IN",
+        "endpoint": "B1_U3.RIN"
+      }
+    ],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "composed_supported_raw_specs",
+    "source_line_count": null
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 56,
+    "net_count": 47,
+    "endpoint_count": 181,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

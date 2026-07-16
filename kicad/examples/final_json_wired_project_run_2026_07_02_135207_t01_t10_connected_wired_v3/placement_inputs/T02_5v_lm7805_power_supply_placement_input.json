@@ -1,0 +1,159 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "t02",
+    "title": "5V LM7805 Power Supply",
+    "purpose": "power-left-to-right connected placement",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "T02",
+  "circuit_name": "5V LM7805 Power Supply",
+  "purpose": "power-left-to-right connected placement",
+  "components": [
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "DC_BARREL_JACK",
+      "value": "DC Barrel Jack"
+    },
+    {
+      "id": "F1",
+      "ref": "F1",
+      "kind": "FUSE",
+      "value": "Fuse"
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "D_1N4007",
+      "value": "1N4007"
+    },
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "LM7805",
+      "value": "LM7805"
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "CP_100UF",
+      "value": "100uF"
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C3",
+      "ref": "C3",
+      "kind": "CP_100UF",
+      "value": "100uF"
+    },
+    {
+      "id": "C4",
+      "ref": "C4",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "C5",
+      "ref": "C5",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "D2",
+      "ref": "D2",
+      "kind": "POWER_LED",
+      "value": "Power LED"
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "RESISTOR",
+      "value": "1k"
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "5V Output"
+    }
+  ],
+  "nets": {
+    "VIN_RAW": [
+      "J1.POS",
+      "F1.1"
+    ],
+    "GND": [
+      "J1.NEG",
+      "U1.GND",
+      "C1.NEG",
+      "C2.2",
+      "C3.NEG",
+      "C4.2",
+      "C5.2",
+      "D2.K",
+      "J2.2"
+    ],
+    "VIN_FUSED": [
+      "F1.2",
+      "D1.A"
+    ],
+    "VIN_PROTECTED": [
+      "D1.K",
+      "U1.IN",
+      "C1.POS",
+      "C2.1",
+      "C5.1"
+    ],
+    "+5V": [
+      "U1.OUT",
+      "C3.POS",
+      "C4.1",
+      "R1.1",
+      "J2.1"
+    ],
+    "PWR_LED_A": [
+      "R1.2",
+      "D2.A"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 12,
+    "net_count": 6,
+    "endpoint_count": 25,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

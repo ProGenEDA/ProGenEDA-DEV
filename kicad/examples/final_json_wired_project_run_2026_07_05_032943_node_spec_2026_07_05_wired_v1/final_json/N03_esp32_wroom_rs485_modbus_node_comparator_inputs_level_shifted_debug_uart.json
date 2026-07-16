@@ -1,0 +1,1014 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n03",
+    "title": "ESP32_WROOM RS485 MODBUS NODE + COMPARATOR INPUTS + LEVEL-SHIFTED DEBUG UART",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N03",
+  "circuit_name": "ESP32_WROOM RS485 MODBUS NODE + COMPARATOR INPUTS + LEVEL-SHIFTED DEBUG UART",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "PWR_3V3",
+      "ref": "PWR_3V3",
+      "kind": "PWR_3V3",
+      "type": "PWR_3V3",
+      "value": "+3V3 Power Symbol",
+      "role": "power_symbol",
+      "block": "03",
+      "pins": {
+        "+": "+3V3",
+        "-": "GND"
+      }
+    },
+    {
+      "id": "PWR_5V",
+      "ref": "PWR_5V",
+      "kind": "PWR_5V",
+      "type": "PWR_5V",
+      "value": "+5V Power Symbol",
+      "role": "power_symbol",
+      "block": "03",
+      "pins": {
+        "+": "+5V",
+        "-": "GND"
+      }
+    },
+    {
+      "id": "ESP32_WROOM",
+      "ref": "ESP32_WROOM",
+      "kind": "ESP32_WROOM",
+      "type": "ESP32_WROOM",
+      "value": "ESP32-WROOM Module",
+      "role": "wireless_module",
+      "block": "03",
+      "pins": {
+        "3V3": "+3V3",
+        "EN": "NET_EN",
+        "GND": "GND",
+        "GPIO0_BOOT": "NET_BOOT",
+        "GPIO12": "NET_HEADER_CONNECTOR_P5",
+        "GPIO13": "NET_HEADER_CONNECTOR_P6",
+        "GPIO14": "NET_DIP_SWITCH_S4B",
+        "GPIO15": "NET_HEADER_CONNECTOR_P7",
+        "GPIO16": "NET_MAX485_RO",
+        "GPIO17": "NET_MAX485_DI",
+        "GPIO18": "NET_ESP32_WROOM_GPIO18",
+        "GPIO19": "NET_LEVEL_SHIFTER_L4",
+        "GPIO21": "NET_ESP32_WROOM_GPIO21",
+        "GPIO22": "NET_LEVEL_SHIFTER_L2",
+        "GPIO23": "NET_ESP32_WROOM_GPIO23",
+        "GPIO25": "NET_DIP_SWITCH_S1B",
+        "GPIO26": "NET_DIP_SWITCH_S2B",
+        "GPIO27": "NET_DIP_SWITCH_S3B",
+        "GPIO32": "NET_HEADER_CONNECTOR_P1",
+        "GPIO33": "NET_HEADER_CONNECTOR_P2",
+        "GPIO34": "NET_LM393_COMPARATOR_OUT1",
+        "GPIO35": "NET_LM393_COMPARATOR_OUT2",
+        "GPIO36": "NET_HEADER_CONNECTOR_P3",
+        "GPIO39": "NET_HEADER_CONNECTOR_P4",
+        "GPIO4": "NET_RS485_DIR",
+        "GPIO5": "NET_ESP32_WROOM_GPIO5"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_EN",
+      "ref": "R_10K_PULLUP_EN",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_EN",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "EN_PUSH_BUTTON",
+      "ref": "EN_PUSH_BUTTON",
+      "kind": "EN_PUSH_BUTTON",
+      "type": "EN_PUSH_BUTTON",
+      "value": "EN Push Button",
+      "role": "switch",
+      "block": "03",
+      "pins": {
+        "1": "NET_EN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "RESET_CAPACITOR",
+      "ref": "RESET_CAPACITOR",
+      "kind": "RESET_CAPACITOR",
+      "type": "RESET_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "03",
+      "pins": {
+        "1": "NET_EN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_BOOT",
+      "ref": "R_10K_PULLUP_BOOT",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_BOOT",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "BOOT_PUSH_BUTTON",
+      "ref": "BOOT_PUSH_BUTTON",
+      "kind": "BOOT_PUSH_BUTTON",
+      "type": "BOOT_PUSH_BUTTON",
+      "value": "BOOT Push Button",
+      "role": "switch",
+      "block": "03",
+      "pins": {
+        "1": "NET_BOOT",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "MAX485",
+      "ref": "MAX485",
+      "kind": "MAX485",
+      "type": "MAX485",
+      "value": "MAX485 Transceiver",
+      "role": "interface_ic",
+      "block": "03",
+      "pins": {
+        "/RE": "NET_RS485_DIR",
+        "A": "NET_RS485_A",
+        "B": "NET_RS485_B",
+        "DE": "NET_RS485_DIR",
+        "DI": "NET_MAX485_DI",
+        "GND": "GND",
+        "RO": "NET_MAX485_RO",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "R_RS485_DIR_PULLDOWN",
+      "ref": "R_RS485_DIR_PULLDOWN",
+      "kind": "RES",
+      "type": "RES",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_RS485_DIR",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_120_RS485",
+      "ref": "R_120_RS485",
+      "kind": "R_120_RS485",
+      "type": "R_120_RS485",
+      "value": "120 ohm",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_RS485_A",
+        "2": "NET_RS485_B"
+      }
+    },
+    {
+      "id": "TVS_DIODE_RS485",
+      "ref": "TVS_DIODE_RS485",
+      "kind": "TVS_DIODE_RS485",
+      "type": "TVS_DIODE_RS485",
+      "value": "TVS Protection Diode",
+      "role": "protection",
+      "block": "03",
+      "pins": {
+        "1": "NET_RS485_A",
+        "2": "NET_RS485_B"
+      }
+    },
+    {
+      "id": "RS485_TERMINAL",
+      "ref": "RS485_TERMINAL",
+      "kind": "RS485_TERMINAL",
+      "type": "RS485_TERMINAL",
+      "value": "RS485 Terminal",
+      "role": "terminal",
+      "block": "03",
+      "pins": {
+        "A": "NET_RS485_A",
+        "B": "NET_RS485_B",
+        "GND": "GND",
+        "SHIELD": "GND"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_RS485",
+      "ref": "DECOUPLING_CAPACITOR_RS485",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "03",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "LM393_COMPARATOR",
+      "ref": "LM393_COMPARATOR",
+      "kind": "LM393_COMPARATOR",
+      "type": "LM393_COMPARATOR",
+      "value": "LM393 Comparator",
+      "role": "comparator",
+      "block": "03",
+      "pins": {
+        "GND": "GND",
+        "IN1+": "NET_POTENTIOMETER_1_WIPER",
+        "IN1-": "NET_TRIMMER_POTENTIOMETER_WIPER",
+        "IN2+": "NET_RS485_A_SENSE",
+        "IN2-": "NET_RS485_B_SENSE",
+        "OUT1": "NET_LM393_COMPARATOR_OUT1",
+        "OUT2": "NET_LM393_COMPARATOR_OUT2",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_COMP1",
+      "ref": "R_10K_PULLUP_COMP1",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_LM393_COMPARATOR_OUT1",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "POTENTIOMETER_1",
+      "ref": "POTENTIOMETER_1",
+      "kind": "POTENTIOMETER",
+      "type": "POTENTIOMETER",
+      "value": "Potentiometer",
+      "role": "potentiometer",
+      "block": "03",
+      "pins": {
+        "END_A": "+3V3",
+        "END_B": "GND",
+        "WIPER": "NET_POTENTIOMETER_1_WIPER"
+      }
+    },
+    {
+      "id": "TRIMMER_POTENTIOMETER",
+      "ref": "TRIMMER_POTENTIOMETER",
+      "kind": "TRIMMER_POTENTIOMETER",
+      "type": "TRIMMER_POTENTIOMETER",
+      "value": "Trimmer Potentiometer",
+      "role": "potentiometer",
+      "block": "03",
+      "pins": {
+        "END_A": "+3V3",
+        "END_B": "GND",
+        "WIPER": "NET_TRIMMER_POTENTIOMETER_WIPER"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_COMP2",
+      "ref": "R_10K_PULLUP_COMP2",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_LM393_COMPARATOR_OUT2",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "RES_RS485_A_SENSE",
+      "ref": "RES_RS485_A_SENSE",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_RS485_A",
+        "2": "NET_RS485_A_SENSE"
+      }
+    },
+    {
+      "id": "RES_RS485_B_SENSE",
+      "ref": "RES_RS485_B_SENSE",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_RS485_B",
+        "2": "NET_RS485_B_SENSE"
+      }
+    },
+    {
+      "id": "BZX55C5_A",
+      "ref": "BZX55C5_A",
+      "kind": "BZX55C5",
+      "type": "BZX55C5",
+      "value": "BZX55C5 Zener Diode",
+      "role": "zener_diode",
+      "block": "03",
+      "pins": {
+        "A": "GND",
+        "K": "NET_RS485_A_SENSE"
+      }
+    },
+    {
+      "id": "BZX79C5_B",
+      "ref": "BZX79C5_B",
+      "kind": "BZX79C5",
+      "type": "BZX79C5",
+      "value": "BZX79C5 Zener Diode",
+      "role": "zener_diode",
+      "block": "03",
+      "pins": {
+        "A": "GND",
+        "K": "NET_RS485_B_SENSE"
+      }
+    },
+    {
+      "id": "LEVEL_SHIFTER",
+      "ref": "LEVEL_SHIFTER",
+      "kind": "LEVEL_SHIFTER",
+      "type": "LEVEL_SHIFTER",
+      "value": "Level Shifter",
+      "role": "interface_ic",
+      "block": "03",
+      "pins": {
+        "GND": "GND",
+        "H1": "NET_LEVEL_SHIFTER_H1",
+        "H2": "NET_UART_HEADER_TX",
+        "H3": "NET_LEVEL_SHIFTER_H3",
+        "H4": "NET_UART_HEADER_CTS",
+        "HV": "+5V",
+        "L1": "NET_ESP32_WROOM_GPIO21",
+        "L2": "NET_LEVEL_SHIFTER_L2",
+        "L3": "NET_ESP32_WROOM_GPIO23",
+        "L4": "NET_LEVEL_SHIFTER_L4",
+        "LV": "+3V3"
+      }
+    },
+    {
+      "id": "UART_HEADER",
+      "ref": "UART_HEADER",
+      "kind": "PROGRAMMING_HEADER",
+      "type": "PROGRAMMING_HEADER",
+      "value": "Programming Header",
+      "role": "header",
+      "block": "03",
+      "pins": {
+        "CTS": "NET_UART_HEADER_CTS",
+        "GND": "GND",
+        "RTS": "NET_LEVEL_SHIFTER_H3",
+        "RX": "NET_LEVEL_SHIFTER_H1",
+        "TX": "NET_UART_HEADER_TX",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "DIP_SWITCH",
+      "ref": "DIP_SWITCH",
+      "kind": "DIP_SWITCH",
+      "type": "DIP_SWITCH",
+      "value": "DIP Switch",
+      "role": "switch",
+      "block": "03",
+      "pins": {
+        "S1A": "GND",
+        "S1B": "NET_DIP_SWITCH_S1B",
+        "S2A": "GND",
+        "S2B": "NET_DIP_SWITCH_S2B",
+        "S3A": "GND",
+        "S3B": "NET_DIP_SWITCH_S3B",
+        "S4A": "GND",
+        "S4B": "NET_DIP_SWITCH_S4B"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_DIP1",
+      "ref": "R_10K_PULLUP_DIP1",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_DIP_SWITCH_S1B",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_DIP2",
+      "ref": "R_10K_PULLUP_DIP2",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_DIP_SWITCH_S2B",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_DIP3",
+      "ref": "R_10K_PULLUP_DIP3",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_DIP_SWITCH_S3B",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_DIP4",
+      "ref": "R_10K_PULLUP_DIP4",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_DIP_SWITCH_S4B",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "R_220_TXLED",
+      "ref": "R_220_TXLED",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_ESP32_WROOM_GPIO18",
+        "2": "NET_R_220_TXLED_2"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_TX",
+      "ref": "LED_INDICATOR_TX",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "03",
+      "pins": {
+        "ANODE": "NET_R_220_TXLED_2",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "R_220_RXLED",
+      "ref": "R_220_RXLED",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "03",
+      "pins": {
+        "1": "NET_ESP32_WROOM_GPIO5",
+        "2": "NET_R_220_RXLED_2"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_RX",
+      "ref": "LED_INDICATOR_RX",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "03",
+      "pins": {
+        "ANODE": "NET_R_220_RXLED_2",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "HEADER_CONNECTOR",
+      "ref": "HEADER_CONNECTOR",
+      "kind": "PROGRAMMING_HEADER",
+      "type": "PROGRAMMING_HEADER",
+      "value": "Programming Header",
+      "role": "header",
+      "block": "03",
+      "pins": {
+        "P1": "NET_HEADER_CONNECTOR_P1",
+        "P10": "GND",
+        "P2": "NET_HEADER_CONNECTOR_P2",
+        "P3": "NET_HEADER_CONNECTOR_P3",
+        "P4": "NET_HEADER_CONNECTOR_P4",
+        "P5": "NET_HEADER_CONNECTOR_P5",
+        "P6": "NET_HEADER_CONNECTOR_P6",
+        "P7": "NET_HEADER_CONNECTOR_P7",
+        "P8": "+3V3",
+        "P9": "+5V"
+      }
+    }
+  ],
+  "nets": {
+    "+3V3": [
+      "PWR_3V3.+",
+      "ESP32_WROOM.3V3",
+      "R_10K_PULLUP_EN.2",
+      "R_10K_PULLUP_BOOT.2",
+      "MAX485.VCC",
+      "DECOUPLING_CAPACITOR_RS485.1",
+      "LM393_COMPARATOR.VCC",
+      "R_10K_PULLUP_COMP1.2",
+      "POTENTIOMETER_1.END_A",
+      "TRIMMER_POTENTIOMETER.END_A",
+      "R_10K_PULLUP_COMP2.2",
+      "LEVEL_SHIFTER.LV",
+      "R_10K_PULLUP_DIP1.2",
+      "R_10K_PULLUP_DIP2.2",
+      "R_10K_PULLUP_DIP3.2",
+      "R_10K_PULLUP_DIP4.2",
+      "HEADER_CONNECTOR.P8"
+    ],
+    "GND": [
+      "PWR_3V3.-",
+      "PWR_5V.-",
+      "ESP32_WROOM.GND",
+      "EN_PUSH_BUTTON.2",
+      "RESET_CAPACITOR.2",
+      "BOOT_PUSH_BUTTON.2",
+      "MAX485.GND",
+      "R_RS485_DIR_PULLDOWN.2",
+      "RS485_TERMINAL.GND",
+      "RS485_TERMINAL.SHIELD",
+      "DECOUPLING_CAPACITOR_RS485.2",
+      "LM393_COMPARATOR.GND",
+      "POTENTIOMETER_1.END_B",
+      "TRIMMER_POTENTIOMETER.END_B",
+      "BZX55C5_A.A",
+      "BZX79C5_B.A",
+      "LEVEL_SHIFTER.GND",
+      "UART_HEADER.GND",
+      "DIP_SWITCH.S1A",
+      "DIP_SWITCH.S2A",
+      "DIP_SWITCH.S3A",
+      "DIP_SWITCH.S4A",
+      "LED_INDICATOR_TX.CATHODE",
+      "LED_INDICATOR_RX.CATHODE",
+      "HEADER_CONNECTOR.P10"
+    ],
+    "+5V": [
+      "PWR_5V.+",
+      "LEVEL_SHIFTER.HV",
+      "UART_HEADER.VCC",
+      "HEADER_CONNECTOR.P9"
+    ],
+    "NET_EN": [
+      "ESP32_WROOM.EN",
+      "R_10K_PULLUP_EN.1",
+      "EN_PUSH_BUTTON.1",
+      "RESET_CAPACITOR.1"
+    ],
+    "NET_BOOT": [
+      "ESP32_WROOM.GPIO0_BOOT",
+      "R_10K_PULLUP_BOOT.1",
+      "BOOT_PUSH_BUTTON.1"
+    ],
+    "NET_MAX485_RO": [
+      "MAX485.RO",
+      "ESP32_WROOM.GPIO16"
+    ],
+    "NET_MAX485_DI": [
+      "MAX485.DI",
+      "ESP32_WROOM.GPIO17"
+    ],
+    "NET_RS485_DIR": [
+      "MAX485.DE",
+      "MAX485./RE",
+      "ESP32_WROOM.GPIO4",
+      "R_RS485_DIR_PULLDOWN.1"
+    ],
+    "NET_RS485_A": [
+      "MAX485.A",
+      "R_120_RS485.1",
+      "TVS_DIODE_RS485.1",
+      "RS485_TERMINAL.A",
+      "RES_RS485_A_SENSE.1"
+    ],
+    "NET_RS485_B": [
+      "MAX485.B",
+      "R_120_RS485.2",
+      "TVS_DIODE_RS485.2",
+      "RS485_TERMINAL.B",
+      "RES_RS485_B_SENSE.1"
+    ],
+    "NET_LM393_COMPARATOR_OUT1": [
+      "LM393_COMPARATOR.OUT1",
+      "ESP32_WROOM.GPIO34",
+      "R_10K_PULLUP_COMP1.1"
+    ],
+    "NET_POTENTIOMETER_1_WIPER": [
+      "POTENTIOMETER_1.WIPER",
+      "LM393_COMPARATOR.IN1+"
+    ],
+    "NET_TRIMMER_POTENTIOMETER_WIPER": [
+      "TRIMMER_POTENTIOMETER.WIPER",
+      "LM393_COMPARATOR.IN1-"
+    ],
+    "NET_LM393_COMPARATOR_OUT2": [
+      "LM393_COMPARATOR.OUT2",
+      "ESP32_WROOM.GPIO35",
+      "R_10K_PULLUP_COMP2.1"
+    ],
+    "NET_RS485_A_SENSE": [
+      "LM393_COMPARATOR.IN2+",
+      "RES_RS485_A_SENSE.2",
+      "BZX55C5_A.K"
+    ],
+    "NET_RS485_B_SENSE": [
+      "LM393_COMPARATOR.IN2-",
+      "RES_RS485_B_SENSE.2",
+      "BZX79C5_B.K"
+    ],
+    "NET_ESP32_WROOM_GPIO21": [
+      "ESP32_WROOM.GPIO21",
+      "LEVEL_SHIFTER.L1"
+    ],
+    "NET_LEVEL_SHIFTER_H1": [
+      "LEVEL_SHIFTER.H1",
+      "UART_HEADER.RX"
+    ],
+    "NET_UART_HEADER_TX": [
+      "UART_HEADER.TX",
+      "LEVEL_SHIFTER.H2"
+    ],
+    "NET_LEVEL_SHIFTER_L2": [
+      "LEVEL_SHIFTER.L2",
+      "ESP32_WROOM.GPIO22"
+    ],
+    "NET_ESP32_WROOM_GPIO23": [
+      "ESP32_WROOM.GPIO23",
+      "LEVEL_SHIFTER.L3"
+    ],
+    "NET_LEVEL_SHIFTER_H3": [
+      "LEVEL_SHIFTER.H3",
+      "UART_HEADER.RTS"
+    ],
+    "NET_UART_HEADER_CTS": [
+      "UART_HEADER.CTS",
+      "LEVEL_SHIFTER.H4"
+    ],
+    "NET_LEVEL_SHIFTER_L4": [
+      "LEVEL_SHIFTER.L4",
+      "ESP32_WROOM.GPIO19"
+    ],
+    "NET_DIP_SWITCH_S1B": [
+      "DIP_SWITCH.S1B",
+      "ESP32_WROOM.GPIO25",
+      "R_10K_PULLUP_DIP1.1"
+    ],
+    "NET_DIP_SWITCH_S2B": [
+      "DIP_SWITCH.S2B",
+      "ESP32_WROOM.GPIO26",
+      "R_10K_PULLUP_DIP2.1"
+    ],
+    "NET_DIP_SWITCH_S3B": [
+      "DIP_SWITCH.S3B",
+      "ESP32_WROOM.GPIO27",
+      "R_10K_PULLUP_DIP3.1"
+    ],
+    "NET_DIP_SWITCH_S4B": [
+      "DIP_SWITCH.S4B",
+      "ESP32_WROOM.GPIO14",
+      "R_10K_PULLUP_DIP4.1"
+    ],
+    "NET_ESP32_WROOM_GPIO18": [
+      "ESP32_WROOM.GPIO18",
+      "R_220_TXLED.1"
+    ],
+    "NET_R_220_TXLED_2": [
+      "R_220_TXLED.2",
+      "LED_INDICATOR_TX.ANODE"
+    ],
+    "NET_ESP32_WROOM_GPIO5": [
+      "ESP32_WROOM.GPIO5",
+      "R_220_RXLED.1"
+    ],
+    "NET_R_220_RXLED_2": [
+      "R_220_RXLED.2",
+      "LED_INDICATOR_RX.ANODE"
+    ],
+    "NET_HEADER_CONNECTOR_P1": [
+      "HEADER_CONNECTOR.P1",
+      "ESP32_WROOM.GPIO32"
+    ],
+    "NET_HEADER_CONNECTOR_P2": [
+      "HEADER_CONNECTOR.P2",
+      "ESP32_WROOM.GPIO33"
+    ],
+    "NET_HEADER_CONNECTOR_P3": [
+      "HEADER_CONNECTOR.P3",
+      "ESP32_WROOM.GPIO36"
+    ],
+    "NET_HEADER_CONNECTOR_P4": [
+      "HEADER_CONNECTOR.P4",
+      "ESP32_WROOM.GPIO39"
+    ],
+    "NET_HEADER_CONNECTOR_P5": [
+      "HEADER_CONNECTOR.P5",
+      "ESP32_WROOM.GPIO12"
+    ],
+    "NET_HEADER_CONNECTOR_P6": [
+      "HEADER_CONNECTOR.P6",
+      "ESP32_WROOM.GPIO13"
+    ],
+    "NET_HEADER_CONNECTOR_P7": [
+      "HEADER_CONNECTOR.P7",
+      "ESP32_WROOM.GPIO15"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "PWR_3V3",
+          "kind": "PWR_3V3",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "PWR_5V",
+          "kind": "PWR_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "ESP32_WROOM",
+          "kind": "ESP32_WROOM",
+          "reason": "exact_catalog_kind",
+          "pin_count": 26
+        },
+        {
+          "ref": "R_10K_PULLUP_EN",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "EN_PUSH_BUTTON",
+          "kind": "EN_PUSH_BUTTON",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "RESET_CAPACITOR",
+          "kind": "RESET_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_BOOT",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "BOOT_PUSH_BUTTON",
+          "kind": "BOOT_PUSH_BUTTON",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "MAX485",
+          "kind": "MAX485",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "R_RS485_DIR_PULLDOWN",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_120_RS485",
+          "kind": "R_120_RS485",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "TVS_DIODE_RS485",
+          "kind": "TVS_DIODE_RS485",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "RS485_TERMINAL",
+          "kind": "RS485_TERMINAL",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_RS485",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "kind": "LM393_COMPARATOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "R_10K_PULLUP_COMP1",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "POTENTIOMETER_1",
+          "kind": "POTENTIOMETER",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 3
+        },
+        {
+          "ref": "TRIMMER_POTENTIOMETER",
+          "kind": "TRIMMER_POTENTIOMETER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "R_10K_PULLUP_COMP2",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_RS485_A_SENSE",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_RS485_B_SENSE",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "BZX55C5_A",
+          "kind": "BZX55C5",
+          "reason": "zener_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "BZX79C5_B",
+          "kind": "BZX79C5",
+          "reason": "zener_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "LEVEL_SHIFTER",
+          "kind": "LEVEL_SHIFTER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 11
+        },
+        {
+          "ref": "UART_HEADER",
+          "kind": "PROGRAMMING_HEADER",
+          "reason": "exact_header_ref_widened_for_pin_count",
+          "pin_count": 6
+        },
+        {
+          "ref": "DIP_SWITCH",
+          "kind": "DIP_SWITCH",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "R_10K_PULLUP_DIP1",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_DIP2",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_DIP3",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_DIP4",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_TXLED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_TX",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_RXLED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_RX",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "HEADER_CONNECTOR",
+          "kind": "PROGRAMMING_HEADER",
+          "reason": "exact_header_ref_widened_for_pin_count",
+          "pin_count": 10
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 108
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 35,
+    "net_count": 39,
+    "endpoint_count": 137,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

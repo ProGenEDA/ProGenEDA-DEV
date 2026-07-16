@@ -1,0 +1,825 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "m02",
+    "title": "Proteus Alias Logic Display Board",
+    "purpose": "new logic/display aliases plus existing shift-register, switch, resistor-network, and LED parts",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "M02",
+  "circuit_name": "Proteus Alias Logic Display Board",
+  "purpose": "new logic/display aliases plus existing shift-register, switch, resistor-network, and LED parts",
+  "components": [
+    {
+      "id": "G1",
+      "ref": "G1",
+      "kind": "GROUND",
+      "type": "GROUND",
+      "value": "Ground",
+      "role": "reference",
+      "block": "logic",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "V1",
+      "ref": "V1",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "5V logic supply",
+      "role": "source",
+      "block": "logic",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "PROGRAMMING_HEADER",
+      "type": "PROGRAMMING_HEADER",
+      "value": "Control header",
+      "role": "connector",
+      "block": "logic",
+      "pins": {
+        "1": "+5V",
+        "2": "GND",
+        "3": "CLK",
+        "4": "COUNTER_LOAD"
+      }
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "SPI_HEADER_FLASH",
+      "type": "SPI_HEADER_FLASH",
+      "value": "SPI/debug header",
+      "role": "connector",
+      "block": "logic",
+      "pins": {
+        "1": "+5V",
+        "2": "SHIFT_LATCH",
+        "3": "MUX_OUT",
+        "4": "ADDER_SUM",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "DS1",
+      "ref": "DS1",
+      "kind": "7SEGCOMA",
+      "type": "7SEGCOMA",
+      "value": "Common-anode display",
+      "role": "display",
+      "block": "display",
+      "pins": {
+        "1": "SEG_CA_A",
+        "10": "+5V",
+        "2": "SEG_CA_B",
+        "3": "SEG_CA_C",
+        "4": "SEG_CA_D",
+        "5": "SEG_CA_E",
+        "6": "SEG_CA_F",
+        "7": "SEG_CA_G"
+      }
+    },
+    {
+      "id": "DS2",
+      "ref": "DS2",
+      "kind": "7SEGCOMK",
+      "type": "7SEGCOMK",
+      "value": "Common-cathode display",
+      "role": "display",
+      "block": "display",
+      "pins": {
+        "1": "SEG_CK_A",
+        "10": "GND",
+        "2": "SEG_CK_B",
+        "3": "SEG_CK_C",
+        "4": "SEG_CK_D",
+        "5": "SEG_CK_E",
+        "6": "SEG_CK_F",
+        "7": "SEG_CK_G"
+      }
+    },
+    {
+      "id": "U4027",
+      "ref": "U4027",
+      "kind": "4027",
+      "type": "4027",
+      "value": "CD4027",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "JK_Q",
+        "16": "+5V",
+        "3": "CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U4511",
+      "ref": "U4511",
+      "kind": "4511",
+      "type": "4511",
+      "value": "CD4511",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "BCD_B",
+        "10": "SEG_CK_D",
+        "11": "SEG_CK_C",
+        "12": "SEG_CK_B",
+        "13": "SEG_CK_A",
+        "14": "SEG_CK_G",
+        "15": "SEG_CK_F",
+        "16": "+5V",
+        "2": "BCD_C",
+        "6": "BCD_D",
+        "7": "BCD_A",
+        "8": "GND",
+        "9": "SEG_CK_E"
+      }
+    },
+    {
+      "id": "U7447",
+      "ref": "U7447",
+      "kind": "7447",
+      "type": "7447",
+      "value": "7447",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "BCD_B",
+        "10": "SEG_CA_D",
+        "11": "SEG_CA_C",
+        "12": "SEG_CA_B",
+        "13": "SEG_CA_A",
+        "14": "SEG_CA_G",
+        "15": "SEG_CA_F",
+        "2": "BCD_C",
+        "6": "BCD_D",
+        "7": "BCD_A",
+        "9": "SEG_CA_E"
+      }
+    },
+    {
+      "id": "U7490",
+      "ref": "U7490",
+      "kind": "7490",
+      "type": "7490",
+      "value": "7490",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "11": "BCD_D",
+        "12": "BCD_A",
+        "14": "CLK",
+        "8": "BCD_C",
+        "9": "BCD_B"
+      }
+    },
+    {
+      "id": "U00",
+      "ref": "U00",
+      "kind": "74HC00",
+      "type": "74HC00",
+      "value": "74HC00",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "DATA_A",
+        "14": "+5V",
+        "2": "DATA_B",
+        "3": "NAND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U02",
+      "ref": "U02",
+      "kind": "74HC02",
+      "type": "74HC02",
+      "value": "74HC02",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "DATA_A",
+        "14": "+5V",
+        "2": "DATA_B",
+        "3": "NOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U04",
+      "ref": "U04",
+      "kind": "74HC04",
+      "type": "74HC04",
+      "value": "74HC04",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "DATA_A",
+        "14": "+5V",
+        "2": "INV_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U08",
+      "ref": "U08",
+      "kind": "74HC08",
+      "type": "74HC08",
+      "value": "74HC08",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "DATA_A",
+        "14": "+5V",
+        "2": "DATA_B",
+        "3": "AND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U32",
+      "ref": "U32",
+      "kind": "74HC32",
+      "type": "74HC32",
+      "value": "74HC32",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "DATA_A",
+        "14": "+5V",
+        "2": "DATA_B",
+        "3": "OR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U74",
+      "ref": "U74",
+      "kind": "74HC74",
+      "type": "74HC74",
+      "value": "74HC74",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "14": "+5V",
+        "2": "NAND_OUT",
+        "3": "CLK",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U76",
+      "ref": "U76",
+      "kind": "74HC76",
+      "type": "74HC76",
+      "value": "74HC76",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "CLK",
+        "13": "+5V",
+        "2": "NOR_OUT",
+        "5": "GND"
+      }
+    },
+    {
+      "id": "U85",
+      "ref": "U85",
+      "kind": "74HC85",
+      "type": "74HC85",
+      "value": "74HC85",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "10": "INV_OUT",
+        "16": "+5V",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U86",
+      "ref": "U86",
+      "kind": "74HC86",
+      "type": "74HC86",
+      "value": "74HC86",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "DATA_A",
+        "14": "+5V",
+        "2": "DATA_B",
+        "3": "XOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U151",
+      "ref": "U151",
+      "kind": "74HC151",
+      "type": "74HC151",
+      "value": "74HC151",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "16": "+5V",
+        "3": "DATA_B",
+        "4": "DATA_A",
+        "5": "AND_OUT",
+        "6": "MUX_OUT",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U157",
+      "ref": "U157",
+      "kind": "74HC157",
+      "type": "74HC157",
+      "value": "74HC157",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "16": "+5V",
+        "2": "DATA_A",
+        "3": "DATA_B",
+        "4": "OR_OUT",
+        "7": "MUX_OUT",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U160",
+      "ref": "U160",
+      "kind": "74HC160",
+      "type": "74HC160",
+      "value": "74HC160",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "11": "BCD_D",
+        "12": "BCD_C",
+        "13": "BCD_B",
+        "14": "BCD_A",
+        "16": "+5V",
+        "2": "CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U174",
+      "ref": "U174",
+      "kind": "74HC174",
+      "type": "74HC174",
+      "value": "74HC174",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "16": "+5V",
+        "2": "RGB_R",
+        "3": "XOR_OUT",
+        "5": "RGB_G",
+        "6": "RGB_B",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U192",
+      "ref": "U192",
+      "kind": "74HC192",
+      "type": "74HC192",
+      "value": "74HC192",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "11": "COUNTER_LOAD",
+        "16": "+5V",
+        "4": "CLK",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U266",
+      "ref": "U266",
+      "kind": "74HC266",
+      "type": "74HC266",
+      "value": "74HC266",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "DATA_A",
+        "14": "+5V",
+        "2": "DATA_B",
+        "3": "XNOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U283",
+      "ref": "U283",
+      "kind": "74HC283",
+      "type": "74HC283",
+      "value": "74HC283",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "XNOR_OUT",
+        "10": "ADDER_SUM",
+        "11": "ADDER_SUM",
+        "16": "+5V",
+        "3": "DATA_B",
+        "5": "DATA_A",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U595",
+      "ref": "U595",
+      "kind": "74HC595_SHIFT_REGISTER",
+      "type": "74HC595_SHIFT_REGISTER",
+      "value": "74HC595",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "16": "+5V",
+        "8": "GND",
+        "MR": "+5V",
+        "OE": "GND",
+        "Q0": "BCD_A",
+        "Q1": "BCD_B",
+        "Q2": "BCD_C",
+        "Q3": "BCD_D",
+        "Q7": "LED_LOGIC_A",
+        "SER": "JK_Q",
+        "SHCP": "CLK",
+        "STCP": "SHIFT_LATCH"
+      }
+    },
+    {
+      "id": "SW1",
+      "ref": "SW1",
+      "kind": "DIP_SWITCH",
+      "type": "DIP_SWITCH",
+      "value": "DIP switch",
+      "role": "input",
+      "block": "logic",
+      "pins": {
+        "1": "GND",
+        "2": "DATA_A",
+        "3": "DATA_B"
+      }
+    },
+    {
+      "id": "RN1",
+      "ref": "RN1",
+      "kind": "RESISTOR_NETWORK",
+      "type": "RESISTOR_NETWORK",
+      "value": "Resistor network",
+      "role": "resistor",
+      "block": "logic",
+      "pins": {
+        "2": "NAND_OUT",
+        "3": "NOR_OUT",
+        "4": "INV_OUT",
+        "5": "AND_OUT",
+        "6": "OR_OUT",
+        "7": "XOR_OUT",
+        "8": "XNOR_OUT",
+        "COM": "+5V"
+      }
+    },
+    {
+      "id": "DARR1",
+      "ref": "DARR1",
+      "kind": "LED_ARRAY",
+      "type": "LED_ARRAY",
+      "value": "RGB LED array",
+      "role": "indicator",
+      "block": "display",
+      "pins": {
+        "1": "RGB_R",
+        "2": "RGB_G",
+        "3": "RGB_B",
+        "4": "GND"
+      }
+    },
+    {
+      "id": "LED1",
+      "ref": "LED1",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "Logic LED",
+      "role": "indicator",
+      "block": "display",
+      "pins": {
+        "A": "LED_LOGIC_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "display",
+      "pins": {
+        "1": "+5V",
+        "2": "LED_LOGIC_A"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "V1.1",
+      "J1.1",
+      "J2.1",
+      "DS1.10",
+      "U4027.16",
+      "U4511.16",
+      "U00.14",
+      "U02.14",
+      "U04.14",
+      "U08.14",
+      "U32.14",
+      "U74.14",
+      "U76.13",
+      "U85.16",
+      "U86.14",
+      "U151.16",
+      "U157.16",
+      "U160.16",
+      "U174.16",
+      "U192.16",
+      "U266.14",
+      "U283.16",
+      "U595.16",
+      "U595.MR",
+      "RN1.COM",
+      "R1.1"
+    ],
+    "GND": [
+      "G1.1",
+      "V1.2",
+      "J1.2",
+      "J2.6",
+      "DS2.10",
+      "U4027.8",
+      "U4511.8",
+      "U00.7",
+      "U02.7",
+      "U04.7",
+      "U08.7",
+      "U32.7",
+      "U74.7",
+      "U76.5",
+      "U85.8",
+      "U86.7",
+      "U151.8",
+      "U157.8",
+      "U160.8",
+      "U174.8",
+      "U192.8",
+      "U266.7",
+      "U283.8",
+      "U595.8",
+      "U595.OE",
+      "SW1.1",
+      "DARR1.4",
+      "LED1.K"
+    ],
+    "CLK": [
+      "J1.3",
+      "U4027.3",
+      "U7490.14",
+      "U160.2",
+      "U192.4",
+      "U74.3",
+      "U76.1",
+      "U595.SHCP"
+    ],
+    "DATA_A": [
+      "SW1.2",
+      "U00.1",
+      "U02.1",
+      "U04.1",
+      "U08.1",
+      "U32.1",
+      "U86.1",
+      "U266.1",
+      "U151.4",
+      "U157.2",
+      "U283.5"
+    ],
+    "DATA_B": [
+      "SW1.3",
+      "U00.2",
+      "U02.2",
+      "U08.2",
+      "U32.2",
+      "U86.2",
+      "U266.2",
+      "U151.3",
+      "U157.3",
+      "U283.3"
+    ],
+    "NAND_OUT": [
+      "U00.3",
+      "U74.2",
+      "RN1.2"
+    ],
+    "NOR_OUT": [
+      "U02.3",
+      "U76.2",
+      "RN1.3"
+    ],
+    "INV_OUT": [
+      "U04.2",
+      "U85.10",
+      "RN1.4"
+    ],
+    "AND_OUT": [
+      "U08.3",
+      "U151.5",
+      "RN1.5"
+    ],
+    "OR_OUT": [
+      "U32.3",
+      "U157.4",
+      "RN1.6"
+    ],
+    "XOR_OUT": [
+      "U86.3",
+      "U174.3",
+      "RN1.7"
+    ],
+    "XNOR_OUT": [
+      "U266.3",
+      "U283.1",
+      "RN1.8"
+    ],
+    "JK_Q": [
+      "U4027.1",
+      "U595.SER"
+    ],
+    "SHIFT_LATCH": [
+      "J2.2",
+      "U595.STCP"
+    ],
+    "BCD_A": [
+      "U7490.12",
+      "U160.14",
+      "U4511.7",
+      "U7447.7",
+      "U595.Q0"
+    ],
+    "BCD_B": [
+      "U7490.9",
+      "U160.13",
+      "U4511.1",
+      "U7447.1",
+      "U595.Q1"
+    ],
+    "BCD_C": [
+      "U7490.8",
+      "U160.12",
+      "U4511.2",
+      "U7447.2",
+      "U595.Q2"
+    ],
+    "BCD_D": [
+      "U7490.11",
+      "U160.11",
+      "U4511.6",
+      "U7447.6",
+      "U595.Q3"
+    ],
+    "SEG_CA_A": [
+      "U7447.13",
+      "DS1.1"
+    ],
+    "SEG_CA_B": [
+      "U7447.12",
+      "DS1.2"
+    ],
+    "SEG_CA_C": [
+      "U7447.11",
+      "DS1.3"
+    ],
+    "SEG_CA_D": [
+      "U7447.10",
+      "DS1.4"
+    ],
+    "SEG_CA_E": [
+      "U7447.9",
+      "DS1.5"
+    ],
+    "SEG_CA_F": [
+      "U7447.15",
+      "DS1.6"
+    ],
+    "SEG_CA_G": [
+      "U7447.14",
+      "DS1.7"
+    ],
+    "SEG_CK_A": [
+      "U4511.13",
+      "DS2.1"
+    ],
+    "SEG_CK_B": [
+      "U4511.12",
+      "DS2.2"
+    ],
+    "SEG_CK_C": [
+      "U4511.11",
+      "DS2.3"
+    ],
+    "SEG_CK_D": [
+      "U4511.10",
+      "DS2.4"
+    ],
+    "SEG_CK_E": [
+      "U4511.9",
+      "DS2.5"
+    ],
+    "SEG_CK_F": [
+      "U4511.15",
+      "DS2.6"
+    ],
+    "SEG_CK_G": [
+      "U4511.14",
+      "DS2.7"
+    ],
+    "LED_LOGIC_A": [
+      "R1.2",
+      "LED1.A",
+      "U595.Q7"
+    ],
+    "RGB_R": [
+      "U174.2",
+      "DARR1.1"
+    ],
+    "RGB_G": [
+      "U174.5",
+      "DARR1.2"
+    ],
+    "RGB_B": [
+      "U174.6",
+      "DARR1.3"
+    ],
+    "MUX_OUT": [
+      "U151.6",
+      "U157.7",
+      "J2.3"
+    ],
+    "COUNTER_LOAD": [
+      "U192.11",
+      "J1.4"
+    ],
+    "ADDER_SUM": [
+      "U283.10",
+      "U283.11",
+      "J2.4"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 32,
+    "net_count": 39,
+    "endpoint_count": 173,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

@@ -1,0 +1,709 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n08",
+    "title": "DC/USB POWER SUPPLY + BUCK 5V + LM317 3V3 + LI-ION CHARGER",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N08",
+  "circuit_name": "DC/USB POWER SUPPLY + BUCK 5V + LM317 3V3 + LI-ION CHARGER",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "DC_BARREL_JACK",
+      "ref": "DC_BARREL_JACK",
+      "kind": "DC_BARREL_JACK",
+      "value": "DC Barrel Jack"
+    },
+    {
+      "id": "FUSE",
+      "ref": "FUSE",
+      "kind": "FUSE",
+      "value": "Fuse"
+    },
+    {
+      "id": "BRIDGE_RECTIFIER",
+      "ref": "BRIDGE_RECTIFIER",
+      "kind": "BRIDGE_RECTIFIER",
+      "value": "Bridge Rectifier"
+    },
+    {
+      "id": "INPUT_CAPACITOR_BUCK",
+      "ref": "INPUT_CAPACITOR_BUCK",
+      "kind": "INPUT_CAPACITOR_BUCK",
+      "value": "100uF"
+    },
+    {
+      "id": "C_100NF_BUCK_IN",
+      "ref": "C_100NF_BUCK_IN",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF"
+    },
+    {
+      "id": "LM2596",
+      "ref": "LM2596",
+      "kind": "LM2596",
+      "value": "LM2596"
+    },
+    {
+      "id": "POWER_INDUCTOR",
+      "ref": "POWER_INDUCTOR",
+      "kind": "POWER_INDUCTOR",
+      "value": "Power Inductor"
+    },
+    {
+      "id": "SCHOTTKY_DIODE_BUCK",
+      "ref": "SCHOTTKY_DIODE_BUCK",
+      "kind": "SCHOTTKY_DIODE_BUCK",
+      "value": "Schottky Diode"
+    },
+    {
+      "id": "OUTPUT_CAPACITOR_BUCK",
+      "ref": "OUTPUT_CAPACITOR_BUCK",
+      "kind": "OUTPUT_CAPACITOR_BUCK",
+      "value": "100uF"
+    },
+    {
+      "id": "FEEDBACK_RESISTOR_TOP",
+      "ref": "FEEDBACK_RESISTOR_TOP",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "FEEDBACK_RESISTOR_BOTTOM",
+      "ref": "FEEDBACK_RESISTOR_BOTTOM",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "LM7805",
+      "ref": "LM7805",
+      "kind": "LM7805",
+      "value": "LM7805 Voltage Regulator"
+    },
+    {
+      "id": "CAP_7805_IN",
+      "ref": "CAP_7805_IN",
+      "kind": "C_100NF_CERAMIC",
+      "value": "Capacitor"
+    },
+    {
+      "id": "CAP_7805_OUT",
+      "ref": "CAP_7805_OUT",
+      "kind": "C_100NF_CERAMIC",
+      "value": "Capacitor"
+    },
+    {
+      "id": "SCHOTTKY_OR_BUCK",
+      "ref": "SCHOTTKY_OR_BUCK",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "SCHOTTKY_OR_7805",
+      "ref": "SCHOTTKY_OR_7805",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "USB_C_CONNECTOR",
+      "ref": "USB_C_CONNECTOR",
+      "kind": "USB_C_CONNECTOR",
+      "value": "USB Type-C Connector"
+    },
+    {
+      "id": "POLYFUSE",
+      "ref": "POLYFUSE",
+      "kind": "POLYFUSE",
+      "value": "Polyfuse Resettable Fuse"
+    },
+    {
+      "id": "RES_USB_CC1",
+      "ref": "RES_USB_CC1",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "RES_USB_CC2",
+      "ref": "RES_USB_CC2",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "TEST_POINT_USB_DP",
+      "ref": "TEST_POINT_USB_DP",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_USB_DM",
+      "ref": "TEST_POINT_USB_DM",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "SCHOTTKY_OR_USB",
+      "ref": "SCHOTTKY_OR_USB",
+      "kind": "PIN_HEADER",
+      "value": "Pin Header"
+    },
+    {
+      "id": "LM317",
+      "ref": "LM317",
+      "kind": "LM317",
+      "value": "LM317 Adjustable Regulator"
+    },
+    {
+      "id": "RES_LM317_TOP",
+      "ref": "RES_LM317_TOP",
+      "kind": "RES",
+      "value": "240 ohm"
+    },
+    {
+      "id": "RES_LM317_BOTTOM",
+      "ref": "RES_LM317_BOTTOM",
+      "kind": "RES",
+      "value": "1.2k"
+    },
+    {
+      "id": "INPUT_CAPACITOR_LM317",
+      "ref": "INPUT_CAPACITOR_LM317",
+      "kind": "CAP",
+      "value": "Capacitor"
+    },
+    {
+      "id": "OUTPUT_CAPACITOR_LM317",
+      "ref": "OUTPUT_CAPACITOR_LM317",
+      "kind": "CAP",
+      "value": "Capacitor"
+    },
+    {
+      "id": "TP4056",
+      "ref": "TP4056",
+      "kind": "TP4056",
+      "value": "TP4056 Charger IC"
+    },
+    {
+      "id": "LI_ION_BATTERY_CONNECTOR",
+      "ref": "LI_ION_BATTERY_CONNECTOR",
+      "kind": "LI_ION_BATTERY_CONNECTOR",
+      "value": "Li-Ion Battery Connector"
+    },
+    {
+      "id": "CHARGING_LED",
+      "ref": "CHARGING_LED",
+      "kind": "CHARGING_LED",
+      "value": "Charging LED"
+    },
+    {
+      "id": "R_CHG_LED",
+      "ref": "R_CHG_LED",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "POWER_LED",
+      "ref": "POWER_LED",
+      "kind": "POWER_LED",
+      "value": "Power LED"
+    },
+    {
+      "id": "R_PWR_LED",
+      "ref": "R_PWR_LED",
+      "kind": "RES",
+      "value": "Resistor"
+    },
+    {
+      "id": "PWR_5V",
+      "ref": "PWR_5V",
+      "kind": "PWR_5V",
+      "value": "+5V Power Symbol"
+    },
+    {
+      "id": "PWR_3V3",
+      "ref": "PWR_3V3",
+      "kind": "PWR_3V3",
+      "value": "+3V3 Power Symbol"
+    },
+    {
+      "id": "TERMINAL_BLOCK_5V",
+      "ref": "TERMINAL_BLOCK_5V",
+      "kind": "TERMINAL_BLOCK",
+      "value": "Terminal Block"
+    },
+    {
+      "id": "TERMINAL_BLOCK_3V3",
+      "ref": "TERMINAL_BLOCK_3V3",
+      "kind": "TERMINAL_BLOCK",
+      "value": "Terminal Block"
+    },
+    {
+      "id": "TEST_POINT_RAW",
+      "ref": "TEST_POINT_RAW",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_5V",
+      "ref": "TEST_POINT_5V",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_3V3",
+      "ref": "TEST_POINT_3V3",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    },
+    {
+      "id": "TEST_POINT_GND",
+      "ref": "TEST_POINT_GND",
+      "kind": "TEST_POINT",
+      "value": "Test Point"
+    }
+  ],
+  "nets": {
+    "NET_DC_BARREL_JACK_CENTER": [
+      "DC_BARREL_JACK.CENTER",
+      "FUSE.1"
+    ],
+    "NET_DC_IN": [
+      "FUSE.2",
+      "BRIDGE_RECTIFIER.AC1"
+    ],
+    "NET_DC_RETURN": [
+      "DC_BARREL_JACK.SLEEVE",
+      "BRIDGE_RECTIFIER.AC2"
+    ],
+    "NET_RAW_DC": [
+      "BRIDGE_RECTIFIER.+",
+      "INPUT_CAPACITOR_BUCK.POS",
+      "C_100NF_BUCK_IN.1",
+      "LM2596.VIN",
+      "LM2596.EN",
+      "LM7805.IN",
+      "CAP_7805_IN.1",
+      "TEST_POINT_RAW.TP"
+    ],
+    "GND": [
+      "BRIDGE_RECTIFIER.-",
+      "INPUT_CAPACITOR_BUCK.NEG",
+      "C_100NF_BUCK_IN.2",
+      "LM2596.GND",
+      "SCHOTTKY_DIODE_BUCK.ANODE",
+      "OUTPUT_CAPACITOR_BUCK.NEG",
+      "FEEDBACK_RESISTOR_BOTTOM.2",
+      "LM7805.GND",
+      "CAP_7805_IN.2",
+      "CAP_7805_OUT.2",
+      "USB_C_CONNECTOR.GND",
+      "RES_USB_CC1.2",
+      "RES_USB_CC2.2",
+      "RES_LM317_BOTTOM.2",
+      "INPUT_CAPACITOR_LM317.2",
+      "OUTPUT_CAPACITOR_LM317.2",
+      "TP4056.IN-",
+      "TP4056.B-",
+      "LI_ION_BATTERY_CONNECTOR.-",
+      "TP4056.OUT-",
+      "R_PWR_LED.2",
+      "PWR_5V.-",
+      "PWR_3V3.-",
+      "TERMINAL_BLOCK_5V.-",
+      "TERMINAL_BLOCK_3V3.-",
+      "TEST_POINT_GND.TP"
+    ],
+    "NET_BUCK_SW": [
+      "LM2596.SW",
+      "POWER_INDUCTOR.1",
+      "SCHOTTKY_DIODE_BUCK.CATHODE"
+    ],
+    "NET_BUCK_FB": [
+      "LM2596.FB",
+      "FEEDBACK_RESISTOR_TOP.2",
+      "FEEDBACK_RESISTOR_BOTTOM.1"
+    ],
+    "NET_BUCK_5V": [
+      "POWER_INDUCTOR.2",
+      "OUTPUT_CAPACITOR_BUCK.POS",
+      "FEEDBACK_RESISTOR_TOP.1",
+      "SCHOTTKY_OR_BUCK.ANODE"
+    ],
+    "NET_7805_5V": [
+      "LM7805.OUT",
+      "CAP_7805_OUT.1",
+      "SCHOTTKY_OR_7805.ANODE"
+    ],
+    "NET_5V_SYS": [
+      "SCHOTTKY_OR_BUCK.CATHODE",
+      "SCHOTTKY_OR_7805.CATHODE",
+      "SCHOTTKY_OR_USB.CATHODE",
+      "LM317.IN",
+      "INPUT_CAPACITOR_LM317.1",
+      "POWER_LED.ANODE",
+      "PWR_5V.+",
+      "TERMINAL_BLOCK_5V.+",
+      "TEST_POINT_5V.TP"
+    ],
+    "NET_USB_C_CONNECTOR_VBUS": [
+      "USB_C_CONNECTOR.VBUS",
+      "POLYFUSE.1"
+    ],
+    "NET_USB_5V": [
+      "POLYFUSE.2",
+      "SCHOTTKY_OR_USB.ANODE",
+      "TP4056.IN+",
+      "CHARGING_LED.ANODE"
+    ],
+    "NET_USB_C_CONNECTOR_CC1": [
+      "USB_C_CONNECTOR.CC1",
+      "RES_USB_CC1.1"
+    ],
+    "NET_USB_C_CONNECTOR_CC2": [
+      "USB_C_CONNECTOR.CC2",
+      "RES_USB_CC2.1"
+    ],
+    "NET_USB_C_CONNECTOR_D": [
+      "USB_C_CONNECTOR.D+",
+      "TEST_POINT_USB_DP.TP"
+    ],
+    "NET_USB_C_CONNECTOR_D_2": [
+      "USB_C_CONNECTOR.D-",
+      "TEST_POINT_USB_DM.TP"
+    ],
+    "NET_3V3_SYS": [
+      "LM317.OUT",
+      "RES_LM317_TOP.1",
+      "OUTPUT_CAPACITOR_LM317.1",
+      "PWR_3V3.+",
+      "TERMINAL_BLOCK_3V3.+",
+      "TEST_POINT_3V3.TP"
+    ],
+    "NET_LM317_ADJ": [
+      "LM317.ADJ",
+      "RES_LM317_TOP.2",
+      "RES_LM317_BOTTOM.1"
+    ],
+    "NET_BAT_PLUS": [
+      "TP4056.B+",
+      "LI_ION_BATTERY_CONNECTOR.+"
+    ],
+    "NET_CHARGING_LED_CATHODE": [
+      "CHARGING_LED.CATHODE",
+      "R_CHG_LED.1"
+    ],
+    "NET_R_CHG_LED_2": [
+      "R_CHG_LED.2",
+      "TP4056.CHRG"
+    ],
+    "NET_POWER_LED_CATHODE": [
+      "POWER_LED.CATHODE",
+      "R_PWR_LED.1"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "DC_BARREL_JACK",
+          "kind": "DC_BARREL_JACK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "FUSE",
+          "kind": "FUSE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "BRIDGE_RECTIFIER",
+          "kind": "BRIDGE_RECTIFIER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "INPUT_CAPACITOR_BUCK",
+          "kind": "INPUT_CAPACITOR_BUCK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C_100NF_BUCK_IN",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "LM2596",
+          "kind": "LM2596",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "POWER_INDUCTOR",
+          "kind": "POWER_INDUCTOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCHOTTKY_DIODE_BUCK",
+          "kind": "SCHOTTKY_DIODE_BUCK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_BUCK",
+          "kind": "OUTPUT_CAPACITOR_BUCK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_TOP",
+          "kind": "PIN_HEADER",
+          "reason": "fallback_pin_header_for_unknown_ref",
+          "pin_count": 2
+        },
+        {
+          "ref": "FEEDBACK_RESISTOR_BOTTOM",
+          "kind": "PIN_HEADER",
+          "reason": "fallback_pin_header_for_unknown_ref",
+          "pin_count": 2
+        },
+        {
+          "ref": "LM7805",
+          "kind": "LM7805",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "CAP_7805_IN",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "CAP_7805_OUT",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCHOTTKY_OR_BUCK",
+          "kind": "PIN_HEADER",
+          "reason": "fallback_pin_header_for_unknown_ref",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCHOTTKY_OR_7805",
+          "kind": "PIN_HEADER",
+          "reason": "fallback_pin_header_for_unknown_ref",
+          "pin_count": 2
+        },
+        {
+          "ref": "USB_C_CONNECTOR",
+          "kind": "USB_C_CONNECTOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 6
+        },
+        {
+          "ref": "POLYFUSE",
+          "kind": "POLYFUSE",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_USB_CC1",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_USB_CC2",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "TEST_POINT_USB_DP",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_USB_DM",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "SCHOTTKY_OR_USB",
+          "kind": "PIN_HEADER",
+          "reason": "fallback_pin_header_for_unknown_ref",
+          "pin_count": 2
+        },
+        {
+          "ref": "LM317",
+          "kind": "LM317",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "RES_LM317_TOP",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_LM317_BOTTOM",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "INPUT_CAPACITOR_LM317",
+          "kind": "CAP",
+          "reason": "generic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "OUTPUT_CAPACITOR_LM317",
+          "kind": "CAP",
+          "reason": "generic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "TP4056",
+          "kind": "TP4056",
+          "reason": "exact_catalog_kind",
+          "pin_count": 7
+        },
+        {
+          "ref": "LI_ION_BATTERY_CONNECTOR",
+          "kind": "LI_ION_BATTERY_CONNECTOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "CHARGING_LED",
+          "kind": "CHARGING_LED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_CHG_LED",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "POWER_LED",
+          "kind": "POWER_LED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_PWR_LED",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "PWR_5V",
+          "kind": "PWR_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "PWR_3V3",
+          "kind": "PWR_3V3",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "TERMINAL_BLOCK_5V",
+          "kind": "TERMINAL_BLOCK",
+          "reason": "terminal_block_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "TERMINAL_BLOCK_3V3",
+          "kind": "TERMINAL_BLOCK",
+          "reason": "terminal_block_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "TEST_POINT_RAW",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_5V",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_3V3",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_GND",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 85
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 42,
+    "net_count": 22,
+    "endpoint_count": 93,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

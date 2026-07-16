@@ -1,0 +1,1498 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "pin_collision_policy": "exact pin cells are reserved so routes do not pass through other nets' pins",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 921.98,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "AMP_FEEDBACK": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "Q2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            657.86,
+            142.24
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin1"
+        },
+        {
+          "ref": "AMP",
+          "pin": "IN_MINUS",
+          "side": "left",
+          "point": [
+            736.6,
+            149.86
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin2"
+        },
+        {
+          "ref": "AMP",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            751.84,
+            147.32
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "BUFFER_FEEDBACK": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "BUF",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            353.06,
+            142.24
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin2"
+        },
+        {
+          "ref": "BUF",
+          "pin": "6",
+          "side": "right",
+          "point": [
+            368.3,
+            139.7
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin6"
+        },
+        {
+          "ref": "AMP",
+          "pin": "IN_PLUS",
+          "side": "left",
+          "point": [
+            736.6,
+            144.78
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: BUFFER_FEEDBACK exceeded 50000 explored grid states."
+      ]
+    },
+    "SPI_SCK": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "CAN",
+          "pin": "SCK",
+          "side": "left",
+          "point": [
+            299.72,
+            139.7
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+        },
+        {
+          "ref": "MCU",
+          "pin": "SCK",
+          "side": "bottom",
+          "point": [
+            490.22,
+            165.1
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "CLK",
+          "side": "left",
+          "point": [
+            685.8,
+            142.24
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: SPI_SCK exceeded 50000 explored grid states."
+      ]
+    },
+    "CANH": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "J_CAN",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            182.88
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "CANPHY",
+          "pin": "CANH",
+          "side": "right",
+          "point": [
+            419.1,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "CANL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J_CAN",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            185.42
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "CANPHY",
+          "pin": "CANL",
+          "side": "right",
+          "point": [
+            419.1,
+            149.86
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: CANL exceeded 50000 explored grid states."
+      ]
+    },
+    "CAN_INT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "CAN",
+          "pin": "INT",
+          "side": "right",
+          "point": [
+            330.2,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+        },
+        {
+          "ref": "TP1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            360.68,
+            167.64
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        },
+        {
+          "ref": "ESP",
+          "pin": "IO4",
+          "side": "top",
+          "point": [
+            817.88,
+            127.0
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin26"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: CAN_INT exceeded 50000 explored grid states."
+      ]
+    },
+    "CAN_RXD": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "CAN",
+          "pin": "RXCAN",
+          "side": "right",
+          "point": [
+            330.2,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+        },
+        {
+          "ref": "CANPHY",
+          "pin": "RXD",
+          "side": "left",
+          "point": [
+            393.7,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "CAN_TXD": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "CAN",
+          "pin": "TXCAN",
+          "side": "right",
+          "point": [
+            330.2,
+            134.62
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin1"
+        },
+        {
+          "ref": "CANPHY",
+          "pin": "TXD",
+          "side": "left",
+          "point": [
+            393.7,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "DIODE_TO_BUFFER": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "D1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            34.29,
+            162.56
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin2"
+        },
+        {
+          "ref": "BUF",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            353.06,
+            137.16
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin3"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "I2C_SCL": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "BME",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            243.84,
+            144.78
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin4"
+        },
+        {
+          "ref": "MCU",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            515.62,
+            160.02
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin24"
+        },
+        {
+          "ref": "RTC",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            553.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin16"
+        },
+        {
+          "ref": "ESP",
+          "pin": "IO22",
+          "side": "right",
+          "point": [
+            817.88,
+            154.94
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin36"
+        },
+        {
+          "ref": "OLED",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            850.9,
+            152.4
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin18"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: I2C_SCL exceeded 50000 explored grid states."
+      ]
+    },
+    "I2C_SDA": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "BME",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            243.84,
+            149.86
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin3"
+        },
+        {
+          "ref": "MCU",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            515.62,
+            157.48
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin23"
+        },
+        {
+          "ref": "RTC",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            553.72,
+            144.78
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin15"
+        },
+        {
+          "ref": "ESP",
+          "pin": "IO21",
+          "side": "right",
+          "point": [
+            817.88,
+            152.4
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin33"
+        },
+        {
+          "ref": "OLED",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            850.9,
+            154.94
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin19"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: I2C_SDA exceeded 50000 explored grid states."
+      ]
+    },
+    "LOAD_LOW": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "L1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin1"
+        },
+        {
+          "ref": "Q1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            441.96,
+            147.32
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin2"
+        },
+        {
+          "ref": "Q2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            650.24,
+            147.32
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "LOAD_OUT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            60.96,
+            157.48
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "L1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for LOAD_OUT."
+      ]
+    },
+    "RS485_A": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "J_RS485",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        },
+        {
+          "ref": "RS485",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            627.38,
+            139.7
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "RS485_B": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J_RS485",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        },
+        {
+          "ref": "RS485",
+          "pin": "B",
+          "side": "right",
+          "point": [
+            627.38,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RS485_B."
+      ]
+    },
+    "RS485_DE_RE": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "RS485",
+          "pin": "RE",
+          "side": "left",
+          "point": [
+            607.06,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin2"
+        },
+        {
+          "ref": "RS485",
+          "pin": "DE",
+          "side": "left",
+          "point": [
+            607.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin3"
+        },
+        {
+          "ref": "ESP",
+          "pin": "IO23",
+          "side": "right",
+          "point": [
+            817.88,
+            157.48
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: RS485_DE_RE exceeded 50000 explored grid states."
+      ]
+    },
+    "RS485_DI": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "D3",
+          "side": "left",
+          "point": [
+            490.22,
+            139.7
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+        },
+        {
+          "ref": "RS485",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            607.06,
+            152.4
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin4"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RS485_DI."
+      ]
+    },
+    "RS485_RO": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "D2",
+          "side": "left",
+          "point": [
+            490.22,
+            137.16
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+        },
+        {
+          "ref": "RS485",
+          "pin": "RO",
+          "side": "left",
+          "point": [
+            607.06,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for RS485_RO."
+      ]
+    },
+    "SPI_CS_CAN": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "CAN",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            299.72,
+            137.16
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin16"
+        },
+        {
+          "ref": "ESP",
+          "pin": "IO5",
+          "side": "right",
+          "point": [
+            817.88,
+            129.54
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin29"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_CS_CAN."
+      ]
+    },
+    "SPI_CS_FLASH": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "MCU",
+          "pin": "D10",
+          "side": "left",
+          "point": [
+            490.22,
+            157.48
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            685.8,
+            139.7
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_CS_FLASH."
+      ]
+    },
+    "SPI_MISO": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "CAN",
+          "pin": "SO",
+          "side": "left",
+          "point": [
+            299.72,
+            134.62
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin15"
+        },
+        {
+          "ref": "MCU",
+          "pin": "MISO",
+          "side": "bottom",
+          "point": [
+            490.22,
+            162.56
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "DO",
+          "side": "left",
+          "point": [
+            685.8,
+            147.32
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_MISO."
+      ]
+    },
+    "SPI_MOSI": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "CAN",
+          "pin": "SI",
+          "side": "left",
+          "point": [
+            299.72,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin14"
+        },
+        {
+          "ref": "MCU",
+          "pin": "MOSI",
+          "side": "left",
+          "point": [
+            490.22,
+            160.02
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            685.8,
+            144.78
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for SPI_MOSI."
+      ]
+    },
+    "TIMER_OUTPUT": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            26.67,
+            162.56
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin1"
+        },
+        {
+          "ref": "TIMER",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            279.4,
+            147.32
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin3"
+        },
+        {
+          "ref": "Q1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            449.58,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for TIMER_OUTPUT."
+      ]
+    },
+    "TIMER_PULLUP": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "DZ1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            97.79,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin1"
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            134.62,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "TIMER_TRIGGER": {
+      "strategy": "local_labels_after_geometry_violation",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            134.62,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            165.1,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            203.2,
+            157.48
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin2"
+        },
+        {
+          "ref": "TIMER",
+          "pin": "6",
+          "side": "left",
+          "point": [
+            259.08,
+            149.86
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin6"
+        },
+        {
+          "ref": "TIMER",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            259.08,
+            152.4
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin2"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "geometry_violation_fallback: net converted to local labels after wire/body or wire/wire validation failure."
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "ESP",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            802.64,
+            111.76
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin2"
+        },
+        {
+          "ref": "BME",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            231.14,
+            132.08
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin8"
+        },
+        {
+          "ref": "OLED",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            866.14,
+            109.22
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin28"
+        },
+        {
+          "ref": "RTC",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            563.88,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin2"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            695.96,
+            134.62
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin8"
+        },
+        {
+          "ref": "CAN",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            314.96,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin18"
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            198.12,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            60.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "V1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            111.76
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "MCU",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            508.0,
+            121.92
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin27"
+        },
+        {
+          "ref": "CANPHY",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            406.4,
+            137.16
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin3"
+        },
+        {
+          "ref": "RS485",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            617.22,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin8"
+        },
+        {
+          "ref": "AMP",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            741.68,
+            165.1
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin8"
+        },
+        {
+          "ref": "TIMER",
+          "pin": "4",
+          "side": "top",
+          "point": [
+            259.08,
+            142.24
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin4"
+        },
+        {
+          "ref": "TIMER",
+          "pin": "8",
+          "side": "top",
+          "point": [
+            271.78,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin8"
+        },
+        {
+          "ref": "BUF",
+          "pin": "7",
+          "side": "top",
+          "point": [
+            358.14,
+            132.08
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin7"
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            193.04,
+            157.48
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin1"
+        },
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            60.96,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "G1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            904.24,
+            276.86
+          ],
+          "exact": true,
+          "source": "power:GND:unit1:pin1"
+        },
+        {
+          "ref": "V1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            121.92
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "MCU",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            505.46,
+            172.72
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin29"
+        },
+        {
+          "ref": "ESP",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            802.64,
+            182.88
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin1"
+        },
+        {
+          "ref": "BME",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            226.06,
+            162.56
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin1"
+        },
+        {
+          "ref": "OLED",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            861.06,
+            185.42
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin1"
+        },
+        {
+          "ref": "RTC",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            566.42,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin10"
+        },
+        {
+          "ref": "FLASH",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            695.96,
+            160.02
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin4"
+        },
+        {
+          "ref": "CAN",
+          "pin": "VSS",
+          "side": "bottom",
+          "point": [
+            314.96,
+            167.64
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin9"
+        },
+        {
+          "ref": "CANPHY",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            406.4,
+            157.48
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin2"
+        },
+        {
+          "ref": "RS485",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            617.22,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin5"
+        },
+        {
+          "ref": "AMP",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            741.68,
+            180.34
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin4"
+        },
+        {
+          "ref": "TIMER",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            269.24,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin1"
+        },
+        {
+          "ref": "BUF",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            358.14,
+            147.32
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin4"
+        },
+        {
+          "ref": "Q1",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            449.58,
+            142.24
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin3"
+        },
+        {
+          "ref": "Q2",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            657.86,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin3"
+        },
+        {
+          "ref": "DZ1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            105.41,
+            137.16
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin2"
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            165.1,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            198.12,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "J2",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            60.96,
+            154.94
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [],
+  "metrics": {
+    "net_count": 28,
+    "wired_route_count": 0,
+    "segment_count": 0,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_expansion_limit: BUFFER_FEEDBACK exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: BUFFER_FEEDBACK converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: SPI_SCK exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: SPI_SCK converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: CANL exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: CANL converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: CAN_INT exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: CAN_INT converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: I2C_SCL exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: I2C_SCL converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: I2C_SDA exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: I2C_SDA converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for LOAD_OUT.",
+    "wire_net_label_fallback: LOAD_OUT converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RS485_B.",
+    "wire_net_label_fallback: RS485_B converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: RS485_DE_RE exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: RS485_DE_RE converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RS485_DI.",
+    "wire_net_label_fallback: RS485_DI converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for RS485_RO.",
+    "wire_net_label_fallback: RS485_RO converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_CS_CAN.",
+    "wire_net_label_fallback: SPI_CS_CAN converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_CS_FLASH.",
+    "wire_net_label_fallback: SPI_CS_FLASH converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_MISO.",
+    "wire_net_label_fallback: SPI_MISO converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for SPI_MOSI.",
+    "wire_net_label_fallback: SPI_MOSI converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for TIMER_OUTPUT.",
+    "wire_net_label_fallback: TIMER_OUTPUT converted to local labels after router failure.",
+    "geometry_repair_fallback: converted nets to local labels: AMP_FEEDBACK, CANH, CAN_RXD, CAN_TXD, DIODE_TO_BUFFER, LOAD_LOW, RS485_A, TIMER_PULLUP, TIMER_TRIGGER"
+  ]
+}

@@ -1,0 +1,638 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n06",
+    "title": "4-BIT ADDER + COMPARATOR + XOR LOGIC + MUX OUTPUT PANEL",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N06",
+  "circuit_name": "4-BIT ADDER + COMPARATOR + XOR LOGIC + MUX OUTPUT PANEL",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "PWR_5V",
+      "ref": "PWR_5V",
+      "kind": "PWR_5V",
+      "value": "+5V Power Symbol"
+    },
+    {
+      "id": "DIP_SWITCH",
+      "ref": "DIP_SWITCH",
+      "kind": "DIP_SWITCH",
+      "value": "DIP Switch"
+    },
+    {
+      "id": "R_A0_PD",
+      "ref": "R_A0_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_A1_PD",
+      "ref": "R_A1_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_A2_PD",
+      "ref": "R_A2_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_A3_PD",
+      "ref": "R_A3_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_B0_PD",
+      "ref": "R_B0_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_B1_PD",
+      "ref": "R_B1_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_B2_PD",
+      "ref": "R_B2_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "R_B3_PD",
+      "ref": "R_B3_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "SWITCH_MODE",
+      "ref": "SWITCH_MODE",
+      "kind": "SWITCH",
+      "value": "Switch"
+    },
+    {
+      "id": "R_MODE_PD",
+      "ref": "R_MODE_PD",
+      "kind": "RES",
+      "value": "10k"
+    },
+    {
+      "id": "74HC283",
+      "ref": "74HC283",
+      "kind": "74HC283",
+      "value": "74HC283 4-Bit Adder"
+    },
+    {
+      "id": "74HC86",
+      "ref": "74HC86",
+      "kind": "74HC86",
+      "value": "74HC86 Quad XOR Gate"
+    },
+    {
+      "id": "74HC157",
+      "ref": "74HC157",
+      "kind": "74HC157",
+      "value": "74HC157 Quad 2-Input Multiplexer"
+    },
+    {
+      "id": "74HC85",
+      "ref": "74HC85",
+      "kind": "74HC85",
+      "value": "74HC85 4-Bit Comparator"
+    },
+    {
+      "id": "RESISTOR_NETWORK",
+      "ref": "RESISTOR_NETWORK",
+      "kind": "RESISTOR_NETWORK",
+      "value": "Resistor Network"
+    },
+    {
+      "id": "LED_ARRAY",
+      "ref": "LED_ARRAY",
+      "kind": "LED_ARRAY",
+      "value": "LED Array"
+    },
+    {
+      "id": "R_220_CARRY",
+      "ref": "R_220_CARRY",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_CARRY",
+      "ref": "LED_INDICATOR_CARRY",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "R_220_GT",
+      "ref": "R_220_GT",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_GT",
+      "ref": "LED_INDICATOR_GT",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "R_220_EQ",
+      "ref": "R_220_EQ",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_EQ",
+      "ref": "LED_INDICATOR_EQ",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "R_220_LT",
+      "ref": "R_220_LT",
+      "kind": "R_220",
+      "value": "220 ohm"
+    },
+    {
+      "id": "LED_INDICATOR_LT",
+      "ref": "LED_INDICATOR_LT",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_283",
+      "ref": "DECOUPLING_CAPACITOR_283",
+      "kind": "DECOUPLING_CAPACITOR",
+      "value": "100nF"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_86",
+      "ref": "DECOUPLING_CAPACITOR_86",
+      "kind": "DECOUPLING_CAPACITOR",
+      "value": "100nF"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_157",
+      "ref": "DECOUPLING_CAPACITOR_157",
+      "kind": "DECOUPLING_CAPACITOR",
+      "value": "100nF"
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_85",
+      "ref": "DECOUPLING_CAPACITOR_85",
+      "kind": "DECOUPLING_CAPACITOR",
+      "value": "100nF"
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "PWR_5V.+",
+      "DIP_SWITCH.S1A",
+      "DIP_SWITCH.S2A",
+      "DIP_SWITCH.S3A",
+      "DIP_SWITCH.S4A",
+      "DIP_SWITCH.S5A",
+      "DIP_SWITCH.S6A",
+      "DIP_SWITCH.S7A",
+      "DIP_SWITCH.S8A",
+      "SWITCH_MODE.1",
+      "74HC283.VCC",
+      "74HC86.VCC",
+      "74HC157.VCC",
+      "74HC85.VCC",
+      "74HC85.I_A_EQ_B",
+      "DECOUPLING_CAPACITOR_283.1",
+      "DECOUPLING_CAPACITOR_86.1",
+      "DECOUPLING_CAPACITOR_157.1",
+      "DECOUPLING_CAPACITOR_85.1"
+    ],
+    "GND": [
+      "PWR_5V.-",
+      "R_A0_PD.2",
+      "R_A1_PD.2",
+      "R_A2_PD.2",
+      "R_A3_PD.2",
+      "R_B0_PD.2",
+      "R_B1_PD.2",
+      "R_B2_PD.2",
+      "R_B3_PD.2",
+      "R_MODE_PD.2",
+      "74HC283.GND",
+      "74HC283.C0",
+      "74HC86.GND",
+      "74HC157.GND",
+      "74HC157./OE",
+      "74HC85.GND",
+      "74HC85.I_A_GT_B",
+      "74HC85.I_A_LT_B",
+      "LED_ARRAY.LED1_CATHODE",
+      "LED_ARRAY.LED2_CATHODE",
+      "LED_ARRAY.LED3_CATHODE",
+      "LED_ARRAY.LED4_CATHODE",
+      "LED_INDICATOR_CARRY.CATHODE",
+      "LED_INDICATOR_GT.CATHODE",
+      "LED_INDICATOR_EQ.CATHODE",
+      "LED_INDICATOR_LT.CATHODE",
+      "DECOUPLING_CAPACITOR_283.2",
+      "DECOUPLING_CAPACITOR_86.2",
+      "DECOUPLING_CAPACITOR_157.2",
+      "DECOUPLING_CAPACITOR_85.2"
+    ],
+    "NET_A0": [
+      "DIP_SWITCH.S1B",
+      "R_A0_PD.1",
+      "74HC283.A1",
+      "74HC86.1A",
+      "74HC85.A0"
+    ],
+    "NET_A1": [
+      "DIP_SWITCH.S2B",
+      "R_A1_PD.1",
+      "74HC283.A2",
+      "74HC86.2A",
+      "74HC85.A1"
+    ],
+    "NET_A2": [
+      "DIP_SWITCH.S3B",
+      "R_A2_PD.1",
+      "74HC283.A3",
+      "74HC86.3A",
+      "74HC85.A2"
+    ],
+    "NET_A3": [
+      "DIP_SWITCH.S4B",
+      "R_A3_PD.1",
+      "74HC283.A4",
+      "74HC86.4A",
+      "74HC85.A3"
+    ],
+    "NET_B0": [
+      "DIP_SWITCH.S5B",
+      "R_B0_PD.1",
+      "74HC283.B1",
+      "74HC86.1B",
+      "74HC85.B0"
+    ],
+    "NET_B1": [
+      "DIP_SWITCH.S6B",
+      "R_B1_PD.1",
+      "74HC283.B2",
+      "74HC86.2B",
+      "74HC85.B1"
+    ],
+    "NET_B2": [
+      "DIP_SWITCH.S7B",
+      "R_B2_PD.1",
+      "74HC283.B3",
+      "74HC86.3B",
+      "74HC85.B2"
+    ],
+    "NET_B3": [
+      "DIP_SWITCH.S8B",
+      "R_B3_PD.1",
+      "74HC283.B4",
+      "74HC86.4B",
+      "74HC85.B3"
+    ],
+    "NET_MODE_SELECT": [
+      "SWITCH_MODE.2",
+      "R_MODE_PD.1",
+      "74HC157.SELECT"
+    ],
+    "NET_SUM0": [
+      "74HC283.S1",
+      "74HC157.1A"
+    ],
+    "NET_SUM1": [
+      "74HC283.S2",
+      "74HC157.2A"
+    ],
+    "NET_SUM2": [
+      "74HC283.S3",
+      "74HC157.3A"
+    ],
+    "NET_SUM3": [
+      "74HC283.S4",
+      "74HC157.4A"
+    ],
+    "NET_CARRY_OUT": [
+      "74HC283.C4",
+      "R_220_CARRY.1"
+    ],
+    "NET_XOR0": [
+      "74HC86.1Y",
+      "74HC157.1B"
+    ],
+    "NET_XOR1": [
+      "74HC86.2Y",
+      "74HC157.2B"
+    ],
+    "NET_XOR2": [
+      "74HC86.3Y",
+      "74HC157.3B"
+    ],
+    "NET_XOR3": [
+      "74HC86.4Y",
+      "74HC157.4B"
+    ],
+    "NET_OUT0": [
+      "74HC157.1Y",
+      "RESISTOR_NETWORK.R1"
+    ],
+    "NET_OUT1": [
+      "74HC157.2Y",
+      "RESISTOR_NETWORK.R2"
+    ],
+    "NET_OUT2": [
+      "74HC157.3Y",
+      "RESISTOR_NETWORK.R3"
+    ],
+    "NET_OUT3": [
+      "74HC157.4Y",
+      "RESISTOR_NETWORK.R4"
+    ],
+    "NET_A_GT_B": [
+      "74HC85.O_A_GT_B",
+      "R_220_GT.1"
+    ],
+    "NET_A_EQ_B": [
+      "74HC85.O_A_EQ_B",
+      "R_220_EQ.1"
+    ],
+    "NET_A_LT_B": [
+      "74HC85.O_A_LT_B",
+      "R_220_LT.1"
+    ],
+    "NET_RESISTOR_NETWORK_C1": [
+      "RESISTOR_NETWORK.C1",
+      "LED_ARRAY.LED1_ANODE"
+    ],
+    "NET_RESISTOR_NETWORK_C2": [
+      "RESISTOR_NETWORK.C2",
+      "LED_ARRAY.LED2_ANODE"
+    ],
+    "NET_RESISTOR_NETWORK_C3": [
+      "RESISTOR_NETWORK.C3",
+      "LED_ARRAY.LED3_ANODE"
+    ],
+    "NET_RESISTOR_NETWORK_C4": [
+      "RESISTOR_NETWORK.C4",
+      "LED_ARRAY.LED4_ANODE"
+    ],
+    "NET_R_220_CARRY_2": [
+      "R_220_CARRY.2",
+      "LED_INDICATOR_CARRY.ANODE"
+    ],
+    "NET_R_220_GT_2": [
+      "R_220_GT.2",
+      "LED_INDICATOR_GT.ANODE"
+    ],
+    "NET_R_220_EQ_2": [
+      "R_220_EQ.2",
+      "LED_INDICATOR_EQ.ANODE"
+    ],
+    "NET_R_220_LT_2": [
+      "R_220_LT.2",
+      "LED_INDICATOR_LT.ANODE"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "PWR_5V",
+          "kind": "PWR_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "DIP_SWITCH",
+          "kind": "DIP_SWITCH",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "R_A0_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_A1_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_A2_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_A3_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_B0_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_B1_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_B2_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_B3_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "SWITCH_MODE",
+          "kind": "SWITCH",
+          "reason": "switch_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_MODE_PD",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "74HC283",
+          "kind": "74HC283",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "74HC86",
+          "kind": "74HC86",
+          "reason": "exact_catalog_kind",
+          "pin_count": 14
+        },
+        {
+          "ref": "74HC157",
+          "kind": "74HC157",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "74HC85",
+          "kind": "74HC85",
+          "reason": "exact_catalog_kind",
+          "pin_count": 16
+        },
+        {
+          "ref": "RESISTOR_NETWORK",
+          "kind": "RESISTOR_NETWORK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "LED_ARRAY",
+          "kind": "LED_ARRAY",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "R_220_CARRY",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_CARRY",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_GT",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_GT",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_EQ",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_EQ",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_LT",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_LT",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_283",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_86",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_157",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_85",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 2
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 132
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 30,
+    "net_count": 35,
+    "endpoint_count": 140,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "pipeline_stage": "component_placer_input_from_final_json"
+}

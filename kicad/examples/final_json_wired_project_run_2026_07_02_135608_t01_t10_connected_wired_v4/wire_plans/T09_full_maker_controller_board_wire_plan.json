@@ -1,0 +1,7295 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "different-net existing wires receive high cost plus adjacency penalty"
+  },
+  "sheet": {
+    "width": 1220.0,
+    "height": 297.0,
+    "grid": 5.08,
+    "clearance": 2.54
+  },
+  "nets": {
+    "SPI_SCK": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_SPI",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            76.2,
+            152.4
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D13",
+          "side": "left",
+          "point": [
+            782.32,
+            172.72
+          ]
+        },
+        {
+          "ref": "TP5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            863.6,
+            152.4
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "CLK",
+          "side": "left",
+          "point": [
+            889.0,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPI_SCK",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "3",
+            "point": [
+              76.2,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D13",
+            "point": [
+              782.32,
+              172.72
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              152.4
+            ],
+            [
+              76.2,
+              172.72
+            ],
+            [
+              782.32,
+              172.72
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                152.4
+              ],
+              "end": [
+                76.2,
+                172.72
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                76.2,
+                172.72
+              ],
+              "end": [
+                782.32,
+                172.72
+              ],
+              "direction": "right",
+              "length": 706.12
+            }
+          ]
+        },
+        {
+          "net": "SPI_SCK",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "3",
+            "point": [
+              76.2,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "TP5",
+            "pin": "1",
+            "point": [
+              863.6,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              152.4
+            ],
+            [
+              863.6,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                152.4
+              ],
+              "end": [
+                863.6,
+                152.4
+              ],
+              "direction": "right",
+              "length": 787.4
+            }
+          ]
+        },
+        {
+          "net": "SPI_SCK",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "3",
+            "point": [
+              76.2,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "U6",
+            "pin": "CLK",
+            "point": [
+              889.0,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              152.4
+            ],
+            [
+              889.0,
+              152.4
+            ],
+            [
+              889.0,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                152.4
+              ],
+              "end": [
+                889.0,
+                152.4
+              ],
+              "direction": "right",
+              "length": 812.8
+            },
+            {
+              "start": [
+                889.0,
+                152.4
+              ],
+              "end": [
+                889.0,
+                147.32
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "ARDUINO_TO_ESP_RX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "D2",
+          "side": "right",
+          "point": [
+            848.36,
+            142.24
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "U0RXD",
+          "side": "left",
+          "point": [
+            939.8,
+            132.08
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ARDUINO_TO_ESP_RX",
+          "from": {
+            "ref": "U1",
+            "pin": "D2",
+            "point": [
+              848.36,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "U0RXD",
+            "point": [
+              939.8,
+              132.08
+            ]
+          },
+          "path": [
+            [
+              848.36,
+              142.24
+            ],
+            [
+              848.36,
+              116.84
+            ],
+            [
+              939.8,
+              116.84
+            ],
+            [
+              939.8,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                848.36,
+                142.24
+              ],
+              "end": [
+                848.36,
+                116.84
+              ],
+              "direction": "up",
+              "length": 25.4
+            },
+            {
+              "start": [
+                848.36,
+                116.84
+              ],
+              "end": [
+                939.8,
+                116.84
+              ],
+              "direction": "right",
+              "length": 91.44
+            },
+            {
+              "start": [
+                939.8,
+                116.84
+              ],
+              "end": [
+                939.8,
+                132.08
+              ],
+              "direction": "down",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "ARDUINO_TO_ESP_TX": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "D3",
+          "side": "right",
+          "point": [
+            848.36,
+            147.32
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "U0TXD",
+          "side": "left",
+          "point": [
+            939.8,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ARDUINO_TO_ESP_TX",
+          "from": {
+            "ref": "U1",
+            "pin": "D3",
+            "point": [
+              848.36,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "U0TXD",
+            "point": [
+              939.8,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              848.36,
+              147.32
+            ],
+            [
+              848.36,
+              182.88
+            ],
+            [
+              939.8,
+              182.88
+            ],
+            [
+              939.8,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                848.36,
+                147.32
+              ],
+              "end": [
+                848.36,
+                182.88
+              ],
+              "direction": "down",
+              "length": 35.56
+            },
+            {
+              "start": [
+                848.36,
+                182.88
+              ],
+              "end": [
+                939.8,
+                182.88
+              ],
+              "direction": "right",
+              "length": 91.44
+            },
+            {
+              "start": [
+                939.8,
+                182.88
+              ],
+              "end": [
+                939.8,
+                137.16
+              ],
+              "direction": "up",
+              "length": 45.72
+            }
+          ]
+        }
+      ]
+    },
+    "BUTTON_1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "SW3",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            243.84,
+            152.4
+          ]
+        },
+        {
+          "ref": "R7",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            401.32,
+            152.4
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D4",
+          "side": "left",
+          "point": [
+            782.32,
+            121.92
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "BUTTON_1",
+          "from": {
+            "ref": "SW3",
+            "pin": "1",
+            "point": [
+              243.84,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "R7",
+            "pin": "1",
+            "point": [
+              401.32,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              243.84,
+              152.4
+            ],
+            [
+              243.84,
+              127.0
+            ],
+            [
+              381.0,
+              127.0
+            ],
+            [
+              381.0,
+              152.4
+            ],
+            [
+              401.32,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                243.84,
+                152.4
+              ],
+              "end": [
+                243.84,
+                127.0
+              ],
+              "direction": "up",
+              "length": 25.4
+            },
+            {
+              "start": [
+                243.84,
+                127.0
+              ],
+              "end": [
+                381.0,
+                127.0
+              ],
+              "direction": "right",
+              "length": 137.16
+            },
+            {
+              "start": [
+                381.0,
+                127.0
+              ],
+              "end": [
+                381.0,
+                152.4
+              ],
+              "direction": "down",
+              "length": 25.4
+            },
+            {
+              "start": [
+                381.0,
+                152.4
+              ],
+              "end": [
+                401.32,
+                152.4
+              ],
+              "direction": "right",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "BUTTON_1",
+          "from": {
+            "ref": "SW3",
+            "pin": "1",
+            "point": [
+              243.84,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D4",
+            "point": [
+              782.32,
+              121.92
+            ]
+          },
+          "path": [
+            [
+              243.84,
+              152.4
+            ],
+            [
+              243.84,
+              121.92
+            ],
+            [
+              782.32,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                243.84,
+                152.4
+              ],
+              "end": [
+                243.84,
+                121.92
+              ],
+              "direction": "up",
+              "length": 30.48
+            },
+            {
+              "start": [
+                243.84,
+                121.92
+              ],
+              "end": [
+                782.32,
+                121.92
+              ],
+              "direction": "right",
+              "length": 538.48
+            }
+          ]
+        }
+      ]
+    },
+    "BUTTON_2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "SW4",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            309.88,
+            157.48
+          ]
+        },
+        {
+          "ref": "R8",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            528.32,
+            152.4
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D5",
+          "side": "left",
+          "point": [
+            782.32,
+            121.92
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "BUTTON_2",
+          "from": {
+            "ref": "SW4",
+            "pin": "1",
+            "point": [
+              309.88,
+              157.48
+            ]
+          },
+          "to": {
+            "ref": "R8",
+            "pin": "1",
+            "point": [
+              528.32,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              309.88,
+              157.48
+            ],
+            [
+              309.88,
+              162.56
+            ],
+            [
+              528.32,
+              162.56
+            ],
+            [
+              528.32,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                309.88,
+                157.48
+              ],
+              "end": [
+                309.88,
+                162.56
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                309.88,
+                162.56
+              ],
+              "end": [
+                528.32,
+                162.56
+              ],
+              "direction": "right",
+              "length": 218.44
+            },
+            {
+              "start": [
+                528.32,
+                162.56
+              ],
+              "end": [
+                528.32,
+                152.4
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        },
+        {
+          "net": "BUTTON_2",
+          "from": {
+            "ref": "SW4",
+            "pin": "1",
+            "point": [
+              309.88,
+              157.48
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D5",
+            "point": [
+              782.32,
+              121.92
+            ]
+          },
+          "path": [
+            [
+              309.88,
+              157.48
+            ],
+            [
+              782.32,
+              157.48
+            ],
+            [
+              782.32,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                309.88,
+                157.48
+              ],
+              "end": [
+                782.32,
+                157.48
+              ],
+              "direction": "right",
+              "length": 472.44
+            },
+            {
+              "start": [
+                782.32,
+                157.48
+              ],
+              "end": [
+                782.32,
+                121.92
+              ],
+              "direction": "up",
+              "length": 35.56
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_BOOT": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R6",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            309.88,
+            137.16
+          ]
+        },
+        {
+          "ref": "SW2",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            619.76,
+            152.4
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "IO0",
+          "side": "left",
+          "point": [
+            939.8,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_BOOT",
+          "from": {
+            "ref": "R6",
+            "pin": "2",
+            "point": [
+              309.88,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "SW2",
+            "pin": "1",
+            "point": [
+              619.76,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              309.88,
+              137.16
+            ],
+            [
+              441.96,
+              137.16
+            ],
+            [
+              441.96,
+              132.08
+            ],
+            [
+              599.44,
+              132.08
+            ],
+            [
+              599.44,
+              152.4
+            ],
+            [
+              619.76,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                309.88,
+                137.16
+              ],
+              "end": [
+                441.96,
+                137.16
+              ],
+              "direction": "right",
+              "length": 132.08
+            },
+            {
+              "start": [
+                441.96,
+                137.16
+              ],
+              "end": [
+                441.96,
+                132.08
+              ],
+              "direction": "up",
+              "length": 5.08
+            },
+            {
+              "start": [
+                441.96,
+                132.08
+              ],
+              "end": [
+                599.44,
+                132.08
+              ],
+              "direction": "right",
+              "length": 157.48
+            },
+            {
+              "start": [
+                599.44,
+                132.08
+              ],
+              "end": [
+                599.44,
+                152.4
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                599.44,
+                152.4
+              ],
+              "end": [
+                619.76,
+                152.4
+              ],
+              "direction": "right",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "ESP_BOOT",
+          "from": {
+            "ref": "R6",
+            "pin": "2",
+            "point": [
+              309.88,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "IO0",
+            "point": [
+              939.8,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              309.88,
+              137.16
+            ],
+            [
+              939.8,
+              137.16
+            ],
+            [
+              939.8,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                309.88,
+                137.16
+              ],
+              "end": [
+                939.8,
+                137.16
+              ],
+              "direction": "right",
+              "length": 629.92
+            },
+            {
+              "start": [
+                939.8,
+                137.16
+              ],
+              "end": [
+                939.8,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "ESP_EN": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            462.28,
+            152.4
+          ]
+        },
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            655.32,
+            142.24
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "EN",
+          "side": "left",
+          "point": [
+            939.8,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "ESP_EN",
+          "from": {
+            "ref": "SW1",
+            "pin": "1",
+            "point": [
+              462.28,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "R5",
+            "pin": "2",
+            "point": [
+              655.32,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              462.28,
+              152.4
+            ],
+            [
+              477.52,
+              152.4
+            ],
+            [
+              477.52,
+              137.16
+            ],
+            [
+              528.32,
+              137.16
+            ],
+            [
+              528.32,
+              142.24
+            ],
+            [
+              538.48,
+              142.24
+            ],
+            [
+              538.48,
+              162.56
+            ],
+            [
+              655.32,
+              162.56
+            ],
+            [
+              655.32,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                462.28,
+                152.4
+              ],
+              "end": [
+                477.52,
+                152.4
+              ],
+              "direction": "right",
+              "length": 15.24
+            },
+            {
+              "start": [
+                477.52,
+                152.4
+              ],
+              "end": [
+                477.52,
+                137.16
+              ],
+              "direction": "up",
+              "length": 15.24
+            },
+            {
+              "start": [
+                477.52,
+                137.16
+              ],
+              "end": [
+                528.32,
+                137.16
+              ],
+              "direction": "right",
+              "length": 50.8
+            },
+            {
+              "start": [
+                528.32,
+                137.16
+              ],
+              "end": [
+                528.32,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                528.32,
+                142.24
+              ],
+              "end": [
+                538.48,
+                142.24
+              ],
+              "direction": "right",
+              "length": 10.16
+            },
+            {
+              "start": [
+                538.48,
+                142.24
+              ],
+              "end": [
+                538.48,
+                162.56
+              ],
+              "direction": "down",
+              "length": 20.32
+            },
+            {
+              "start": [
+                538.48,
+                162.56
+              ],
+              "end": [
+                655.32,
+                162.56
+              ],
+              "direction": "right",
+              "length": 116.84
+            },
+            {
+              "start": [
+                655.32,
+                162.56
+              ],
+              "end": [
+                655.32,
+                142.24
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "ESP_EN",
+          "from": {
+            "ref": "SW1",
+            "pin": "1",
+            "point": [
+              462.28,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "EN",
+            "point": [
+              939.8,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              462.28,
+              152.4
+            ],
+            [
+              939.8,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                462.28,
+                152.4
+              ],
+              "end": [
+                939.8,
+                152.4
+              ],
+              "direction": "right",
+              "length": 477.52
+            }
+          ]
+        }
+      ]
+    },
+    "FLASH_WP_HOLD": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R4",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            462.28,
+            142.24
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "HOLD",
+          "side": "left",
+          "point": [
+            889.0,
+            121.92
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "WP",
+          "side": "left",
+          "point": [
+            889.0,
+            127.0
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "FLASH_WP_HOLD",
+          "from": {
+            "ref": "R4",
+            "pin": "2",
+            "point": [
+              462.28,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U6",
+            "pin": "HOLD",
+            "point": [
+              889.0,
+              121.92
+            ]
+          },
+          "path": [
+            [
+              462.28,
+              142.24
+            ],
+            [
+              889.0,
+              142.24
+            ],
+            [
+              889.0,
+              121.92
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                462.28,
+                142.24
+              ],
+              "end": [
+                889.0,
+                142.24
+              ],
+              "direction": "right",
+              "length": 426.72
+            },
+            {
+              "start": [
+                889.0,
+                142.24
+              ],
+              "end": [
+                889.0,
+                121.92
+              ],
+              "direction": "up",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "FLASH_WP_HOLD",
+          "from": {
+            "ref": "R4",
+            "pin": "2",
+            "point": [
+              462.28,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U6",
+            "pin": "WP",
+            "point": [
+              889.0,
+              127.0
+            ]
+          },
+          "path": [
+            [
+              462.28,
+              142.24
+            ],
+            [
+              889.0,
+              142.24
+            ],
+            [
+              889.0,
+              127.0
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                462.28,
+                142.24
+              ],
+              "end": [
+                889.0,
+                142.24
+              ],
+              "direction": "right",
+              "length": 426.72
+            },
+            {
+              "start": [
+                889.0,
+                142.24
+              ],
+              "end": [
+                889.0,
+                127.0
+              ],
+              "direction": "up",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "LED_STATUS_1": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R14",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            40.64,
+            137.16
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D9",
+          "side": "left",
+          "point": [
+            782.32,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED_STATUS_1",
+          "from": {
+            "ref": "R14",
+            "pin": "1",
+            "point": [
+              40.64,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D9",
+            "point": [
+              782.32,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              137.16
+            ],
+            [
+              782.32,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                137.16
+              ],
+              "end": [
+                782.32,
+                137.16
+              ],
+              "direction": "right",
+              "length": 741.68
+            }
+          ]
+        }
+      ]
+    },
+    "LED_STATUS_1_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R14",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            142.24
+          ]
+        },
+        {
+          "ref": "D4",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            1112.52,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED_STATUS_1_A",
+          "from": {
+            "ref": "R14",
+            "pin": "2",
+            "point": [
+              40.64,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "D4",
+            "pin": "A",
+            "point": [
+              1112.52,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              142.24
+            ],
+            [
+              1112.52,
+              142.24
+            ],
+            [
+              1112.52,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                142.24
+              ],
+              "end": [
+                1112.52,
+                142.24
+              ],
+              "direction": "right",
+              "length": 1071.88
+            },
+            {
+              "start": [
+                1112.52,
+                142.24
+              ],
+              "end": [
+                1112.52,
+                147.32
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "LED_STATUS_2": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R15",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            40.64,
+            147.32
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "IO2",
+          "side": "left",
+          "point": [
+            939.8,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED_STATUS_2",
+          "from": {
+            "ref": "R15",
+            "pin": "1",
+            "point": [
+              40.64,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U2",
+            "pin": "IO2",
+            "point": [
+              939.8,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              147.32
+            ],
+            [
+              939.8,
+              147.32
+            ],
+            [
+              939.8,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                147.32
+              ],
+              "end": [
+                939.8,
+                147.32
+              ],
+              "direction": "right",
+              "length": 899.16
+            },
+            {
+              "start": [
+                939.8,
+                147.32
+              ],
+              "end": [
+                939.8,
+                152.4
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "LED_STATUS_2_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R15",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            152.4
+          ]
+        },
+        {
+          "ref": "D5",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            1143.0,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED_STATUS_2_A",
+          "from": {
+            "ref": "R15",
+            "pin": "2",
+            "point": [
+              40.64,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "D5",
+            "pin": "A",
+            "point": [
+              1143.0,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              152.4
+            ],
+            [
+              1143.0,
+              152.4
+            ],
+            [
+              1143.0,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                152.4
+              ],
+              "end": [
+                1143.0,
+                152.4
+              ],
+              "direction": "right",
+              "length": 1102.36
+            },
+            {
+              "start": [
+                1143.0,
+                152.4
+              ],
+              "end": [
+                1143.0,
+                147.32
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "MOSFET1_GATE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R9",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            309.88,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D6",
+          "side": "left",
+          "point": [
+            782.32,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "MOSFET1_GATE",
+          "from": {
+            "ref": "R9",
+            "pin": "1",
+            "point": [
+              309.88,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D6",
+            "point": [
+              782.32,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              309.88,
+              142.24
+            ],
+            [
+              782.32,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                309.88,
+                142.24
+              ],
+              "end": [
+                782.32,
+                142.24
+              ],
+              "direction": "right",
+              "length": 472.44
+            }
+          ]
+        }
+      ]
+    },
+    "MOSFET1_GATE_NODE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R10",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            279.4,
+            137.16
+          ]
+        },
+        {
+          "ref": "R9",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            309.88,
+            147.32
+          ]
+        },
+        {
+          "ref": "Q1",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            1010.92,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "MOSFET1_GATE_NODE",
+          "from": {
+            "ref": "R10",
+            "pin": "1",
+            "point": [
+              279.4,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "R9",
+            "pin": "2",
+            "point": [
+              309.88,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              279.4,
+              137.16
+            ],
+            [
+              279.4,
+              147.32
+            ],
+            [
+              309.88,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                279.4,
+                137.16
+              ],
+              "end": [
+                279.4,
+                147.32
+              ],
+              "direction": "down",
+              "length": 10.16
+            },
+            {
+              "start": [
+                279.4,
+                147.32
+              ],
+              "end": [
+                309.88,
+                147.32
+              ],
+              "direction": "right",
+              "length": 30.48
+            }
+          ]
+        },
+        {
+          "net": "MOSFET1_GATE_NODE",
+          "from": {
+            "ref": "R10",
+            "pin": "1",
+            "point": [
+              279.4,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "Q1",
+            "pin": "G",
+            "point": [
+              1010.92,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              279.4,
+              137.16
+            ],
+            [
+              254.0,
+              137.16
+            ],
+            [
+              254.0,
+              162.56
+            ],
+            [
+              248.92,
+              162.56
+            ],
+            [
+              248.92,
+              167.64
+            ],
+            [
+              223.52,
+              167.64
+            ],
+            [
+              223.52,
+              106.68
+            ],
+            [
+              1010.92,
+              106.68
+            ],
+            [
+              1010.92,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                279.4,
+                137.16
+              ],
+              "end": [
+                254.0,
+                137.16
+              ],
+              "direction": "left",
+              "length": 25.4
+            },
+            {
+              "start": [
+                254.0,
+                137.16
+              ],
+              "end": [
+                254.0,
+                162.56
+              ],
+              "direction": "down",
+              "length": 25.4
+            },
+            {
+              "start": [
+                254.0,
+                162.56
+              ],
+              "end": [
+                248.92,
+                162.56
+              ],
+              "direction": "left",
+              "length": 5.08
+            },
+            {
+              "start": [
+                248.92,
+                162.56
+              ],
+              "end": [
+                248.92,
+                167.64
+              ],
+              "direction": "down",
+              "length": 5.08
+            },
+            {
+              "start": [
+                248.92,
+                167.64
+              ],
+              "end": [
+                223.52,
+                167.64
+              ],
+              "direction": "left",
+              "length": 25.4
+            },
+            {
+              "start": [
+                223.52,
+                167.64
+              ],
+              "end": [
+                223.52,
+                106.68
+              ],
+              "direction": "up",
+              "length": 60.96
+            },
+            {
+              "start": [
+                223.52,
+                106.68
+              ],
+              "end": [
+                1010.92,
+                106.68
+              ],
+              "direction": "right",
+              "length": 787.4
+            },
+            {
+              "start": [
+                1010.92,
+                106.68
+              ],
+              "end": [
+                1010.92,
+                142.24
+              ],
+              "direction": "down",
+              "length": 35.56
+            }
+          ]
+        }
+      ]
+    },
+    "MOSFET1_LOAD_LOW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_LOAD1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            147.32,
+            152.4
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            528.32,
+            142.24
+          ]
+        },
+        {
+          "ref": "Q1",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            1010.92,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "MOSFET1_LOAD_LOW",
+          "from": {
+            "ref": "J_LOAD1",
+            "pin": "2",
+            "point": [
+              147.32,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "A",
+            "point": [
+              528.32,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              147.32,
+              152.4
+            ],
+            [
+              528.32,
+              152.4
+            ],
+            [
+              528.32,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                152.4
+              ],
+              "end": [
+                528.32,
+                152.4
+              ],
+              "direction": "right",
+              "length": 381.0
+            },
+            {
+              "start": [
+                528.32,
+                152.4
+              ],
+              "end": [
+                528.32,
+                142.24
+              ],
+              "direction": "up",
+              "length": 10.16
+            }
+          ]
+        },
+        {
+          "net": "MOSFET1_LOAD_LOW",
+          "from": {
+            "ref": "J_LOAD1",
+            "pin": "2",
+            "point": [
+              147.32,
+              152.4
+            ]
+          },
+          "to": {
+            "ref": "Q1",
+            "pin": "D",
+            "point": [
+              1010.92,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              147.32,
+              152.4
+            ],
+            [
+              1010.92,
+              152.4
+            ],
+            [
+              1010.92,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                147.32,
+                152.4
+              ],
+              "end": [
+                1010.92,
+                152.4
+              ],
+              "direction": "right",
+              "length": 863.6
+            },
+            {
+              "start": [
+                1010.92,
+                152.4
+              ],
+              "end": [
+                1010.92,
+                147.32
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "MOSFET2_GATE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R11",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            40.64,
+            116.84
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D7",
+          "side": "left",
+          "point": [
+            782.32,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "MOSFET2_GATE",
+          "from": {
+            "ref": "R11",
+            "pin": "1",
+            "point": [
+              40.64,
+              116.84
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D7",
+            "point": [
+              782.32,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              116.84
+            ],
+            [
+              782.32,
+              116.84
+            ],
+            [
+              782.32,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                116.84
+              ],
+              "end": [
+                782.32,
+                116.84
+              ],
+              "direction": "right",
+              "length": 741.68
+            },
+            {
+              "start": [
+                782.32,
+                116.84
+              ],
+              "end": [
+                782.32,
+                147.32
+              ],
+              "direction": "down",
+              "length": 30.48
+            }
+          ]
+        }
+      ]
+    },
+    "MOSFET2_GATE_NODE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R11",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            121.92
+          ]
+        },
+        {
+          "ref": "R12",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            543.56,
+            147.32
+          ]
+        },
+        {
+          "ref": "Q2",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            1046.48,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "MOSFET2_GATE_NODE",
+          "from": {
+            "ref": "R11",
+            "pin": "2",
+            "point": [
+              40.64,
+              121.92
+            ]
+          },
+          "to": {
+            "ref": "R12",
+            "pin": "1",
+            "point": [
+              543.56,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              121.92
+            ],
+            [
+              543.56,
+              121.92
+            ],
+            [
+              543.56,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                121.92
+              ],
+              "end": [
+                543.56,
+                121.92
+              ],
+              "direction": "right",
+              "length": 502.92
+            },
+            {
+              "start": [
+                543.56,
+                121.92
+              ],
+              "end": [
+                543.56,
+                147.32
+              ],
+              "direction": "down",
+              "length": 25.4
+            }
+          ]
+        },
+        {
+          "net": "MOSFET2_GATE_NODE",
+          "from": {
+            "ref": "R11",
+            "pin": "2",
+            "point": [
+              40.64,
+              121.92
+            ]
+          },
+          "to": {
+            "ref": "Q2",
+            "pin": "G",
+            "point": [
+              1046.48,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              121.92
+            ],
+            [
+              1046.48,
+              121.92
+            ],
+            [
+              1046.48,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                121.92
+              ],
+              "end": [
+                1046.48,
+                121.92
+              ],
+              "direction": "right",
+              "length": 1005.84
+            },
+            {
+              "start": [
+                1046.48,
+                121.92
+              ],
+              "end": [
+                1046.48,
+                142.24
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "MOSFET2_LOAD_LOW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_LOAD2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            182.88,
+            147.32
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "left",
+          "point": [
+            670.56,
+            142.24
+          ]
+        },
+        {
+          "ref": "Q2",
+          "pin": "D",
+          "side": "left",
+          "point": [
+            1046.48,
+            147.32
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "MOSFET2_LOAD_LOW",
+          "from": {
+            "ref": "J_LOAD2",
+            "pin": "2",
+            "point": [
+              182.88,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "A",
+            "point": [
+              670.56,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              182.88,
+              147.32
+            ],
+            [
+              670.56,
+              147.32
+            ],
+            [
+              670.56,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                182.88,
+                147.32
+              ],
+              "end": [
+                670.56,
+                147.32
+              ],
+              "direction": "right",
+              "length": 487.68
+            },
+            {
+              "start": [
+                670.56,
+                147.32
+              ],
+              "end": [
+                670.56,
+                142.24
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "MOSFET2_LOAD_LOW",
+          "from": {
+            "ref": "J_LOAD2",
+            "pin": "2",
+            "point": [
+              182.88,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "Q2",
+            "pin": "D",
+            "point": [
+              1046.48,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              182.88,
+              147.32
+            ],
+            [
+              182.88,
+              96.52
+            ],
+            [
+              1036.32,
+              96.52
+            ],
+            [
+              1036.32,
+              147.32
+            ],
+            [
+              1046.48,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                182.88,
+                147.32
+              ],
+              "end": [
+                182.88,
+                96.52
+              ],
+              "direction": "up",
+              "length": 50.8
+            },
+            {
+              "start": [
+                182.88,
+                96.52
+              ],
+              "end": [
+                1036.32,
+                96.52
+              ],
+              "direction": "right",
+              "length": 853.44
+            },
+            {
+              "start": [
+                1036.32,
+                96.52
+              ],
+              "end": [
+                1036.32,
+                147.32
+              ],
+              "direction": "down",
+              "length": 50.8
+            },
+            {
+              "start": [
+                1036.32,
+                147.32
+              ],
+              "end": [
+                1046.48,
+                147.32
+              ],
+              "direction": "right",
+              "length": 10.16
+            }
+          ]
+        }
+      ]
+    },
+    "RELAY_BASE": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R13",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            127.0
+          ]
+        },
+        {
+          "ref": "Q3",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            701.04,
+            142.24
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "RELAY_BASE",
+          "from": {
+            "ref": "R13",
+            "pin": "2",
+            "point": [
+              40.64,
+              127.0
+            ]
+          },
+          "to": {
+            "ref": "Q3",
+            "pin": "B",
+            "point": [
+              701.04,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              127.0
+            ],
+            [
+              701.04,
+              127.0
+            ],
+            [
+              701.04,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                127.0
+              ],
+              "end": [
+                701.04,
+                127.0
+              ],
+              "direction": "right",
+              "length": 660.4
+            },
+            {
+              "start": [
+                701.04,
+                127.0
+              ],
+              "end": [
+                701.04,
+                142.24
+              ],
+              "direction": "down",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "RELAY_COIL_LOW": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "D3",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            279.4,
+            147.32
+          ]
+        },
+        {
+          "ref": "Q3",
+          "pin": "C",
+          "side": "left",
+          "point": [
+            701.04,
+            147.32
+          ]
+        },
+        {
+          "ref": "K1",
+          "pin": "COIL_MINUS",
+          "side": "left",
+          "point": [
+            894.08,
+            162.56
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "RELAY_COIL_LOW",
+          "from": {
+            "ref": "D3",
+            "pin": "A",
+            "point": [
+              279.4,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "Q3",
+            "pin": "C",
+            "point": [
+              701.04,
+              147.32
+            ]
+          },
+          "path": [
+            [
+              279.4,
+              147.32
+            ],
+            [
+              701.04,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                279.4,
+                147.32
+              ],
+              "end": [
+                701.04,
+                147.32
+              ],
+              "direction": "right",
+              "length": 421.64
+            }
+          ]
+        },
+        {
+          "net": "RELAY_COIL_LOW",
+          "from": {
+            "ref": "D3",
+            "pin": "A",
+            "point": [
+              279.4,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "K1",
+            "pin": "COIL_MINUS",
+            "point": [
+              894.08,
+              162.56
+            ]
+          },
+          "path": [
+            [
+              279.4,
+              147.32
+            ],
+            [
+              894.08,
+              147.32
+            ],
+            [
+              894.08,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                279.4,
+                147.32
+              ],
+              "end": [
+                894.08,
+                147.32
+              ],
+              "direction": "right",
+              "length": 614.68
+            },
+            {
+              "start": [
+                894.08,
+                147.32
+              ],
+              "end": [
+                894.08,
+                162.56
+              ],
+              "direction": "down",
+              "length": 15.24
+            }
+          ]
+        }
+      ]
+    },
+    "RELAY_CONTACT_COM": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_RELAY",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            40.64,
+            172.72
+          ]
+        },
+        {
+          "ref": "K1",
+          "pin": "COM",
+          "side": "left",
+          "point": [
+            894.08,
+            167.64
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "RELAY_CONTACT_COM",
+          "from": {
+            "ref": "J_RELAY",
+            "pin": "1",
+            "point": [
+              40.64,
+              172.72
+            ]
+          },
+          "to": {
+            "ref": "K1",
+            "pin": "COM",
+            "point": [
+              894.08,
+              167.64
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              172.72
+            ],
+            [
+              894.08,
+              172.72
+            ],
+            [
+              894.08,
+              167.64
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                172.72
+              ],
+              "end": [
+                894.08,
+                172.72
+              ],
+              "direction": "right",
+              "length": 853.44
+            },
+            {
+              "start": [
+                894.08,
+                172.72
+              ],
+              "end": [
+                894.08,
+                167.64
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "RELAY_CONTACT_NO": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_RELAY",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            177.8
+          ]
+        },
+        {
+          "ref": "K1",
+          "pin": "NO",
+          "side": "left",
+          "point": [
+            894.08,
+            172.72
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "RELAY_CONTACT_NO",
+          "from": {
+            "ref": "J_RELAY",
+            "pin": "2",
+            "point": [
+              40.64,
+              177.8
+            ]
+          },
+          "to": {
+            "ref": "K1",
+            "pin": "NO",
+            "point": [
+              894.08,
+              172.72
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              177.8
+            ],
+            [
+              894.08,
+              177.8
+            ],
+            [
+              894.08,
+              172.72
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                177.8
+              ],
+              "end": [
+                894.08,
+                177.8
+              ],
+              "direction": "right",
+              "length": 853.44
+            },
+            {
+              "start": [
+                894.08,
+                177.8
+              ],
+              "end": [
+                894.08,
+                172.72
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "RELAY_CTRL": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R13",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            40.64,
+            132.08
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D8",
+          "side": "left",
+          "point": [
+            782.32,
+            152.4
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "RELAY_CTRL",
+          "from": {
+            "ref": "R13",
+            "pin": "1",
+            "point": [
+              40.64,
+              132.08
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D8",
+            "point": [
+              782.32,
+              152.4
+            ]
+          },
+          "path": [
+            [
+              40.64,
+              132.08
+            ],
+            [
+              782.32,
+              132.08
+            ],
+            [
+              782.32,
+              152.4
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                40.64,
+                132.08
+              ],
+              "end": [
+                782.32,
+                132.08
+              ],
+              "direction": "right",
+              "length": 741.68
+            },
+            {
+              "start": [
+                782.32,
+                132.08
+              ],
+              "end": [
+                782.32,
+                152.4
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        }
+      ]
+    },
+    "SPI_CS_FLASH": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_SPI",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            76.2,
+            137.16
+          ]
+        },
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            401.32,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D10",
+          "side": "left",
+          "point": [
+            782.32,
+            157.48
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            889.0,
+            132.08
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPI_CS_FLASH",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "2",
+            "point": [
+              76.2,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              401.32,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              137.16
+            ],
+            [
+              401.32,
+              137.16
+            ],
+            [
+              401.32,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                137.16
+              ],
+              "end": [
+                401.32,
+                137.16
+              ],
+              "direction": "right",
+              "length": 325.12
+            },
+            {
+              "start": [
+                401.32,
+                137.16
+              ],
+              "end": [
+                401.32,
+                142.24
+              ],
+              "direction": "down",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "SPI_CS_FLASH",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "2",
+            "point": [
+              76.2,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D10",
+            "point": [
+              782.32,
+              157.48
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              137.16
+            ],
+            [
+              782.32,
+              137.16
+            ],
+            [
+              782.32,
+              157.48
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                137.16
+              ],
+              "end": [
+                782.32,
+                137.16
+              ],
+              "direction": "right",
+              "length": 706.12
+            },
+            {
+              "start": [
+                782.32,
+                137.16
+              ],
+              "end": [
+                782.32,
+                157.48
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "SPI_CS_FLASH",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "2",
+            "point": [
+              76.2,
+              137.16
+            ]
+          },
+          "to": {
+            "ref": "U6",
+            "pin": "CS",
+            "point": [
+              889.0,
+              132.08
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              137.16
+            ],
+            [
+              889.0,
+              137.16
+            ],
+            [
+              889.0,
+              132.08
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                137.16
+              ],
+              "end": [
+                889.0,
+                137.16
+              ],
+              "direction": "right",
+              "length": 812.8
+            },
+            {
+              "start": [
+                889.0,
+                137.16
+              ],
+              "end": [
+                889.0,
+                132.08
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "SPI_MISO": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_SPI",
+          "pin": "5",
+          "side": "right",
+          "point": [
+            76.2,
+            142.24
+          ]
+        },
+        {
+          "ref": "TP4",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            111.76,
+            142.24
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D12",
+          "side": "left",
+          "point": [
+            782.32,
+            162.56
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "DO",
+          "side": "left",
+          "point": [
+            889.0,
+            137.16
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPI_MISO",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "5",
+            "point": [
+              76.2,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "TP4",
+            "pin": "1",
+            "point": [
+              111.76,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              142.24
+            ],
+            [
+              111.76,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                142.24
+              ],
+              "end": [
+                111.76,
+                142.24
+              ],
+              "direction": "right",
+              "length": 35.56
+            }
+          ]
+        },
+        {
+          "net": "SPI_MISO",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "5",
+            "point": [
+              76.2,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D12",
+            "point": [
+              782.32,
+              162.56
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              142.24
+            ],
+            [
+              782.32,
+              142.24
+            ],
+            [
+              782.32,
+              162.56
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                142.24
+              ],
+              "end": [
+                782.32,
+                142.24
+              ],
+              "direction": "right",
+              "length": 706.12
+            },
+            {
+              "start": [
+                782.32,
+                142.24
+              ],
+              "end": [
+                782.32,
+                162.56
+              ],
+              "direction": "down",
+              "length": 20.32
+            }
+          ]
+        },
+        {
+          "net": "SPI_MISO",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "5",
+            "point": [
+              76.2,
+              142.24
+            ]
+          },
+          "to": {
+            "ref": "U6",
+            "pin": "DO",
+            "point": [
+              889.0,
+              137.16
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              142.24
+            ],
+            [
+              889.0,
+              142.24
+            ],
+            [
+              889.0,
+              137.16
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                142.24
+              ],
+              "end": [
+                889.0,
+                142.24
+              ],
+              "direction": "right",
+              "length": 812.8
+            },
+            {
+              "start": [
+                889.0,
+                142.24
+              ],
+              "end": [
+                889.0,
+                137.16
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        }
+      ]
+    },
+    "SPI_MOSI": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "J_SPI",
+          "pin": "4",
+          "side": "right",
+          "point": [
+            76.2,
+            147.32
+          ]
+        },
+        {
+          "ref": "U1",
+          "pin": "D11",
+          "side": "left",
+          "point": [
+            782.32,
+            172.72
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            889.0,
+            142.24
+          ]
+        },
+        {
+          "ref": "TP3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            960.12,
+            182.88
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "net": "SPI_MOSI",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "4",
+            "point": [
+              76.2,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U1",
+            "pin": "D11",
+            "point": [
+              782.32,
+              172.72
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              147.32
+            ],
+            [
+              782.32,
+              147.32
+            ],
+            [
+              782.32,
+              172.72
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                147.32
+              ],
+              "end": [
+                782.32,
+                147.32
+              ],
+              "direction": "right",
+              "length": 706.12
+            },
+            {
+              "start": [
+                782.32,
+                147.32
+              ],
+              "end": [
+                782.32,
+                172.72
+              ],
+              "direction": "down",
+              "length": 25.4
+            }
+          ]
+        },
+        {
+          "net": "SPI_MOSI",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "4",
+            "point": [
+              76.2,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "U6",
+            "pin": "DI",
+            "point": [
+              889.0,
+              142.24
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              147.32
+            ],
+            [
+              889.0,
+              147.32
+            ],
+            [
+              889.0,
+              142.24
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                147.32
+              ],
+              "end": [
+                889.0,
+                147.32
+              ],
+              "direction": "right",
+              "length": 812.8
+            },
+            {
+              "start": [
+                889.0,
+                147.32
+              ],
+              "end": [
+                889.0,
+                142.24
+              ],
+              "direction": "up",
+              "length": 5.08
+            }
+          ]
+        },
+        {
+          "net": "SPI_MOSI",
+          "from": {
+            "ref": "J_SPI",
+            "pin": "4",
+            "point": [
+              76.2,
+              147.32
+            ]
+          },
+          "to": {
+            "ref": "TP3",
+            "pin": "1",
+            "point": [
+              960.12,
+              182.88
+            ]
+          },
+          "path": [
+            [
+              76.2,
+              147.32
+            ],
+            [
+              960.12,
+              147.32
+            ],
+            [
+              960.12,
+              182.88
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                76.2,
+                147.32
+              ],
+              "end": [
+                960.12,
+                147.32
+              ],
+              "direction": "right",
+              "length": 883.92
+            },
+            {
+              "start": [
+                960.12,
+                147.32
+              ],
+              "end": [
+                960.12,
+                182.88
+              ],
+              "direction": "down",
+              "length": 35.56
+            }
+          ]
+        }
+      ]
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U2",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            965.2,
+            111.76
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1087.12,
+            137.16
+          ]
+        },
+        {
+          "ref": "U4",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1188.72,
+            127.0
+          ]
+        },
+        {
+          "ref": "U5",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            751.84,
+            127.0
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            904.24,
+            116.84
+          ]
+        },
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            609.6,
+            137.16
+          ]
+        },
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            269.24,
+            152.4
+          ]
+        },
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            396.24,
+            137.16
+          ]
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            457.2,
+            137.16
+          ]
+        },
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            645.16,
+            137.16
+          ]
+        },
+        {
+          "ref": "R6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            304.8,
+            132.08
+          ]
+        },
+        {
+          "ref": "C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            335.28,
+            142.24
+          ]
+        },
+        {
+          "ref": "C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            426.72,
+            142.24
+          ]
+        },
+        {
+          "ref": "C6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            579.12,
+            142.24
+          ]
+        },
+        {
+          "ref": "C7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            233.68,
+            137.16
+          ]
+        },
+        {
+          "ref": "C8",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            365.76,
+            142.24
+          ]
+        },
+        {
+          "ref": "J_3V3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            137.16,
+            132.08
+          ]
+        },
+        {
+          "ref": "TP7",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            1016.0,
+            152.4
+          ]
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            812.8,
+            111.76
+          ]
+        },
+        {
+          "ref": "K1",
+          "pin": "COIL_PLUS",
+          "side": "top",
+          "point": [
+            904.24,
+            157.48
+          ]
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "top",
+          "point": [
+            518.16,
+            137.16
+          ]
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "top",
+          "point": [
+            680.72,
+            137.16
+          ]
+        },
+        {
+          "ref": "D3",
+          "pin": "K",
+          "side": "top",
+          "point": [
+            269.24,
+            142.24
+          ]
+        },
+        {
+          "ref": "C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            487.68,
+            142.24
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            645.16,
+            147.32
+          ]
+        },
+        {
+          "ref": "C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            203.2,
+            142.24
+          ]
+        },
+        {
+          "ref": "SW3",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            233.68,
+            147.32
+          ]
+        },
+        {
+          "ref": "SW4",
+          "pin": "2",
+          "side": "top",
+          "point": [
+            304.8,
+            147.32
+          ]
+        },
+        {
+          "ref": "J_POWER",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            101.6,
+            147.32
+          ]
+        },
+        {
+          "ref": "J_LOAD1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            137.16,
+            147.32
+          ]
+        },
+        {
+          "ref": "J_LOAD2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            172.72,
+            137.16
+          ]
+        },
+        {
+          "ref": "TP6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            868.68,
+            157.48
+          ]
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            812.8,
+            182.88
+          ]
+        },
+        {
+          "ref": "U2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            965.2,
+            177.8
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1087.12,
+            157.48
+          ]
+        },
+        {
+          "ref": "U4",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1188.72,
+            167.64
+          ]
+        },
+        {
+          "ref": "U5",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            751.84,
+            167.64
+          ]
+        },
+        {
+          "ref": "U6",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            904.24,
+            157.48
+          ]
+        },
+        {
+          "ref": "Q1",
+          "pin": "S",
+          "side": "bottom",
+          "point": [
+            1016.0,
+            152.4
+          ]
+        },
+        {
+          "ref": "Q2",
+          "pin": "S",
+          "side": "bottom",
+          "point": [
+            1051.56,
+            157.48
+          ]
+        },
+        {
+          "ref": "Q3",
+          "pin": "E",
+          "side": "bottom",
+          "point": [
+            711.2,
+            152.4
+          ]
+        },
+        {
+          "ref": "D4",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            1122.68,
+            152.4
+          ]
+        },
+        {
+          "ref": "D5",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            1148.08,
+            152.4
+          ]
+        },
+        {
+          "ref": "R7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            396.24,
+            157.48
+          ]
+        },
+        {
+          "ref": "R8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            518.16,
+            162.56
+          ]
+        },
+        {
+          "ref": "R10",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            269.24,
+            142.24
+          ]
+        },
+        {
+          "ref": "R12",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            548.64,
+            152.4
+          ]
+        },
+        {
+          "ref": "C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            487.68,
+            152.4
+          ]
+        },
+        {
+          "ref": "C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            645.16,
+            157.48
+          ]
+        },
+        {
+          "ref": "C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            203.2,
+            152.4
+          ]
+        },
+        {
+          "ref": "C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            335.28,
+            152.4
+          ]
+        },
+        {
+          "ref": "C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            426.72,
+            152.4
+          ]
+        },
+        {
+          "ref": "C6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            579.12,
+            152.4
+          ]
+        },
+        {
+          "ref": "C7",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            233.68,
+            147.32
+          ]
+        },
+        {
+          "ref": "C8",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            365.76,
+            152.4
+          ]
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            457.2,
+            162.56
+          ]
+        },
+        {
+          "ref": "SW2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            609.6,
+            162.56
+          ]
+        },
+        {
+          "ref": "J_POWER",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            101.6,
+            157.48
+          ]
+        },
+        {
+          "ref": "J_3V3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            137.16,
+            147.32
+          ]
+        },
+        {
+          "ref": "J_I2C",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            30.48,
+            167.64
+          ]
+        },
+        {
+          "ref": "J_SPI",
+          "pin": "6",
+          "side": "bottom",
+          "point": [
+            66.04,
+            152.4
+          ]
+        },
+        {
+          "ref": "TP8",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            680.72,
+            162.56
+          ]
+        }
+      ],
+      "routes": []
+    },
+    "I2C_SCL": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "A5",
+          "side": "left",
+          "point": [
+            782.32,
+            127.0
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            1076.96,
+            142.24
+          ]
+        },
+        {
+          "ref": "U4",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            1173.48,
+            142.24
+          ]
+        },
+        {
+          "ref": "U5",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            731.52,
+            147.32
+          ]
+        },
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            279.4,
+            162.56
+          ]
+        },
+        {
+          "ref": "J_I2C",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            40.64,
+            157.48
+          ]
+        },
+        {
+          "ref": "TP2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            863.6,
+            142.24
+          ]
+        }
+      ],
+      "routes": []
+    },
+    "I2C_SDA": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "A4",
+          "side": "left",
+          "point": [
+            782.32,
+            132.08
+          ]
+        },
+        {
+          "ref": "U3",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            1076.96,
+            147.32
+          ]
+        },
+        {
+          "ref": "U4",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            1173.48,
+            147.32
+          ]
+        },
+        {
+          "ref": "U5",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            767.08,
+            147.32
+          ]
+        },
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            619.76,
+            142.24
+          ]
+        },
+        {
+          "ref": "J_I2C",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            40.64,
+            162.56
+          ]
+        },
+        {
+          "ref": "TP1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            863.6,
+            132.08
+          ]
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "SPI_SCK",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "3",
+        "point": [
+          76.2,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D13",
+        "point": [
+          782.32,
+          172.72
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          152.4
+        ],
+        [
+          76.2,
+          172.72
+        ],
+        [
+          782.32,
+          172.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            152.4
+          ],
+          "end": [
+            76.2,
+            172.72
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            76.2,
+            172.72
+          ],
+          "end": [
+            782.32,
+            172.72
+          ],
+          "direction": "right",
+          "length": 706.12
+        }
+      ]
+    },
+    {
+      "net": "SPI_SCK",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "3",
+        "point": [
+          76.2,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "TP5",
+        "pin": "1",
+        "point": [
+          863.6,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          152.4
+        ],
+        [
+          863.6,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            152.4
+          ],
+          "end": [
+            863.6,
+            152.4
+          ],
+          "direction": "right",
+          "length": 787.4
+        }
+      ]
+    },
+    {
+      "net": "SPI_SCK",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "3",
+        "point": [
+          76.2,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "U6",
+        "pin": "CLK",
+        "point": [
+          889.0,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          152.4
+        ],
+        [
+          889.0,
+          152.4
+        ],
+        [
+          889.0,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            152.4
+          ],
+          "end": [
+            889.0,
+            152.4
+          ],
+          "direction": "right",
+          "length": 812.8
+        },
+        {
+          "start": [
+            889.0,
+            152.4
+          ],
+          "end": [
+            889.0,
+            147.32
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ARDUINO_TO_ESP_RX",
+      "from": {
+        "ref": "U1",
+        "pin": "D2",
+        "point": [
+          848.36,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "U0RXD",
+        "point": [
+          939.8,
+          132.08
+        ]
+      },
+      "path": [
+        [
+          848.36,
+          142.24
+        ],
+        [
+          848.36,
+          116.84
+        ],
+        [
+          939.8,
+          116.84
+        ],
+        [
+          939.8,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            848.36,
+            142.24
+          ],
+          "end": [
+            848.36,
+            116.84
+          ],
+          "direction": "up",
+          "length": 25.4
+        },
+        {
+          "start": [
+            848.36,
+            116.84
+          ],
+          "end": [
+            939.8,
+            116.84
+          ],
+          "direction": "right",
+          "length": 91.44
+        },
+        {
+          "start": [
+            939.8,
+            116.84
+          ],
+          "end": [
+            939.8,
+            132.08
+          ],
+          "direction": "down",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "ARDUINO_TO_ESP_TX",
+      "from": {
+        "ref": "U1",
+        "pin": "D3",
+        "point": [
+          848.36,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "U0TXD",
+        "point": [
+          939.8,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          848.36,
+          147.32
+        ],
+        [
+          848.36,
+          182.88
+        ],
+        [
+          939.8,
+          182.88
+        ],
+        [
+          939.8,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            848.36,
+            147.32
+          ],
+          "end": [
+            848.36,
+            182.88
+          ],
+          "direction": "down",
+          "length": 35.56
+        },
+        {
+          "start": [
+            848.36,
+            182.88
+          ],
+          "end": [
+            939.8,
+            182.88
+          ],
+          "direction": "right",
+          "length": 91.44
+        },
+        {
+          "start": [
+            939.8,
+            182.88
+          ],
+          "end": [
+            939.8,
+            137.16
+          ],
+          "direction": "up",
+          "length": 45.72
+        }
+      ]
+    },
+    {
+      "net": "BUTTON_1",
+      "from": {
+        "ref": "SW3",
+        "pin": "1",
+        "point": [
+          243.84,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "R7",
+        "pin": "1",
+        "point": [
+          401.32,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          243.84,
+          152.4
+        ],
+        [
+          243.84,
+          127.0
+        ],
+        [
+          381.0,
+          127.0
+        ],
+        [
+          381.0,
+          152.4
+        ],
+        [
+          401.32,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            243.84,
+            152.4
+          ],
+          "end": [
+            243.84,
+            127.0
+          ],
+          "direction": "up",
+          "length": 25.4
+        },
+        {
+          "start": [
+            243.84,
+            127.0
+          ],
+          "end": [
+            381.0,
+            127.0
+          ],
+          "direction": "right",
+          "length": 137.16
+        },
+        {
+          "start": [
+            381.0,
+            127.0
+          ],
+          "end": [
+            381.0,
+            152.4
+          ],
+          "direction": "down",
+          "length": 25.4
+        },
+        {
+          "start": [
+            381.0,
+            152.4
+          ],
+          "end": [
+            401.32,
+            152.4
+          ],
+          "direction": "right",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "BUTTON_1",
+      "from": {
+        "ref": "SW3",
+        "pin": "1",
+        "point": [
+          243.84,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D4",
+        "point": [
+          782.32,
+          121.92
+        ]
+      },
+      "path": [
+        [
+          243.84,
+          152.4
+        ],
+        [
+          243.84,
+          121.92
+        ],
+        [
+          782.32,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            243.84,
+            152.4
+          ],
+          "end": [
+            243.84,
+            121.92
+          ],
+          "direction": "up",
+          "length": 30.48
+        },
+        {
+          "start": [
+            243.84,
+            121.92
+          ],
+          "end": [
+            782.32,
+            121.92
+          ],
+          "direction": "right",
+          "length": 538.48
+        }
+      ]
+    },
+    {
+      "net": "BUTTON_2",
+      "from": {
+        "ref": "SW4",
+        "pin": "1",
+        "point": [
+          309.88,
+          157.48
+        ]
+      },
+      "to": {
+        "ref": "R8",
+        "pin": "1",
+        "point": [
+          528.32,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          309.88,
+          157.48
+        ],
+        [
+          309.88,
+          162.56
+        ],
+        [
+          528.32,
+          162.56
+        ],
+        [
+          528.32,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            309.88,
+            157.48
+          ],
+          "end": [
+            309.88,
+            162.56
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            309.88,
+            162.56
+          ],
+          "end": [
+            528.32,
+            162.56
+          ],
+          "direction": "right",
+          "length": 218.44
+        },
+        {
+          "start": [
+            528.32,
+            162.56
+          ],
+          "end": [
+            528.32,
+            152.4
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "BUTTON_2",
+      "from": {
+        "ref": "SW4",
+        "pin": "1",
+        "point": [
+          309.88,
+          157.48
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D5",
+        "point": [
+          782.32,
+          121.92
+        ]
+      },
+      "path": [
+        [
+          309.88,
+          157.48
+        ],
+        [
+          782.32,
+          157.48
+        ],
+        [
+          782.32,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            309.88,
+            157.48
+          ],
+          "end": [
+            782.32,
+            157.48
+          ],
+          "direction": "right",
+          "length": 472.44
+        },
+        {
+          "start": [
+            782.32,
+            157.48
+          ],
+          "end": [
+            782.32,
+            121.92
+          ],
+          "direction": "up",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "ESP_BOOT",
+      "from": {
+        "ref": "R6",
+        "pin": "2",
+        "point": [
+          309.88,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "SW2",
+        "pin": "1",
+        "point": [
+          619.76,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          309.88,
+          137.16
+        ],
+        [
+          441.96,
+          137.16
+        ],
+        [
+          441.96,
+          132.08
+        ],
+        [
+          599.44,
+          132.08
+        ],
+        [
+          599.44,
+          152.4
+        ],
+        [
+          619.76,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            309.88,
+            137.16
+          ],
+          "end": [
+            441.96,
+            137.16
+          ],
+          "direction": "right",
+          "length": 132.08
+        },
+        {
+          "start": [
+            441.96,
+            137.16
+          ],
+          "end": [
+            441.96,
+            132.08
+          ],
+          "direction": "up",
+          "length": 5.08
+        },
+        {
+          "start": [
+            441.96,
+            132.08
+          ],
+          "end": [
+            599.44,
+            132.08
+          ],
+          "direction": "right",
+          "length": 157.48
+        },
+        {
+          "start": [
+            599.44,
+            132.08
+          ],
+          "end": [
+            599.44,
+            152.4
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            599.44,
+            152.4
+          ],
+          "end": [
+            619.76,
+            152.4
+          ],
+          "direction": "right",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "ESP_BOOT",
+      "from": {
+        "ref": "R6",
+        "pin": "2",
+        "point": [
+          309.88,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "IO0",
+        "point": [
+          939.8,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          309.88,
+          137.16
+        ],
+        [
+          939.8,
+          137.16
+        ],
+        [
+          939.8,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            309.88,
+            137.16
+          ],
+          "end": [
+            939.8,
+            137.16
+          ],
+          "direction": "right",
+          "length": 629.92
+        },
+        {
+          "start": [
+            939.8,
+            137.16
+          ],
+          "end": [
+            939.8,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "ESP_EN",
+      "from": {
+        "ref": "SW1",
+        "pin": "1",
+        "point": [
+          462.28,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "R5",
+        "pin": "2",
+        "point": [
+          655.32,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          462.28,
+          152.4
+        ],
+        [
+          477.52,
+          152.4
+        ],
+        [
+          477.52,
+          137.16
+        ],
+        [
+          528.32,
+          137.16
+        ],
+        [
+          528.32,
+          142.24
+        ],
+        [
+          538.48,
+          142.24
+        ],
+        [
+          538.48,
+          162.56
+        ],
+        [
+          655.32,
+          162.56
+        ],
+        [
+          655.32,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            462.28,
+            152.4
+          ],
+          "end": [
+            477.52,
+            152.4
+          ],
+          "direction": "right",
+          "length": 15.24
+        },
+        {
+          "start": [
+            477.52,
+            152.4
+          ],
+          "end": [
+            477.52,
+            137.16
+          ],
+          "direction": "up",
+          "length": 15.24
+        },
+        {
+          "start": [
+            477.52,
+            137.16
+          ],
+          "end": [
+            528.32,
+            137.16
+          ],
+          "direction": "right",
+          "length": 50.8
+        },
+        {
+          "start": [
+            528.32,
+            137.16
+          ],
+          "end": [
+            528.32,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            528.32,
+            142.24
+          ],
+          "end": [
+            538.48,
+            142.24
+          ],
+          "direction": "right",
+          "length": 10.16
+        },
+        {
+          "start": [
+            538.48,
+            142.24
+          ],
+          "end": [
+            538.48,
+            162.56
+          ],
+          "direction": "down",
+          "length": 20.32
+        },
+        {
+          "start": [
+            538.48,
+            162.56
+          ],
+          "end": [
+            655.32,
+            162.56
+          ],
+          "direction": "right",
+          "length": 116.84
+        },
+        {
+          "start": [
+            655.32,
+            162.56
+          ],
+          "end": [
+            655.32,
+            142.24
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "ESP_EN",
+      "from": {
+        "ref": "SW1",
+        "pin": "1",
+        "point": [
+          462.28,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "EN",
+        "point": [
+          939.8,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          462.28,
+          152.4
+        ],
+        [
+          939.8,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            462.28,
+            152.4
+          ],
+          "end": [
+            939.8,
+            152.4
+          ],
+          "direction": "right",
+          "length": 477.52
+        }
+      ]
+    },
+    {
+      "net": "FLASH_WP_HOLD",
+      "from": {
+        "ref": "R4",
+        "pin": "2",
+        "point": [
+          462.28,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U6",
+        "pin": "HOLD",
+        "point": [
+          889.0,
+          121.92
+        ]
+      },
+      "path": [
+        [
+          462.28,
+          142.24
+        ],
+        [
+          889.0,
+          142.24
+        ],
+        [
+          889.0,
+          121.92
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            462.28,
+            142.24
+          ],
+          "end": [
+            889.0,
+            142.24
+          ],
+          "direction": "right",
+          "length": 426.72
+        },
+        {
+          "start": [
+            889.0,
+            142.24
+          ],
+          "end": [
+            889.0,
+            121.92
+          ],
+          "direction": "up",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "FLASH_WP_HOLD",
+      "from": {
+        "ref": "R4",
+        "pin": "2",
+        "point": [
+          462.28,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U6",
+        "pin": "WP",
+        "point": [
+          889.0,
+          127.0
+        ]
+      },
+      "path": [
+        [
+          462.28,
+          142.24
+        ],
+        [
+          889.0,
+          142.24
+        ],
+        [
+          889.0,
+          127.0
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            462.28,
+            142.24
+          ],
+          "end": [
+            889.0,
+            142.24
+          ],
+          "direction": "right",
+          "length": 426.72
+        },
+        {
+          "start": [
+            889.0,
+            142.24
+          ],
+          "end": [
+            889.0,
+            127.0
+          ],
+          "direction": "up",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "LED_STATUS_1",
+      "from": {
+        "ref": "R14",
+        "pin": "1",
+        "point": [
+          40.64,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D9",
+        "point": [
+          782.32,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          137.16
+        ],
+        [
+          782.32,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            137.16
+          ],
+          "end": [
+            782.32,
+            137.16
+          ],
+          "direction": "right",
+          "length": 741.68
+        }
+      ]
+    },
+    {
+      "net": "LED_STATUS_1_A",
+      "from": {
+        "ref": "R14",
+        "pin": "2",
+        "point": [
+          40.64,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "D4",
+        "pin": "A",
+        "point": [
+          1112.52,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          142.24
+        ],
+        [
+          1112.52,
+          142.24
+        ],
+        [
+          1112.52,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            142.24
+          ],
+          "end": [
+            1112.52,
+            142.24
+          ],
+          "direction": "right",
+          "length": 1071.88
+        },
+        {
+          "start": [
+            1112.52,
+            142.24
+          ],
+          "end": [
+            1112.52,
+            147.32
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "LED_STATUS_2",
+      "from": {
+        "ref": "R15",
+        "pin": "1",
+        "point": [
+          40.64,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U2",
+        "pin": "IO2",
+        "point": [
+          939.8,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          147.32
+        ],
+        [
+          939.8,
+          147.32
+        ],
+        [
+          939.8,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            147.32
+          ],
+          "end": [
+            939.8,
+            147.32
+          ],
+          "direction": "right",
+          "length": 899.16
+        },
+        {
+          "start": [
+            939.8,
+            147.32
+          ],
+          "end": [
+            939.8,
+            152.4
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "LED_STATUS_2_A",
+      "from": {
+        "ref": "R15",
+        "pin": "2",
+        "point": [
+          40.64,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "D5",
+        "pin": "A",
+        "point": [
+          1143.0,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          152.4
+        ],
+        [
+          1143.0,
+          152.4
+        ],
+        [
+          1143.0,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            152.4
+          ],
+          "end": [
+            1143.0,
+            152.4
+          ],
+          "direction": "right",
+          "length": 1102.36
+        },
+        {
+          "start": [
+            1143.0,
+            152.4
+          ],
+          "end": [
+            1143.0,
+            147.32
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "MOSFET1_GATE",
+      "from": {
+        "ref": "R9",
+        "pin": "1",
+        "point": [
+          309.88,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D6",
+        "point": [
+          782.32,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          309.88,
+          142.24
+        ],
+        [
+          782.32,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            309.88,
+            142.24
+          ],
+          "end": [
+            782.32,
+            142.24
+          ],
+          "direction": "right",
+          "length": 472.44
+        }
+      ]
+    },
+    {
+      "net": "MOSFET1_GATE_NODE",
+      "from": {
+        "ref": "R10",
+        "pin": "1",
+        "point": [
+          279.4,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "R9",
+        "pin": "2",
+        "point": [
+          309.88,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          279.4,
+          137.16
+        ],
+        [
+          279.4,
+          147.32
+        ],
+        [
+          309.88,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            279.4,
+            137.16
+          ],
+          "end": [
+            279.4,
+            147.32
+          ],
+          "direction": "down",
+          "length": 10.16
+        },
+        {
+          "start": [
+            279.4,
+            147.32
+          ],
+          "end": [
+            309.88,
+            147.32
+          ],
+          "direction": "right",
+          "length": 30.48
+        }
+      ]
+    },
+    {
+      "net": "MOSFET1_GATE_NODE",
+      "from": {
+        "ref": "R10",
+        "pin": "1",
+        "point": [
+          279.4,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "Q1",
+        "pin": "G",
+        "point": [
+          1010.92,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          279.4,
+          137.16
+        ],
+        [
+          254.0,
+          137.16
+        ],
+        [
+          254.0,
+          162.56
+        ],
+        [
+          248.92,
+          162.56
+        ],
+        [
+          248.92,
+          167.64
+        ],
+        [
+          223.52,
+          167.64
+        ],
+        [
+          223.52,
+          106.68
+        ],
+        [
+          1010.92,
+          106.68
+        ],
+        [
+          1010.92,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            279.4,
+            137.16
+          ],
+          "end": [
+            254.0,
+            137.16
+          ],
+          "direction": "left",
+          "length": 25.4
+        },
+        {
+          "start": [
+            254.0,
+            137.16
+          ],
+          "end": [
+            254.0,
+            162.56
+          ],
+          "direction": "down",
+          "length": 25.4
+        },
+        {
+          "start": [
+            254.0,
+            162.56
+          ],
+          "end": [
+            248.92,
+            162.56
+          ],
+          "direction": "left",
+          "length": 5.08
+        },
+        {
+          "start": [
+            248.92,
+            162.56
+          ],
+          "end": [
+            248.92,
+            167.64
+          ],
+          "direction": "down",
+          "length": 5.08
+        },
+        {
+          "start": [
+            248.92,
+            167.64
+          ],
+          "end": [
+            223.52,
+            167.64
+          ],
+          "direction": "left",
+          "length": 25.4
+        },
+        {
+          "start": [
+            223.52,
+            167.64
+          ],
+          "end": [
+            223.52,
+            106.68
+          ],
+          "direction": "up",
+          "length": 60.96
+        },
+        {
+          "start": [
+            223.52,
+            106.68
+          ],
+          "end": [
+            1010.92,
+            106.68
+          ],
+          "direction": "right",
+          "length": 787.4
+        },
+        {
+          "start": [
+            1010.92,
+            106.68
+          ],
+          "end": [
+            1010.92,
+            142.24
+          ],
+          "direction": "down",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "MOSFET1_LOAD_LOW",
+      "from": {
+        "ref": "J_LOAD1",
+        "pin": "2",
+        "point": [
+          147.32,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "A",
+        "point": [
+          528.32,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          147.32,
+          152.4
+        ],
+        [
+          528.32,
+          152.4
+        ],
+        [
+          528.32,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            152.4
+          ],
+          "end": [
+            528.32,
+            152.4
+          ],
+          "direction": "right",
+          "length": 381.0
+        },
+        {
+          "start": [
+            528.32,
+            152.4
+          ],
+          "end": [
+            528.32,
+            142.24
+          ],
+          "direction": "up",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "MOSFET1_LOAD_LOW",
+      "from": {
+        "ref": "J_LOAD1",
+        "pin": "2",
+        "point": [
+          147.32,
+          152.4
+        ]
+      },
+      "to": {
+        "ref": "Q1",
+        "pin": "D",
+        "point": [
+          1010.92,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          147.32,
+          152.4
+        ],
+        [
+          1010.92,
+          152.4
+        ],
+        [
+          1010.92,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            147.32,
+            152.4
+          ],
+          "end": [
+            1010.92,
+            152.4
+          ],
+          "direction": "right",
+          "length": 863.6
+        },
+        {
+          "start": [
+            1010.92,
+            152.4
+          ],
+          "end": [
+            1010.92,
+            147.32
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "MOSFET2_GATE",
+      "from": {
+        "ref": "R11",
+        "pin": "1",
+        "point": [
+          40.64,
+          116.84
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D7",
+        "point": [
+          782.32,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          116.84
+        ],
+        [
+          782.32,
+          116.84
+        ],
+        [
+          782.32,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            116.84
+          ],
+          "end": [
+            782.32,
+            116.84
+          ],
+          "direction": "right",
+          "length": 741.68
+        },
+        {
+          "start": [
+            782.32,
+            116.84
+          ],
+          "end": [
+            782.32,
+            147.32
+          ],
+          "direction": "down",
+          "length": 30.48
+        }
+      ]
+    },
+    {
+      "net": "MOSFET2_GATE_NODE",
+      "from": {
+        "ref": "R11",
+        "pin": "2",
+        "point": [
+          40.64,
+          121.92
+        ]
+      },
+      "to": {
+        "ref": "R12",
+        "pin": "1",
+        "point": [
+          543.56,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          121.92
+        ],
+        [
+          543.56,
+          121.92
+        ],
+        [
+          543.56,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            121.92
+          ],
+          "end": [
+            543.56,
+            121.92
+          ],
+          "direction": "right",
+          "length": 502.92
+        },
+        {
+          "start": [
+            543.56,
+            121.92
+          ],
+          "end": [
+            543.56,
+            147.32
+          ],
+          "direction": "down",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "MOSFET2_GATE_NODE",
+      "from": {
+        "ref": "R11",
+        "pin": "2",
+        "point": [
+          40.64,
+          121.92
+        ]
+      },
+      "to": {
+        "ref": "Q2",
+        "pin": "G",
+        "point": [
+          1046.48,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          121.92
+        ],
+        [
+          1046.48,
+          121.92
+        ],
+        [
+          1046.48,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            121.92
+          ],
+          "end": [
+            1046.48,
+            121.92
+          ],
+          "direction": "right",
+          "length": 1005.84
+        },
+        {
+          "start": [
+            1046.48,
+            121.92
+          ],
+          "end": [
+            1046.48,
+            142.24
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "MOSFET2_LOAD_LOW",
+      "from": {
+        "ref": "J_LOAD2",
+        "pin": "2",
+        "point": [
+          182.88,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "A",
+        "point": [
+          670.56,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          182.88,
+          147.32
+        ],
+        [
+          670.56,
+          147.32
+        ],
+        [
+          670.56,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            182.88,
+            147.32
+          ],
+          "end": [
+            670.56,
+            147.32
+          ],
+          "direction": "right",
+          "length": 487.68
+        },
+        {
+          "start": [
+            670.56,
+            147.32
+          ],
+          "end": [
+            670.56,
+            142.24
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "MOSFET2_LOAD_LOW",
+      "from": {
+        "ref": "J_LOAD2",
+        "pin": "2",
+        "point": [
+          182.88,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "Q2",
+        "pin": "D",
+        "point": [
+          1046.48,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          182.88,
+          147.32
+        ],
+        [
+          182.88,
+          96.52
+        ],
+        [
+          1036.32,
+          96.52
+        ],
+        [
+          1036.32,
+          147.32
+        ],
+        [
+          1046.48,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            182.88,
+            147.32
+          ],
+          "end": [
+            182.88,
+            96.52
+          ],
+          "direction": "up",
+          "length": 50.8
+        },
+        {
+          "start": [
+            182.88,
+            96.52
+          ],
+          "end": [
+            1036.32,
+            96.52
+          ],
+          "direction": "right",
+          "length": 853.44
+        },
+        {
+          "start": [
+            1036.32,
+            96.52
+          ],
+          "end": [
+            1036.32,
+            147.32
+          ],
+          "direction": "down",
+          "length": 50.8
+        },
+        {
+          "start": [
+            1036.32,
+            147.32
+          ],
+          "end": [
+            1046.48,
+            147.32
+          ],
+          "direction": "right",
+          "length": 10.16
+        }
+      ]
+    },
+    {
+      "net": "RELAY_BASE",
+      "from": {
+        "ref": "R13",
+        "pin": "2",
+        "point": [
+          40.64,
+          127.0
+        ]
+      },
+      "to": {
+        "ref": "Q3",
+        "pin": "B",
+        "point": [
+          701.04,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          127.0
+        ],
+        [
+          701.04,
+          127.0
+        ],
+        [
+          701.04,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            127.0
+          ],
+          "end": [
+            701.04,
+            127.0
+          ],
+          "direction": "right",
+          "length": 660.4
+        },
+        {
+          "start": [
+            701.04,
+            127.0
+          ],
+          "end": [
+            701.04,
+            142.24
+          ],
+          "direction": "down",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "RELAY_COIL_LOW",
+      "from": {
+        "ref": "D3",
+        "pin": "A",
+        "point": [
+          279.4,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "Q3",
+        "pin": "C",
+        "point": [
+          701.04,
+          147.32
+        ]
+      },
+      "path": [
+        [
+          279.4,
+          147.32
+        ],
+        [
+          701.04,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            279.4,
+            147.32
+          ],
+          "end": [
+            701.04,
+            147.32
+          ],
+          "direction": "right",
+          "length": 421.64
+        }
+      ]
+    },
+    {
+      "net": "RELAY_COIL_LOW",
+      "from": {
+        "ref": "D3",
+        "pin": "A",
+        "point": [
+          279.4,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "K1",
+        "pin": "COIL_MINUS",
+        "point": [
+          894.08,
+          162.56
+        ]
+      },
+      "path": [
+        [
+          279.4,
+          147.32
+        ],
+        [
+          894.08,
+          147.32
+        ],
+        [
+          894.08,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            279.4,
+            147.32
+          ],
+          "end": [
+            894.08,
+            147.32
+          ],
+          "direction": "right",
+          "length": 614.68
+        },
+        {
+          "start": [
+            894.08,
+            147.32
+          ],
+          "end": [
+            894.08,
+            162.56
+          ],
+          "direction": "down",
+          "length": 15.24
+        }
+      ]
+    },
+    {
+      "net": "RELAY_CONTACT_COM",
+      "from": {
+        "ref": "J_RELAY",
+        "pin": "1",
+        "point": [
+          40.64,
+          172.72
+        ]
+      },
+      "to": {
+        "ref": "K1",
+        "pin": "COM",
+        "point": [
+          894.08,
+          167.64
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          172.72
+        ],
+        [
+          894.08,
+          172.72
+        ],
+        [
+          894.08,
+          167.64
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            172.72
+          ],
+          "end": [
+            894.08,
+            172.72
+          ],
+          "direction": "right",
+          "length": 853.44
+        },
+        {
+          "start": [
+            894.08,
+            172.72
+          ],
+          "end": [
+            894.08,
+            167.64
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "RELAY_CONTACT_NO",
+      "from": {
+        "ref": "J_RELAY",
+        "pin": "2",
+        "point": [
+          40.64,
+          177.8
+        ]
+      },
+      "to": {
+        "ref": "K1",
+        "pin": "NO",
+        "point": [
+          894.08,
+          172.72
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          177.8
+        ],
+        [
+          894.08,
+          177.8
+        ],
+        [
+          894.08,
+          172.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            177.8
+          ],
+          "end": [
+            894.08,
+            177.8
+          ],
+          "direction": "right",
+          "length": 853.44
+        },
+        {
+          "start": [
+            894.08,
+            177.8
+          ],
+          "end": [
+            894.08,
+            172.72
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "RELAY_CTRL",
+      "from": {
+        "ref": "R13",
+        "pin": "1",
+        "point": [
+          40.64,
+          132.08
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D8",
+        "point": [
+          782.32,
+          152.4
+        ]
+      },
+      "path": [
+        [
+          40.64,
+          132.08
+        ],
+        [
+          782.32,
+          132.08
+        ],
+        [
+          782.32,
+          152.4
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            40.64,
+            132.08
+          ],
+          "end": [
+            782.32,
+            132.08
+          ],
+          "direction": "right",
+          "length": 741.68
+        },
+        {
+          "start": [
+            782.32,
+            132.08
+          ],
+          "end": [
+            782.32,
+            152.4
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "SPI_CS_FLASH",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "2",
+        "point": [
+          76.2,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          401.32,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          137.16
+        ],
+        [
+          401.32,
+          137.16
+        ],
+        [
+          401.32,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            137.16
+          ],
+          "end": [
+            401.32,
+            137.16
+          ],
+          "direction": "right",
+          "length": 325.12
+        },
+        {
+          "start": [
+            401.32,
+            137.16
+          ],
+          "end": [
+            401.32,
+            142.24
+          ],
+          "direction": "down",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "SPI_CS_FLASH",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "2",
+        "point": [
+          76.2,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D10",
+        "point": [
+          782.32,
+          157.48
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          137.16
+        ],
+        [
+          782.32,
+          137.16
+        ],
+        [
+          782.32,
+          157.48
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            137.16
+          ],
+          "end": [
+            782.32,
+            137.16
+          ],
+          "direction": "right",
+          "length": 706.12
+        },
+        {
+          "start": [
+            782.32,
+            137.16
+          ],
+          "end": [
+            782.32,
+            157.48
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "SPI_CS_FLASH",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "2",
+        "point": [
+          76.2,
+          137.16
+        ]
+      },
+      "to": {
+        "ref": "U6",
+        "pin": "CS",
+        "point": [
+          889.0,
+          132.08
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          137.16
+        ],
+        [
+          889.0,
+          137.16
+        ],
+        [
+          889.0,
+          132.08
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            137.16
+          ],
+          "end": [
+            889.0,
+            137.16
+          ],
+          "direction": "right",
+          "length": 812.8
+        },
+        {
+          "start": [
+            889.0,
+            137.16
+          ],
+          "end": [
+            889.0,
+            132.08
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "SPI_MISO",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "5",
+        "point": [
+          76.2,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "TP4",
+        "pin": "1",
+        "point": [
+          111.76,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          142.24
+        ],
+        [
+          111.76,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            142.24
+          ],
+          "end": [
+            111.76,
+            142.24
+          ],
+          "direction": "right",
+          "length": 35.56
+        }
+      ]
+    },
+    {
+      "net": "SPI_MISO",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "5",
+        "point": [
+          76.2,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D12",
+        "point": [
+          782.32,
+          162.56
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          142.24
+        ],
+        [
+          782.32,
+          142.24
+        ],
+        [
+          782.32,
+          162.56
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            142.24
+          ],
+          "end": [
+            782.32,
+            142.24
+          ],
+          "direction": "right",
+          "length": 706.12
+        },
+        {
+          "start": [
+            782.32,
+            142.24
+          ],
+          "end": [
+            782.32,
+            162.56
+          ],
+          "direction": "down",
+          "length": 20.32
+        }
+      ]
+    },
+    {
+      "net": "SPI_MISO",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "5",
+        "point": [
+          76.2,
+          142.24
+        ]
+      },
+      "to": {
+        "ref": "U6",
+        "pin": "DO",
+        "point": [
+          889.0,
+          137.16
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          142.24
+        ],
+        [
+          889.0,
+          142.24
+        ],
+        [
+          889.0,
+          137.16
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            142.24
+          ],
+          "end": [
+            889.0,
+            142.24
+          ],
+          "direction": "right",
+          "length": 812.8
+        },
+        {
+          "start": [
+            889.0,
+            142.24
+          ],
+          "end": [
+            889.0,
+            137.16
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "SPI_MOSI",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "4",
+        "point": [
+          76.2,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U1",
+        "pin": "D11",
+        "point": [
+          782.32,
+          172.72
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          147.32
+        ],
+        [
+          782.32,
+          147.32
+        ],
+        [
+          782.32,
+          172.72
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            147.32
+          ],
+          "end": [
+            782.32,
+            147.32
+          ],
+          "direction": "right",
+          "length": 706.12
+        },
+        {
+          "start": [
+            782.32,
+            147.32
+          ],
+          "end": [
+            782.32,
+            172.72
+          ],
+          "direction": "down",
+          "length": 25.4
+        }
+      ]
+    },
+    {
+      "net": "SPI_MOSI",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "4",
+        "point": [
+          76.2,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "U6",
+        "pin": "DI",
+        "point": [
+          889.0,
+          142.24
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          147.32
+        ],
+        [
+          889.0,
+          147.32
+        ],
+        [
+          889.0,
+          142.24
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            147.32
+          ],
+          "end": [
+            889.0,
+            147.32
+          ],
+          "direction": "right",
+          "length": 812.8
+        },
+        {
+          "start": [
+            889.0,
+            147.32
+          ],
+          "end": [
+            889.0,
+            142.24
+          ],
+          "direction": "up",
+          "length": 5.08
+        }
+      ]
+    },
+    {
+      "net": "SPI_MOSI",
+      "from": {
+        "ref": "J_SPI",
+        "pin": "4",
+        "point": [
+          76.2,
+          147.32
+        ]
+      },
+      "to": {
+        "ref": "TP3",
+        "pin": "1",
+        "point": [
+          960.12,
+          182.88
+        ]
+      },
+      "path": [
+        [
+          76.2,
+          147.32
+        ],
+        [
+          960.12,
+          147.32
+        ],
+        [
+          960.12,
+          182.88
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            76.2,
+            147.32
+          ],
+          "end": [
+            960.12,
+            147.32
+          ],
+          "direction": "right",
+          "length": 883.92
+        },
+        {
+          "start": [
+            960.12,
+            147.32
+          ],
+          "end": [
+            960.12,
+            182.88
+          ],
+          "direction": "down",
+          "length": 35.56
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 31,
+    "wired_route_count": 44,
+    "segment_count": 104,
+    "different_net_crossing_count": 257
+  },
+  "warnings": [
+    "astar_fallback_expansion_limit: SPI_SCK exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_SCK exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: BUTTON_2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_BOOT exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: ESP_EN exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: FLASH_WP_HOLD exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: FLASH_WP_HOLD exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: LED_STATUS_1 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: LED_STATUS_1_A exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: LED_STATUS_2 exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: LED_STATUS_2_A exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MOSFET1_GATE exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MOSFET1_LOAD_LOW exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MOSFET1_LOAD_LOW exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MOSFET2_GATE exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MOSFET2_GATE_NODE exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MOSFET2_GATE_NODE exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: MOSFET2_LOAD_LOW exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: RELAY_BASE exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: RELAY_COIL_LOW exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: RELAY_COIL_LOW exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: RELAY_CONTACT_COM exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: RELAY_CONTACT_NO exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: RELAY_CTRL exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_CS_FLASH exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_CS_FLASH exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_CS_FLASH exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_MISO exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_MISO exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_MOSI exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_MOSI exceeded 1500 explored grid states.",
+    "astar_fallback_expansion_limit: SPI_MOSI exceeded 1500 explored grid states.",
+    "different_net_crossings_detected: 257"
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "DS3231",
+            "name": "DS3231 RTC",
+            "at": [
+              29.0,
+              34.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "rtc_ic",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X2": {
+            "kind": "COIN_CELL_HOLDER",
+            "name": "Coin Cell Holder",
+            "at": [
+              55.0,
+              40.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "battery_holder",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X3": {
+            "kind": "CR2032_BATTERY",
+            "name": "CR2032 Battery",
+            "at": [
+              87.0,
+              40.0
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "battery",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X4": {
+            "kind": "SDA_PULLUP",
+            "name": "SDA Pull-up",
+            "at": [
+              112.5,
+              31.25
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X5": {
+            "kind": "SCL_PULLUP",
+            "name": "SCL Pull-up",
+            "at": [
+              131.5,
+              31.25
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.0,
+            "top": 30.0,
+            "right": 33.0,
+            "bottom": 38.0
+          },
+          {
+            "owner": "X2",
+            "left": 45.0,
+            "top": 30.0,
+            "right": 65.0,
+            "bottom": 50.0
+          },
+          {
+            "owner": "X3",
+            "left": 77.0,
+            "top": 30.0,
+            "right": 97.0,
+            "bottom": 50.0
+          },
+          {
+            "owner": "X4",
+            "left": 109.0,
+            "top": 30.0,
+            "right": 116.0,
+            "bottom": 32.5
+          },
+          {
+            "owner": "X5",
+            "left": 128.0,
+            "top": 30.0,
+            "right": 135.0,
+            "bottom": 32.5
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

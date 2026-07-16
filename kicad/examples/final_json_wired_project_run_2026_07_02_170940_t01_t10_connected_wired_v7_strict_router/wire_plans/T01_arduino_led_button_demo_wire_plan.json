@@ -1,0 +1,1403 @@
+{
+  "schema": "progen-kicad-wire-plan/v0.1",
+  "stage": "wire_planner",
+  "input_contract": {
+    "placement": "components plus obstacles JSON; no EDA file required",
+    "connections": "CircuitIR components[].pins and/or nets endpoint lists"
+  },
+  "algorithm": {
+    "router": "grid_astar_orthogonal",
+    "routing_order": "clock, ordinary short nets, power/ground labels, high-fanout labels",
+    "component_avoidance": "inflated_obstacle_grid",
+    "wire_collision_policy": "existing wire grid cells are blocked; adjacent different-net wires receive penalty",
+    "failure_policy": "unroutable nets are converted to local labels and recorded; no speculative Manhattan fallback wires are drawn",
+    "pin_point_policy": "uses placement.pin_points when supplied; otherwise estimates endpoint stubs from component body edges"
+  },
+  "sheet": {
+    "width": 420.0,
+    "height": 297.0,
+    "grid": 1.27,
+    "clearance": 1.27
+  },
+  "nets": {
+    "BTN1_NET": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            60.96,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "R4",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            99.06,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            137.16,
+            144.78
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "D5",
+          "side": "left",
+          "point": [
+            175.26,
+            144.78
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin8"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: BTN1_NET exceeded 50000 explored grid states."
+      ]
+    },
+    "BTN2_NET": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            60.96,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "SW2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            104.14,
+            152.4
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            132.08,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D6",
+          "side": "left",
+          "point": [
+            175.26,
+            147.32
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin9"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for BTN2_NET."
+      ]
+    },
+    "IO_D10": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            157.48
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "U1",
+          "pin": "D10",
+          "side": "left",
+          "point": [
+            175.26,
+            157.48
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: IO_D10 exceeded 50000 explored grid states."
+      ]
+    },
+    "IO_D11": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            25.4,
+            160.02
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        },
+        {
+          "ref": "U1",
+          "pin": "D11",
+          "side": "left",
+          "point": [
+            175.26,
+            160.02
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: IO_D11 exceeded 50000 explored grid states."
+      ]
+    },
+    "IO_D12": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            25.4,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        },
+        {
+          "ref": "U1",
+          "pin": "D12",
+          "side": "bottom",
+          "point": [
+            175.26,
+            162.56
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: IO_D12 exceeded 50000 explored grid states."
+      ]
+    },
+    "IO_D13": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            25.4,
+            165.1
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "D13",
+          "side": "bottom",
+          "point": [
+            175.26,
+            165.1
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: IO_D13 exceeded 50000 explored grid states."
+      ]
+    },
+    "IO_D7": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            60.96,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        },
+        {
+          "ref": "U1",
+          "pin": "D7",
+          "side": "left",
+          "point": [
+            175.26,
+            149.86
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin10"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: IO_D7 exceeded 50000 explored grid states."
+      ]
+    },
+    "IO_D8": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J1",
+          "pin": "6",
+          "side": "left",
+          "point": [
+            60.96,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        },
+        {
+          "ref": "U1",
+          "pin": "D8",
+          "side": "left",
+          "point": [
+            175.26,
+            152.4
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin11"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: IO_D8 exceeded 50000 explored grid states."
+      ]
+    },
+    "IO_D9": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "J2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            154.94
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D9",
+          "side": "left",
+          "point": [
+            175.26,
+            154.94
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin12"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: IO_D9 exceeded 50000 explored grid states."
+      ]
+    },
+    "LED1_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            247.65,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED1_A",
+          "from": {
+            "ref": "R1",
+            "pin": "2",
+            "point": [
+              30.48,
+              135.89
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D1",
+            "pin": "A",
+            "point": [
+              247.65,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              30.48,
+              135.89
+            ],
+            [
+              30.48,
+              137.16
+            ],
+            [
+              62.23,
+              137.16
+            ],
+            [
+              62.23,
+              114.3
+            ],
+            [
+              248.92,
+              114.3
+            ],
+            [
+              248.92,
+              147.32
+            ],
+            [
+              247.65,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                135.89
+              ],
+              "end": [
+                30.48,
+                137.16
+              ],
+              "direction": "down",
+              "length": 1.27
+            },
+            {
+              "start": [
+                30.48,
+                137.16
+              ],
+              "end": [
+                62.23,
+                137.16
+              ],
+              "direction": "right",
+              "length": 31.75
+            },
+            {
+              "start": [
+                62.23,
+                137.16
+              ],
+              "end": [
+                62.23,
+                114.3
+              ],
+              "direction": "up",
+              "length": 22.86
+            },
+            {
+              "start": [
+                62.23,
+                114.3
+              ],
+              "end": [
+                248.92,
+                114.3
+              ],
+              "direction": "right",
+              "length": 186.69
+            },
+            {
+              "start": [
+                248.92,
+                114.3
+              ],
+              "end": [
+                248.92,
+                147.32
+              ],
+              "direction": "down",
+              "length": 33.02
+            },
+            {
+              "start": [
+                248.92,
+                147.32
+              ],
+              "end": [
+                247.65,
+                147.32
+              ],
+              "direction": "left",
+              "length": 1.27
+            }
+          ]
+        }
+      ]
+    },
+    "LED1_NET": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R1",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            30.48,
+            128.27
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D2",
+          "side": "left",
+          "point": [
+            175.26,
+            137.16
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: LED1_NET exceeded 50000 explored grid states."
+      ]
+    },
+    "LED2_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            30.48,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            278.13,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED2_A",
+          "from": {
+            "ref": "R2",
+            "pin": "2",
+            "point": [
+              30.48,
+              146.05
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D2",
+            "pin": "A",
+            "point": [
+              278.13,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              30.48,
+              146.05
+            ],
+            [
+              58.42,
+              146.05
+            ],
+            [
+              58.42,
+              180.34
+            ],
+            [
+              279.4,
+              180.34
+            ],
+            [
+              279.4,
+              147.32
+            ],
+            [
+              278.13,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                146.05
+              ],
+              "end": [
+                58.42,
+                146.05
+              ],
+              "direction": "right",
+              "length": 27.94
+            },
+            {
+              "start": [
+                58.42,
+                146.05
+              ],
+              "end": [
+                58.42,
+                180.34
+              ],
+              "direction": "down",
+              "length": 34.29
+            },
+            {
+              "start": [
+                58.42,
+                180.34
+              ],
+              "end": [
+                279.4,
+                180.34
+              ],
+              "direction": "right",
+              "length": 220.98
+            },
+            {
+              "start": [
+                279.4,
+                180.34
+              ],
+              "end": [
+                279.4,
+                147.32
+              ],
+              "direction": "up",
+              "length": 33.02
+            },
+            {
+              "start": [
+                279.4,
+                147.32
+              ],
+              "end": [
+                278.13,
+                147.32
+              ],
+              "direction": "left",
+              "length": 1.27
+            }
+          ]
+        }
+      ]
+    },
+    "LED2_NET": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R2",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            30.48,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D3",
+          "side": "left",
+          "point": [
+            175.26,
+            139.7
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_no_clear_route: no clear route found for LED2_NET."
+      ]
+    },
+    "LED3_A": {
+      "strategy": "wire",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            30.48,
+            156.21
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "D3",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            308.61,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": [
+        {
+          "net": "LED3_A",
+          "from": {
+            "ref": "R3",
+            "pin": "2",
+            "point": [
+              30.48,
+              156.21
+            ],
+            "exact": true,
+            "source": "Device:R:unit1:pin2"
+          },
+          "to": {
+            "ref": "D3",
+            "pin": "A",
+            "point": [
+              308.61,
+              147.32
+            ],
+            "exact": true,
+            "source": "Device:LED:unit1:pin2"
+          },
+          "path": [
+            [
+              30.48,
+              156.21
+            ],
+            [
+              55.88,
+              156.21
+            ],
+            [
+              55.88,
+              182.88
+            ],
+            [
+              309.88,
+              182.88
+            ],
+            [
+              309.88,
+              147.32
+            ],
+            [
+              308.61,
+              147.32
+            ]
+          ],
+          "segments": [
+            {
+              "start": [
+                30.48,
+                156.21
+              ],
+              "end": [
+                55.88,
+                156.21
+              ],
+              "direction": "right",
+              "length": 25.4
+            },
+            {
+              "start": [
+                55.88,
+                156.21
+              ],
+              "end": [
+                55.88,
+                182.88
+              ],
+              "direction": "down",
+              "length": 26.67
+            },
+            {
+              "start": [
+                55.88,
+                182.88
+              ],
+              "end": [
+                309.88,
+                182.88
+              ],
+              "direction": "right",
+              "length": 254.0
+            },
+            {
+              "start": [
+                309.88,
+                182.88
+              ],
+              "end": [
+                309.88,
+                147.32
+              ],
+              "direction": "up",
+              "length": 35.56
+            },
+            {
+              "start": [
+                309.88,
+                147.32
+              ],
+              "end": [
+                308.61,
+                147.32
+              ],
+              "direction": "left",
+              "length": 1.27
+            }
+          ]
+        }
+      ]
+    },
+    "LED3_NET": {
+      "strategy": "local_labels_after_router_failure",
+      "endpoints": [
+        {
+          "ref": "R3",
+          "pin": "1",
+          "side": "right",
+          "point": [
+            30.48,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "U1",
+          "pin": "D4",
+          "side": "left",
+          "point": [
+            175.26,
+            142.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin7"
+        }
+      ],
+      "routes": [],
+      "failure_warnings": [
+        "astar_unroutable_expansion_limit: LED3_NET exceeded 50000 explored grid states."
+      ]
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            193.04,
+            121.92
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin27"
+        },
+        {
+          "ref": "SW1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            127.0,
+            144.78
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "SW2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            93.98,
+            152.4
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "J1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            60.96,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "endpoints": [
+        {
+          "ref": "U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            190.5,
+            172.72
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin29"
+        },
+        {
+          "ref": "D1",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            240.03,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "D2",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            270.51,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "D3",
+          "pin": "K",
+          "side": "bottom",
+          "point": [
+            300.99,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            99.06,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            132.08,
+            158.75
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "J1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            60.96,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "J2",
+          "pin": "6",
+          "side": "bottom",
+          "point": [
+            25.4,
+            167.64
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin6"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "net": "LED1_A",
+      "from": {
+        "ref": "R1",
+        "pin": "2",
+        "point": [
+          30.48,
+          135.89
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D1",
+        "pin": "A",
+        "point": [
+          247.65,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          30.48,
+          135.89
+        ],
+        [
+          30.48,
+          137.16
+        ],
+        [
+          62.23,
+          137.16
+        ],
+        [
+          62.23,
+          114.3
+        ],
+        [
+          248.92,
+          114.3
+        ],
+        [
+          248.92,
+          147.32
+        ],
+        [
+          247.65,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            135.89
+          ],
+          "end": [
+            30.48,
+            137.16
+          ],
+          "direction": "down",
+          "length": 1.27
+        },
+        {
+          "start": [
+            30.48,
+            137.16
+          ],
+          "end": [
+            62.23,
+            137.16
+          ],
+          "direction": "right",
+          "length": 31.75
+        },
+        {
+          "start": [
+            62.23,
+            137.16
+          ],
+          "end": [
+            62.23,
+            114.3
+          ],
+          "direction": "up",
+          "length": 22.86
+        },
+        {
+          "start": [
+            62.23,
+            114.3
+          ],
+          "end": [
+            248.92,
+            114.3
+          ],
+          "direction": "right",
+          "length": 186.69
+        },
+        {
+          "start": [
+            248.92,
+            114.3
+          ],
+          "end": [
+            248.92,
+            147.32
+          ],
+          "direction": "down",
+          "length": 33.02
+        },
+        {
+          "start": [
+            248.92,
+            147.32
+          ],
+          "end": [
+            247.65,
+            147.32
+          ],
+          "direction": "left",
+          "length": 1.27
+        }
+      ]
+    },
+    {
+      "net": "LED2_A",
+      "from": {
+        "ref": "R2",
+        "pin": "2",
+        "point": [
+          30.48,
+          146.05
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D2",
+        "pin": "A",
+        "point": [
+          278.13,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          30.48,
+          146.05
+        ],
+        [
+          58.42,
+          146.05
+        ],
+        [
+          58.42,
+          180.34
+        ],
+        [
+          279.4,
+          180.34
+        ],
+        [
+          279.4,
+          147.32
+        ],
+        [
+          278.13,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            146.05
+          ],
+          "end": [
+            58.42,
+            146.05
+          ],
+          "direction": "right",
+          "length": 27.94
+        },
+        {
+          "start": [
+            58.42,
+            146.05
+          ],
+          "end": [
+            58.42,
+            180.34
+          ],
+          "direction": "down",
+          "length": 34.29
+        },
+        {
+          "start": [
+            58.42,
+            180.34
+          ],
+          "end": [
+            279.4,
+            180.34
+          ],
+          "direction": "right",
+          "length": 220.98
+        },
+        {
+          "start": [
+            279.4,
+            180.34
+          ],
+          "end": [
+            279.4,
+            147.32
+          ],
+          "direction": "up",
+          "length": 33.02
+        },
+        {
+          "start": [
+            279.4,
+            147.32
+          ],
+          "end": [
+            278.13,
+            147.32
+          ],
+          "direction": "left",
+          "length": 1.27
+        }
+      ]
+    },
+    {
+      "net": "LED3_A",
+      "from": {
+        "ref": "R3",
+        "pin": "2",
+        "point": [
+          30.48,
+          156.21
+        ],
+        "exact": true,
+        "source": "Device:R:unit1:pin2"
+      },
+      "to": {
+        "ref": "D3",
+        "pin": "A",
+        "point": [
+          308.61,
+          147.32
+        ],
+        "exact": true,
+        "source": "Device:LED:unit1:pin2"
+      },
+      "path": [
+        [
+          30.48,
+          156.21
+        ],
+        [
+          55.88,
+          156.21
+        ],
+        [
+          55.88,
+          182.88
+        ],
+        [
+          309.88,
+          182.88
+        ],
+        [
+          309.88,
+          147.32
+        ],
+        [
+          308.61,
+          147.32
+        ]
+      ],
+      "segments": [
+        {
+          "start": [
+            30.48,
+            156.21
+          ],
+          "end": [
+            55.88,
+            156.21
+          ],
+          "direction": "right",
+          "length": 25.4
+        },
+        {
+          "start": [
+            55.88,
+            156.21
+          ],
+          "end": [
+            55.88,
+            182.88
+          ],
+          "direction": "down",
+          "length": 26.67
+        },
+        {
+          "start": [
+            55.88,
+            182.88
+          ],
+          "end": [
+            309.88,
+            182.88
+          ],
+          "direction": "right",
+          "length": 254.0
+        },
+        {
+          "start": [
+            309.88,
+            182.88
+          ],
+          "end": [
+            309.88,
+            147.32
+          ],
+          "direction": "up",
+          "length": 35.56
+        },
+        {
+          "start": [
+            309.88,
+            147.32
+          ],
+          "end": [
+            308.61,
+            147.32
+          ],
+          "direction": "left",
+          "length": 1.27
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "net_count": 17,
+    "wired_route_count": 3,
+    "segment_count": 16,
+    "different_net_crossing_count": 0
+  },
+  "warnings": [
+    "astar_unroutable_expansion_limit: BTN1_NET exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: BTN1_NET converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for BTN2_NET.",
+    "wire_net_label_fallback: BTN2_NET converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: IO_D10 exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: IO_D10 converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: IO_D11 exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: IO_D11 converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: IO_D12 exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: IO_D12 converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: IO_D13 exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: IO_D13 converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: IO_D7 exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: IO_D7 converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: IO_D8 exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: IO_D8 converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: IO_D9 exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: IO_D9 converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: LED1_NET exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: LED1_NET converted to local labels after router failure.",
+    "astar_unroutable_no_clear_route: no clear route found for LED2_NET.",
+    "wire_net_label_fallback: LED2_NET converted to local labels after router failure.",
+    "astar_unroutable_expansion_limit: LED3_NET exceeded 50000 explored grid states.",
+    "wire_net_label_fallback: LED3_NET converted to local labels after router failure."
+  ]
+}

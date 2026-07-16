@@ -1,0 +1,1258 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n01",
+    "title": "ESP32_WROOM ENVIRONMENT LOGGER + OLED + BME280 + DS3231 + W25Q64 + MICRO_SD + USB UART",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N01",
+  "circuit_name": "ESP32_WROOM ENVIRONMENT LOGGER + OLED + BME280 + DS3231 + W25Q64 + MICRO_SD + USB UART",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "USB_C_CONNECTOR",
+      "ref": "USB_C_CONNECTOR",
+      "kind": "USB_C_CONNECTOR",
+      "type": "USB_C_CONNECTOR",
+      "value": "USB Type-C Connector",
+      "role": "connector",
+      "block": "01",
+      "pins": {
+        "CC1": "NET_USB_C_CONNECTOR_CC1",
+        "CC2": "NET_USB_C_CONNECTOR_CC2",
+        "D+": "NET_USB_C_CONNECTOR_D",
+        "D-": "NET_USB_C_CONNECTOR_D_2",
+        "GND": "GND",
+        "VBUS": "NET_USB_5V"
+      }
+    },
+    {
+      "id": "RES_USB_CC1",
+      "ref": "RES_USB_CC1",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_USB_C_CONNECTOR_CC1",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "RES_USB_CC2",
+      "ref": "RES_USB_CC2",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_USB_C_CONNECTOR_CC2",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "CP2102",
+      "ref": "CP2102",
+      "kind": "CP2102",
+      "type": "CP2102",
+      "value": "CP2102 USB-UART IC",
+      "role": "interface_ic",
+      "block": "01",
+      "pins": {
+        "D+": "NET_USB_C_CONNECTOR_D",
+        "D-": "NET_USB_C_CONNECTOR_D_2",
+        "DTR": "NET_CP2102_DTR",
+        "GND": "GND",
+        "RTS": "NET_CP2102_RTS",
+        "RXD": "NET_CP2102_RXD",
+        "TXD": "NET_CP2102_TXD",
+        "VBUS": "NET_USB_5V",
+        "VDD": "+3V3",
+        "VIO": "+3V3"
+      }
+    },
+    {
+      "id": "LM317",
+      "ref": "LM317",
+      "kind": "LM317",
+      "type": "LM317",
+      "value": "LM317 Adjustable Regulator",
+      "role": "regulator",
+      "block": "01",
+      "pins": {
+        "ADJ": "NET_LM317_ADJ",
+        "IN": "NET_USB_5V",
+        "OUT": "+3V3"
+      }
+    },
+    {
+      "id": "RES_LM317_TOP",
+      "ref": "RES_LM317_TOP",
+      "kind": "RES",
+      "type": "RES",
+      "value": "240 ohm",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "+3V3",
+        "2": "NET_LM317_ADJ"
+      }
+    },
+    {
+      "id": "RES_LM317_BOTTOM",
+      "ref": "RES_LM317_BOTTOM",
+      "kind": "RES",
+      "type": "RES",
+      "value": "1.2k",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_LM317_ADJ",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "INPUT_CAPACITOR",
+      "ref": "INPUT_CAPACITOR",
+      "kind": "INPUT_CAPACITOR",
+      "type": "INPUT_CAPACITOR",
+      "value": "Input Capacitor",
+      "role": "capacitor",
+      "block": "01",
+      "pins": {
+        "1": "NET_USB_5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "OUTPUT_FILTER_CAPACITOR",
+      "ref": "OUTPUT_FILTER_CAPACITOR",
+      "kind": "OUTPUT_FILTER_CAPACITOR",
+      "type": "OUTPUT_FILTER_CAPACITOR",
+      "value": "Output Filter Capacitor",
+      "role": "capacitor",
+      "block": "01",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C_100NF_CERAMIC_3V3",
+      "ref": "C_100NF_CERAMIC_3V3",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "01",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "ESP32_WROOM",
+      "ref": "ESP32_WROOM",
+      "kind": "ESP32_WROOM",
+      "type": "ESP32_WROOM",
+      "value": "ESP32-WROOM Module",
+      "role": "wireless_module",
+      "block": "01",
+      "pins": {
+        "3V3": "+3V3",
+        "EN": "NET_ESP_EN",
+        "GND": "GND",
+        "GPIO0_BOOT": "NET_ESP_BOOT",
+        "GPIO12": "NET_HEADER_CONNECTOR_P2",
+        "GPIO13": "NET_MICRO_SD_SOCKET_CS",
+        "GPIO14": "NET_HEADER_CONNECTOR_P3",
+        "GPIO15": "NET_HEADER_CONNECTOR_P4",
+        "GPIO16": "NET_HEADER_CONNECTOR_P5",
+        "GPIO17": "NET_HEADER_CONNECTOR_P6",
+        "GPIO18": "NET_SPI_SCK",
+        "GPIO19": "NET_SPI_MISO",
+        "GPIO1_TX0": "NET_CP2102_RXD",
+        "GPIO2": "NET_R_220_STATUS_2",
+        "GPIO21": "NET_I2C_SDA",
+        "GPIO22": "NET_I2C_SCL",
+        "GPIO23": "NET_SPI_MOSI",
+        "GPIO25": "NET_HEADER_CONNECTOR_P7",
+        "GPIO26": "NET_HEADER_CONNECTOR_P8",
+        "GPIO27": "NET_HEADER_CONNECTOR_P9",
+        "GPIO32": "NET_HEADER_CONNECTOR_P10",
+        "GPIO33": "NET_HEADER_CONNECTOR_P11",
+        "GPIO34": "NET_MICRO_SD_SOCKET_CD",
+        "GPIO35": "NET_DS3231_SQW",
+        "GPIO36": "NET_TEST_POINT_36_TP",
+        "GPIO39": "NET_TEST_POINT_39_TP",
+        "GPIO3_RX0": "NET_CP2102_TXD",
+        "GPIO4": "NET_HEADER_CONNECTOR_P1",
+        "GPIO5": "NET_W25Q64_CS"
+      }
+    },
+    {
+      "id": "TEST_POINT_DTR",
+      "ref": "TEST_POINT_DTR",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "01",
+      "pins": {
+        "TP": "NET_CP2102_DTR"
+      }
+    },
+    {
+      "id": "TEST_POINT_RTS",
+      "ref": "TEST_POINT_RTS",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "01",
+      "pins": {
+        "TP": "NET_CP2102_RTS"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_EN",
+      "ref": "R_10K_PULLUP_EN",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_ESP_EN",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "EN_PUSH_BUTTON",
+      "ref": "EN_PUSH_BUTTON",
+      "kind": "EN_PUSH_BUTTON",
+      "type": "EN_PUSH_BUTTON",
+      "value": "EN Push Button",
+      "role": "switch",
+      "block": "01",
+      "pins": {
+        "1": "NET_ESP_EN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "RESET_CAPACITOR",
+      "ref": "RESET_CAPACITOR",
+      "kind": "RESET_CAPACITOR",
+      "type": "RESET_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "01",
+      "pins": {
+        "1": "NET_ESP_EN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_BOOT",
+      "ref": "R_10K_PULLUP_BOOT",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_ESP_BOOT",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "BOOT_PUSH_BUTTON",
+      "ref": "BOOT_PUSH_BUTTON",
+      "kind": "BOOT_PUSH_BUTTON",
+      "type": "BOOT_PUSH_BUTTON",
+      "value": "BOOT Push Button",
+      "role": "switch",
+      "block": "01",
+      "pins": {
+        "1": "NET_ESP_BOOT",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "SDA_PULLUP",
+      "ref": "SDA_PULLUP",
+      "kind": "SDA_PULLUP",
+      "type": "SDA_PULLUP",
+      "value": "SDA Pull-up",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_I2C_SDA",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "SCL_PULLUP",
+      "ref": "SCL_PULLUP",
+      "kind": "SCL_PULLUP",
+      "type": "SCL_PULLUP",
+      "value": "SCL Pull-up",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_I2C_SCL",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "SSD1306_OLED",
+      "ref": "SSD1306_OLED",
+      "kind": "SSD1306_OLED",
+      "type": "SSD1306_OLED",
+      "value": "SSD1306 OLED",
+      "role": "display",
+      "block": "01",
+      "pins": {
+        "GND": "GND",
+        "RESET": "NET_PULLUP_RESISTOR_OLED_1",
+        "SCL": "NET_I2C_SCL",
+        "SDA": "NET_I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "PULLUP_RESISTOR_OLED",
+      "ref": "PULLUP_RESISTOR_OLED",
+      "kind": "PULLUP_RESISTOR_OLED",
+      "type": "PULLUP_RESISTOR_OLED",
+      "value": "Pull-up Resistor",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_PULLUP_RESISTOR_OLED_1",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "BME280",
+      "ref": "BME280",
+      "kind": "BME280",
+      "type": "BME280",
+      "value": "BME280 Sensor",
+      "role": "sensor",
+      "block": "01",
+      "pins": {
+        "CSB": "+3V3",
+        "GND": "GND",
+        "SCL": "NET_I2C_SCL",
+        "SDA": "NET_I2C_SDA",
+        "SDO": "GND",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "DS3231",
+      "ref": "DS3231",
+      "kind": "DS3231",
+      "type": "DS3231",
+      "value": "DS3231 RTC",
+      "role": "rtc_ic",
+      "block": "01",
+      "pins": {
+        "32K": "NET_DS3231_32K",
+        "BAT": "NET_DS3231_BAT",
+        "GND": "GND",
+        "SCL": "NET_I2C_SCL",
+        "SDA": "NET_I2C_SDA",
+        "SQW": "NET_DS3231_SQW",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "TEST_POINT_32K",
+      "ref": "TEST_POINT_32K",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "01",
+      "pins": {
+        "TP": "NET_DS3231_32K"
+      }
+    },
+    {
+      "id": "CR2032_BATTERY",
+      "ref": "CR2032_BATTERY",
+      "kind": "CR2032_BATTERY",
+      "type": "CR2032_BATTERY",
+      "value": "CR2032 Battery",
+      "role": "battery",
+      "block": "01",
+      "pins": {
+        "NEG": "GND",
+        "POS": "NET_DS3231_BAT"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_SQW",
+      "ref": "R_10K_PULLUP_SQW",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_DS3231_SQW",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "W25Q64",
+      "ref": "W25Q64",
+      "kind": "W25Q64",
+      "type": "W25Q64",
+      "value": "W25Q64 Flash IC",
+      "role": "memory_ic",
+      "block": "01",
+      "pins": {
+        "/CS": "NET_W25Q64_CS",
+        "/HOLD_IO3": "NET_FLASH_HOLD",
+        "/WP_IO2": "NET_FLASH_WP",
+        "CLK": "NET_SPI_SCK",
+        "DI_IO0": "NET_SPI_MOSI",
+        "DO_IO1": "NET_SPI_MISO",
+        "GND": "GND",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_FLASH_WP",
+      "ref": "R_10K_PULLUP_FLASH_WP",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_FLASH_WP",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_FLASH_HOLD",
+      "ref": "R_10K_PULLUP_FLASH_HOLD",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_FLASH_HOLD",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "C_100NF_FLASH",
+      "ref": "C_100NF_FLASH",
+      "kind": "C_100NF_FLASH",
+      "type": "C_100NF_FLASH",
+      "value": "100nF Capacitor",
+      "role": "capacitor",
+      "block": "01",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "MICRO_SD_SOCKET",
+      "ref": "MICRO_SD_SOCKET",
+      "kind": "MICRO_SD_SOCKET",
+      "type": "MICRO_SD_SOCKET",
+      "value": "Micro SD Socket",
+      "role": "connector",
+      "block": "01",
+      "pins": {
+        "CD": "NET_MICRO_SD_SOCKET_CD",
+        "CS": "NET_MICRO_SD_SOCKET_CS",
+        "GND": "GND",
+        "MISO": "NET_SPI_MISO",
+        "MOSI": "NET_SPI_MOSI",
+        "SCK": "NET_SPI_SCK",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_SD",
+      "ref": "DECOUPLING_CAPACITOR_SD",
+      "kind": "DECOUPLING_CAPACITOR_SD",
+      "type": "DECOUPLING_CAPACITOR_SD",
+      "value": "Decoupling Capacitor",
+      "role": "capacitor",
+      "block": "01",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_SD_CD",
+      "ref": "R_10K_PULLUP_SD_CD",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_MICRO_SD_SOCKET_CD",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "POWER_LED",
+      "ref": "POWER_LED",
+      "kind": "POWER_LED",
+      "type": "POWER_LED",
+      "value": "Power LED",
+      "role": "indicator",
+      "block": "01",
+      "pins": {
+        "ANODE": "NET_POWER_LED_ANODE",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "R_220_PWR",
+      "ref": "R_220_PWR",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_POWER_LED_ANODE",
+        "2": "+3V3"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_STATUS",
+      "ref": "LED_INDICATOR_STATUS",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "01",
+      "pins": {
+        "ANODE": "NET_LED_INDICATOR_STATUS_ANODE",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "R_220_STATUS",
+      "ref": "R_220_STATUS",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "01",
+      "pins": {
+        "1": "NET_LED_INDICATOR_STATUS_ANODE",
+        "2": "NET_R_220_STATUS_2"
+      }
+    },
+    {
+      "id": "I2C_HEADER",
+      "ref": "I2C_HEADER",
+      "kind": "I2C_HEADER",
+      "type": "I2C_HEADER",
+      "value": "I2C Header",
+      "role": "header",
+      "block": "01",
+      "pins": {
+        "GND": "GND",
+        "SCL": "NET_I2C_SCL",
+        "SDA": "NET_I2C_SDA",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "SPI_HEADER_FLASH",
+      "ref": "SPI_HEADER_FLASH",
+      "kind": "SPI_HEADER_FLASH",
+      "type": "SPI_HEADER_FLASH",
+      "value": "SPI Header",
+      "role": "header",
+      "block": "01",
+      "pins": {
+        "CS": "NET_W25Q64_CS",
+        "GND": "GND",
+        "MISO": "NET_SPI_MISO",
+        "MOSI": "NET_SPI_MOSI",
+        "SCK": "NET_SPI_SCK",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "SPI_HEADER_SD",
+      "ref": "SPI_HEADER_SD",
+      "kind": "SPI_HEADER_SD",
+      "type": "SPI_HEADER_SD",
+      "value": "SPI Header",
+      "role": "header",
+      "block": "01",
+      "pins": {
+        "CS": "NET_MICRO_SD_SOCKET_CS",
+        "GND": "GND",
+        "MISO": "NET_SPI_MISO",
+        "MOSI": "NET_SPI_MOSI",
+        "SCK": "NET_SPI_SCK",
+        "VCC": "+3V3"
+      }
+    },
+    {
+      "id": "HEADER_CONNECTOR",
+      "ref": "HEADER_CONNECTOR",
+      "kind": "PROGRAMMING_HEADER",
+      "type": "PROGRAMMING_HEADER",
+      "value": "Programming Header",
+      "role": "header",
+      "block": "01",
+      "pins": {
+        "P1": "NET_HEADER_CONNECTOR_P1",
+        "P10": "NET_HEADER_CONNECTOR_P10",
+        "P11": "NET_HEADER_CONNECTOR_P11",
+        "P12": "+3V3",
+        "P13": "GND",
+        "P2": "NET_HEADER_CONNECTOR_P2",
+        "P3": "NET_HEADER_CONNECTOR_P3",
+        "P4": "NET_HEADER_CONNECTOR_P4",
+        "P5": "NET_HEADER_CONNECTOR_P5",
+        "P6": "NET_HEADER_CONNECTOR_P6",
+        "P7": "NET_HEADER_CONNECTOR_P7",
+        "P8": "NET_HEADER_CONNECTOR_P8",
+        "P9": "NET_HEADER_CONNECTOR_P9"
+      }
+    },
+    {
+      "id": "TEST_POINT_36",
+      "ref": "TEST_POINT_36",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "01",
+      "pins": {
+        "TP": "NET_TEST_POINT_36_TP"
+      }
+    },
+    {
+      "id": "TEST_POINT_39",
+      "ref": "TEST_POINT_39",
+      "kind": "TEST_POINT",
+      "type": "TEST_POINT",
+      "value": "Test Point",
+      "role": "testpoint",
+      "block": "01",
+      "pins": {
+        "TP": "NET_TEST_POINT_39_TP"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR",
+      "ref": "DECOUPLING_CAPACITOR",
+      "kind": "DECOUPLING_CAPACITOR",
+      "type": "DECOUPLING_CAPACITOR",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "01",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "NET_USB_5V": [
+      "USB_C_CONNECTOR.VBUS",
+      "LM317.IN",
+      "INPUT_CAPACITOR.1",
+      "CP2102.VBUS"
+    ],
+    "GND": [
+      "USB_C_CONNECTOR.GND",
+      "RES_USB_CC1.2",
+      "RES_USB_CC2.2",
+      "RES_LM317_BOTTOM.2",
+      "INPUT_CAPACITOR.2",
+      "OUTPUT_FILTER_CAPACITOR.2",
+      "C_100NF_CERAMIC_3V3.2",
+      "CP2102.GND",
+      "ESP32_WROOM.GND",
+      "EN_PUSH_BUTTON.2",
+      "RESET_CAPACITOR.2",
+      "BOOT_PUSH_BUTTON.2",
+      "SSD1306_OLED.GND",
+      "BME280.GND",
+      "BME280.SDO",
+      "DS3231.GND",
+      "CR2032_BATTERY.NEG",
+      "W25Q64.GND",
+      "C_100NF_FLASH.2",
+      "MICRO_SD_SOCKET.GND",
+      "DECOUPLING_CAPACITOR_SD.2",
+      "POWER_LED.CATHODE",
+      "LED_INDICATOR_STATUS.CATHODE",
+      "I2C_HEADER.GND",
+      "SPI_HEADER_FLASH.GND",
+      "SPI_HEADER_SD.GND",
+      "HEADER_CONNECTOR.P13",
+      "DECOUPLING_CAPACITOR.2"
+    ],
+    "NET_USB_C_CONNECTOR_CC1": [
+      "USB_C_CONNECTOR.CC1",
+      "RES_USB_CC1.1"
+    ],
+    "NET_USB_C_CONNECTOR_CC2": [
+      "USB_C_CONNECTOR.CC2",
+      "RES_USB_CC2.1"
+    ],
+    "NET_USB_C_CONNECTOR_D": [
+      "USB_C_CONNECTOR.D+",
+      "CP2102.D+"
+    ],
+    "NET_USB_C_CONNECTOR_D_2": [
+      "USB_C_CONNECTOR.D-",
+      "CP2102.D-"
+    ],
+    "+3V3": [
+      "LM317.OUT",
+      "RES_LM317_TOP.1",
+      "OUTPUT_FILTER_CAPACITOR.1",
+      "C_100NF_CERAMIC_3V3.1",
+      "CP2102.VDD",
+      "CP2102.VIO",
+      "ESP32_WROOM.3V3",
+      "R_10K_PULLUP_EN.2",
+      "R_10K_PULLUP_BOOT.2",
+      "SDA_PULLUP.2",
+      "SCL_PULLUP.2",
+      "SSD1306_OLED.VCC",
+      "PULLUP_RESISTOR_OLED.2",
+      "BME280.VCC",
+      "BME280.CSB",
+      "DS3231.VCC",
+      "R_10K_PULLUP_SQW.2",
+      "W25Q64.VCC",
+      "R_10K_PULLUP_FLASH_WP.2",
+      "R_10K_PULLUP_FLASH_HOLD.2",
+      "C_100NF_FLASH.1",
+      "MICRO_SD_SOCKET.VCC",
+      "DECOUPLING_CAPACITOR_SD.1",
+      "R_10K_PULLUP_SD_CD.2",
+      "R_220_PWR.2",
+      "I2C_HEADER.VCC",
+      "SPI_HEADER_FLASH.VCC",
+      "SPI_HEADER_SD.VCC",
+      "HEADER_CONNECTOR.P12",
+      "DECOUPLING_CAPACITOR.1"
+    ],
+    "NET_LM317_ADJ": [
+      "LM317.ADJ",
+      "RES_LM317_TOP.2",
+      "RES_LM317_BOTTOM.1"
+    ],
+    "NET_CP2102_TXD": [
+      "CP2102.TXD",
+      "ESP32_WROOM.GPIO3_RX0"
+    ],
+    "NET_CP2102_RXD": [
+      "CP2102.RXD",
+      "ESP32_WROOM.GPIO1_TX0"
+    ],
+    "NET_CP2102_DTR": [
+      "CP2102.DTR",
+      "TEST_POINT_DTR.TP"
+    ],
+    "NET_CP2102_RTS": [
+      "CP2102.RTS",
+      "TEST_POINT_RTS.TP"
+    ],
+    "NET_ESP_EN": [
+      "ESP32_WROOM.EN",
+      "R_10K_PULLUP_EN.1",
+      "EN_PUSH_BUTTON.1",
+      "RESET_CAPACITOR.1"
+    ],
+    "NET_ESP_BOOT": [
+      "ESP32_WROOM.GPIO0_BOOT",
+      "R_10K_PULLUP_BOOT.1",
+      "BOOT_PUSH_BUTTON.1"
+    ],
+    "NET_I2C_SDA": [
+      "ESP32_WROOM.GPIO21",
+      "SDA_PULLUP.1",
+      "SSD1306_OLED.SDA",
+      "BME280.SDA",
+      "DS3231.SDA",
+      "I2C_HEADER.SDA"
+    ],
+    "NET_I2C_SCL": [
+      "ESP32_WROOM.GPIO22",
+      "SCL_PULLUP.1",
+      "SSD1306_OLED.SCL",
+      "BME280.SCL",
+      "DS3231.SCL",
+      "I2C_HEADER.SCL"
+    ],
+    "NET_PULLUP_RESISTOR_OLED_1": [
+      "PULLUP_RESISTOR_OLED.1",
+      "SSD1306_OLED.RESET"
+    ],
+    "NET_DS3231_SQW": [
+      "DS3231.SQW",
+      "ESP32_WROOM.GPIO35",
+      "R_10K_PULLUP_SQW.1"
+    ],
+    "NET_DS3231_32K": [
+      "DS3231.32K",
+      "TEST_POINT_32K.TP"
+    ],
+    "NET_DS3231_BAT": [
+      "DS3231.BAT",
+      "CR2032_BATTERY.POS"
+    ],
+    "NET_SPI_SCK": [
+      "ESP32_WROOM.GPIO18",
+      "W25Q64.CLK",
+      "MICRO_SD_SOCKET.SCK",
+      "SPI_HEADER_FLASH.SCK",
+      "SPI_HEADER_SD.SCK"
+    ],
+    "NET_SPI_MOSI": [
+      "ESP32_WROOM.GPIO23",
+      "W25Q64.DI_IO0",
+      "MICRO_SD_SOCKET.MOSI",
+      "SPI_HEADER_FLASH.MOSI",
+      "SPI_HEADER_SD.MOSI"
+    ],
+    "NET_SPI_MISO": [
+      "ESP32_WROOM.GPIO19",
+      "W25Q64.DO_IO1",
+      "MICRO_SD_SOCKET.MISO",
+      "SPI_HEADER_FLASH.MISO",
+      "SPI_HEADER_SD.MISO"
+    ],
+    "NET_W25Q64_CS": [
+      "W25Q64./CS",
+      "ESP32_WROOM.GPIO5",
+      "SPI_HEADER_FLASH.CS"
+    ],
+    "NET_FLASH_WP": [
+      "W25Q64./WP_IO2",
+      "R_10K_PULLUP_FLASH_WP.1"
+    ],
+    "NET_FLASH_HOLD": [
+      "W25Q64./HOLD_IO3",
+      "R_10K_PULLUP_FLASH_HOLD.1"
+    ],
+    "NET_MICRO_SD_SOCKET_CS": [
+      "MICRO_SD_SOCKET.CS",
+      "ESP32_WROOM.GPIO13",
+      "SPI_HEADER_SD.CS"
+    ],
+    "NET_MICRO_SD_SOCKET_CD": [
+      "MICRO_SD_SOCKET.CD",
+      "ESP32_WROOM.GPIO34",
+      "R_10K_PULLUP_SD_CD.1"
+    ],
+    "NET_POWER_LED_ANODE": [
+      "POWER_LED.ANODE",
+      "R_220_PWR.1"
+    ],
+    "NET_LED_INDICATOR_STATUS_ANODE": [
+      "LED_INDICATOR_STATUS.ANODE",
+      "R_220_STATUS.1"
+    ],
+    "NET_R_220_STATUS_2": [
+      "R_220_STATUS.2",
+      "ESP32_WROOM.GPIO2"
+    ],
+    "NET_HEADER_CONNECTOR_P1": [
+      "HEADER_CONNECTOR.P1",
+      "ESP32_WROOM.GPIO4"
+    ],
+    "NET_HEADER_CONNECTOR_P2": [
+      "HEADER_CONNECTOR.P2",
+      "ESP32_WROOM.GPIO12"
+    ],
+    "NET_HEADER_CONNECTOR_P3": [
+      "HEADER_CONNECTOR.P3",
+      "ESP32_WROOM.GPIO14"
+    ],
+    "NET_HEADER_CONNECTOR_P4": [
+      "HEADER_CONNECTOR.P4",
+      "ESP32_WROOM.GPIO15"
+    ],
+    "NET_HEADER_CONNECTOR_P5": [
+      "HEADER_CONNECTOR.P5",
+      "ESP32_WROOM.GPIO16"
+    ],
+    "NET_HEADER_CONNECTOR_P6": [
+      "HEADER_CONNECTOR.P6",
+      "ESP32_WROOM.GPIO17"
+    ],
+    "NET_HEADER_CONNECTOR_P7": [
+      "HEADER_CONNECTOR.P7",
+      "ESP32_WROOM.GPIO25"
+    ],
+    "NET_HEADER_CONNECTOR_P8": [
+      "HEADER_CONNECTOR.P8",
+      "ESP32_WROOM.GPIO26"
+    ],
+    "NET_HEADER_CONNECTOR_P9": [
+      "HEADER_CONNECTOR.P9",
+      "ESP32_WROOM.GPIO27"
+    ],
+    "NET_HEADER_CONNECTOR_P10": [
+      "HEADER_CONNECTOR.P10",
+      "ESP32_WROOM.GPIO32"
+    ],
+    "NET_HEADER_CONNECTOR_P11": [
+      "HEADER_CONNECTOR.P11",
+      "ESP32_WROOM.GPIO33"
+    ],
+    "NET_TEST_POINT_36_TP": [
+      "TEST_POINT_36.TP",
+      "ESP32_WROOM.GPIO36"
+    ],
+    "NET_TEST_POINT_39_TP": [
+      "TEST_POINT_39.TP",
+      "ESP32_WROOM.GPIO39"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "USB_C_CONNECTOR",
+          "kind": "USB_C_CONNECTOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 6
+        },
+        {
+          "ref": "RES_USB_CC1",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_USB_CC2",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "CP2102",
+          "kind": "CP2102",
+          "reason": "exact_catalog_kind",
+          "pin_count": 10
+        },
+        {
+          "ref": "LM317",
+          "kind": "LM317",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "RES_LM317_TOP",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_LM317_BOTTOM",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "INPUT_CAPACITOR",
+          "kind": "INPUT_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "OUTPUT_FILTER_CAPACITOR",
+          "kind": "OUTPUT_FILTER_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "C_100NF_CERAMIC_3V3",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "ESP32_WROOM",
+          "kind": "ESP32_WROOM",
+          "reason": "exact_catalog_kind",
+          "pin_count": 29
+        },
+        {
+          "ref": "TEST_POINT_DTR",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_RTS",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "R_10K_PULLUP_EN",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "EN_PUSH_BUTTON",
+          "kind": "EN_PUSH_BUTTON",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "RESET_CAPACITOR",
+          "kind": "RESET_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_BOOT",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "BOOT_PUSH_BUTTON",
+          "kind": "BOOT_PUSH_BUTTON",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "SDA_PULLUP",
+          "kind": "SDA_PULLUP",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "SCL_PULLUP",
+          "kind": "SCL_PULLUP",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "SSD1306_OLED",
+          "kind": "SSD1306_OLED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 5
+        },
+        {
+          "ref": "PULLUP_RESISTOR_OLED",
+          "kind": "PULLUP_RESISTOR_OLED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "BME280",
+          "kind": "BME280",
+          "reason": "exact_catalog_kind",
+          "pin_count": 6
+        },
+        {
+          "ref": "DS3231",
+          "kind": "DS3231",
+          "reason": "exact_catalog_kind",
+          "pin_count": 7
+        },
+        {
+          "ref": "TEST_POINT_32K",
+          "kind": "TEST_POINT",
+          "reason": "test_point_family",
+          "pin_count": 1
+        },
+        {
+          "ref": "CR2032_BATTERY",
+          "kind": "CR2032_BATTERY",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_SQW",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "W25Q64",
+          "kind": "W25Q64",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "R_10K_PULLUP_FLASH_WP",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_FLASH_HOLD",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "C_100NF_FLASH",
+          "kind": "C_100NF_FLASH",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "MICRO_SD_SOCKET",
+          "kind": "MICRO_SD_SOCKET",
+          "reason": "exact_catalog_kind",
+          "pin_count": 7
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_SD",
+          "kind": "DECOUPLING_CAPACITOR_SD",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_10K_PULLUP_SD_CD",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "POWER_LED",
+          "kind": "POWER_LED",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_PWR",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_STATUS",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_STATUS",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "I2C_HEADER",
+          "kind": "I2C_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "SPI_HEADER_FLASH",
+          "kind": "SPI_HEADER_FLASH",
+          "reason": "exact_catalog_kind",
+          "pin_count": 6
+        },
+        {
+          "ref": "SPI_HEADER_SD",
+          "kind": "SPI_HEADER_SD",
+          "reason": "exact_catalog_kind",
+          "pin_count": 6
+        },
+        {
+          "ref": "HEADER_CONNECTOR",
+          "kind": "PROGRAMMING_HEADER",
+          "reason": "exact_header_ref_widened_for_pin_count",
+          "pin_count": 13
+        },
+        {
+          "ref": "TEST_POINT_36",
+          "kind": "TEST_POINT",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 1
+        },
+        {
+          "ref": "TEST_POINT_39",
+          "kind": "TEST_POINT",
+          "reason": "numeric_suffix_removed",
+          "pin_count": 1
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR",
+          "kind": "DECOUPLING_CAPACITOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 138
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 45,
+    "net_count": 44,
+    "endpoint_count": 169,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

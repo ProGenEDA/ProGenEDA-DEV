@@ -1,0 +1,154 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "ACS712",
+            "name": "ACS712 Current Sensor",
+            "at": [
+              29.21,
+              34.29
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "sensor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Sensor_Current:ACS712xLCTR-20A"
+          },
+          "X2": {
+            "kind": "LM393_COMPARATOR",
+            "name": "LM393 Comparator",
+            "at": [
+              49.53,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "comparator",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Comparator:LM393"
+          },
+          "X3": {
+            "kind": "TRIMMER_POTENTIOMETER",
+            "name": "Trimmer Potentiometer",
+            "at": [
+              68.58,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "potentiometer",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R_Potentiometer_Trim"
+          },
+          "X4": {
+            "kind": "FUSE",
+            "name": "Fuse",
+            "at": [
+              87.63,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "protection",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:Fuse"
+          },
+          "X5": {
+            "kind": "POLYFUSE",
+            "name": "Polyfuse Resettable Fuse",
+            "at": [
+              107.95,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "protection",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:Polyfuse"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.21,
+            "top": 30.29,
+            "right": 33.21,
+            "bottom": 38.29
+          },
+          {
+            "owner": "X2",
+            "left": 45.53,
+            "top": 29.52,
+            "right": 53.53,
+            "bottom": 36.52
+          },
+          {
+            "owner": "X3",
+            "left": 65.08,
+            "top": 29.52,
+            "right": 72.08,
+            "bottom": 36.52
+          },
+          {
+            "owner": "X4",
+            "left": 83.63,
+            "top": 30.25,
+            "right": 91.63,
+            "bottom": 33.25
+          },
+          {
+            "owner": "X5",
+            "left": 103.95,
+            "top": 29.75,
+            "right": 111.95,
+            "bottom": 33.75
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

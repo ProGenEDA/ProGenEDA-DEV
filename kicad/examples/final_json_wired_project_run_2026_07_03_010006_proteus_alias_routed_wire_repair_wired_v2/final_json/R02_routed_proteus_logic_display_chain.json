@@ -1,0 +1,414 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "r02",
+    "title": "Routed Proteus Logic Display Chain",
+    "purpose": "wire-heavy logic chain using new Proteus-style logic aliases and existing display/passive parts",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "R02",
+  "circuit_name": "Routed Proteus Logic Display Chain",
+  "purpose": "wire-heavy logic chain using new Proteus-style logic aliases and existing display/passive parts",
+  "components": [
+    {
+      "id": "G1",
+      "ref": "G1",
+      "kind": "GROUND",
+      "type": "GROUND",
+      "value": "GND",
+      "role": "reference",
+      "block": "logic",
+      "pins": {
+        "1": "GND"
+      }
+    },
+    {
+      "id": "V1",
+      "ref": "V1",
+      "kind": "VDC",
+      "type": "VDC",
+      "value": "5V logic source",
+      "role": "source",
+      "block": "logic",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "PROGRAMMING_HEADER",
+      "type": "PROGRAMMING_HEADER",
+      "value": "Logic input header",
+      "role": "connector",
+      "block": "logic",
+      "pins": {
+        "1": "+5V",
+        "10": "BCD_D",
+        "2": "GND",
+        "3": "IN_A",
+        "4": "IN_B",
+        "5": "XOR_IN_B",
+        "6": "CLK",
+        "7": "BCD_A",
+        "8": "BCD_B",
+        "9": "BCD_C"
+      }
+    },
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "74HC00",
+      "type": "74HC00",
+      "value": "74HC00",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "IN_A",
+        "14": "+5V",
+        "2": "IN_B",
+        "3": "NAND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U2",
+      "ref": "U2",
+      "kind": "74HC04",
+      "type": "74HC04",
+      "value": "74HC04",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "NAND_OUT",
+        "14": "+5V",
+        "2": "INV_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U3",
+      "ref": "U3",
+      "kind": "74HC08",
+      "type": "74HC08",
+      "value": "74HC08",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "IN_A",
+        "14": "+5V",
+        "2": "IN_B",
+        "3": "AND_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U4",
+      "ref": "U4",
+      "kind": "74HC32",
+      "type": "74HC32",
+      "value": "74HC32",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "INV_OUT",
+        "14": "+5V",
+        "2": "AND_OUT",
+        "3": "OR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U5",
+      "ref": "U5",
+      "kind": "74HC86",
+      "type": "74HC86",
+      "value": "74HC86",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "OR_OUT",
+        "14": "+5V",
+        "2": "XOR_IN_B",
+        "3": "XOR_OUT",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U6",
+      "ref": "U6",
+      "kind": "74HC74",
+      "type": "74HC74",
+      "value": "74HC74",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "14": "+5V",
+        "2": "XOR_OUT",
+        "3": "CLK",
+        "5": "FF_Q",
+        "7": "GND"
+      }
+    },
+    {
+      "id": "U7",
+      "ref": "U7",
+      "kind": "4027",
+      "type": "4027",
+      "value": "CD4027",
+      "role": "logic_ic",
+      "block": "logic",
+      "pins": {
+        "1": "JK_Q",
+        "16": "+5V",
+        "3": "CLK",
+        "5": "FF_Q",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "U8",
+      "ref": "U8",
+      "kind": "4511",
+      "type": "4511",
+      "value": "CD4511",
+      "role": "decoder",
+      "block": "display",
+      "pins": {
+        "1": "BCD_B",
+        "10": "SEG_D",
+        "11": "SEG_C",
+        "12": "SEG_B",
+        "13": "SEG_A",
+        "14": "SEG_G",
+        "15": "SEG_F",
+        "16": "+5V",
+        "2": "BCD_C",
+        "6": "BCD_D",
+        "7": "BCD_A",
+        "8": "GND",
+        "9": "SEG_E"
+      }
+    },
+    {
+      "id": "DS1",
+      "ref": "DS1",
+      "kind": "7SEGCOMK",
+      "type": "7SEGCOMK",
+      "value": "Common-cathode display",
+      "role": "display",
+      "block": "display",
+      "pins": {
+        "1": "SEG_A",
+        "10": "GND",
+        "2": "SEG_B",
+        "3": "SEG_C",
+        "4": "SEG_D",
+        "5": "SEG_E",
+        "6": "SEG_F",
+        "7": "SEG_G"
+      }
+    },
+    {
+      "id": "RN1",
+      "ref": "RN1",
+      "kind": "RESISTOR_NETWORK",
+      "type": "RESISTOR_NETWORK",
+      "value": "Pull network",
+      "role": "resistor",
+      "block": "logic",
+      "pins": {
+        "2": "IN_A",
+        "3": "IN_B",
+        "COM": "+5V"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "indicator",
+      "pins": {
+        "1": "JK_Q",
+        "2": "LED_A"
+      }
+    },
+    {
+      "id": "LED1",
+      "ref": "LED1",
+      "kind": "LED",
+      "type": "LED",
+      "value": "Logic LED",
+      "role": "indicator",
+      "block": "display",
+      "pins": {
+        "1": "LED_A",
+        "2": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "V1.1",
+      "J1.1",
+      "U1.14",
+      "U2.14",
+      "U3.14",
+      "U4.14",
+      "U5.14",
+      "U6.14",
+      "U7.16",
+      "U8.16",
+      "RN1.COM"
+    ],
+    "GND": [
+      "G1.1",
+      "V1.2",
+      "J1.2",
+      "U1.7",
+      "U2.7",
+      "U3.7",
+      "U4.7",
+      "U5.7",
+      "U6.7",
+      "U7.8",
+      "U8.8",
+      "DS1.10",
+      "LED1.2"
+    ],
+    "IN_A": [
+      "J1.3",
+      "U1.1",
+      "U3.1",
+      "RN1.2"
+    ],
+    "IN_B": [
+      "J1.4",
+      "U1.2",
+      "U3.2",
+      "RN1.3"
+    ],
+    "NAND_OUT": [
+      "U1.3",
+      "U2.1"
+    ],
+    "INV_OUT": [
+      "U2.2",
+      "U4.1"
+    ],
+    "AND_OUT": [
+      "U3.3",
+      "U4.2"
+    ],
+    "OR_OUT": [
+      "U4.3",
+      "U5.1"
+    ],
+    "XOR_IN_B": [
+      "J1.5",
+      "U5.2"
+    ],
+    "XOR_OUT": [
+      "U5.3",
+      "U6.2"
+    ],
+    "CLK": [
+      "J1.6",
+      "U6.3",
+      "U7.3"
+    ],
+    "FF_Q": [
+      "U6.5",
+      "U7.5"
+    ],
+    "JK_Q": [
+      "U7.1",
+      "R1.1"
+    ],
+    "LED_A": [
+      "R1.2",
+      "LED1.1"
+    ],
+    "BCD_A": [
+      "J1.7",
+      "U8.7"
+    ],
+    "BCD_B": [
+      "J1.8",
+      "U8.1"
+    ],
+    "BCD_C": [
+      "J1.9",
+      "U8.2"
+    ],
+    "BCD_D": [
+      "J1.10",
+      "U8.6"
+    ],
+    "SEG_A": [
+      "U8.13",
+      "DS1.1"
+    ],
+    "SEG_B": [
+      "U8.12",
+      "DS1.2"
+    ],
+    "SEG_C": [
+      "U8.11",
+      "DS1.3"
+    ],
+    "SEG_D": [
+      "U8.10",
+      "DS1.4"
+    ],
+    "SEG_E": [
+      "U8.9",
+      "DS1.5"
+    ],
+    "SEG_F": [
+      "U8.15",
+      "DS1.6"
+    ],
+    "SEG_G": [
+      "U8.14",
+      "DS1.7"
+    ]
+  },
+  "blocks": [],
+  "generation_notes": {
+    "source": "user-supplied connected T01-T10 test specification",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation."
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 15,
+    "net_count": 25,
+    "endpoint_count": 75,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

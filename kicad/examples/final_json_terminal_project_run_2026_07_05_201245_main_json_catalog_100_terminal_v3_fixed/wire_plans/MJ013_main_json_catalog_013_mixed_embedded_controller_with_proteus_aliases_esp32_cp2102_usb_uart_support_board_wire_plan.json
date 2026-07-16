@@ -1,0 +1,2362 @@
+{
+  "schema": "progen-kicad-terminal-plan/v0.1",
+  "stage": "terminal_placer",
+  "version": "progen-kicad-terminal-placer/v0.1",
+  "routing_mode": "terminal",
+  "terminal_backend": "kicad_local_labels",
+  "contract": {
+    "owns_local_labels": true,
+    "wire_mode_must_not_use_this_as_fallback": true
+  },
+  "nets": {
+    "B1_AMP_FEEDBACK": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_AMP",
+          "pin": "IN_MINUS",
+          "side": "left",
+          "point": [
+            1526.54,
+            149.86
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin2"
+        },
+        {
+          "ref": "B1_AMP",
+          "pin": "OUT",
+          "side": "right",
+          "point": [
+            1541.78,
+            147.32
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin1"
+        },
+        {
+          "ref": "B1_Q2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            1419.86,
+            142.24
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_BUFFER_FEEDBACK": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_AMP",
+          "pin": "IN_PLUS",
+          "side": "left",
+          "point": [
+            1526.54,
+            144.78
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit1:pin3"
+        },
+        {
+          "ref": "B1_BUF",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            1036.32,
+            81.28
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin2"
+        },
+        {
+          "ref": "B1_BUF",
+          "pin": "6",
+          "side": "right",
+          "point": [
+            1051.56,
+            78.74
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin6"
+        }
+      ],
+      "routes": []
+    },
+    "B1_SPI_SCK": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "SCK",
+          "side": "left",
+          "point": [
+            1216.66,
+            147.32
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin16"
+        },
+        {
+          "ref": "B1_FLASH",
+          "pin": "CLK",
+          "side": "left",
+          "point": [
+            1465.58,
+            142.24
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin6"
+        },
+        {
+          "ref": "B1_CAN",
+          "pin": "SCK",
+          "side": "left",
+          "point": [
+            957.58,
+            139.7
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin13"
+        }
+      ],
+      "routes": []
+    },
+    "B1_CANH": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_CANPHY",
+          "pin": "CANH",
+          "side": "right",
+          "point": [
+            1125.22,
+            99.06
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin7"
+        },
+        {
+          "ref": "B1_R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            27.94,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B1_J_CAN",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            73.66,
+            88.9
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_CANL": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_CANPHY",
+          "pin": "CANL",
+          "side": "right",
+          "point": [
+            1125.22,
+            104.14
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin6"
+        },
+        {
+          "ref": "B1_R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            27.94,
+            171.45
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_J_CAN",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            73.66,
+            91.44
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B1_CAN_INT": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_ESP",
+          "pin": "IO4",
+          "side": "right",
+          "point": [
+            1612.9,
+            127.0
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin26"
+        },
+        {
+          "ref": "B1_CAN",
+          "pin": "INT",
+          "side": "right",
+          "point": [
+            988.06,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin12"
+        },
+        {
+          "ref": "B1_TP1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            1043.94,
+            119.38
+          ],
+          "exact": true,
+          "source": "Connector:TestPoint:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_CAN_RXD": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_CAN",
+          "pin": "RXCAN",
+          "side": "right",
+          "point": [
+            988.06,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin2"
+        },
+        {
+          "ref": "B1_CANPHY",
+          "pin": "RXD",
+          "side": "left",
+          "point": [
+            1099.82,
+            99.06
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin4"
+        }
+      ],
+      "routes": []
+    },
+    "B1_CAN_TXD": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_CAN",
+          "pin": "TXCAN",
+          "side": "right",
+          "point": [
+            988.06,
+            134.62
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin1"
+        },
+        {
+          "ref": "B1_CANPHY",
+          "pin": "TXD",
+          "side": "left",
+          "point": [
+            1099.82,
+            96.52
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_DIODE_TO_BUFFER": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_BUF",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            1036.32,
+            76.2
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin3"
+        },
+        {
+          "ref": "B1_D1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            31.75,
+            127.0
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B1_I2C_SCL": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            1242.06,
+            142.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin24"
+        },
+        {
+          "ref": "B1_ESP",
+          "pin": "IO22",
+          "side": "right",
+          "point": [
+            1612.9,
+            154.94
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin36"
+        },
+        {
+          "ref": "B1_BME",
+          "pin": "SCL",
+          "side": "right",
+          "point": [
+            858.52,
+            144.78
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin4"
+        },
+        {
+          "ref": "B1_OLED",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            1653.54,
+            152.4
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin18"
+        },
+        {
+          "ref": "B1_RTC",
+          "pin": "SCL",
+          "side": "left",
+          "point": [
+            1282.7,
+            142.24
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin16"
+        }
+      ],
+      "routes": []
+    },
+    "B1_I2C_SDA": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            1242.06,
+            139.7
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin23"
+        },
+        {
+          "ref": "B1_ESP",
+          "pin": "IO21",
+          "side": "right",
+          "point": [
+            1612.9,
+            152.4
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin33"
+        },
+        {
+          "ref": "B1_BME",
+          "pin": "SDA",
+          "side": "right",
+          "point": [
+            858.52,
+            149.86
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin3"
+        },
+        {
+          "ref": "B1_OLED",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            1653.54,
+            154.94
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin19"
+        },
+        {
+          "ref": "B1_RTC",
+          "pin": "SDA",
+          "side": "left",
+          "point": [
+            1282.7,
+            144.78
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin15"
+        }
+      ],
+      "routes": []
+    },
+    "B1_LOAD_LOW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_Q1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            1165.86,
+            129.54
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin2"
+        },
+        {
+          "ref": "B1_Q2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            1412.24,
+            147.32
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin2"
+        },
+        {
+          "ref": "B1_L1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            340.36,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_LOAD_OUT": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_L1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            340.36,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin2"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            276.86,
+            111.76
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        }
+      ],
+      "routes": []
+    },
+    "B1_RS485_A": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_RS485",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            1369.06,
+            139.7
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin6"
+        },
+        {
+          "ref": "B1_J_RS485",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            22.86,
+            88.9
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_RS485_B": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_RS485",
+          "pin": "B",
+          "side": "right",
+          "point": [
+            1369.06,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin7"
+        },
+        {
+          "ref": "B1_J_RS485",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            22.86,
+            91.44
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B1_RS485_DE_RE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_ESP",
+          "pin": "IO23",
+          "side": "right",
+          "point": [
+            1612.9,
+            157.48
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+        },
+        {
+          "ref": "B1_RS485",
+          "pin": "DE",
+          "side": "left",
+          "point": [
+            1348.74,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin3"
+        },
+        {
+          "ref": "B1_RS485",
+          "pin": "RE",
+          "side": "left",
+          "point": [
+            1348.74,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B1_RS485_DI": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "D3",
+          "side": "left",
+          "point": [
+            1216.66,
+            121.92
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin6"
+        },
+        {
+          "ref": "B1_RS485",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            1348.74,
+            152.4
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin4"
+        }
+      ],
+      "routes": []
+    },
+    "B1_RS485_RO": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "D2",
+          "side": "left",
+          "point": [
+            1216.66,
+            119.38
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin5"
+        },
+        {
+          "ref": "B1_RS485",
+          "pin": "RO",
+          "side": "left",
+          "point": [
+            1348.74,
+            142.24
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_SPI_CS_CAN": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_ESP",
+          "pin": "IO5",
+          "side": "right",
+          "point": [
+            1612.9,
+            129.54
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin29"
+        },
+        {
+          "ref": "B1_CAN",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            957.58,
+            137.16
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin16"
+        }
+      ],
+      "routes": []
+    },
+    "B1_SPI_CS_FLASH": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "D10",
+          "side": "left",
+          "point": [
+            1216.66,
+            139.7
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin13"
+        },
+        {
+          "ref": "B1_FLASH",
+          "pin": "CS",
+          "side": "left",
+          "point": [
+            1465.58,
+            139.7
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_SPI_MISO": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "MISO",
+          "side": "left",
+          "point": [
+            1216.66,
+            144.78
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin15"
+        },
+        {
+          "ref": "B1_FLASH",
+          "pin": "DO",
+          "side": "left",
+          "point": [
+            1465.58,
+            147.32
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin2"
+        },
+        {
+          "ref": "B1_CAN",
+          "pin": "SO",
+          "side": "left",
+          "point": [
+            957.58,
+            134.62
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin15"
+        }
+      ],
+      "routes": []
+    },
+    "B1_SPI_MOSI": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_MCU",
+          "pin": "MOSI",
+          "side": "left",
+          "point": [
+            1216.66,
+            142.24
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin14"
+        },
+        {
+          "ref": "B1_FLASH",
+          "pin": "DI",
+          "side": "left",
+          "point": [
+            1465.58,
+            144.78
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin5"
+        },
+        {
+          "ref": "B1_CAN",
+          "pin": "SI",
+          "side": "left",
+          "point": [
+            957.58,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin14"
+        }
+      ],
+      "routes": []
+    },
+    "B1_TIMER_OUTPUT": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_TIMER",
+          "pin": "3",
+          "side": "right",
+          "point": [
+            916.94,
+            147.32
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin3"
+        },
+        {
+          "ref": "B1_Q1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            1173.48,
+            134.62
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin1"
+        },
+        {
+          "ref": "B1_D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            24.13,
+            127.0
+          ],
+          "exact": true,
+          "source": "Diode:1N4148:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_TIMER_PULLUP": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_DZ1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            336.55,
+            101.6
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin1"
+        },
+        {
+          "ref": "B1_R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            388.62,
+            125.73
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_TIMER_TRIGGER": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_TIMER",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            896.62,
+            152.4
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin2"
+        },
+        {
+          "ref": "B1_TIMER",
+          "pin": "6",
+          "side": "left",
+          "point": [
+            896.62,
+            149.86
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin6"
+        },
+        {
+          "ref": "B1_C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            439.42,
+            125.73
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        },
+        {
+          "ref": "B1_R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            388.62,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            83.82,
+            127.0
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_BOOT_IO0": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO0",
+          "side": "right",
+          "point": [
+            1059.18,
+            160.02
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin25"
+        },
+        {
+          "ref": "B2_SW2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            434.34,
+            167.64
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "B2_R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            635.0,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_EN": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "EN",
+          "side": "left",
+          "point": [
+            1028.7,
+            160.02
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin3"
+        },
+        {
+          "ref": "B2_SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            779.78,
+            167.64
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin1"
+        },
+        {
+          "ref": "B2_R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            538.48,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_IO18": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO18",
+          "side": "right",
+          "point": [
+            1059.18,
+            190.5
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin30"
+        },
+        {
+          "ref": "B2_J2",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            218.44,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_IO19": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO19",
+          "side": "right",
+          "point": [
+            1059.18,
+            193.04
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin31"
+        },
+        {
+          "ref": "B2_J2",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            218.44,
+            152.4
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_IO21": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO21",
+          "side": "right",
+          "point": [
+            1059.18,
+            195.58
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin33"
+        },
+        {
+          "ref": "B2_J3",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            335.28,
+            185.42
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_IO22": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO22",
+          "side": "right",
+          "point": [
+            1059.18,
+            198.12
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin36"
+        },
+        {
+          "ref": "B2_J3",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            335.28,
+            187.96
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_IO23": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO23",
+          "side": "right",
+          "point": [
+            1059.18,
+            200.66
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin37"
+        },
+        {
+          "ref": "B2_J3",
+          "pin": "5",
+          "side": "left",
+          "point": [
+            335.28,
+            190.5
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin5"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_IO5": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO5",
+          "side": "right",
+          "point": [
+            1059.18,
+            172.72
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin29"
+        },
+        {
+          "ref": "B2_J2",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            218.44,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_LED1": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO2",
+          "side": "right",
+          "point": [
+            1059.18,
+            165.1
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin24"
+        },
+        {
+          "ref": "B2_R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            78.74,
+            212.09
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            1174.75,
+            170.18
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_ESP_LED2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "IO4",
+          "side": "right",
+          "point": [
+            1059.18,
+            170.18
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin26"
+        },
+        {
+          "ref": "B2_R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            27.94,
+            252.73
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            1233.17,
+            187.96
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_UART_RX_FROM_ESP_TX": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "U0TXD",
+          "side": "right",
+          "point": [
+            1059.18,
+            162.56
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin35"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "RXD",
+          "side": "right",
+          "point": [
+            1125.22,
+            147.32
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin25"
+        },
+        {
+          "ref": "B2_J4",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            121.92,
+            149.86
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin4"
+        }
+      ],
+      "routes": []
+    },
+    "B2_UART_TX_TO_ESP_RX": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "U0RXD",
+          "side": "right",
+          "point": [
+            1059.18,
+            167.64
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin34"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "TXD",
+          "side": "right",
+          "point": [
+            1125.22,
+            144.78
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin26"
+        },
+        {
+          "ref": "B2_J4",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            121.92,
+            147.32
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": []
+    },
+    "B2_USB_CC1": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_J1",
+          "pin": "CC1",
+          "side": "right",
+          "point": [
+            297.18,
+            167.64
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA5"
+        },
+        {
+          "ref": "B2_R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            27.94,
+            204.47
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_USB_CC2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_J1",
+          "pin": "CC2",
+          "side": "right",
+          "point": [
+            297.18,
+            170.18
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinB5"
+        },
+        {
+          "ref": "B2_R6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            78.74,
+            163.83
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_USB_D_MINUS": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U2",
+          "pin": "D-",
+          "side": "left",
+          "point": [
+            1099.82,
+            160.02
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin5"
+        },
+        {
+          "ref": "B2_J1",
+          "pin": "D-",
+          "side": "right",
+          "point": [
+            297.18,
+            175.26
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA7"
+        }
+      ],
+      "routes": []
+    },
+    "B2_USB_D_PLUS": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U2",
+          "pin": "D+",
+          "side": "left",
+          "point": [
+            1099.82,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin4"
+        },
+        {
+          "ref": "B2_J1",
+          "pin": "D+",
+          "side": "right",
+          "point": [
+            297.18,
+            180.34
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA6"
+        }
+      ],
+      "routes": []
+    },
+    "B2_USB_VBUS": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U2",
+          "pin": "VBUS",
+          "side": "left",
+          "point": [
+            1099.82,
+            157.48
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin8"
+        },
+        {
+          "ref": "B2_J1",
+          "pin": "VBUS",
+          "side": "right",
+          "point": [
+            297.18,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA4"
+        }
+      ],
+      "routes": []
+    },
+    "+3V3": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_ESP",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            1597.66,
+            111.76
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin2"
+        },
+        {
+          "ref": "B1_BME",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            845.82,
+            132.08
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin8"
+        },
+        {
+          "ref": "B1_OLED",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1668.78,
+            109.22
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin28"
+        },
+        {
+          "ref": "B1_RTC",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1292.86,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin2"
+        },
+        {
+          "ref": "B1_FLASH",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1475.74,
+            134.62
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin8"
+        },
+        {
+          "ref": "B1_CAN",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            972.82,
+            127.0
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin18"
+        },
+        {
+          "ref": "B1_C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            784.86,
+            125.73
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            276.86,
+            106.68
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B2_U1",
+          "pin": "3V3",
+          "side": "top",
+          "point": [
+            1043.94,
+            154.94
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin2"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "VDD",
+          "side": "top",
+          "point": [
+            1112.52,
+            139.7
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin6"
+        },
+        {
+          "ref": "B2_R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            538.48,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            635.0,
+            146.05
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            78.74,
+            204.47
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            27.94,
+            245.11
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B2_C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            734.06,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            388.62,
+            166.37
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            487.68,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            586.74,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_C5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            683.26,
+            143.51
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B2_J2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            218.44,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B2_J3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            335.28,
+            180.34
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B2_J4",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            121.92,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        },
+        {
+          "ref": "B2_J5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            172.72,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_V1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            27.94,
+            43.18
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "B1_MCU",
+          "pin": "5V",
+          "side": "top",
+          "point": [
+            1234.44,
+            104.14
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin27"
+        },
+        {
+          "ref": "B1_CANPHY",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1112.52,
+            91.44
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin3"
+        },
+        {
+          "ref": "B1_RS485",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1358.9,
+            132.08
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin8"
+        },
+        {
+          "ref": "B1_AMP",
+          "pin": "VCC",
+          "side": "top",
+          "point": [
+            1531.62,
+            165.1
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin8"
+        },
+        {
+          "ref": "B1_TIMER",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            896.62,
+            142.24
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit1:pin4"
+        },
+        {
+          "ref": "B1_TIMER",
+          "pin": "8",
+          "side": "top",
+          "point": [
+            909.32,
+            137.16
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin8"
+        },
+        {
+          "ref": "B1_BUF",
+          "pin": "7",
+          "side": "top",
+          "point": [
+            1041.4,
+            71.12
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin7"
+        },
+        {
+          "ref": "B1_SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            73.66,
+            127.0
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin1"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            276.86,
+            104.14
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_G1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            1724.66,
+            279.4
+          ],
+          "exact": true,
+          "source": "power:GND:unit1:pin1"
+        },
+        {
+          "ref": "B1_V1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            27.94,
+            53.34
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "B1_MCU",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1231.9,
+            154.94
+          ],
+          "exact": true,
+          "source": "MCU_Module:Arduino_Nano_v3.x:unit1:pin29"
+        },
+        {
+          "ref": "B1_ESP",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1597.66,
+            182.88
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin1"
+        },
+        {
+          "ref": "B1_BME",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            840.74,
+            162.56
+          ],
+          "exact": true,
+          "source": "Sensor:BME280:unit1:pin1"
+        },
+        {
+          "ref": "B1_OLED",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1663.7,
+            185.42
+          ],
+          "exact": true,
+          "source": "Display_Graphic:OLED-128O064D:unit1:pin1"
+        },
+        {
+          "ref": "B1_RTC",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1295.4,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer_RTC:DS3231M:unit1:pin10"
+        },
+        {
+          "ref": "B1_FLASH",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1475.74,
+            160.02
+          ],
+          "exact": true,
+          "source": "Memory_Flash:W25Q32JVSS:unit1:pin4"
+        },
+        {
+          "ref": "B1_CAN",
+          "pin": "VSS",
+          "side": "bottom",
+          "point": [
+            972.82,
+            167.64
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:MCP2515-xSO:unit1:pin9"
+        },
+        {
+          "ref": "B1_CANPHY",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1112.52,
+            111.76
+          ],
+          "exact": true,
+          "source": "Interface_CAN_LIN:SN65HVD1050D:unit1:pin2"
+        },
+        {
+          "ref": "B1_RS485",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1358.9,
+            162.56
+          ],
+          "exact": true,
+          "source": "Interface_UART:MAX485E:unit1:pin5"
+        },
+        {
+          "ref": "B1_AMP",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1531.62,
+            180.34
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM358:unit3:pin4"
+        },
+        {
+          "ref": "B1_TIMER",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            906.78,
+            157.48
+          ],
+          "exact": true,
+          "source": "Timer:NE555P:unit0:pin1"
+        },
+        {
+          "ref": "B1_BUF",
+          "pin": "4",
+          "side": "bottom",
+          "point": [
+            1041.4,
+            86.36
+          ],
+          "exact": true,
+          "source": "Amplifier_Operational:LM741:unit1:pin4"
+        },
+        {
+          "ref": "B1_Q1",
+          "pin": "3",
+          "side": "top",
+          "point": [
+            1173.48,
+            124.46
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin3"
+        },
+        {
+          "ref": "B1_Q2",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            1419.86,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin3"
+        },
+        {
+          "ref": "B1_DZ1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            344.17,
+            101.6
+          ],
+          "exact": true,
+          "source": "Device:D_Zener:unit1:pin2"
+        },
+        {
+          "ref": "B1_C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            439.42,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "B1_C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            784.86,
+            133.35
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B1_J2",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            276.86,
+            109.22
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin3"
+        }
+      ],
+      "routes": []
+    },
+    "B2_USB_GND": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_U1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1043.94,
+            226.06
+          ],
+          "exact": true,
+          "source": "RF_Module:ESP32-WROOM-32:unit1:pin1"
+        },
+        {
+          "ref": "B2_U2",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            1112.52,
+            205.74
+          ],
+          "exact": true,
+          "source": "Interface_USB:CP2102N-Axx-xQFN28:unit1:pin29"
+        },
+        {
+          "ref": "B2_J1",
+          "pin": "GND",
+          "side": "bottom",
+          "point": [
+            281.94,
+            200.66
+          ],
+          "exact": true,
+          "source": "Connector:USB_C_Receptacle_USB2.0_16P:unit1:pinA1"
+        },
+        {
+          "ref": "B2_SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            789.94,
+            167.64
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B2_SW2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            444.5,
+            167.64
+          ],
+          "exact": true,
+          "source": "Switch:SW_Push:unit0:pin2"
+        },
+        {
+          "ref": "B2_R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            27.94,
+            212.09
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            78.74,
+            171.45
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            734.06,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            388.62,
+            173.99
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            487.68,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            586.74,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_C5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            683.26,
+            151.13
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B2_D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            1167.13,
+            170.18
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "B2_D2",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            1225.55,
+            187.96
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        },
+        {
+          "ref": "B2_J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            218.44,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B2_J3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            335.28,
+            182.88
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B2_J4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            121.92,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        },
+        {
+          "ref": "B2_J5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            172.72,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x08:unit1:pin2"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "metrics": {
+    "net_count": 46,
+    "wired_route_count": 0,
+    "lane_route_count": 0,
+    "astar_route_count": 0,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 0,
+    "crossing_risk_route_count": 0,
+    "dense_design_mode": false,
+    "segment_count": 0,
+    "different_net_crossing_count": 0,
+    "mst_total_length": 0,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 0,
+    "crossing_density_max_tile_crossings": 0,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 0,
+    "label_strategy_count": 46,
+    "wire_mode_terminal_net_count": 0,
+    "wire_mode_terminal_endpoint_count": 0,
+    "partial_wire_net_count": 0,
+    "unroutable_net_count": 0
+  },
+  "warnings": [],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": false,
+    "reason": "only strict wire mode uses partial-route component motion repair",
+    "pass_count": 0,
+    "passes": []
+  },
+  "arrangement_selection": {
+    "mode": "terminal_fast_arrangement",
+    "reason": "terminal-only generation does not need wire-routeable arrangement search"
+  }
+}

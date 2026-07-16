@@ -1,0 +1,65 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "circuit_id": "NATIVE_OBSERVED_FAMILY_MIX",
+  "project": {
+    "name": "native_observed_family_mix",
+    "analysis": [".op", ".ac dec 5 10 10k"]
+  },
+  "components": [
+    {
+      "ref": "V1",
+      "kind": "VDC",
+      "value": "5",
+      "parameters": {
+        "window_123": "0 0 Left 0",
+        "window_39": "0 0 Left 0"
+      },
+      "pins": {"1": "DC_RAIL", "2": "GND"}
+    },
+    {"ref": "R1", "kind": "R", "value": "1k", "parameters": {"tol": "1%", "pwr": "120W"}, "pins": {"1": "DC_RAIL", "2": "GND"}},
+    {
+      "ref": "I1",
+      "kind": "IDC",
+      "value": "1m",
+      "parameters": {
+        "window_123": "0 0 Left 0",
+        "window_39": "0 0 Left 0"
+      },
+      "pins": {"1": "CURRENT_NODE", "2": "GND"}
+    },
+    {"ref": "R2", "kind": "R", "value": "2k", "pins": {"1": "CURRENT_NODE", "2": "GND"}},
+    {
+      "ref": "V2",
+      "kind": "MISC_SIGNAL",
+      "parameters": {
+        "ac": "2",
+        "window_123": "24 132 Left 2",
+        "window_39": "0 0 Left 0"
+      },
+      "pins": {"1": "AC_IN", "2": "GND"}
+    },
+    {"ref": "L1", "kind": "L", "value": "10m", "parameters": {"ipk": "2A", "rser": "43m", "rpar": "21m", "cpar": "12p"}, "pins": {"1": "AC_IN", "2": "AC_OUT"}},
+    {"ref": "C1", "kind": "C", "value": "1u", "pins": {"1": "AC_OUT", "2": "GND"}},
+    {"ref": "R3", "kind": "R", "value": "4.7k", "pins": {"1": "AC_OUT", "2": "GND"}},
+    {"ref": "G1", "kind": "GND", "value": "0", "pins": {"1": "GND"}}
+  ],
+  "nets": {
+    "DC_RAIL": ["V1.1", "R1.1"],
+    "CURRENT_NODE": ["I1.1", "R2.1"],
+    "AC_IN": ["V2.1", "L1.1"],
+    "AC_OUT": ["L1.2", "C1.1", "R3.1"],
+    "GND": ["V1.2", "R1.2", "I1.2", "R2.2", "V2.2", "C1.2", "R3.2", "G1.1"]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {"name": "DC_RAIL", "members": ["V1.1", "R1.1"], "member_count": 2},
+      {"name": "CURRENT_NODE", "members": ["I1.1", "R2.1"], "member_count": 2},
+      {"name": "AC_IN", "members": ["V2.1", "L1.1"], "member_count": 2},
+      {"name": "AC_OUT", "members": ["L1.2", "C1.1", "R3.1"], "member_count": 3},
+      {"name": "GND", "members": ["V1.2", "R1.2", "I1.2", "R2.2", "V2.2", "C1.2", "R3.2", "G1.1"], "member_count": 8}
+    ],
+    "important_nets": ["GND"]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "c05_relay_switching",
+    "title": "Relay Switching",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "RELAY_5V",
+      "value": "5V Relay"
+    },
+    {
+      "id": "X2",
+      "kind": "BC547",
+      "value": "BC547 NPN Transistor"
+    },
+    {
+      "id": "X3",
+      "kind": "RELAY_FLYBACK_DIODE",
+      "value": "Relay Flyback Diode"
+    },
+    {
+      "id": "X4",
+      "kind": "RELAY_INDICATOR_LED",
+      "value": "Indicator LED"
+    },
+    {
+      "id": "X5",
+      "kind": "TERMINAL_BLOCK",
+      "value": "Terminal Block"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Used to prove real KiCad symbol placement coverage before beautifier and routing stages are enabled."
+  ]
+}

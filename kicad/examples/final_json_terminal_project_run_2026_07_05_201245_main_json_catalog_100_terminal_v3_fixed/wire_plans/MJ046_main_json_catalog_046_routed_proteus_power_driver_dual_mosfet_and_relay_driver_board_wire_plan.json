@@ -1,0 +1,1370 @@
+{
+  "schema": "progen-kicad-terminal-plan/v0.1",
+  "stage": "terminal_placer",
+  "version": "progen-kicad-terminal-placer/v0.1",
+  "routing_mode": "terminal",
+  "terminal_backend": "kicad_local_labels",
+  "contract": {
+    "owns_local_labels": true,
+    "wire_mode_must_not_use_this_as_fallback": true
+  },
+  "nets": {
+    "B1_ADJ": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            270.51,
+            173.99
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin1"
+        },
+        {
+          "ref": "B1_R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            100.33,
+            144.78
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_ADJ_RETURN": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            100.33,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_D2",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            34.29,
+            180.34
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B1_DRIVE_GATE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_Q1",
+          "pin": "1",
+          "side": "bottom",
+          "point": [
+            375.92,
+            153.67
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin1"
+        },
+        {
+          "ref": "B1_Q2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            443.23,
+            143.51
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_LC_OUT": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_C1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            166.37,
+            147.32
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin1"
+        },
+        {
+          "ref": "B1_L1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            201.93,
+            152.4
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin2"
+        },
+        {
+          "ref": "B1_D2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            26.67,
+            180.34
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_LED_A": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            30.48,
+            101.6
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B1_LED1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            402.59,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_LED_K": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_LED1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            410.21,
+            160.02
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "B1_Q1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            368.3,
+            148.59
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B1_LOAD_OUT": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_Q2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            435.61,
+            148.59
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin2"
+        },
+        {
+          "ref": "B1_J1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            60.96,
+            160.02
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_REG_IN": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_D1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            34.29,
+            162.56
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin2"
+        },
+        {
+          "ref": "B1_U1",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            262.89,
+            166.37
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin3"
+        },
+        {
+          "ref": "B1_C2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            236.22,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_REG_OUT": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_U1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            278.13,
+            166.37
+          ],
+          "exact": true,
+          "source": "Regulator_Linear:LM317_TO-220:unit1:pin2"
+        },
+        {
+          "ref": "B1_R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            134.62
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B1_R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            30.48,
+            93.98
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        },
+        {
+          "ref": "B1_L1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            201.93,
+            144.78
+          ],
+          "exact": true,
+          "source": "Device:L:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_VIN_FUSED": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_F1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            132.08,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin2"
+        },
+        {
+          "ref": "B1_SW1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            161.29,
+            186.69
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B1_VIN_SWITCHED": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_SW1",
+          "pin": "2",
+          "side": "right",
+          "point": [
+            171.45,
+            186.69
+          ],
+          "exact": true,
+          "source": "Switch:SW_SPST:unit1:pin2"
+        },
+        {
+          "ref": "B1_D1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            26.67,
+            162.56
+          ],
+          "exact": true,
+          "source": "Diode:1N4007:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_LOAD2_LOW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q2",
+          "pin": "D",
+          "side": "top",
+          "point": [
+            408.94,
+            133.35
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin2"
+        },
+        {
+          "ref": "B2_D2",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            205.74,
+            127.0
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "B2_J2",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            161.29,
+            114.3
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        },
+        {
+          "ref": "B2_D6",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            678.18,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_MOSFET1_GATE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q1",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            334.01,
+            148.59
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin1"
+        },
+        {
+          "ref": "B2_R1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            207.01
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R2",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            270.51,
+            142.24
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_MOSFET2_GATE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q2",
+          "pin": "G",
+          "side": "left",
+          "point": [
+            401.32,
+            138.43
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin1"
+        },
+        {
+          "ref": "B2_R3",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            166.37,
+            172.72
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R4",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            201.93,
+            166.37
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_MOTOR_LOW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q1",
+          "pin": "D",
+          "side": "top",
+          "point": [
+            341.63,
+            143.51
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin2"
+        },
+        {
+          "ref": "B2_D1",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            308.61,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "B2_M1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            718.82,
+            166.37
+          ],
+          "exact": true,
+          "source": "Motor:Motor_DC:unit1:pin2"
+        },
+        {
+          "ref": "B2_D5",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            604.52,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_PWM_LOAD_2": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_J6",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            127.0,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin3"
+        },
+        {
+          "ref": "B2_R3",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            166.37,
+            165.1
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_PWM_MOTOR_1": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_J5",
+          "pin": "3",
+          "side": "left",
+          "point": [
+            25.4,
+            201.93
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin3"
+        },
+        {
+          "ref": "B2_R1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            199.39
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY1_BASE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q3",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            467.36,
+            148.59
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin2"
+        },
+        {
+          "ref": "B2_R5",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            97.79
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY1_COIL_LOW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q3",
+          "pin": "C",
+          "side": "top",
+          "point": [
+            474.98,
+            143.51
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin1"
+        },
+        {
+          "ref": "B2_K1",
+          "pin": "COIL_MINUS",
+          "side": "bottom",
+          "point": [
+            565.15,
+            156.21
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pinA2"
+        },
+        {
+          "ref": "B2_D3",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            240.03,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "B2_D7",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            499.11,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY1_COM": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_K1",
+          "pin": "COM",
+          "side": "bottom",
+          "point": [
+            575.31,
+            156.21
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pin11"
+        },
+        {
+          "ref": "B2_J3",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            118.11
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY1_CTRL": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_J5",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            25.4,
+            204.47
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin4"
+        },
+        {
+          "ref": "B2_R5",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            90.17
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY1_NO": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_K1",
+          "pin": "NO",
+          "side": "top",
+          "point": [
+            577.85,
+            140.97
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pin14"
+        },
+        {
+          "ref": "B2_J3",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            120.65
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY2_BASE": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q4",
+          "pin": "B",
+          "side": "left",
+          "point": [
+            299.72,
+            157.48
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin2"
+        },
+        {
+          "ref": "B2_R6",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            166.37,
+            135.89
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY2_COIL_LOW": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_Q4",
+          "pin": "C",
+          "side": "top",
+          "point": [
+            307.34,
+            152.4
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin1"
+        },
+        {
+          "ref": "B2_K2",
+          "pin": "COIL_MINUS",
+          "side": "bottom",
+          "point": [
+            640.08,
+            156.21
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pinA2"
+        },
+        {
+          "ref": "B2_D4",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            274.32,
+            128.27
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin2"
+        },
+        {
+          "ref": "B2_D8",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            529.59,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY2_COM": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_K2",
+          "pin": "COM",
+          "side": "bottom",
+          "point": [
+            650.24,
+            156.21
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pin11"
+        },
+        {
+          "ref": "B2_J4",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            142.24
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY2_CTRL": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_J6",
+          "pin": "4",
+          "side": "left",
+          "point": [
+            127.0,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin4"
+        },
+        {
+          "ref": "B2_R6",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            166.37,
+            128.27
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin1"
+        }
+      ],
+      "routes": []
+    },
+    "B2_RELAY2_NO": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_K2",
+          "pin": "NO",
+          "side": "top",
+          "point": [
+            652.78,
+            140.97
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pin14"
+        },
+        {
+          "ref": "B2_J4",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            144.78
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "+5V": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B2_K1",
+          "pin": "COIL_PLUS",
+          "side": "top",
+          "point": [
+            565.15,
+            140.97
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pinA1"
+        },
+        {
+          "ref": "B2_K2",
+          "pin": "COIL_PLUS",
+          "side": "top",
+          "point": [
+            640.08,
+            140.97
+          ],
+          "exact": true,
+          "source": "Relay:Relay_SPDT:unit1:pinA1"
+        },
+        {
+          "ref": "B2_D1",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            300.99,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "B2_D2",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            198.12,
+            127.0
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "B2_D3",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            232.41,
+            138.43
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "B2_D4",
+          "pin": "K",
+          "side": "left",
+          "point": [
+            266.7,
+            128.27
+          ],
+          "exact": true,
+          "source": "Device:D:unit1:pin1"
+        },
+        {
+          "ref": "B2_M1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            718.82,
+            153.67
+          ],
+          "exact": true,
+          "source": "Motor:Motor_DC:unit1:pin1"
+        },
+        {
+          "ref": "B2_J1",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            60.96,
+            182.88
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "B2_J2",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            161.29,
+            111.76
+          ],
+          "exact": true,
+          "source": "Connector:Screw_Terminal_01x02:unit1:pin1"
+        },
+        {
+          "ref": "B2_J5",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            25.4,
+            196.85
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin1"
+        },
+        {
+          "ref": "B2_J6",
+          "pin": "1",
+          "side": "left",
+          "point": [
+            127.0,
+            137.16
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin1"
+        },
+        {
+          "ref": "B2_D5",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            612.14,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "B2_D6",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            685.8,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "B2_D7",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            506.73,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        },
+        {
+          "ref": "B2_D8",
+          "pin": "A",
+          "side": "right",
+          "point": [
+            537.21,
+            148.59
+          ],
+          "exact": true,
+          "source": "Device:LED:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "GND": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_G1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            718.82,
+            133.35
+          ],
+          "exact": true,
+          "source": "power:GND:unit1:pin1"
+        },
+        {
+          "ref": "B1_V1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            66.04,
+            121.92
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin2"
+        },
+        {
+          "ref": "B1_C1",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            166.37,
+            154.94
+          ],
+          "exact": true,
+          "source": "Device:C:unit1:pin2"
+        },
+        {
+          "ref": "B1_C2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            236.22,
+            161.29
+          ],
+          "exact": true,
+          "source": "Device:C_Polarized:unit1:pin2"
+        },
+        {
+          "ref": "B1_Q1",
+          "pin": "3",
+          "side": "top",
+          "point": [
+            375.92,
+            143.51
+          ],
+          "exact": true,
+          "source": "Transistor_FET:2N7000:unit1:pin3"
+        },
+        {
+          "ref": "B1_Q2",
+          "pin": "3",
+          "side": "bottom",
+          "point": [
+            443.23,
+            153.67
+          ],
+          "exact": true,
+          "source": "Transistor_FET:BS170:unit1:pin3"
+        },
+        {
+          "ref": "B1_J1",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            60.96,
+            162.56
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x02:unit1:pin2"
+        },
+        {
+          "ref": "B2_Q1",
+          "pin": "S",
+          "side": "bottom",
+          "point": [
+            341.63,
+            153.67
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin3"
+        },
+        {
+          "ref": "B2_Q2",
+          "pin": "S",
+          "side": "bottom",
+          "point": [
+            408.94,
+            143.51
+          ],
+          "exact": true,
+          "source": "Transistor_FET:IRLZ44N:unit1:pin3"
+        },
+        {
+          "ref": "B2_Q3",
+          "pin": "E",
+          "side": "bottom",
+          "point": [
+            474.98,
+            153.67
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin3"
+        },
+        {
+          "ref": "B2_Q4",
+          "pin": "E",
+          "side": "bottom",
+          "point": [
+            307.34,
+            162.56
+          ],
+          "exact": true,
+          "source": "Transistor_BJT:BC547:unit1:pin3"
+        },
+        {
+          "ref": "B2_J5",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            25.4,
+            199.39
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin2"
+        },
+        {
+          "ref": "B2_J6",
+          "pin": "2",
+          "side": "left",
+          "point": [
+            127.0,
+            139.7
+          ],
+          "exact": true,
+          "source": "Connector_Generic:Conn_01x04:unit1:pin2"
+        },
+        {
+          "ref": "B2_R2",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            270.51,
+            149.86
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        },
+        {
+          "ref": "B2_R4",
+          "pin": "2",
+          "side": "bottom",
+          "point": [
+            201.93,
+            173.99
+          ],
+          "exact": true,
+          "source": "Device:R:unit1:pin2"
+        }
+      ],
+      "routes": []
+    },
+    "VIN": {
+      "strategy": "local_labels",
+      "terminal_reason": "terminal_mode_all_nets",
+      "endpoints": [
+        {
+          "ref": "B1_V1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            66.04,
+            111.76
+          ],
+          "exact": true,
+          "source": "Simulation_SPICE:VDC:unit1:pin1"
+        },
+        {
+          "ref": "B1_F1",
+          "pin": "1",
+          "side": "top",
+          "point": [
+            132.08,
+            153.67
+          ],
+          "exact": true,
+          "source": "Device:Fuse:unit1:pin1"
+        }
+      ],
+      "routes": []
+    }
+  },
+  "metrics": {
+    "net_count": 30,
+    "wired_route_count": 0,
+    "lane_route_count": 0,
+    "astar_route_count": 0,
+    "salvage_astar_route_count": 0,
+    "salvage_astar_attempt_count": 0,
+    "crossing_risk_route_count": 0,
+    "dense_design_mode": false,
+    "segment_count": 0,
+    "different_net_crossing_count": 0,
+    "mst_total_length": 0,
+    "crossing_density_tile_size": 25.4,
+    "crossing_density_tile_count": 0,
+    "crossing_density_max_tile_crossings": 0,
+    "crossing_density_overflow": 0,
+    "near_endpoint_crossing_count": 0,
+    "label_strategy_count": 30,
+    "wire_mode_terminal_net_count": 0,
+    "wire_mode_terminal_endpoint_count": 0,
+    "partial_wire_net_count": 0,
+    "unroutable_net_count": 0
+  },
+  "warnings": [],
+  "partial_route_motion_repair": {
+    "schema": "progen-kicad-partial-route-motion-repair/v0.1",
+    "stage": "partial_route_motion_repair",
+    "enabled": false,
+    "reason": "only strict wire mode uses partial-route component motion repair",
+    "pass_count": 0,
+    "passes": []
+  },
+  "arrangement_selection": {
+    "mode": "terminal_fast_arrangement",
+    "reason": "terminal-only generation does not need wire-routeable arrangement search"
+  }
+}

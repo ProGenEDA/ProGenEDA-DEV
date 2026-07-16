@@ -1,0 +1,149 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the KiCad topology-aware autoplace engine.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "CH340",
+            "name": "CH340 USB-UART",
+            "at": [
+              28.5,
+              33.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "interface_ic",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X2": {
+            "kind": "USB_CONNECTOR_UART",
+            "name": "USB Connector",
+            "at": [
+              48.5,
+              33.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "connector",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X3": {
+            "kind": "TX_HEADER",
+            "name": "TX Header",
+            "at": [
+              67.5,
+              31.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X4": {
+            "kind": "RX_HEADER",
+            "name": "RX Header",
+            "at": [
+              84.5,
+              31.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog"
+          },
+          "X5": {
+            "kind": "RESET_CAPACITOR",
+            "name": "Reset Capacitor",
+            "at": [
+              101.0,
+              31.5
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 25.0,
+            "top": 30.0,
+            "right": 32.0,
+            "bottom": 37.0
+          },
+          {
+            "owner": "X2",
+            "left": 44.0,
+            "top": 30.0,
+            "right": 53.0,
+            "bottom": 37.0
+          },
+          {
+            "owner": "X3",
+            "left": 65.0,
+            "top": 30.0,
+            "right": 70.0,
+            "bottom": 33.0
+          },
+          {
+            "owner": "X4",
+            "left": 82.0,
+            "top": 30.0,
+            "right": 87.0,
+            "bottom": 33.0
+          },
+          {
+            "owner": "X5",
+            "left": 99.0,
+            "top": 30.0,
+            "right": 103.0,
+            "bottom": 33.0
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

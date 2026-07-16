@@ -137,6 +137,30 @@ class LayoutPlan:
         }
 
 
+@dataclass(frozen=True)
+class PlacementPlan:
+    components: tuple[Component, ...]
+    obstacles: tuple[Obstacle, ...]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "components": {
+                c.ref: {"kind": c.kind, "at": list(c.at), "rotation": c.rotation, "manual": c.manual_position}
+                for c in self.components
+            },
+            "obstacles": [
+                {
+                    "owner": obstacle.owner,
+                    "left": obstacle.left,
+                    "top": obstacle.top,
+                    "right": obstacle.right,
+                    "bottom": obstacle.bottom,
+                }
+                for obstacle in self.obstacles
+            ],
+        }
+
+
 def _pin_tuple(pins: dict[str, tuple[float, float]], fallback: tuple[PinDef, ...]) -> tuple[PinDef, ...]:
     if not pins:
         return fallback
@@ -911,9 +935,16 @@ def points_by_net(comps: tuple[Component, ...]) -> dict[str, list[Point]]:
     return out
 
 
-def plan_layout(circuit: dict[str, Any]) -> LayoutPlan:
+def plan_placement(circuit: dict[str, Any]) -> PlacementPlan:
     comps = autoplace(circuit)
     obstacles = _obstacles(comps)
+    return PlacementPlan(comps, obstacles)
+
+
+def plan_layout(circuit: dict[str, Any]) -> LayoutPlan:
+    placement = plan_placement(circuit)
+    comps = placement.components
+    obstacles = placement.obstacles
     routing = route_nets(points_by_net(comps), obstacles, grid=GRID, clearance=0.8)
     return LayoutPlan(comps, routing, obstacles)
 
@@ -983,12 +1014,13 @@ def text_obj(
     index: int,
     kind: str = "text",
     justify: str = "left bottom",
+    font_size: float = 1.27,
 ) -> str:
     token = "label" if kind == "label" else "text"
     extra = " (exclude_from_sim no)" if token == "text" else ""
     return (
         f"  ({token} {q(text)}{extra} (at {num(at[0])} {num(at[1])} 0) (fields_autoplaced)\n"
-        f"    (effects (font (size 1.27 1.27)) (justify {justify}))\n"
+        f"    (effects (font (size {num(font_size)} {num(font_size)})) (justify {justify}))\n"
         f"    (uuid {uid(project_name + ':' + token + ':' + str(index) + text + str(at))})\n"
         "  )\n"
     )

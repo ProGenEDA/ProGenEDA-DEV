@@ -1,0 +1,120 @@
+{
+  "schema_version": "progen-kicad-placer-ir/v0.2",
+  "compatible_schema": "progen-kicad-circuit-ir/v1",
+  "pipeline_stage": "component_placement_only",
+  "project": {
+    "name": "t02_power_supply_cluster",
+    "title": "Power Supply Cluster",
+    "analysis": []
+  },
+  "components": [
+    {
+      "id": "X1",
+      "kind": "LM7805",
+      "value": "LM7805 Voltage Regulator"
+    },
+    {
+      "id": "X2",
+      "kind": "D_1N4007",
+      "value": "1N4007 Diode"
+    },
+    {
+      "id": "X3",
+      "kind": "CP_100UF",
+      "value": "100uF Electrolytic Capacitor"
+    },
+    {
+      "id": "X4",
+      "kind": "CP_100UF",
+      "value": "100uF Electrolytic Capacitor"
+    },
+    {
+      "id": "X5",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF Ceramic Capacitor"
+    },
+    {
+      "id": "X6",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF Ceramic Capacitor"
+    },
+    {
+      "id": "X7",
+      "kind": "C_100NF_CERAMIC",
+      "value": "100nF Ceramic Capacitor"
+    },
+    {
+      "id": "X8",
+      "kind": "DC_BARREL_JACK",
+      "value": "DC Barrel Jack"
+    },
+    {
+      "id": "X9",
+      "kind": "LED_INDICATOR",
+      "value": "LED"
+    },
+    {
+      "id": "X10",
+      "kind": "RESISTOR",
+      "value": "Resistor"
+    },
+    {
+      "id": "X11",
+      "kind": "SCREW_TERMINAL_2",
+      "value": "Screw Terminal"
+    },
+    {
+      "id": "X12",
+      "kind": "FUSE",
+      "value": "Fuse"
+    },
+    {
+      "id": "X13",
+      "kind": "GND_SYMBOL",
+      "value": "GND"
+    },
+    {
+      "id": "X14",
+      "kind": "GND_SYMBOL",
+      "value": "GND"
+    },
+    {
+      "id": "X15",
+      "kind": "GND_SYMBOL",
+      "value": "GND"
+    },
+    {
+      "id": "X16",
+      "kind": "GND_SYMBOL",
+      "value": "GND"
+    },
+    {
+      "id": "X17",
+      "kind": "PWR_5V",
+      "value": "+5V"
+    },
+    {
+      "id": "X18",
+      "kind": "PWR_5V",
+      "value": "+5V"
+    },
+    {
+      "id": "X19",
+      "kind": "PWR_5V",
+      "value": "+5V"
+    }
+  ],
+  "nets": {},
+  "constraints": {
+    "placement": {
+      "mode": "auto"
+    },
+    "routing": "deferred_to_wire_or_terminal_stage",
+    "values": "display_only_until_value_editor_stage"
+  },
+  "notes": [
+    "Partial CircuitIR-shaped placer input. Component id/kind/value/project/nets match the full CircuitIR shape as closely as this stage can support.",
+    "Pins and net membership are intentionally omitted until the wire planner, terminal placer, and value editor stages own those decisions.",
+    "Purpose: power-left-to-right placement."
+  ]
+}

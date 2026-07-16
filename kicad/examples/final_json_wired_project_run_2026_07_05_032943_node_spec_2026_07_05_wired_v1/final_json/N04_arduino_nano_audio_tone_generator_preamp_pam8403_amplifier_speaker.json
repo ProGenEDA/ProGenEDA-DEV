@@ -1,0 +1,969 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "n04",
+    "title": "ARDUINO_NANO AUDIO TONE GENERATOR + PREAMP + PAM8403 AMPLIFIER + SPEAKER",
+    "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+    "target": "kicad_schematic",
+    "schematic_only": true
+  },
+  "circuit_id": "N04",
+  "circuit_name": "ARDUINO_NANO AUDIO TONE GENERATOR + PREAMP + PAM8403 AMPLIFIER + SPEAKER",
+  "purpose": "pasted node-spec connected circuit for parser/router/netlist validation",
+  "routing": {
+    "mode": "wire",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior."
+  },
+  "components": [
+    {
+      "id": "PWR_5V",
+      "ref": "PWR_5V",
+      "kind": "PWR_5V",
+      "type": "PWR_5V",
+      "value": "+5V Power Symbol",
+      "role": "power_symbol",
+      "block": "04",
+      "pins": {
+        "+": "+5V",
+        "-": "GND"
+      }
+    },
+    {
+      "id": "ARDUINO_NANO",
+      "ref": "ARDUINO_NANO",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "microcontroller_module",
+      "block": "04",
+      "pins": {
+        "5V": "+5V",
+        "A0": "NET_VOLUME_WIPER",
+        "A1": "NET_AUDIO_MIX",
+        "A2": "NET_RIGHT_BUFFERED",
+        "D0_RX": "NET_UART_HEADER_RX",
+        "D1_TX": "NET_UART_HEADER_TX",
+        "D2": "NET_TONE_OUT",
+        "D3": "NET_AUDIO_DETECT",
+        "D4": "NET_CLIP_DETECT",
+        "D5": "NET_ARDUINO_NANO_D5",
+        "D6": "NET_ARDUINO_NANO_D6",
+        "D9": "NET_ARDUINO_NANO_D9",
+        "GND": "GND",
+        "RST": "NET_ARDUINO_NANO_RST"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_RESET",
+      "ref": "R_10K_PULLUP_RESET",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "NET_ARDUINO_NANO_RST",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "PUSH_BUTTON_RESET",
+      "ref": "PUSH_BUTTON_RESET",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "04",
+      "pins": {
+        "1": "NET_ARDUINO_NANO_RST",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "NE555",
+      "ref": "NE555",
+      "kind": "NE555",
+      "type": "NE555",
+      "value": "NE555 Timer",
+      "role": "timer_ic",
+      "block": "04",
+      "pins": {
+        "CTRL": "NET_NE555_CTRL",
+        "DISCH": "NET_555_DISCH",
+        "GND": "GND",
+        "OUT": "NET_TONE_OUT",
+        "RESET": "+5V",
+        "THRESH": "NET_555_TIMING",
+        "TRIG": "NET_555_TIMING",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "C_100NF_555_CTRL",
+      "ref": "C_100NF_555_CTRL",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "NET_NE555_CTRL",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "RES_555_RA",
+      "ref": "RES_555_RA",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "+5V",
+        "2": "NET_555_DISCH"
+      }
+    },
+    {
+      "id": "POT_HG",
+      "ref": "POT_HG",
+      "kind": "POT_HG",
+      "type": "POT_HG",
+      "value": "Potentiometer",
+      "role": "potentiometer",
+      "block": "04",
+      "pins": {
+        "END_A": "NET_555_DISCH",
+        "END_B": "NET_555_TIMING",
+        "WIPER": "NET_555_TIMING"
+      }
+    },
+    {
+      "id": "CAP_555_TIMING",
+      "ref": "CAP_555_TIMING",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "Capacitor",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "NET_555_TIMING",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "COUPLING_CAP_TONE",
+      "ref": "COUPLING_CAP_TONE",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "Capacitor",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "NET_TONE_OUT",
+        "2": "NET_AUDIO_MIX"
+      }
+    },
+    {
+      "id": "AUDIO_INPUT_JACK",
+      "ref": "AUDIO_INPUT_JACK",
+      "kind": "AUDIO_INPUT_JACK",
+      "type": "AUDIO_INPUT_JACK",
+      "value": "Audio Input Jack",
+      "role": "connector",
+      "block": "04",
+      "pins": {
+        "RING": "NET_AUDIO_INPUT_JACK_RING",
+        "SLEEVE": "GND",
+        "TIP": "NET_AUDIO_INPUT_JACK_TIP"
+      }
+    },
+    {
+      "id": "COUPLING_CAP_IN_L",
+      "ref": "COUPLING_CAP_IN_L",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "Capacitor",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "NET_AUDIO_INPUT_JACK_TIP"
+      }
+    },
+    {
+      "id": "COUPLING_CAP_IN_R",
+      "ref": "COUPLING_CAP_IN_R",
+      "kind": "CAP",
+      "type": "CAP",
+      "value": "Capacitor",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "NET_AUDIO_INPUT_JACK_RING",
+        "2": "NET_AUDIO_IN_R"
+      }
+    },
+    {
+      "id": "RES_BIAS_TOP",
+      "ref": "RES_BIAS_TOP",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "+5V",
+        "2": "NET_AUDIO_BIAS"
+      }
+    },
+    {
+      "id": "RES_BIAS_BOTTOM",
+      "ref": "RES_BIAS_BOTTOM",
+      "kind": "RES",
+      "type": "RES",
+      "value": "Resistor",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "NET_AUDIO_BIAS",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "CAP_BIAS_FILTER",
+      "ref": "CAP_BIAS_FILTER",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "Capacitor",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "NET_AUDIO_BIAS",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "LM358",
+      "ref": "LM358",
+      "kind": "LM358",
+      "type": "LM358",
+      "value": "LM358 Op-Amp",
+      "role": "opamp",
+      "block": "04",
+      "pins": {
+        "GND": "GND",
+        "IN1+": "NET_AUDIO_MIX",
+        "IN1-": "NET_LM358_IN1",
+        "IN2+": "NET_AUDIO_IN_R",
+        "IN2-": "NET_RIGHT_BUFFERED",
+        "OUT1": "NET_LM358_IN1",
+        "OUT2": "NET_RIGHT_BUFFERED",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "VOLUME_POTENTIOMETER",
+      "ref": "VOLUME_POTENTIOMETER",
+      "kind": "VOLUME_POTENTIOMETER",
+      "type": "VOLUME_POTENTIOMETER",
+      "value": "Volume Potentiometer",
+      "role": "potentiometer",
+      "block": "04",
+      "pins": {
+        "END_A": "NET_LM358_IN1",
+        "END_B": "NET_AUDIO_BIAS",
+        "WIPER": "NET_VOLUME_WIPER"
+      }
+    },
+    {
+      "id": "DECOUPLING_CAPACITOR_LM358",
+      "ref": "DECOUPLING_CAPACITOR_LM358",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "PAM8403",
+      "ref": "PAM8403",
+      "kind": "PAM8403",
+      "type": "PAM8403",
+      "value": "PAM8403 Amplifier",
+      "role": "audio_ic",
+      "block": "04",
+      "pins": {
+        "GND": "GND",
+        "L_IN": "NET_VOLUME_WIPER",
+        "L_OUT+": "NET_PAM8403_L_OUT",
+        "L_OUT-": "NET_PAM8403_L_OUT_2",
+        "R_IN": "NET_RIGHT_BUFFERED",
+        "R_OUT+": "NET_PAM8403_R_OUT",
+        "R_OUT-": "NET_PAM8403_R_OUT_2",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "SPEAKER_LEFT",
+      "ref": "SPEAKER_LEFT",
+      "kind": "SPEAKER",
+      "type": "SPEAKER",
+      "value": "Speaker",
+      "role": "speaker",
+      "block": "04",
+      "pins": {
+        "NEGATIVE": "NET_PAM8403_L_OUT_2",
+        "POSITIVE": "NET_PAM8403_L_OUT"
+      }
+    },
+    {
+      "id": "SPEAKER_RIGHT",
+      "ref": "SPEAKER_RIGHT",
+      "kind": "SPEAKER",
+      "type": "SPEAKER",
+      "value": "Speaker",
+      "role": "speaker",
+      "block": "04",
+      "pins": {
+        "NEGATIVE": "NET_PAM8403_R_OUT_2",
+        "POSITIVE": "NET_PAM8403_R_OUT"
+      }
+    },
+    {
+      "id": "CP_100UF_AUDIO",
+      "ref": "CP_100UF_AUDIO",
+      "kind": "CP_100UF",
+      "type": "CP_100UF",
+      "value": "100uF",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C_100NF_AUDIO",
+      "ref": "C_100NF_AUDIO",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "capacitor",
+      "block": "04",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "LM393_COMPARATOR",
+      "ref": "LM393_COMPARATOR",
+      "kind": "LM393_COMPARATOR",
+      "type": "LM393_COMPARATOR",
+      "value": "LM393 Comparator",
+      "role": "comparator",
+      "block": "04",
+      "pins": {
+        "GND": "GND",
+        "IN1+": "NET_LM358_IN1",
+        "IN1-": "NET_AUDIO_BIAS",
+        "IN2+": "NET_VOLUME_WIPER",
+        "IN2-": "NET_LM393_COMPARATOR_IN2",
+        "OUT1": "NET_AUDIO_DETECT",
+        "OUT2": "NET_CLIP_DETECT",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_AUDIO_DETECT",
+      "ref": "R_10K_PULLUP_AUDIO_DETECT",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "NET_AUDIO_DETECT",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "R_220_AUDIO_LED",
+      "ref": "R_220_AUDIO_LED",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "NET_AUDIO_DETECT",
+        "2": "NET_R_220_AUDIO_LED_2"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_AUDIO",
+      "ref": "LED_INDICATOR_AUDIO",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "04",
+      "pins": {
+        "ANODE": "NET_R_220_AUDIO_LED_2",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "TRIMMER_POTENTIOMETER",
+      "ref": "TRIMMER_POTENTIOMETER",
+      "kind": "TRIMMER_POTENTIOMETER",
+      "type": "TRIMMER_POTENTIOMETER",
+      "value": "Trimmer Potentiometer",
+      "role": "potentiometer",
+      "block": "04",
+      "pins": {
+        "END_A": "+5V",
+        "END_B": "GND",
+        "WIPER": "NET_LM393_COMPARATOR_IN2"
+      }
+    },
+    {
+      "id": "R_10K_PULLUP_CLIP",
+      "ref": "R_10K_PULLUP_CLIP",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "NET_CLIP_DETECT",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "R_220_CLIP_LED",
+      "ref": "R_220_CLIP_LED",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "NET_CLIP_DETECT",
+        "2": "NET_R_220_CLIP_LED_2"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_CLIP",
+      "ref": "LED_INDICATOR_CLIP",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "04",
+      "pins": {
+        "ANODE": "NET_R_220_CLIP_LED_2",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "R_220_STATUS",
+      "ref": "R_220_STATUS",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "resistor",
+      "block": "04",
+      "pins": {
+        "1": "NET_ARDUINO_NANO_D5",
+        "2": "NET_R_220_STATUS_2"
+      }
+    },
+    {
+      "id": "LED_INDICATOR_STATUS",
+      "ref": "LED_INDICATOR_STATUS",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "04",
+      "pins": {
+        "ANODE": "NET_R_220_STATUS_2",
+        "CATHODE": "GND"
+      }
+    },
+    {
+      "id": "PWM_HEADER",
+      "ref": "PWM_HEADER",
+      "kind": "PWM_HEADER",
+      "type": "PWM_HEADER",
+      "value": "PWM Header",
+      "role": "header",
+      "block": "04",
+      "pins": {
+        "GND": "GND",
+        "PWM1": "NET_ARDUINO_NANO_D6",
+        "PWM2": "NET_ARDUINO_NANO_D9",
+        "VCC": "+5V"
+      }
+    },
+    {
+      "id": "UART_HEADER",
+      "ref": "UART_HEADER",
+      "kind": "UART_HEADER",
+      "type": "UART_HEADER",
+      "value": "UART Header",
+      "role": "header",
+      "block": "04",
+      "pins": {
+        "GND": "GND",
+        "RX": "NET_UART_HEADER_RX",
+        "TX": "NET_UART_HEADER_TX",
+        "VCC": "+5V"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "PWR_5V.+",
+      "ARDUINO_NANO.5V",
+      "R_10K_PULLUP_RESET.2",
+      "NE555.VCC",
+      "NE555.RESET",
+      "RES_555_RA.1",
+      "RES_BIAS_TOP.1",
+      "LM358.VCC",
+      "DECOUPLING_CAPACITOR_LM358.1",
+      "PAM8403.VCC",
+      "CP_100UF_AUDIO.1",
+      "C_100NF_AUDIO.1",
+      "LM393_COMPARATOR.VCC",
+      "R_10K_PULLUP_AUDIO_DETECT.2",
+      "TRIMMER_POTENTIOMETER.END_A",
+      "R_10K_PULLUP_CLIP.2",
+      "PWM_HEADER.VCC",
+      "UART_HEADER.VCC"
+    ],
+    "GND": [
+      "PWR_5V.-",
+      "ARDUINO_NANO.GND",
+      "PUSH_BUTTON_RESET.2",
+      "NE555.GND",
+      "C_100NF_555_CTRL.2",
+      "CAP_555_TIMING.2",
+      "AUDIO_INPUT_JACK.SLEEVE",
+      "RES_BIAS_BOTTOM.2",
+      "CAP_BIAS_FILTER.2",
+      "LM358.GND",
+      "DECOUPLING_CAPACITOR_LM358.2",
+      "PAM8403.GND",
+      "CP_100UF_AUDIO.2",
+      "C_100NF_AUDIO.2",
+      "LM393_COMPARATOR.GND",
+      "LED_INDICATOR_AUDIO.CATHODE",
+      "TRIMMER_POTENTIOMETER.END_B",
+      "LED_INDICATOR_CLIP.CATHODE",
+      "LED_INDICATOR_STATUS.CATHODE",
+      "PWM_HEADER.GND",
+      "UART_HEADER.GND"
+    ],
+    "NET_ARDUINO_NANO_RST": [
+      "ARDUINO_NANO.RST",
+      "R_10K_PULLUP_RESET.1",
+      "PUSH_BUTTON_RESET.1"
+    ],
+    "NET_NE555_CTRL": [
+      "NE555.CTRL",
+      "C_100NF_555_CTRL.1"
+    ],
+    "NET_555_DISCH": [
+      "NE555.DISCH",
+      "RES_555_RA.2",
+      "POT_HG.END_A"
+    ],
+    "NET_555_TIMING": [
+      "NE555.TRIG",
+      "NE555.THRESH",
+      "POT_HG.WIPER",
+      "POT_HG.END_B",
+      "CAP_555_TIMING.1"
+    ],
+    "NET_TONE_OUT": [
+      "NE555.OUT",
+      "ARDUINO_NANO.D2",
+      "COUPLING_CAP_TONE.1"
+    ],
+    "NET_AUDIO_MIX": [
+      "COUPLING_CAP_TONE.2",
+      "LM358.IN1+",
+      "ARDUINO_NANO.A1"
+    ],
+    "NET_AUDIO_INPUT_JACK_TIP": [
+      "AUDIO_INPUT_JACK.TIP",
+      "COUPLING_CAP_IN_L.1"
+    ],
+    "NET_AUDIO_INPUT_JACK_RING": [
+      "AUDIO_INPUT_JACK.RING",
+      "COUPLING_CAP_IN_R.1"
+    ],
+    "NET_AUDIO_IN_R": [
+      "COUPLING_CAP_IN_R.2",
+      "LM358.IN2+"
+    ],
+    "NET_AUDIO_BIAS": [
+      "RES_BIAS_TOP.2",
+      "RES_BIAS_BOTTOM.1",
+      "CAP_BIAS_FILTER.1",
+      "VOLUME_POTENTIOMETER.END_B",
+      "LM393_COMPARATOR.IN1-"
+    ],
+    "NET_LM358_IN1": [
+      "LM358.IN1-",
+      "LM358.OUT1",
+      "VOLUME_POTENTIOMETER.END_A",
+      "LM393_COMPARATOR.IN1+"
+    ],
+    "NET_VOLUME_WIPER": [
+      "VOLUME_POTENTIOMETER.WIPER",
+      "PAM8403.L_IN",
+      "LM393_COMPARATOR.IN2+",
+      "ARDUINO_NANO.A0"
+    ],
+    "NET_RIGHT_BUFFERED": [
+      "LM358.IN2-",
+      "LM358.OUT2",
+      "PAM8403.R_IN",
+      "ARDUINO_NANO.A2"
+    ],
+    "NET_PAM8403_L_OUT": [
+      "PAM8403.L_OUT+",
+      "SPEAKER_LEFT.POSITIVE"
+    ],
+    "NET_PAM8403_L_OUT_2": [
+      "PAM8403.L_OUT-",
+      "SPEAKER_LEFT.NEGATIVE"
+    ],
+    "NET_PAM8403_R_OUT": [
+      "PAM8403.R_OUT+",
+      "SPEAKER_RIGHT.POSITIVE"
+    ],
+    "NET_PAM8403_R_OUT_2": [
+      "PAM8403.R_OUT-",
+      "SPEAKER_RIGHT.NEGATIVE"
+    ],
+    "NET_AUDIO_DETECT": [
+      "LM393_COMPARATOR.OUT1",
+      "R_10K_PULLUP_AUDIO_DETECT.1",
+      "ARDUINO_NANO.D3",
+      "R_220_AUDIO_LED.1"
+    ],
+    "NET_R_220_AUDIO_LED_2": [
+      "R_220_AUDIO_LED.2",
+      "LED_INDICATOR_AUDIO.ANODE"
+    ],
+    "NET_LM393_COMPARATOR_IN2": [
+      "LM393_COMPARATOR.IN2-",
+      "TRIMMER_POTENTIOMETER.WIPER"
+    ],
+    "NET_CLIP_DETECT": [
+      "LM393_COMPARATOR.OUT2",
+      "R_10K_PULLUP_CLIP.1",
+      "ARDUINO_NANO.D4",
+      "R_220_CLIP_LED.1"
+    ],
+    "NET_R_220_CLIP_LED_2": [
+      "R_220_CLIP_LED.2",
+      "LED_INDICATOR_CLIP.ANODE"
+    ],
+    "NET_ARDUINO_NANO_D5": [
+      "ARDUINO_NANO.D5",
+      "R_220_STATUS.1"
+    ],
+    "NET_R_220_STATUS_2": [
+      "R_220_STATUS.2",
+      "LED_INDICATOR_STATUS.ANODE"
+    ],
+    "NET_ARDUINO_NANO_D6": [
+      "ARDUINO_NANO.D6",
+      "PWM_HEADER.PWM1"
+    ],
+    "NET_ARDUINO_NANO_D9": [
+      "ARDUINO_NANO.D9",
+      "PWM_HEADER.PWM2"
+    ],
+    "NET_UART_HEADER_RX": [
+      "UART_HEADER.RX",
+      "ARDUINO_NANO.D0_RX"
+    ],
+    "NET_UART_HEADER_TX": [
+      "UART_HEADER.TX",
+      "ARDUINO_NANO.D1_TX"
+    ]
+  },
+  "blocks": [
+    {
+      "name": "node_spec_component_inference",
+      "items": [
+        {
+          "ref": "PWR_5V",
+          "kind": "PWR_5V",
+          "reason": "exact_catalog_kind",
+          "pin_count": 2
+        },
+        {
+          "ref": "ARDUINO_NANO",
+          "kind": "ARDUINO_NANO",
+          "reason": "exact_catalog_kind",
+          "pin_count": 14
+        },
+        {
+          "ref": "R_10K_PULLUP_RESET",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "PUSH_BUTTON_RESET",
+          "kind": "PUSH_BUTTON",
+          "reason": "push_button_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "NE555",
+          "kind": "NE555",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "C_100NF_555_CTRL",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_555_RA",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "POT_HG",
+          "kind": "POT_HG",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "CAP_555_TIMING",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "COUPLING_CAP_TONE",
+          "kind": "CAP",
+          "reason": "generic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "AUDIO_INPUT_JACK",
+          "kind": "AUDIO_INPUT_JACK",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "COUPLING_CAP_IN_L",
+          "kind": "CAP",
+          "reason": "generic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "COUPLING_CAP_IN_R",
+          "kind": "CAP",
+          "reason": "generic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_BIAS_TOP",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "RES_BIAS_BOTTOM",
+          "kind": "RES",
+          "reason": "generic_resistor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "CAP_BIAS_FILTER",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "LM358",
+          "kind": "LM358",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "VOLUME_POTENTIOMETER",
+          "kind": "VOLUME_POTENTIOMETER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "DECOUPLING_CAPACITOR_LM358",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "PAM8403",
+          "kind": "PAM8403",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "SPEAKER_LEFT",
+          "kind": "SPEAKER",
+          "reason": "speaker_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "SPEAKER_RIGHT",
+          "kind": "SPEAKER",
+          "reason": "speaker_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "CP_100UF_AUDIO",
+          "kind": "CP_100UF",
+          "reason": "electrolytic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "C_100NF_AUDIO",
+          "kind": "C_100NF_CERAMIC",
+          "reason": "ceramic_capacitor_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "LM393_COMPARATOR",
+          "kind": "LM393_COMPARATOR",
+          "reason": "exact_catalog_kind",
+          "pin_count": 8
+        },
+        {
+          "ref": "R_10K_PULLUP_AUDIO_DETECT",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_AUDIO_LED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_AUDIO",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "TRIMMER_POTENTIOMETER",
+          "kind": "TRIMMER_POTENTIOMETER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 3
+        },
+        {
+          "ref": "R_10K_PULLUP_CLIP",
+          "kind": "R_10K_PULLUP",
+          "reason": "resistor_value_10k",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_CLIP_LED",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_CLIP",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "R_220_STATUS",
+          "kind": "R_220",
+          "reason": "resistor_value_220",
+          "pin_count": 2
+        },
+        {
+          "ref": "LED_INDICATOR_STATUS",
+          "kind": "LED_INDICATOR",
+          "reason": "indicator_led_family",
+          "pin_count": 2
+        },
+        {
+          "ref": "PWM_HEADER",
+          "kind": "PWM_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        },
+        {
+          "ref": "UART_HEADER",
+          "kind": "UART_HEADER",
+          "reason": "exact_catalog_kind",
+          "pin_count": 4
+        }
+      ]
+    }
+  ],
+  "generation_notes": {
+    "source": "/home/zaruka/.codex/attachments/4a542999-646f-4500-97f5-65104aecbad6/pasted-text.txt",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "node_spec_arrow_text",
+    "source_line_count": 98
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 36,
+    "net_count": 30,
+    "endpoint_count": 115,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  }
+}

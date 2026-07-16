@@ -1,0 +1,514 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 23,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the canonical KiCad component placer.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 23,
+        "components": {
+          "U1": {
+            "kind": "MCP2515",
+            "name": "MCP2515",
+            "at": [
+              36.83,
+              46.99
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "interface_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Interface_CAN_LIN:MCP2515-xSO"
+          },
+          "U2": {
+            "kind": "TJA1050",
+            "name": "TJA1050",
+            "at": [
+              95.25,
+              44.45
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "interface_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Interface_CAN_LIN:SN65HVD1050D"
+          },
+          "U3": {
+            "kind": "MAX485",
+            "name": "MAX485",
+            "at": [
+              152.4,
+              44.45
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "interface_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Interface_UART:MAX485E"
+          },
+          "Y1": {
+            "kind": "CRYSTAL_16MHZ",
+            "name": "16MHz crystal",
+            "at": [
+              201.93,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "crystal",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:Crystal"
+          },
+          "C1": {
+            "kind": "C_22PF_X1",
+            "name": "22pF",
+            "at": [
+              26.67,
+              105.41
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "C2": {
+            "kind": "C_22PF_X2",
+            "name": "22pF",
+            "at": [
+              66.04,
+              105.41
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "C3": {
+            "kind": "C_100NF_CERAMIC",
+            "name": "100nF",
+            "at": [
+              105.41,
+              105.41
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "C4": {
+            "kind": "C_100NF_CERAMIC",
+            "name": "100nF",
+            "at": [
+              143.51,
+              105.41
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "C5": {
+            "kind": "C_100NF_CERAMIC",
+            "name": "100nF",
+            "at": [
+              26.67,
+              148.59
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "C6": {
+            "kind": "C_100NF_CERAMIC",
+            "name": "100nF",
+            "at": [
+              66.04,
+              148.59
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "C7": {
+            "kind": "C_100NF_CERAMIC",
+            "name": "100nF",
+            "at": [
+              105.41,
+              148.59
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "capacitor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:C"
+          },
+          "R1": {
+            "kind": "R_120_CAN",
+            "name": "120 ohm CAN termination",
+            "at": [
+              146.05,
+              148.59
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "R2": {
+            "kind": "R_120_RS485",
+            "name": "120 ohm RS485 termination",
+            "at": [
+              27.94,
+              191.77
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "D1": {
+            "kind": "TVS_DIODE_RS485",
+            "name": "TVS diode",
+            "at": [
+              69.85,
+              191.77
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "protection",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:D_TVS"
+          },
+          "D2": {
+            "kind": "TVS_DIODE_RS485",
+            "name": "TVS diode",
+            "at": [
+              110.49,
+              191.77
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "protection",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:D_TVS"
+          },
+          "J1": {
+            "kind": "CAN_TERMINAL",
+            "name": "CAN terminal",
+            "at": [
+              153.67,
+              194.31
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "terminal",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector:Screw_Terminal_01x03"
+          },
+          "J2": {
+            "kind": "RS485_TERMINAL",
+            "name": "RS485 terminal",
+            "at": [
+              30.48,
+              242.57
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "terminal",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector:Screw_Terminal_01x03"
+          },
+          "J3": {
+            "kind": "SPI_HEADER_FLASH",
+            "name": "SPI header",
+            "at": [
+              76.2,
+              240.03
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Generic:Conn_02x03_Odd_Even"
+          },
+          "J4": {
+            "kind": "UART_HEADER",
+            "name": "UART/control header",
+            "at": [
+              121.92,
+              240.03
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Generic:Conn_01x04"
+          },
+          "J5": {
+            "kind": "PIN_HEADER",
+            "name": "Power header",
+            "at": [
+              166.37,
+              240.03
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "header",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Connector_Generic:Conn_01x04"
+          },
+          "JP1": {
+            "kind": "CHIP_SELECT_JUMPER",
+            "name": "Jumper",
+            "at": [
+              27.94,
+              287.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "jumper",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Jumper:Jumper_2_Open"
+          },
+          "JP2": {
+            "kind": "CHIP_SELECT_JUMPER",
+            "name": "Jumper",
+            "at": [
+              67.31,
+              287.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "jumper",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Jumper:Jumper_2_Open"
+          },
+          "JP3": {
+            "kind": "CHIP_SELECT_JUMPER",
+            "name": "Jumper",
+            "at": [
+              107.95,
+              287.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "jumper",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Jumper:Jumper_2_Open"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "U1",
+            "left": 24.83,
+            "top": 29.99,
+            "right": 48.83,
+            "bottom": 63.99
+          },
+          {
+            "owner": "U2",
+            "left": 84.25,
+            "top": 29.45,
+            "right": 106.25,
+            "bottom": 59.45
+          },
+          {
+            "owner": "U3",
+            "left": 141.4,
+            "top": 29.45,
+            "right": 163.4,
+            "bottom": 59.45
+          },
+          {
+            "owner": "Y1",
+            "left": 197.93,
+            "top": 29.75,
+            "right": 205.93,
+            "bottom": 33.75
+          },
+          {
+            "owner": "C1",
+            "left": 24.67,
+            "top": 103.91,
+            "right": 28.67,
+            "bottom": 106.91
+          },
+          {
+            "owner": "C2",
+            "left": 64.04,
+            "top": 103.91,
+            "right": 68.04,
+            "bottom": 106.91
+          },
+          {
+            "owner": "C3",
+            "left": 103.41,
+            "top": 103.91,
+            "right": 107.41,
+            "bottom": 106.91
+          },
+          {
+            "owner": "C4",
+            "left": 141.51,
+            "top": 103.91,
+            "right": 145.51,
+            "bottom": 106.91
+          },
+          {
+            "owner": "C5",
+            "left": 24.67,
+            "top": 147.09,
+            "right": 28.67,
+            "bottom": 150.09
+          },
+          {
+            "owner": "C6",
+            "left": 64.04,
+            "top": 147.09,
+            "right": 68.04,
+            "bottom": 150.09
+          },
+          {
+            "owner": "C7",
+            "left": 103.41,
+            "top": 147.09,
+            "right": 107.41,
+            "bottom": 150.09
+          },
+          {
+            "owner": "R1",
+            "left": 142.55,
+            "top": 147.34,
+            "right": 149.55,
+            "bottom": 149.84
+          },
+          {
+            "owner": "R2",
+            "left": 24.44,
+            "top": 190.52,
+            "right": 31.44,
+            "bottom": 193.02
+          },
+          {
+            "owner": "D1",
+            "left": 66.85,
+            "top": 189.77,
+            "right": 72.85,
+            "bottom": 193.77
+          },
+          {
+            "owner": "D2",
+            "left": 107.49,
+            "top": 189.77,
+            "right": 113.49,
+            "bottom": 193.77
+          },
+          {
+            "owner": "J1",
+            "left": 148.67,
+            "top": 190.31,
+            "right": 158.67,
+            "bottom": 198.31
+          },
+          {
+            "owner": "J2",
+            "left": 25.48,
+            "top": 238.57,
+            "right": 35.48,
+            "bottom": 246.57
+          },
+          {
+            "owner": "J3",
+            "left": 70.2,
+            "top": 238.53,
+            "right": 82.2,
+            "bottom": 241.53
+          },
+          {
+            "owner": "J4",
+            "left": 116.92,
+            "top": 238.53,
+            "right": 126.92,
+            "bottom": 241.53
+          },
+          {
+            "owner": "J5",
+            "left": 161.37,
+            "top": 238.53,
+            "right": 171.37,
+            "bottom": 241.53
+          },
+          {
+            "owner": "JP1",
+            "left": 25.44,
+            "top": 285.52,
+            "right": 30.44,
+            "bottom": 288.52
+          },
+          {
+            "owner": "JP2",
+            "left": 64.81,
+            "top": 285.52,
+            "right": 69.81,
+            "bottom": 288.52
+          },
+          {
+            "owner": "JP3",
+            "left": 105.45,
+            "top": 285.52,
+            "right": 110.45,
+            "bottom": 288.52
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

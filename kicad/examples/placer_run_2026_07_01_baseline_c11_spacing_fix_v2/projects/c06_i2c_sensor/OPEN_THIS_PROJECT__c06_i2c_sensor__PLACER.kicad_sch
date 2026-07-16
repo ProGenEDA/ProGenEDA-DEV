@@ -1,0 +1,880 @@
+(kicad_sch (version 20241201) (generator "progen-kicad-placer-v0") (generator_version "v0.1")
+  (uuid 00000000-0000-0000-0000-000000000001)
+  (paper "A3")
+  (lib_symbols
+    (symbol "Sensor:BME280"
+    		(exclude_from_sim no)
+    		(in_bom yes)
+    		(on_board yes)
+    		(in_pos_files yes)
+    		(duplicate_pin_numbers_are_jumpers no)
+    		(property "Reference" "U"
+    			(at -8.89 11.43 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Value" "BME280"
+    			(at 7.62 11.43 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Footprint" "Package_LGA:Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering"
+    			(at 38.1 -11.43 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Datasheet" "https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf"
+    			(at 0 -5.08 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Description" "3-in-1 sensor, humidity, pressure, temperature, I2C and SPI interface, 1.71-3.6V, LGA-8"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_keywords" "Bosch pressure humidity temperature environment environmental measurement digital"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_fp_filters" "*LGA*2.5x2.5mm*P0.65mm*Clockwise*"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(symbol "BME280_0_1"
+    			(rectangle
+    				(start -10.16 10.16)
+    				(end 10.16 -10.16)
+    				(stroke
+    					(width 0.254)
+    					(type default)
+    				)
+    				(fill
+    					(type background)
+    				)
+    			)
+    		)
+    		(symbol "BME280_1_1"
+    			(pin power_in line
+    				(at -2.54 -15.24 90)
+    				(length 5.08)
+    				(name "GND"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin input line
+    				(at 15.24 -7.62 180)
+    				(length 5.08)
+    				(name "CSB"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "2"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin bidirectional line
+    				(at 15.24 -2.54 180)
+    				(length 5.08)
+    				(name "SDI"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "3"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin input line
+    				(at 15.24 2.54 180)
+    				(length 5.08)
+    				(name "SCK"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "4"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin bidirectional line
+    				(at 15.24 7.62 180)
+    				(length 5.08)
+    				(name "SDO"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "5"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin power_in line
+    				(at -2.54 15.24 270)
+    				(length 5.08)
+    				(name "VDDIO"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "6"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin power_in line
+    				(at 2.54 -15.24 90)
+    				(length 5.08)
+    				(name "GND"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "7"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin power_in line
+    				(at 2.54 15.24 270)
+    				(length 5.08)
+    				(name "VDD"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "8"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    		)
+    		(embedded_fonts no)
+    	)
+    (symbol "Device:R"
+    		(pin_numbers
+    			(hide yes)
+    		)
+    		(pin_names
+    			(offset 0)
+    		)
+    		(exclude_from_sim no)
+    		(in_bom yes)
+    		(on_board yes)
+    		(in_pos_files yes)
+    		(duplicate_pin_numbers_are_jumpers no)
+    		(property "Reference" "R"
+    			(at 2.032 0 90)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Value" "R"
+    			(at 0 0 90)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Footprint" ""
+    			(at -1.778 0 90)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Datasheet" ""
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Description" "Resistor"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_keywords" "R res resistor"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_fp_filters" "R_*"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(symbol "R_0_1"
+    			(rectangle
+    				(start -1.016 -2.54)
+    				(end 1.016 2.54)
+    				(stroke
+    					(width 0.254)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    		)
+    		(symbol "R_1_1"
+    			(pin passive line
+    				(at 0 3.81 270)
+    				(length 1.27)
+    				(name ""
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin passive line
+    				(at 0 -3.81 90)
+    				(length 1.27)
+    				(name ""
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "2"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    		)
+    		(embedded_fonts no)
+    	)
+    (symbol "Connector_Generic:Conn_01x04"
+    		(pin_names
+    			(offset 1.016)
+    			(hide yes)
+    		)
+    		(exclude_from_sim no)
+    		(in_bom yes)
+    		(on_board yes)
+    		(in_pos_files yes)
+    		(duplicate_pin_numbers_are_jumpers no)
+    		(property "Reference" "J"
+    			(at 0 5.08 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Value" "Conn_01x04"
+    			(at 0 -7.62 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Footprint" ""
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Datasheet" ""
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_keywords" "connector"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_fp_filters" "Connector*:*_1x??_*"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(symbol "Conn_01x04_1_1"
+    			(rectangle
+    				(start -1.27 3.81)
+    				(end 1.27 -6.35)
+    				(stroke
+    					(width 0.254)
+    					(type default)
+    				)
+    				(fill
+    					(type background)
+    				)
+    			)
+    			(rectangle
+    				(start -1.27 2.667)
+    				(end 0 2.413)
+    				(stroke
+    					(width 0.1524)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    			(rectangle
+    				(start -1.27 0.127)
+    				(end 0 -0.127)
+    				(stroke
+    					(width 0.1524)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    			(rectangle
+    				(start -1.27 -2.413)
+    				(end 0 -2.667)
+    				(stroke
+    					(width 0.1524)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    			(rectangle
+    				(start -1.27 -4.953)
+    				(end 0 -5.207)
+    				(stroke
+    					(width 0.1524)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    			(pin passive line
+    				(at -5.08 2.54 0)
+    				(length 3.81)
+    				(name "Pin_1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin passive line
+    				(at -5.08 0 0)
+    				(length 3.81)
+    				(name "Pin_2"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "2"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin passive line
+    				(at -5.08 -2.54 0)
+    				(length 3.81)
+    				(name "Pin_3"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "3"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin passive line
+    				(at -5.08 -5.08 0)
+    				(length 3.81)
+    				(name "Pin_4"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "4"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    		)
+    		(embedded_fonts no)
+    	)
+    (symbol "Device:C"
+    		(pin_numbers
+    			(hide yes)
+    		)
+    		(pin_names
+    			(offset 0.254)
+    		)
+    		(exclude_from_sim no)
+    		(in_bom yes)
+    		(on_board yes)
+    		(in_pos_files yes)
+    		(duplicate_pin_numbers_are_jumpers no)
+    		(property "Reference" "C"
+    			(at 0.635 2.54 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(justify left)
+    			)
+    		)
+    		(property "Value" "C"
+    			(at 0.635 -2.54 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    				(justify left)
+    			)
+    		)
+    		(property "Footprint" ""
+    			(at 0.9652 -3.81 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Datasheet" ""
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "Description" "Unpolarized capacitor"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_keywords" "cap capacitor"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(property "ki_fp_filters" "C_*"
+    			(at 0 0 0)
+    			(show_name no)
+    			(do_not_autoplace no)
+    			(hide yes)
+    			(effects
+    				(font
+    					(size 1.27 1.27)
+    				)
+    			)
+    		)
+    		(symbol "C_0_1"
+    			(polyline
+    				(pts
+    					(xy -2.032 0.762) (xy 2.032 0.762)
+    				)
+    				(stroke
+    					(width 0.508)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    			(polyline
+    				(pts
+    					(xy -2.032 -0.762) (xy 2.032 -0.762)
+    				)
+    				(stroke
+    					(width 0.508)
+    					(type default)
+    				)
+    				(fill
+    					(type none)
+    				)
+    			)
+    		)
+    		(symbol "C_1_1"
+    			(pin passive line
+    				(at 0 3.81 270)
+    				(length 2.794)
+    				(name ""
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "1"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    			(pin passive line
+    				(at 0 -3.81 90)
+    				(length 2.794)
+    				(name ""
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    				(number "2"
+    					(effects
+    						(font
+    							(size 1.27 1.27)
+    						)
+    					)
+    				)
+    			)
+    		)
+    		(embedded_fonts no)
+    	)
+  )
+  (text "I2C Sensor" (exclude_from_sim no) (at 20 18 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 349f30c0-8fd4-5b6a-a526-0e08e6a8cca4)
+  )
+  (text "Placement-only schematic: real KiCad library symbols are embedded; wires/simulation models come in later stages." (exclude_from_sim no) (at 20 24 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid dfa9d4a9-0c18-548f-b79a-5c66eaa6f160)
+  )
+  (symbol (lib_id "Sensor:BME280") (at 29.21 34.29 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 061d579d-2256-5582-a132-6f26c040cce8)
+    (property "Reference" "X1" (at 33.21 29.29 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "BME280 Sensor" (at 33.21 39.29 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Footprint" "Package_LGA:Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering" (at 29.21 34.29 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf" (at 29.21 34.29 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Kind" "BME280" (at 29.21 34.29 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Category" "sensor" (at 29.21 34.29 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.LibId" "Sensor:BME280" (at 29.21 34.29 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid df704764-2322-5573-bbf7-1a5d9be95d03))
+    (pin "2" (uuid e3e8f043-db19-59ef-8470-1cdda0fb8957))
+    (pin "3" (uuid aed008d3-500d-5157-9e30-70442c6cf951))
+    (pin "4" (uuid bd2fcf1f-8255-5f04-930d-036711dfd4ec))
+    (pin "5" (uuid 2bbe3c2f-4ee6-5626-97e4-bf7cc303c123))
+    (pin "6" (uuid fa8f256e-1b8c-5b85-8dd6-6e8342b506ef))
+    (pin "7" (uuid 1b0206d6-f2a5-5716-a6ec-1a9e3d951bc3))
+    (pin "8" (uuid f3a201bf-6c2c-50ce-8cad-3c6d745c1e52))
+    (instances
+      (project "OPEN_THIS_PROJECT__c06_i2c_sensor__PLACER"
+        (path "/00000000-0000-0000-0000-000000000001"
+          (reference "X1") (unit 1) (value "BME280 Sensor") (footprint "Package_LGA:Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering")
+        )
+      )
+    )
+  )
+  (symbol (lib_id "Device:R") (at 71.12 31.75 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid f8f283c7-6352-5948-8bd7-341a3c094d76)
+    (property "Reference" "X2" (at 75.12 26.75 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "4.7k Pull-up Resistor" (at 75.12 36.75 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Footprint" "" (at 71.12 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "" (at 71.12 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Kind" "R_4K7_PULLUP" (at 71.12 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Category" "resistor" (at 71.12 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.LibId" "Device:R" (at 71.12 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 5596ab76-81ad-503a-9fe1-a8753a499205))
+    (pin "2" (uuid 548d8d87-f155-5b00-b440-36a90a6e7f4e))
+    (instances
+      (project "OPEN_THIS_PROJECT__c06_i2c_sensor__PLACER"
+        (path "/00000000-0000-0000-0000-000000000001"
+          (reference "X2") (unit 1) (value "4.7k Pull-up Resistor") (footprint "")
+        )
+      )
+    )
+  )
+  (symbol (lib_id "Connector_Generic:Conn_01x04") (at 114.3 33.02 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 44a04466-54a8-510e-bdda-3849f23aba5e)
+    (property "Reference" "X3" (at 118.3 28.02 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "JST Connector" (at 118.3 38.02 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Footprint" "" (at 114.3 33.02 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "" (at 114.3 33.02 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Kind" "JST_CONNECTOR" (at 114.3 33.02 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Category" "connector" (at 114.3 33.02 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.LibId" "Connector_Generic:Conn_01x04" (at 114.3 33.02 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid dc81565d-c61c-525c-8355-e52cf9d762a1))
+    (pin "2" (uuid 7ed3d6c1-6971-5104-963a-a7b5f7361521))
+    (pin "3" (uuid 1ceca0c3-6953-58d0-a3d3-9cb75eb3d46c))
+    (pin "4" (uuid e37b46d6-4a11-5567-88a6-d78b84029172))
+    (instances
+      (project "OPEN_THIS_PROJECT__c06_i2c_sensor__PLACER"
+        (path "/00000000-0000-0000-0000-000000000001"
+          (reference "X3") (unit 1) (value "JST Connector") (footprint "")
+        )
+      )
+    )
+  )
+  (symbol (lib_id "Device:C") (at 154.94 31.75 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 51b64fa2-a4f6-5010-a833-9b6cf95f673f)
+    (property "Reference" "X4" (at 158.94 26.75 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "Decoupling Capacitor" (at 158.94 36.75 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Footprint" "" (at 154.94 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "" (at 154.94 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Kind" "DECOUPLING_CAPACITOR" (at 154.94 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Category" "capacitor" (at 154.94 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.LibId" "Device:C" (at 154.94 31.75 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid bc771f78-fc3e-54af-89a1-bec995f5c90c))
+    (pin "2" (uuid 600fdbe5-0ea9-5475-aa64-9a50c31caf7d))
+    (instances
+      (project "OPEN_THIS_PROJECT__c06_i2c_sensor__PLACER"
+        (path "/00000000-0000-0000-0000-000000000001"
+          (reference "X4") (unit 1) (value "Decoupling Capacitor") (footprint "")
+        )
+      )
+    )
+  )
+  (symbol (lib_id "Connector_Generic:Conn_01x04") (at 30.48 80.01 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid ca52a5d6-9acd-5630-8e1d-22a7f6727f79)
+    (property "Reference" "X5" (at 34.48 75.01 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "Pin Header" (at 34.48 85.01 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Footprint" "" (at 30.48 80.01 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "" (at 30.48 80.01 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Kind" "PIN_HEADER" (at 30.48 80.01 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.Category" "header" (at 30.48 80.01 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Progen.LibId" "Connector_Generic:Conn_01x04" (at 30.48 80.01 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 05d8b988-a4f3-5750-a939-7b0197fbd961))
+    (pin "2" (uuid 0f36093e-5cdc-52dc-a287-7fedbe56c006))
+    (pin "3" (uuid 8797ba94-8860-59d2-ab38-b41ea5d0d895))
+    (pin "4" (uuid cc28c22b-6375-5fd5-9b24-8ac904eb4a4f))
+    (instances
+      (project "OPEN_THIS_PROJECT__c06_i2c_sensor__PLACER"
+        (path "/00000000-0000-0000-0000-000000000001"
+          (reference "X5") (unit 1) (value "Pin Header") (footprint "")
+        )
+      )
+    )
+  )
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)

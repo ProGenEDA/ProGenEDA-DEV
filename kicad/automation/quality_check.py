@@ -15,15 +15,22 @@ from kicad.generator.kicad_json_to_project import validate_schematic
 
 
 DEFAULT_WINDOWS_KICAD_CLI = Path(r"C:\Program Files\KiCad\10.0\bin\kicad-cli.exe")
-TOLERATED_ERC_TYPES = {
+DEFAULT_LOCAL_KICAD_CLI = Path(__file__).resolve().parents[1] / ".local" / "AppDir" / "bin" / "kicad-cli"
+BASE_TOLERATED_ERC_TYPES = {
     # V1 intentionally exposes many named off-page/local IO labels.
     "isolated_pin_label",
     # Generated projects can embed exact/mined source symbols while the local KiCad install has a newer library.
     "lib_symbol_mismatch",
+    # KiCad 10.0.4 reports missing global library configuration with this broader type even when symbols are embedded.
+    "lib_symbol_issues",
     # V1 power sources are schematic-level symbols, not full KiCad PWR_FLAG/power-tree modeling yet.
     "power_pin_not_driven",
     # Broad generated IC symbols may have unused pins where a no-connect marker would collide with a routed wire.
     "pin_not_connected",
+}
+PLACER_ONLY_TOLERATED_ERC_TYPES = BASE_TOLERATED_ERC_TYPES | {
+    # Placement-only projects intentionally stop before route/drive logic.
+    "pin_not_driven",
 }
 
 
@@ -34,6 +41,8 @@ def find_kicad_cli(explicit: str | None = None) -> str | None:
     discovered = shutil.which("kicad-cli")
     if discovered:
         return discovered
+    if DEFAULT_LOCAL_KICAD_CLI.exists():
+        return str(DEFAULT_LOCAL_KICAD_CLI)
     if DEFAULT_WINDOWS_KICAD_CLI.exists():
         return str(DEFAULT_WINDOWS_KICAD_CLI)
     return None
@@ -44,12 +53,15 @@ def discover_schematics(target: Path) -> list[Path]:
         return [target]
     if target.is_dir():
         exact = sorted(target.glob("OPEN_THIS_PROJECT__*__PROJECT_FILE.kicad_sch"))
+        exact.extend(sorted(target.glob("OPEN_THIS_PROJECT__*__PLACER.kicad_sch")))
+        exact.extend(sorted(target.glob("OPEN_THIS_PROJECT__*__WIRED.kicad_sch")))
         if exact:
             return exact
         return sorted(
             path
             for path in target.rglob("*.kicad_sch")
-            if path.name.startswith("OPEN_THIS_PROJECT__") and "__PROJECT_FILE" in path.name
+            if path.name.startswith("OPEN_THIS_PROJECT__")
+            and ("__PROJECT_FILE" in path.name or "__PLACER" in path.name or "__WIRED" in path.name)
         )
     raise FileNotFoundError(target)
 
@@ -62,7 +74,7 @@ def erc_violations(report: dict[str, Any]) -> list[dict[str, Any]]:
     return violations
 
 
-def run_erc(kicad_cli: str, schematic: Path, output_json: Path) -> dict[str, Any]:
+def run_erc(kicad_cli: str, schematic: Path, output_json: Path, tolerated_types: set[str]) -> dict[str, Any]:
     output_json.parent.mkdir(parents=True, exist_ok=True)
     process = subprocess.run(
         [kicad_cli, "sch", "erc", "--format", "json", "--output", str(output_json), str(schematic)],
@@ -73,8 +85,8 @@ def run_erc(kicad_cli: str, schematic: Path, output_json: Path) -> dict[str, Any
     )
     report = json.loads(output_json.read_text(encoding="utf-8")) if output_json.exists() else {"violations": []}
     violations = erc_violations(report)
-    tolerated = [item for item in violations if str(item.get("type", "unknown")) in TOLERATED_ERC_TYPES]
-    blocking = [item for item in violations if str(item.get("type", "unknown")) not in TOLERATED_ERC_TYPES]
+    tolerated = [item for item in violations if str(item.get("type", "unknown")) in tolerated_types]
+    blocking = [item for item in violations if str(item.get("type", "unknown")) not in tolerated_types]
     by_type = Counter(str(item.get("type", "unknown")) for item in violations)
     tolerated_by_type = Counter(str(item.get("type", "unknown")) for item in tolerated)
     blocking_by_type = Counter(str(item.get("type", "unknown")) for item in blocking)
@@ -93,18 +105,51 @@ def run_erc(kicad_cli: str, schematic: Path, output_json: Path) -> dict[str, Any
     }
 
 
+def export_netlist(kicad_cli: str, schematic: Path, output_netlist: Path) -> dict[str, Any]:
+    output_netlist.parent.mkdir(parents=True, exist_ok=True)
+    process = subprocess.run(
+        [
+            kicad_cli,
+            "sch",
+            "export",
+            "netlist",
+            "--format",
+            "kicadsexpr",
+            "--output",
+            str(output_netlist),
+            str(schematic),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    return {
+        "available": True,
+        "exit_code": process.returncode,
+        "ok": process.returncode == 0 and output_netlist.exists(),
+        "stdout": process.stdout.strip(),
+        "netlist": str(output_netlist),
+        "bytes": output_netlist.stat().st_size if output_netlist.exists() else 0,
+    }
+
+
 def check_schematic(
     schematic: Path,
     *,
     report_dir: Path,
     kicad_cli: str | None,
     run_erc_check: bool,
+    run_netlist_export: bool,
 ) -> dict[str, Any]:
     text = schematic.read_text(encoding="utf-8")
     static = validate_schematic(text)
+    tolerated_types = (
+        PLACER_ONLY_TOLERATED_ERC_TYPES if "progen-kicad-placer" in text else BASE_TOLERATED_ERC_TYPES
+    )
     erc: dict[str, Any]
     if run_erc_check and kicad_cli:
-        erc = run_erc(kicad_cli, schematic, report_dir / f"{schematic.stem}.erc.json")
+        erc = run_erc(kicad_cli, schematic, report_dir / f"{schematic.stem}.erc.json", tolerated_types)
     else:
         erc = {
             "available": bool(kicad_cli),
@@ -116,12 +161,24 @@ def check_schematic(
     erc_ok = not run_erc_check or not kicad_cli or (
         erc.get("exit_code") == 0 and erc.get("blocking_violation_count") == 0
     )
-    ok = bool(static.get("ok")) and erc_ok
+    if run_netlist_export and kicad_cli:
+        netlist = export_netlist(kicad_cli, schematic, report_dir / f"{schematic.stem}.netlist.kicadsexpr")
+    else:
+        netlist = {
+            "available": bool(kicad_cli),
+            "skipped": True,
+            "ok": None,
+            "netlist": None,
+            "bytes": None,
+        }
+    netlist_ok = not run_netlist_export or not kicad_cli or bool(netlist.get("ok"))
+    ok = bool(static.get("ok")) and erc_ok and netlist_ok
     return {
         "schematic": str(schematic),
         "ok": ok,
         "static": static,
         "erc": erc,
+        "netlist_export": netlist,
     }
 
 
@@ -131,13 +188,20 @@ def run_quality_check(
     output: Path | None = None,
     kicad_cli: str | None = None,
     run_erc_check: bool = True,
+    run_netlist_export: bool = False,
 ) -> dict[str, Any]:
     schematics = discover_schematics(target)
     report_path = output or target / "kicad_quality_report.json"
     report_dir = report_path.parent / "kicad_erc_reports"
     cli = find_kicad_cli(kicad_cli)
     results = [
-        check_schematic(schematic, report_dir=report_dir, kicad_cli=cli, run_erc_check=run_erc_check)
+        check_schematic(
+            schematic,
+            report_dir=report_dir,
+            kicad_cli=cli,
+            run_erc_check=run_erc_check,
+            run_netlist_export=run_netlist_export,
+        )
         for schematic in schematics
     ]
     failures = [row for row in results if not row["ok"]]
@@ -145,6 +209,7 @@ def run_quality_check(
         "target": str(target),
         "kicad_cli": cli,
         "erc_requested": run_erc_check,
+        "netlist_export_requested": run_netlist_export,
         "schematic_count": len(schematics),
         "ok_count": len(results) - len(failures),
         "failure_count": len(failures),
@@ -161,12 +226,14 @@ def main() -> None:
     parser.add_argument("--output", help="JSON report path")
     parser.add_argument("--kicad-cli", help="Explicit kicad-cli executable path")
     parser.add_argument("--skip-erc", action="store_true", help="Only run static Progen schematic checks")
+    parser.add_argument("--export-netlist", action="store_true", help="Also export KiCad S-expression netlists")
     args = parser.parse_args()
     result = run_quality_check(
         Path(args.target),
         output=Path(args.output) if args.output else None,
         kicad_cli=args.kicad_cli,
         run_erc_check=not args.skip_erc,
+        run_netlist_export=args.export_netlist,
     )
     print(json.dumps(result, indent=2))
     raise SystemExit(0 if result["failure_count"] == 0 else 2)

@@ -1,0 +1,154 @@
+{
+  "schema": "progen-kicad-placer-pipeline/v0.1",
+  "stage_count": 3,
+  "ok": true,
+  "placement": {
+    "valid": true,
+    "missing": [],
+    "overlaps": []
+  },
+  "warnings": [],
+  "errors": [],
+  "trace": [
+    {
+      "stage": "placement_input_validator",
+      "ok": true,
+      "summary": "Validated placer input against source-backed KiCad kind and pin specs.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "component_count": 5,
+        "errors": [],
+        "warnings": [],
+        "source": "KIND_SPECS plus kicad.pipeline.placement_catalog.PLACER_COMPONENT_SPECS"
+      }
+    },
+    {
+      "stage": "component_placer",
+      "ok": true,
+      "summary": "Placed components with the canonical KiCad component placer.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "component_count": 5,
+        "components": {
+          "X1": {
+            "kind": "ESP32_WROOM",
+            "name": "ESP32-WROOM Module",
+            "at": [
+              46.99,
+              57.15
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "wireless_module",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "RF_Module:ESP32-WROOM-32"
+          },
+          "X2": {
+            "kind": "EN_PUSH_BUTTON",
+            "name": "EN Push Button",
+            "at": [
+              107.95,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Switch:SW_Push"
+          },
+          "X3": {
+            "kind": "BOOT_PUSH_BUTTON",
+            "name": "BOOT Push Button",
+            "at": [
+              148.59,
+              33.02
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "switch",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Switch:SW_Push"
+          },
+          "X4": {
+            "kind": "R_10K_PULLUP",
+            "name": "10k Pull-up Resistor",
+            "at": [
+              190.5,
+              31.75
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "resistor",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Device:R"
+          },
+          "X5": {
+            "kind": "CP2102",
+            "name": "CP2102 USB-UART IC",
+            "at": [
+              27.94,
+              128.27
+            ],
+            "rotation": 0.0,
+            "manual": false,
+            "category": "interface_ic",
+            "catalog_source": "embedded_placement_catalog",
+            "lib_id": "Interface_USB:CP2102N-Axx-xQFN28"
+          }
+        },
+        "obstacles": [
+          {
+            "owner": "X1",
+            "left": 24.49,
+            "top": 29.65,
+            "right": 69.49,
+            "bottom": 84.65
+          },
+          {
+            "owner": "X2",
+            "left": 104.95,
+            "top": 30.02,
+            "right": 110.95,
+            "bottom": 36.02
+          },
+          {
+            "owner": "X3",
+            "left": 145.59,
+            "top": 30.02,
+            "right": 151.59,
+            "bottom": 36.02
+          },
+          {
+            "owner": "X4",
+            "left": 187.0,
+            "top": 30.5,
+            "right": 194.0,
+            "bottom": 33.0
+          },
+          {
+            "owner": "X5",
+            "left": 24.44,
+            "top": 124.77,
+            "right": 31.44,
+            "bottom": 131.77
+          }
+        ]
+      }
+    },
+    {
+      "stage": "placement_validator",
+      "ok": true,
+      "summary": "Checked requested components against generated placements.",
+      "warnings": [],
+      "errors": [],
+      "data": {
+        "valid": true,
+        "missing": [],
+        "overlaps": []
+      }
+    }
+  ]
+}

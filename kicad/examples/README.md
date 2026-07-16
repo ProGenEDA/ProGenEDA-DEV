@@ -1,0 +1,72 @@
+# KiCad Example Records
+
+Generated example folders are immutable records. Do not overwrite old generated
+projects or input packs. When placement, wiring, symbol mapping, values, or any
+other output changes, create a new timestamped run folder.
+
+This directory now has two layers:
+
+- committed source/evidence records: curated fixtures, docs, compact manifest
+  summaries, and old small records already in Git;
+- local generated project packs: bulky run folders produced during validation,
+  kept on disk and indexed, but ignored by default so a 600-project pass does
+  not accidentally become a multi-gigabyte source commit.
+
+The full index is:
+
+```text
+kicad/examples/EVIDENCE_INDEX.md
+```
+
+Compact summaries for the current accepted runs are under:
+
+```text
+kicad/examples/manifest_summaries/
+```
+
+Current accepted schematic evidence:
+
+- `progen_kicad_executable_run_2026_07_06_025855_executable_600_combination_v6`: 600/600 combination-mode projects passed final validation, hosted expected-net comparison, geometry validation, value validation, and component body overlap checks.
+- `progen_kicad_executable_run_2026_07_06_031455_executable_600_terminal_v1`: 600/600 terminal-only projects passed the same validator stack.
+- `progen_kicad_executable_run_2026_07_10_130324_variation_100x3_v1_projects`: 100 random imported circuits x 3 deterministic layout variations passed as 300/300 combination-mode projects.
+- `progen_kicad_executable_run_2026_07_10_133147_demo7_3variations_v1_projects`: 7 curated MVP-demo circuits x 3 variations passed as 21/21 combination-mode projects.
+
+Current accepted integrated PCB evidence:
+
+- `progen_kicad_executable_run_2026_07_11_174321_pcb_600_combination_v4`: 600/600 schematic pipelines passed; 495 native PCBs accepted, 67 complexity-limited, and 38 routing-limited.
+- `pcb_cli_oracle_run_2026_07_11_185217_pcb_600_combination_v4`: installed KiCad 10.0.4 checked all 495 accepted PCBs; 495/495 passed with zero DRC violations and zero unconnected items.
+- `pcb_release_evidence_run_2026_07_11_230157_pcb_600_combination_v4`: five final boards exported Gerbers, drill, BOM, positions, and nonblank 3D renders.
+
+Current accepted JSON sources:
+
+- `final_json_run_2026_07_06_020659_main_json_catalog_600_combination_v2`: canonical 600 main JSON source catalog.
+- `final_json_run_2026_07_06_020648_complex_500_from_node_spec_v2`: repaired 500 imported netlist JSON source.
+- `final_json_run_2026_07_10_133400_demo7_curated_source_v1`: curated seven-demo source.
+- `final_json_variation_source_run_2026_07_10_130323_variation_100x3_v1_source`: accepted 300-variation source batch.
+- `final_json_variation_source_run_2026_07_10_133146_demo7_3variations_v1_source`: accepted demo variation source batch.
+
+Do not rename accepted evidence folders after they have been shared. If a
+folder name is ugly or historical, keep it and document its status in this file
+or `EVIDENCE_INDEX.md`; the path itself is part of the reproducibility record.
+
+Current useful runs:
+
+- `placer_run_2026_07_01_baseline_c11_spacing_fix_v2`: current 20-circuit baseline with the C11 spacing fix.
+- `placer_run_2026_07_01_stress_limit_suite_v2`: current stress and limit suite, 22 projects, 2747 requested components.
+- `final_json_run_2026_07_02_132530_t01_t10_connected_v3`: connected final JSON for T01-T10 plus placement inputs and bounded arrangement/beautifier/wire-planner reports.
+- `final_json_project_run_2026_07_02_133420_t01_t10_connected_projects_v1`: KiCad project folders generated from the connected final JSON run. Static quality: 10 checked, 10 passed, 0 failed. These are placement schematics and remain as the pre-wire-maker record.
+- `final_json_wired_project_run_2026_07_02_171521_t01_t10_connected_wired_v9_reserved_pin_router`: current strict-router evidence. Static quality and KiCad netlist export passed 10/10, geometry validation passed 10/10 with 0 wire/body or wire/wire violations, and ERC quality passed 5/10. Contains 430 components, 442 symbol instances, 360 wire objects, 1128 labels, and 18 recorded unresolved symbol-model pins.
+- `final_json_wired_project_run_2026_07_02_164836_t01_t10_connected_wired_v5_geometry_rules`: strict wire-geometry validation evidence. Static quality and KiCad netlist export passed 10/10, but ERC quality passed 1/10 and geometry validation passed 0/10. This is a failure record, not accepted final wiring.
+
+Historical folders:
+
+- `placer_pack`: earlier active 20-circuit input pack.
+- `placer_projects`: earlier active 20-circuit project pack; opened correctly except C11 had two components too close together.
+- `placer_run_2026_07_01_stress_limit_suite_v1`: first stress run; kept because it exposed real pin-overlap spacing failures.
+- `final_json_wired_project_run_2026_07_02_134715_t01_t10_connected_wired_v1`: first wired project run; superseded by v2/v3 after pin alias and quality-discovery updates.
+- `final_json_wired_project_run_2026_07_02_134931_t01_t10_connected_wired_v2`: second wired project run; static quality passed after the checker learned `__WIRED` schematics, but it had more unresolved alias pins than v3.
+- `final_json_wired_project_run_2026_07_02_135207_t01_t10_connected_wired_v3`: third wired project run; electrically equivalent to v4 counts, but superseded because the schematic sheet note still said placement-only.
+- `final_json_wired_project_run_2026_07_02_135608_t01_t10_connected_wired_v4`: first useful wired baseline with 3357 wire objects, 530 labels, 18 unresolved symbol-model pins, and 5 deferred T10 route-cap nets.
+- `final_json_wired_project_run_2026_07_02_170327_t01_t10_connected_wired_v6_exact_pin_planner`: first exact-pin planner run; reduced geometry violations from 21268 to 14587 and exposed the `ref.pin` endpoint parser gap.
+- `final_json_wired_project_run_2026_07_02_170940_t01_t10_connected_wired_v7_strict_router`: strict no-Manhattan-fallback router run; reduced geometry violations to 9 and improved ERC quality to 6/10.
+- `final_json_wired_project_run_2026_07_02_171210_t01_t10_connected_wired_v8_pin_side_fix`: pin-side detector fix run; reduced geometry violations to 2.

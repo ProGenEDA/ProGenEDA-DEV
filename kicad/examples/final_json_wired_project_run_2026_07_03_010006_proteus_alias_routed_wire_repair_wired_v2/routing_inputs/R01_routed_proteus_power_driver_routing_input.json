@@ -1,0 +1,719 @@
+{
+  "schema": "progen-kicad-routing-placement/v0.1",
+  "stage": "kicad_routing_input_builder",
+  "components": {
+    "G1": {
+      "kind": "GROUND",
+      "name": "GND",
+      "at": [
+        233.68,
+        276.86
+      ],
+      "rotation": 0.0,
+      "width": 5.0,
+      "height": 4.0
+    },
+    "V1": {
+      "kind": "VDC",
+      "name": "12V DC source",
+      "at": [
+        66.04,
+        139.7
+      ],
+      "rotation": 0.0,
+      "width": 10.0,
+      "height": 12.0
+    },
+    "F1": {
+      "kind": "FUSE",
+      "name": "Fuse",
+      "at": [
+        99.06,
+        129.54
+      ],
+      "rotation": 0.0,
+      "width": 8.0,
+      "height": 3.0
+    },
+    "SW1": {
+      "kind": "SWITCH",
+      "name": "Power switch",
+      "at": [
+        134.62,
+        170.18
+      ],
+      "rotation": 0.0,
+      "width": 6.0,
+      "height": 4.0
+    },
+    "D1": {
+      "kind": "1N4007",
+      "name": "1N4007",
+      "at": [
+        30.48,
+        137.16
+      ],
+      "rotation": 0.0,
+      "width": 8.0,
+      "height": 3.0
+    },
+    "U1": {
+      "kind": "LM317",
+      "name": "LM317",
+      "at": [
+        170.18,
+        160.02
+      ],
+      "rotation": 0.0,
+      "width": 10.0,
+      "height": 8.0
+    },
+    "R1": {
+      "kind": "RES",
+      "name": "240 ohm",
+      "at": [
+        66.04,
+        162.56
+      ],
+      "rotation": 0.0,
+      "width": 7.0,
+      "height": 2.5
+    },
+    "R2": {
+      "kind": "RES",
+      "name": "1.2k",
+      "at": [
+        99.06,
+        147.32
+      ],
+      "rotation": 0.0,
+      "width": 7.0,
+      "height": 2.5
+    },
+    "R3": {
+      "kind": "R_220",
+      "name": "220 ohm",
+      "at": [
+        30.48,
+        119.38
+      ],
+      "rotation": 0.0,
+      "width": 7.0,
+      "height": 2.5
+    },
+    "C1": {
+      "kind": "CAP",
+      "name": "100nF",
+      "at": [
+        99.06,
+        167.64
+      ],
+      "rotation": 0.0,
+      "width": 4.0,
+      "height": 3.0
+    },
+    "C2": {
+      "kind": "CAP_ELEC",
+      "name": "100uF",
+      "at": [
+        134.62,
+        149.86
+      ],
+      "rotation": 0.0,
+      "width": 6.0,
+      "height": 6.0
+    },
+    "L1": {
+      "kind": "REALIND",
+      "name": "47uH",
+      "at": [
+        134.62,
+        129.54
+      ],
+      "rotation": 0.0,
+      "width": 9.0,
+      "height": 9.0
+    },
+    "D2": {
+      "kind": "DIODE",
+      "name": "Clamp diode",
+      "at": [
+        30.48,
+        177.8
+      ],
+      "rotation": 0.0,
+      "width": 8.0,
+      "height": 3.0
+    },
+    "LED1": {
+      "kind": "LED",
+      "name": "Power LED",
+      "at": [
+        203.2,
+        160.02
+      ],
+      "rotation": 0.0,
+      "width": 5.0,
+      "height": 5.0
+    },
+    "Q1": {
+      "kind": "2N7000",
+      "name": "2N7000",
+      "at": [
+        170.18,
+        137.16
+      ],
+      "rotation": 0.0,
+      "width": 7.0,
+      "height": 6.0
+    },
+    "Q2": {
+      "kind": "BS170",
+      "name": "BS170",
+      "at": [
+        203.2,
+        139.7
+      ],
+      "rotation": 0.0,
+      "width": 7.0,
+      "height": 6.0
+    },
+    "J1": {
+      "kind": "TERMINAL",
+      "name": "Load terminal",
+      "at": [
+        30.48,
+        157.48
+      ],
+      "rotation": 0.0,
+      "width": 10.0,
+      "height": 8.0
+    }
+  },
+  "obstacles": [
+    {
+      "owner": "G1::body1",
+      "component_ref": "G1",
+      "left": 232.41,
+      "top": 276.86,
+      "right": 234.95,
+      "bottom": 279.4,
+      "source": "power:GND:unit1"
+    },
+    {
+      "owner": "V1::body2",
+      "component_ref": "V1",
+      "left": 63.5,
+      "top": 137.16,
+      "right": 68.58,
+      "bottom": 142.24,
+      "source": "Simulation_SPICE:VDC:unit1"
+    },
+    {
+      "owner": "F1::body3",
+      "component_ref": "F1",
+      "left": 98.298,
+      "top": 127.0,
+      "right": 99.822,
+      "bottom": 132.08,
+      "source": "Device:Fuse:unit1"
+    },
+    {
+      "owner": "SW1::body4",
+      "component_ref": "SW1",
+      "left": 132.08,
+      "top": 168.402,
+      "right": 137.16,
+      "bottom": 170.688,
+      "source": "Switch:SW_SPST:unit1"
+    },
+    {
+      "owner": "D1::body5",
+      "component_ref": "D1",
+      "left": 29.21,
+      "top": 135.89,
+      "right": 31.75,
+      "bottom": 138.43,
+      "source": "Diode:1N4007:unit1"
+    },
+    {
+      "owner": "U1::body6",
+      "component_ref": "U1",
+      "left": 165.1,
+      "top": 158.115,
+      "right": 175.26,
+      "bottom": 165.1,
+      "source": "Regulator_Linear:LM317_TO-220:unit1"
+    },
+    {
+      "owner": "R1::body7",
+      "component_ref": "R1",
+      "left": 65.024,
+      "top": 160.02,
+      "right": 67.056,
+      "bottom": 165.1,
+      "source": "Device:R:unit1"
+    },
+    {
+      "owner": "R2::body8",
+      "component_ref": "R2",
+      "left": 98.044,
+      "top": 144.78,
+      "right": 100.076,
+      "bottom": 149.86,
+      "source": "Device:R:unit1"
+    },
+    {
+      "owner": "R3::body9",
+      "component_ref": "R3",
+      "left": 29.464,
+      "top": 116.84,
+      "right": 31.496,
+      "bottom": 121.92,
+      "source": "Device:R:unit1"
+    },
+    {
+      "owner": "C1::body10",
+      "component_ref": "C1",
+      "left": 97.028,
+      "top": 166.878,
+      "right": 101.092,
+      "bottom": 168.402,
+      "source": "Device:C:unit1"
+    },
+    {
+      "owner": "C2::body11",
+      "component_ref": "C2",
+      "left": 132.334,
+      "top": 147.066,
+      "right": 136.906,
+      "bottom": 150.876,
+      "source": "Device:C_Polarized:unit1"
+    },
+    {
+      "owner": "L1::body12",
+      "component_ref": "L1",
+      "left": 134.62,
+      "top": 127.0,
+      "right": 135.252,
+      "bottom": 132.08,
+      "source": "Device:L:unit1"
+    },
+    {
+      "owner": "D2::body13",
+      "component_ref": "D2",
+      "left": 29.21,
+      "top": 176.53,
+      "right": 31.75,
+      "bottom": 179.07,
+      "source": "Device:D:unit1"
+    },
+    {
+      "owner": "LED1::body14",
+      "component_ref": "LED1",
+      "left": 198.628,
+      "top": 158.75,
+      "right": 204.47,
+      "bottom": 162.306,
+      "source": "Device:LED:unit1"
+    },
+    {
+      "owner": "Q1::body15",
+      "component_ref": "Q1",
+      "left": 167.64,
+      "top": 134.366,
+      "right": 174.625,
+      "bottom": 139.954,
+      "source": "Transistor_FET:2N7000:unit1"
+    },
+    {
+      "owner": "Q2::body16",
+      "component_ref": "Q2",
+      "left": 200.66,
+      "top": 136.906,
+      "right": 207.645,
+      "bottom": 142.494,
+      "source": "Transistor_FET:BS170:unit1"
+    },
+    {
+      "owner": "J1::body17",
+      "component_ref": "J1",
+      "left": 29.21,
+      "top": 156.21,
+      "right": 31.75,
+      "bottom": 161.29,
+      "source": "Connector_Generic:Conn_01x02:unit1"
+    }
+  ],
+  "pin_points": {
+    "U1": {
+      "1": {
+        "point": [
+          170.18,
+          167.64
+        ],
+        "source": "Regulator_Linear:LM317_TO-220:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "ADJ"
+      },
+      "3": {
+        "point": [
+          162.56,
+          160.02
+        ],
+        "source": "Regulator_Linear:LM317_TO-220:unit1:pin3",
+        "resolved_pin_number": "3",
+        "resolved_pin_name": "VI"
+      },
+      "2": {
+        "point": [
+          177.8,
+          160.02
+        ],
+        "source": "Regulator_Linear:LM317_TO-220:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "VO"
+      }
+    },
+    "R1": {
+      "2": {
+        "point": [
+          66.04,
+          166.37
+        ],
+        "source": "Device:R:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": ""
+      },
+      "1": {
+        "point": [
+          66.04,
+          158.75
+        ],
+        "source": "Device:R:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      }
+    },
+    "R2": {
+      "1": {
+        "point": [
+          99.06,
+          143.51
+        ],
+        "source": "Device:R:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      },
+      "2": {
+        "point": [
+          99.06,
+          151.13
+        ],
+        "source": "Device:R:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": ""
+      }
+    },
+    "D2": {
+      "2": {
+        "point": [
+          34.29,
+          177.8
+        ],
+        "source": "Device:D:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "A"
+      },
+      "1": {
+        "point": [
+          26.67,
+          177.8
+        ],
+        "source": "Device:D:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "K"
+      }
+    },
+    "Q1": {
+      "1": {
+        "point": [
+          172.72,
+          142.24
+        ],
+        "source": "Transistor_FET:2N7000:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "S"
+      },
+      "3": {
+        "point": [
+          172.72,
+          132.08
+        ],
+        "source": "Transistor_FET:2N7000:unit1:pin3",
+        "resolved_pin_number": "3",
+        "resolved_pin_name": "D"
+      },
+      "2": {
+        "point": [
+          165.1,
+          137.16
+        ],
+        "source": "Transistor_FET:2N7000:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "G"
+      }
+    },
+    "Q2": {
+      "1": {
+        "point": [
+          205.74,
+          134.62
+        ],
+        "source": "Transistor_FET:BS170:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "D"
+      },
+      "3": {
+        "point": [
+          205.74,
+          144.78
+        ],
+        "source": "Transistor_FET:BS170:unit1:pin3",
+        "resolved_pin_number": "3",
+        "resolved_pin_name": "S"
+      },
+      "2": {
+        "point": [
+          198.12,
+          139.7
+        ],
+        "source": "Transistor_FET:BS170:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "G"
+      }
+    },
+    "G1": {
+      "1": {
+        "point": [
+          233.68,
+          276.86
+        ],
+        "source": "power:GND:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      }
+    },
+    "V1": {
+      "2": {
+        "point": [
+          66.04,
+          144.78
+        ],
+        "source": "Simulation_SPICE:VDC:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": ""
+      },
+      "1": {
+        "point": [
+          66.04,
+          134.62
+        ],
+        "source": "Simulation_SPICE:VDC:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      }
+    },
+    "C1": {
+      "2": {
+        "point": [
+          99.06,
+          171.45
+        ],
+        "source": "Device:C:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": ""
+      },
+      "1": {
+        "point": [
+          99.06,
+          163.83
+        ],
+        "source": "Device:C:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      }
+    },
+    "C2": {
+      "2": {
+        "point": [
+          134.62,
+          153.67
+        ],
+        "source": "Device:C_Polarized:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": ""
+      },
+      "1": {
+        "point": [
+          134.62,
+          146.05
+        ],
+        "source": "Device:C_Polarized:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      }
+    },
+    "J1": {
+      "2": {
+        "point": [
+          25.4,
+          160.02
+        ],
+        "source": "Connector_Generic:Conn_01x02:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "Pin_2"
+      },
+      "1": {
+        "point": [
+          25.4,
+          157.48
+        ],
+        "source": "Connector_Generic:Conn_01x02:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "Pin_1"
+      }
+    },
+    "L1": {
+      "2": {
+        "point": [
+          134.62,
+          133.35
+        ],
+        "source": "Device:L:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "2"
+      },
+      "1": {
+        "point": [
+          134.62,
+          125.73
+        ],
+        "source": "Device:L:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "1"
+      }
+    },
+    "R3": {
+      "2": {
+        "point": [
+          30.48,
+          123.19
+        ],
+        "source": "Device:R:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": ""
+      },
+      "1": {
+        "point": [
+          30.48,
+          115.57
+        ],
+        "source": "Device:R:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      }
+    },
+    "LED1": {
+      "1": {
+        "point": [
+          199.39,
+          160.02
+        ],
+        "source": "Device:LED:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "K"
+      },
+      "2": {
+        "point": [
+          207.01,
+          160.02
+        ],
+        "source": "Device:LED:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "A"
+      }
+    },
+    "D1": {
+      "2": {
+        "point": [
+          34.29,
+          137.16
+        ],
+        "source": "Diode:1N4007:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "A"
+      },
+      "1": {
+        "point": [
+          26.67,
+          137.16
+        ],
+        "source": "Diode:1N4007:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "K"
+      }
+    },
+    "F1": {
+      "1": {
+        "point": [
+          99.06,
+          125.73
+        ],
+        "source": "Device:Fuse:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": ""
+      },
+      "2": {
+        "point": [
+          99.06,
+          133.35
+        ],
+        "source": "Device:Fuse:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": ""
+      }
+    },
+    "SW1": {
+      "1": {
+        "point": [
+          129.54,
+          170.18
+        ],
+        "source": "Switch:SW_SPST:unit1:pin1",
+        "resolved_pin_number": "1",
+        "resolved_pin_name": "A"
+      },
+      "2": {
+        "point": [
+          139.7,
+          170.18
+        ],
+        "source": "Switch:SW_SPST:unit1:pin2",
+        "resolved_pin_number": "2",
+        "resolved_pin_name": "B"
+      }
+    }
+  },
+  "routing_metadata": {
+    "pin_point_source": "KiCad embedded/source symbol library pin coordinates",
+    "body_source": "KiCad symbol graphics bounds with fallback placement specs",
+    "pin_resolved_count": 36,
+    "unresolved_pin_count": 0,
+    "unresolved_pins": [],
+    "unresolved_pin_report_truncated": false,
+    "component_body_overlap_ok": true,
+    "component_body_overlap_count": 0,
+    "component_body_overlaps": []
+  }
+}
