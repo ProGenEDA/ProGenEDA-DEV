@@ -125,3 +125,32 @@ The shared generic two-pin route (diodes, zeners, 40EPS08, LED-RED, FUSE and SWI
 - See `knowledge/combined_7seg_45f_donor_audit_2026_07_15.md`. No source or
   catalogue change may be made until the repair preflight is completed from
   this donor.
+
+## Completed preflight - 2026-07-16 frozen 43-family 3x full-WIRE-pointer route
+
+- Authority: user-created, Proteus-saved
+  `experiments/frozen_43_family_mix_matrix_v1_temp_2026_07_16/00_user_editable_compact_43f/U00_43F_ACCEPTED_TERMINALIZED_USER_MULTIPLY.pdsprj`.
+  Its complete archive/DSN/CDB/packet/terminal/WIRE/link/finalizer audit is
+  `knowledge/frozen_43_manual_3x_donor_audit_2026_07_16.md`.
+- Scope: the frozen 43-family mix-scale route only. Accepted 1x legacy routes,
+  including G02's 27 `0100` active link fields, are not changed.
+- Evidence: U00 has 129 components and 639 terminal/WIRE pairs. Every active
+  terminal and matching component pin link is the complete little-endian
+  32-bit final WIRE address `(object_start + wire_marker - 24)`. U01 rebased
+  only the low word and resolves 268/639 links; U00 resolves 639/639.
+- Backup created before edit:
+  `backups/component_terminal_placer/component_terminal_placer_20260716_140237_before_frozen_43_full_wire_pointer_rebase.py`.
+- Implemented additive behavior: an explicit full-address final-link encoding
+  disables low-word label jitter, patches all four bytes of the known terminal
+  and component fields, and validates complete address uniqueness. It will not
+  expand the legacy global trailer allow-list or replace existing serializers.
+- The manual donor's three-copy closure order is explicitly non-causal: it is
+  the user's copy/paste result, not a required component-stream ordering rule.
+  The original placed-design order remains unchanged, including for uneven
+  future family counts.
+- Completed verification: the focused 43-family 3x regression generated the
+  original-order 129-component stream and proved all 639 terminal and
+  component fields equal their final 32-bit WIRE addresses; no label jitter
+  occurred. Remaining verification is accepted-family regressions, compile
+  checks, a fresh generated 3x static audit, and a delayed normal/cold Proteus
+  gate.

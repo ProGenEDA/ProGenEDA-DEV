@@ -16105,3 +16105,104 @@ The actual executable produced `experiments/progen_proteus_executable_v1_temp_20
 Use: `release\\ProgenProteus.exe generate examples\\progen_proteus_r_c_value_edit.json --output out\\circuit.pdsprj`. The code/binary checkpoint is `aa1704785628e1fcf28f976052a5f349e8fc02f6`, pushed and remote-verified.
 
 Files edited: `context.md`.
+
+### User message - 2026-07-16 20:55 +05:00
+
+PLEASE IMPLEMENT THIS PLAN:
+# Proteus repository consolidation into `memory/main`
+
+## Baseline and branch safety
+
+- Start from the current remote-synced checkpoint `4cf7dc4b`; first capture all meaningful Proteus work currently outside Git: 3,322 files / ~342 MiB of code, donors, backups, reports, and experiments.
+- Do not commit reproducible local infrastructure: `.venv`, `.pytest_*`, `.codex_*`, `build`, `out`, `__pycache__`, workspaces, and temporary gate copies. Add precise ignore rules and list them in the inventory as `local_ignored`.
+- Restore the two locally deleted tracked `.pdsprj` files from Git and retain them as historical evidence; this is the default chosen to honor the no-data-removal requirement.
+- Create a baseline commit and push it before any move. Then create a dedicated Proteus-reorganization branch from the current branch.
+- Per your choice, complete the reorganization first, then merge the finished branch with `origin/main` normally—preserving its 74 unique commits and this branch’s 170 unique commits. No force push or history replacement.
+
+## Complete inventory and target layout
+
+Create a generated, hash-backed map that records every file’s original path, destination, SHA-256, Git state, classification, purpose, and retention reason:
+
+```text
+proteus/
+  active/
+    README.md
+    REPOSITORY_MAP.md
+    inventory/
+      repository_map.csv
+      active_manifest.json
+      ignored_local_items.csv
+    src/proteusgen/
+    tests/
+    tools/
+    docs/
+    knowledge/
+    schemas/
+    examples/
+    fixtures/
+    evidence/
+      registry/
+      donors/
+    release/
+  experiments/
+    runs/
+    runners/
+    imports/
+  archive/
+    docs/
+    knowledge/
+    donors/
+    backups/
+    legacy_entrypoints/
+    recovered_artifacts/
+    historical_examples/
+```
+
+- `proteus/active` receives the complete current Python package, active Proteus tests, build tooling, schemas, current examples, executable, fixtures, registries, runtime donor closure, catalogue, validators, and current operational documentation.
+- `proteus/experiments` receives every dated experiment folder, experiment runner, ZIP, loose Proteus project, accepted/rejected test pack, screenshot, and report. Existing experiment folder names remain intact beneath `runs/`.
+- `proteus/archive` receives historical specs, old handoffs, donor-learning material not needed at runtime, backups, recovery artifacts, legacy entrypoints, and superseded documentation. Nothing meaningful is deleted.
+- Files remain at the repository root only when they are repository-wide control files: `.gitignore`, `AGENTS.md`, `context.md`, `pyproject.toml`, and the cross-backend root `README.md`.
+- Leave `kicad/`, `pspice/`, the two KiCad tests, KiCad batch files, and KiCad documentation untouched. LTspice and EasyEDA do not exist in this checkout.
+
+## Migration mechanics
+
+- Use `git mv` for all tracked Proteus content so history follows each file.
+- Move `src/proteusgen` to `proteus/active/src/proteusgen`; update the root workspace `pyproject.toml` to discover that source path while preserving its existing KiCad package configuration.
+- Keep package names and public commands unchanged. Update root discovery so source runs locate `proteus/active` while PyInstaller continues to use its bundled `_MEIPASS` data root.
+- Split `tools/`: current executable/build/analysis tools go to `proteus/active/tools`; dated generation runners go to `proteus/experiments/runners`.
+- Classify active versus archived donors through a deterministic runtime/test reference closure. The locked mega donor, fixture set, catalogue, registry, and all files required by the executable or active tests stay active; all remaining donor evidence is archived with an updated registry/index path.
+- Preserve every historical Markdown file unchanged in `archive`; add archive indexes rather than rewriting historical claims or paths.
+
+## Documentation and GPT‑5.6 attribution
+
+- Create `proteus/active/README.md` as the single current entry point: supported pipeline, commands, current executable, active donor policy, support limits, and links to catalogue, tests, and experiments.
+- Create `proteus/active/GPT_5_6_PROGRESS.md` documenting the decisive GPT‑5.6 phase: consolidation of the shared terminal route, nonzero grid-attached wires, scale/mixed validation work, value/properties editor, and portable executable.
+- Add a clear, prominent GPT‑5.6 progress/attribution block to every active Markdown file. It will explicitly describe the substantial improvement over the earlier 5.5 phase; uncertain active provenance will be credited as GPT‑5.6 continuity/consolidation work, as requested.
+- Refresh every active Markdown file’s status, dates, commands, paths, links, supported-component claims, and known limitations. The root README receives only a neutral link to the new Proteus area so no KiCad content is altered.
+
+## Validation and handoff
+
+- Verify inventory completeness: every in-scope file appears exactly once in the map, every moved binary retains its SHA-256, and every excluded local file is explicitly listed.
+- Verify no unexpected deletion, no changes under excluded backend directories, and no broken active Markdown links.
+- Run the relocated Proteus tests, compile checks, executable build, executable JSON generation smoke test, and local Proteus normal-open/cold-reopen gate.
+- Commit and push each logical checkpoint, verify remote hashes after each push, merge the finished reorganization into `main`, then verify local `main` and `origin/main` match exactly.
+
+### Agent response - 2026-07-16 20:56 +05:00
+
+I’m starting the reorganization exactly as approved: first I’ll freeze and commit the meaningful Proteus corpus without touching caches or excluded backends, then move the committed material through the three-tier layout. I’ll keep each phase separately committed and remote-verified.
+
+### Agent response - 2026-07-16 20:56 +05:00
+
+The remote checkpoint is confirmed. I’m restoring the two deleted donor/experiment projects before the baseline snapshot, then I’ll stage only durable Proteus evidence; cache and disposable gate-output patterns will remain local and be recorded as ignored.
+
+### Agent response - 2026-07-16 21:00 +05:00
+
+I’m resuming from the verified `4cf7dc4b` checkpoint and checking the restored historical projects before I freeze the baseline. I’ll preserve the two deleted files, capture the durable Proteus corpus, and leave local caches/gate copies out of Git.
+
+Files edited: `.gitignore`, `context.md`.
+
+### Agent response - 2026-07-16 21:05 +05:00
+
+The two deleted historical `.pdsprj` files were restored from `4cf7dc4b` and retained. The baseline staging set contains 2,501 durable Proteus files: code-adjacent evidence, donors, backups, reports, generated projects, screenshots, and experiments. I removed only 116 disposable local gate-project copies from staging and added exact ignore rules for reproducible `.pytest_tmp*`, `.codex_pytest*`, and local gate-copy projects; non-copy screenshots and reports remain preserved.
+
+Files edited: `.gitignore`, `context.md`; restored historical files: `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/E04_74HC04_1X_NO_TERMINAL_CONTROL/E04_74HC04_1X_NO_TERMINAL_CONTROL.pdsprj`, `proteus_ic/donors/terminalized_catalogue_evidence/dil14_hex_inverter/74HC04/74HC04_terminalized_primary_hc04_all7.pdsprj`.

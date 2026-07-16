@@ -78,6 +78,14 @@ record boundaries/order, terminal fields, component pin-link fields, WIRE
 records, coordinates, trailers, separators, and finalizers. If written evidence
 disagrees with the accepted donor, fix the written evidence and implementation.
 
+When a staged donor comparison leaves a required byte-level grammar fact
+unknown, stop rather than make a speculative patch or attempt a 100% donor
+copy. State the exact missing fact and ask the user for the smallest
+terminalized/control donor that isolates it. Donors are research evidence only:
+derive reusable catalogue/profile facts from them, then emit a newly placed
+project through the shared placer; never transplant the donor project, slots,
+coordinates, or packet bytes at runtime.
+
 Never stop after finding and repairing only the first plausible byte
 difference. Continue the donor-vs-generated comparison after each repair and
 enumerate every remaining unexplained structural difference before declaring a
