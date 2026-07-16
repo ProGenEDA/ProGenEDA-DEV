@@ -16264,3 +16264,77 @@ I’ve preserved the baseline on a separate remote-backed branch and completed t
 I found 284 Proteus GUI workspace sidecars and 20 disposable cold-open/gate project copies that were historically tracked. I’m preserving them on disk but removing them from version control and explicitly recording them as `local_ignored`, exactly as your plan requires; reports and screenshots remain as experiment evidence.
 
 Files edited: `.gitignore`, `context.md`. Local files preserved but removed from Git index: 284 `*.workspace` sidecars and disposable `*_COPY.pdsprj`/`*_GATE.pdsprj` loader-gate copies.
+
+### Agent response - 2026-07-16 21:40 +05:00
+
+The staged relocation now has zero changes under KiCad/PSpice and zero newly versioned workspaces or disposable gate projects. I’m committing this structural checkpoint next; it contains only preserved moves, path rebasing, and the donor-closure index.
+
+### Agent response - 2026-07-16 21:42 +05:00
+
+The structural checkpoint is committed as `98018c49`. Its remote push is still transferring the large evidence history; I’m waiting for the hash verification rather than starting the next mutation on an unverified checkpoint.
+
+### Agent response - 2026-07-16 21:45 +05:00
+
+The push process is still actively packing/uploading the several-hundred-megabyte preservation corpus; the remote has not advanced yet. I’m keeping the branch untouched until it finishes, so no documentation or inventory changes can be stranded ahead of the required remote checkpoint.
+
+### Agent response - 2026-07-16 21:47 +05:00
+
+The transfer is unusually slow but still live, so I’m using the wait time productively on the next isolated checkpoint: generating the hash-backed inventory tooling and refreshing only the new active documentation. I will not alter terminal behavior or excluded backends.
+
+### Agent response - 2026-07-16 21:50 +05:00
+
+A completeness audit found 13 older Proteus research documents still tracked at the root—not lost, simply outside the first move set. I’m relocating those unchanged into `proteus/archive/docs` now; the remaining root files are only the approved repository controls and untouched KiCad launch material.
+
+### Agent response - 2026-07-16 21:53 +05:00
+
+The first inventory run found a real Windows-specific edge case, not a missing donor: a preserved donor filename yields a 286-character absolute path. I’m making the hasher use Windows extended-path semantics so it inventories the exact file rather than shortening or relocating it.
+
+### Agent response - 2026-07-16 21:55 +05:00
+
+The map generator is now using Git blob identities instead of an expensive whole-repository rename heuristic. That preserves the same provenance evidence but avoids an O(n²) search over the large binary corpus; it is hashing the resulting corpus now.
+
+### User message - 2026-07-16 21:56 +05:00
+
+continue
+
+### Agent response - 2026-07-16 21:56 +05:00
+
+Continuing—the inventory pass is still running against the full preserved corpus, then I’ll use its results to finish the documentation and validation checkpoint.
+
+### Agent response - 2026-07-16 21:59 +05:00
+
+The provenance audit is down to the relocated active tests only; I’ve added their deterministic `tests/ → proteus/active/tests/` rule. The next run should produce the actual CSV/manifest rather than another incomplete map.
+
+### Agent response - 2026-07-16 22:02 +05:00
+
+The generated map exposed one over-broad legacy ignore rule: it was hiding meaningful loader screenshots and JSON reports along with the disposable projects. I’m narrowing it to ignore only the projects/copies, then capturing the reports so the experiment record is complete.
+
+### Agent response - 2026-07-16 22:04 +05:00
+
+I’m preserving the detailed legacy reasoning in the active documents but adding a uniform current-status/path-translation block to every one. That keeps historical evidence intact while preventing old root paths from being mistaken for the post-consolidation operating layout.
+
+### Agent response - 2026-07-16 22:07 +05:00
+
+The active documentation is now consolidated, every active Markdown file has the requested GPT‑5.6 attribution/status block, and the link audit passes with zero broken local links. I’m staging the documentation, inventory tooling, and newly unignored experiment reports next, then I’ll regenerate the final hashes from that exact staged tree.
+
+### Agent response - 2026-07-16 22:09 +05:00
+
+The staged tree is clean of newly added local workspaces and gate projects; the five workspace references are intentional deletions from Git’s old paths, with the sidecars retained locally. The map is rebuilding from that staged tree now so the final manifest reflects the actual checkpoint.
+
+### Agent response - 2026-07-16 22:12 +05:00
+
+The inventory contents are correct; its verification exposed the same long-path issue in the existence check (the 286-character donor can be hashed but `Path.is_file()` rejects it). I’m applying the identical extended-path handling to the verifier, then rerunning the check.
+
+### Agent response - 2026-07-16 22:15 +05:00
+
+The long-path verifier is fixed and the final hash check is running over 23,879 mapped files and 1,324 explicitly listed local-only items. This check is intentionally exhaustive, so it takes about a minute on the preserved donor corpus.
+
+### Agent response - 2026-07-16 22:17 +05:00
+
+The map now verifies successfully against the staged tree: 23,879 mapped files, 1,324 explicit local-only items, and active aggregate SHA-256 `7969eccea06e711e27829a5843303487718ad6bca10e7c1bb917cbf30133d1b9`.
+
+Files edited: `.gitignore`, `README.md`, `context.md`, `proteus/active/README.md`, `proteus/active/GPT_5_6_PROGRESS.md`, `proteus/active/REPOSITORY_MAP.md`, all active Markdown status/attribution blocks, `proteus/active/tools/build_repository_map.py`, `proteus/active/tools/check_active_markdown_links.py`, generated `proteus/active/inventory/*`, `proteus/archive/README.md`; moved unchanged historical root documents into `proteus/archive/docs`; added preserved local-gate screenshots/reports to experiments.
+
+### Agent response - 2026-07-16 22:18 +05:00
+
+The inventory and documentation checkpoint is complete in substance. I’m doing one final regeneration after recording that result in the continuity log, then I’ll commit the map, docs, archive moves, and evidence reports together.

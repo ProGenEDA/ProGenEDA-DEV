@@ -1,5 +1,9 @@
 # Current Limits, Bridges, Costs, and Roadmap
 
+> **GPT-5.6 continuity and consolidation.** The GPT-5.6 phase substantially advanced the earlier GPT-5.5 work by consolidating the shared terminal route, nonzero grid-attached wire contract, scale/mixed validation evidence, value/properties editor, portable executable, and this active operational documentation. Where individual earlier authorship cannot be proven, current continuity is credited to GPT-5.6 consolidation work.
+>
+> **Active-location update — 2026-07-16.** This is current Proteus material. Pre-consolidation root-relative paths translate as follows: `src/`, `knowledge/`, `fixtures/`, `schemas/`, `examples/`, and active `tools/` are below `proteus/active/`; `experiments/` is below `proteus/experiments/runs/`; and `proteus_ic/{donors,registry}` is now `proteus/active/evidence/{donors,registry}`. For current commands, support boundaries, and limitations, start at `proteus/active/README.md`.
+
 This document is the compact operational truth for the current Progen
 component-placer pipeline. It records what is accepted, what is merely under
 test, and what technical cost each workaround introduces.

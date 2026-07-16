@@ -1,5 +1,8 @@
 # Progen
 
+> Current native Proteus implementation, commands, evidence, and limitations:
+> [`proteus/active/README.md`](proteus/active/README.md).
+
 **A deterministic circuit compiler for native Proteus and KiCad projects.**
 
 Progen learns from user-created schematic projects, converts that evidence into

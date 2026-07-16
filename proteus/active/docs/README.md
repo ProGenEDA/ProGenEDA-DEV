@@ -1,62 +1,47 @@
-# Progen Documentation Index
+# Proteus Active Documentation
 
-This directory contains both current operational documentation and historical
-research. Historical files are not rewritten to erase failed approaches; use
-the documents below in order when deciding current behavior.
+> **GPT-5.6 continuity and consolidation.** This active documentation was
+> consolidated in the GPT-5.6 phase, a substantial improvement over the
+> earlier GPT-5.5 phase: it now points to the shared terminal route,
+> grid-attached wire contract, scale/mixed evidence, value editor, executable,
+> and current repository layout. Where precise prior authorship is uncertain,
+> active operational continuity is credited to GPT-5.6 consolidation work.
 
-## Read First
+Updated: 2026-07-16
 
-1. [`../README.md`](../README.md) - project overview, support, CLI, and limits.
-2. [`current_status_2026_06_29.md`](current_status_2026_06_29.md) - concise
-   current truth and active task.
-3. [`current_limitations_bridges_costs_and_roadmap.md`](current_limitations_bridges_costs_and_roadmap.md)
-   - accepted limits and structural costs.
-4. [`component_placer_pipeline.md`](component_placer_pipeline.md) - active
-   removal-only pipeline contract.
-5. [`active_working_memory_2026_06_23.md`](active_working_memory_2026_06_23.md)
-   - chronological continuation memory; newest entries are authoritative.
-6. [`progen_eda_canonical_pipeline.md`](progen_eda_canonical_pipeline.md) -
-   owner-defined stage order and current implementation map.
-7. [`complete_component_donor_request.md`](complete_component_donor_request.md)
-   - complete current-catalog IC/non-IC donor suite request and delivery order.
+Start with [`../README.md`](../README.md) for commands, support boundaries, the
+runtime donor policy, release executable, and links to experiments/archive.
 
-## Architecture And Validation
+## Current operational documents
 
-- [`architecture.md`](architecture.md) - planner, validator, generator, and
-  feedback layers.
-- [`validator_design.md`](validator_design.md) - stage and cumulative validator
-  contracts.
-- [`beautifier.md`](beautifier.md) - legacy topology beautifier and the newer
-  packet-coordinate beautifier.
-- [`generator_design.md`](generator_design.md) - established legacy generator
-  behavior.
+- [`progen_eda_canonical_pipeline.md`](progen_eda_canonical_pipeline.md) —
+  owner-defined stage order and implementation map.
+- [`architecture.md`](architecture.md) — replaceable stage contracts, catalogue
+  policy, and current architecture decisions.
+- [`component_placer_pipeline.md`](component_placer_pipeline.md) — the
+  donor-backed placement contract.
+- [`beautifier.md`](beautifier.md) — coordinate/arrangement stage contract.
+- [`validator_design.md`](validator_design.md) — cumulative validation stages.
+- [`generator_design.md`](generator_design.md) — generator responsibilities.
+- [`current_limitations_bridges_costs_and_roadmap.md`](current_limitations_bridges_costs_and_roadmap.md)
+  — promoted boundaries and next work.
+- [`prompts/planner_prompt.md`](prompts/planner_prompt.md) — current prompt
+  planning input.
 
-## Binary Evidence
+## Active evidence and validation
 
-- [`proteus_file_model.md`](proteus_file_model.md) - detailed chronological
-  binary observations. Later sections supersede earlier experiments.
-- [`decision_log.md`](decision_log.md) - accepted and rejected decisions.
-- [`observed_project_structure.md`](observed_project_structure.md) - container
-  structure.
-- [`result_learning_workflow.md`](result_learning_workflow.md) - how Proteus
-  feedback becomes a rule.
+- [`../knowledge/component_catalog_v0.json`](../knowledge/component_catalog_v0.json)
+  — current catalogue/profile source.
+- [`../knowledge/terminal_placement_preflight_checklist.md`](../knowledge/terminal_placement_preflight_checklist.md)
+  — required donor/loader checklist before terminal changes.
+- [`../knowledge/value_and_properties_editor_preflight_2026_07_16.md`](../knowledge/value_and_properties_editor_preflight_2026_07_16.md)
+  — value editor evidence.
+- [`../evidence/registry/active_donor_closure.json`](../evidence/registry/active_donor_closure.json)
+  — deterministic runtime/test donor closure.
+- [`../REPOSITORY_MAP.md`](../REPOSITORY_MAP.md) — active/experiment/archive map
+  and generated hashes.
 
-## Input Contracts
-
-- [`resistor_json_input.md`](resistor_json_input.md)
-- [`mixed_passive_json_input.md`](mixed_passive_json_input.md)
-- [`mixed_rcl_json_input.md`](mixed_rcl_json_input.md)
-- schemas in [`../schemas`](../schemas)
-
-## Current Experimental Handoff
-
-- [`value_terminal_v2_test_handoff_2026_06_29.md`](value_terminal_v2_test_handoff_2026_06_29.md)
-  - current value and all-family bidirectional terminal test pack.
-- [`beautifier_coordinate_vs_arrangement_report_2026_06_26.md`](beautifier_coordinate_vs_arrangement_report_2026_06_26.md)
-  - separates coordinate mutation from later arrangement policy.
-
-## Historical Snapshots
-
-Context snapshots and dated experiment reports are evidence, not current
-specifications. Keep them for provenance, but resolve conflicts in favor of the
-current status, limits, pipeline, and latest working-memory entries.
+Historical reports, older handoffs, and donor-learning notes were deliberately
+preserved unchanged under [`../../archive/docs`](../../archive/docs), while
+dated generated packs and their runners live under
+[`../../experiments`](../../experiments).
