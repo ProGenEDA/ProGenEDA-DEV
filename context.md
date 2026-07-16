@@ -16206,3 +16206,61 @@ Files edited: `.gitignore`, `context.md`.
 The two deleted historical `.pdsprj` files were restored from `4cf7dc4b` and retained. The baseline staging set contains 2,501 durable Proteus files: code-adjacent evidence, donors, backups, reports, generated projects, screenshots, and experiments. I removed only 116 disposable local gate-project copies from staging and added exact ignore rules for reproducible `.pytest_tmp*`, `.codex_pytest*`, and local gate-copy projects; non-copy screenshots and reports remain preserved.
 
 Files edited: `.gitignore`, `context.md`; restored historical files: `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/E04_74HC04_1X_NO_TERMINAL_CONTROL/E04_74HC04_1X_NO_TERMINAL_CONTROL.pdsprj`, `proteus_ic/donors/terminalized_catalogue_evidence/dil14_hex_inverter/74HC04/74HC04_terminalized_primary_hc04_all7.pdsprj`.
+
+### Agent response - 2026-07-16 21:10 +05:00
+
+The baseline audit is clean: 2,501 staged files, 935 Proteus projects, and 1,554 reports/metadata items, all inside the approved Proteus scope. I’m committing this preservation checkpoint now, before any directory move.
+
+### Agent response - 2026-07-16 21:12 +05:00
+
+Baseline preservation is committed as `3acf1fdf`. The only remaining worktree difference is a pre-existing no-content/line-ending state on `component_placer.py`; I’m leaving it untouched. I’m pushing the baseline before opening the reorganization branch.
+
+### Agent response - 2026-07-16 21:13 +05:00
+
+The remote now matches `3acf1fdf` exactly. I’m creating and publishing the dedicated reorganization branch next; all subsequent moves will happen there, leaving the preserved baseline intact.
+
+### Agent response - 2026-07-16 21:15 +05:00
+
+The reorganization branch is remote-tracked and starts exactly at the baseline. I’m mapping the current Proteus file groups and their runtime references now so the active/archive split is evidence-based rather than a superficial directory shuffle.
+
+### Agent response - 2026-07-16 21:18 +05:00
+
+I’ve completed the reference map. The active runtime depends on the locked mega donor plus the registry/fixture/catalogue closure; dated runners and historical donor-learning material will be retained separately. I’m moving the major tracked groups now with `git mv`, preserving history and leaving KiCad/PSpice untouched.
+
+### Agent response - 2026-07-16 21:21 +05:00
+
+The main move completed cleanly as 23,909 Git-detected renames. I’m now placing the remaining tests, current tools, current operational docs/data, and historical materials into their final tiers; the two KiCad tests and all KiCad files remain at their existing paths.
+
+### Agent response - 2026-07-16 21:24 +05:00
+
+The tier placement is complete for code, tests, tooling, examples, docs, experiments, backups, and imports. Next I’m making the active package self-contained under `proteus/active`: updating its data-root resolver, build paths, registry paths, and test discovery without changing public command names.
+
+### Agent response - 2026-07-16 21:27 +05:00
+
+I’m applying a controlled mechanical relocation rewrite now: only active Python, JSON, and catalogue files will have the old `proteus_ic/{donors,registry}` tokens changed to `evidence/{donors,registry}`. I’ll then inspect every remaining old-path reference manually.
+
+### Agent response - 2026-07-16 21:29 +05:00
+
+The first relocated test exposed a move-target issue immediately: because several destination directories already existed, Git nested the source directory one level too deep (for example `active/fixtures/fixtures`). Nothing was lost; the moves are still Git-tracked. I’m flattening those exact nested groups now, then rerunning the same test before proceeding.
+
+### Agent response - 2026-07-16 21:32 +05:00
+
+The relocated app imports and 49 focused catalogue checks pass. The remaining 11 catalogue failures exercise the already-untrusted multi-pin terminal route (for example 4017 is not in the locked mega donor and several assertions expect the rejected zero-length-wire behavior); I’m preserving those as known limitations rather than “fixing” accepted routes during reorganization.
+
+### Agent response - 2026-07-16 21:33 +05:00
+
+The supported executable regression passes from the relocated path (6/6). I’ve now derived the donor closure: locked mega, trusted main mega, native registry corpus, catalogue evidence, and explicitly referenced test donors remain active; unrelated dated donor-learning bundles and analysis snapshots are being archived without deletion.
+
+Files moved with `git mv`: the Proteus runtime, non-KiCad tests, fixtures, schemas, executable release, all experiments and dated runners, current tools, docs/knowledge/examples, donor registry/evidence, backups, recovered artifacts, imports, and historical entrypoints into `proteus/{active,experiments,archive}`. Active path references were mechanically rebased from `proteus_ic/{donors,registry}` to `evidence/{donors,registry}`. The two KiCad tests, `kicad/`, `pspice/`, KiCad batch files, KiCad documents, root control files, and root README remain outside the migration.
+
+Files edited: `pyproject.toml`, `proteus/active/src/proteusgen/component_placer.py`, `proteus/active/src/proteusgen/component_terminal_placer.py`, `proteus/active/src/proteusgen/ic_native.py`, `proteus/active/src/proteusgen/ic_combinational.py`, active tests/tools/registry/catalogue paths, `proteus/active/evidence/registry/active_donor_closure.json`, and `context.md`.
+
+### Agent response - 2026-07-16 21:35 +05:00
+
+I’ve preserved the baseline on a separate remote-backed branch and completed the first history-preserving move set. I’m checking that staged checkpoint now, then I’ll commit and verify it remotely before generating the inventory and active documentation.
+
+### Agent response - 2026-07-16 21:38 +05:00
+
+I found 284 Proteus GUI workspace sidecars and 20 disposable cold-open/gate project copies that were historically tracked. I’m preserving them on disk but removing them from version control and explicitly recording them as `local_ignored`, exactly as your plan requires; reports and screenshots remain as experiment evidence.
+
+Files edited: `.gitignore`, `context.md`. Local files preserved but removed from Git index: 284 `*.workspace` sidecars and disposable `*_COPY.pdsprj`/`*_GATE.pdsprj` loader-gate copies.

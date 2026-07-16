@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://proteusgen.local/schemas/ic_native_circuit_ir_v0_1.schema.json",
+  "title": "Native IC CircuitIR v0.1",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema": {
+      "const": "ic-native-circuit-ir/v0.1"
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "donor": {
+      "type": "string",
+      "description": "Optional explicit donor .pdsprj path relative to evidence/donors/manual_downloads_20260611."
+    },
+    "donor_key": {
+      "type": "string",
+      "description": "Optional manual donor key such as PAIR_7490_4017."
+    },
+    "donor_kind": {
+      "type": "string",
+      "description": "Optional complete donor variant such as single, two, four, four_rlc, or four_with_7seg."
+    },
+    "exact_rezip": {
+      "type": "boolean",
+      "default": false
+    },
+    "compose": {
+      "type": "boolean",
+      "description": "When true, build the output from cloned single native donor packets plus optional generated logic/RCL records."
+    },
+    "clone_from_donor": {
+      "type": "string",
+      "description": "Optional donor used as the source packet for each native clone."
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "strategy": {
+          "enum": ["beautify", "manual", "legacy"]
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["part"],
+        "additionalProperties": true,
+        "properties": {
+          "ref": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "part": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string"
+          },
+          "connections": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["net"],
+        "properties": {
+          "component": {
+            "type": "string"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "pin": {
+            "oneOf": [
+              {"type": "string"},
+              {"type": "integer"}
+            ]
+          },
+          "signal": {
+            "type": "string"
+          },
+          "net": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "passives": {
+      "type": "array",
+      "description": "Optional R/C/L passives generated with the locked passive route and connected by shared net labels.",
+      "items": {
+        "type": "object",
+        "required": ["kind", "left", "right"],
+        "additionalProperties": true,
+        "properties": {
+          "ref": {"type": "string"},
+          "kind": {"enum": ["R", "C", "L", "RESISTOR", "CAPACITOR", "INDUCTOR"]},
+          "value": {"type": "string"},
+          "left": {"type": "string"},
+          "right": {"type": "string"},
+          "from": {"type": "string"},
+          "to": {"type": "string"}
+        }
+      }
+    },
+    "logic_gates": {
+      "type": "array",
+      "description": "Optional locked combinational gates connected by shared net labels.",
+      "items": {
+        "type": "object",
+        "required": ["family", "left", "output"],
+        "additionalProperties": true,
+        "properties": {
+          "family": {"type": "string"},
+          "part": {"type": "string"},
+          "type": {"type": "string"},
+          "gate": {"type": "string"},
+          "package": {"type": "string"},
+          "left": {"type": "string"},
+          "right": {"type": "string"},
+          "a": {"type": "string"},
+          "b": {"type": "string"},
+          "in1": {"type": "string"},
+          "in2": {"type": "string"},
+          "output": {"type": "string"},
+          "out": {"type": "string"},
+          "y": {"type": "string"},
+          "note": {"type": "string"}
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "required": ["components"]
+    },
+    {
+      "required": ["donor"]
+    },
+    {
+      "required": ["donor_key"]
+    }
+  ]
+}
