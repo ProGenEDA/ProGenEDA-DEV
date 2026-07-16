@@ -16,9 +16,9 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import (  # noqa: E402
     NEW_COMPONENT_MEGA_DONOR,
@@ -27,8 +27,8 @@ from proteusgen.component_placer import (  # noqa: E402
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 
 
-OUT_DIR = ROOT / "experiments" / "locked_mega_no_terminal_matrix_v2_temp_2026_07_08"
-ARCHIVE = ROOT / "experiments" / "LOCKED_MEGA_NO_TERMINAL_MATRIX_V2_TEMP_2026_07_08"
+OUT_DIR = ROOT / "proteus" / "experiments" / "runs" / "locked_mega_no_terminal_matrix_v2_temp_2026_07_08"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "LOCKED_MEGA_NO_TERMINAL_MATRIX_V2_TEMP_2026_07_08"
 DONOR = ROOT / NEW_COMPONENT_MEGA_DONOR
 
 

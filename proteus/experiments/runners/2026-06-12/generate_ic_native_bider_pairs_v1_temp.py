@@ -23,15 +23,15 @@ from itertools import combinations
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-PAIRWISE_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_34_v2_temp.py"
-CDB_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
-OUT_ROOT = REPO / "experiments" / "ic_native_bider_pairs_v1_temp_2026_06_12"
-ARCHIVE = REPO / "experiments" / "IC_NATIVE_BIDER_PAIRS_V1_TEMP_2026_06_12.zip"
+PAIRWISE_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_34_v2_temp.py"
+CDB_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_native_bider_pairs_v1_temp_2026_06_12"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "IC_NATIVE_BIDER_PAIRS_V1_TEMP_2026_06_12.zip"
 
 
 def _load_module(name: str, path: Path):

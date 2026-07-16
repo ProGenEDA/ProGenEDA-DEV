@@ -24,8 +24,8 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -34,10 +34,10 @@ from proteusgen.mixed_rcl import MixedRclCircuitIR, MixedRclGroup  # noqa: E402
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 
-V9_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_dc_mixed_sources_v9_donor_tail_temp.py"
-V13_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_dc_mixed_sources_v13_v0_source_geometry_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_mixed_sources_v14_requested5_v13_method_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_TEMP_2026_06_05"
+V9_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_dc_mixed_sources_v9_donor_tail_temp.py"
+V13_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_dc_mixed_sources_v13_v0_source_geometry_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v14_requested5_v13_method_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_MIXED_SOURCES_V14_REQUESTED5_V13_METHOD_TEMP_2026_06_05"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 SourceKind = Literal["dc_voltage", "dc_current"]
@@ -560,7 +560,7 @@ def main() -> int:
     donor_chunk = rv9._extract_object_chunk(donor_dsn)
     devices = v9.v5._device_section_from_dsn(donor_dsn)
 
-    accepted_control = REPO_ROOT / "experiments" / "dc_mixed_sources_v13_v0_source_geometry_temp_2026_06_05" / "DCMS_V13_T05_GROUP4_SOURCES_AND_V0_LOCAL" / "DCMS_V13_T05_GROUP4_SOURCES_AND_V0_LOCAL.pdsprj"
+    accepted_control = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v13_v0_source_geometry_temp_2026_06_05" / "DCMS_V13_T05_GROUP4_SOURCES_AND_V0_LOCAL" / "DCMS_V13_T05_GROUP4_SOURCES_AND_V0_LOCAL.pdsprj"
     cases: list[dict[str, Any]] = []
     if accepted_control.exists():
         cases.append(v9._copy_control("DCMS_V14_T00_V13_ACCEPTED_CONTROL", "Accepted V13 group-4 sources+V0-local control.", accepted_control))

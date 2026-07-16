@@ -19,9 +19,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-PREV_TOOL_DIR = REPO_ROOT / "tools" / "proteus_generation" / "2026-05-30"
-for path in (REPO_ROOT / "src", PREV_TOOL_DIR):
+REPO_ROOT = Path(__file__).resolve().parents[4]
+PREV_TOOL_DIR = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-05-30"
+for path in (REPO_ROOT / "proteus" / "active" / "src", PREV_TOOL_DIR):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
@@ -32,7 +32,7 @@ from proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO_ROOT / "experiments" / "capacitor_v7_terminal_isolation_temp_2026_05_31"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "capacitor_v7_terminal_isolation_temp_2026_05_31"
 
 
 def sha256_bytes(data: bytes) -> str:

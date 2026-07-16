@@ -26,12 +26,12 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _sha256_bytes
 from proteusgen.templates import FixtureRegistry
 
 
-REPO = Path(__file__).resolve().parents[3]
-CDB_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
-MASTER_DONOR = REPO / "proteus_ic" / "donors" / "mixed_large_20260611" / "alot_of_ics.pdsprj"
+REPO = Path(__file__).resolve().parents[4]
+CDB_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
+MASTER_DONOR = REPO / "proteus" / "archive" / "donors" / "mixed_large_20260611" / "alot_of_ics.pdsprj"
 
-OUT_ROOT = REPO / "experiments" / "ic_pairwise_noncomb_master_metadata_v1_temp_2026_06_11"
-ARCHIVE_PATH = REPO / "experiments" / "IC_PAIRWISE_NONCOMB_MASTER_METADATA_V1_TEMP_2026_06_11.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_pairwise_noncomb_master_metadata_v1_temp_2026_06_11"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_PAIRWISE_NONCOMB_MASTER_METADATA_V1_TEMP_2026_06_11.zip"
 
 
 def _load_module(name: str, path: Path):

@@ -14,9 +14,9 @@ import shutil
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-OUT_ROOT = REPO / "experiments" / "ic_7490_real_circuits_v1_temp_2026_06_12"
-ARCHIVE = REPO / "experiments" / "IC_7490_REAL_CIRCUITS_V1_TEMP_2026_06_12.zip"
+REPO = Path(__file__).resolve().parents[4]
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_7490_real_circuits_v1_temp_2026_06_12"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "IC_7490_REAL_CIRCUITS_V1_TEMP_2026_06_12.zip"
 DONOR = "SQU/4_7490withRLC.pdsprj"
 
 from proteusgen.ic_native import NativeRegistry, bidir_events, generate_ic_native_project_from_payload, read_internal_file  # noqa: E402

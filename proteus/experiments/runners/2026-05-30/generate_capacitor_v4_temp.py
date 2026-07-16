@@ -16,16 +16,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-if str(REPO_ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "src"))
+REPO_ROOT = Path(__file__).resolve().parents[4]
+if str(REPO_ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from proteusgen.resistor_v9 import _extract_object_chunk, _i32, _u16, _u32, build_dsn
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO_ROOT / "experiments" / "capacitor_v4_temp_2026_05_30"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "capacitor_v4_temp_2026_05_30"
 
 IN_SIZE = 103
 OUT_SIZE = 104

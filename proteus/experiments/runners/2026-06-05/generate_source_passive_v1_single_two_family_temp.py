@@ -22,8 +22,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -31,12 +31,12 @@ from proteusgen.mixed_rcl import BASE_PROJECT, GENERATOR_TARGET, SCHEMA_VERSION 
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 
-DCV_V15_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_dc_voltage_v15_15_rcl_topologies_temp.py"
-DCI_V13_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_dc_current_v13_15_topologies_temp.py"
-ACV_V2_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_ac_voltage_v2_nonfinal_source_unit_temp.py"
+DCV_V15_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_dc_voltage_v15_15_rcl_topologies_temp.py"
+DCI_V13_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_dc_current_v13_15_topologies_temp.py"
+ACV_V2_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_ac_voltage_v2_nonfinal_source_unit_temp.py"
 
-OUT_ROOT = REPO_ROOT / "experiments" / "source_passive_v1_single_two_family_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_TEMP_2026_06_05"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "source_passive_v1_single_two_family_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_TEMP_2026_06_05"
 DONOR_ROOT = OUT_ROOT / "donors"
 TEST_BATCH = OUT_ROOT / "SOURCE_PASSIVE_V1_SINGLE_TWO_FAMILY_TEST_BATCH"
 

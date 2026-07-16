@@ -14,8 +14,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -24,7 +24,7 @@ from proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO_ROOT / "experiments" / "mixed_rcl_v4_resistor_boundary_temp_2026_06_01"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mixed_rcl_v4_resistor_boundary_temp_2026_06_01"
 V2_PATH = Path(__file__).with_name("generate_mixed_rcl_v2_v8_temp.py")
 V3_PATH = Path(__file__).with_name("generate_mixed_rcl_v3_isolation_temp.py")
 V8_PATH = Path(__file__).with_name("generate_inductor_v8_six_donor_temp.py")
@@ -327,7 +327,7 @@ def main() -> int:
         encoding="utf-8",
     )
     shutil.copy(Path(__file__), OUT_ROOT / "generation_code_used.py")
-    shutil.make_archive(str(REPO_ROOT / "experiments" / "MIXED_RCL_V4_RESISTOR_BOUNDARY_TEMP_2026_06_01"), "zip", OUT_ROOT)
+    shutil.make_archive(str(REPO_ROOT / "proteus" / "experiments" / "runs" / "MIXED_RCL_V4_RESISTOR_BOUNDARY_TEMP_2026_06_01"), "zip", OUT_ROOT)
     print(json.dumps({"out_root": str(OUT_ROOT), "case_count": len(manifests), "test_order": summary["test_order"]}, indent=2))
     return 0
 

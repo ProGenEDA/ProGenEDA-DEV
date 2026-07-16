@@ -11,7 +11,7 @@ import sys
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 V9_RUNNER = (
     ROOT
     / "tools"
@@ -21,7 +21,9 @@ V9_RUNNER = (
 )
 DONOR = (
     ROOT
-    / "proteus_ic"
+    / "proteus"
+    / "active"
+    / "evidence"
     / "donors"
     / "manual_downloads_20260618"
     / "new_component_mega"
@@ -47,7 +49,7 @@ def _readme() -> str:
 
 All cases are placed from the unchanged mega donor:
 
-`proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`
+`proteus/active/evidence/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`
 
 SHA-256: `{DONOR_SHA256}`
 
@@ -163,7 +165,7 @@ def main() -> int:
     v9._readme = _readme
     v9.main()
 
-    experiment = ROOT / "experiments" / EXPERIMENT_NAME
+    experiment = ROOT / "proteus" / "experiments" / "runs" / EXPERIMENT_NAME
     shutil.copy(Path(__file__), experiment / "generation_code_used_v10.py")
     (experiment / "README.md").write_text(_readme(), encoding="utf-8")
     summary_path = experiment / "summary.json"
@@ -199,7 +201,7 @@ def main() -> int:
     )
     loaded_harness["module"]._write_deterministic_archive(
         experiment,
-        ROOT / "experiments" / ARCHIVE_NAME,
+        ROOT / "proteus" / "experiments" / "runs" / ARCHIVE_NAME,
     )
     print(json.dumps(summary, indent=2))
     return 0

@@ -24,10 +24,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-V3_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v3_filtered_device_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_cross_donor_isolation_v1_temp_2026_06_09"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09.zip"
+REPO = Path(__file__).resolve().parents[4]
+V3_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v3_filtered_device_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_cross_donor_isolation_v1_temp_2026_06_09"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_CROSS_DONOR_ISOLATION_V1_TEMP_2026_06_09.zip"
 
 
 def load_v3_module():

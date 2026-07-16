@@ -24,8 +24,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -34,13 +34,13 @@ from proteusgen.pdsprj import read_internal_file, write_project_from_parts  # no
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 
-V5_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_source_passive_v5_fixed_v3_order_temp.py"
+V5_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_source_passive_v5_fixed_v3_order_temp.py"
 USER_FIXED = Path(r"C:\Users\tahab\Downloads\SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF.pdsprj")
 BASE_FIXTURE_ID = "e001_empty"
 RCL_DONOR_ID = "rcl_4x_t07_unit_donor"
 
-OUT_ROOT = REPO_ROOT / "experiments" / "source_passive_v8_compact_fixed_suffix_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_TEMP_2026_06_05"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "source_passive_v8_compact_fixed_suffix_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_TEMP_2026_06_05"
 TEST_BATCH = OUT_ROOT / "SOURCE_PASSIVE_V8_COMPACT_FIXED_SUFFIX_TEST_BATCH"
 DONOR_ROOT = OUT_ROOT / "donors"
 

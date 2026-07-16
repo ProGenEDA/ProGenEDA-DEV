@@ -20,19 +20,19 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
-HELPER_PATH = ROOT / "tools/proteus_generation/2026-06-16/generate_mega_bare_separation_v1_temp.py"
+HELPER_PATH = ROOT / "proteus/experiments/runners/2026-06-16/generate_mega_bare_separation_v1_temp.py"
 OUT_DIR = ROOT / "experiments/mega_bare_pair_matrix_v2_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/MEGA_BARE_PAIR_MATRIX_V2_TEMP_2026_06_16.zip"
 MEGA_NO_SOURCE = (
     ROOT
-    / "proteus_ic/donors/manual_downloads_20260616/mega_component_placer/Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj"
+    / "proteus/archive/donors/manual_downloads_20260616/mega_component_placer/Mega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistor.pdsprj"
 )
 
 COUNT_CHOICES = (1, 3, 5, 15, 23)

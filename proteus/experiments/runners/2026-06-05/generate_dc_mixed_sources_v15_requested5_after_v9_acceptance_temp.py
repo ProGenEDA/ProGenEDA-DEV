@@ -20,10 +20,10 @@ from pathlib import Path
 from typing import Any
 
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-V14_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_dc_mixed_sources_v14_requested5_v13_method_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_mixed_sources_v15_requested5_after_v9_acceptance_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_MIXED_SOURCES_V15_REQUESTED5_AFTER_V9_ACCEPTANCE_TEMP_2026_06_05"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+V14_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_dc_mixed_sources_v14_requested5_v13_method_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v15_requested5_after_v9_acceptance_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_MIXED_SOURCES_V15_REQUESTED5_AFTER_V9_ACCEPTANCE_TEMP_2026_06_05"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 

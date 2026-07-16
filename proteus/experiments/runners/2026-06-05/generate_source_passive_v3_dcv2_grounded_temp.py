@@ -22,8 +22,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -32,9 +32,9 @@ from proteusgen.mixed_rcl import BASE_PROJECT, GENERATOR_TARGET, MixedRclCircuit
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 
-V14_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_dc_mixed_sources_v14_requested5_v13_method_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "source_passive_v3_dcv2_grounded_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEMP_2026_06_05"
+V14_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_dc_mixed_sources_v14_requested5_v13_method_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "source_passive_v3_dcv2_grounded_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEMP_2026_06_05"
 DONOR_ROOT = OUT_ROOT / "donors"
 TEST_BATCH = OUT_ROOT / "SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEST_BATCH"
 

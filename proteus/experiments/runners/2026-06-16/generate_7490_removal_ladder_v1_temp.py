@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -25,10 +25,10 @@ from src.proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 
-DONOR = ROOT / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/6_7490_withallcombunationaland21RLC.pdsprj"
-SOLO = ROOT / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/7490.pdsprj"
-TWO = ROOT / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/2_7490.pdsprj"
-FOUR = ROOT / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/4_7490.pdsprj"
+DONOR = ROOT / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal/7490/6_7490_withallcombunationaland21RLC.pdsprj"
+SOLO = ROOT / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal/7490/7490.pdsprj"
+TWO = ROOT / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal/7490/2_7490.pdsprj"
+FOUR = ROOT / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal/7490/4_7490.pdsprj"
 OUT_DIR = ROOT / "experiments/ic_7490_removal_ladder_v1_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/IC_7490_REMOVAL_LADDER_V1_TEMP_2026_06_16.zip"
 

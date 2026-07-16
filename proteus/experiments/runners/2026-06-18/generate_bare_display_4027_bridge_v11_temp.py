@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -28,7 +28,7 @@ from src.proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 
-V9_PATH = ROOT / "tools/proteus_generation/2026-06-18/generate_bare_display_mega_acceptance_v9_temp.py"
+V9_PATH = ROOT / "proteus/experiments/runners/2026-06-18/generate_bare_display_mega_acceptance_v9_temp.py"
 OUT_DIR = ROOT / "experiments/bare_display_4027_bridge_v11_temp_2026_06_18"
 ZIP_OUT = ROOT / "experiments/BARE_DISPLAY_4027_BRIDGE_V11_TEMP_2026_06_18.zip"
 

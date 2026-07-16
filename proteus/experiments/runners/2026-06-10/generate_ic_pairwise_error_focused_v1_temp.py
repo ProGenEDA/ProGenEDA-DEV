@@ -25,13 +25,13 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
-REPO = Path(__file__).resolve().parents[3]
-OUT_ROOT = REPO / "experiments" / "ic_pairwise_error_focused_v1_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_pairwise_error_focused_v1_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_PAIRWISE_ERROR_FOCUSED_V1_TEMP_2026_06_10.zip"
 
 
 def _load_ic_module():
-    script = REPO / "src" / "proteusgen" / "ic_combinational.py"
+    script = REPO / "proteus" / "active" / "src" / "proteusgen" / "ic_combinational.py"
     spec = importlib.util.spec_from_file_location("ic_combinational_pairwise_focus", script)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Cannot load {script}")

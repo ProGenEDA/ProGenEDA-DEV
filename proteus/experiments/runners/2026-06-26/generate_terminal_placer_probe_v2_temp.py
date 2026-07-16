@@ -5,8 +5,8 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import (  # noqa: E402
     MAIN_MEGA_NO_SOURCE_DONOR,
@@ -20,8 +20,8 @@ from proteusgen.component_terminal_placer import (  # noqa: E402
 )
 
 
-OUT_DIR = ROOT / "experiments" / "terminal_placer_bidir_probe_v2_all_families_temp_2026_06_26"
-ARCHIVE = ROOT / "experiments" / "TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip"
+OUT_DIR = ROOT / "proteus" / "experiments" / "runs" / "terminal_placer_bidir_probe_v2_all_families_temp_2026_06_26"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "TERMINAL_PLACER_BIDIR_PROBE_V2_ALL_FAMILIES_TEMP_2026_06_26.zip"
 
 
 CASES = [

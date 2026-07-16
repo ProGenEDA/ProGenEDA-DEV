@@ -16,9 +16,9 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_catalog import load_component_catalog  # noqa: E402
 from proteusgen.component_placer import (  # noqa: E402
@@ -33,9 +33,9 @@ from proteusgen.pdsprj import read_internal_file  # noqa: E402
 from proteusgen.resistor_v9 import _extract_object_chunk  # noqa: E402
 
 
-OUT_ROOT = ROOT / "experiments" / "current_group_mixed_tail_oracle_v1_temp_2026_07_12"
+OUT_ROOT = ROOT / "proteus" / "experiments" / "runs" / "current_group_mixed_tail_oracle_v1_temp_2026_07_12"
 DONOR = ROOT / NEW_COMPONENT_MEGA_DONOR
-CATALOGUE_PATH = ROOT / "knowledge" / "component_catalog_v0.json"
+CATALOGUE_PATH = ROOT / "proteus" / "active" / "knowledge" / "component_catalog_v0.json"
 ROUTE_LIMIT_KEY = "current_group_mixed_tail"
 SCALES = (1, 9, 15, 23)
 

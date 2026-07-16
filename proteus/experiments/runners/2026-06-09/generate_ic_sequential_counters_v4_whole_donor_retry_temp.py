@@ -19,10 +19,10 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SCRIPT_V2 = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
-OUT_ROOT = REPO / "experiments" / "ic_sequential_counters_v4_whole_donor_retry_temp_2026_06_09"
-ARCHIVE_PATH = REPO / "experiments" / "IC_SEQUENTIAL_COUNTERS_V4_WHOLE_DONOR_RETRY_TEMP_2026_06_09.zip"
+REPO = Path(__file__).resolve().parents[4]
+SCRIPT_V2 = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_sequential_counters_v4_whole_donor_retry_temp_2026_06_09"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_SEQUENTIAL_COUNTERS_V4_WHOLE_DONOR_RETRY_TEMP_2026_06_09.zip"
 
 
 def load_v2_module():

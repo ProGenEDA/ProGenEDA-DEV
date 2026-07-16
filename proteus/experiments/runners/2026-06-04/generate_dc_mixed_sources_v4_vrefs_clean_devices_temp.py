@@ -36,12 +36,12 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
 
 ARCHIVED_4X_DCV = (
     REPO_ROOT
@@ -78,8 +78,8 @@ def _load_v1() -> Any:
 
 v1 = _load_v1()
 
-v1.OUT_ROOT = REPO_ROOT / "experiments" / "dc_mixed_sources_v4_vrefs_clean_devices_temp_2026_06_04"
-v1.ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_TEMP_2026_06_04"
+v1.OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v4_vrefs_clean_devices_temp_2026_06_04"
+v1.ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_TEMP_2026_06_04"
 v1.DONOR_ROOT = v1.OUT_ROOT / "donors"
 v1.TEST_BATCH = v1.OUT_ROOT / "DC_MIXED_SOURCES_V4_VREFS_CLEAN_DEVICES_TEST_BATCH"
 

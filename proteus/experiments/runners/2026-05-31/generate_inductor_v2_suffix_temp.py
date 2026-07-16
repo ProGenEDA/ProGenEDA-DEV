@@ -16,8 +16,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-05-31" / "generate_inductor_v1_terminal_temp.py"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-05-31" / "generate_inductor_v1_terminal_temp.py"
 spec = importlib.util.spec_from_file_location("inductor_v1", V1_PATH)
 if spec is None or spec.loader is None:
     raise RuntimeError("Could not load inductor V1 helper script.")
@@ -25,7 +25,7 @@ v1 = importlib.util.module_from_spec(spec)
 sys.modules["inductor_v1"] = v1
 spec.loader.exec_module(v1)
 
-OUT_ROOT = REPO_ROOT / "experiments" / "inductor_v2_suffix_temp_2026_05_31"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "inductor_v2_suffix_temp_2026_05_31"
 
 
 def _donor_suffix(record: bytes) -> int:
@@ -342,7 +342,7 @@ def main() -> int:
         + "\n",
         encoding="utf-8",
     )
-    shutil.make_archive(str(REPO_ROOT / "experiments" / "INDUCTOR_V2_SUFFIX_TEMP_2026_05_31"), "zip", OUT_ROOT)
+    shutil.make_archive(str(REPO_ROOT / "proteus" / "experiments" / "runs" / "INDUCTOR_V2_SUFFIX_TEMP_2026_05_31"), "zip", OUT_ROOT)
     print(json.dumps({"out_root": str(OUT_ROOT), "test_order": summary["test_order"]}, indent=2))
     return 0
 

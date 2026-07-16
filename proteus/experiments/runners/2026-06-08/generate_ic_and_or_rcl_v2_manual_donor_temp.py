@@ -18,8 +18,8 @@ from pathlib import Path
 from types import ModuleType
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -30,9 +30,9 @@ from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
 MANUAL_DONOR = Path(r"C:\Users\tahab\Downloads\ddddddddzzzzzzzzzz.pdsprj")
-V1_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-08" / "generate_ic_and_or_rcl_v1_temp.py"
-OUT_ROOT = REPO / "experiments" / "ic_and_or_rcl_v2_manual_donor_temp_2026_06_08"
-ARCHIVE_PATH = REPO / "experiments" / "IC_AND_OR_RCL_V2_MANUAL_DONOR_TEMP_2026_06_08.zip"
+V1_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-08" / "generate_ic_and_or_rcl_v1_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_and_or_rcl_v2_manual_donor_temp_2026_06_08"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_AND_OR_RCL_V2_MANUAL_DONOR_TEMP_2026_06_08.zip"
 
 MARKERS = (
     b"74HC08",

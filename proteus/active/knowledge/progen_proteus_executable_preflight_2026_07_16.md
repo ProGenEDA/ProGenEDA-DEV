@@ -25,9 +25,9 @@ locked shared Proteus route:
 - `fixtures/`
 - `knowledge/component_catalog_v0.json`
 - `knowledge/validator_history_rules.json`
-- `proteus_ic/registry/trusted_donor_manifest.json`
-- `proteus_ic/registry/native_components.json` (normalization/marker metadata)
-- `proteus_ic/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`
+- `evidence/registry/trusted_donor_manifest.json`
+- `evidence/registry/native_components.json` (normalization/marker metadata)
+- `evidence/donors/manual_downloads_20260618/new_component_mega/new_components_5x_mega.pdsprj`
 
 It does not package KiCad code or data. `templates.repository_root()` resolves
 the PyInstaller `_MEIPASS` extraction root before normal source-checkout
@@ -35,15 +35,18 @@ discovery, so the bundled fixtures and locked donor are used at runtime.
 
 ## Verification
 
-- `python -m pytest tests/test_proteus_app.py tests/test_component_value_changer.py -q`: **12 passed**
-- `python -m compileall -q src tests tools`: **passed**
+- `python -m pytest proteus/active/tests -q`: **418 passed, 13 documented
+  historical expected failures, 78 subtests passed**
+- `python -m compileall -q proteus/active/src proteus/active/tests
+  proteus/active/tools proteus/experiments/runners`: **passed**
 - Built `release/ProgenProteus.exe` with PyInstaller 6.21.0: **passed**
 - Actual executable `generate` invocation using
   `examples/progen_proteus_r_c_value_edit.json`: **passed**
   - produced one R/C design through placement, beautification, shared terminal
     placement, and post-terminal edits;
   - emitted four terminal records and four nonzero WIRE records.
-- Local Proteus 8 disposable-copy gate: **passed**
+- Local Proteus 8 disposable-copy gate through
+  `tools/invoke_local_proteus_gate.ps1`: **passed**
   - cold open after 12 seconds: no Bad Object Record, Fatal Error, LXLCORE, or
     device-library dialog;
   - cold reopen after 12 seconds: same result.

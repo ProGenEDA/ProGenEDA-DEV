@@ -23,8 +23,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -32,10 +32,10 @@ from proteusgen.mixed_rcl_examples import mixed_rcl_15_cases  # noqa: E402
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 
-V8_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-03" / "generate_dc_sources_v8_15_voltage_15_current_temp.py"
-V13_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_dc_mixed_sources_v13_v0_source_geometry_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_voltage_v15_15_rcl_topologies_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_TEMP_2026_06_05"
+V8_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-03" / "generate_dc_sources_v8_15_voltage_15_current_temp.py"
+V13_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_dc_mixed_sources_v13_v0_source_geometry_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_voltage_v15_15_rcl_topologies_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_VOLTAGE_V15_15_RCL_TOPOLOGIES_TEMP_2026_06_05"
 DONOR_ROOT = OUT_ROOT / "donors"
 TEST_BATCH = OUT_ROOT / "DCV_V15_15_RCL_TOPOLOGIES_TEST_BATCH"
 

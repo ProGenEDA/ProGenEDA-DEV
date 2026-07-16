@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -31,7 +31,7 @@ from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 from src.proteusgen.templates import FixtureRegistry
 
 
-DONOR_DIR = ROOT / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490"
+DONOR_DIR = ROOT / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal/7490"
 HOST6 = DONOR_DIR / "6_7490_withallcombunationaland21RLC.pdsprj"
 SOLO1 = DONOR_DIR / "7490.pdsprj"
 TWO2 = DONOR_DIR / "2_7490.pdsprj"

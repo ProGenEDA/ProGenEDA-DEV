@@ -20,8 +20,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -30,11 +30,11 @@ from proteusgen.pdsprj import read_internal_file  # noqa: E402
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen import resistor_v9 as rv9  # noqa: E402
 
-OUT_ROOT = REPO_ROOT / "experiments" / "ac_voltage_v2_nonfinal_source_unit_temp_2026_06_04"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_TEMP_2026_06_04"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "ac_voltage_v2_nonfinal_source_unit_temp_2026_06_04"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "AC_VOLTAGE_V2_NONFINAL_SOURCE_UNIT_TEMP_2026_06_04"
 DONOR_ROOT = OUT_ROOT / "donors"
 TEST_BATCH = OUT_ROOT / "ACV_V2_NONFINAL_SOURCE_UNIT_TEST_BATCH"
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_ac_voltage_v1_source_diagnostics_temp.py"
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_ac_voltage_v1_source_diagnostics_temp.py"
 
 
 def _load_v1() -> Any:

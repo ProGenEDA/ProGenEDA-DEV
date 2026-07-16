@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -44,7 +44,7 @@ from src.proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 
-DONOR_DIR = ROOT / "proteus_ic/donors/manual_downloads_20260616/mega_component_placer"
+DONOR_DIR = ROOT / "proteus/archive/donors/manual_downloads_20260616/mega_component_placer"
 OUT_DIR = ROOT / "experiments/bare_display_mega_focus_v8_temp_2026_06_18"
 ZIP_OUT = ROOT / "experiments/BARE_DISPLAY_MEGA_FOCUS_V8_TEMP_2026_06_18.zip"
 

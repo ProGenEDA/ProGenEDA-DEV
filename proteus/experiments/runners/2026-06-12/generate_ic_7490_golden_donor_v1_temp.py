@@ -35,13 +35,13 @@ from proteusgen.resistor_v9 import _extract_object_chunk
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 DONOR = REPO / (
-    "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490/"
+    "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal/7490/"
     "2_7490_withallcombunationaland21RLC.pdsprj"
 )
-OUT_ROOT = REPO / "experiments" / "ic_7490_golden_donor_v1_temp_2026_06_12"
-ARCHIVE = REPO / "experiments" / "IC_7490_GOLDEN_DONOR_V1_TEMP_2026_06_12.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_7490_golden_donor_v1_temp_2026_06_12"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "IC_7490_GOLDEN_DONOR_V1_TEMP_2026_06_12.zip"
 
 MARKERS = (
     b"7490",
@@ -517,7 +517,7 @@ def build_output(case: dict[str, object], case_dir: Path) -> dict[str, object]:
 
 
 def write_inventory() -> dict[str, object]:
-    root = REPO / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal"
+    root = REPO / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal"
     rows: list[dict[str, object]] = []
     for donor in sorted(root.rglob("*.pdsprj")):
         try:
@@ -547,11 +547,11 @@ def write_inventory() -> dict[str, object]:
     inventory = {
         "schema": "proteus-donor-inventory/v0.1",
         "source": "C:/Users/tahab/Downloads/ICcombinationfinal",
-        "repo_copy": "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal",
+        "repo_copy": "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal",
         "donor_count": len(rows),
         "donors": rows,
     }
-    path = REPO / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal_inventory.json"
+    path = REPO / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal_inventory.json"
     path.write_text(json.dumps(inventory, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return inventory
 

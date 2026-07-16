@@ -34,11 +34,11 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from proteusgen.cdb import package_ref
 
 
-REPO = Path(__file__).resolve().parents[3]
-EXACT_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_exact_rezip_all_families_temp.py"
-CDB_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
-OUT_ROOT = REPO / "experiments" / "ic_pairwise_34_v1_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "IC_PAIRWISE_34_V1_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+EXACT_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_ic_exact_rezip_all_families_temp.py"
+CDB_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_pairwise_34_v1_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_PAIRWISE_34_V1_TEMP_2026_06_10.zip"
 
 PAIRWISE_SOURCE_EXCLUDED = {
     "T018_74HC4060_REPO_SINGLE_EXACT_REZIP",

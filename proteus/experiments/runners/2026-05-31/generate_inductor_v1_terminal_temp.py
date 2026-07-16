@@ -13,9 +13,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-if str(REPO_ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "src"))
+REPO_ROOT = Path(__file__).resolve().parents[4]
+if str(REPO_ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "proteus" / "active" / "src"))
 
 from proteusgen import resistor_v9 as rv9
 from proteusgen.pdsprj import read_internal_file, write_project_from_parts
@@ -28,7 +28,7 @@ IND_SIZE = 374
 WIRE_SIZE = 50
 POWER_BRIDGE_CORE_SIZE = 255
 IND_PROP_TEXT = b"{MODFILE=REALIND}\n{RP=1M}\n{ESR=0.2}\n{CP=0.2pF}\n\n\n\x00"
-OUT_ROOT = REPO_ROOT / "experiments" / "inductor_v1_terminal_temp_2026_05_31"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "inductor_v1_terminal_temp_2026_05_31"
 
 
 @dataclass(frozen=True)
@@ -401,7 +401,7 @@ def main() -> int:
         + "\n",
         encoding="utf-8",
     )
-    shutil.make_archive(str(REPO_ROOT / "experiments" / "INDUCTOR_V1_TERMINAL_TEMP_2026_05_31"), "zip", OUT_ROOT)
+    shutil.make_archive(str(REPO_ROOT / "proteus" / "experiments" / "runs" / "INDUCTOR_V1_TERMINAL_TEMP_2026_05_31"), "zip", OUT_ROOT)
     print(json.dumps({"out_root": str(OUT_ROOT), "test_order": summary["test_order"]}, indent=2))
     return 0
 

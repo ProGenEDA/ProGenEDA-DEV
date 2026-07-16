@@ -24,8 +24,8 @@ from itertools import combinations
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -41,9 +41,9 @@ from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 
 V1_SCRIPT = Path(__file__).with_name("generate_component_placer_seq_16x_v1_temp.py")
-DONOR = REPO / "proteus_ic" / "donors" / "manual_downloads_20260615" / "component_placer" / "16x_seq_combo_mega_donor.pdsprj"
-OUT_ROOT = REPO / "experiments" / "component_placer_seq_16x_v3_full_packets_temp_2026_06_15"
-ARCHIVE = REPO / "experiments" / "COMPONENT_PLACER_SEQ_16X_V3_FULL_PACKETS_TEMP_2026_06_15.zip"
+DONOR = REPO / "proteus" / "active" / "evidence" / "donors" / "manual_downloads_20260615" / "component_placer" / "16x_seq_combo_mega_donor.pdsprj"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "component_placer_seq_16x_v3_full_packets_temp_2026_06_15"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "COMPONENT_PLACER_SEQ_16X_V3_FULL_PACKETS_TEMP_2026_06_15.zip"
 
 SAME_FAMILY_COUNTS = (1, 3, 5, 15, 23)
 SEQUENTIAL_FAMILIES = (

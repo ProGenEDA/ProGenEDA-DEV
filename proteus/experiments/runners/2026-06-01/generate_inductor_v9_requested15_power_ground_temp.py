@@ -15,9 +15,9 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-OUT_ROOT = REPO_ROOT / "experiments" / "inductor_v9_requested15_power_ground_temp_2026_06_01"
-SOURCE_ROOT = REPO_ROOT / "experiments" / "requested_resistor_networks_oriented_2026_05_30"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "inductor_v9_requested15_power_ground_temp_2026_06_01"
+SOURCE_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "requested_resistor_networks_oriented_2026_05_30"
 V8_PATH = Path(__file__).with_name("generate_inductor_v8_six_donor_temp.py")
 
 
@@ -124,7 +124,7 @@ def main() -> int:
         encoding="utf-8",
     )
     shutil.copy(Path(__file__), OUT_ROOT / "generation_code_used.py")
-    shutil.make_archive(str(REPO_ROOT / "experiments" / "INDUCTOR_V9_REQUESTED15_POWER_GROUND_TEMP_2026_06_01"), "zip", OUT_ROOT)
+    shutil.make_archive(str(REPO_ROOT / "proteus" / "experiments" / "runs" / "INDUCTOR_V9_REQUESTED15_POWER_GROUND_TEMP_2026_06_01"), "zip", OUT_ROOT)
     print(json.dumps({"out_root": str(OUT_ROOT), "case_count": len(manifests), "test_order": summary["test_order"]}, indent=2))
     return 0
 

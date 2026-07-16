@@ -24,7 +24,7 @@ from itertools import combinations
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -33,7 +33,7 @@ from src.proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 
-DONOR = ROOT / "proteus_ic/donors/manual_downloads_20260615/component_placer/16x_seq_combo_mega_donor.pdsprj"
+DONOR = ROOT / "proteus/active/evidence/donors/manual_downloads_20260615/component_placer/16x_seq_combo_mega_donor.pdsprj"
 OUT_DIR = ROOT / "experiments/component_placer_seq_16x_v4_full_master_cdb_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/COMPONENT_PLACER_SEQ_16X_V4_FULL_MASTER_CDB_TEMP_2026_06_16.zip"
 

@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import (  # noqa: E402
     MAIN_MEGA_NO_SOURCE_DONOR,

@@ -18,8 +18,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -30,7 +30,7 @@ from proteusgen.resistor_ir import resistor_orientation_angle, visible_resistor_
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO_ROOT / "experiments" / "mixed_rcl_v7_resistor_suffix_order_temp_2026_06_01"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mixed_rcl_v7_resistor_suffix_order_temp_2026_06_01"
 V2_PATH = Path(__file__).with_name("generate_mixed_rcl_v2_v8_temp.py")
 V3_PATH = Path(__file__).with_name("generate_mixed_rcl_v3_isolation_temp.py")
 V6_PATH = Path(__file__).with_name("generate_mixed_rcl_v6_terminal_boundary_temp.py")

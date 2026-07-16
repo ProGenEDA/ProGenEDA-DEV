@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -30,7 +30,7 @@ from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 OUT_DIR = ROOT / "experiments/mega_bare_separation_v1_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/MEGA_BARE_SEPARATION_V1_TEMP_2026_06_16.zip"
-DONOR_DIR = ROOT / "proteus_ic/donors/manual_downloads_20260616/mega_component_placer"
+DONOR_DIR = ROOT / "proteus/archive/donors/manual_downloads_20260616/mega_component_placer"
 
 SEMI_NO_SOURCE = (
     DONOR_DIR

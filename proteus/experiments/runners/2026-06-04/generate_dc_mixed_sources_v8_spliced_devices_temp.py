@@ -24,8 +24,8 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, Literal
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -34,9 +34,9 @@ from proteusgen.pdsprj import read_internal_file, write_project_from_parts  # no
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_mixed_sources_v8_spliced_devices_temp_2026_06_04"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_MIXED_SOURCES_V8_SPLICED_DEVICES_TEMP_2026_06_04"
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v8_spliced_devices_temp_2026_06_04"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_MIXED_SOURCES_V8_SPLICED_DEVICES_TEMP_2026_06_04"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 USER_DONOR_ROOT = Path(r"C:\Users\tahab\Downloads\New folder (3)")

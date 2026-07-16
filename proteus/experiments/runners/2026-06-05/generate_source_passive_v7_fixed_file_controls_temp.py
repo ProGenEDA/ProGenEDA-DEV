@@ -22,8 +22,8 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -31,13 +31,13 @@ from proteusgen import mixed_rcl as rcl  # noqa: E402
 from proteusgen import resistor_v9 as rv9  # noqa: E402
 from proteusgen.pdsprj import read_internal_file, write_project_from_parts  # noqa: E402
 
-OUT_ROOT = REPO_ROOT / "experiments" / "source_passive_v7_fixed_file_controls_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_TEMP_2026_06_05"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "source_passive_v7_fixed_file_controls_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_TEMP_2026_06_05"
 TEST_BATCH = OUT_ROOT / "SOURCE_PASSIVE_V7_FIXED_FILE_CONTROLS_TEST_BATCH"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 USER_FIXED = Path(r"C:\Users\tahab\Downloads\SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF.pdsprj")
-E001_BASE = REPO_ROOT / "fixtures" / "pdsprj" / "control_e001_empty_base.pdsprj"
+E001_BASE = REPO_ROOT / "proteus" / "active" / "fixtures" / "pdsprj" / "control_e001_empty_base.pdsprj"
 REQUIRED_INTERNALS = ("PROJECT.XML", "ROOT.DSN", "ROOT.CDB", "SCRIPTS/PWRRAILS.DAT")
 
 

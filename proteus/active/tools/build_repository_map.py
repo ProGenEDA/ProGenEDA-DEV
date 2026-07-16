@@ -204,6 +204,17 @@ def _migrate_old_path(old_path: str) -> str | None:
         "knowledge/value_and_properties_editor_preflight_2026_07_16.md",
     }:
         return "proteus/active/" + old_path
+    if old_path in {
+        "docs/README.md",
+        "docs/architecture.md",
+        "docs/beautifier.md",
+        "docs/component_placer_pipeline.md",
+        "docs/current_limitations_bridges_costs_and_roadmap.md",
+        "docs/generator_design.md",
+        "docs/progen_eda_canonical_pipeline.md",
+        "docs/validator_design.md",
+    }:
+        return "proteus/active/" + old_path
     archive_donor_prefixes = (
         "proteus_ic/donors/manual_downloads_20260616/",
         "proteus_ic/donors/manual_downloads_20260619/",
@@ -282,6 +293,7 @@ def _infer_origin(destination: str, baseline_paths: set[str], origins: dict[str,
         ("proteus/archive/historical_examples/final/", "final/"),
         ("proteus/archive/docs/main_learning/", "main learning/"),
         ("proteus/archive/docs/proteus_ic/", "proteus_ic/docs/"),
+        ("proteus/active/docs/", "docs/"),
         ("proteus/archive/docs/", "docs/"),
         ("proteus/archive/knowledge/", "knowledge/"),
         ("proteus/archive/historical_examples/examples/", "examples/"),

@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -27,7 +27,7 @@ from src.proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 
-DONOR_DIR = ROOT / "proteus_ic/donors/manual_downloads_20260618/new_component_mega"
+DONOR_DIR = ROOT / "proteus/active/evidence/donors/manual_downloads_20260618/new_component_mega"
 SINGLE_DONOR = DONOR_DIR / "new_components_single_mega.pdsprj"
 FIVE_X_DONOR = DONOR_DIR / "new_components_5x_mega.pdsprj"
 

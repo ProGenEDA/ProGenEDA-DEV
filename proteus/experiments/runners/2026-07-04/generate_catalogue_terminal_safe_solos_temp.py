@@ -24,8 +24,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -43,10 +43,10 @@ from proteusgen.component_terminal_placer import (  # noqa: E402
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 
 
-OUTPUT_ROOT = REPO / "experiments" / "terminal_recovery_solo_1x_catalogue_v2_temp_2026_07_08"
-ARCHIVE = REPO / "experiments" / "TERMINAL_RECOVERY_SOLO_1X_CATALOGUE_V2_TEMP_2026_07_08.zip"
+OUTPUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "terminal_recovery_solo_1x_catalogue_v2_temp_2026_07_08"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "TERMINAL_RECOVERY_SOLO_1X_CATALOGUE_V2_TEMP_2026_07_08.zip"
 
-DONOR_BASE = REPO / "experiments" / "multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04"
+DONOR_BASE = REPO / "proteus" / "experiments" / "runs" / "multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04"
 TWO_PIN_DONOR = _repo_path(NEW_COMPONENT_MEGA_DONOR)
 
 ACCEPTED_TWO_PIN_FAMILIES = (

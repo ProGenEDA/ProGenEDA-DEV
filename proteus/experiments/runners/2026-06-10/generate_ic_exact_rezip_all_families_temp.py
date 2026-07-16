@@ -22,10 +22,10 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
-REPO = Path(__file__).resolve().parents[3]
-SEQ_HELPER = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
-OUT_ROOT = REPO / "experiments" / "ic_exact_rezip_all_families_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+SEQ_HELPER = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_exact_rezip_all_families_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_EXACT_REZIP_ALL_FAMILIES_TEMP_2026_06_10.zip"
 
 
 def _load_seq_helper():
@@ -51,7 +51,7 @@ class ExactRezipCase:
 
 
 def donor(relative: str) -> Path:
-    return REPO / "proteus_ic" / "donors" / relative
+    return REPO / "proteus" / "active" / "evidence" / "donors" / relative
 
 
 CASES: tuple[ExactRezipCase, ...] = (

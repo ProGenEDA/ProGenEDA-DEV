@@ -22,16 +22,16 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
-V12_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-03" / "generate_dc_current_v12_manual_testing_study_temp.py"
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
+V12_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-03" / "generate_dc_current_v12_manual_testing_study_temp.py"
 
-OUT_ROOT = REPO_ROOT / "experiments" / "mx5"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "MX5"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mx5"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "MX5"
 DONOR_ROOT = OUT_ROOT / "d"
 
 ARCHIVED_4X_DCV = (

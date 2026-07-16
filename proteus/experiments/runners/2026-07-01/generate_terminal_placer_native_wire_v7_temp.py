@@ -10,8 +10,8 @@ from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.bidirectional import extract_bidir_records  # noqa: E402
 from proteusgen.component_beautifier import MIXED_LAYOUT_BAND_GAP_Y  # noqa: E402
@@ -306,11 +306,11 @@ the connections.
 
 
 def main() -> None:
-    experiment = ROOT / "experiments" / EXPERIMENT_NAME
-    archive = ROOT / "experiments" / ARCHIVE_NAME
+    experiment = ROOT / "proteus" / "experiments" / "runs" / EXPERIMENT_NAME
+    archive = ROOT / "proteus" / "experiments" / "runs" / ARCHIVE_NAME
     if experiment.exists():
         resolved = experiment.resolve()
-        experiments_root = (ROOT / "experiments").resolve()
+        experiments_root = (ROOT / "proteus" / "experiments" / "runs").resolve()
         if experiments_root not in resolved.parents:
             raise RuntimeError(f"Refusing to remove unexpected path: {resolved}")
         shutil.rmtree(resolved)

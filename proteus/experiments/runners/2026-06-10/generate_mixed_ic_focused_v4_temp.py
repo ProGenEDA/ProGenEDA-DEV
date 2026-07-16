@@ -23,11 +23,11 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from proteusgen.cdb import CdbPropertyRow, build_cdb_from_rows, parse_cdb
 
 
-REPO = Path(__file__).resolve().parents[3]
-ACCEPTED_V1_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_accepted_v1_temp.py"
-SUBSET_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_analog_subset_v1_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_focused_v4_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_FOCUSED_V4_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+ACCEPTED_V1_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_cross_donor_accepted_v1_temp.py"
+SUBSET_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_analog_subset_v1_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_focused_v4_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_FOCUSED_V4_TEMP_2026_06_10.zip"
 
 OLD_4060_PROPS = b"{ITFMOD=CMOS}\n{PACKAGE=DIL16}\n"
 
@@ -422,21 +422,21 @@ WHOLE_DONOR_CASES: tuple[WholeDonorCase, ...] = (
     WholeDonorCase(
         "T05_4060_RLC_MODFILE_MDF",
         "74HC4060 with RLC, patched in both DSN and CDB to add MODFILE=4060.MDF and VOLTAGE=4.5V.",
-        REPO / "proteus_ic" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj",
         ("74HC4060", "RESISTOR", "CAPACITOR", "REALIND"),
         patch_4060_model="4060.MDF",
     ),
     WholeDonorCase(
         "T06_4060_RLC_MODFILE_NOEXT",
         "74HC4060 with RLC, patched in both DSN and CDB to add MODFILE=4060 and VOLTAGE=4.5V.",
-        REPO / "proteus_ic" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj",
         ("74HC4060", "RESISTOR", "CAPACITOR", "REALIND"),
         patch_4060_model="4060",
     ),
     WholeDonorCase(
         "T09_NE555_RLC_LABEL_MUTATION",
         "NE555 with RLC, topology-preserving terminal label mutation retained as a real edit rather than an exact copy.",
-        REPO / "proteus_ic" / "donors" / "analog_misc_batch1" / "2_NE555WITHRLC.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "analog_misc_batch1" / "2_NE555WITHRLC.pdsprj",
         ("NE555", "RESISTOR", "CAPACITOR", "REALIND"),
         mutate_labels=True,
     ),

@@ -13,9 +13,9 @@ import shutil
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-OUT_ROOT = REPO / "experiments" / "ic_7490_focused_v1_temp_2026_06_12"
-ARCHIVE = REPO / "experiments" / "IC_7490_FOCUSED_V1_TEMP_2026_06_12.zip"
+REPO = Path(__file__).resolve().parents[4]
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_7490_focused_v1_temp_2026_06_12"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "IC_7490_FOCUSED_V1_TEMP_2026_06_12.zip"
 
 from proteusgen.ic_native import NativeRegistry, generate_ic_native_project_from_payload, read_internal_file  # noqa: E402
 from proteusgen.resistor_v9 import _extract_object_chunk  # noqa: E402

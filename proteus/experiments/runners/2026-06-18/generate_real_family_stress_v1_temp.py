@@ -25,7 +25,7 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -36,11 +36,11 @@ from src.proteusgen.bidirectional import ORIENTATION_BY_TERMINAL_ROLE
 from src.proteusgen.templates import FixtureRegistry
 
 
-HELPER_PATH = ROOT / "tools/proteus_generation/2026-06-16/generate_mega_bare_separation_v1_temp.py"
-V9_PATH = ROOT / "tools/proteus_generation/2026-06-18/generate_bare_display_mega_acceptance_v9_temp.py"
-V11_PATH = ROOT / "tools/proteus_generation/2026-06-18/generate_bare_display_4027_bridge_v11_temp.py"
-BIDIR_PATH = ROOT / "tools/proteus_generation/2026-06-07/bidirectional_temp.py"
-DONOR_DIR = ROOT / "proteus_ic/donors/main_mega_20260618"
+HELPER_PATH = ROOT / "proteus/experiments/runners/2026-06-16/generate_mega_bare_separation_v1_temp.py"
+V9_PATH = ROOT / "proteus/experiments/runners/2026-06-18/generate_bare_display_mega_acceptance_v9_temp.py"
+V11_PATH = ROOT / "proteus/experiments/runners/2026-06-18/generate_bare_display_4027_bridge_v11_temp.py"
+BIDIR_PATH = ROOT / "proteus/experiments/runners/2026-06-07/bidirectional_temp.py"
+DONOR_DIR = ROOT / "proteus/active/evidence/donors/main_mega_20260618"
 SOURCE_DONOR = (
     DONOR_DIR
     / "15xsemimega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistorandsources.pdsprj"

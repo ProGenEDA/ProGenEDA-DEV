@@ -6,15 +6,15 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import generate_component_placement_project
 
 
-OUT_DIR = ROOT / "experiments" / "beautifier_coordinate_stage_v2_temp_2026_06_22"
-ARCHIVE = ROOT / "experiments" / "BEAUTIFIER_COORDINATE_STAGE_V2_TEMP_2026_06_22.zip"
+OUT_DIR = ROOT / "proteus" / "experiments" / "runs" / "beautifier_coordinate_stage_v2_temp_2026_06_22"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BEAUTIFIER_COORDINATE_STAGE_V2_TEMP_2026_06_22.zip"
 
 
 CASES = [

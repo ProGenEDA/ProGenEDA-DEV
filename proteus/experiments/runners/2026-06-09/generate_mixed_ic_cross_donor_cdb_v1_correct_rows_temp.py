@@ -30,10 +30,10 @@ from proteusgen.cdb import (
 )
 
 
-REPO = Path(__file__).resolve().parents[3]
-ISO_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_cross_donor_cdb_v1_correct_rows_temp_2026_06_09"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09.zip"
+REPO = Path(__file__).resolve().parents[4]
+ISO_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_cross_donor_cdb_v1_correct_rows_temp_2026_06_09"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_CROSS_DONOR_CDB_V1_CORRECT_ROWS_TEMP_2026_06_09.zip"
 
 
 def load_iso_v2_module():

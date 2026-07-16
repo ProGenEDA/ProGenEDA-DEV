@@ -10,8 +10,8 @@ import zipfile
 from pathlib import Path
 from typing import Any, Callable
 
-ROOT = Path(__file__).resolve().parents[3]
-SRC = ROOT / "src"
+ROOT = Path(__file__).resolve().parents[4]
+SRC = ROOT / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 if str(Path(__file__).resolve().parent) not in sys.path:
@@ -41,8 +41,8 @@ from bidirectional_temp import (
 )
 
 
-OUT = ROOT / "experiments" / "bidirectional_v2_orientation_dcv_temp_2026_06_07"
-ARCHIVE = ROOT / "experiments" / "BIDIRECTIONAL_V2_ORIENTATION_DCV_TEMP_2026_06_07.zip"
+OUT = ROOT / "proteus" / "experiments" / "runs" / "bidirectional_v2_orientation_dcv_temp_2026_06_07"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BIDIRECTIONAL_V2_ORIENTATION_DCV_TEMP_2026_06_07.zip"
 USER_ONE_DCV = Path(r"C:\Users\tahab\Downloads\1DCV.pdsprj")
 USER_TWO_DCV = Path(r"C:\Users\tahab\Downloads\2DCV.pdsprj")
 V1_SAVED_T09 = (
@@ -53,7 +53,7 @@ V1_SAVED_T09 = (
     / "BIDIR"
     / "BIDIR_V1_T09_2DCV_RCL.pdsprj"
 )
-V1_DONORS = ROOT / "experiments" / "bidirectional_v1_temp_2026_06_07" / "donors"
+V1_DONORS = ROOT / "proteus" / "experiments" / "runs" / "bidirectional_v1_temp_2026_06_07" / "donors"
 
 
 def _sha256(data: bytes) -> str:

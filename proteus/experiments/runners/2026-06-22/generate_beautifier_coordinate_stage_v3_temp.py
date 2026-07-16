@@ -7,17 +7,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import generate_component_placement_project, normalize_component
 
 
-OUT_DIR = ROOT / "experiments" / "beautifier_coordinate_stage_v3_large_rules_temp_2026_06_22"
-ARCHIVE = ROOT / "experiments" / "BEAUTIFIER_COORDINATE_STAGE_V3_LARGE_RULES_TEMP_2026_06_22.zip"
-FIRST_30_DIR = ROOT / "experiments" / "component_placer_30_large_complex_v2_2026_06_21"
-SECOND_30_MANIFEST = ROOT / "experiments" / "component_placer_31_60_r91_safe_v1_2026_06_21" / "manifest.json"
+OUT_DIR = ROOT / "proteus" / "experiments" / "runs" / "beautifier_coordinate_stage_v3_large_rules_temp_2026_06_22"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BEAUTIFIER_COORDINATE_STAGE_V3_LARGE_RULES_TEMP_2026_06_22.zip"
+FIRST_30_DIR = ROOT / "proteus" / "experiments" / "runs" / "component_placer_30_large_complex_v2_2026_06_21"
+SECOND_30_MANIFEST = ROOT / "proteus" / "experiments" / "runs" / "component_placer_31_60_r91_safe_v1_2026_06_21" / "manifest.json"
 R91_LIMIT = 91
 
 

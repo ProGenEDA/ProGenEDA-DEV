@@ -15,7 +15,7 @@ import sys
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 V7_RUNNER = (
     ROOT
     / "tools"
@@ -113,7 +113,7 @@ def main() -> int:
     harness._readme = _readme
     harness.main()
 
-    experiment = ROOT / "experiments" / EXPERIMENT_NAME
+    experiment = ROOT / "proteus" / "experiments" / "runs" / EXPERIMENT_NAME
     shutil.copy(Path(__file__), experiment / "generation_code_used_v9.py")
     summary_path = experiment / "summary.json"
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
@@ -142,7 +142,7 @@ def main() -> int:
     )
     harness._write_deterministic_archive(
         experiment,
-        ROOT / "experiments" / ARCHIVE_NAME,
+        ROOT / "proteus" / "experiments" / "runs" / ARCHIVE_NAME,
     )
     print(json.dumps(summary, indent=2))
     return 0

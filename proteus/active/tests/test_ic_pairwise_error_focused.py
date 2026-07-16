@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def load_focused_module():
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_error_focused_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_error_focused_v1_temp.py"
     spec = importlib.util.spec_from_file_location("ic_pairwise_error_focused_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -49,7 +49,7 @@ def test_focused_s01_s02_uses_accepted_combinational_path(tmp_path: Path) -> Non
 
 
 def load_fixed_module():
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_error_fixed_v2_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_error_fixed_v2_temp.py"
     spec = importlib.util.spec_from_file_location("ic_pairwise_error_fixed_v2_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -60,7 +60,7 @@ def load_fixed_module():
 
 
 def load_comb_method_module():
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-11" / "generate_ic_pairwise_combinational_method_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-11" / "generate_ic_pairwise_combinational_method_v1_temp.py"
     spec = importlib.util.spec_from_file_location("ic_pairwise_combinational_method_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -71,7 +71,7 @@ def load_comb_method_module():
 
 
 def load_noncomb_master_module():
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-11" / "generate_ic_pairwise_noncomb_master_metadata_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-11" / "generate_ic_pairwise_noncomb_master_metadata_v1_temp.py"
     spec = importlib.util.spec_from_file_location("ic_pairwise_noncomb_master_metadata_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None

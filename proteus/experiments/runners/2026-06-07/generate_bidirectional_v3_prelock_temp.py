@@ -9,8 +9,8 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
-SRC = ROOT / "src"
+ROOT = Path(__file__).resolve().parents[4]
+SRC = ROOT / "proteus" / "active" / "src"
 HERE = Path(__file__).resolve().parent
 for entry in (str(SRC), str(HERE)):
     if entry not in sys.path:
@@ -30,9 +30,9 @@ from bidirectional_dcv_temp import load_dcv_unit_template
 from bidirectional_temp import load_templates
 
 
-OUT = ROOT / "experiments" / "bidirectional_v3_prelock_temp_2026_06_07"
-ARCHIVE = ROOT / "experiments" / "BIDIRECTIONAL_V3_PRELOCK_TEMP_2026_06_07.zip"
-V1_DONORS = ROOT / "experiments" / "bidirectional_v1_temp_2026_06_07" / "donors"
+OUT = ROOT / "proteus" / "experiments" / "runs" / "bidirectional_v3_prelock_temp_2026_06_07"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BIDIRECTIONAL_V3_PRELOCK_TEMP_2026_06_07.zip"
+V1_DONORS = ROOT / "proteus" / "experiments" / "runs" / "bidirectional_v1_temp_2026_06_07" / "donors"
 USER_ONE_DCV = Path(r"C:\Users\tahab\Downloads\1DCV.pdsprj")
 
 

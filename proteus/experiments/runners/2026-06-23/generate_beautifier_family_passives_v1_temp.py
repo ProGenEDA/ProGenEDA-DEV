@@ -7,15 +7,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import MAIN_MEGA_NO_SOURCE_DONOR, generate_component_placement_project
 
 
-OUT_DIR = ROOT / "experiments" / "beautifier_family_passives_v1_temp_2026_06_23"
-ARCHIVE = ROOT / "experiments" / "BEAUTIFIER_FAMILY_PASSIVES_V1_TEMP_2026_06_23.zip"
+OUT_DIR = ROOT / "proteus" / "experiments" / "runs" / "beautifier_family_passives_v1_temp_2026_06_23"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BEAUTIFIER_FAMILY_PASSIVES_V1_TEMP_2026_06_23.zip"
 
 
 CASES: list[dict[str, Any]] = [

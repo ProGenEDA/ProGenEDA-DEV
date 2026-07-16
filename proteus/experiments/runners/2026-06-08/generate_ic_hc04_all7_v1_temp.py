@@ -26,8 +26,8 @@ from pathlib import Path
 from types import ModuleType
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -39,12 +39,12 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _i32, _sha256_bytes, _
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO / "experiments" / "ic_hc04_all7_v1_temp_2026_06_08"
-ARCHIVE_PATH = REPO / "experiments" / "IC_HC04_ALL7_V1_TEMP_2026_06_08.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_hc04_all7_v1_temp_2026_06_08"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_HC04_ALL7_V1_TEMP_2026_06_08.zip"
 
-COMBINED_DEVICE_DONOR = REPO / "proteus_ic" / "donors" / "combined" / "ALLL_ICS_ALL4_RLC_HC04_20260608.pdsprj"
-HC08_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-08" / "generate_ic_hc08_logic_v1_temp.py"
-HC32_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-08" / "generate_ic_hc32_logic_v1_temp.py"
+COMBINED_DEVICE_DONOR = REPO / "proteus" / "active" / "evidence" / "donors" / "combined" / "ALLL_ICS_ALL4_RLC_HC04_20260608.pdsprj"
+HC08_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-08" / "generate_ic_hc08_logic_v1_temp.py"
+HC32_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-08" / "generate_ic_hc32_logic_v1_temp.py"
 
 QUAD_GATE_LETTERS = "ABCD"
 HEX_GATE_LETTERS = "ABCDEF"
@@ -185,7 +185,7 @@ FAMILIES = {
         "74hc08",
         "74HC08",
         "AND2",
-        REPO / "proteus_ic" / "donors" / "74hc08" / "IC_HC08_M01_ALL4_IO.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "74hc08" / "IC_HC08_M01_ALL4_IO.pdsprj",
         "hc08_script",
         b"{MODFILE=74AND2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         STANDARD_PINS,
@@ -196,7 +196,7 @@ FAMILIES = {
         "74hc32",
         "74HC32",
         "OR2",
-        REPO / "proteus_ic" / "donors" / "74hc32" / "IC_HC32_M02_ALL4_IO.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "74hc32" / "IC_HC32_M02_ALL4_IO.pdsprj",
         "hc32_script",
         b"{MODFILE=74OR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         STANDARD_PINS,
@@ -207,7 +207,7 @@ FAMILIES = {
         "74hc00",
         "74HC00",
         "NAND2",
-        REPO / "proteus_ic" / "donors" / "74hc00" / "IC_74HC00_M02_ALL4_IO.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "74hc00" / "IC_74HC00_M02_ALL4_IO.pdsprj",
         "terminal_first",
         b"{MODFILE=74NAND2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         NAND_PINS,
@@ -218,7 +218,7 @@ FAMILIES = {
         "74hc02",
         "74HC02",
         "NOR2",
-        REPO / "proteus_ic" / "donors" / "74hc02" / "IC_74HC02_M02_ALL4_IO.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "74hc02" / "IC_74HC02_M02_ALL4_IO.pdsprj",
         "component_first",
         b"{MODFILE=74NOR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         NOR_PINS,
@@ -229,7 +229,7 @@ FAMILIES = {
         "74hc86",
         "74HC86",
         "XOR2",
-        REPO / "proteus_ic" / "donors" / "74hc86" / "IC_74HC86_M02_ALL4_IO.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "74hc86" / "IC_74HC86_M02_ALL4_IO.pdsprj",
         "component_first",
         b"{MODFILE=74XOR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         STANDARD_PINS,
@@ -240,7 +240,7 @@ FAMILIES = {
         "74hc266",
         "74HC266",
         "XNOR2 candidate using observed 74XOR2 marker",
-        REPO / "proteus_ic" / "donors" / "74hc266" / "IC_74HC266_M02_ALL4_IO.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "74hc266" / "IC_74HC266_M02_ALL4_IO.pdsprj",
         "component_first",
         b"{MODFILE=74XOR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         XNOR_PINS,
@@ -251,7 +251,7 @@ FAMILIES = {
         "74hc04",
         "74HC04",
         "NOT1",
-        REPO / "proteus_ic" / "donors" / "74hc04" / "IC_74HC04_M04_LOGIC_CONSTANTS_PG.pdsprj",
+        REPO / "proteus" / "active" / "evidence" / "donors" / "74hc04" / "IC_74HC04_M04_LOGIC_CONSTANTS_PG.pdsprj",
         "hc04_unary",
         b"{MODFILE=74INV.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         NOT_PINS,

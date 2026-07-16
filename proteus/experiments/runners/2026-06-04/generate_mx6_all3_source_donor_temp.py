@@ -16,14 +16,14 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "mx6"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "MX6"
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mx6"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "MX6"
 DONOR_ROOT = OUT_ROOT / "d"
 
 ALL3_DONOR = Path(r"C:\Users\tahab\Downloads\45454New Project.pdsprj")

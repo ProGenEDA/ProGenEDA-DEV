@@ -7,9 +7,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_beautifier import _s32_at, layout_coordinate_pairs
 from proteusgen.component_placer import (
@@ -22,8 +22,8 @@ from proteusgen.component_placer import (
 )
 
 
-OUT_DIR = ROOT / "experiments" / "beautifier_resistor_coordinate_probe_v2_temp_2026_06_24"
-ARCHIVE = ROOT / "experiments" / "BEAUTIFIER_RESISTOR_COORDINATE_PROBE_V2_TEMP_2026_06_24.zip"
+OUT_DIR = ROOT / "proteus" / "experiments" / "runs" / "beautifier_resistor_coordinate_probe_v2_temp_2026_06_24"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BEAUTIFIER_RESISTOR_COORDINATE_PROBE_V2_TEMP_2026_06_24.zip"
 
 
 CASES: list[dict[str, Any]] = [

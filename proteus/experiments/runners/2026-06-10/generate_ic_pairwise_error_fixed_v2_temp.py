@@ -24,13 +24,13 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _sha256_bytes
 from proteusgen.templates import FixtureRegistry
 
 
-REPO = Path(__file__).resolve().parents[3]
-OUT_ROOT = REPO / "experiments" / "ic_pairwise_error_fixed_v2_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_pairwise_error_fixed_v2_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_PAIRWISE_ERROR_FIXED_V2_TEMP_2026_06_10.zip"
 
-FOCUSED_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_error_focused_v1_temp.py"
-PAIRWISE_V1_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_34_v1_temp.py"
-CDB_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
+FOCUSED_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_error_focused_v1_temp.py"
+PAIRWISE_V1_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_34_v1_temp.py"
+CDB_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
 
 COMBINATIONAL_SOURCE_FAMILY = {
     "S01": "74hc00",

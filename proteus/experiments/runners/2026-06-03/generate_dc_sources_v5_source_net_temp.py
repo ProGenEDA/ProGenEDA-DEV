@@ -25,8 +25,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -37,8 +37,8 @@ from proteusgen.pdsprj import read_internal_file, write_project_from_parts  # no
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_sources_v5_source_net_temp_2026_06_03"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_SOURCES_V5_SOURCE_NET_TEMP_2026_06_03"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_sources_v5_source_net_temp_2026_06_03"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_SOURCES_V5_SOURCE_NET_TEMP_2026_06_03"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 USER_DONOR_ROOT = Path(r"C:\Users\tahab\Downloads\New folder (3)")

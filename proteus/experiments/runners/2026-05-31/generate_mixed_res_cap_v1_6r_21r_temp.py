@@ -20,10 +20,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-TOOL_DIR_2026_05_30 = REPO_ROOT / "tools" / "proteus_generation" / "2026-05-30"
-TOOL_DIR_2026_05_31 = REPO_ROOT / "tools" / "proteus_generation" / "2026-05-31"
-for path in (REPO_ROOT / "src", TOOL_DIR_2026_05_30, TOOL_DIR_2026_05_31):
+REPO_ROOT = Path(__file__).resolve().parents[4]
+TOOL_DIR_2026_05_30 = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-05-30"
+TOOL_DIR_2026_05_31 = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-05-31"
+for path in (REPO_ROOT / "proteus" / "active" / "src", TOOL_DIR_2026_05_30, TOOL_DIR_2026_05_31):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
@@ -35,9 +35,9 @@ from proteusgen.resistor_ir import visible_resistor_value
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO_ROOT / "experiments" / "mixed_res_cap_v1_6r_21r_temp_2026_05_31"
-SOURCE_6R = REPO_ROOT / "experiments" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
-SOURCE_21R = REPO_ROOT / "experiments" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T02_R21_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mixed_res_cap_v1_6r_21r_temp_2026_05_31"
+SOURCE_6R = REPO_ROOT / "proteus" / "experiments" / "runs" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
+SOURCE_21R = REPO_ROOT / "proteus" / "experiments" / "runs" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T02_R21_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
 SAFE_X_STEP = 3810000
 SAFE_Y_STEP = 3810000
 BASE_X = -6858000

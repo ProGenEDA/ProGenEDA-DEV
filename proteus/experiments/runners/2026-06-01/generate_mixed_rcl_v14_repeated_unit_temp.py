@@ -24,8 +24,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -35,7 +35,7 @@ from proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO_ROOT / "experiments" / "mixed_rcl_v14_repeated_unit_temp_2026_06_02"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mixed_rcl_v14_repeated_unit_temp_2026_06_02"
 
 CAP_SIZE = 366
 IN_SIZE = 103
@@ -1008,7 +1008,7 @@ def main() -> int:
         encoding="utf-8",
     )
     shutil.copy(Path(__file__), OUT_ROOT / "generation_code_used.py")
-    archive = shutil.make_archive(str(REPO_ROOT / "experiments" / "MIXED_RCL_V14_REPEATED_UNIT_TEMP_2026_06_02"), "zip", OUT_ROOT)
+    archive = shutil.make_archive(str(REPO_ROOT / "proteus" / "experiments" / "runs" / "MIXED_RCL_V14_REPEATED_UNIT_TEMP_2026_06_02"), "zip", OUT_ROOT)
     print(json.dumps({"out_root": str(OUT_ROOT), "archive": archive, "case_count": len(cases), "test_order": summary["test_order"]}, indent=2))
     return 0
 

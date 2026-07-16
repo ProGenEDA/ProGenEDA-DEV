@@ -16,8 +16,8 @@ from collections import Counter
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -33,8 +33,8 @@ from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 
 V1_SCRIPT = Path(__file__).with_name("generate_component_placer_seq_16x_v1_temp.py")
-OUT_ROOT = REPO / "experiments" / "component_placer_seq_16x_v2_pruned_cdb_temp_2026_06_15"
-ARCHIVE = REPO / "experiments" / "COMPONENT_PLACER_SEQ_16X_V2_PRUNED_CDB_TEMP_2026_06_15.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "component_placer_seq_16x_v2_pruned_cdb_temp_2026_06_15"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "COMPONENT_PLACER_SEQ_16X_V2_PRUNED_CDB_TEMP_2026_06_15.zip"
 
 
 def _load_v1():

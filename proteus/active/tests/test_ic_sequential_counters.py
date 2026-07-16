@@ -9,33 +9,25 @@ from proteusgen.resistor_v9 import _extract_object_chunk
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v1_temp.py"
-SCRIPT_V2 = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
+SCRIPT = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_ic_sequential_counters_v1_temp.py"
+SCRIPT_V2 = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
 SCRIPT_V3 = (
-    ROOT
-    / "tools"
-    / "proteus_generation"
+    ROOT.parent / "experiments" / "runners"
     / "2026-06-09"
     / "generate_ic_sequential_counters_v3_mixed_retry_temp.py"
 )
 SCRIPT_V4 = (
-    ROOT
-    / "tools"
-    / "proteus_generation"
+    ROOT.parent / "experiments" / "runners"
     / "2026-06-09"
     / "generate_ic_sequential_counters_v4_whole_donor_retry_temp.py"
 )
 SCRIPT_BATCH3 = (
-    ROOT
-    / "tools"
-    / "proteus_generation"
+    ROOT.parent / "experiments" / "runners"
     / "2026-06-09"
     / "generate_ic_sequential_batch3_solo_temp.py"
 )
 SCRIPT_BATCH4 = (
-    ROOT
-    / "tools"
-    / "proteus_generation"
+    ROOT.parent / "experiments" / "runners"
     / "2026-06-09"
     / "generate_ic_sequential_batch4_solo_temp.py"
 )

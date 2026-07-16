@@ -19,10 +19,10 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from proteusgen.cdb import parse_cdb
 
 
-REPO = Path(__file__).resolve().parents[3]
-CDB_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_cross_donor_cdb_v3_t05_isolation_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_CROSS_DONOR_CDB_V3_T05_ISOLATION_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+CDB_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_cross_donor_cdb_v3_t05_isolation_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_CROSS_DONOR_CDB_V3_T05_ISOLATION_TEMP_2026_06_10.zip"
 
 
 def load_cdb_v2_module():

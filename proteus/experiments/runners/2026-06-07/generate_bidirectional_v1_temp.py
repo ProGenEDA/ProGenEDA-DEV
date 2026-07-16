@@ -36,8 +36,8 @@ from bidirectional_temp import (  # noqa: E402
 )
 
 USER_DONOR_ROOT = Path(r"C:\Users\tahab\Downloads\projects")
-OUT = ROOT / "experiments" / "bidirectional_v1_temp_2026_06_07"
-ARCHIVE = ROOT / "experiments" / "BIDIRECTIONAL_V1_TEMP_2026_06_07.zip"
+OUT = ROOT / "proteus" / "experiments" / "runs" / "bidirectional_v1_temp_2026_06_07"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BIDIRECTIONAL_V1_TEMP_2026_06_07.zip"
 
 DONOR_NAMES = (
     "bider_180bider_RCL_2ACC.pdsprj",

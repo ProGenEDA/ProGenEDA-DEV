@@ -20,8 +20,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -32,10 +32,10 @@ from proteusgen.resistor_ir import visible_resistor_value
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO_ROOT / "experiments" / "mixed_rcl_v11_scaled_temp_2026_06_01"
-SOURCE_6R = REPO_ROOT / "experiments" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
-SOURCE_21R = REPO_ROOT / "experiments" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T02_R21_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
-SOURCE_15_ROOT = REPO_ROOT / "experiments" / "requested_resistor_networks_oriented_2026_05_30"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mixed_rcl_v11_scaled_temp_2026_06_01"
+SOURCE_6R = REPO_ROOT / "proteus" / "experiments" / "runs" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T01_6R_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
+SOURCE_21R = REPO_ROOT / "proteus" / "experiments" / "runs" / "power_ground_endpoint_examples_2026_05_30" / "BOTH_T02_R21_V0_G0_SHORTWIRE_ATTEMPT" / "input.json"
+SOURCE_15_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "requested_resistor_networks_oriented_2026_05_30"
 V2_PATH = Path(__file__).with_name("generate_mixed_rcl_v2_v8_temp.py")
 V8_PATH = Path(__file__).with_name("generate_inductor_v8_six_donor_temp.py")
 V10_PATH = Path(__file__).with_name("generate_mixed_rcl_v10_terminal_rl_donor_temp.py")
@@ -719,7 +719,7 @@ def main() -> int:
         encoding="utf-8",
     )
     shutil.copy(Path(__file__), OUT_ROOT / "generation_code_used.py")
-    archive = shutil.make_archive(str(REPO_ROOT / "experiments" / "MIXED_RCL_V11_SCALED_TEMP_2026_06_01"), "zip", OUT_ROOT)
+    archive = shutil.make_archive(str(REPO_ROOT / "proteus" / "experiments" / "runs" / "MIXED_RCL_V11_SCALED_TEMP_2026_06_01"), "zip", OUT_ROOT)
     print(json.dumps({"out_root": str(OUT_ROOT), "archive": archive, "case_count": len(manifests), "test_order": summary["test_order"]}, indent=2))
     return 0
 

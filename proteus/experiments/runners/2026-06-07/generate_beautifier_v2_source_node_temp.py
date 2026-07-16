@@ -15,9 +15,9 @@ from proteusgen.mixed_rcl import generate_mixed_rcl_project_from_payload
 from proteusgen.mixed_rcl_examples import mixed_rcl_15_cases
 from proteusgen.source_driven import generate_source_driven_project_from_payload
 
-ROOT = Path(__file__).resolve().parents[3]
-OUT = ROOT / "experiments" / "beautifier_v2_source_node_temp_2026_06_07"
-ARCHIVE = ROOT / "experiments" / "BEAUTIFIER_V2_SOURCE_NODE_TEMP_2026_06_07.zip"
+ROOT = Path(__file__).resolve().parents[4]
+OUT = ROOT / "proteus" / "experiments" / "runs" / "beautifier_v2_source_node_temp_2026_06_07"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BEAUTIFIER_V2_SOURCE_NODE_TEMP_2026_06_07.zip"
 
 
 def _renamed(payload: dict[str, Any], name: str) -> dict[str, Any]:

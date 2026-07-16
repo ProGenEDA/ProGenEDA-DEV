@@ -16,16 +16,16 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-V3_SCRIPT = ROOT / "tools/proteus_generation/2026-06-16/generate_bare_visibility_rlc_anchor_v3_temp.py"
+ROOT = Path(__file__).resolve().parents[4]
+V3_SCRIPT = ROOT / "proteus/experiments/runners/2026-06-16/generate_bare_visibility_rlc_anchor_v3_temp.py"
 OUT_DIR = ROOT / "experiments/bare_visibility_final_record_v5_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/BARE_VISIBILITY_FINAL_RECORD_V5_TEMP_2026_06_16.zip"
 
 FINAL_DONORS = {
-    "REALIND": ROOT / "proteus_ic/donors/manual_downloads_20260611/inductor_01_single_free.pdsprj",
-    "CAP": ROOT / "proteus_ic/donors/manual_downloads_20260611/cap3.pdsprj",
-    "LM741": ROOT / "proteus_ic/donors/manual_downloads_20260611/squence/PAIR_LM741_74HC85.pdsprj",
-    "74HC160": ROOT / "proteus_ic/donors/manual_downloads_20260611/squence/MIX_SYNC_COUNTERS_160_161_163_192_193.pdsprj",
+    "REALIND": ROOT / "proteus/active/evidence/donors/manual_downloads_20260611/inductor_01_single_free.pdsprj",
+    "CAP": ROOT / "proteus/active/evidence/donors/manual_downloads_20260611/cap3.pdsprj",
+    "LM741": ROOT / "proteus/active/evidence/donors/manual_downloads_20260611/squence/PAIR_LM741_74HC85.pdsprj",
+    "74HC160": ROOT / "proteus/active/evidence/donors/manual_downloads_20260611/squence/MIX_SYNC_COUNTERS_160_161_163_192_193.pdsprj",
 }
 
 

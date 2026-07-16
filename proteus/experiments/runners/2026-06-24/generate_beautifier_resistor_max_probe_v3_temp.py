@@ -8,9 +8,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import (
     MAIN_MEGA_NO_SOURCE_DONOR,
@@ -20,9 +20,9 @@ from proteusgen.component_placer import (
 )
 
 
-OUT_DIR = ROOT / "experiments" / "beautifier_resistor_max_probe_v3_temp_2026_06_24"
-ARCHIVE = ROOT / "experiments" / "BEAUTIFIER_RESISTOR_MAX_PROBE_V3_TEMP_2026_06_24.zip"
-V2_SCRIPT = ROOT / "tools" / "proteus_generation" / "2026-06-24" / "generate_beautifier_resistor_coordinate_probe_v2_temp.py"
+OUT_DIR = ROOT / "proteus" / "experiments" / "runs" / "beautifier_resistor_max_probe_v3_temp_2026_06_24"
+ARCHIVE = ROOT / "proteus" / "experiments" / "runs" / "BEAUTIFIER_RESISTOR_MAX_PROBE_V3_TEMP_2026_06_24.zip"
+V2_SCRIPT = ROOT / "proteus" / "experiments" / "runners" / "2026-06-24" / "generate_beautifier_resistor_coordinate_probe_v2_temp.py"
 ACCEPTED_RESISTOR_LIMIT = 91
 
 

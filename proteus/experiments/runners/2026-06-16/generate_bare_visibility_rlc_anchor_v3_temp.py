@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -29,7 +29,7 @@ from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 OUT_DIR = ROOT / "experiments/bare_visibility_rlc_anchor_v3_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/BARE_VISIBILITY_RLC_ANCHOR_V3_TEMP_2026_06_16.zip"
-DONOR = ROOT / "proteus_ic/donors/mixed_large_20260611/4_alot_of_ics.pdsprj"
+DONOR = ROOT / "proteus/archive/donors/mixed_large_20260611/4_alot_of_ics.pdsprj"
 
 FAMILY_MARKERS = tuple(
     sorted(

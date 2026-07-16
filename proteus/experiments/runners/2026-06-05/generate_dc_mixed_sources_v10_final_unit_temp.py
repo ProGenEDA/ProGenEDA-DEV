@@ -27,8 +27,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -36,9 +36,9 @@ from proteusgen import resistor_v9 as rv9  # noqa: E402
 from proteusgen.pdsprj import read_internal_file  # noqa: E402
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 
-V9_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-05" / "generate_dc_mixed_sources_v9_donor_tail_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_mixed_sources_v10_final_unit_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_MIXED_SOURCES_V10_FINAL_UNIT_TEMP_2026_06_05"
+V9_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-05" / "generate_dc_mixed_sources_v9_donor_tail_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v10_final_unit_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_MIXED_SOURCES_V10_FINAL_UNIT_TEMP_2026_06_05"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 

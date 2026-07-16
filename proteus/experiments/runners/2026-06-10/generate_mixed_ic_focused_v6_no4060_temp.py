@@ -22,10 +22,10 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
-REPO = Path(__file__).resolve().parents[3]
-V5_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v5_donor_native_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_focused_v6_no4060_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_FOCUSED_V6_NO4060_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+V5_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_focused_v5_donor_native_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_focused_v6_no4060_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_FOCUSED_V6_NO4060_TEMP_2026_06_10.zip"
 
 
 def _load_v5():

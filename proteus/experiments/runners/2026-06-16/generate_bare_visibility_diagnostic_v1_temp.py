@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -42,10 +42,10 @@ from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 OUT_DIR = ROOT / "experiments/bare_visibility_diagnostic_v1_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/BARE_VISIBILITY_DIAGNOSTIC_V1_TEMP_2026_06_16.zip"
 
-PAIR_160_161 = ROOT / "proteus_ic/donors/manual_downloads_20260611/squence/PAIR_74HC160_74HC161.pdsprj"
-MIXED_1X = ROOT / "proteus_ic/donors/mixed_large_20260611/alot_of_ics.pdsprj"
-MIXED_4X = ROOT / "proteus_ic/donors/mixed_large_20260611/4_alot_of_ics.pdsprj"
-MASTER_TERMINALIZED = ROOT / "proteus_ic/donors/manual_downloads_20260615/component_placer/16x_seq_combo_mega_donor.pdsprj"
+PAIR_160_161 = ROOT / "proteus/active/evidence/donors/manual_downloads_20260611/squence/PAIR_74HC160_74HC161.pdsprj"
+MIXED_1X = ROOT / "proteus/archive/donors/mixed_large_20260611/alot_of_ics.pdsprj"
+MIXED_4X = ROOT / "proteus/archive/donors/mixed_large_20260611/4_alot_of_ics.pdsprj"
+MASTER_TERMINALIZED = ROOT / "proteus/active/evidence/donors/manual_downloads_20260615/component_placer/16x_seq_combo_mega_donor.pdsprj"
 FAILED_B00 = (
     ROOT
     / "experiments/74hc160_bare_mixed_v1_temp_2026_06_16/B00_74HC160_1X_BARE/B00_74HC160_1X_BARE.pdsprj"

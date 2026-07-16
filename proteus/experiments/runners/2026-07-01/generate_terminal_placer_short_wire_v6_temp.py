@@ -10,8 +10,8 @@ from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.bidirectional import extract_bidir_records  # noqa: E402
 from proteusgen.component_beautifier import MIXED_LAYOUT_BAND_GAP_Y  # noqa: E402
@@ -31,7 +31,7 @@ EXPERIMENT_NAME = "terminal_placer_short_wire_v6_temp_2026_07_01"
 ARCHIVE_NAME = "TERMINAL_PLACER_SHORT_WIRE_V6_TEMP_2026_07_01.zip"
 DONOR_ID = "component_placer_main_15x_semimega_sources_20260618"
 CTRL_S_FIXTURE = (
-    ROOT / "fixtures" / "pdsprj" / "t06_resistor_ctrl_s_repair_20260701.pdsprj"
+    ROOT / "proteus" / "active" / "fixtures" / "pdsprj" / "t06_resistor_ctrl_s_repair_20260701.pdsprj"
 )
 ACCEPTED_FAMILIES = (
     "RESISTOR",
@@ -396,11 +396,11 @@ terminal orientation, electrical attachment, and simulation.
 def main() -> None:
     if not CTRL_S_FIXTURE.exists():
         raise FileNotFoundError(CTRL_S_FIXTURE)
-    experiment = ROOT / "experiments" / EXPERIMENT_NAME
-    archive = ROOT / "experiments" / ARCHIVE_NAME
+    experiment = ROOT / "proteus" / "experiments" / "runs" / EXPERIMENT_NAME
+    archive = ROOT / "proteus" / "experiments" / "runs" / ARCHIVE_NAME
     if experiment.exists():
         resolved = experiment.resolve()
-        experiments_root = (ROOT / "experiments").resolve()
+        experiments_root = (ROOT / "proteus" / "experiments" / "runs").resolve()
         if experiments_root not in resolved.parents:
             raise RuntimeError(f"Refusing to remove unexpected path: {resolved}")
         shutil.rmtree(resolved)

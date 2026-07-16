@@ -53,6 +53,18 @@ The portable executable is [`release/ProgenProteus.exe`](release/ProgenProteus.e
 Its CLI, JSON smoke test, and build instructions are in
 [`release/README.md`](release/README.md).
 
+For the required local Proteus loader check, use the disposable-copy gate:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File proteus/active/tools/invoke_local_proteus_gate.ps1 `
+  -Project out/r_c_terminalized.pdsprj
+```
+
+It refuses to run while a user-owned Proteus process is open, launches only a
+copy with a hidden window, checks loader-dialog text after the required
+12-second stability wait, cold-reopens it, and checks that the copy was not
+mutated.
+
 ## Active donor and catalogue policy
 
 - The runtime placement anchor is the locked mega donor declared in
@@ -94,6 +106,7 @@ requests that would silently claim a routed circuit. See
 - [Canonical pipeline](docs/progen_eda_canonical_pipeline.md)
 - [Architecture and stage contracts](docs/architecture.md)
 - [GPT-5.6 progress record](GPT_5_6_PROGRESS.md)
+- [Consolidation validation record](knowledge/repository_consolidation_validation_2026_07_16.md)
 - [Hash-backed repository map](REPOSITORY_MAP.md)
 - [Generated inventory CSV](inventory/repository_map.csv)
 - [Active manifest](inventory/active_manifest.json)

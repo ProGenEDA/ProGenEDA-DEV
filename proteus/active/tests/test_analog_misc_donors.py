@@ -9,7 +9,7 @@ from proteusgen.resistor_v9 import _extract_object_chunk
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_analog_misc_batch1_solo_temp.py"
+SCRIPT = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_analog_misc_batch1_solo_temp.py"
 
 
 def load_analog_module():

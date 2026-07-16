@@ -23,8 +23,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -33,8 +33,8 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _sha256_bytes, _u32, b
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO / "experiments" / "ic_remaining_generated_logic_v1_temp_2026_06_08"
-ARCHIVE_PATH = REPO / "experiments" / "IC_REMAINING_GENERATED_LOGIC_V1_TEMP_2026_06_08.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_remaining_generated_logic_v1_temp_2026_06_08"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_REMAINING_GENERATED_LOGIC_V1_TEMP_2026_06_08.zip"
 
 GATE_LETTERS = "ABCD"
 GATE_PINS = {
@@ -97,7 +97,7 @@ CONFIGS = {
         key="74hc00",
         device="74HC00",
         function_marker="74NAND2",
-        donor=REPO / "proteus_ic" / "donors" / "74hc00" / "IC_74HC00_M02_ALL4_IO.pdsprj",
+        donor=REPO / "proteus" / "active" / "evidence" / "donors" / "74hc00" / "IC_74HC00_M02_ALL4_IO.pdsprj",
         record_shape="terminal_first",
         prop_text=b"{MODFILE=74NAND2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         description="Generated three-input NAND: Y0 = NAND(X1, X2, X3).",
@@ -106,7 +106,7 @@ CONFIGS = {
         key="74hc02",
         device="74HC02",
         function_marker="74NOR2",
-        donor=REPO / "proteus_ic" / "donors" / "74hc02" / "IC_74HC02_M02_ALL4_IO.pdsprj",
+        donor=REPO / "proteus" / "active" / "evidence" / "donors" / "74hc02" / "IC_74HC02_M02_ALL4_IO.pdsprj",
         record_shape="component_first",
         prop_text=b"{MODFILE=74NOR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         description="Generated three-input NOR: Y0 = NOR(X1, X2, X3).",
@@ -115,7 +115,7 @@ CONFIGS = {
         key="74hc86",
         device="74HC86",
         function_marker="74XOR2",
-        donor=REPO / "proteus_ic" / "donors" / "74hc86" / "IC_74HC86_M02_ALL4_IO.pdsprj",
+        donor=REPO / "proteus" / "active" / "evidence" / "donors" / "74hc86" / "IC_74HC86_M02_ALL4_IO.pdsprj",
         record_shape="component_first",
         prop_text=b"{MODFILE=74XOR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         description="Generated four-input XOR: Y0 = X1 XOR X2 XOR X3 XOR X4.",
@@ -124,7 +124,7 @@ CONFIGS = {
         key="74hc266",
         device="74HC266",
         function_marker="74XOR2",
-        donor=REPO / "proteus_ic" / "donors" / "74hc266" / "IC_74HC266_M02_ALL4_IO.pdsprj",
+        donor=REPO / "proteus" / "active" / "evidence" / "donors" / "74hc266" / "IC_74HC266_M02_ALL4_IO.pdsprj",
         record_shape="component_first",
         prop_text=b"{MODFILE=74XOR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00",
         description="Generated 74HC266 XNOR-chain diagnostic preserving observed 74XOR2 function marker.",

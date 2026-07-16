@@ -14,8 +14,8 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-V3_SCRIPT = ROOT / "tools/proteus_generation/2026-06-16/generate_bare_visibility_rlc_anchor_v3_temp.py"
+ROOT = Path(__file__).resolve().parents[4]
+V3_SCRIPT = ROOT / "proteus/experiments/runners/2026-06-16/generate_bare_visibility_rlc_anchor_v3_temp.py"
 OUT_DIR = ROOT / "experiments/bare_visibility_resistor_anchor_v4_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/BARE_VISIBILITY_RESISTOR_ANCHOR_V4_TEMP_2026_06_16.zip"
 

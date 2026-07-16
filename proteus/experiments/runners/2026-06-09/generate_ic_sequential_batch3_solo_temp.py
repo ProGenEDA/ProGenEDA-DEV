@@ -21,11 +21,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SCRIPT_V2 = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
-DONOR_ROOT = REPO / "proteus_ic" / "donors" / "sequential_ics_batch3"
-OUT_ROOT = REPO / "experiments" / "ic_sequential_batch3_solo_temp_2026_06_09"
-ARCHIVE_PATH = REPO / "experiments" / "IC_SEQUENTIAL_BATCH3_SOLO_TEMP_2026_06_09.zip"
+REPO = Path(__file__).resolve().parents[4]
+SCRIPT_V2 = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
+DONOR_ROOT = REPO / "proteus" / "active" / "evidence" / "donors" / "sequential_ics_batch3"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_sequential_batch3_solo_temp_2026_06_09"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_SEQUENTIAL_BATCH3_SOLO_TEMP_2026_06_09.zip"
 
 
 def load_v2_module():

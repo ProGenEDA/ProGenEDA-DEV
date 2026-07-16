@@ -15,8 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -26,10 +26,10 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _i32, _sha256_bytes, _
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO / "experiments" / "ic_hc32_logic_v1_temp_2026_06_08"
-ARCHIVE_PATH = REPO / "experiments" / "IC_HC32_LOGIC_V1_TEMP_2026_06_08.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_hc32_logic_v1_temp_2026_06_08"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_HC32_LOGIC_V1_TEMP_2026_06_08.zip"
 
-HC32_ALL4_DONOR = REPO / "proteus_ic" / "donors" / "74hc32" / "IC_HC32_M02_ALL4_IO.pdsprj"
+HC32_ALL4_DONOR = REPO / "proteus" / "active" / "evidence" / "donors" / "74hc32" / "IC_HC32_M02_ALL4_IO.pdsprj"
 DEVICE_SECTION_DONOR = HC32_ALL4_DONOR
 
 EXPRESSION = (

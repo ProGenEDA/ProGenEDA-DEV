@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -37,16 +37,16 @@ from src.proteusgen.component_placer import (
 )
 
 
-DONOR_DIR = ROOT / "proteus_ic/donors/manual_downloads_20260618/new_component_mega"
+DONOR_DIR = ROOT / "proteus/active/evidence/donors/manual_downloads_20260618/new_component_mega"
 SINGLE_DONOR = DONOR_DIR / "new_components_single_mega.pdsprj"
 FIVE_X_DONOR = DONOR_DIR / "new_components_5x_mega.pdsprj"
 
 OUT_DIR = ROOT / "experiments/new_component_mega_probe_v8_control_block_temp_2026_06_19"
 ZIP_OUT = ROOT / "experiments/NEW_COMPONENT_MEGA_PROBE_V8_CONTROL_BLOCK_TEMP_2026_06_19.zip"
-CONTROL_DONOR_DIR = ROOT / "proteus_ic/donors/manual_downloads_20260619/control_components"
+CONTROL_DONOR_DIR = ROOT / "proteus/archive/donors/manual_downloads_20260619/control_components"
 SWITCH_CONTROL_DONOR = CONTROL_DONOR_DIR / "switch.pdsprj"
 POT_CONTROL_DONOR = CONTROL_DONOR_DIR / "1pot hg.pdsprj"
-MAIN_MEGA_DIR = ROOT / "proteus_ic/donors/main_mega_20260618"
+MAIN_MEGA_DIR = ROOT / "proteus/active/evidence/donors/main_mega_20260618"
 MAIN_SOURCE_DONOR = (
     MAIN_MEGA_DIR
     / "15xsemimega_7segan7segcom74hc0074hc02hc04hc08hc32hc74hc76hc85hc86hc151hc157hc160hc174hc174hc192hc266hc283_4027_4511_7447_7490capcapelecdiodelm741ne555npnpnprealindresistorandsources.pdsprj"

@@ -10,8 +10,8 @@ from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_beautifier import MIXED_LAYOUT_BAND_GAP_Y  # noqa: E402
 from proteusgen.component_placer import generate_component_placement_project  # noqa: E402
@@ -305,11 +305,11 @@ T01 is a positive order control, not the desired final attachment result.
 
 
 def main() -> None:
-    experiment = ROOT / "experiments" / EXPERIMENT_NAME
-    archive = ROOT / "experiments" / ARCHIVE_NAME
+    experiment = ROOT / "proteus" / "experiments" / "runs" / EXPERIMENT_NAME
+    archive = ROOT / "proteus" / "experiments" / "runs" / ARCHIVE_NAME
     if experiment.exists():
         resolved = experiment.resolve()
-        expected_parent = (ROOT / "experiments").resolve()
+        expected_parent = (ROOT / "proteus" / "experiments" / "runs").resolve()
         if resolved.parent != expected_parent:
             raise RuntimeError(f"Refusing to remove unexpected path: {resolved}")
         shutil.rmtree(resolved)

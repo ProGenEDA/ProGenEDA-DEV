@@ -9,7 +9,7 @@ from proteusgen.resistor_v9 import _extract_object_chunk
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_analog_batch1_temp.py"
+SCRIPT = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_analog_batch1_temp.py"
 
 
 def load_mixed_module():
@@ -70,7 +70,7 @@ def test_large_mixed_donor_covers_counter_analog_scope() -> None:
 
 
 def test_subset_region_discovery_finds_expected_counter_regions() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_analog_subset_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_analog_subset_v1_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_analog_subset_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -115,7 +115,7 @@ def test_subset_region_discovery_finds_expected_counter_regions() -> None:
 
 
 def test_cross_donor_region_discovery_splits_7447_from_74hc157() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v1_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -139,7 +139,7 @@ def test_cross_donor_region_discovery_splits_7447_from_74hc157() -> None:
 
 
 def test_cross_donor_v2_patches_every_device_section_tail_pointer() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_v2_metadata_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -171,7 +171,7 @@ def test_cross_donor_v2_patches_every_device_section_tail_pointer() -> None:
 
 
 def test_cross_donor_v3_filtered_device_definitions_drop_analog_tail() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v3_filtered_device_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v3_filtered_device_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_v3_filtered_device_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -194,7 +194,7 @@ def test_cross_donor_v3_filtered_device_definitions_drop_analog_tail() -> None:
 
 
 def test_cross_donor_isolation_audits_previous_u50_ref_mismatch() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_isolation_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -213,7 +213,7 @@ def test_cross_donor_isolation_audits_previous_u50_ref_mismatch() -> None:
 
 
 def test_cross_donor_isolation_contiguous_cdb_plan_keeps_t02_refs_covered() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_isolation_v1_temp_for_cdb", script)
     assert spec is not None
     assert spec.loader is not None
@@ -238,7 +238,7 @@ def test_cross_donor_isolation_contiguous_cdb_plan_keeps_t02_refs_covered() -> N
 
 
 def test_cross_donor_isolation_v2_keeps_full_multi_device_metadata() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v2_full_device_cdb_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_isolation_v2_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -256,7 +256,7 @@ def test_cross_donor_isolation_v2_keeps_full_multi_device_metadata() -> None:
 
 
 def test_cross_donor_cdb_v1_uses_correct_row_parser_variants() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_cdb_v1_correct_rows_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_cdb_v1_correct_rows_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_cdb_v1_correct_rows_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -282,7 +282,7 @@ def test_cross_donor_cdb_v1_uses_correct_row_parser_variants() -> None:
 
 
 def test_cross_donor_cdb_v2_uses_full_skeleton_replacement() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_cdb_v2_full_skeleton_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -310,7 +310,7 @@ def test_cross_donor_cdb_v2_uses_full_skeleton_replacement() -> None:
 
 
 def test_cross_donor_cdb_v3_isolates_t05_replacements() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v3_t05_isolation_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v3_t05_isolation_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_cdb_v3_t05_isolation_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -339,7 +339,7 @@ def test_cross_donor_cdb_v3_isolates_t05_replacements() -> None:
 
 
 def test_cross_donor_accepted_v1_uses_full_skeleton_policy_without_u50() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_accepted_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_cross_donor_accepted_v1_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_accepted_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -373,7 +373,7 @@ def test_cross_donor_accepted_v1_uses_full_skeleton_policy_without_u50() -> None
 
 
 def test_cross_donor_accepted_v2_layout_separates_regions_and_excludes_4060() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_cross_donor_accepted_v2_layout_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_cross_donor_accepted_v2_layout_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -407,7 +407,7 @@ def test_cross_donor_accepted_v2_layout_separates_regions_and_excludes_4060() ->
 
 
 def test_mixed_ic_focused_v3_moves_text_and_covers_analog_controls() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v3_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_focused_v3_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v3_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -446,7 +446,7 @@ def test_mixed_ic_focused_v3_moves_text_and_covers_analog_controls() -> None:
 
 
 def test_mixed_ic_focused_v5_keeps_4060_donor_native() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v5_donor_native_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_focused_v5_donor_native_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v5_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -471,7 +471,7 @@ def test_mixed_ic_focused_v5_keeps_4060_donor_native() -> None:
 
 
 def test_mixed_ic_focused_v6_excludes_4060_and_extends_accepted_routes() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v6_no4060_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_focused_v6_no4060_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v6_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -494,7 +494,7 @@ def test_mixed_ic_focused_v6_excludes_4060_and_extends_accepted_routes() -> None
 
 
 def test_ic_exact_rezip_all_families_includes_refreshed_4060_and_no_payload_edits() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_exact_rezip_all_families_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_ic_exact_rezip_all_families_temp.py"
     spec = importlib.util.spec_from_file_location("ic_exact_rezip_all_families_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -522,7 +522,7 @@ def test_ic_exact_rezip_all_families_includes_refreshed_4060_and_no_payload_edit
 
 
 def test_ic_pairwise_34_v1_uses_clean_source_matrix_and_generic_cdb_splitter() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_34_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_34_v1_temp.py"
     spec = importlib.util.spec_from_file_location("ic_pairwise_34_v1_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -556,7 +556,7 @@ def test_ic_pairwise_34_v1_uses_clean_source_matrix_and_generic_cdb_splitter() -
 
 
 def test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text(tmp_path: Path) -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_34_v2_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_34_v2_temp.py"
     spec = importlib.util.spec_from_file_location("ic_pairwise_34_v2_temp", script)
     assert spec is not None
     assert spec.loader is not None
@@ -597,7 +597,7 @@ def test_ic_pairwise_34_v2_rebuilds_cdb_boundaries_and_moves_4060_text(tmp_path:
 
 
 def test_mixed_ic_focused_v4_patches_4060_without_coordinate_scan() -> None:
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_focused_v4_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_focused_v4_temp.py"
     spec = importlib.util.spec_from_file_location("mixed_ic_focused_v4_temp", script)
     assert spec is not None
     assert spec.loader is not None

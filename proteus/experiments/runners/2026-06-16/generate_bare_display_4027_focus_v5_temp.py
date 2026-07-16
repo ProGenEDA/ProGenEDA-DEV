@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -37,8 +37,8 @@ from src.proteusgen.pdsprj import read_internal_file, write_project_from_parts
 from src.proteusgen.resistor_v9 import _extract_object_chunk, build_dsn
 
 
-HELPER_PATH = ROOT / "tools/proteus_generation/2026-06-16/generate_mega_bare_separation_v1_temp.py"
-DONOR_DIR = ROOT / "proteus_ic/donors/manual_downloads_20260616/mega_component_placer"
+HELPER_PATH = ROOT / "proteus/experiments/runners/2026-06-16/generate_mega_bare_separation_v1_temp.py"
+DONOR_DIR = ROOT / "proteus/archive/donors/manual_downloads_20260616/mega_component_placer"
 FOLLOWUP_DIR = DONOR_DIR / "display_4027_followup"
 OUT_DIR = ROOT / "experiments/bare_display_4027_focus_v5_temp_2026_06_16"
 ZIP_OUT = ROOT / "experiments/BARE_DISPLAY_4027_FOCUS_V5_TEMP_2026_06_16.zip"

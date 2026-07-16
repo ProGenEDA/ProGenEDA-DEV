@@ -18,8 +18,8 @@ from pathlib import Path
 from types import ModuleType
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -31,13 +31,13 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _sha256_bytes, _u32
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO / "experiments" / "ic_and_or_rcl_v1_temp_2026_06_08"
-ARCHIVE_PATH = REPO / "experiments" / "IC_AND_OR_RCL_V1_TEMP_2026_06_08.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_and_or_rcl_v1_temp_2026_06_08"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_AND_OR_RCL_V1_TEMP_2026_06_08.zip"
 
-HC08_RCL_DEVICE_DONOR = REPO / "proteus_ic" / "donors" / "74hc08" / "IC_HC08_M04_RCL_LOAD.pdsprj"
-HC32_DEVICE_DONOR = REPO / "proteus_ic" / "donors" / "74hc32" / "IC_HC32_M02_ALL4_IO.pdsprj"
-HC08_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-08" / "generate_ic_hc08_logic_v1_temp.py"
-HC32_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-08" / "generate_ic_hc32_logic_v1_temp.py"
+HC08_RCL_DEVICE_DONOR = REPO / "proteus" / "active" / "evidence" / "donors" / "74hc08" / "IC_HC08_M04_RCL_LOAD.pdsprj"
+HC32_DEVICE_DONOR = REPO / "proteus" / "active" / "evidence" / "donors" / "74hc32" / "IC_HC32_M02_ALL4_IO.pdsprj"
+HC08_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-08" / "generate_ic_hc08_logic_v1_temp.py"
+HC32_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-08" / "generate_ic_hc32_logic_v1_temp.py"
 
 AND_PROP_TEXT = b"{MODFILE=74AND2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00"
 OR_PROP_TEXT = b"{MODFILE=74OR2.MDF}\n{PACKAGE=DIL14}\n{ITFMOD=TTLHC}\n\x00"

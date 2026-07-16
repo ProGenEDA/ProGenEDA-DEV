@@ -25,10 +25,10 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from proteusgen.cdb import parse_cdb
 
 
-REPO = Path(__file__).resolve().parents[3]
-CDB_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_cross_donor_accepted_v2_layout_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+CDB_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_mixed_ic_cross_donor_cdb_v2_full_skeleton_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_cross_donor_accepted_v2_layout_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_CROSS_DONOR_ACCEPTED_V2_LAYOUT_TEMP_2026_06_10.zip"
 
 IC_SLOT_COLUMNS = 4
 IC_SLOT_X = 7_620_000

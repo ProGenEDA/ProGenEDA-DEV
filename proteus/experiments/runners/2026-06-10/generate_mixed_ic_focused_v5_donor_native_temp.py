@@ -27,11 +27,11 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from proteusgen.cdb import parse_cdb
 
 
-REPO = Path(__file__).resolve().parents[3]
-SEQ_HELPER = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
-MIXED_HELPER = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_analog_batch1_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_focused_v5_donor_native_temp_2026_06_10"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10.zip"
+REPO = Path(__file__).resolve().parents[4]
+SEQ_HELPER = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_ic_sequential_counters_v2_temp.py"
+MIXED_HELPER = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_analog_batch1_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_focused_v5_donor_native_temp_2026_06_10"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_FOCUSED_V5_DONOR_NATIVE_TEMP_2026_06_10.zip"
 
 
 def _load_module(name: str, path: Path):
@@ -248,10 +248,10 @@ def write_case(case: DonorNativeCase) -> dict[str, object]:
     return manifest
 
 
-DONOR_4060_RLC = REPO / "proteus_ic" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj"
-DONOR_MIXED_COUNTERS = REPO / "proteus_ic" / "donors" / "mixed_ic_analog_batch1" / "MIX_SEQ_COUNTERS_ALL_RCL_ANALOG.pdsprj"
-DONOR_ANALOG_ONLY = REPO / "proteus_ic" / "donors" / "mixed_ic_analog_batch1" / "MIX_RCL_ANALOG_ONLY.pdsprj"
-DONOR_NE555_RLC = REPO / "proteus_ic" / "donors" / "analog_misc_batch1" / "2_NE555WITHRLC.pdsprj"
+DONOR_4060_RLC = REPO / "proteus" / "active" / "evidence" / "donors" / "sequential_ics_batch3" / "4_74HC4060withRLC.pdsprj"
+DONOR_MIXED_COUNTERS = REPO / "proteus" / "active" / "evidence" / "donors" / "mixed_ic_analog_batch1" / "MIX_SEQ_COUNTERS_ALL_RCL_ANALOG.pdsprj"
+DONOR_ANALOG_ONLY = REPO / "proteus" / "active" / "evidence" / "donors" / "mixed_ic_analog_batch1" / "MIX_RCL_ANALOG_ONLY.pdsprj"
+DONOR_NE555_RLC = REPO / "proteus" / "active" / "evidence" / "donors" / "analog_misc_batch1" / "2_NE555WITHRLC.pdsprj"
 
 
 CASES: tuple[DonorNativeCase, ...] = (

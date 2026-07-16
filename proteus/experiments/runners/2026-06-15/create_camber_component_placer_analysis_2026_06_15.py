@@ -15,21 +15,21 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from proteusgen.pdsprj import inspect_pdsprj, read_internal_file  # noqa: E402
 from proteusgen.resistor_v9 import _extract_object_chunk, _sha256_bytes  # noqa: E402
 
-OUT_ROOT = REPO / "experiments" / "camber_component_placer_analysis_2026_06_15"
-ARCHIVE = REPO / "experiments" / "CAMBER_COMPONENT_PLACER_ANALYSIS_2026_06_15.zip"
-STAGING = REPO / "experiments" / "camber_component_placer_analysis_2026_06_15.building"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "camber_component_placer_analysis_2026_06_15"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "CAMBER_COMPONENT_PLACER_ANALYSIS_2026_06_15.zip"
+STAGING = REPO / "proteus" / "experiments" / "runs" / "camber_component_placer_analysis_2026_06_15.building"
 
-FAILED_PACK = REPO / "experiments" / "component_placer_seq_16x_v1_temp_2026_06_15"
-FAILED_ARCHIVE = REPO / "experiments" / "COMPONENT_PLACER_SEQ_16X_V1_TEMP_2026_06_15.zip"
-MEGA_DONOR_COPY = REPO / "proteus_ic" / "donors" / "manual_downloads_20260615" / "component_placer" / "16x_seq_combo_mega_donor.pdsprj"
+FAILED_PACK = REPO / "proteus" / "experiments" / "runs" / "component_placer_seq_16x_v1_temp_2026_06_15"
+FAILED_ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "COMPONENT_PLACER_SEQ_16X_V1_TEMP_2026_06_15.zip"
+MEGA_DONOR_COPY = REPO / "proteus" / "active" / "evidence" / "donors" / "manual_downloads_20260615" / "component_placer" / "16x_seq_combo_mega_donor.pdsprj"
 MEGA_DONOR_ORIGINAL = Path(
     r"C:\Users\tahab\Downloads\ICcombinationfinal\16x_4X_160,74,76,85,157,160,174,266,283,4027,7447,7490withallcombunational_21Rlc.pdsprj"
 )
@@ -272,7 +272,7 @@ def can_satisfy_removal_only(analysis: dict[str, object]) -> dict[str, object]:
 
 def scan_projects() -> list[dict[str, object]]:
     candidates: dict[Path, str] = {}
-    roots = [REPO / "proteus_ic", REPO / "experiments", REPO / "fixtures", REPO / "templates", REPO / "out"]
+    roots = [REPO / "proteus" / "active" / "evidence", REPO / "proteus" / "experiments" / "runs", REPO / "proteus" / "active" / "fixtures", REPO / "templates", REPO / "out"]
     for root in roots:
         if not root.exists():
             continue

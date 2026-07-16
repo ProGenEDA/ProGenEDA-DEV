@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import (  # noqa: E402
     NEW_COMPONENT_MEGA_DONOR,
@@ -213,8 +213,8 @@ def main() -> None:
             f"expected {EXPECTED_DONOR_SHA256}."
         )
 
-    out_dir = ROOT / "experiments" / EXPERIMENT_NAME
-    archive = ROOT / "experiments" / ARCHIVE_NAME
+    out_dir = ROOT / "proteus" / "experiments" / "runs" / EXPERIMENT_NAME
+    archive = ROOT / "proteus" / "experiments" / "runs" / ARCHIVE_NAME
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)

@@ -26,11 +26,11 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _sha256_bytes
 from proteusgen.templates import FixtureRegistry
 
 
-REPO = Path(__file__).resolve().parents[3]
-FIXED_V2_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-10" / "generate_ic_pairwise_error_fixed_v2_temp.py"
+REPO = Path(__file__).resolve().parents[4]
+FIXED_V2_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-10" / "generate_ic_pairwise_error_fixed_v2_temp.py"
 
-OUT_ROOT = REPO / "experiments" / "ic_pairwise_combinational_method_v1_temp_2026_06_11"
-ARCHIVE_PATH = REPO / "experiments" / "IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_pairwise_combinational_method_v1_temp_2026_06_11"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_PAIRWISE_COMBINATIONAL_METHOD_V1_TEMP_2026_06_11.zip"
 
 NONCOMB_PROBE_PAIRS = (
     ("S08", "S09"),

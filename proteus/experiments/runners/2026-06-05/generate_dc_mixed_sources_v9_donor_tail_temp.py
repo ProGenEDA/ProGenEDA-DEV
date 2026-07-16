@@ -27,8 +27,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -40,9 +40,9 @@ from proteusgen.pdsprj import read_internal_file, write_project_from_parts  # no
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 
-V5_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-03" / "generate_dc_sources_v5_source_net_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_mixed_sources_v9_donor_tail_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_MIXED_SOURCES_V9_DONOR_TAIL_TEMP_2026_06_05"
+V5_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-03" / "generate_dc_sources_v5_source_net_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v9_donor_tail_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_MIXED_SOURCES_V9_DONOR_TAIL_TEMP_2026_06_05"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 USER_DONOR = Path(r"C:\Users\tahab\Downloads\RCL_V19_T01_CORRECT_21_withVsourcenCsource.pdsprj")

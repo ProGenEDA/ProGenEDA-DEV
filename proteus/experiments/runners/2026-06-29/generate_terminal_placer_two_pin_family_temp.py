@@ -8,8 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import (  # noqa: E402
     MAIN_MEGA_NO_SOURCE_DONOR,
@@ -272,8 +272,8 @@ Static validation passed locally. Proteus acceptance remains pending.
 
 def main() -> None:
     config = CONFIGS[parse_args().family]
-    out_dir = ROOT / "experiments" / config.experiment_name
-    archive = ROOT / "experiments" / config.archive_name
+    out_dir = ROOT / "proteus" / "experiments" / "runs" / config.experiment_name
+    archive = ROOT / "proteus" / "experiments" / "runs" / config.archive_name
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)

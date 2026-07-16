@@ -23,8 +23,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -34,12 +34,12 @@ from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 from proteusgen import resistor_v9 as rv9  # noqa: E402
 
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_current_v13_15_topologies_temp_2026_06_04"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_CURRENT_V13_15_TOPOLOGIES_TEMP_2026_06_04"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_current_v13_15_topologies_temp_2026_06_04"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_CURRENT_V13_15_TOPOLOGIES_TEMP_2026_06_04"
 DONOR_ROOT = OUT_ROOT / "donors"
 TEST_BATCH = OUT_ROOT / "DCI_V13_15_TOPOLOGIES_TEST_BATCH"
-V12_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-03" / "generate_dc_current_v12_manual_testing_study_temp.py"
-V10_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-03" / "generate_dc_current_v10_anchor_terminals_temp.py"
+V12_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-03" / "generate_dc_current_v12_manual_testing_study_temp.py"
+V10_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-03" / "generate_dc_current_v10_anchor_terminals_temp.py"
 
 
 def _load_module(name: str, path: Path) -> Any:

@@ -8,15 +8,15 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from proteusgen.ic_native import IcNativeGenerationBlocked, generate_ic_native_project_from_payload  # noqa: E402
 
-OUT_ROOT = REPO / "experiments" / "ic_native_v1_temp_2026_06_11"
-ARCHIVE = REPO / "experiments" / "IC_NATIVE_V1_TEMP_2026_06_11.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_native_v1_temp_2026_06_11"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "IC_NATIVE_V1_TEMP_2026_06_11.zip"
 
 
 CASES = [

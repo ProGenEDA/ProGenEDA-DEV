@@ -20,8 +20,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
@@ -29,12 +29,12 @@ from proteusgen import mixed_rcl as rcl
 from proteusgen import resistor_v9 as rv9
 from proteusgen.pdsprj import read_internal_file, write_project_from_parts
 
-OUT_ROOT = REPO_ROOT / "experiments" / "source_passive_v6_v3_dsn_cdb_only_temp_2026_06_05"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_TEMP_2026_06_05"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "source_passive_v6_v3_dsn_cdb_only_temp_2026_06_05"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_TEMP_2026_06_05"
 TEST_BATCH = OUT_ROOT / "SOURCE_PASSIVE_V6_V3_DSN_CDB_ONLY_TEST_BATCH"
 DONOR_ROOT = OUT_ROOT / "donors"
 
-V3_BATCH = REPO_ROOT / "experiments" / "source_passive_v3_dcv2_grounded_temp_2026_06_05" / "SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEST_BATCH"
+V3_BATCH = REPO_ROOT / "proteus" / "experiments" / "runs" / "source_passive_v3_dcv2_grounded_temp_2026_06_05" / "SOURCE_PASSIVE_V3_DCV2_GROUNDED_TEST_BATCH"
 V3_T03_ID = "SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF"
 V3_T04_ID = "SRCP_V3_DCV2_T04_RC_RL_D0_WITH_1G_REF"
 USER_FIXED = Path(r"C:\Users\tahab\Downloads\SRCP_V3_DCV2_T03_R_ONLY_D0_WITH_1G_REF.pdsprj")

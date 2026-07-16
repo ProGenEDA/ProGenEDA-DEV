@@ -20,10 +20,10 @@ import sys
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-ISO_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
-OUT_ROOT = REPO / "experiments" / "mixed_ic_cross_donor_v3_full_metadata_temp_2026_06_09"
-ARCHIVE_PATH = REPO / "experiments" / "MIXED_IC_CROSS_DONOR_V3_FULL_METADATA_TEMP_2026_06_09.zip"
+REPO = Path(__file__).resolve().parents[4]
+ISO_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_isolation_v1_temp.py"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "mixed_ic_cross_donor_v3_full_metadata_temp_2026_06_09"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "MIXED_IC_CROSS_DONOR_V3_FULL_METADATA_TEMP_2026_06_09.zip"
 
 
 def load_iso_module():

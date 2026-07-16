@@ -58,7 +58,12 @@ def test_rcl_load_donor_is_diagnostic_only_due_to_bidir_terminals() -> None:
 
 
 def test_ic_v1_generated_pack_manifests_are_static_clean() -> None:
-    root = repository_root() / "experiments" / "ic_hc08_hc32_v1_temp_2026_06_07"
+    root = (
+        repository_root().parent
+        / "experiments"
+        / "runs"
+        / "ic_hc08_hc32_v1_temp_2026_06_07"
+    )
     summary = json.loads((root / "summary_manifest.json").read_text(encoding="utf-8"))
     assert summary["do_not_promote"] is True
     assert len(summary["cases"]) == 11
@@ -70,10 +75,10 @@ def test_ic_v1_generated_pack_manifests_are_static_clean() -> None:
 
 
 def test_ic_v1_archive_hash_is_deterministic() -> None:
-    root = repository_root()
-    archive = root / "experiments" / "IC_HC08_HC32_V1_TEMP_2026_06_07.zip"
+    experiments = repository_root().parent / "experiments" / "runs"
+    archive = experiments / "IC_HC08_HC32_V1_TEMP_2026_06_07.zip"
     summary = json.loads(
-        (root / "experiments" / "ic_hc08_hc32_v1_temp_2026_06_07" / "summary_manifest.json").read_text(
+        (experiments / "ic_hc08_hc32_v1_temp_2026_06_07" / "summary_manifest.json").read_text(
             encoding="utf-8"
         )
     )

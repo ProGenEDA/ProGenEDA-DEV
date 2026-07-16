@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_beautifier import _s32_at, coordinate_bbox, layout_coordinate_pairs
 from proteusgen.component_placer import (
@@ -611,7 +611,7 @@ def generate_family_probe(
     run_date_slug = run_date.replace("-", "_")
     variant_part = f"_{variant_slug}" if variant_slug else ""
     archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
-    out_dir = ROOT / "experiments" / f"beautifier_{slug}_coordinate_probe{variant_part}_v1_temp_{run_date_slug}"
+    out_dir = ROOT / "proteus" / "experiments" / "runs" / f"beautifier_{slug}_coordinate_probe{variant_part}_v1_temp_{run_date_slug}"
     archive = (
         ROOT
         / "experiments"
@@ -690,7 +690,7 @@ def generate_family_probe(
             "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
             "explicit_donor": str(donor_path),
             "full_cdb": True,
-            "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "script": "proteus/experiments/runners/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "reuses_parsed_coordinate_method": True,
             "include_baseline": include_baseline,
         },
@@ -773,8 +773,8 @@ def generate_mixed_base135_batch(counts: tuple[int, ...], *, variant: str | None
     variant_slug = slug_variant(variant)
     variant_part = f"_{variant_slug}" if variant_slug else ""
     archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
-    out_dir = ROOT / "experiments" / f"beautifier_mixed_base135{variant_part}_v1_temp_2026_06_24"
-    archive = ROOT / "experiments" / (
+    out_dir = ROOT / "proteus" / "experiments" / "runs" / f"beautifier_mixed_base135{variant_part}_v1_temp_2026_06_24"
+    archive = ROOT / "proteus" / "experiments" / "runs" / (
         f"BEAUTIFIER_MIXED_BASE135{archive_variant_part}_V1_TEMP_2026_06_24.zip"
     )
     if out_dir.exists():
@@ -898,7 +898,7 @@ def generate_mixed_base135_batch(counts: tuple[int, ...], *, variant: str | None
             "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
             "explicit_donor": str(donor_path),
             "full_cdb": True,
-            "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "script": "proteus/experiments/runners/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "reuses_parsed_coordinate_method": True,
         },
     }
@@ -944,8 +944,8 @@ def generate_mixed_non_ic_batch(
     run_date_slug = run_date.replace("-", "_")
     variant_part = f"_{variant_slug}" if variant_slug else ""
     archive_variant_part = f"_{variant_slug.upper()}" if variant_slug else ""
-    out_dir = ROOT / "experiments" / f"beautifier_mixed_non_ic{variant_part}_v1_temp_{run_date_slug}"
-    archive = ROOT / "experiments" / (
+    out_dir = ROOT / "proteus" / "experiments" / "runs" / f"beautifier_mixed_non_ic{variant_part}_v1_temp_{run_date_slug}"
+    archive = ROOT / "proteus" / "experiments" / "runs" / (
         f"BEAUTIFIER_MIXED_NON_IC{archive_variant_part}_V1_TEMP_{run_date_slug}.zip"
     )
     if out_dir.exists():
@@ -1083,7 +1083,7 @@ def generate_mixed_non_ic_batch(
             "actual_generator": "proteusgen.component_placer.generate_component_placement_project",
             "explicit_donor": str(donor_path),
             "full_cdb": True,
-            "script": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "script": "proteus/experiments/runners/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "hide_display_bridge": False,
             "display_bridge_coordinate_mode": "preserve_donor",
             "control_count_policy": "exact_requested_count_no_dummy",
@@ -1108,8 +1108,8 @@ def generate_mixed_non_ic_batch(
 
 def generate_remaining_non_ic_solo_batch(counts: tuple[int, ...], *, run_date: str) -> dict[str, Any]:
     run_date_slug = run_date.replace("-", "_")
-    batch_dir = ROOT / "experiments" / f"beautifier_remaining_non_ic_solo_batch_v1_temp_{run_date_slug}"
-    batch_archive = ROOT / "experiments" / f"BEAUTIFIER_REMAINING_NON_IC_SOLO_BATCH_V1_TEMP_{run_date_slug}.zip"
+    batch_dir = ROOT / "proteus" / "experiments" / "runs" / f"beautifier_remaining_non_ic_solo_batch_v1_temp_{run_date_slug}"
+    batch_archive = ROOT / "proteus" / "experiments" / "runs" / f"BEAUTIFIER_REMAINING_NON_IC_SOLO_BATCH_V1_TEMP_{run_date_slug}.zip"
     if batch_dir.exists():
         shutil.rmtree(batch_dir)
     batch_dir.mkdir(parents=True, exist_ok=True)
@@ -1182,7 +1182,7 @@ def generate_remaining_non_ic_solo_batch(counts: tuple[int, ...], *, run_date: s
         "counts": list(counts),
         "results": results,
         "policy": {
-            "single_reusable_harness": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "single_reusable_harness": "proteus/experiments/runners/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "no_mixed_family_generation": True,
             "family_specific_coordinate_parsing": True,
         },
@@ -1382,7 +1382,7 @@ def validate_ic_all_in_one_batch(records: list[dict[str, Any]], counts: tuple[in
 
 def _remove_generated_experiment_path(path: Path) -> None:
     resolved = path.resolve()
-    experiment_root = (ROOT / "experiments").resolve()
+    experiment_root = (ROOT / "proteus" / "experiments" / "runs").resolve()
     resolved.relative_to(experiment_root)
     if resolved.is_dir():
         shutil.rmtree(resolved)
@@ -1392,8 +1392,8 @@ def _remove_generated_experiment_path(path: Path) -> None:
 
 def generate_ic_solo_batch(counts: tuple[int, ...], *, run_date: str) -> dict[str, Any]:
     run_date_slug = run_date.replace("-", "_")
-    batch_dir = ROOT / "experiments" / f"beautifier_ic_solo_1_3_15_25_v1_temp_{run_date_slug}"
-    batch_archive = ROOT / "experiments" / f"BEAUTIFIER_IC_SOLO_1_3_15_25_V1_TEMP_{run_date_slug}.zip"
+    batch_dir = ROOT / "proteus" / "experiments" / "runs" / f"beautifier_ic_solo_1_3_15_25_v1_temp_{run_date_slug}"
+    batch_archive = ROOT / "proteus" / "experiments" / "runs" / f"BEAUTIFIER_IC_SOLO_1_3_15_25_V1_TEMP_{run_date_slug}.zip"
     family_archive_dir = batch_dir / "family_archives"
     if batch_dir.exists():
         shutil.rmtree(batch_dir)
@@ -1501,7 +1501,7 @@ def generate_ic_solo_batch(counts: tuple[int, ...], *, run_date: str) -> dict[st
         "research": "ic_coordinate_research.json",
         "validation": "validation.json",
         "policy": {
-            "single_reusable_harness": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "single_reusable_harness": "proteus/experiments/runners/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "family_specific_research_required": True,
             "full_cdb": True,
             "terminals_and_wires": False,
@@ -1541,8 +1541,8 @@ def generate_ic_solo_batch(counts: tuple[int, ...], *, run_date: str) -> dict[st
 
 def generate_ic_all_in_one_batch(counts: tuple[int, ...], *, run_date: str) -> dict[str, Any]:
     run_date_slug = run_date.replace("-", "_")
-    batch_dir = ROOT / "experiments" / f"beautifier_all_ics_in_one_1_5_15_v1_temp_{run_date_slug}"
-    batch_archive = ROOT / "experiments" / f"BEAUTIFIER_ALL_ICS_IN_ONE_1_5_15_V1_TEMP_{run_date_slug}.zip"
+    batch_dir = ROOT / "proteus" / "experiments" / "runs" / f"beautifier_all_ics_in_one_1_5_15_v1_temp_{run_date_slug}"
+    batch_archive = ROOT / "proteus" / "experiments" / "runs" / f"BEAUTIFIER_ALL_ICS_IN_ONE_1_5_15_V1_TEMP_{run_date_slug}.zip"
     if batch_dir.exists():
         shutil.rmtree(batch_dir)
     batch_dir.mkdir(parents=True, exist_ok=True)
@@ -1662,7 +1662,7 @@ def generate_ic_all_in_one_batch(counts: tuple[int, ...], *, run_date: str) -> d
         "records": records,
         "validation": "validation.json",
         "policy": {
-            "single_reusable_harness": "tools/proteus_generation/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
+            "single_reusable_harness": "proteus/experiments/runners/2026-06-24/generate_beautifier_passive_family_probe_temp.py",
             "footprint_shelf_layout": True,
             "full_cdb": True,
             "terminals_and_wires": False,

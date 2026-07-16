@@ -35,14 +35,14 @@ from proteusgen.resistor_v9 import _extract_object_chunk
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-REPO = Path(__file__).resolve().parents[3]
-DONOR_ROOT = REPO / "proteus_ic/donors/manual_downloads_20260612/ICcombinationfinal/7490"
+REPO = Path(__file__).resolve().parents[4]
+DONOR_ROOT = REPO / "proteus/active/evidence/donors/manual_downloads_20260612/ICcombinationfinal/7490"
 DONORS = {
     "2x": DONOR_ROOT / "2_7490_withallcombunationaland21RLC.pdsprj",
     "6x": DONOR_ROOT / "6_7490_withallcombunationaland21RLC.pdsprj",
 }
-OUT_ROOT = REPO / "experiments" / "ic_7490_structural_v2_temp_2026_06_12"
-ARCHIVE = REPO / "experiments" / "IC_7490_STRUCTURAL_V2_TEMP_2026_06_12.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_7490_structural_v2_temp_2026_06_12"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "IC_7490_STRUCTURAL_V2_TEMP_2026_06_12.zip"
 
 MARKERS = (
     b"7490",

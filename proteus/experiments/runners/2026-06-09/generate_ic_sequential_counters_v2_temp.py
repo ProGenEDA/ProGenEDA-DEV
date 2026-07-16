@@ -17,8 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -28,9 +28,9 @@ from proteusgen.resistor_v9 import _extract_object_chunk, _sha256_bytes, _u32  #
 from proteusgen.templates import FixtureRegistry  # noqa: E402
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version  # noqa: E402
 
-OUT_ROOT = REPO / "experiments" / "ic_sequential_counters_v2_temp_2026_06_09"
-ARCHIVE_PATH = REPO / "experiments" / "IC_SEQUENTIAL_COUNTERS_V2_TEMP_2026_06_09.zip"
-DONOR_ROOT = REPO / "proteus_ic" / "donors" / "sequential_counters"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_sequential_counters_v2_temp_2026_06_09"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_SEQUENTIAL_COUNTERS_V2_TEMP_2026_06_09.zip"
+DONOR_ROOT = REPO / "proteus" / "active" / "evidence" / "donors" / "sequential_counters"
 
 MARKERS = (
     b"7490",

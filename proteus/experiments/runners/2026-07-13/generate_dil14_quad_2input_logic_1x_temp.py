@@ -13,9 +13,9 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[3]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT / "proteus" / "active" / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "proteus" / "active" / "src"))
 
 from proteusgen.component_placer import (  # noqa: E402
     NEW_COMPONENT_MEGA_DONOR,
@@ -32,7 +32,7 @@ from proteusgen.resistor_v9 import _extract_object_chunk  # noqa: E402
 
 
 FAMILIES = ("74HC00", "74HC02", "74HC08", "74HC32", "74HC86", "74HC266")
-OUT_ROOT = ROOT / "experiments" / "dil14_quad_2input_logic_terminal_v1_temp_2026_07_13"
+OUT_ROOT = ROOT / "proteus" / "experiments" / "runs" / "dil14_quad_2input_logic_terminal_v1_temp_2026_07_13"
 REQUESTED_SCALES = (1, 9, 15)
 # Keep experiment paths stable when a researcher regenerates one scale at a
 # time while investigating a loader failure. The old enumerate-only folder

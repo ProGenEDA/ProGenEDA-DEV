@@ -22,16 +22,16 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from proteusgen.templates import FixtureRegistry
 
-OUT_ROOT = REPO_ROOT / "experiments" / "mixed_rcl_v19_correct_21_temp_2026_06_02"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "MIXED_RCL_V19_CORRECT_21_TEMP_2026_06_02"
-V18_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-02" / "generate_mixed_rcl_v18_final_topology_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "mixed_rcl_v19_correct_21_temp_2026_06_02"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "MIXED_RCL_V19_CORRECT_21_TEMP_2026_06_02"
+V18_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-02" / "generate_mixed_rcl_v18_final_topology_temp.py"
 
 CASE_ID = "RCL_V19_T01_CORRECT_21_RULE_TOPOLOGY"
 

@@ -19,9 +19,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-05-31" / "generate_inductor_v1_terminal_temp.py"
-V2_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-05-31" / "generate_inductor_v2_suffix_temp.py"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-05-31" / "generate_inductor_v1_terminal_temp.py"
+V2_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-05-31" / "generate_inductor_v2_suffix_temp.py"
 
 
 def _load_module(name: str, path: Path) -> Any:
@@ -37,7 +37,7 @@ def _load_module(name: str, path: Path) -> Any:
 v1 = _load_module("inductor_v1", V1_PATH)
 v2 = _load_module("inductor_v2", V2_PATH)
 
-OUT_ROOT = REPO_ROOT / "experiments" / "inductor_v3_multi_temp_2026_05_31"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "inductor_v3_multi_temp_2026_05_31"
 
 
 @dataclass(frozen=True)
@@ -466,7 +466,7 @@ def main() -> int:
         + "\n",
         encoding="utf-8",
     )
-    shutil.make_archive(str(REPO_ROOT / "experiments" / "INDUCTOR_V3_MULTI_TEMP_2026_05_31"), "zip", OUT_ROOT)
+    shutil.make_archive(str(REPO_ROOT / "proteus" / "experiments" / "runs" / "INDUCTOR_V3_MULTI_TEMP_2026_05_31"), "zip", OUT_ROOT)
     print(json.dumps({"out_root": str(OUT_ROOT), "test_order": summary["test_order"]}, indent=2))
     return 0
 

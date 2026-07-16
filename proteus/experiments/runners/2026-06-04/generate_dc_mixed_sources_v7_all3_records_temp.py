@@ -26,14 +26,14 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, Literal
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SRC_ROOT = REPO_ROOT / "src"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SRC_ROOT = REPO_ROOT / "proteus" / "active" / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-V1_PATH = REPO_ROOT / "tools" / "proteus_generation" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
-OUT_ROOT = REPO_ROOT / "experiments" / "dc_mixed_sources_v7_all3_records_temp_2026_06_04"
-ARCHIVE_BASE = REPO_ROOT / "experiments" / "DC_MIXED_SOURCES_V7_ALL3_RECORDS_TEMP_2026_06_04"
+V1_PATH = REPO_ROOT / "proteus" / "experiments" / "runners" / "2026-06-04" / "generate_dc_mixed_sources_v1_requested5_temp.py"
+OUT_ROOT = REPO_ROOT / "proteus" / "experiments" / "runs" / "dc_mixed_sources_v7_all3_records_temp_2026_06_04"
+ARCHIVE_BASE = REPO_ROOT / "proteus" / "experiments" / "runs" / "DC_MIXED_SOURCES_V7_ALL3_RECORDS_TEMP_2026_06_04"
 DONOR_ROOT = OUT_ROOT / "donors"
 
 ALL3_DONOR = Path(r"C:\Users\tahab\Downloads\45454New Project.pdsprj")

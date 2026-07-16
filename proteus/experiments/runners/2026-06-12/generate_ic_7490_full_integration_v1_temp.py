@@ -25,11 +25,11 @@ from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
 
-REPO = Path(__file__).resolve().parents[3]
-OUT_ROOT = REPO / "experiments" / "ic_7490_full_integration_v1_temp_2026_06_12"
-ARCHIVE = REPO / "experiments" / "IC_7490_FULL_INTEGRATION_V1_TEMP_2026_06_12.zip"
-DONOR_7490 = REPO / "proteus_ic" / "donors" / "manual_downloads_20260611" / "SQU" / "4_7490.pdsprj"
-PAIRWISE_CDB_SCRIPT = REPO / "tools" / "proteus_generation" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
+REPO = Path(__file__).resolve().parents[4]
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_7490_full_integration_v1_temp_2026_06_12"
+ARCHIVE = REPO / "proteus" / "experiments" / "runs" / "IC_7490_FULL_INTEGRATION_V1_TEMP_2026_06_12.zip"
+DONOR_7490 = REPO / "proteus" / "active" / "evidence" / "donors" / "manual_downloads_20260611" / "SQU" / "4_7490.pdsprj"
+PAIRWISE_CDB_SCRIPT = REPO / "proteus" / "experiments" / "runners" / "2026-06-09" / "generate_mixed_ic_cross_donor_v2_metadata_temp.py"
 
 GATE_X = 11_430_000
 GATE_Y = 2_540_000
@@ -47,7 +47,7 @@ def _load_module(name: str, path: Path):
     return module
 
 
-ic = _load_module("ic_combinational_for_7490_full_integration", REPO / "src" / "proteusgen" / "ic_combinational.py")
+ic = _load_module("ic_combinational_for_7490_full_integration", REPO / "proteus" / "active" / "src" / "proteusgen" / "ic_combinational.py")
 cdb_v2 = _load_module("mixed_cdb_v2_for_7490_full_integration", PAIRWISE_CDB_SCRIPT)
 
 

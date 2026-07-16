@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def load_native_bider_v2_module():
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-12" / "generate_ic_native_bider_pairs_v2_cdb_idfix_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-12" / "generate_ic_native_bider_pairs_v2_cdb_idfix_temp.py"
     spec = importlib.util.spec_from_file_location("ic_native_bider_pairs_v2_for_tests", script)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -29,7 +29,7 @@ def load_native_bider_v2_module():
 
 
 def load_7490_real_circuits_module():
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-12" / "generate_ic_7490_real_circuits_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-12" / "generate_ic_7490_real_circuits_v1_temp.py"
     spec = importlib.util.spec_from_file_location("ic_7490_real_circuits_v1_for_tests", script)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -39,7 +39,7 @@ def load_7490_real_circuits_module():
 
 
 def load_7490_full_integration_module():
-    script = ROOT / "tools" / "proteus_generation" / "2026-06-12" / "generate_ic_7490_full_integration_v1_temp.py"
+    script = ROOT.parent / "experiments" / "runners" / "2026-06-12" / "generate_ic_7490_full_integration_v1_temp.py"
     spec = importlib.util.spec_from_file_location("ic_7490_full_integration_v1_for_tests", script)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)

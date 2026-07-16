@@ -15,8 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-REPO = Path(__file__).resolve().parents[3]
-SRC = REPO / "src"
+REPO = Path(__file__).resolve().parents[4]
+SRC = REPO / "proteus" / "active" / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -27,11 +27,11 @@ from proteusgen.source_driven import _terminal_events
 from proteusgen.templates import FixtureRegistry
 from proteusgen.versioning import PROTEUS_813, patch_project_xml_version, patch_root_dsn_version
 
-OUT_ROOT = REPO / "experiments" / "ic_hc08_logic_v1_temp_2026_06_08"
-ARCHIVE_PATH = REPO / "experiments" / "IC_HC08_LOGIC_V1_TEMP_2026_06_08.zip"
+OUT_ROOT = REPO / "proteus" / "experiments" / "runs" / "ic_hc08_logic_v1_temp_2026_06_08"
+ARCHIVE_PATH = REPO / "proteus" / "experiments" / "runs" / "IC_HC08_LOGIC_V1_TEMP_2026_06_08.zip"
 
-HC08_ALL4_DONOR = REPO / "proteus_ic" / "donors" / "74hc08" / "IC_HC08_M01_ALL4_IO.pdsprj"
-DEVICE_SECTION_DONOR = REPO / "proteus_ic" / "donors" / "74hc08" / "IC_HC08_M02_TWO_PACKAGES_IO.pdsprj"
+HC08_ALL4_DONOR = REPO / "proteus" / "active" / "evidence" / "donors" / "74hc08" / "IC_HC08_M01_ALL4_IO.pdsprj"
+DEVICE_SECTION_DONOR = REPO / "proteus" / "active" / "evidence" / "donors" / "74hc08" / "IC_HC08_M02_TWO_PACKAGES_IO.pdsprj"
 
 EXPRESSION = (
     r"Y = X_1 \cdot X_2 \cdot X_3 \cdot X_4 \cdot X_5 \cdot X_6 \cdot "
