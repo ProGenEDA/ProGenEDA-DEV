@@ -42,13 +42,18 @@ MULTIPART_SUBPART_GAP_Y = 5_080_000
 PROTEUS_TERMINAL_GRID = 254_000
 SCAN_COORD_LIMIT = 30_000_000
 MIN_COORD_ABS = 50_000
-# The terminalized mixed route is Proteus-loader-safe through 15x.  Larger
-# layouts can place source markers above this range and then trigger VGDVC.DLL
-# access violations once their terminal/WIRE attachment stream is added.
-# Keep the parser guard at the demonstrated safe range so unsupported scales
-# fail deterministically before an invalid terminalized project is emitted.
+# General packet scanning remains intentionally conservative.  Its 700M
+# ceiling prevents arbitrary binary payload from being mistaken for a moveable
+# coordinate pair.
 SAFE_PACKET_COORD_LIMIT = 700_000_000
 SAFE_PACKET_MIN_COORD_ABS = 1_000_000
+# A direct body marker is substantially narrower than the generic scanner: it
+# is a family marker in the native component packet followed immediately by
+# signed X/Y coordinates.  The locked mega's valid 30x native two-pin layout
+# reaches 912,134,320, so this separate bound must cover the signed 32-bit
+# working area without loosening the general scanner.  Keep headroom below
+# INT32_MAX for the next scale probe while rejecting overflow-like payload.
+STRICT_MARKER_BODY_COORD_LIMIT = 2_000_000_000
 
 LINKED_COORDINATE_PLANS: dict[str, tuple[tuple[int, int], ...]] = {
     "SWITCH": ((2, 6), (68, 72), (143, 147), (208, 212), (359, 363)),
@@ -289,8 +294,10 @@ def _strict_marker_body_coord_pair_ok(x_value: int, y_value: int) -> bool:
     """
 
     return (
-        _packet_coord_ok(x_value)
-        and _packet_coord_ok(y_value)
+        -STRICT_MARKER_BODY_COORD_LIMIT <= x_value <= STRICT_MARKER_BODY_COORD_LIMIT
+        and -STRICT_MARKER_BODY_COORD_LIMIT <= y_value <= STRICT_MARKER_BODY_COORD_LIMIT
+        and x_value % 10 == 0
+        and y_value % 10 == 0
         and (x_value != 0 or y_value != 0)
     )
 

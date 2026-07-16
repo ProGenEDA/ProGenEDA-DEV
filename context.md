@@ -14760,6 +14760,54 @@ I’m starting from your `totalmix.pdsprj` as the authoritative combined example
 
 Files edited: `context.md`.
 
+### User message - 2026-07-16 17:38 +05:00
+
+just fix the 2 pin for 30x n even higher then u can stop
+
+### Agent response - 2026-07-16 17:38 +05:00
+
+Understood. All multi-pin work is dropped for this task. I am focusing only on the 18-family two-pin mixed route: fix 30× first, then push it higher until the locked mega donor or Proteus gives a real ceiling.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 17:32 +05:00
+
+The two-pin 30× request was generated with `CAP-ELEC=21`, and the component placer accepted all 531 placements. The native terminalizer then stopped at a resistor packet whose structural body anchor was not parsed. This is recorded as a terminalizer scale limitation; no geometry or accepted route was changed.
+
+Files created: additional native scale controls under `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/01_native_two_pin18/`; edited: `context.md`.
+
+### Agent response - 2026-07-16 17:35 +05:00
+
+Generated four fast 3× non-IC groups against the 18-family two-pin baseline: CONTROL3 (`POT-HG`, `LM317T`, `OPAMP`), BJT4, MOS3, and FOURPIN2. All four loader-gated with the same parser-derived library dialog, so no family-specific source change or blocker was made.
+
+Files created: `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/02_non_ic_group_screen/`; edited: `context.md`.
+
+### User message - 2026-07-16 17:36 +05:00
+
+no leave them
+
+### Agent response - 2026-07-16 17:36 +05:00
+
+Understood. The non-IC multi-pin routes are left unchanged: no blocker and no further scale work on them right now. The completed two-pin matrix remains the active path.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 17:25 +05:00
+
+The non-IC two-pin matrix passed 3×, 9×, and 15× local Proteus opens with no modal error. The 15× disposable copy also passed cold open and cold reopen; it contains 270 placed components with 540 terminals and 540 short WIRE records.
+
+Files created: `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/01_native_two_pin18/` (1×, 3×, 9×, and 15× bare/terminalized projects, reports, and a 15× cold-gate copy); edited: `context.md`.
+
+### User message - 2026-07-16 17:27 +05:00
+
+no need to only do 15x that limit was for ics, test up to 30x
+
+### Agent response - 2026-07-16 17:27 +05:00
+
+Agreed—the 15× cap applies to ICs, not the non-IC matrix. I will extend the proven 18-family two-pin mix directly to 30× and then use the same higher ceiling for non-IC additions that pass their smaller mixed checks.
+
+Files edited: `context.md`.
+
 ### Agent response - 2026-07-16 17:14 +05:00
 
 The 41-family mix (with Switch and Fuse excluded) opens at 1× but still produces a parser-derived library dialog at 3×. A direct static audit found unresolved 74HC74 component-link rebasing mismatches and zero-length drain WIRE units for 2N7000/BS170; no IC-route repair was emitted.
@@ -15813,3 +15861,59 @@ Files edited: `context.md`.
 Audit complete. The user donor proves that the generated 45-family file contains both display packets but serializes them incorrectly: `CC → AN → all 16 display terminal/WIRE units`, instead of the donor's local `AN → eight units → CC → eight units` structure. It also uses `0100` for both display link classes and generic clipped labels, while the donor uses exact pin labels with `0200` for anode and `0300` for cathode. The display anchors are also far above the donor's working frame. The donor and audit are saved; no implementation behavior was changed during this audit-only step.
 
 Files created/edited: `proteus_ic/donors/terminalized_catalogue_evidence/display_7seg/combined_45_family/both7segplaced_user_terminalized_45f_20260715.pdsprj`, `knowledge/combined_7seg_45f_donor_audit_2026_07_15.md`, `knowledge/display_cathode_terminal_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, and `context.md`.
+### User message - 2026-07-16 17:38 +05:00
+
+just fix the 2 pin for 30x n even higher then u can stop
+
+### Agent response - 2026-07-16 17:39 +05:00
+
+I found the 30× blocker: valid resistor body coordinates cross a 700M parser guard at R24, even though the placed packet is valid. I’m widening only that strict body-marker check—without changing terminal geometry or any accepted family route—then I’ll regenerate and loader-test 30× and the next higher scale.
+
+Files edited: `context.md`. Files created: `backups/component_beautifier/component_beautifier_20260716_174850_before_high_coordinate_marker_anchor_fix.py`.
+
+### Agent response - 2026-07-16 17:55 +05:00
+
+The coordinate guard is fixed: the fresh 30× placement now reaches terminal emission. Its next real boundary is suffix allocation—four terminal suffixes collide before final WIRE-address rebasing. I’m auditing the full allocation set together so the scale fix is one deterministic change, not a one-collision-at-a-time patch.
+
+Files edited: `context.md`. Files created: `backups/component_terminal_placer/component_terminal_placer_20260716_175610_before_native_high_scale_suffix_remap.py`.
+
+### Agent response - 2026-07-16 18:03 +05:00
+
+The fresh 30× native two-pin stream now emits all 1,062 terminal/WIRE attachments with unique temporary links. The allocation audit found exactly two collisions and remapped only the later stream occurrences before final WIRE-address rebasing; no terminal geometry, WIRE coordinate, or accepted low-scale route changed.
+
+Files edited: `src/proteusgen/component_beautifier.py`, `src/proteusgen/component_terminal_placer.py`, `tests/test_component_placer.py`, `knowledge/high_coordinate_marker_anchor_preflight_2026_07_16.md`, and `context.md`. Files generated: `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/01_native_two_pin18/N10_NATIVE18_30X_CAPELEC21_*`.
+
+### User message - 2026-07-16 18:15 +05:00
+
+u can actually stop here
+now test various combinations quickly then give me list of supported components
+
+### Agent response - 2026-07-16 18:15 +05:00
+
+Understood—I’m stopping the scale push at the proven 58× locked-mega ceiling. I’ll run a compact set of varied two-pin mixes now (rather than more uniform stress packs), then give you the supported-component list.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 18:16 +05:00
+
+Six deliberately uneven mixes now generate cleanly—from source/RCL and diode clusters through 30× and 58× all-family mixes. I’m doing the quick Proteus loader check on the two small full mixes and the two high-count mixes now.
+
+Files edited: `context.md`. Files generated: `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/03_combination_quickcheck/`.
+
+### Agent response - 2026-07-16 18:19 +05:00
+
+Q03, Q04, Q05, and Q06 all opened in Proteus without a modal error; the largest uneven 58× mix also cold-reopened normally. I am documenting this quick combination screen and the locked-donor support inventory now.
+
+Files edited: `context.md`, `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/README.md`, and `knowledge/high_coordinate_marker_anchor_preflight_2026_07_16.md`.
+
+### Agent response - 2026-07-16 18:22 +05:00
+
+Combination screen complete: six uneven native two-pin mixes generated with the expected terminal/WIRE counts; Q03, Q04, Q05, and Q06 opened without a modal Proteus error, and Q06 cold-reopened normally. The locked mega exposes 56 physical component-placer families; the active, loader-tested terminal mix in this pass is the 18-family two-pin subset, with FUSE and SWITCH deliberately blocked from mixed emission.
+
+Files edited: `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/README.md`, `knowledge/test_results.jsonl`, `knowledge/high_coordinate_marker_anchor_preflight_2026_07_16.md`, and `context.md`. Files generated: `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/03_combination_quickcheck/`.
+
+### Agent response - 2026-07-16 18:26 +05:00
+
+Final requested screen complete. The active terminal route is proven through the locked mega's native two-pin component inventory at 58 of every eligible family (with `CAP-ELEC` at its 21 donor-backed maximum); 60 cannot be generated because the locked mega has only 58 `CSOURCE` packets. I am committing and pushing the shared evidence-backed scale repair, the quick combination pack, and the precise support inventory now.
+
+Files edited: `src/proteusgen/component_beautifier.py`, `src/proteusgen/component_terminal_placer.py`, `tests/test_component_placer.py`, `knowledge/high_coordinate_marker_anchor_preflight_2026_07_16.md`, `knowledge/test_results.jsonl`, `experiments/non_ic_totalmix_matrix_v1_temp_2026_07_16/README.md`, and `context.md`. Files created: the dated shared-placer/beautifier backups and curated 30x/45x/58x plus combination evidence.

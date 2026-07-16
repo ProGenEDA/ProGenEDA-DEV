@@ -59,6 +59,11 @@ SUPPORTED_FINAL_WIRE_LINK_ENCODINGS = {
     LEGACY_LOW16_WIRE_LINK_ENCODING,
     FULL_ABSOLUTE_WIRE_LINK_ENCODING,
 }
+# Temporary suffixes identify a terminal and its component pin-link until the
+# final ROOT.DSN WIRE addresses are known.  The catalogue mixed route already
+# reserves from this range; use the same established temporary namespace only
+# if an otherwise accepted native family progression collides at a large scale.
+MIXED_NATIVE_TEMPORARY_SUFFIX_REMAP_START = 0x7A00
 # User-directed safety withdrawal for the active totalmix work.  These are not
 # removed from their historical standalone files; a mixed request must omit
 # them entirely until an authoritative donor proves their combined-stream
@@ -8514,6 +8519,82 @@ def _apply_mixed_native_wire_evidence_to_pairs(
     return tuple(out)
 
 
+def _pair_terminal_roles(pair: Any) -> tuple[str, str]:
+    return ("input", "output") if isinstance(pair, SourceTerminalPair) else ("left", "right")
+
+
+def _replace_pair_temporary_suffixes(
+    pair: Any,
+    *,
+    overrides: dict[tuple[str, str], int],
+) -> Any:
+    """Apply a collision-only temporary suffix remap to one terminal pair."""
+
+    replacements: dict[str, TerminalSpec] = {}
+    key = str(getattr(pair, "component_key", ""))
+    for role in _pair_terminal_roles(pair):
+        suffix = overrides.get((key, role))
+        if suffix is not None:
+            replacements[role] = replace(getattr(pair, role), suffix=suffix)
+    return replace(pair, **replacements) if replacements else pair
+
+
+def _mixed_native_temporary_suffix_overrides(
+    family_parts: dict[
+        str,
+        tuple[
+            tuple[Any, ...],
+            list[bytes],
+            list[tuple[bytes, bytes]],
+            dict[int, bytes],
+        ],
+    ],
+    families: Iterable[str],
+) -> dict[str, dict[tuple[str, str], int]]:
+    """Return deterministic remaps only for duplicate native temporary links.
+
+    Family profiles intentionally retain their donor-derived suffix progression
+    at ordinary scales.  A larger mixed request can make two independent
+    progressions meet before the final WIRE-address rebasing stage.  Reserve
+    every planned suffix first, retain the first stream occurrence unchanged,
+    and move only later duplicate occurrences into unused temporary slots.
+    """
+
+    original_suffixes: set[int] = set()
+    for family in families:
+        pairs = family_parts[family][0]
+        for pair in pairs:
+            for role in _pair_terminal_roles(pair):
+                original_suffixes.add(int(getattr(pair, role).suffix) & 0xFFFF)
+
+    used_suffixes = set(original_suffixes)
+    seen_suffixes: set[int] = set()
+    next_candidate = MIXED_NATIVE_TEMPORARY_SUFFIX_REMAP_START
+    overrides: dict[str, dict[tuple[str, str], int]] = {}
+
+    def allocate_unused() -> int:
+        nonlocal next_candidate
+        for _ in range(0x10000):
+            candidate = next_candidate & 0xFFFF
+            next_candidate = (next_candidate + 1) & 0xFFFF
+            if candidate and candidate not in used_suffixes:
+                used_suffixes.add(candidate)
+                return candidate
+        raise ValueError("No temporary terminal suffix remains for mixed native emission.")
+
+    for family in families:
+        pairs = family_parts[family][0]
+        for pair in pairs:
+            key = str(getattr(pair, "component_key", ""))
+            for role in _pair_terminal_roles(pair):
+                suffix = int(getattr(pair, role).suffix) & 0xFFFF
+                if suffix in seen_suffixes:
+                    overrides.setdefault(family, {})[(key, role)] = allocate_unused()
+                else:
+                    seen_suffixes.add(suffix)
+    return overrides
+
+
 def _mixed_overlay_family_parts(
     family: str,
     groups: tuple[Any, ...],
@@ -8526,6 +8607,7 @@ def _mixed_overlay_family_parts(
     snap_terminal_contacts_to_grid: bool = False,
     ensure_nonzero_grid_wire: bool = False,
     mixed_native_wire_evidence: dict[str, Any] | None = None,
+    temporary_suffix_overrides: dict[tuple[str, str], int] | None = None,
 ) -> tuple[
     tuple[Any, ...],
     list[bytes],
@@ -8642,6 +8724,34 @@ def _mixed_overlay_family_parts(
         evidence=mixed_native_wire_evidence,
         retarget_grid_contact_short_wires=ensure_nonzero_grid_wire,
     )
+    if temporary_suffix_overrides:
+        pairs = tuple(
+            _replace_pair_temporary_suffixes(
+                pair,
+                overrides=temporary_suffix_overrides,
+            )
+            for pair in pairs
+        )
+        # The initial per-family patches are donor-native and intentionally
+        # unchanged for normal scales.  Only a detected collision regenerates
+        # the affected family’s pin-link fields from the same final pair data.
+        patched_by_id = {}
+        for group, pair in zip(groups, pairs, strict=True):
+            if family == "RESISTOR":
+                patched = _patch_resistor_terminal_links(bytes(group.data), pair)
+            elif family == "CAP":
+                patched = _patch_capacitor_terminal_links(bytes(group.data), pair)
+            elif family == "REALIND":
+                patched = _patch_inductor_terminal_links(bytes(group.data), pair)
+            elif family == "CAP-ELEC":
+                patched = _patch_cap_elec_terminal_links(bytes(group.data), pair)
+            elif family in GENERIC_TWO_PIN_PROFILES:
+                patched = _patch_generic_two_pin_terminal_links(bytes(group.data), pair)
+            elif family in SOURCE_COMPONENT_BARE_BASE_SIZES:
+                patched = _patch_source_terminal_links(bytes(group.data), pair)
+            else:
+                raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
+            patched_by_id[id(group)] = patched
     if family == "RESISTOR":
         terminals = [
             *(pair.left for pair in pairs),
@@ -9256,6 +9366,8 @@ def attach_mixed_native_bidir_terminals_to_project(
         ],
     ] = {}
     family_reports: list[dict[str, Any]] = []
+    family_groups_by_family: dict[str, tuple[Any, ...]] = {}
+    source_index_starts: dict[str, int] = {}
     source_index_start = 1
     for family in requested:
         family_groups = tuple(
@@ -9263,6 +9375,8 @@ def attach_mixed_native_bidir_terminals_to_project(
             for group in ordered_groups
             if _terminal_eligible_family(group, {family}) == family
         )
+        family_groups_by_family[family] = family_groups
+        source_index_starts[family] = source_index_start
         parts = _mixed_overlay_family_parts(
             family,
             family_groups,
@@ -9274,11 +9388,48 @@ def attach_mixed_native_bidir_terminals_to_project(
         if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
             source_index_start += len(family_groups)
         family_parts[family] = parts
-        pairs, terminal_records, wire_pairs, _patches = parts
+
+    temporary_suffix_overrides = _mixed_native_temporary_suffix_overrides(
+        family_parts,
+        requested,
+    )
+    temporary_suffix_reassignments: list[dict[str, Any]] = []
+    for family in requested:
+        overrides = temporary_suffix_overrides.get(family, {})
+        if not overrides:
+            continue
+        original_pairs = family_parts[family][0]
+        for (key, role), replacement in sorted(overrides.items()):
+            pair = next(
+                pair
+                for pair in original_pairs
+                if str(getattr(pair, "component_key", "")) == key
+            )
+            temporary_suffix_reassignments.append(
+                {
+                    "family": family,
+                    "component_key": key,
+                    "role": role,
+                    "old_suffix": f"{int(getattr(pair, role).suffix) & 0xFFFF:04x}",
+                    "temporary_suffix": f"{replacement:04x}",
+                }
+            )
+        family_parts[family] = _mixed_overlay_family_parts(
+            family,
+            family_groups_by_family[family],
+            terminal_templates=terminal_templates,
+            source_index_start=source_index_starts[family],
+            active_links=True,
+            snap_terminal_contacts_to_grid=True,
+            temporary_suffix_overrides=overrides,
+        )
+
+    for family in requested:
+        pairs, terminal_records, wire_pairs, _patches = family_parts[family]
         family_reports.append(
             {
                 "family_handler": f"{family}/accepted-native-unit",
-                "component_count": len(family_groups),
+                "component_count": len(family_groups_by_family[family]),
                 "terminal_count": len(terminal_records),
                 "wire_count": len(wire_pairs) * 2,
                 "terminal_pairs": [pair.as_dict() for pair in pairs],
@@ -9484,6 +9635,7 @@ def attach_mixed_native_bidir_terminals_to_project(
         "wire_path_contacts_valid": wire_path_contacts_valid,
         "wire_path_contact_checks": wire_path_checks,
         "family_reports": family_reports,
+        "temporary_suffix_reassignments": temporary_suffix_reassignments,
         "terminal_suffixes": [f"{suffix:04x}" for suffix in suffixes],
         "terminal_suffixes_unique": suffixes_unique,
         "terminal_suffix_links_valid": suffix_links_valid,

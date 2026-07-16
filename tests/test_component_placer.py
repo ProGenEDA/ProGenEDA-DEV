@@ -4,6 +4,7 @@ from collections import Counter
 import json
 from pathlib import Path
 import struct
+from types import SimpleNamespace
 
 import pytest
 import proteusgen.component_terminal_placer as terminal_placer
@@ -28,6 +29,7 @@ from proteusgen.component_placer import (
 )
 from proteusgen.component_beautifier import (
     MIXED_LAYOUT_BAND_GAP_Y,
+    STRICT_MARKER_BODY_COORD_LIMIT,
     layout_coordinate_pairs,
 )
 from proteusgen.beautifier_validator import (
@@ -7182,3 +7184,44 @@ def test_catalogue_three_pin_scaled_terminals_append_after_component_stream(
     assert {label for label in labels if label.startswith(first_key)} == {
         f"{first_key}{suffix}" for suffix in expected_role_suffixes
     }
+
+
+def test_strict_marker_body_anchor_accepts_high_native_two_pin_coordinate_only() -> None:
+    """Keep high-scale parsed anchors available without widening generic scans."""
+
+    marker = b"RESISTOR"
+    high_body = b"\x00\x08" + marker + struct.pack("<ii", 24_130_000, 879_988_080)
+    beyond_limit = b"\x00\x08" + marker + struct.pack(
+        "<ii", 24_130_000, STRICT_MARKER_BODY_COORD_LIMIT + 10
+    )
+
+    assert layout_coordinate_pairs(high_body, "RESISTOR") == [
+        (10, 14, "marker_body:RESISTOR"),
+    ]
+    # The family-less/general scanner is deliberately unchanged: it must not
+    # infer this high coordinate pair from arbitrary binary payload.
+    assert layout_coordinate_pairs(high_body) == []
+    assert layout_coordinate_pairs(beyond_limit, "RESISTOR") == []
+
+
+def test_native_mixed_suffix_allocator_remaps_only_later_collision() -> None:
+    """Large mixes preserve donor suffixes until two family ranges meet."""
+
+    def pair(key: str, left: int, right: int) -> SimpleNamespace:
+        return SimpleNamespace(
+            component_key=key,
+            left=SimpleNamespace(suffix=left),
+            right=SimpleNamespace(suffix=right),
+        )
+
+    family_parts = {
+        "CAP": ((pair("C1", 0x4171, 0x4172),), [], [], {}),
+        "REALIND": ((pair("L1", 0x4172, 0x4173),), [], [], {}),
+    }
+
+    overrides = terminal_placer._mixed_native_temporary_suffix_overrides(
+        family_parts,
+        ("CAP", "REALIND"),
+    )
+
+    assert overrides == {"REALIND": {("L1", "left"): 0x7A00}}
